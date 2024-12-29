@@ -37,7 +37,6 @@ public class ModuleManager {
 				 new ArrayListModule(),
 				 new MoreSwingModule(),
 				 new PingModule(),
-				 new NoHurtCamModule(),
 				 new TargetESPModule(),
 				 new FullBrightModule(),
 				 new ClientSpooferModule(),

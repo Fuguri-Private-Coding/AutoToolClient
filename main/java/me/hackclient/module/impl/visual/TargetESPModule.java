@@ -18,7 +18,7 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "TargetESP", category = Category.VISUAL, toggled = true)
 public class TargetESPModule extends Module {
 
-    FloatSettings speed = new FloatSettings("Speed", this, 1f, 5f, 2f, 0.1f);
+    FloatSettings speed = new FloatSettings("Speed", this, 1f, 10f, 5f, 0.1f);
     IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
     FloatSettings length = new FloatSettings("Length", this, 0.2f, 1.5f, 0.3f, 0.1f);
 

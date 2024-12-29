@@ -6,8 +6,10 @@ import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
+import net.minecraft.client.gui.Gui;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ import java.util.List;
 
 @ModuleInfo(name = "ArrayList", category = Category.VISUAL, toggled = true)
 public class ArrayListModule extends Module {
+
+	BooleanSetting background = new BooleanSetting("Background", this, true);
 
 	@Override
 	public void onEvent(Event event) {
@@ -26,7 +30,15 @@ public class ArrayListModule extends Module {
 				list.add(() -> {
 					int offset = 0;
 					for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
-						mc.fontRendererObj.drawString(module.getName(), 5, 5 + offset, new Color(0, 255, 247, 255).getRGB(), true);
+						if (background.isToggled()) {
+							Gui.drawRect(
+									3,
+									3 + offset,
+									6 + mc.fontRendererObj.getStringWidth(module.getName()),
+									4 + offset + 9,
+									new Color(255, 255, 255, 255).getRGB()
+							);
+						}
 						offset += mc.fontRendererObj.FONT_HEIGHT + 1;
 					}
 				});
@@ -47,6 +59,15 @@ public class ArrayListModule extends Module {
 		);
 		int offset = 0;
 		for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
+			if (background.isToggled()) {
+				Gui.drawRect(
+						3,
+						3 + offset,
+						6 + mc.fontRendererObj.getStringWidth(module.getName()),
+						4 + offset + 9,
+						new Color(0, 0, 0, 75).getRGB()
+				);
+			}
 			mc.fontRendererObj.drawString(module.getName(), 5, 5 + offset, Color.WHITE.getRGB(), true);
 			offset += mc.fontRendererObj.FONT_HEIGHT + 1;
 		}

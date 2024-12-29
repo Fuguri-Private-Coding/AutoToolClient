@@ -6,6 +6,7 @@ import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.util.MathHelper;
 
 public class MoveUtils implements InstanceAccess {
+
     public static void silentMoveFix(MoveFlyingEvent event)
     {
         int dif = (int)((MathHelper.wrapDegree((mc.thePlayer.rotationYaw - Rotation.getServerRotation().getYaw() - 23.5f - 135)) + 180) / 45);
@@ -112,6 +113,10 @@ public class MoveUtils implements InstanceAccess {
             mc.thePlayer.motionX += calcStrafe * yawCos - calcForward * yawSin;
             mc.thePlayer.motionZ += calcForward * yawCos + calcStrafe * yawSin;
         }
+    }
+
+    public static boolean isMoving() {
+        return mc.thePlayer.moveForward != 0;
     }
 
     public static double getDirection(float yaw)

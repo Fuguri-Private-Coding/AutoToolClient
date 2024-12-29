@@ -24,13 +24,13 @@ public class TimerRangeModule extends Module {
 
     FloatSettings startDistance = new FloatSettings("StartDistance", this, () -> predictMode.getMode().equalsIgnoreCase("RayCast"), 3f, 6, 3.6f, 0.1f);
     IntegerSetting limitTicks = new IntegerSetting("LimitTick", this, () -> predictMode.getMode().equalsIgnoreCase("RayCast"), 1,10,2);
-    IntegerSetting disabledTicks = new IntegerSetting("DontWorkDelay", this, 0, 100, 10);
+    IntegerSetting disabledTicks = new IntegerSetting("FlagDelayTicks", this, 0, 100, 10);
 
     FloatSettings partialTicks = new FloatSettings("PartialTicks", this, 0f, 2f, 1f, 0.1f);
 
     private KillAuraModule killAura;
 
-    private int dontWorkTicks;
+    private int flagDelayTicks;
     private float balance;
 
     @Override
@@ -42,18 +42,18 @@ public class TimerRangeModule extends Module {
         }
 
         if (event instanceof TickEvent) {
-            if (dontWorkTicks > 0) {
-                dontWorkTicks--;
+            if (flagDelayTicks > 0) {
+                flagDelayTicks--;
             }
         }
 
-        if (dontWorkTicks > 0) {
+        if (flagDelayTicks > 0) {
             return;
         }
 
         if (event instanceof PacketEvent packetEvent) {
             if (packetEvent.getPacket() instanceof S08PacketPlayerPosLook) {
-                dontWorkTicks = disabledTicks.getValue();
+                flagDelayTicks = disabledTicks.getValue();
                 return;
             }
         }

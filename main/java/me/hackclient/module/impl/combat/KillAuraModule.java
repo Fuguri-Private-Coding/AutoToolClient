@@ -39,7 +39,7 @@ public class KillAuraModule extends Module {
 	BooleanSetting moveFix = new BooleanSetting("SilentMoveFix", this, true);
 
 	FloatSettings maxRange = new FloatSettings("MaxRange", this, 3f, 6f, 5.5f, 0.1f);
-	IntegerSetting reactionTime = new IntegerSetting("ReactionTime", this, 0, 5, 0);
+	IntegerSetting reactionTime = new IntegerSetting("ReactionTime", this, 0, 5, 1);
 	public FloatSettings speedYawRotation = new FloatSettings("MaxYawStep", this, 1f, 180f, 50f, 0.5f);
 	public FloatSettings speedPitchRotation = new FloatSettings("MaxPitchStep", this, 1f, 180f, 20f, 0.5f);
 

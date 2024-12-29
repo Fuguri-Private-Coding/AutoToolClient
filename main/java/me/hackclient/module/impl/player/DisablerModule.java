@@ -13,7 +13,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(name = "Disaler", category = Category.PLAYER, key = Keyboard.KEY_O)
+@ModuleInfo(name = "Disaler", category = Category.PLAYER)
 public class DisablerModule extends Module {
 
 	private final CopyOnWriteArrayList<C0FPacketConfirmTransaction> c0fs = new CopyOnWriteArrayList<>();

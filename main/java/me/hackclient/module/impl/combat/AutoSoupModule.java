@@ -44,7 +44,6 @@ public class AutoSoupModule extends Module {
             if (timer.reachedMS() < 300)
                 return;
 
-
             if (mc.thePlayer.getHealth() < health.getValue()) {
                 if (mc.thePlayer.inventory.currentItem != soup) {
                     mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C09PacketHeldItemChange(soup));

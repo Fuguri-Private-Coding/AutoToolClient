@@ -6,6 +6,7 @@ import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.FloatSettings;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.util.MathHelper;
@@ -14,6 +15,9 @@ import net.minecraft.util.MathHelper;
 public class HandlerModule extends Module {
 
 	private boolean rotated;
+
+	FloatSettings yawBackRotate = new FloatSettings("YawStepBackRotate", this, 0f, 180f, 30f, 0.5f);
+	FloatSettings pitchBackRotate = new FloatSettings("PitchStepBackRotate", this, 0f, 180f, 10f, 0.5f);
 
 	private KillAuraModule killAura;
 
@@ -39,30 +43,36 @@ public class HandlerModule extends Module {
 				if (delta.hypot() < 0.2) {
 					rotated = false;
 				} else {
-					delta.setYaw(MathHelper.clamp(delta.getYaw(), -30, 30));
-					delta.setPitch(MathHelper.clamp(delta.getPitch(), -10, 10));
+					delta.setYaw(MathHelper.clamp(delta.getYaw(), -yawBackRotate.getValue(), yawBackRotate.getValue()));
+					delta.setPitch(MathHelper.clamp(delta.getPitch(), -pitchBackRotate.getValue(), pitchBackRotate.getValue()));
 					delta = RotationUtils.fixDelta(delta);
 					Rotation.setServerRotation(serverRotation.add(delta));
 				}
 			}
+
 			if (event instanceof ChangeHeadRotationEvent event1) {
 				event1.setYaw(Rotation.getServerRotation().getYaw());
 				event1.setPitch(Rotation.getServerRotation().getPitch());
 			}
+
 			if (event instanceof LookEvent lookEvent) {
 				lookEvent.setYaw(Rotation.getServerRotation().getYaw());
 				lookEvent.setPitch(Rotation.getServerRotation().getPitch());
 			}
+
 			if (event instanceof MotionEvent motionEvent) {
 				motionEvent.setYaw(Rotation.getServerRotation().getYaw());
 				motionEvent.setPitch(Rotation.getServerRotation().getPitch());
 			}
+
 			if (event instanceof MoveFlyingEvent moveFlyingEvent) {
 				moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
 			}
+
 			if (event instanceof JumpEvent jumpEvent) {
                 jumpEvent.setYaw(Rotation.getServerRotation().getYaw());
 			}
+
 		} else if (event instanceof TickEvent) {
 			Rotation.setServerRotation(new Rotation(
 					MathHelper.wrapDegree(mc.thePlayer.rotationYaw),
