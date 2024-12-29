@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="netty-1.6">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/jars/libraries/com/mojang/netty/1.6/netty-1.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

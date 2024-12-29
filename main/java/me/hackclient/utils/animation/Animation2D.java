@@ -1,0 +1,36 @@
+package me.hackclient.utils.animation;
+
+import me.hackclient.utils.timer.StopWatch;
+import org.lwjgl.util.vector.Vector2f;
+
+public class Animation2D {
+    public double x, y, endX, endY;
+    private final StopWatch stopWatch;
+
+    public Animation2D(double x, double y, double endX, double endY) {
+        this.x = x;
+        this.y = y;
+        this.endX = endX;
+        this.endY = endY;
+        stopWatch = new StopWatch();
+    }
+
+    public void update(float smooth) {
+        smooth /= 1000f;
+
+        for (int i = 0; i < stopWatch.reachedMS(); i++) {
+            Vector2f delta = getDelta();
+            x += delta.x * smooth;
+            y += delta.y * smooth;
+        }
+
+        stopWatch.reset();
+    }
+
+    public Vector2f getDelta() {
+        return new Vector2f(
+                (float) (endX - x),
+                (float) (endY - y)
+        );
+    }
+}
