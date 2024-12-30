@@ -72,14 +72,17 @@ public class KillAuraModule extends Module {
 			if (event instanceof RunGameLoopEvent) {
 				clickManager.checkTime();
 			}
+
 			if (event instanceof MotionEvent motionEvent) {
 				motionEvent.setYaw(Rotation.getServerRotation().getYaw());
 				motionEvent.setPitch(Rotation.getServerRotation().getPitch());
 			}
+
 			if (event instanceof LookEvent lookEvent) {
 				lookEvent.setYaw(Rotation.getServerRotation().getYaw());
 				lookEvent.setPitch(Rotation.getServerRotation().getPitch());
 			}
+
 			if (moveFix.isToggled()) {
 				if (event instanceof MoveFlyingEvent moveFlyingEvent) {
 					moveFlyingEvent.setCanceled(true);
@@ -93,13 +96,16 @@ public class KillAuraModule extends Module {
 			} else if (event instanceof MoveFlyingEvent moveFlyingEvent) {
 				moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
 			}
+
 			if (event instanceof JumpEvent jumpEvent) {
 				jumpEvent.setYaw(Rotation.getServerRotation().getYaw());
 			}
+
 			if (event instanceof ChangeHeadRotationEvent changeHeadRotationEvent) {
 				changeHeadRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
 				changeHeadRotationEvent.setPitch(Rotation.getServerRotation().getPitch());
 			}
+
 			if (event instanceof LegitClickTimingEvent) {
 				clickManager.click(target, new IClickingCFG() {
 					@Override
