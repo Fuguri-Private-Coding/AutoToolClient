@@ -45,7 +45,8 @@ public class ModuleManager {
 				 new DelayFixModule(),
 				 new HandlerModule(),
 				 new NoRenderModule(),
-				 new MidClickModule()
+				 new MidClickModule(),
+				 new FarmGovnoModule()
 		);
 	}
 
