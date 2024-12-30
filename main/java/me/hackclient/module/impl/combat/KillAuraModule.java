@@ -72,7 +72,7 @@ public class KillAuraModule extends Module {
 			if (event instanceof RunGameLoopEvent) {
 				clickManager.checkTime();
 			}
-
+// аодывадолжфоджлполджавподжла
 			if (event instanceof MotionEvent motionEvent) {
 				motionEvent.setYaw(Rotation.getServerRotation().getYaw());
 				motionEvent.setPitch(Rotation.getServerRotation().getPitch());
