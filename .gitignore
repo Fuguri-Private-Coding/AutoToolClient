@@ -3,3 +3,4 @@
 out
 logs
 .idea
+main/java/me/hackclient/module/impl/combat/KillAuraModule.java
