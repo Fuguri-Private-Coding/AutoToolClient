@@ -28,18 +28,9 @@ public class MoreKBModule extends Module {
 			new String[] {
 					"LegitFast",
 					"Legit",
-					"One",
-					"penis",
-					"ajsdfkj",
-					"ajksdfljwe",
-					"ajksdfljse",
-					"ajksdfljsd",
-					"ajksdfljsf",
-
+					"One"
 			}
 	);
-
-	BooleanSetting modes = new BooleanSetting("LegitFast = true / Legit = false", this, true);
 
 	IntegerSetting MinDelayTicks = new IntegerSetting("MinDelayTicks", this, 1, 5, 3);
 	IntegerSetting MaxDelayTicks = new IntegerSetting("MaxDelayTicks", this, 1, 5, 3);
@@ -75,29 +66,21 @@ public class MoreKBModule extends Module {
 		}
 
 		if (ticks > 0) {
-			if (modes.isToggled()) {
-				handleLegitFast(event);
-			} else {
-				handleLegit(event);
+			switch (mode.getMode()) {
+				case "LegitFast": {
+					handleLegitFast(event);
+					break;
+				}
+				case "One": {
+					handleOne(event);
+					break;
+				}
+				case "Legit": {
+					handleLegit(event);
+					break;
+				}
 			}
 		}
-
-		//if (ticks > 0) {
-		//	switch (mode.getMode()) {
-		//		case "LegitFast": {
-		//			handleLegitFast(event);
-		//			break;
-		//		}
-		//		case "One": {
-		//			handleOne(event);
-		//			break;
-		//		}
-		//		case "Legit": {
-		//			handleLegit(event);
-		//			break;
-		//		}
-		//	}
-		//}
 	}
 
 	private void handleLegit(Event event) {

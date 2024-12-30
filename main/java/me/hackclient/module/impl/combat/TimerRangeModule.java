@@ -20,13 +20,22 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, toggled = true)
 public class TimerRangeModule extends Module {
 
-    ModeSetting predictMode = new ModeSetting("Predict", this, "RayCast", new String[] {"RayCast", "Ticks"});
+    //ModeSetting predictMode = new ModeSetting("Predict", this, "RayCast", new String[] {"RayCast", "Ticks"});
 
-    FloatSettings startDistance = new FloatSettings("StartDistance", this, () -> predictMode.getMode().equalsIgnoreCase("RayCast"), 3f, 6, 3.6f, 0.1f);
-    IntegerSetting limitTicks = new IntegerSetting("LimitTick", this, () -> predictMode.getMode().equalsIgnoreCase("RayCast"), 1,10,2);
+    FloatSettings startDistance = new FloatSettings("StartDistance", this/*, () -> predictMode.getMode().equalsIgnoreCase("RayCast")*/, 3f, 6, 3.6f, 0.1f);
+    IntegerSetting limitTicks = new IntegerSetting("LimitTick", this/*, () -> predictMode.getMode().equalsIgnoreCase("RayCast")*/, 1,10,2);
     IntegerSetting disabledTicks = new IntegerSetting("FlagDelayTicks", this, 0, 100, 10);
 
-    FloatSettings partialTicks = new FloatSettings("PartialTicks", this, 0f, 2f, 1f, 0.1f);
+    //FloatSettings partialTicks = new FloatSettings("PartialTicks", this, 0f, 2f, 1f, 0.1f);
+    ModeSetting freezeMode = new ModeSetting(
+            "FreezeAnimation",
+            this,
+            "TimerRangeV2",
+            new String[] {
+                    "TimerRangeV2",
+                    "TimeManipulation",
+                    "PizdecPolniy"
+            });
 
     private KillAuraModule killAura;
 
@@ -67,7 +76,6 @@ public class TimerRangeModule extends Module {
 
             EntityLivingBase target = killAura.getTarget();
             if (target != null && mc.thePlayer.motionX != 0 && mc.thePlayer.motionZ != 0) {
-                boolean clicked = false;
                 double distance = DistanceUtils.getDistanceToEntity(target);
                 while (distance < startDistance.getValue()
                         && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
@@ -81,15 +89,27 @@ public class TimerRangeModule extends Module {
                     } catch (Exception ignored) {
                     }
                 }
-                if (!clicked && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
-                    clicked = true;
+                if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
                     killAura.clickManager.clicks++;
                 }
             }
         }
         if (event instanceof RunGameLoopEvent) {
             if (balance > 0) {
-                mc.timer.renderPartialTicks = partialTicks.getValue();
+                switch (freezeMode.getMode()) {
+                    case "TimerRangeV2": {
+                        mc.timer.renderPartialTicks = 0;
+                        break;
+                    }
+                    case "TimeManipulation": {
+                        mc.timer.renderPartialTicks = 1;
+                        break;
+                    }
+                    case "PizdecPolniy": {
+                        mc.timer.renderPartialTicks = 2;
+                        break;
+                    }
+                }
             }
         }
     }

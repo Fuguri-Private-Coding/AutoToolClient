@@ -150,9 +150,9 @@ public class ClickGuiScreen extends GuiScreen {
 					settingLineAnimation.update(Client.INSTANCE.getModuleManager().getModule(ClickGuiModule.class).animationSpeed.getValue());
 					RoundedUtils.drawRect(
 							(float) settingLineAnimation.x,
-							(float) settingLineAnimation.y,
+							(float) settingLineAnimation.y - 1,
 							(float) settingLineAnimation.x + 1,
-							(float) settingLineAnimation.y + 10,
+							(float) settingLineAnimation.y + 9,
 							3f,
 							new Color(0, 255, 209, 255)
 					);
@@ -254,9 +254,12 @@ public class ClickGuiScreen extends GuiScreen {
 				if (setting instanceof ModeSetting modeSetting) {
 					int xOffset = 0;
 					int yOffset = 0;
-					String lastSetting = "";
 					for (String mode : modeSetting.getModes()) {
-						String gavno2 = mode + (modeSetting.getModes()[modeSetting.getModes().length - 1] != mode ? "," : "");
+						String gavno2 = mode + (!modeSetting.getModes()[modeSetting.getModes().length - 1].equalsIgnoreCase(mode) ? "," : "");
+						if (70 + 85 + nameLength + xOffset + mc.fontRendererObj.getStringWidth(gavno2) >= 400) {
+							xOffset = 0;
+							yOffset += 11;
+						}
 						mc.fontRendererObj.drawString(
 								gavno2,
 								70 + 85 + nameLength + xOffset,
@@ -265,11 +268,6 @@ public class ClickGuiScreen extends GuiScreen {
 								true
 						);
 						xOffset += mc.fontRendererObj.getStringWidth(gavno2) + 4;
-						if (70 + 85 + nameLength + xOffset >= 400) {
-							xOffset = 0;
-							yOffset += 11;
-						}
-						lastSetting = mode;
 					}
 					offset += yOffset;
 				}
@@ -320,7 +318,31 @@ public class ClickGuiScreen extends GuiScreen {
 				}
 			}
 			if (setting instanceof ModeSetting modeSetting) {
-
+				int xOffset = 0;
+				int yOffset = 0;
+				for (String mode : modeSetting.getModes()) {
+					String gavno2 = mode + (!modeSetting.getModes()[modeSetting.getModes().length - 1].equalsIgnoreCase(mode) ? "," : "");
+					if (70 + 85 + nameLength + xOffset + mc.fontRendererObj.getStringWidth(gavno2) >= 400) {
+						xOffset = 0;
+						yOffset += 11;
+					}
+					/*mc.fontRendererObj.drawString(
+							gavno2,
+							70 + 85 + nameLength + xOffset,
+							79 + offset + yOffset,
+							mode.equalsIgnoreCase(modeSetting.getMode()) ? new Color(0, 255, 209, 255).getRGB() : new Color(75, 75, 75, 179).getRGB(),
+							true
+					);*/
+					if (mouseX > 70 + 85 + nameLength + xOffset
+					&& mouseX < 70 + 85 + nameLength + xOffset + mc.fontRendererObj.getStringWidth(gavno2)
+					&& mouseY > 79 + offset + yOffset
+					&& mouseY < 79 + offset + yOffset + 10) {
+						modeSetting.setMode(mode);
+						lastSetting = setting;
+					}
+					xOffset += mc.fontRendererObj.getStringWidth(gavno2) + 4;
+				}
+				offset += yOffset;
 			}
 		}
 	}
