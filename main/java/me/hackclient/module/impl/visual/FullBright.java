@@ -7,7 +7,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 
 @ModuleInfo(name = "FullBright", category = Category.VISUAL, toggled = true)
-public class FullBrightModule extends Module {
+public class FullBright extends Module {
 
     @Override
     public void onDisable() {

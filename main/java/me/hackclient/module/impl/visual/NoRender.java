@@ -6,7 +6,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 
 @ModuleInfo(name = "NoRender", category = Category.VISUAL, toggled = true)
-public class NoRenderModule extends Module {
+public class NoRender extends Module {
 
     public BooleanSetting HurtCam = new BooleanSetting("HurtCam", this, true);
     public BooleanSetting Fire = new BooleanSetting("Fire", this, true);

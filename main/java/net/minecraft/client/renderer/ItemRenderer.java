@@ -1,7 +1,7 @@
 package net.minecraft.client.renderer;
 
 import me.hackclient.Client;
-import me.hackclient.module.impl.visual.NoRenderModule;
+import me.hackclient.module.impl.visual.NoRender;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -487,7 +487,7 @@ public class ItemRenderer
 
     private void renderFireInFirstPerson(float partialTicks)
     {
-        NoRenderModule noRender = Client.INSTANCE.getModuleManager().getModule(NoRenderModule.class);
+        NoRender noRender = Client.INSTANCE.getModuleManager().getModule(NoRender.class);
 
         if (noRender.isToggled() && noRender.Fire.isToggled()) return;
 

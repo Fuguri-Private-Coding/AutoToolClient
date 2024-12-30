@@ -9,12 +9,11 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
 import net.minecraft.util.ChatComponentText;
-import org.lwjgl.input.Keyboard;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "Disaler", category = Category.PLAYER)
-public class DisablerModule extends Module {
+public class Disabler extends Module {
 
 	private final CopyOnWriteArrayList<C0FPacketConfirmTransaction> c0fs = new CopyOnWriteArrayList<>();
 

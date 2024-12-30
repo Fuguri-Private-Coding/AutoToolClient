@@ -5,4 +5,4 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 
 @ModuleInfo(name = "AntiBot", category = Category.COMBAT)
-public class AntiBotModule extends Module { }
+public class AntiBot extends Module { }

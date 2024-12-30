@@ -4,6 +4,6 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 
-@ModuleInfo(name = "NoSlow", category = Category.MOVE)
-public class NoSlowModule extends Module {
+@ModuleInfo(name = "LongJump", category = Category.MOVE)
+public class LongJump extends Module {
 }

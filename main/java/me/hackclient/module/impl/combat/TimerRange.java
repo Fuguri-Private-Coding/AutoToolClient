@@ -18,7 +18,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, toggled = true)
-public class TimerRangeModule extends Module {
+public class TimerRange extends Module {
 
     //ModeSetting predictMode = new ModeSetting("Predict", this, "RayCast", new String[] {"RayCast", "Ticks"});
 
@@ -37,7 +37,7 @@ public class TimerRangeModule extends Module {
                     "PizdecPolniy"
             });
 
-    private KillAuraModule killAura;
+    private KillAura killAura;
 
     private int flagDelayTicks;
     private float balance;
@@ -45,7 +45,7 @@ public class TimerRangeModule extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (killAura == null) killAura = Client.INSTANCE.getModuleManager().getModule(KillAuraModule.class);
+        if (killAura == null) killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
         if (killAura.getTarget() == null) {
             balance = 0;
         }

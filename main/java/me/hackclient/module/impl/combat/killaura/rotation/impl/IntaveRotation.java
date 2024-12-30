@@ -31,7 +31,6 @@ public class IntaveRotation implements IKillAuraRotation {
 			return new Rotation(current.getYaw(), current.getPitch());
 		}
 
-		//System.out.println("nearest rotation is " + "[" + nearest.getYaw() + " " + nearest.getPitch() + "]");
 		Delta delta = RotationUtils.getDelta(current, nearest);
 
 		Delta delta1 = delta.copy();

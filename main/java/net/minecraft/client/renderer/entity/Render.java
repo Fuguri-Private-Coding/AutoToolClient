@@ -1,7 +1,7 @@
 package net.minecraft.client.renderer.entity;
 
 import me.hackclient.Client;
-import me.hackclient.module.impl.misc.MidClickModule;
+import me.hackclient.module.impl.misc.MidClick;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.src.Config;
 import net.minecraft.util.*;
@@ -336,7 +335,7 @@ public abstract class Render<T extends Entity> implements IEntityRenderer
 
         if (d0 <= (double)(maxDistance * maxDistance)) {
             if (entityIn instanceof EntityPlayer ent
-            && Client.INSTANCE.getModuleManager().getModule(MidClickModule.class).showInName.isToggled()
+            && Client.INSTANCE.getModuleManager().getModule(MidClick.class).showInName.isToggled()
             && ent.isFriend()) {
                 str = "§2[Friend]§9 " + str;
             }

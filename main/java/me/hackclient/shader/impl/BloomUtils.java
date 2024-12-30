@@ -1,7 +1,7 @@
 package me.hackclient.shader.impl;
 
 import me.hackclient.Client;
-import me.hackclient.module.impl.visual.BloomModule;
+import me.hackclient.module.impl.visual.Bloom;
 import me.hackclient.shader.GaussianKernel;
 import me.hackclient.shader.Shader;
 import me.hackclient.shader.Uniform;
@@ -9,7 +9,6 @@ import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
-import net.minecraft.util.ChatComponentText;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -45,8 +44,8 @@ public class BloomUtils implements InstanceAccess {
 			outputFramebuffer.framebufferClear();
 		}
 
-		final int radius = Client.INSTANCE.getModuleManager().getModule(BloomModule.class).radius.getValue();
-		final float compression = Client.INSTANCE.getModuleManager().getModule(BloomModule.class).compression.getValue();
+		final int radius = Client.INSTANCE.getModuleManager().getModule(Bloom.class).radius.getValue();
+		final float compression = Client.INSTANCE.getModuleManager().getModule(Bloom.class).compression.getValue();
 		final int programID = bloom.getProgram();
 
 		inputFramebuffer.bindFramebuffer(true);
@@ -73,7 +72,7 @@ public class BloomUtils implements InstanceAccess {
 
 		Uniform.uniform2f(programID, "u_texel_size", 1F / mc.displayWidth, 1F / mc.displayHeight);
 		Uniform.uniform2f(programID, "u_direction", compression, 0.0F);
-		Uniform.uniform1f(programID, "strength",  Client.INSTANCE.getModuleManager().getModule(BloomModule.class).strength.getValue());
+		Uniform.uniform1f(programID, "strength",  Client.INSTANCE.getModuleManager().getModule(Bloom.class).strength.getValue());
 
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_SRC_ALPHA);

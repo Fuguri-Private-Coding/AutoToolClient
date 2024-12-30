@@ -6,12 +6,12 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.combat.KillAuraModule;
+import me.hackclient.module.impl.combat.KillAura;
 
 @ModuleInfo(name = "MoreSwing", category = Category.VISUAL, toggled = true)
-public class MoreSwingModule extends Module {
+public class MoreSwing extends Module {
 
-    private KillAuraModule killAura;
+    private KillAura killAura;
 
     @Override
     public void onEvent(Event event) {
@@ -20,7 +20,7 @@ public class MoreSwingModule extends Module {
             if (mc.thePlayer == null || mc.theWorld == null) return;
 
             if (killAura == null) {
-                killAura = Client.INSTANCE.getModuleManager().getModule(KillAuraModule.class);
+                killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
             }
 
             if (killAura.getTarget() != null) {

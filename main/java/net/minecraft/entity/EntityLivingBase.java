@@ -12,7 +12,6 @@ import java.util.UUID;
 
 import me.hackclient.Client;
 import me.hackclient.event.events.JumpEvent;
-import me.hackclient.module.impl.misc.MidClickModule;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

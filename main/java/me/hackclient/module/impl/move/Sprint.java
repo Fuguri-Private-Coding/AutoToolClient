@@ -6,8 +6,8 @@ import me.hackclient.module.ModuleInfo;
 import net.minecraft.client.entity.EntityPlayerSP;
 
 @ModuleInfo(name = "Sprint", category = Category.MOVE, toggled = true)
-public class SprintModule extends Module {
-	public SprintModule() {
+public class Sprint extends Module {
+	public Sprint() {
 		super();
 	}
 

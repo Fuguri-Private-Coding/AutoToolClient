@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
 import me.hackclient.Client;
 import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.event.events.Render3DEvent;
-import me.hackclient.module.impl.visual.NoRenderModule;
+import me.hackclient.module.impl.visual.NoRender;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -609,7 +609,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
 
     private void hurtCameraEffect(float partialTicks)
     {
-        NoRenderModule noRender = Client.INSTANCE.getModuleManager().getModule(NoRenderModule.class);
+        NoRender noRender = Client.INSTANCE.getModuleManager().getModule(NoRender.class);
 
         if (noRender.isToggled() && noRender.HurtCam.isToggled()) return;
 

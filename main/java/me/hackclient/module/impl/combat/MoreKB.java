@@ -10,15 +10,13 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
-import me.hackclient.utils.move.MoveUtils;
-import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import org.apache.commons.lang3.RandomUtils;
 
 @ModuleInfo(name = "MoreKB", category = Category.COMBAT, toggled = true)
-public class MoreKBModule extends Module {
+public class MoreKB extends Module {
 
-    private KillAuraModule killAura;
+    private KillAura killAura;
 	public int ticks, delayTicks;
 
 	ModeSetting mode = new ModeSetting(
@@ -35,23 +33,28 @@ public class MoreKBModule extends Module {
 	IntegerSetting MinDelayTicks = new IntegerSetting("MinDelayTicks", this, 1, 5, 3);
 	IntegerSetting MaxDelayTicks = new IntegerSetting("MaxDelayTicks", this, 1, 5, 3);
 	IntegerSetting MinResetTicks = new IntegerSetting("MinTicks", this, 1, 5, 1);
-	IntegerSetting MaxResetTicks = new IntegerSetting("MaxTicks", this, 1, 5, 2);
-	BooleanSetting debug = new BooleanSetting("Debug", this, true);
-	BooleanSetting testSprintFix2 = new BooleanSetting("TestSprintFix2", this, true);
+	IntegerSetting MaxResetTicks = new IntegerSetting("MaxTicks", this, 1, 5, 1);
+	BooleanSetting debug = new BooleanSetting("Debug", this, false);
+	BooleanSetting serverSprintToggle = new BooleanSetting("ServerSprintToggle", this, () -> mode.getMode().equalsIgnoreCase("One"), true);
 
 	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
-		if (event instanceof TickEvent && debug.isToggled()) {
+		if (event instanceof RunGameLoopEvent && debug.isToggled()) {
 			if (delayTicks > 0) {
-				ClientUtils.chatLog("Delaying ticks" + delayTicks);
-			} else if (ticks > 0) {
-				ClientUtils.chatLog("Resetting ticks" + ticks);
+				ClientUtils.chatLog("Delaying ticks " + delayTicks);
+			}
+
+			if (ticks > 0) {
+				ClientUtils.chatLog("Resetting ticks " + ticks);
 			}
 		}
 
-		if (killAura == null)
-			killAura = Client.INSTANCE.getModuleManager().getModule(KillAuraModule.class);
+		if (killAura == null) {
+			killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
+			ticks = 0;
+			delayTicks = 0;
+		}
 
 		if (killAura.getTarget() != null && killAura.getTarget().hurtTime == 10 && ticks == 0 && event instanceof TickEvent) {
 			delayTicks = RandomUtils.nextInt(MinDelayTicks.getValue(), MaxDelayTicks.getValue());
@@ -93,7 +96,7 @@ public class MoreKBModule extends Module {
 	private void handleOne(Event event) {
 		if (event instanceof UpdateEvent) {
 			mc.thePlayer.setSprinting(true);
-			if (testSprintFix2.isToggled()) {
+			if (serverSprintToggle.isToggled()) {
 				mc.thePlayer.setServerSprintState(true);
 			}
 			mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
@@ -102,8 +105,7 @@ public class MoreKBModule extends Module {
 	}
 
 	private void handleLegitFast(Event event) {
-		if (!MoveUtils.isMoving()) return;
-		if (event instanceof SprintEvent) {
+		if (event instanceof TickEvent) {
 			if (mc.thePlayer.isSprinting()) {
 				mc.thePlayer.setSprinting(false);
 				mc.thePlayer.setServerSprintState(false);

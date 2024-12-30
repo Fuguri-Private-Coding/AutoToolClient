@@ -4,5 +4,5 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 
-@ModuleInfo(name = "Teams", category = Category.COMBAT)
-public class TeamsModule extends Module {}
+@ModuleInfo(name = "DelayFix", category = Category.COMBAT, toggled = true)
+public class DelayFix extends Module { }

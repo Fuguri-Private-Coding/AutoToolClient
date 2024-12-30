@@ -12,19 +12,19 @@ import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.util.MathHelper;
 
 @ModuleInfo(name = "Handler", category = Category.COMBAT, toggled = true)
-public class HandlerModule extends Module {
+public class Handler extends Module {
 
 	private boolean rotated;
 
 	FloatSettings yawBackRotate = new FloatSettings("YawStepBackRotate", this, 0f, 180f, 30f, 0.5f);
 	FloatSettings pitchBackRotate = new FloatSettings("PitchStepBackRotate", this, 0f, 180f, 10f, 0.5f);
 
-	private KillAuraModule killAura;
+	private KillAura killAura;
 
 	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
-		if (killAura == null) killAura = Client.INSTANCE.getModuleManager().getModule(KillAuraModule.class);
+		if (killAura == null) killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
 
 		if (killAura.isToggled() && killAura.getTarget() != null) {
 			rotated = true;

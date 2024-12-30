@@ -3,14 +3,14 @@ package me.hackclient.module.impl.connection;
 import me.hackclient.event.Direction;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.PacketEvent;
-import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
+import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.doubles.Doubles;
-import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.network.Packet;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.play.client.C01PacketChatMessage;
@@ -21,31 +21,27 @@ import net.minecraft.network.status.client.C00PacketServerQuery;
 import net.minecraft.network.status.client.C01PacketPing;
 import net.minecraft.network.status.server.S01PacketPong;
 import net.minecraft.util.Vec3;
-import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static org.lwjgl.opengl.GL11.*;
-
-@ModuleInfo(name = "Ping", category = Category.CONNECTION, key = Keyboard.KEY_P)
-public class PingModule extends Module {
+@ModuleInfo(name = "Ping", category = Category.CONNECTION, toggled = true)
+public class Ping extends Module {
 
 	IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 500);
-	IntegerSetting attackDelay = new IntegerSetting("AttackConditionTime", this, 0, 500, 500);
-	IntegerSetting flagDelay = new IntegerSetting("FlagConditionTime", this, 0, 500, 500);
+	IntegerSetting attackDelay = new IntegerSetting("AttackConditionTime", this, 0, 20, 10);
+	IntegerSetting flagDelay = new IntegerSetting("FlagConditionTime", this, 0, 20, 10);
+	BooleanSetting damageFlush = new BooleanSetting("DamageFlush", this, true);
+	BooleanSetting guiFlush = new BooleanSetting("GuiFlush", this, true);
+	BooleanSetting itemFlush = new BooleanSetting("ItemFlush", this, true);
 
 	// Таймер для задержки после ресета, помогает обходить античиты
-	private long lastMS;
 	private int stoppingTime;
 	private final LinkedHashMap<Packet<?>, Long> packetBuffer;
 	private final List<Doubles<Vec3, Long>> posBuffer;
 
-	public PingModule() {
+	public Ping() {
 		packetBuffer = new LinkedHashMap<>();
 		posBuffer = new ArrayList<>();
 		stoppingTime = 0;
@@ -72,8 +68,18 @@ public class PingModule extends Module {
 				}
 			}
 
+			if (mc.thePlayer.hurtTime > 0 && damageFlush.isToggled()) {
+				resetPackets();
+			}
 
-			// Ресет при флаге от античита/сервера, чтобы быстрее расфлагаться
+			if (mc.currentScreen != null && guiFlush.isToggled()) {
+				resetPackets();
+			}
+
+			if (mc.thePlayer.isUsingItem() && itemFlush.isToggled()) {
+				resetPackets();
+			}
+
 			if (packet instanceof S08PacketPlayerPosLook) {
 				stoppingTime = flagDelay.getValue();
 			}
@@ -90,22 +96,15 @@ public class PingModule extends Module {
 		}
 
 		if (event instanceof RunGameLoopEvent) {
-			handleStandalone();
+			handleStandAlone();
+		}
 
-			if (lastMS == 0) {
-				lastMS = System.currentTimeMillis();
-			}
-
-			stoppingTime -= (int) (System.currentTimeMillis() - lastMS);
-			lastMS = System.currentTimeMillis();
-
-			if (stoppingTime < 0) {
-				stoppingTime = 0;
-			}
+		if (event instanceof TickEvent) {
+			if (stoppingTime > 0) stoppingTime--;
 		}
 	}
 
-	private void handleStandalone() {
+	private void handleStandAlone() {
 		if (packetBuffer.isEmpty())
 			return;
 

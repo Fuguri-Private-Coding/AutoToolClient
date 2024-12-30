@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, key = Keyboard.KEY_R)
-public class KillAuraModule extends Module {
+public class KillAura extends Module {
 
 	private EntityLivingBase target;
 
@@ -31,19 +31,19 @@ public class KillAuraModule extends Module {
 	private final TargetSelector targetSelector;
 	public final ClickManager clickManager;
 
-	IntegerSetting minCps = new IntegerSetting("MinCps", this, 1,20,16);
-	IntegerSetting maxCps = new IntegerSetting("MaxCps", this, 1,20,16);
+	IntegerSetting minCps = new IntegerSetting("MinCps", this, 1,20,18);
+	IntegerSetting maxCps = new IntegerSetting("MaxCps", this, 1,20,18);
 
 	BooleanSetting clickFix = new BooleanSetting("ClickFix", this, true);
 	BooleanSetting mineBlazeFix = new BooleanSetting("MineBlazeFix", this, true);
 	BooleanSetting moveFix = new BooleanSetting("SilentMoveFix", this, true);
 
-	FloatSettings maxRange = new FloatSettings("MaxRange", this, 3f, 6f, 5.5f, 0.1f);
+	FloatSettings maxRange = new FloatSettings("MaxRange", this, 3f, 6f, 6f, 0.1f);
 	IntegerSetting reactionTime = new IntegerSetting("ReactionTime", this, 0, 5, 1);
-	public FloatSettings speedYawRotation = new FloatSettings("MaxYawStep", this, 1f, 180f, 50f, 0.5f);
-	public FloatSettings speedPitchRotation = new FloatSettings("MaxPitchStep", this, 1f, 180f, 20f, 0.5f);
+	public FloatSettings speedYawRotation = new FloatSettings("MaxYawStep", this, 1f, 180f, 75f, 0.5f);
+	public FloatSettings speedPitchRotation = new FloatSettings("MaxPitchStep", this, 1f, 180f, 45f, 0.5f);
 
-	public KillAuraModule() {
+	public KillAura() {
 		clickManager = new ClickManager();
 		targetSelector = new TargetSelector();
 		rotations = new ArrayList<>();
@@ -72,7 +72,7 @@ public class KillAuraModule extends Module {
 			if (event instanceof RunGameLoopEvent) {
 				clickManager.checkTime();
 			}
-// аодывадолжфоджлполджавподжла
+
 			if (event instanceof MotionEvent motionEvent) {
 				motionEvent.setYaw(Rotation.getServerRotation().getYaw());
 				motionEvent.setPitch(Rotation.getServerRotation().getPitch());

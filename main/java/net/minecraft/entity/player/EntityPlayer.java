@@ -10,7 +10,7 @@ import java.util.UUID;
 import me.hackclient.Client;
 import me.hackclient.event.events.AttackEvent;
 import me.hackclient.event.events.ChangeHeadRotationEvent;
-import me.hackclient.module.impl.misc.MidClickModule;
+import me.hackclient.module.impl.misc.MidClick;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockDirectional;
@@ -2162,7 +2162,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     }
 
     public boolean isFriend() {
-        return Client.INSTANCE.getFriendManager().isFriend(getName(), Client.INSTANCE.getModuleManager().getModule(MidClickModule.class).reverseFriends.isToggled());
+        return Client.INSTANCE.getFriendManager().isFriend(getName(), Client.INSTANCE.getModuleManager().getModule(MidClick.class).reverseFriends.isToggled());
     }
 
     public boolean hasReducedDebug()

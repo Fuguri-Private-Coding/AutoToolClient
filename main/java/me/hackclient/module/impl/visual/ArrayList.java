@@ -8,15 +8,13 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.Gui;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @ModuleInfo(name = "ArrayList", category = Category.VISUAL, toggled = true)
-public class ArrayListModule extends Module {
+public class ArrayList extends Module {
 
 	BooleanSetting background = new BooleanSetting("Background", this, true);
 
@@ -24,9 +22,9 @@ public class ArrayListModule extends Module {
 	public void onEvent(Event event) {
 		super.onEvent(event);
 		if (event instanceof Render2DEvent) {
-			BloomModule bloomModule = mm.getModule(BloomModule.class);
+			Bloom bloomModule = mm.getModule(Bloom.class);
 			if (bloomModule.isToggled() && bloomModule.arrayList.isToggled()) {
-				List<Runnable> list = new ArrayList<>();
+				List<Runnable> list = new java.util.ArrayList<>();
 				list.add(() -> {
 					int offset = 0;
 					for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {

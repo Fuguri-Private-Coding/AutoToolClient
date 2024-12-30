@@ -3,8 +3,8 @@ package me.hackclient.guis.clickGui;
 import me.hackclient.Client;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
-import me.hackclient.module.impl.visual.BloomModule;
-import me.hackclient.module.impl.visual.ClickGuiModule;
+import me.hackclient.module.impl.visual.Bloom;
+import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSettings;
@@ -43,7 +43,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		BloomModule bloomModule = InstanceAccess.mm.getModule(BloomModule.class);
+		Bloom bloomModule = InstanceAccess.mm.getModule(Bloom.class);
 		if (bloomModule.isToggled() && bloomModule.clickGui.isToggled()) {
 			list.add(() -> RoundedUtils.drawRect(70, 50 ,400, 200, 2 , new Color(255, 255, 255, 255)));
 			BloomUtils.drawBloom(list);
@@ -80,7 +80,7 @@ public class ClickGuiScreen extends GuiScreen {
 				);
 				categoryLineAnimation.endX = 70 + 5 + offset + categoryOffset;
 				categoryLineAnimation.endY = 55 + 10;
-				categoryLineAnimation.update(Client.INSTANCE.getModuleManager().getModule(ClickGuiModule.class).animationSpeed.getValue());
+				categoryLineAnimation.update(Client.INSTANCE.getModuleManager().getModule(ClickGui.class).animationSpeed.getValue());
 			}
 			offset += mc.fontRendererObj.getStringWidth(category.name) + 10;
 		}
@@ -120,7 +120,7 @@ public class ClickGuiScreen extends GuiScreen {
 				);
 				moduleLineAnimation.endX = 70 + 2;
 				moduleLineAnimation.endY = 74 + offset;
-				moduleLineAnimation.update(Client.INSTANCE.getModuleManager().getModule(ClickGuiModule.class).animationSpeed.getValue());
+				moduleLineAnimation.update(Client.INSTANCE.getModuleManager().getModule(ClickGui.class).animationSpeed.getValue());
 			}
 			offset += 11;
 		}
@@ -147,7 +147,7 @@ public class ClickGuiScreen extends GuiScreen {
 				if (setting == lastSetting) {
 					settingLineAnimation.endX = 70 + 82;
 					settingLineAnimation.endY = 90 + offset;
-					settingLineAnimation.update(Client.INSTANCE.getModuleManager().getModule(ClickGuiModule.class).animationSpeed.getValue());
+					settingLineAnimation.update(Client.INSTANCE.getModuleManager().getModule(ClickGui.class).animationSpeed.getValue());
 					RoundedUtils.drawRect(
 							(float) settingLineAnimation.x,
 							(float) settingLineAnimation.y - 1,
@@ -349,6 +349,6 @@ public class ClickGuiScreen extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		Client.INSTANCE.getModuleManager().getModule(ClickGuiModule.class).setToggled(false);
+		Client.INSTANCE.getModuleManager().getModule(ClickGui.class).setToggled(false);
 	}
 }

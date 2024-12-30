@@ -6,7 +6,7 @@ import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.combat.KillAuraModule;
+import me.hackclient.module.impl.combat.KillAura;
 import me.hackclient.settings.impl.FloatSettings;
 import me.hackclient.settings.impl.IntegerSetting;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -16,19 +16,19 @@ import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 
 @ModuleInfo(name = "TargetESP", category = Category.VISUAL, toggled = true)
-public class TargetESPModule extends Module {
+public class TargetESP extends Module {
 
-    FloatSettings speed = new FloatSettings("Speed", this, 1f, 10f, 5f, 0.1f);
+    FloatSettings speed = new FloatSettings("Speed", this, 1f, 10f, 10f, 0.1f);
     IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
     FloatSettings length = new FloatSettings("Length", this, 0.2f, 1.5f, 0.3f, 0.1f);
 
-    private KillAuraModule killAura;
+    private KillAura killAura;
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
         if (killAura == null)
-            killAura = Client.INSTANCE.getModuleManager().getModule(KillAuraModule.class);
+            killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
 
         if (killAura.getTarget() == null)
             return;

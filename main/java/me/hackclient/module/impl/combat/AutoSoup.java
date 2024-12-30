@@ -6,7 +6,6 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
@@ -17,7 +16,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
 @ModuleInfo(name = "AutoSoup", category = Category.COMBAT)
-public class AutoSoupModule extends Module {
+public class AutoSoup extends Module {
 
     final StopWatch timer;
     IntegerSetting health = new IntegerSetting("Health", this, 4, 12, 10);
@@ -26,7 +25,7 @@ public class AutoSoupModule extends Module {
 
     int prevSlot;
 
-    public AutoSoupModule() {
+    public AutoSoup() {
         timer = new StopWatch();
     }
 
@@ -41,8 +40,6 @@ public class AutoSoupModule extends Module {
 
             if (timer.reachedMS() < 300)
                 return;
-
-         //   ClientUtils.chatLog(soup);
 
             if (mc.thePlayer.getHealth() < health.getValue() && !test1) {
                 test2 = mc.thePlayer.inventory.currentItem != soup;

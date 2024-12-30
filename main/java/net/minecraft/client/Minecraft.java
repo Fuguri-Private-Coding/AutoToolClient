@@ -41,7 +41,7 @@ import me.hackclient.event.events.KeyEvent;
 import me.hackclient.event.events.LegitClickTimingEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.TickEvent;
-import me.hackclient.module.impl.combat.DelayFixModule;
+import me.hackclient.module.impl.combat.DelayFix;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;
@@ -1399,7 +1399,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     public void clickMouse()
     {
-        if (this.leftClickCounter <= 0 || Client.INSTANCE.getModuleManager().getModule(DelayFixModule.class).isToggled())
+        if (this.leftClickCounter <= 0 || Client.INSTANCE.getModuleManager().getModule(DelayFix.class).isToggled())
         {
             this.thePlayer.swingItem();
 

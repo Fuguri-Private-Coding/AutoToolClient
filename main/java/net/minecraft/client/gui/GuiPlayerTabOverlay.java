@@ -8,7 +8,7 @@ import java.util.List;
 
 import me.hackclient.Client;
 import me.hackclient.friend.FriendManager;
-import me.hackclient.module.impl.misc.MidClickModule;
+import me.hackclient.module.impl.misc.MidClick;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -42,7 +42,7 @@ public class GuiPlayerTabOverlay extends Gui
 
     public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
     {
-        final MidClickModule midClick = Client.INSTANCE.getModuleManager().getModule(MidClickModule.class);
+        final MidClick midClick = Client.INSTANCE.getModuleManager().getModule(MidClick.class);
         final FriendManager friendManager = Client.INSTANCE.getFriendManager();
 
         String prefix = friendManager.isFriend(networkPlayerInfoIn.getGameProfile().getName(), midClick.reverseFriends.isToggled()) ? "§2[Friend]§9 " : "";

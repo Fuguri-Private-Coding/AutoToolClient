@@ -3,10 +3,9 @@ package me.hackclient.module.impl.move;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "Timer", category = Category.MOVE)
-public class TimerModule extends Module {
+public class Timer extends Module {
 
 	public void onEnable() {
 		mc.timer.timerSpeed = 1.6F;

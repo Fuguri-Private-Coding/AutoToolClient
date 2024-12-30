@@ -5,6 +5,6 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 
 @ModuleInfo(name = "HighJump", category = Category.MOVE)
-public class HighJumpModule extends Module {
+public class HighJump extends Module {
 
 }

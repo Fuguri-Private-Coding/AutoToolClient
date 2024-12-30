@@ -7,7 +7,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 
 @ModuleInfo(name = "Velocity", category = Category.COMBAT)
-public class VelocityModule extends Module {
+public class Velocity extends Module {
 
 	@Override
 	public void onEvent(Event event) {

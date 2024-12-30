@@ -27,10 +27,6 @@ public class ClickManager implements InstanceAccess {
 			clicks = 1;
 		}
 
-	//	mc.thePlayer.addChatMessage(new ChatComponentText("time " + clickTimer.reachedMS()));
-
-		boolean clicked = false;
-
 		if (clickTimer.reachedMS() >= 500) {
 			mc.clickMouse();
 			if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
