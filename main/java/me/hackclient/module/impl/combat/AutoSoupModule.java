@@ -6,6 +6,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
@@ -41,7 +42,9 @@ public class AutoSoupModule extends Module {
             if (timer.reachedMS() < 300)
                 return;
 
-            if (mc.thePlayer.getHealth() < health.getValue()) {
+         //   ClientUtils.chatLog(soup);
+
+            if (mc.thePlayer.getHealth() < health.getValue() && !test1) {
                 test2 = mc.thePlayer.inventory.currentItem != soup;
                 if (test2) {
                     mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C09PacketHeldItemChange(soup));
