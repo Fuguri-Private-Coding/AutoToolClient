@@ -1,4 +1,6 @@
 /jars/
 /out/
+/logs/
+logs
 out
 .idea

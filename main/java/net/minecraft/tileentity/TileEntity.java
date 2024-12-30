@@ -18,8 +18,8 @@ import org.apache.logging.log4j.Logger;
 public abstract class TileEntity
 {
     private static final Logger logger = LogManager.getLogger();
-    private static Map < String, Class <? extends TileEntity >> nameToClassMap = Maps. < String, Class <? extends TileEntity >> newHashMap();
-    private static Map < Class <? extends TileEntity > , String > classToNameMap = Maps. < Class <? extends TileEntity > , String > newHashMap();
+    private static Map < String, Class <? extends TileEntity >> nameToClassMap = Maps.newHashMap();
+    private static Map < Class <? extends TileEntity > , String > classToNameMap = Maps.newHashMap();
     protected World worldObj;
     protected BlockPos pos = BlockPos.ORIGIN;
     protected boolean tileEntityInvalid;
