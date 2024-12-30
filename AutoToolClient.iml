@@ -24,11 +24,11 @@
     <orderEntry type="module-library">
       <library name="libs">
         <CLASSES>
-          <root url="file://$MODULE_DIR$/jars/libs" />
+          <root url="file://$MODULE_DIR$/libs" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="file://$MODULE_DIR$/jars/libs" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/libs" recursive="false" />
       </library>
     </orderEntry>
     <orderEntry type="module-library">
