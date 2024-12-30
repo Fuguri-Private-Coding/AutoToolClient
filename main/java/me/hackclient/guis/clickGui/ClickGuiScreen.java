@@ -252,7 +252,26 @@ public class ClickGuiScreen extends GuiScreen {
 					}
 				}
 				if (setting instanceof ModeSetting modeSetting) {
-
+					int xOffset = 0;
+					int yOffset = 0;
+					String lastSetting = "";
+					for (String mode : modeSetting.getModes()) {
+						String gavno2 = mode + (modeSetting.getModes()[modeSetting.getModes().length - 1] != mode ? "," : "");
+						mc.fontRendererObj.drawString(
+								gavno2,
+								70 + 85 + nameLength + xOffset,
+								79 + offset + yOffset,
+								mode.equalsIgnoreCase(modeSetting.getMode()) ? new Color(0, 255, 209, 255).getRGB() : new Color(75, 75, 75, 179).getRGB(),
+								true
+						);
+						xOffset += mc.fontRendererObj.getStringWidth(gavno2) + 4;
+						if (70 + 85 + nameLength + xOffset >= 400) {
+							xOffset = 0;
+							yOffset += 11;
+						}
+						lastSetting = mode;
+					}
+					offset += yOffset;
 				}
 			}
 		}

@@ -15,7 +15,7 @@ public class ModeSetting extends Setting {
         this.mode = mode;
         this.modes = modes;
     }
-    //ddf
+
     public ModeSetting(String name, Module parent, BooleanSupplier visible, String mode, String[] modes) {
         super(name, parent);
         this.mode = mode;

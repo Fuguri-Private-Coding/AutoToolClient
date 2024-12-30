@@ -29,6 +29,13 @@ public class MoreKBModule extends Module {
 					"LegitFast",
 					"Legit",
 					"One",
+					"penis",
+					"ajsdfkj",
+					"ajksdfljwe",
+					"ajksdfljse",
+					"ajksdfljsd",
+					"ajksdfljsf",
+
 			}
 	);
 
