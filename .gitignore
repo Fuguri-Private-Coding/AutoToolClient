@@ -1,5 +1,8 @@
 /jars/
 /out/
-out
+/logs/
+/assets/
+assets
 logs
+out
 .idea
