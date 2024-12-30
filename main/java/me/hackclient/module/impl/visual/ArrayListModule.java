@@ -35,11 +35,11 @@ public class ArrayListModule extends Module {
 									3,
 									3 + offset,
 									6 + mc.fontRendererObj.getStringWidth(module.getName()),
-									4 + offset + 10,
+									5 + offset + 10,
 									new Color(255, 255, 255, 255).getRGB()
 							);
 						}
-						offset += mc.fontRendererObj.FONT_HEIGHT + 2;
+						offset += mc.fontRendererObj.FONT_HEIGHT + 3;
 					}
 				});
 				BloomUtils.drawBloom(list);
@@ -61,10 +61,10 @@ public class ArrayListModule extends Module {
 		for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
 			if (background.isToggled()) {
 				Gui.drawRect(
-						4,
-						4 + offset,
+						3,
+						3 + offset,
 						6 + mc.fontRendererObj.getStringWidth(module.getName()),
-						6 + offset + 10,
+						5 + offset + 10,
 						new Color(0, 0, 0, 75).getRGB()
 				);
 			}
