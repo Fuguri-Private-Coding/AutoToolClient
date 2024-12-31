@@ -7,6 +7,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.combat.KillAura;
+import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSettings;
 import me.hackclient.settings.impl.IntegerSetting;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -21,6 +22,7 @@ public class TargetESP extends Module {
     FloatSettings speed = new FloatSettings("Speed", this, 1f, 10f, 10f, 0.1f);
     IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
     FloatSettings length = new FloatSettings("Length", this, 0.2f, 1.5f, 0.3f, 0.1f);
+    BooleanSetting changeColorToHit = new BooleanSetting("ChangeColorDueHurtTime", this, true);
 
     private KillAura killAura;
 
@@ -61,9 +63,17 @@ public class TargetESP extends Module {
                 double x1 = x + sin(i * Math.PI / 180) * 0.7;
                 double z1 = z + cos(i * Math.PI / 180) * 0.7;
                 double y1 = y + (animationTranslate + 1) / 2 * target.height;
-                glColor4f(1f, 1f, 1f, 1f);
+                if (killAura.getTarget().hurtTime > 0 && changeColorToHit.isToggled()) {
+                    glColor4f(1f, 0f, 0f, 1f);
+                } else {
+                    glColor4f(1f, 1f, 1f, 1f);
+                }
                 glVertex3d(x1, y1, z1);
-                glColor4f(1f, 1f, 1f, 0f);
+                if (killAura.getTarget().hurtTime > 0 && changeColorToHit.isToggled()) {
+                    glColor4f(1f, 0f, 0f, 0f);
+                } else {
+                    glColor4f(1f, 1f, 1f, 0f);
+                }
                 glVertex3d(x1, y1 + animationTranslate * length.getValue(), z1);
             }
             glEnd();
