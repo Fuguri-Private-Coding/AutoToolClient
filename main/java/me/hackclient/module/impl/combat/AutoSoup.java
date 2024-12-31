@@ -62,6 +62,7 @@ public class AutoSoup extends Module {
                 if (mc.thePlayer.serverSlot != slot) {
                     mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C09PacketHeldItemChange(slot));
                     mc.thePlayer.serverSlot = slot;
+                    return;
                 }
                 mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
                 used = false;
