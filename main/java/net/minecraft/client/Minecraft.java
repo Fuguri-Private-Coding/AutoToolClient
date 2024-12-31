@@ -1441,7 +1441,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     }
 
     @SuppressWarnings("incomplete-switch")
-    private void rightClickMouse()
+    public void rightClickMouse()
     {
         if (!this.playerController.getIsHittingBlock())
         {
