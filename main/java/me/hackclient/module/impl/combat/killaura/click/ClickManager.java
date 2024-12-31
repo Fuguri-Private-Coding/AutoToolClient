@@ -35,7 +35,7 @@ public class ClickManager implements InstanceAccess {
 			return;
 		}
 
-		if (mc.thePlayer.hurtTime > 6 && cfg.mineBlazeKbFix()) {
+		if (mc.thePlayer.hurtTime > 8 && cfg.mineBlazeKbFix()) {
 			mc.clickMouse();
 		}
 
