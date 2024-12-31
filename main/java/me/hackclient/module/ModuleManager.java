@@ -45,6 +45,7 @@ public class ModuleManager {
 				 new DelayFix(),
 				 new Handler(),
 				 new FlagDetector(),
+				 new Animations(),
 				 new NoRender(),
 				 new MidClick()
 		);

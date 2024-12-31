@@ -332,6 +332,7 @@ public class PlayerControllerMP
 
         if (i != this.currentPlayerItem)
         {
+            mc.thePlayer.serverSlot = i;
             this.currentPlayerItem = i;
             this.netClientHandler.addToSendQueue(new C09PacketHeldItemChange(this.currentPlayerItem));
         }

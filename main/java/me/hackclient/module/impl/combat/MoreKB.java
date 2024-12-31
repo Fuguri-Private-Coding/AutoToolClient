@@ -10,6 +10,7 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
+import me.hackclient.utils.move.MoveUtils;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -105,6 +106,7 @@ public class MoreKB extends Module {
 	}
 
 	private void handleLegitFast(Event event) {
+		if (!MoveUtils.isMoving()) return;
 		if (event instanceof TickEvent) {
 			if (mc.thePlayer.isSprinting()) {
 				mc.thePlayer.setSprinting(false);

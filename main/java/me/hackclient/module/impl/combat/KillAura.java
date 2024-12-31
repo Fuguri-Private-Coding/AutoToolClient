@@ -10,6 +10,7 @@ import me.hackclient.module.impl.combat.killaura.click.IClickingCFG;
 import me.hackclient.module.impl.combat.killaura.rotation.IKillAuraRotation;
 import me.hackclient.module.impl.combat.killaura.rotation.impl.IntaveRotation;
 import me.hackclient.module.impl.combat.killaura.target.TargetSelector;
+import me.hackclient.module.impl.visual.Animations;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSettings;
 import me.hackclient.settings.impl.IntegerSetting;
@@ -37,6 +38,7 @@ public class KillAura extends Module {
 	BooleanSetting clickFix = new BooleanSetting("ClickFix", this, true);
 	BooleanSetting mineBlazeFix = new BooleanSetting("MineBlazeFix", this, true);
 	BooleanSetting moveFix = new BooleanSetting("SilentMoveFix", this, true);
+	BooleanSetting fakeAutoBlock = new BooleanSetting("FakeAutoBlock", this, true);
 
 	FloatSettings maxRange = new FloatSettings("MaxRange", this, 3f, 6f, 6f, 0.1f);
 	IntegerSetting reactionTime = new IntegerSetting("ReactionTime", this, 0, 5, 1);
@@ -56,6 +58,7 @@ public class KillAura extends Module {
 	public void onDisable() {
 		rotations.clear();
 		target = null;
+		Animations.setAnimate(false);
 	}
 
 	public EntityLivingBase getTarget() {
@@ -69,6 +72,7 @@ public class KillAura extends Module {
 			target = targetSelector.selectPlayer(maxRange.getValue());
 		}
 		if (target != null) {
+			Animations.setAnimate(fakeAutoBlock.isToggled());
 			if (event instanceof RunGameLoopEvent) {
 				clickManager.checkTime();
 			}
@@ -141,6 +145,8 @@ public class KillAura extends Module {
 					}
 				}
             }
+		} else {
+			Animations.setAnimate(false);
 		}
 	}
 

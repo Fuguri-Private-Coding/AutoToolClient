@@ -1,7 +1,9 @@
 package me.hackclient.module.impl.combat;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.TickEvent;
+import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -32,7 +34,7 @@ public class AutoSoup extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof TickEvent) {
+        if (event instanceof UpdateEvent) {
             int soup = getSoup();
 
             if (soup == -1)
@@ -41,10 +43,12 @@ public class AutoSoup extends Module {
             if (timer.reachedMS() < 300)
                 return;
 
-            if (mc.thePlayer.getHealth() < health.getValue() && !test1) {
-                test2 = mc.thePlayer.inventory.currentItem != soup;
+            if (mc.thePlayer.getHealth() <= health.getValue() && !test1) {
+                test2 = mc.thePlayer.serverSlot != soup;
                 if (test2) {
                     mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C09PacketHeldItemChange(soup));
+                    mc.thePlayer.serverSlot = soup;
+                    return;
                 }
                 mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(soup)));
                 test1 = true;
@@ -53,10 +57,31 @@ public class AutoSoup extends Module {
 
             if (test1) {
                 mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-                if (test2) mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                if (test2) {
+                    mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                    mc.thePlayer.serverSlot = mc.thePlayer.inventory.currentItem;
+                }
                 test1 = false;
                 test2 = false;
+                timer.reset();
             }
+
+//            if (mc.thePlayer.getHealth() < health.getValue() && !test1) {
+//                test2 = mc.thePlayer.inventory.currentItem != soup;
+//                if (test2) {
+//                    mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C09PacketHeldItemChange(soup));
+//                }
+//                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(soup)));
+//                test1 = true;
+//                return;
+//            }
+//
+//            if (test1) {
+//                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+//                if (test2) mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+//                test1 = false;
+//                test2 = false;
+//            }
 
             /*if (mc.thePlayer.inventory.getCurrentItem().getItem() == Items.bowl) {
                 mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));

@@ -82,6 +82,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
     private float horseJumpPower;
     public float timeInPortal;
     public float prevTimeInPortal;
+    public int serverSlot;
 
     public static boolean forceSprint;
 
@@ -121,6 +122,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void onUpdate()
     {
+        Client.INSTANCE.getObjectsCaller().onEvent(new UpdateEvent());
+
         if (this.worldObj.isBlockLoaded(new BlockPos(this.posX, 0.0D, this.posZ)))
         {
             super.onUpdate();
@@ -139,7 +142,6 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void onUpdateWalkingPlayer()
     {
-        Client.INSTANCE.getObjectsCaller().onEvent(new UpdateEvent());
 
         boolean flag = this.isSprinting();
 

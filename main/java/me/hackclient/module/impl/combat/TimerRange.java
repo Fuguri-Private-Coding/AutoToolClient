@@ -30,7 +30,7 @@ public class TimerRange extends Module {
     ModeSetting freezeMode = new ModeSetting(
             "FreezeAnimation",
             this,
-            "TimerRangeV2",
+            "TimeManipulation",
             new String[] {
                     "TimerRangeV2",
                     "TimeManipulation",
@@ -46,9 +46,9 @@ public class TimerRange extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (killAura == null) killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
-        if (killAura.getTarget() == null) {
-            balance = 0;
-        }
+        //if (killAura.getTarget() == null) {
+        //    balance = 0;
+        //}
 
         if (event instanceof TickEvent) {
             if (flagDelayTicks > 0) {
@@ -106,7 +106,7 @@ public class TimerRange extends Module {
                         break;
                     }
                     case "PizdecPolniy": {
-                        mc.timer.renderPartialTicks = 2;
+                        mc.timer.renderPartialTicks = 20;
                         break;
                     }
                 }

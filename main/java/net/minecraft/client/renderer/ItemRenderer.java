@@ -1,6 +1,8 @@
 package net.minecraft.client.renderer;
 
 import me.hackclient.Client;
+import me.hackclient.event.events.RenderItemEvent;
+import me.hackclient.module.impl.visual.Animations;
 import me.hackclient.module.impl.visual.NoRender;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -260,7 +262,7 @@ public class ItemRenderer
         GlStateManager.rotate(f3 * 30.0F, 0.0F, 0.0F, 1.0F);
     }
 
-    private void transformFirstPersonItem(float equipProgress, float swingProgress)
+    public void transformFirstPersonItem(float equipProgress, float swingProgress)
     {
         GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
         GlStateManager.translate(0.0F, equipProgress * -0.6F, 0.0F);
@@ -300,7 +302,7 @@ public class ItemRenderer
         GlStateManager.scale(1.0F, 1.0F, 1.0F + f1 * 0.2F);
     }
 
-    private void doBlockTransformations()
+    public void doBlockTransformations()
     {
         GlStateManager.translate(-0.5F, 0.2F, 0.0F);
         GlStateManager.rotate(30.0F, 0.0F, 1.0F, 0.0F);
@@ -325,11 +327,12 @@ public class ItemRenderer
 
             if (this.itemToRender != null)
             {
+                boolean animate = f1 > 0 && (Animations.isAnimate() || abstractclientplayer.getItemInUseCount() > 0);
                 if (this.itemToRender.getItem() instanceof ItemMap)
                 {
                     this.renderItemMap(abstractclientplayer, f2, f, f1);
                 }
-                else if (abstractclientplayer.getItemInUseCount() > 0)
+                else if (abstractclientplayer.getItemInUseCount() > 0 || animate)
                 {
                     EnumAction enumaction = this.itemToRender.getItemUseAction();
 
@@ -346,8 +349,12 @@ public class ItemRenderer
                             break;
 
                         case BLOCK:
-                            this.transformFirstPersonItem(f, 0.0F);
-                            this.doBlockTransformations();
+                            if (animate) {
+                                Client.INSTANCE.getObjectsCaller().onEvent(new RenderItemEvent(f1, f));
+                            } else {
+                                this.transformFirstPersonItem(f, 0.0F);
+                                this.doBlockTransformations();
+                            }
                             break;
 
                         case BOW:
