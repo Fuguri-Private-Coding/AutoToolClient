@@ -34,13 +34,8 @@ public class MoreKB extends Module {
 	IntegerSetting MaxDelayTicks = new IntegerSetting("MaxDelayTicks", this, 1, 5, 4);
 	IntegerSetting MinResetTicks = new IntegerSetting("MinTicks", this, 1, 5, 1);
 	IntegerSetting MaxResetTicks = new IntegerSetting("MaxTicks", this, 1, 5, 1);
-<<<<<<< Updated upstream:main/java/me/hackclient/module/impl/combat/MoreKB.java
-	BooleanSetting debug = new BooleanSetting("Debug", this, false);
 	BooleanSetting serverSprintToggle = new BooleanSetting("ServerSprintToggle", this, () -> mode.getMode().equalsIgnoreCase("One"), true);
-=======
 	BooleanSetting debug = new BooleanSetting("Debug", this, true);
-	BooleanSetting testSprintFix2 = new BooleanSetting("TestSprintFix2", this, true);
->>>>>>> Stashed changes:main/java/me/hackclient/module/impl/combat/MoreKBModule.java
 
 	@Override
 	public void onEvent(Event event) {
@@ -110,16 +105,11 @@ public class MoreKB extends Module {
 	}
 
 	private void handleLegitFast(Event event) {
-<<<<<<< Updated upstream:main/java/me/hackclient/module/impl/combat/MoreKB.java
-=======
 		if (!MoveUtils.isMoving()) return;
->>>>>>> Stashed changes:main/java/me/hackclient/module/impl/combat/MoreKBModule.java
 		if (event instanceof TickEvent) {
 			if (mc.thePlayer.isSprinting()) {
 				mc.thePlayer.setSprinting(false);
-				if (testSprintFix2.isToggled()) {
-					mc.thePlayer.setServerSprintState(false);
-				}
+				mc.thePlayer.setServerSprintState(false);
 				ticks--;
 			}
 		}
