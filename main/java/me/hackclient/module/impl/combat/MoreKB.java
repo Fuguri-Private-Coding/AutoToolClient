@@ -36,7 +36,7 @@ public class MoreKB extends Module {
 	IntegerSetting MinResetTicks = new IntegerSetting("MinTicks", this, 1, 5, 1);
 	IntegerSetting MaxResetTicks = new IntegerSetting("MaxTicks", this, 1, 5, 1);
 	BooleanSetting serverSprintToggle = new BooleanSetting("ServerSprintToggle", this, () -> mode.getMode().equalsIgnoreCase("One"), true);
-	BooleanSetting debug = new BooleanSetting("Debug", this, true);
+	BooleanSetting debug = new BooleanSetting("Debug", this, false);
 
 	@Override
 	public void onEvent(Event event) {
