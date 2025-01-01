@@ -37,6 +37,7 @@ public class KillAura extends Module {
 
 	BooleanSetting clickFix = new BooleanSetting("ClickFix", this, true);
 	BooleanSetting mineBlazeFix = new BooleanSetting("MineBlazeFix", this, true);
+	IntegerSetting minPlayerHurtTime = new IntegerSetting("MinPlayerHurtTime", this, () -> mineBlazeFix.isToggled(), 0, 9, 7);
 	BooleanSetting moveFix = new BooleanSetting("SilentMoveFix", this, true);
 	BooleanSetting fakeAutoBlock = new BooleanSetting("FakeAutoBlock", this, true);
 
@@ -120,6 +121,11 @@ public class KillAura extends Module {
 					@Override
 					public boolean mineBlazeKbFix() {
 						return mineBlazeFix.isToggled();
+					}
+
+					@Override
+					public int minPlayerHurtTime() {
+						return minPlayerHurtTime.getValue();
 					}
 
 					@Override

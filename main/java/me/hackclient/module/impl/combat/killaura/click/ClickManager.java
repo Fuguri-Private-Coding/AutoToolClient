@@ -23,7 +23,7 @@ public class ClickManager implements InstanceAccess {
 	}
 
 	public void click(final EntityLivingBase target, final IClickingCFG cfg) {
-		if (clickTimer.reachedMS() >= 500) {
+		if (clickTimer.reachedMS() >= 500 && clicks == 0) {
 			clicks++;
 		}
 
@@ -37,13 +37,9 @@ public class ClickManager implements InstanceAccess {
 				if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
 					clickTimer.reset();
 				}
-			} else if (mc.thePlayer.hurtTime > (cfg.mineBlazeKbFix() ? 8 : 0)) {
+			} else if (mc.thePlayer.hurtTime > (cfg.mineBlazeKbFix() ? cfg.minPlayerHurtTime() : 0)) {
 				mouseClick(cfg.minCps(), cfg.maxCps());
 			}
-		}
-
-		if (mc.thePlayer.hurtTime > 8 && cfg.mineBlazeKbFix()) {
-			mc.clickMouse();
 		}
 
 		clicks = 0;

@@ -308,6 +308,10 @@ public class FontRenderer implements IResourceManagerReloadListener
         }
     }
 
+    public int drawCenteredString(String text, float x, float y, int color) {
+        return this.drawString(text, x - getStringWidth(text) / 2, y, color, true);
+    }
+
     public int drawStringWithShadow(String text, float x, float y, int color)
     {
         return this.drawString(text, x, y, color, true);

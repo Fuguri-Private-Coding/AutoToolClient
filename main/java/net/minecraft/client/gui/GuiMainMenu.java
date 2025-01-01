@@ -15,6 +15,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import me.hackclient.Client;
+import me.hackclient.guis.altManager.AltManagerGuiScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -194,6 +195,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         }
 
         this.buttonList.add(new GuiButton(1488, 20, 20, "reload shaders"));
+        this.buttonList.add(new GuiButton(1487, 20, 50, "alt manager"));
         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, j + 72 + 12, 98, 20, I18n.format("menu.options", new Object[0])));
         this.buttonList.add(new GuiButton(4, this.width / 2 + 2, j + 72 + 12, 98, 20, I18n.format("menu.quit", new Object[0])));
         this.buttonList.add(new GuiButtonLanguage(5, this.width / 2 - 124, j + 72 + 12));
@@ -259,6 +261,10 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         if (button.id == 0)
         {
             this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
+        }
+
+        if (button.id == 1487) {
+            mc.displayGuiScreen(new AltManagerGuiScreen());
         }
 
         if (button.id == 1488) {
