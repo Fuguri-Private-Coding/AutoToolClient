@@ -9,6 +9,7 @@ import me.hackclient.settings.impl.FloatSettings;
 import me.hackclient.settings.impl.ModeSetting;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
+import org.lwjgl.opengl.GL11;
 
 @ModuleInfo(name = "Animations", category = Category.VISUAL)
 public class Animations extends Module {
@@ -20,6 +21,10 @@ public class Animations extends Module {
             "Sigma 2",
             "Exhibition",
             "Chill",
+            "Gothaj",
+            "Spin",
+            "Basic",
+
     });
 
     FloatSettings X = new FloatSettings("X", this, -1f, 1f, 0f, 0.1f);
@@ -36,6 +41,25 @@ public class Animations extends Module {
             float convertedProgress = (float) Math.sin(Math.sqrt(renderItemEvent.getSwingProgress()) * Math.PI);
             float y;
             switch (mode.getMode()) {
+                case "Basic":
+                    itemRenderer.transformFirstPersonItem(-0.25F, 1.0F + convertedProgress / 10.0F);
+                    GL11.glRotated((-convertedProgress * 25.0F), 1.0, 0.0, 0.0);
+                    itemRenderer.doBlockTransformations();
+                    break;
+                case "Spin":
+                    itemRenderer.transformFirstPersonItem(animationProgression, 0.0F);
+                    GlStateManager.translate(0.0F, 0.2F, -1.0F);
+                    GlStateManager.rotate(-59.0F, -1.0F, 0.0F, 3.0F);
+                    GlStateManager.rotate((float)(-(System.currentTimeMillis() / 2L % 360L)), 1.0F, 0.0F, 0.0F);
+                    GlStateManager.rotate(60.0F, 0.0F, 1.0F, 0.0F);
+                    break;
+                case "Gothaj":
+                    itemRenderer.transformFirstPersonItem(animationProgression / 2.0F, 0.0F);
+                    GlStateManager.translate(0.0F, 0.3F, -0.0F);
+                    GlStateManager.rotate(-convertedProgress * 30.0F, 1.0F, 0.0F, 2.0F);
+                    GlStateManager.rotate(-convertedProgress * 44.0F, 1.5F, convertedProgress / 1.2F, 0.0F);
+                    itemRenderer.doBlockTransformations();
+                    break;
                 case "Chill":
                     itemRenderer.transformFirstPersonItem(animationProgression / 1.5F, 0.0F);
                     itemRenderer.doBlockTransformations();

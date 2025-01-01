@@ -1,11 +1,16 @@
 package me.hackclient.utils.render;
 
+import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ResourceLocation;
 
+import static net.minecraft.client.gui.Gui.drawModalRectWithCustomSizedTexture;
+import static net.minecraft.client.renderer.GlStateManager.resetColor;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL14.*;
 
-public class RenderUtils {
+public class RenderUtils implements InstanceAccess {
 
     public static void start3D() {
         glDisable(GL_TEXTURE_2D);
@@ -78,6 +83,28 @@ public class RenderUtils {
 
     public static void renderHitBox(AxisAlignedBB bb) {
         renderHitBox(bb, GL_LINE_LOOP);
+    }
+
+    public static void drawImage(ResourceLocation image, int x, int y, int width, int height) {
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glDepthMask(false);
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        resetColor();
+        mc.getTextureManager().bindTexture(image);
+        drawModalRectWithCustomSizedTexture(
+                x,
+                y,
+                0f,
+                0f,
+                width,
+                height,
+                width,
+                height
+        );
+        glDepthMask(true);
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
     }
 
 }

@@ -46,6 +46,9 @@ public class ModuleManager {
 				 new Handler(),
 				 new FlagDetector(),
 				 new Animations(),
+				 new MotionBlur(),
+				 new ClientLogo(),
+				 new AutoPlace(),
 				 new NoRender(),
 				 new MidClick(),
 				 new AutoBot()
