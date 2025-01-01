@@ -3,6 +3,7 @@ package me.hackclient.module.impl.connection;
 import me.hackclient.event.Direction;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.PacketEvent;
+import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
@@ -11,6 +12,9 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.doubles.Doubles;
+import me.hackclient.utils.render.RenderUtils;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.network.Packet;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.play.client.C01PacketChatMessage;
@@ -20,6 +24,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.status.client.C00PacketServerQuery;
 import net.minecraft.network.status.client.C01PacketPing;
 import net.minecraft.network.status.server.S01PacketPong;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 
 import java.util.ArrayList;
@@ -62,8 +67,8 @@ public class Ping extends Module {
 			}
 
 			// Ресет при атаке
-			if (packet instanceof C02PacketUseEntity) {
-				if (((C02PacketUseEntity) packet).getAction() == C02PacketUseEntity.Action.ATTACK) {
+			if (packet instanceof C02PacketUseEntity c02) {
+				if (c02.getAction() == C02PacketUseEntity.Action.ATTACK) {
 					stoppingTime = attackDelay.getValue();
 				}
 			}
@@ -72,7 +77,7 @@ public class Ping extends Module {
 				resetPackets();
 			}
 
-			if (mc.currentScreen != null && guiFlush.isToggled()) {
+			if (mc.currentScreen instanceof GuiInventory && guiFlush.isToggled() || mc.currentScreen instanceof GuiContainer && guiFlush.isToggled()) {
 				resetPackets();
 			}
 
@@ -99,11 +104,19 @@ public class Ping extends Module {
 			handleStandAlone();
 		}
 
+		if (event instanceof Render3DEvent && !posBuffer.isEmpty() && mc.gameSettings.thirdPersonView != 0) {
+			RenderUtils.start3D();
+			Vec3 dif = posBuffer.get(0).getFirst().subtract(mc.thePlayer.getPositionVector());
+			AxisAlignedBB box = mc.thePlayer.getEntityBoundingBox().offset(dif).
+					offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
+			RenderUtils.renderHitBox(box);
+			RenderUtils.stop3D();
+		}
+
 		if (event instanceof TickEvent) {
 			if (stoppingTime > 0) stoppingTime--;
 		}
 	}
-
 	private void handleStandAlone() {
 		if (packetBuffer.isEmpty())
 			return;
@@ -122,6 +135,7 @@ public class Ping extends Module {
 		mc.addScheduledTask(() -> {
 			packetBuffer.forEach( (packet, aLong) -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet) );
 			packetBuffer.clear();
+			posBuffer.clear();
 		});
 	}
 }

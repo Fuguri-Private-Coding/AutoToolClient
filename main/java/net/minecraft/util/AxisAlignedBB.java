@@ -106,6 +106,11 @@ public class AxisAlignedBB
         return new AxisAlignedBB(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
     }
 
+    public AxisAlignedBB offset(Vec3 offset)
+    {
+        return offset(offset.xCoord, offset.yCoord, offset.zCoord);
+    }
+
     public double calculateXOffset(AxisAlignedBB other, double offsetX)
     {
         if (other.maxY > this.minY && other.minY < this.maxY && other.maxZ > this.minZ && other.minZ < this.maxZ)

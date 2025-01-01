@@ -12,7 +12,7 @@ import net.minecraft.util.ChatComponentText;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(name = "Disaler", category = Category.PLAYER)
+@ModuleInfo(name = "Disabler", category = Category.PLAYER)
 public class Disabler extends Module {
 
 	private final CopyOnWriteArrayList<C0FPacketConfirmTransaction> c0fs = new CopyOnWriteArrayList<>();
