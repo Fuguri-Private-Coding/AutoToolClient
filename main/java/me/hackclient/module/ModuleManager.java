@@ -47,7 +47,8 @@ public class ModuleManager {
 				 new FlagDetector(),
 				 new Animations(),
 				 new NoRender(),
-				 new MidClick()
+				 new MidClick(),
+				 new AutoBot()
 		);
 	}
 
