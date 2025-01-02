@@ -51,6 +51,7 @@ public class ModuleManager {
 				 new AutoPlace(),
 				 new NoJumpDelay(),
 				 //new KillEvents(),
+				 new NameTags(),
 				 new NoRender(),
 				 new MidClick(),
 				 new AutoBot()
