@@ -28,7 +28,7 @@ public class Animations extends Module {
     });
 
     FloatSettings X = new FloatSettings("X", this, -1f, 1f, -0.1f, 0.1f);
-    FloatSettings Y = new FloatSettings("X", this, -1f, 1f, 0.2f, 0.1f);
+    FloatSettings Y = new FloatSettings("Y", this, -1f, 1f, 0.2f, 0.1f);
     FloatSettings Z = new FloatSettings("Z", this, -1f, 1f, -0.1f, 0.1f);
 
     @Override
