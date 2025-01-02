@@ -42,6 +42,7 @@ public class IntaveRotation implements IKillAuraRotation {
 		delta.setPitch(delta.getPitch() * 0.5f);
 
 		if (startSlowRotation) {
+			startSlowRotation = false;
 			delta.setYaw(delta.getYaw() * 0.2f);
 			delta.setPitch(delta.getPitch() * 0.2f);
 		}
