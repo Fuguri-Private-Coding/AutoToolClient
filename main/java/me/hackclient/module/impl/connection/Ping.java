@@ -74,10 +74,8 @@ public class Ping extends Module {
 			}
 
 			// Ресет при атаке
-			if (packet instanceof C02PacketUseEntity c02) {
-				if (c02.getAction() == C02PacketUseEntity.Action.ATTACK) {
-					stoppingTime = attackDelay.getValue();
-				}
+			if (packet instanceof C02PacketUseEntity) {
+				stoppingTime = attackDelay.getValue();
 			}
 
 			if (packet instanceof C08PacketPlayerBlockPlacement) {

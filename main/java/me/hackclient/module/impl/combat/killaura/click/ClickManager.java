@@ -33,13 +33,12 @@ public class ClickManager implements InstanceAccess {
 		}
 
 		for (int i = 0; i < clicks; i++) {
-			if (clickTimer.reachedMS() >= 500) {
+			if (clickTimer.reachedMS() >= 500 || mc.thePlayer.hurtTime > (cfg.mineBlazeKbFix() ? cfg.minPlayerHurtTime() : 0)) {
 				mouseClick(cfg.minCps(), cfg.maxCps(), target);
-				if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
+				if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
+				&& clickTimer.reachedMS() >= 500) {
 					clickTimer.reset();
 				}
-			} else if (mc.thePlayer.hurtTime > (cfg.mineBlazeKbFix() ? cfg.minPlayerHurtTime() : 0)) {
-				mouseClick(cfg.minCps(), cfg.maxCps(), target);
 			}
 		}
 
