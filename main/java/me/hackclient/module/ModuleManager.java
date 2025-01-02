@@ -40,7 +40,7 @@ public class ModuleManager {
 				 new TargetESP(),
 				 new FullBright(),
 				 new ClientSpoofer(),
-				 new TimerRange(),
+				 new TickBase(),
 				 new ClickGui(),
 				 new DelayFix(),
 				 new Handler(),

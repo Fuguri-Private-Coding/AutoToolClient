@@ -17,8 +17,8 @@ import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
-@ModuleInfo(name = "TimerRange", category = Category.COMBAT, toggled = true)
-public class TimerRange extends Module {
+@ModuleInfo(name = "TickBase", category = Category.COMBAT, toggled = true)
+public class TickBase extends Module {
 
     FloatSettings startDistance = new FloatSettings("StartDistance", this, 3f, 6, 3.8f, 0.1f);
     IntegerSetting limitTicks = new IntegerSetting("LimitTick", this, 1,10,2);
