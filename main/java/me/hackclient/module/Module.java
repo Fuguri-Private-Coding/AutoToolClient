@@ -1,6 +1,6 @@
 package me.hackclient.module;
 
-import me.hackclient.event.CallableObject;
+import me.hackclient.event.ConditionCallableObject;
 import me.hackclient.event.Event;
 import me.hackclient.settings.Setting;
 import me.hackclient.utils.interfaces.InstanceAccess;
@@ -8,7 +8,7 @@ import me.hackclient.utils.interfaces.InstanceAccess;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Module implements InstanceAccess, CallableObject {
+public class Module implements InstanceAccess, ConditionCallableObject {
 
 	private final ModuleInfo annotation = getClass().getAnnotation(ModuleInfo.class);
 
@@ -86,6 +86,6 @@ public class Module implements InstanceAccess, CallableObject {
 
 	@Override
 	public boolean handleEvents() {
-		return isToggled() && mc.theWorld != null && mc.thePlayer != null;
+		return isToggled() && mc.thePlayer != null && mc.theWorld != null;
 	}
 }

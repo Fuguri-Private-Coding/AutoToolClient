@@ -1,6 +1,6 @@
 package me.hackclient.module.impl.connection;
 
-import me.hackclient.event.Direction;
+import me.hackclient.event.PackerDirection;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.Render3DEvent;
@@ -11,7 +11,6 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -60,7 +59,7 @@ public class Ping extends Module {
 		super.onEvent(event);
 		if (event instanceof PacketEvent packetEvent) {
 			Packet<?> packet = packetEvent.getPacket();
-			Direction direction = packetEvent.getDirection();
+			PackerDirection direction = packetEvent.getDirection();
 
 			// Пропускает некоторые пакеты, также нужно для чего-то там
 			if (packet instanceof C00Handshake || packet instanceof C00PacketServerQuery
@@ -98,7 +97,7 @@ public class Ping extends Module {
 
 			if (stoppingTime > 0) {
 				resetPackets();
-			} else if (direction == Direction.OUTGOING) {
+			} else if (direction == PackerDirection.OUTGOING) {
 				packetEvent.setCanceled(true);
 				packetBuffer.put(packet, System.currentTimeMillis());
 				if (packet instanceof C03PacketPlayer c03 && c03.isMoving()) {

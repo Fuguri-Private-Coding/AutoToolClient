@@ -1,16 +1,16 @@
 package me.hackclient.event.events;
 
 import me.hackclient.event.CancelableEvent;
-import me.hackclient.event.Direction;
+import me.hackclient.event.PackerDirection;
 import net.minecraft.network.Packet;
 
 public class PacketEvent extends CancelableEvent {
 
 	private Packet packet;
 	private final long sendTime;
-	private final Direction direction;
+	private final PackerDirection direction;
 
-	public PacketEvent(Packet packet, Direction direction) {
+	public PacketEvent(Packet packet, PackerDirection direction) {
 		this.packet = packet;
 		sendTime = System.currentTimeMillis();
 		this.direction = direction;
@@ -28,7 +28,7 @@ public class PacketEvent extends CancelableEvent {
 		return sendTime;
 	}
 
-	public Direction getDirection() {
+	public PackerDirection getDirection() {
 		return direction;
 	}
 }

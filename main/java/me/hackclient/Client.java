@@ -75,6 +75,7 @@ public enum Client implements CallableObject {
 		return timeScheduler;
 	}
 
+	@Override
 	public void onEvent(Event event) {
 		if (event instanceof KeyEvent keyEvent) {
 			for (Module module : moduleManager.modules) {
@@ -83,10 +84,5 @@ public enum Client implements CallableObject {
 				}
 			}
 		}
-	}
-
-	@Override
-	public boolean handleEvents() {
-		return true;
 	}
 }

@@ -7,6 +7,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSettings;
+import me.hackclient.utils.move.MoveUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.util.MathHelper;
@@ -66,7 +67,14 @@ public class Handler extends Module {
 			}
 
 			if (event instanceof MoveFlyingEvent moveFlyingEvent) {
-				moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
+				moveFlyingEvent.setCanceled(true);
+				MoveUtils.silentMoveFix(moveFlyingEvent);
+			}
+
+			if (event instanceof SprintEvent) {
+				if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
+					mc.thePlayer.setSprinting(false);
+				}
 			}
 
 			if (event instanceof JumpEvent jumpEvent) {

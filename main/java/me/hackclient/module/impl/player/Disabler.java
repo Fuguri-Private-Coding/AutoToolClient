@@ -1,6 +1,6 @@
 package me.hackclient.module.impl.player;
 
-import me.hackclient.event.Direction;
+import me.hackclient.event.PackerDirection;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.MotionEvent;
 import me.hackclient.event.events.PacketEvent;
@@ -32,7 +32,7 @@ public class Disabler extends Module {
 	public void onEvent(Event event) {
 		super.onEvent(event);
 		if (event instanceof PacketEvent packetEvent) {
-			if (packetEvent.getDirection() == Direction.INCOMING)
+			if (packetEvent.getDirection() == PackerDirection.INCOMING)
 				return;
 
 			if (packetEvent.getPacket() instanceof C0FPacketConfirmTransaction c0f) {

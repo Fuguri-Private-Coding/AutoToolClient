@@ -32,9 +32,4 @@ public class TimeScheduler implements CallableObject, InstanceAccess {
             });
         }
     }
-
-    @Override
-    public boolean handleEvents() {
-        return true;
-    }
 }

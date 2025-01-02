@@ -23,7 +23,9 @@ public class FlagDetector extends Module {
         if (event instanceof PacketEvent packetEvent) {
             if (packetEvent.getPacket() instanceof S08PacketPlayerPosLook) {
                 flagCount++;
-                ClientUtils.chatLog("§4Flag Detected: §7" + flagCount);
+                if (mc.thePlayer.ticksExisted > 5) {
+                    ClientUtils.chatLog("§4Flag Detected: §7" + flagCount);
+                }
             }
         }
 
