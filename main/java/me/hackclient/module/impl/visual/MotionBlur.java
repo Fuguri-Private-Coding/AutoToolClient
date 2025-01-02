@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 @ModuleInfo(name = "MotionBlur", category = Category.VISUAL, toggled = true)
 public class MotionBlur extends Module {
 
-    IntegerSetting blurAmount = new IntegerSetting("BlurAmount", this, 1, 9, 5);
+    IntegerSetting blurAmount = new IntegerSetting("BlurAmount", this, 1, 9, 7);
 
     @Override
     public void onEnable() {

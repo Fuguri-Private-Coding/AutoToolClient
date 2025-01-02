@@ -20,13 +20,10 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, toggled = true)
 public class TimerRange extends Module {
 
-    //ModeSetting predictMode = new ModeSetting("Predict", this, "RayCast", new String[] {"RayCast", "Ticks"});
+    FloatSettings startDistance = new FloatSettings("StartDistance", this, 3f, 6, 3.8f, 0.1f);
+    IntegerSetting limitTicks = new IntegerSetting("LimitTick", this, 1,10,2);
+    IntegerSetting disabledTicks = new IntegerSetting("FlagDelayTicks", this, 0, 100, 20);
 
-    FloatSettings startDistance = new FloatSettings("StartDistance", this/*, () -> predictMode.getMode().equalsIgnoreCase("RayCast")*/, 3f, 6, 3.6f, 0.1f);
-    IntegerSetting limitTicks = new IntegerSetting("LimitTick", this/*, () -> predictMode.getMode().equalsIgnoreCase("RayCast")*/, 1,10,2);
-    IntegerSetting disabledTicks = new IntegerSetting("FlagDelayTicks", this, 0, 100, 10);
-
-    //FloatSettings partialTicks = new FloatSettings("PartialTicks", this, 0f, 2f, 1f, 0.1f);
     ModeSetting freezeMode = new ModeSetting(
             "FreezeAnimation",
             this,
@@ -46,10 +43,6 @@ public class TimerRange extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (killAura == null) killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
-        //if (killAura.getTarget() == null) {
-        //    balance = 0;
-        //}
-
         if (event instanceof TickEvent) {
             if (flagDelayTicks > 0) {
                 flagDelayTicks--;

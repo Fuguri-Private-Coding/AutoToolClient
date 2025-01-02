@@ -10,7 +10,7 @@ import org.lwjgl.input.Keyboard;
 @ModuleInfo(name = "ClickGui", category = Category.VISUAL, key = Keyboard.KEY_RSHIFT)
 public class ClickGui extends Module {
 
-	public FloatSettings animationSpeed = new FloatSettings("AnimationSpeed", this, 1, 20, 10, 0.5f);
+	public FloatSettings animationSpeed = new FloatSettings("AnimationSpeed", this, 1, 20, 20, 0.5f);
 
 	@Override
 	public void onEnable() {

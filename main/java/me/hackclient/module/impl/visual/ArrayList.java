@@ -16,7 +16,7 @@ import java.util.List;
 @ModuleInfo(name = "ArrayList", category = Category.VISUAL, toggled = true)
 public class ArrayList extends Module {
 
-	BooleanSetting background = new BooleanSetting("Background", this, true);
+	BooleanSetting background = new BooleanSetting("Background", this, false);
 
 	@Override
 	public void onEvent(Event event) {

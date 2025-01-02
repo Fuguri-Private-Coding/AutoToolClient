@@ -4,6 +4,7 @@ import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.timer.StopWatch;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ChatComponentScore;
 import net.minecraft.util.ChatComponentText;
@@ -33,24 +34,27 @@ public class ClickManager implements InstanceAccess {
 
 		for (int i = 0; i < clicks; i++) {
 			if (clickTimer.reachedMS() >= 500) {
-				mouseClick(cfg.minCps(), cfg.maxCps());
+				mouseClick(cfg.minCps(), cfg.maxCps(), target);
 				if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
 					clickTimer.reset();
 				}
 			} else if (mc.thePlayer.hurtTime > (cfg.mineBlazeKbFix() ? cfg.minPlayerHurtTime() : 0)) {
-				mouseClick(cfg.minCps(), cfg.maxCps());
+				mouseClick(cfg.minCps(), cfg.maxCps(), target);
 			}
 		}
 
 		clicks = 0;
 	}
 
-	private void mouseClick(int minCps, int maxCps) {
-		mc.clickMouse();
-		nextDelay = RandomUtils.nextInt(
-				1000 / maxCps,
-				1000 / minCps
-		);
+	private void mouseClick(int minCps, int maxCps, EntityLivingBase target) {
+		Entity entity = RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity1 -> true);
+		if (entity == null || entity == target) {
+			mc.clickMouse();
+			nextDelay = RandomUtils.nextInt(
+					1000 / maxCps,
+					1000 / minCps
+			);
+		}
 	}
 
 	public void checkTime() {
