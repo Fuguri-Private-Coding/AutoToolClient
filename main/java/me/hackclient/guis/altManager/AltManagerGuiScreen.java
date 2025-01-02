@@ -32,8 +32,8 @@ public class AltManagerGuiScreen extends GuiScreen {
         mc.getFramebuffer().framebufferClear();
         mc.getFramebuffer().bindFramebuffer(true);
         guiTextField.drawTextBox();
+        guiTextField.setMaxStringLength(16);
         mc.fontRendererObj.drawCenteredString("Current logged as " + mc.getSession().getUsername(), sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f - 20, new Color(255, 255, 255, 150).getRGB());
-        mc.fontRendererObj.drawCenteredString(guiTextField.getText(), sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f, new Color(255, 255, 255, 150).getRGB());
     }
 
     @Override
