@@ -7,6 +7,7 @@ import me.hackclient.event.events.PacketEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.IntegerSetting;
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
 import net.minecraft.util.ChatComponentText;
 

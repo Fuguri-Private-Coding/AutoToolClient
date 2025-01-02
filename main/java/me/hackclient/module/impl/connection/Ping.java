@@ -39,15 +39,20 @@ public class Ping extends Module {
 	IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 500);
 	IntegerSetting attackDelay = new IntegerSetting("AttackConditionTime", this, 0, 20, 10);
 	IntegerSetting flagDelay = new IntegerSetting("FlagConditionTime", this, 0, 20, 10);
-	BooleanSetting damageFlush = new BooleanSetting("DamageFlush", this, true);
+	IntegerSetting damageDelay = new IntegerSetting("DamageConditionTime", this, 0, 20, 0);
 	BooleanSetting guiFlush = new BooleanSetting("GuiFlush", this, true);
 	BooleanSetting itemFlush = new BooleanSetting("ItemFlush", this, true);
-	BooleanSetting blockPlacement = new BooleanSetting("BlockPlacement", this, true);
+	IntegerSetting blockPlacementDelay = new IntegerSetting("BlockPlacementConditionTime", this, 0, 20, 10);
 
 	// Таймер для задержки после ресета, помогает обходить античиты
 	private int stoppingTime;
 	private final LinkedHashMap<Packet<?>, Long> packetBuffer;
 	private final List<Doubles<Vec3, Long>> posBuffer;
+
+	@Override
+	public void onDisable() {
+		resetPackets();
+	}
 
 	public Ping() {
 		packetBuffer = new LinkedHashMap<>();
@@ -76,12 +81,12 @@ public class Ping extends Module {
 				}
 			}
 
-			if (packet instanceof C08PacketPlayerBlockPlacement && blockPlacement.isToggled()) {
-				resetPackets();
+			if (packet instanceof C08PacketPlayerBlockPlacement) {
+				stoppingTime = blockPlacementDelay.getValue();
 			}
 
-			if (mc.thePlayer.hurtTime > 0 && damageFlush.isToggled()) {
-				resetPackets();
+			if (mc.thePlayer.hurtTime > 0) {
+				stoppingTime = damageDelay.getValue();
 			}
 
 			if (mc.currentScreen instanceof GuiInventory && guiFlush.isToggled() || mc.currentScreen instanceof GuiContainer && guiFlush.isToggled()) {

@@ -31,8 +31,8 @@ public class MoreKB extends Module {
 			}
 	);
 
-	IntegerSetting MinDelayTicks = new IntegerSetting("MinDelayTicks", this, 1, 5, 4);
-	IntegerSetting MaxDelayTicks = new IntegerSetting("MaxDelayTicks", this, 1, 5, 4);
+	IntegerSetting MinDelayTicks = new IntegerSetting("MinDelayTicks", this, 1, 5, 3);
+	IntegerSetting MaxDelayTicks = new IntegerSetting("MaxDelayTicks", this, 1, 5, 3);
 	IntegerSetting MinResetTicks = new IntegerSetting("MinTicks", this, 1, 5, 1);
 	IntegerSetting MaxResetTicks = new IntegerSetting("MaxTicks", this, 1, 5, 1);
 	BooleanSetting serverSprintToggle = new BooleanSetting("ServerSprintToggle", this, () -> mode.getMode().equalsIgnoreCase("One"), true);

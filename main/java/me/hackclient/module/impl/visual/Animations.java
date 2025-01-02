@@ -11,12 +11,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import org.lwjgl.opengl.GL11;
 
-@ModuleInfo(name = "Animations", category = Category.VISUAL)
+@ModuleInfo(name = "Animations", category = Category.VISUAL, toggled = true)
 public class Animations extends Module {
 
     static boolean animate;
 
-    ModeSetting mode = new ModeSetting("Mode", this, "Sigma 2", new String[]{
+    ModeSetting mode = new ModeSetting("Mode", this, "Sigma", new String[]{
             "Sigma",
             "Sigma 2",
             "Exhibition",
@@ -27,9 +27,9 @@ public class Animations extends Module {
 
     });
 
-    FloatSettings X = new FloatSettings("X", this, -1f, 1f, 0f, 0.1f);
-    FloatSettings Y = new FloatSettings("X", this, -1f, 1f, 0f, 0.1f);
-    FloatSettings Z = new FloatSettings("Z", this, -1f, 1f, 0f, 0.1f);
+    FloatSettings X = new FloatSettings("X", this, -1f, 1f, -0.1f, 0.1f);
+    FloatSettings Y = new FloatSettings("X", this, -1f, 1f, 0.2f, 0.1f);
+    FloatSettings Z = new FloatSettings("Z", this, -1f, 1f, -0.1f, 0.1f);
 
     @Override
     public void onEvent(Event event) {

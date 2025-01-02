@@ -13,7 +13,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 @ModuleInfo(name = "FlagDetector", category = Category.MISC, toggled = true)
 public class FlagDetector extends Module {
 
-    BooleanSetting resetFlagsOnWorld = new BooleanSetting("ResetFlagsOnWorld", this, true);
+    BooleanSetting resetFlagsOnWorld = new BooleanSetting("ResetFlagsOnWorld", this, false);
 
     int flagCount = 0;
 

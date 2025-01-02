@@ -8,7 +8,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.combat.KillAura;
 
-@ModuleInfo(name = "MoreSwing", category = Category.VISUAL, toggled = true)
+@ModuleInfo(name = "MoreSwing", category = Category.VISUAL)
 public class MoreSwing extends Module {
 
     private KillAura killAura;
