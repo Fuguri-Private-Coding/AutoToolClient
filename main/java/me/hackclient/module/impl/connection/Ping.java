@@ -21,6 +21,7 @@ import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.status.client.C00PacketServerQuery;
 import net.minecraft.network.status.client.C01PacketPing;
@@ -41,6 +42,7 @@ public class Ping extends Module {
 	BooleanSetting damageFlush = new BooleanSetting("DamageFlush", this, true);
 	BooleanSetting guiFlush = new BooleanSetting("GuiFlush", this, true);
 	BooleanSetting itemFlush = new BooleanSetting("ItemFlush", this, true);
+	BooleanSetting blockPlacement = new BooleanSetting("BlockPlacement", this, true);
 
 	// Таймер для задержки после ресета, помогает обходить античиты
 	private int stoppingTime;
@@ -72,6 +74,10 @@ public class Ping extends Module {
 				if (c02.getAction() == C02PacketUseEntity.Action.ATTACK) {
 					stoppingTime = attackDelay.getValue();
 				}
+			}
+
+			if (packet instanceof C08PacketPlayerBlockPlacement && blockPlacement.isToggled()) {
+				resetPackets();
 			}
 
 			if (mc.thePlayer.hurtTime > 0 && damageFlush.isToggled()) {

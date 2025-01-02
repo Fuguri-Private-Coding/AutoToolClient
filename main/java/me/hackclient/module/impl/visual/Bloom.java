@@ -16,4 +16,5 @@ public class Bloom extends Module {
     public BooleanSetting arrayList = new BooleanSetting("ArrayList", this, false);
     public BooleanSetting clickGui = new BooleanSetting("ClickGui", this, true);
     public BooleanSetting keyBinds = new BooleanSetting("KeyBinds", this, false);
+    public BooleanSetting clientLogo = new BooleanSetting("ClientLogo", this, true);
 }

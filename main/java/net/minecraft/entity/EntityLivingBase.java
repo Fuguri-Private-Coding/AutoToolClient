@@ -11,7 +11,9 @@ import java.util.Random;
 import java.util.UUID;
 
 import me.hackclient.Client;
+import me.hackclient.event.events.EntityKilledEvent;
 import me.hackclient.event.events.JumpEvent;
+import me.hackclient.module.impl.move.NoJumpDelay;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -1700,6 +1702,10 @@ public abstract class EntityLivingBase extends Entity
 
     public void onLivingUpdate()
     {
+        if (Client.INSTANCE.getModuleManager().getModule(NoJumpDelay.class).isToggled()) {
+            jumpTicks = 0;
+        }
+
         if (this.jumpTicks > 0)
         {
             --this.jumpTicks;

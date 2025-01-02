@@ -37,10 +37,7 @@ import java.util.concurrent.FutureTask;
 import javax.imageio.ImageIO;
 
 import me.hackclient.Client;
-import me.hackclient.event.events.KeyEvent;
-import me.hackclient.event.events.LegitClickTimingEvent;
-import me.hackclient.event.events.RunGameLoopEvent;
-import me.hackclient.event.events.TickEvent;
+import me.hackclient.event.events.*;
 import me.hackclient.module.impl.combat.DelayFix;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -1603,6 +1600,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     public void runTick() throws IOException
     {
 
+        Client.INSTANCE.getObjectsCaller().onEvent(new GameTickEvent());
 
         if (this.rightClickDelayTimer > 0)
         {

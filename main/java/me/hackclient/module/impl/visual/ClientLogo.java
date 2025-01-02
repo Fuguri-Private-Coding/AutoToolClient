@@ -7,6 +7,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.util.ResourceLocation;
 
@@ -25,11 +26,12 @@ public class ClientLogo extends Module {
         super.onEvent(event);
         if (event instanceof Render2DEvent) {
             ResourceLocation molotok400panage = new ResourceLocation("minecraft", "hackclient/image/molotok400.png");
-
-            List<Runnable> list = new ArrayList<>();
-            list.add(() -> RenderUtils.drawImage(molotok400panage, X.getValue(), Y.getValue(), scale.getValue(), scale.getValue()));
-            BloomUtils.drawBloom(list);
-
+            Bloom bloomModule = InstanceAccess.mm.getModule(Bloom.class);
+            if (bloomModule.isToggled() && bloomModule.clientLogo.isToggled()) {
+                List<Runnable> list = new ArrayList<>();
+                list.add(() -> RenderUtils.drawImage(molotok400panage, X.getValue(), Y.getValue(), scale.getValue(), scale.getValue()));
+                BloomUtils.drawBloom(list);
+            }
             RenderUtils.drawImage(molotok400panage, X.getValue(), Y.getValue(), scale.getValue(), scale.getValue());
 
         }

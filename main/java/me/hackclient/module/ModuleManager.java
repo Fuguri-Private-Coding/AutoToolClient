@@ -49,6 +49,8 @@ public class ModuleManager {
 				 new MotionBlur(),
 				 new ClientLogo(),
 				 new AutoPlace(),
+				 new NoJumpDelay(),
+				 //new KillEvents(),
 				 new NoRender(),
 				 new MidClick(),
 				 new AutoBot()
