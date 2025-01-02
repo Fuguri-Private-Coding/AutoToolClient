@@ -13,6 +13,7 @@ import java.util.UUID;
 import me.hackclient.Client;
 import me.hackclient.event.events.EntityKilledEvent;
 import me.hackclient.event.events.JumpEvent;
+import me.hackclient.event.events.UpdateBodyRotationEvent;
 import me.hackclient.module.impl.move.NoJumpDelay;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -1670,9 +1671,16 @@ public abstract class EntityLivingBase extends Entity
 
     protected float updateDistance(float p_110146_1_, float p_110146_2_)
     {
+        float yaw = rotationYaw;
+
+        UpdateBodyRotationEvent event = new UpdateBodyRotationEvent(yaw);
+        Client.INSTANCE.getObjectsCaller().onEvent(event);
+
+        yaw = event.getYaw();
+
         float f = MathHelper.wrapDegree(p_110146_1_ - this.renderYawOffset);
         this.renderYawOffset += f * 0.3F;
-        float f1 = MathHelper.wrapDegree(this.rotationYaw - this.renderYawOffset);
+        float f1 = MathHelper.wrapDegree(yaw - this.renderYawOffset);
         boolean flag = f1 < -90.0F || f1 >= 90.0F;
 
         if (f1 < -75.0F)
@@ -1680,20 +1688,17 @@ public abstract class EntityLivingBase extends Entity
             f1 = -75.0F;
         }
 
-        if (f1 >= 75.0F)
-        {
+        if (f1 >= 75.0F) {
             f1 = 75.0F;
         }
 
-        this.renderYawOffset = this.rotationYaw - f1;
+        this.renderYawOffset = yaw - f1;
 
-        if (f1 * f1 > 2500.0F)
-        {
+        if (f1 * f1 > 2500.0F) {
             this.renderYawOffset += f1 * 0.2F;
         }
 
-        if (flag)
-        {
+        if (flag) {
             p_110146_2_ *= -1.0F;
         }
 

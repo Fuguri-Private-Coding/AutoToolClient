@@ -110,6 +110,9 @@ public class KillAura extends Module {
 				changeHeadRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
 				changeHeadRotationEvent.setPitch(Rotation.getServerRotation().getPitch());
 			}
+			if (event instanceof UpdateBodyRotationEvent UpdateBodyRotationEvent) {
+				UpdateBodyRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
+			}
 
 			if (event instanceof LegitClickTimingEvent) {
 				clickManager.click(target, new IClickingCFG() {
