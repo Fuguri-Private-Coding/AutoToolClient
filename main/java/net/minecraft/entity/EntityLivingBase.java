@@ -1673,10 +1673,12 @@ public abstract class EntityLivingBase extends Entity
     {
         float yaw = rotationYaw;
 
-        UpdateBodyRotationEvent event = new UpdateBodyRotationEvent(yaw);
-        Client.INSTANCE.getObjectsCaller().onEvent(event);
+        if (this instanceof EntityPlayerSP) {
+            UpdateBodyRotationEvent event = new UpdateBodyRotationEvent(yaw);
+            Client.INSTANCE.getObjectsCaller().onEvent(event);
+            yaw = event.getYaw();
+        }
 
-        yaw = event.getYaw();
 
         float f = MathHelper.wrapDegree(p_110146_1_ - this.renderYawOffset);
         this.renderYawOffset += f * 0.3F;
