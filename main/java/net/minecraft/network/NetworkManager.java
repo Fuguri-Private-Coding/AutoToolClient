@@ -34,7 +34,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.SecretKey;
 
 import me.hackclient.Client;
-import me.hackclient.event.Direction;
+import me.hackclient.event.PackerDirection;
 import me.hackclient.event.events.PacketEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
@@ -141,7 +141,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 
     protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, Packet p_channelRead0_2_) throws Exception
     {
-        PacketEvent event = new PacketEvent(p_channelRead0_2_, Direction.INCOMING);
+        PacketEvent event = new PacketEvent(p_channelRead0_2_, PackerDirection.INCOMING);
         Client.INSTANCE.getObjectsCaller().onEvent(event);
         p_channelRead0_2_ = event.getPacket();
 
@@ -186,7 +186,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 
     public void sendPacket(Packet packetIn)
     {
-        PacketEvent event = new PacketEvent(packetIn, Direction.OUTGOING);
+        PacketEvent event = new PacketEvent(packetIn, PackerDirection.OUTGOING);
         Client.INSTANCE.getObjectsCaller().onEvent(event);
         packetIn = event.getPacket();
 

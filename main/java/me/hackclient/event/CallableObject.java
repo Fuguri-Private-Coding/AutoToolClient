@@ -1,10 +1,5 @@
 package me.hackclient.event;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public interface CallableObject {
-	List<CallableObject> callables = new ArrayList<>();
+public interface CallableObject extends IObjectCaller {
 	void onEvent(Event event);
-	boolean handleEvents();
 }

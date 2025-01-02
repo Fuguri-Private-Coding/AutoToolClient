@@ -1,5 +1,5 @@
 package me.hackclient.event;
 
-public enum Direction {
+public enum PackerDirection {
 	INCOMING, OUTGOING
 }

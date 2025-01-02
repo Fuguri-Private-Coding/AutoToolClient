@@ -1,12 +1,17 @@
 package me.hackclient.event;
 
-public class ObjectsCaller implements IObjectCaller {
-	public void onEvent(Event event) {
-		for (CallableObject object : CallableObject.callables) {
-			if (!object.handleEvents())
-				continue;
+import me.hackclient.utils.interfaces.InstanceAccess;
 
-			object.onEvent(event);
+public class ObjectsCaller implements IObjectCaller, InstanceAccess {
+
+	@Override
+	public void onEvent(Event event) {
+		for (CallableObject object : callables) {
+			if (object instanceof ConditionCallableObject condition) {
+				if (condition.handleEvents()) condition.onEvent(event);
+			} else {
+				object.onEvent(event);
+			}
 		}
 	}
 }
