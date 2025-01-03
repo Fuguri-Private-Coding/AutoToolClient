@@ -32,8 +32,8 @@ public class KillAura extends Module {
 	final TargetSelector targetSelector;
 	public final ClickManager clickManager;
 
-	IntegerSetting minCps = new IntegerSetting("MinCps", this, 1,20,18);
-	IntegerSetting maxCps = new IntegerSetting("MaxCps", this, 1,20,18);
+	IntegerSetting minCps = new IntegerSetting("MinCps", this, -20,20,18);
+	IntegerSetting maxCps = new IntegerSetting("MaxCps", this, -20,20,18);
 
 	BooleanSetting clickFix = new BooleanSetting("ClickFix", this, true);
 	BooleanSetting mineBlazeFix = new BooleanSetting("MineBlazeFix", this, true);

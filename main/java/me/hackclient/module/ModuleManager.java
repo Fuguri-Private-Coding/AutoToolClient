@@ -51,6 +51,7 @@ public class ModuleManager {
 				 new AutoPlace(),
 				 new NoJumpDelay(),
 				 new FlyTimer(),
+				 new MLG(),
 				 //new KillEvents(),
 				 new NameTags(),
 				 new NoRender(),
