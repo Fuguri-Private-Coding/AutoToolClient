@@ -22,6 +22,7 @@ import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
+import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.network.status.client.C00PacketServerQuery;
 import net.minecraft.network.status.client.C01PacketPing;
 import net.minecraft.network.status.server.S01PacketPong;
@@ -78,10 +79,12 @@ public class Ping extends Module {
 				stoppingTime = attackDelay.getValue();
 			}
 
+			// Ресет при поставке блока, использовании придмета
 			if (packet instanceof C08PacketPlayerBlockPlacement) {
 				stoppingTime = blockPlacementDelay.getValue();
 			}
 
+			// Ресет при получении урона
 			if (mc.thePlayer.hurtTime > 0) {
 				stoppingTime = damageDelay.getValue();
 			}

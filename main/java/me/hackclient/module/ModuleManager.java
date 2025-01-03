@@ -50,6 +50,7 @@ public class ModuleManager {
 				 new ClientLogo(),
 				 new AutoPlace(),
 				 new NoJumpDelay(),
+				 new FlyTimer(),
 				 //new KillEvents(),
 				 new NameTags(),
 				 new NoRender(),
