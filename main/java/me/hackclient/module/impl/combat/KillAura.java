@@ -26,10 +26,10 @@ import java.util.List;
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, key = Keyboard.KEY_R)
 public class KillAura extends Module {
 
-	private EntityLivingBase target;
+    EntityLivingBase target;
 
-	private final List<Rotation> rotations;
-	private final TargetSelector targetSelector;
+	final List<Rotation> rotations;
+	final TargetSelector targetSelector;
 	public final ClickManager clickManager;
 
 	IntegerSetting minCps = new IntegerSetting("MinCps", this, 1,20,18);
@@ -43,8 +43,8 @@ public class KillAura extends Module {
 
 	FloatSettings maxRange = new FloatSettings("MaxRange", this, 3f, 6f, 6f, 0.1f);
 	IntegerSetting reactionTime = new IntegerSetting("ReactionTime", this, 0, 5, 1);
-	public FloatSettings speedYawRotation = new FloatSettings("MaxYawStep", this, 1f, 180f, 75f, 0.5f);
-	public FloatSettings speedPitchRotation = new FloatSettings("MaxPitchStep", this, 1f, 180f, 45f, 0.5f);
+    FloatSettings speedYawRotation = new FloatSettings("MaxYawStep", this, 1f, 180f, 75f, 0.5f);
+	FloatSettings speedPitchRotation = new FloatSettings("MaxPitchStep", this, 1f, 180f, 45f, 0.5f);
 
 	public KillAura() {
 		clickManager = new ClickManager();

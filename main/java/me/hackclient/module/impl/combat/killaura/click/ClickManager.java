@@ -6,14 +6,12 @@ import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.ChatComponentScore;
-import net.minecraft.util.ChatComponentText;
 import org.apache.commons.lang3.RandomUtils;
 
 public class ClickManager implements InstanceAccess {
 
-	private final StopWatch timer, clickTimer;
-	private int nextDelay;
+	final StopWatch timer, clickTimer;
+	int nextDelay;
 	public int clicks;
 
 	public int hurtTime;
@@ -45,7 +43,7 @@ public class ClickManager implements InstanceAccess {
 		clicks = 0;
 	}
 
-	private void mouseClick(int minCps, int maxCps, EntityLivingBase target) {
+	void mouseClick(int minCps, int maxCps, EntityLivingBase target) {
 		Entity entity = RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity1 -> true);
 		if (entity == null || entity == target) {
 			mc.clickMouse();

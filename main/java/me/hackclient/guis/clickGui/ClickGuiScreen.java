@@ -25,13 +25,15 @@ import java.util.List;
 
 public class ClickGuiScreen extends GuiScreen {
 
-	private Category selectedCategory = Category.COMBAT;
-	private Module selectedModule;
-	private Setting lastSetting;
+	boolean binding;
 
-	private final Animation2D categoryLineAnimation;
-	private final Animation2D moduleLineAnimation;
-	private final Animation2D settingLineAnimation;
+	Category selectedCategory = Category.COMBAT;
+	Module selectedModule;
+	Setting lastSetting;
+
+	final Animation2D categoryLineAnimation;
+	final Animation2D moduleLineAnimation;
+	final Animation2D settingLineAnimation;
 
 	public ClickGuiScreen() {
         settingLineAnimation = new Animation2D(0,0,0,0);
@@ -52,7 +54,7 @@ public class ClickGuiScreen extends GuiScreen {
 		drawMain(mouseX, mouseY);
 	}
 
-	private void drawMain(int mouseX, int mouseY) {
+	void drawMain(int mouseX, int mouseY) {
 		RoundedUtils.drawRect(70, 50 ,400, 200, 2 , new Color(15, 15, 15, 100));
 		int offset = 0;
 		final int categoryOffset = 75;
@@ -137,7 +139,7 @@ public class ClickGuiScreen extends GuiScreen {
 					new Color(0, 0, 0, 50)
 			);
 			mc.fontRendererObj.drawString(
-					"KeyBind: " + Keyboard.getKeyName(selectedModule.getKey()),
+					"KeyBind: " + (binding ? "..." : Keyboard.getKeyName(selectedModule.getKey())),
 					70 + 80,
 					75,
 					-1
@@ -306,6 +308,18 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 		offset = 0;
 		if (selectedModule == null) return;
+//		mc.fontRendererObj.drawString(
+//				"KeyBind: " + Keyboard.getKeyName(selectedModule.getKey()),
+//				70 + 80,
+//				75,
+//				-1
+//		);
+		if (mouseX > 70 + 80 + mc.fontRendererObj.getStringWidth("KeyBind: ")
+		&& mouseX < 70 + 80 + mc.fontRendererObj.getStringWidth("KeyBind: " + Keyboard.getKeyName(selectedModule.getKey()))
+		&& mouseY > 75
+		&& mouseY < 75 + 10) {
+			binding = true;
+		}
 		for (Setting setting : selectedModule.getSettings()) {
 			if (!setting.isVisible()) continue;
 			int nameLength = mc.fontRendererObj.getStringWidth(setting.getName() + ": ");
@@ -345,6 +359,22 @@ public class ClickGuiScreen extends GuiScreen {
 				offset += yOffset;
 			}
 		}
+	}
+
+	@Override
+	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+		if (selectedModule == null) {
+			binding = false;
+		}
+		if (binding) {
+			binding = false;
+			if (keyCode == Keyboard.KEY_ESCAPE) {
+				selectedModule.setKey(Keyboard.KEY_NONE);
+				return;
+			}
+			selectedModule.setKey(keyCode);
+		}
+		super.keyTyped(typedChar, keyCode);
 	}
 
 	@Override
