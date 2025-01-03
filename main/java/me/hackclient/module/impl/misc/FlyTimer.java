@@ -36,6 +36,7 @@ public class FlyTimer extends Module {
                 if (msg.equalsIgnoreCase("Вы использовали свои способности!")) {
                     ClientUtils.chatLog("Detected fly");
                     timer.reset();
+                    canUse = false;
                 }
             }
         }
