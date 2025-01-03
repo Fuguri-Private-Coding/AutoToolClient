@@ -62,7 +62,6 @@ public class RotationUtils implements InstanceAccess {
 
 	public static Rotation getNearestRotation(Rotation from, AxisAlignedBB to) {
 		List<Rotation> possibleRotations = getPossibleRotations(to, true);
-		System.out.println("starting sort");
 		possibleRotations.sort(Comparator.comparingDouble(
 				rotation -> {
 					Delta delta = getDelta(from, rotation);
@@ -76,7 +75,7 @@ public class RotationUtils implements InstanceAccess {
 	public static List<Rotation> getPossibleRotations(AxisAlignedBB box, boolean removeInvisible) {
 		List<Rotation> rotations = new ArrayList<>();
 
-		double accuracy = 5;
+		double accuracy = 7;
 		double stepX = box.getLengthX() / accuracy;
 		double stepY = box.getLengthY() / accuracy;
 		double stepZ = box.getLengthZ() / accuracy;

@@ -327,13 +327,15 @@ public class ItemRenderer
 
             if (this.itemToRender != null)
             {
-                boolean animate = f1 > 0 && (Animations.isAnimate() || abstractclientplayer.getItemInUseCount() > 0);
+                boolean animate = (f1 > 0 && Animations.isAnimate()) || abstractclientplayer.getItemInUseCount() > 0;
+
                 if (this.itemToRender.getItem() instanceof ItemMap)
                 {
                     this.renderItemMap(abstractclientplayer, f2, f, f1);
                 }
-                else if (abstractclientplayer.getItemInUseCount() > 0 || animate)
-                {
+                else if (animate) {
+                    Client.INSTANCE.getObjectsCaller().onEvent(new RenderItemEvent(f1, f));
+                } else if (abstractclientplayer.getItemInUseCount() > 0) {
                     EnumAction enumaction = this.itemToRender.getItemUseAction();
 
                     switch (enumaction)
@@ -349,12 +351,8 @@ public class ItemRenderer
                             break;
 
                         case BLOCK:
-                            if (animate) {
-                                Client.INSTANCE.getObjectsCaller().onEvent(new RenderItemEvent(f1, f));
-                            } else {
-                                this.transformFirstPersonItem(f, 0.0F);
-                                this.doBlockTransformations();
-                            }
+                            this.transformFirstPersonItem(f, 0.0F);
+                            this.doBlockTransformations();
                             break;
 
                         case BOW:
