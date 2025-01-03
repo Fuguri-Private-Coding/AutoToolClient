@@ -548,7 +548,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     private void createDisplay() throws LWJGLException
     {
         Display.setResizable(true);
-        Display.setTitle("Loading BINAN!!!");
+        Display.setTitle("Loading Minecraft...");
 
         try
         {

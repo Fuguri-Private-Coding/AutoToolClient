@@ -60,35 +60,30 @@ public enum EnumFacing implements IStringSerializable
 
     public EnumFacing rotateAround(EnumFacing.Axis axis)
     {
-        switch (axis)
-        {
-            case X:
-                if (this != WEST && this != EAST)
-                {
-                    return this.rotateX();
+        return switch (axis) {
+            case X -> {
+                if (this != WEST && this != EAST) {
+                    yield this.rotateX();
                 }
 
-                return this;
-
-            case Y:
-                if (this != UP && this != DOWN)
-                {
-                    return this.rotateY();
+                yield this;
+            }
+            case Y -> {
+                if (this != UP && this != DOWN) {
+                    yield this.rotateY();
                 }
 
-                return this;
-
-            case Z:
-                if (this != NORTH && this != SOUTH)
-                {
-                    return this.rotateZ();
+                yield this;
+            }
+            case Z -> {
+                if (this != NORTH && this != SOUTH) {
+                    yield this.rotateZ();
                 }
 
-                return this;
-
-            default:
-                throw new IllegalStateException("Unable to get CW facing for axis " + axis);
-        }
+                yield this;
+            }
+            default -> throw new IllegalStateException("Unable to get CW facing for axis " + axis);
+        };
     }
 
     public EnumFacing rotateY()

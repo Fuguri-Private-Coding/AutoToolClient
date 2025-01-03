@@ -1,5 +1,6 @@
 package me.hackclient;
 
+import me.hackclient.cfg.ConfigManager;
 import me.hackclient.event.CallableObject;
 import me.hackclient.event.Event;
 import me.hackclient.event.ObjectsCaller;
@@ -24,15 +25,17 @@ public enum Client implements CallableObject {
 	ModuleManager moduleManager;
 	ShaderManager shaderManager;
 	ObjectsCaller objectsCaller;
+	ConfigManager configManager;
 
 	public void init() {
 		callables.add(this);
 
 		timeScheduler = new TimeScheduler();
 		friendManager = new FriendManager();
-		objectsCaller = new ObjectsCaller();
 		moduleManager = new ModuleManager();
 		shaderManager = new ShaderManager();
+		objectsCaller = new ObjectsCaller();
+		configManager = new ConfigManager();
 
 		clickGui = new ClickGuiScreen();
 		Display.setTitle(getFullName());
@@ -67,12 +70,12 @@ public enum Client implements CallableObject {
 		return friendManager;
 	}
 
-	public ClickGuiScreen getClickGui() {
-		return clickGui;
-	}
-
 	public TimeScheduler getTimeScheduler() {
 		return timeScheduler;
+	}
+
+	public ClickGuiScreen getClickGui() {
+		return clickGui;
 	}
 
 	@Override
