@@ -39,7 +39,7 @@ public class Ping extends Module {
 	IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 500);
 	IntegerSetting attackDelay = new IntegerSetting("AttackConditionTime", this, 0, 20, 10);
 	IntegerSetting flagDelay = new IntegerSetting("FlagConditionTime", this, 0, 20, 10);
-	IntegerSetting damageDelay = new IntegerSetting("DamageConditionTime", this, 0, 20, 0);
+	BooleanSetting damageFlush = new BooleanSetting("DamageFlush", this, true);
 	BooleanSetting guiFlush = new BooleanSetting("GuiFlush", this, true);
 	BooleanSetting itemFlush = new BooleanSetting("ItemFlush", this, true);
 	IntegerSetting blockPlacementDelay = new IntegerSetting("BlockPlacementConditionTime", this, 0, 20, 10);
@@ -85,8 +85,8 @@ public class Ping extends Module {
 			}
 
 			// Ресет при получении урона
-			if (mc.thePlayer.hurtTime > 0) {
-				stoppingTime = damageDelay.getValue();
+			if (mc.thePlayer.hurtTime > 0 && damageFlush.isToggled()) {
+				resetPackets();
 			}
 
 			if (mc.currentScreen instanceof GuiInventory && guiFlush.isToggled() || mc.currentScreen instanceof GuiContainer && guiFlush.isToggled()) {

@@ -21,8 +21,8 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 public class TickBase extends Module {
 
     FloatSettings startDistance = new FloatSettings("StartDistance", this, 3f, 6, 3.8f, 0.1f);
-    IntegerSetting limitTicks = new IntegerSetting("LimitTick", this, 1,10,2);
-    IntegerSetting disabledTicks = new IntegerSetting("FlagDelayTicks", this, 0, 100, 20);
+    IntegerSetting limitTicks = new IntegerSetting("LimitTick", this, 1,20,2);
+    IntegerSetting disabledTicks = new IntegerSetting("FlagDelayTicks", this, 0, 20, 0);
 
     ModeSetting freezeMode = new ModeSetting(
             "FreezeAnimation",
