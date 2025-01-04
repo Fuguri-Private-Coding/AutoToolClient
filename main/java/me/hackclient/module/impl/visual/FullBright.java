@@ -18,7 +18,7 @@ public class FullBright extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof UpdateEvent) {
-            mc.gameSettings.gammaSetting = 1000000000F;
+            mc.gameSettings.gammaSetting = 10000;
         }
     }
 }
