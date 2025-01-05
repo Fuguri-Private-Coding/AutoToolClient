@@ -1010,9 +1010,14 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         long l = System.nanoTime();
         this.mcProfiler.startSection("tick");
 
+
         for (int j = 0; j < this.timer.elapsedTicks; ++j)
         {
-            runTick();
+            TickEvent tickEvent = new TickEvent();
+            Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
+            if (!tickEvent.isCanceled()) {
+                runTick();
+            }
         }
 
         this.mcProfiler.endStartSection("preRenderErrors");
@@ -1600,17 +1605,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         return this.mcMusicTicker;
     }
 
-    public void runTick() throws IOException {
-        runTick(true);
-    }
-
-    public void runTick(boolean event) throws IOException
+    public void runTick() throws IOException
     {
-        if (event) {
-            TickEvent tickEvent = new TickEvent();
-            Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
-            if (tickEvent.isCanceled()) return;
-        }
 
         if (this.rightClickDelayTimer > 0)
         {

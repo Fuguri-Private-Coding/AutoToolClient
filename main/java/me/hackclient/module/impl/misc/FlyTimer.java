@@ -36,8 +36,7 @@ public class FlyTimer extends Module {
             Packet packet = packetEvent.getPacket();
             if (packet instanceof S02PacketChat s02 && s02.getType() != 2) {
                 String msg = s02.getChatComponent().getFormattedText();
-                if (msg.equalsIgnoreCase("Вы использовали свои способности!")
-                && mc.thePlayer.getHeldItem().getItem().getUnlocalizedName().equalsIgnoreCase("Полет!") ) {
+                if (msg.contains("Вы использовали свои способности!") ) {
                     ClientUtils.chatLog("Detected fly");
                     leftTime = 60;
                     canUse = false;
@@ -47,11 +46,11 @@ public class FlyTimer extends Module {
         if (event instanceof RunGameLoopEvent) {
             if (leftTime > 0) {
                 leftTime -= timer.reachedMS() / 1000f;
-                timer.reset();
             } else {
                 leftTime = 0;
                 canUse = true;
             }
+            timer.reset();
         }
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = new ScaledResolution(mc);
@@ -59,7 +58,7 @@ public class FlyTimer extends Module {
             Y.setMax(sc.getScaledHeight());
 
             mc.fontRendererObj.drawString("Can use: " + canUse, X.getValue(), Y.getValue(), -1);
-            mc.fontRendererObj.drawString(String.format("Time: %.2f", leftTime), X.getValue(), Y.getValue(), -1);
+            mc.fontRendererObj.drawString(String.format("Time: %.2f", leftTime), X.getValue(), Y.getValue() + 11, -1);
         }
     }
 

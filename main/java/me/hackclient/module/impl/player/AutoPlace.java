@@ -70,12 +70,13 @@ public class AutoPlace extends Module {
                 Block b = mc.theWorld.getBlockState(pos).getBlock();
                 if (b != null && b != Blocks.air && !(b instanceof BlockLiquid)) {
                     if (!needHoldRight.isToggled() || Mouse.isButtonDown(1)) {
-                        if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec)) {
+                        if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25)  {
                             mc.rightClickMouse();
                             mc.thePlayer.swingItem();
                             mc.getItemRenderer().resetEquippedProgress();
                             mc.rightClickMouse();
                             blockPos = pos;
+                            lastTime = System.currentTimeMillis();
                             delay = 0;
                         }
                     }

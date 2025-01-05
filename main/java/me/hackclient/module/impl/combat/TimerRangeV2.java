@@ -2,9 +2,7 @@ package me.hackclient.module.impl.combat;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
-import me.hackclient.event.events.LegitClickTimingEvent;
-import me.hackclient.event.events.RunGameLoopEvent;
-import me.hackclient.event.events.TickEvent;
+import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -18,7 +16,9 @@ import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
 
+import java.io.IOException;
 import java.util.Comparator;
+import java.util.Timer;
 
 @ModuleInfo(name = "TimerRangeV2", category = Category.COMBAT)
 public class TimerRangeV2 extends Module {
@@ -46,14 +46,11 @@ public class TimerRangeV2 extends Module {
         if (killAura == null) {
             killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
         }
-        if (event instanceof LegitClickTimingEvent && click) {
-            mc.clickMouse();
-            click = false;
-        }
 
         switch (state) {
             case NONE -> {
                 target = killAura.getTarget();
+
                 if (!onlyKillAura.isToggled() && target == null) {
                     if (mc.thePlayer != null && mc.theWorld != null) {
                         target = (EntityLivingBase) mc.theWorld.loadedEntityList.parallelStream()
@@ -64,60 +61,66 @@ public class TimerRangeV2 extends Module {
                                 .orElse(null);
                     }
                 }
-                if (target != null) {
-                    double distance;
-                    if (testAutoDistance.isToggled()) {
-                        double dx = Math.abs(mc.thePlayer.posX - mc.thePlayer.lastTickPosX);
-                        double dz = Math.abs(mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ);
-                        double bps = Math.hypot(dx, dz);
-                        distance = bps * ticks.getValue();
-                    } else {
-                        distance = startDistance.getValue();
-                    }
 
-                    if (DistanceUtils.getDistanceToEntity(target) <= distance) {
+                if (target != null) {
+                    if (DistanceUtils.getDistanceToEntity(target) < getDistance()) {
                         state = TimerState.TIMER;
                     }
                 }
             }
             case TIMER -> {
                 if (event instanceof RunGameLoopEvent) {
-                    while (true) {
-                        if (target != null
-                        && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
-                        && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
-                        && (!limitTicks.isToggled() || balance < ticks.getValue())) {
-                            try {
-                                mc.runTick(false);
-                                balance++;
-                            } catch (Exception ignored) {}
-                        } else {
-                            if (balance > 0) {
-                                state = TimerState.FREEZE;
-                                if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
-                                    click = true;
-                                }
-                            } else {
-                                state = TimerState.NONE;
-                            }
-                            break;
+                    try {
+                        while (target != null
+                                && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
+                                && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
+                            mc.runTick();
+                            balance++;
+                            if (!notReachedTicks(balance))
+                                break;
                         }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (balance > 0) {
+                        state = TimerState.FREEZE;
+                        click = true;
+                    } else {
+                        state = TimerState.NONE;
                     }
                 }
             }
             case FREEZE -> {
-                if (balance <= 0) {
+                if (balance == 0) {
                     state = TimerState.NONE;
-                    return;
                 }
-                if (event instanceof TickEvent tickEvent) {
+                if (balance > 0 && event instanceof TickEvent tickEvent) {
                     tickEvent.setCanceled(true);
                     balance--;
+                }
+                if (event instanceof LegitClickTimingEvent && click) {
+                    mc.clickMouse();
+                    click = false;
                 }
                 if (event instanceof RunGameLoopEvent) {
                     mc.timer.renderPartialTicks = renderPartialTicks.getValue();
                 }
             }
+        }
+    }
+
+    boolean notReachedTicks(int balance) {
+        return !limitTicks.isToggled() || balance < ticks.getValue();
+    }
+
+    double getDistance() {
+        if (testAutoDistance.isToggled()) {
+            double dx = Math.abs(mc.thePlayer.posX - mc.thePlayer.lastTickPosX);
+            double dz = Math.abs(mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ);
+            double bps = Math.hypot(dx, dz);
+            return 3 + bps * ticks.getValue();
+        } else {
+            return startDistance.getValue();
         }
     }
 

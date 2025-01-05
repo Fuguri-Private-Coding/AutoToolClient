@@ -137,7 +137,7 @@ public class Ping extends Module {
 			return;
 
 		mc.addScheduledTask(() -> packetBuffer.forEach( (packet, aLong) -> {
-            if (System.currentTimeMillis() >= aLong + delay.getValue()) {
+            if (System.currentTimeMillis() - aLong >= delay.getValue()) {
                 mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet);
                 packetBuffer.remove(packet);
             }
