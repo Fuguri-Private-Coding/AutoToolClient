@@ -5,6 +5,7 @@ public enum Category {
 	MOVE("Move"),
 	VISUAL("Visual"),
 	CONNECTION("Connection"),
+	LEGIT("Legit"),
 	PLAYER("Player"),
 	MISC("Misc"),
 	;

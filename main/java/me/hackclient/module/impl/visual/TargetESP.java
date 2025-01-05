@@ -8,7 +8,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.combat.KillAura;
 import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSettings;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,9 +19,9 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "TargetESP", category = Category.VISUAL, toggled = true)
 public class TargetESP extends Module {
 
-    FloatSettings speed = new FloatSettings("Speed", this, 1f, 10f, 3f, 0.1f);
+    FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f);
     IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
-    FloatSettings length = new FloatSettings("Length", this, 0.2f, 1.5f, 0.6f, 0.1f);
+    FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f);
     BooleanSetting changeColorToHit = new BooleanSetting("ChangeColorDueHurtTime", this, true);
 
     private KillAura killAura;

@@ -10,7 +10,7 @@ import org.apache.commons.lang3.RandomUtils;
 
 public class ClickManager implements InstanceAccess {
 
-	final StopWatch timer, clickTimer;
+	final StopWatch timer, hitSelectTimer;
 	int nextDelay;
 	public int clicks;
 
@@ -18,7 +18,7 @@ public class ClickManager implements InstanceAccess {
 
 	public ClickManager() {
 		timer = new StopWatch();
-		clickTimer = new StopWatch();
+		hitSelectTimer = new StopWatch();
 	}
 
 	public void click(final EntityLivingBase target, final IClickingCFG cfg) {
@@ -27,10 +27,10 @@ public class ClickManager implements InstanceAccess {
 		}
 
 		for (int i = 0; i < clicks; i++) {
-			if (clickTimer.reachedMS() >= 500) {
+			if (hitSelectTimer.reachedMS() >= 500) {
 				mouseClick(cfg.minCps(), cfg.maxCps(), target);
 				if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
-					clickTimer.reset();
+					hitSelectTimer.reset();
 				}
 			} else if (mc.thePlayer.hurtTime > (cfg.mineBlazeKbFix() ? cfg.minPlayerHurtTime() : 0)) {
 				mouseClick(cfg.minCps(), cfg.maxCps(), target);

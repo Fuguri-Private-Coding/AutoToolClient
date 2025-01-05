@@ -6,7 +6,7 @@ import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.FloatSettings;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.utils.move.MoveUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
@@ -17,8 +17,8 @@ public class Handler extends Module {
 
 	private boolean rotated;
 
-	FloatSettings yawBackRotate = new FloatSettings("YawStepBackRotate", this, 0f, 180f, 30f, 0.5f);
-	FloatSettings pitchBackRotate = new FloatSettings("PitchStepBackRotate", this, 0f, 180f, 10f, 0.5f);
+	FloatSetting yawBackRotate = new FloatSetting("YawStepBackRotate", this, 0f, 180f, 30f, 0.5f);
+	FloatSetting pitchBackRotate = new FloatSetting("PitchStepBackRotate", this, 0f, 180f, 10f, 0.5f);
 
 	private KillAura killAura;
 

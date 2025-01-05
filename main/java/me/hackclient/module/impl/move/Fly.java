@@ -5,13 +5,13 @@ import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.FloatSettings;
+import me.hackclient.settings.impl.FloatSetting;
 import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "Fly", category = Category.MOVE, key = Keyboard.KEY_Z)
 public class Fly extends Module {
 
-    FloatSettings speed = new FloatSettings("Speed", this, 0.1f, 0.6f, 0.6f, 0.1f);
+    FloatSetting speed = new FloatSetting("Speed", this, 0.1f, 0.6f, 0.6f, 0.1f);
 
     @Override
     public void onDisable() {

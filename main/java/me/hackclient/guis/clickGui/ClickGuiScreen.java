@@ -4,13 +4,17 @@ import me.hackclient.Client;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.impl.visual.ClickGui;
+import me.hackclient.settings.Setting;
+import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.FloatSetting;
+import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.network.Packet;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
@@ -117,17 +121,109 @@ public class ClickGuiScreen extends GuiScreen {
 		if (selectedModule != null) {
 			RoundedUtils.drawRect(pos.x + 2, (float) moduleLine.y - 12, 1, 12, 3, MAIN_COLOR);
 			fontRenderer.drawString(
-					selectedModule.getName(),
-					pos.x + verticalLineXOffset + 5,
-					pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 7.5f,
-					-1
-					);
-			fontRenderer.drawString(
 					"Keybind: " + (binding ? "..." : Keyboard.getKeyName(selectedModule.getKey())),
-					pos.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth(selectedModule.getName()) + 2,
-					pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 7.5f,
+					pos.x + verticalLineXOffset + 5,
+					pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6,
 					-1
 					);
+
+			for (Setting setting : selectedModule.getSettings()) {
+				if (!setting.isVisible())
+					continue;
+
+				float settingWidth = fontRenderer.getStringWidth(setting.getName() + ": ");
+				fontRenderer.drawString(
+						setting.getName() + ": ",
+						pos.x + verticalLineXOffset + 5,
+						pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+						-1
+				);
+				if (setting instanceof BooleanSetting booleanSetting) {
+					fontRenderer.drawString(
+							String.valueOf(booleanSetting.isToggled()),
+							pos.x + verticalLineXOffset + 5 + settingWidth + 1,
+							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+							booleanSetting.isToggled() ? Color.GREEN.darker().getRGB() : Color.RED.getRGB()
+					);
+				}
+				if (setting instanceof IntegerSetting integerSetting) {
+					float filledFactor = integerSetting.normalize();
+					final float length = 75;
+					final float sliderLength = filledFactor * length;
+					RoundedUtils.drawRect(
+							pos.x + verticalLineXOffset + 5 + settingWidth + 1,
+							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							length,
+							4,
+							1.5f,
+							BACKGROUND_COLOR
+					);
+					RoundedUtils.drawRect(
+							pos.x + verticalLineXOffset + 5 + settingWidth + 1,
+							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							sliderLength,
+							4,
+							1.5f,
+							MAIN_COLOR
+					);
+					fontRenderer.drawString(
+							String.valueOf(integerSetting.getValue()),
+							pos.x + verticalLineXOffset + 5 + settingWidth + 1 + length + 1,
+							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+							-1
+					);
+
+					if (Mouse.isButtonDown(0)
+					&& mouseX > pos.x + verticalLineXOffset + 5 + settingWidth
+					&& mouseX < pos.x + verticalLineXOffset + 5 + settingWidth + length + 1
+					&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
+					&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
+						float mx = mouseX - (pos.x + verticalLineXOffset + 5 + settingWidth);
+						float p = mx / length;
+						float normalize = integerSetting.getMin() + (integerSetting.getMax() - integerSetting.getMin()) * p;
+						integerSetting.setValue(Math.round(normalize));
+					}
+				}
+				if (setting instanceof FloatSetting floatSetting) {
+					float filledFactor = floatSetting.normalize();
+					final float length = 75;
+					final float sliderLength = filledFactor * length;
+					RoundedUtils.drawRect(
+							pos.x + verticalLineXOffset + 5 + settingWidth + 1,
+							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							length,
+							4,
+							1.5f,
+							BACKGROUND_COLOR
+					);
+					RoundedUtils.drawRect(
+							pos.x + verticalLineXOffset + 5 + settingWidth + 1,
+							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							sliderLength,
+							4,
+							1.5f,
+							MAIN_COLOR
+					);
+					fontRenderer.drawString(
+							String.format("%.3f", floatSetting.getValue()),
+							pos.x + verticalLineXOffset + 5 + settingWidth + 1 + length + 1,
+							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+							-1
+					);
+
+					if (Mouse.isButtonDown(0)
+							&& mouseX > pos.x + verticalLineXOffset + 5 + settingWidth
+							&& mouseX < pos.x + verticalLineXOffset + 5 + settingWidth + length + 1
+							&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
+							&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
+						float mx = mouseX - (pos.x + verticalLineXOffset + 5 + settingWidth);
+						float p = mx / length;
+						float normalize = floatSetting.getMin() + (floatSetting.getMax() - floatSetting.getMin()) * p;
+						floatSetting.setValue(normalize);
+					}
+				}
+				offset += 11;
+			}
 		}
 
 		categoryLine.update(10f);
@@ -172,7 +268,7 @@ public class ClickGuiScreen extends GuiScreen {
 			if (mouseX > pos.x + 3
 			&& mouseX < pos.x + 3 + moduleWidth
 			&& mouseY > pos.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset
-			&& mouseY < pos.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 10) {
+			&& mouseY < pos.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 9) {
 				switch (mouseButton) {
 					case 0 -> module.toggle();
 					case 1 -> selectedModule = module;
@@ -200,12 +296,33 @@ public class ClickGuiScreen extends GuiScreen {
 		if (selectedModule != null) {
 			float moduleWidth = fontRenderer.getStringWidth(selectedModule.getName());
 
-            if (mouseX > pos.x + verticalLineXOffset + 5 + moduleWidth + 2
-			&& mouseX < pos.x + verticalLineXOffset + 5 + moduleWidth + 2 + fontRenderer.getStringWidth("Keybind: " + (binding ? "..." : Keyboard.getKeyName(selectedModule.getKey())))
-			&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 7.5f
-			&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 7.5f + 10) {
+            if (mouseX > pos.x + verticalLineXOffset + 5
+			&& mouseX < pos.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Keybind: " + (binding ? "..." : Keyboard.getKeyName(selectedModule.getKey())))
+			&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6
+			&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9) {
 				binding = true;
+			}
 
+			for (Setting setting : selectedModule.getSettings()) {
+				if (!setting.isVisible())
+					continue;
+
+				float settingWidth = fontRenderer.getStringWidth(setting.getName() + ": ");
+				fontRenderer.drawString(
+						setting.getName() + ": ",
+						pos.x + verticalLineXOffset + 5,
+						pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+						-1
+				);
+				if (setting instanceof BooleanSetting booleanSetting) {
+					if (mouseX > pos.x + verticalLineXOffset + 5 + settingWidth + 1
+					&& mouseX < pos.x + verticalLineXOffset + 5 + settingWidth + 1 + fontRenderer.getStringWidth(String.valueOf(booleanSetting.isToggled()))
+					&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset
+					&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10) {
+						booleanSetting.setToggled(!booleanSetting.isToggled());
+					}
+				}
+				offset += 11;
 			}
 		}
 
@@ -238,7 +355,7 @@ public class ClickGuiScreen extends GuiScreen {
 		Client.INSTANCE.getModuleManager().getModule(ClickGui.class).setToggled(false);
 	}
 
-	//	boolean binding;
+//	boolean binding;
 //
 //	Category selectedCategory = Category.COMBAT;
 //	Module selectedModule;
@@ -289,7 +406,7 @@ public class ClickGuiScreen extends GuiScreen {
 //                        (float) categoryLineAnimation.x,
 //                        (float) categoryLineAnimation.y,
 //						gavno,
-//						(float) categoryLineAnimation.y + 1,
+//						1,
 //						3f,
 //						new Color(0, 255, 209, 255)
 //				);

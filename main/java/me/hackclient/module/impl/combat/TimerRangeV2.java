@@ -3,14 +3,13 @@ package me.hackclient.module.impl.combat;
 import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.LegitClickTimingEvent;
-import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSettings;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
@@ -26,9 +25,10 @@ public class TimerRangeV2 extends Module {
 
     BooleanSetting limitTicks = new BooleanSetting("LimitTeleportTicks", this, true);
     IntegerSetting ticks = new IntegerSetting("Ticks", this, () -> limitTicks.isToggled(), 1,20,2);
-    FloatSettings startDistance = new FloatSettings("StartDistance", this, 3f, 6, 3.6f, 0.1f);
+    BooleanSetting testAutoDistance = new BooleanSetting("TestAutoDistance", this, false);
+    FloatSetting startDistance = new FloatSetting("StartDistance", this, () -> !testAutoDistance.isToggled(), 3f, 6, 3.6f, 0.1f);
 
-    FloatSettings renderPartialTicks = new FloatSettings("RenderPartialTicksAtFreeze", this, 0, 2, 1, 0.1f);
+    FloatSetting renderPartialTicks = new FloatSetting("RenderPartialTicksAtFreeze", this, 0, 2, 1, 0.1f);
 
     BooleanSetting onlyKillAura = new BooleanSetting("OnlyKillAura", this, true);
 
@@ -55,14 +55,27 @@ public class TimerRangeV2 extends Module {
             case NONE -> {
                 target = killAura.getTarget();
                 if (!onlyKillAura.isToggled() && target == null) {
-                    target = (EntityLivingBase) mc.theWorld.loadedEntityList.parallelStream()
-                            .filter(entity -> entity instanceof EntityLivingBase)
-                            .filter(entity -> !(entity instanceof EntityPlayerSP))
-                            .min(Comparator.comparing(RotationUtils::getFovToEntity))
-                            .orElse(null);
+                    if (mc.thePlayer != null && mc.theWorld != null) {
+                        target = (EntityLivingBase) mc.theWorld.loadedEntityList.parallelStream()
+                                .filter(entity -> entity instanceof EntityLivingBase)
+                                .filter(entity -> !(entity instanceof EntityPlayerSP))
+                                .filter(entity -> DistanceUtils.getDistanceToEntity(entity) < startDistance.getValue())
+                                .min(Comparator.comparing(RotationUtils::getFovToEntity))
+                                .orElse(null);
+                    }
                 }
                 if (target != null) {
-                    if (DistanceUtils.getDistanceToEntity(target) < startDistance.getValue()) {
+                    double distance;
+                    if (testAutoDistance.isToggled()) {
+                        double dx = Math.abs(mc.thePlayer.posX - mc.thePlayer.lastTickPosX);
+                        double dz = Math.abs(mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ);
+                        double bps = Math.hypot(dx, dz);
+                        distance = bps * ticks.getValue();
+                    } else {
+                        distance = startDistance.getValue();
+                    }
+
+                    if (DistanceUtils.getDistanceToEntity(target) <= distance) {
                         state = TimerState.TIMER;
                     }
                 }
@@ -71,12 +84,11 @@ public class TimerRangeV2 extends Module {
                 if (event instanceof RunGameLoopEvent) {
                     while (true) {
                         if (target != null
-                                && DistanceUtils.getDistanceToEntity(target) < startDistance.getValue()
-                                && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
-                                && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
-                            && (!limitTicks.isToggled() || balance < ticks.getValue())) {
+                        && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
+                        && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
+                        && (!limitTicks.isToggled() || balance < ticks.getValue())) {
                             try {
-                                mc.runTick();
+                                mc.runTick(false);
                                 balance++;
                             } catch (Exception ignored) {}
                         } else {

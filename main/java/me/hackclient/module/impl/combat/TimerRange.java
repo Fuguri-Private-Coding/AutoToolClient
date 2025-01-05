@@ -8,7 +8,7 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.FloatSettings;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.distance.DistanceUtils;
@@ -20,7 +20,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, toggled = true)
 public class TimerRange extends Module {
 
-    FloatSettings startDistance = new FloatSettings("StartDistance", this, 3f, 6, 3.8f, 0.1f);
+    FloatSetting startDistance = new FloatSetting("StartDistance", this, 3f, 6, 3.8f, 0.1f);
     IntegerSetting limitTicks = new IntegerSetting("LimitTick", this, 1,20,2);
     IntegerSetting disabledTicks = new IntegerSetting("FlagDelayTicks", this, 0, 20, 0);
 

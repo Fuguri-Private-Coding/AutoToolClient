@@ -10,6 +10,7 @@ import me.hackclient.guis.altManager.AltManagerGuiScreen;
 import me.hackclient.guis.clickGui.ClickGuiScreen;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleManager;
+import me.hackclient.module.impl.combat.killaura.click.ClickManager;
 import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
 import org.lwjgl.opengl.Display;
@@ -22,14 +23,16 @@ public enum Client implements CallableObject {
 
 	final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
 
-	ClickGuiScreen clickGui;
-
 	TimeScheduler timeScheduler;
 	FriendManager friendManager;
 	ModuleManager moduleManager;
 	ShaderManager shaderManager;
 	ObjectsCaller objectsCaller;
 	ConfigManager configManager;
+
+	ClickGuiScreen clickGui;
+
+	ClickManager clickManager;
 
 	public void init() {
 		callables.add(this);
@@ -42,6 +45,8 @@ public enum Client implements CallableObject {
 		configManager = new ConfigManager();
 
 		clickGui = new ClickGuiScreen();
+
+		clickManager = new ClickManager();
 		Display.setTitle(getFullName());
 	}
 

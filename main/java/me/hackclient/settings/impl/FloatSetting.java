@@ -6,11 +6,11 @@ import net.minecraft.util.MathHelper;
 
 import java.util.function.BooleanSupplier;
 
-public class FloatSettings extends Setting {
+public class FloatSetting extends Setting {
 
     private float min, max, value, step;
 
-    public FloatSettings(String name, Module parent, float min, float max, float value, float step) {
+    public FloatSetting(String name, Module parent, float min, float max, float value, float step) {
         super(name, parent);
         this.min = min;
         this.max = max;
@@ -18,7 +18,7 @@ public class FloatSettings extends Setting {
         this.step = step;
     }
 
-    public FloatSettings(String name, Module parent, BooleanSupplier visible, float min, float max, float value, float step) {
+    public FloatSetting(String name, Module parent, BooleanSupplier visible, float min, float max, float value, float step) {
         super(name, parent);
         this.min = min;
         this.max = max;

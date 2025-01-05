@@ -7,7 +7,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSettings;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.utils.rotation.RayCastUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +15,7 @@ import org.lwjgl.input.Mouse;
 
 @ModuleInfo(name = "MidClick", category = Category.MISC, toggled = true)
 public class MidClick extends Module {
-    FloatSettings range = new FloatSettings("Range", this, 3f, 1000f, 1000f, 1f);
+    FloatSetting range = new FloatSetting("Range", this, 3f, 1000f, 1000f, 1f);
     public BooleanSetting reverseFriends = new BooleanSetting("ReverseFriend", this, true);
     public BooleanSetting showInName = new BooleanSetting("ShowFriendPrefixInName", this, true);
 

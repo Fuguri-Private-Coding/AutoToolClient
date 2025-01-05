@@ -12,7 +12,7 @@ import me.hackclient.module.impl.combat.killaura.rotation.impl.IntaveRotation;
 import me.hackclient.module.impl.combat.killaura.target.TargetSelector;
 import me.hackclient.module.impl.visual.Animations;
 import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSettings;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.move.MoveUtils;
 import me.hackclient.utils.rotation.Rotation;
@@ -41,10 +41,10 @@ public class KillAura extends Module {
 	BooleanSetting moveFix = new BooleanSetting("SilentMoveFix", this, true);
 	BooleanSetting fakeAutoBlock = new BooleanSetting("FakeAutoBlock", this, true);
 
-	FloatSettings maxRange = new FloatSettings("MaxRange", this, 3f, 6f, 6f, 0.1f);
+	FloatSetting maxRange = new FloatSetting("MaxRange", this, 3f, 6f, 6f, 0.1f);
 	IntegerSetting reactionTime = new IntegerSetting("ReactionTime", this, 0, 5, 1);
-    FloatSettings speedYawRotation = new FloatSettings("MaxYawStep", this, 1f, 180f, 75f, 0.5f);
-	FloatSettings speedPitchRotation = new FloatSettings("MaxPitchStep", this, 1f, 180f, 45f, 0.5f);
+    FloatSetting speedYawRotation = new FloatSetting("MaxYawStep", this, 1f, 180f, 75f, 0.5f);
+	FloatSetting speedPitchRotation = new FloatSetting("MaxPitchStep", this, 1f, 180f, 45f, 0.5f);
 
 	public KillAura() {
 		clickManager = new ClickManager();

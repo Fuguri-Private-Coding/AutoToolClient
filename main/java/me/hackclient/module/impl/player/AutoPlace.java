@@ -6,7 +6,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSettings;
+import me.hackclient.settings.impl.FloatSetting;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Blocks;
@@ -25,7 +25,7 @@ public class AutoPlace extends Module {
     MovingObjectPosition movingObjectPosition = null;
     BlockPos blockPos = null;
 
-    FloatSettings frameDelay = new FloatSettings("FrameDelay", this, 0f, 10f, 0f, 1f);
+    FloatSetting frameDelay = new FloatSetting("FrameDelay", this, 0f, 10f, 0f, 1f);
     BooleanSetting needHoldRight = new BooleanSetting("HoldRight", this, true);
 
     @Override
