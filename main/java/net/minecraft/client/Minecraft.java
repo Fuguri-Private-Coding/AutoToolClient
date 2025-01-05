@@ -136,6 +136,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.client.C00PacketLoginStart;
 import net.minecraft.network.play.client.C16PacketClientStatus;
@@ -1011,11 +1012,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         for (int j = 0; j < this.timer.elapsedTicks; ++j)
         {
-            TickEvent tickEvent = new TickEvent();
-            Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
-            if (!tickEvent.isCanceled()) {
-                runTick();
-            }
+            runTick();
         }
 
         this.mcProfiler.endStartSection("preRenderErrors");
@@ -1150,7 +1147,13 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     public int getLimitFramerate()
     {
-        return /*this.theWorld == null && this.currentScreen != null ? 60 : */this.gameSettings.limitFramerate;
+        if (!Display.isActive()) {
+            return 5;
+        }
+        if (currentScreen != null) {
+            return 150;
+        }
+        return gameSettings.limitFramerate;
     }
 
     public boolean isFramerateLimitBelowMax()
@@ -1599,8 +1602,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     public void runTick() throws IOException
     {
-
-        Client.INSTANCE.getObjectsCaller().onEvent(new GameTickEvent());
+        TickEvent tickEvent = new TickEvent();
+        Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
+        if (tickEvent.isCanceled()) return;
 
         if (this.rightClickDelayTimer > 0)
         {

@@ -5,7 +5,12 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class Animation2D {
     public double x, y, endX, endY;
-    private final StopWatch stopWatch;
+    final StopWatch stopWatch;
+
+    public Animation2D() {
+        endX = endY = x = y = 0;
+        stopWatch = new StopWatch();
+    }
 
     public Animation2D(double x, double y, double endX, double endY) {
         this.x = x;

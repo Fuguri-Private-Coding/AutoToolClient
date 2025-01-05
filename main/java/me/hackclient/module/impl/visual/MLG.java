@@ -1,7 +1,7 @@
 package me.hackclient.module.impl.visual;
 
 import me.hackclient.event.Event;
-import me.hackclient.event.events.GameTickEvent;
+import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -26,7 +26,7 @@ public class MLG extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof GameTickEvent) {
+        if (event instanceof TickEvent) {
             try {
                 if (mc.entityRenderer.getShaderGroup() == null) mc.entityRenderer.loadShader(new ResourceLocation("minecraft", "shaders/post/motion_blur.json"));
 

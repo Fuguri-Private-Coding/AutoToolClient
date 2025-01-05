@@ -67,6 +67,9 @@ public class Ping extends Module {
 			Packet<?> packet = packetEvent.getPacket();
 			PackerDirection direction = packetEvent.getDirection();
 
+			if (mc.isSingleplayer())
+				return;
+
 			// Пропускает некоторые пакеты, также нужно для чего-то там
 			if (packet instanceof C00Handshake || packet instanceof C00PacketServerQuery
 					|| packet instanceof C01PacketPing || packet instanceof C01PacketChatMessage

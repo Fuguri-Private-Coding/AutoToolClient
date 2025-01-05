@@ -14,9 +14,13 @@ import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
 import org.lwjgl.opengl.Display;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 public enum Client implements CallableObject {
 	INSTANCE;
 
+	final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
 
 	ClickGuiScreen clickGui;
 
@@ -42,7 +46,7 @@ public enum Client implements CallableObject {
 	}
 
 	public String getName() {
-		return "AutoToolClient";
+		return "AutoTool";
 	}
 
 	public String getVersion() {
@@ -76,6 +80,10 @@ public enum Client implements CallableObject {
 
 	public ClickGuiScreen getClickGui() {
 		return clickGui;
+	}
+
+	public ScheduledExecutorService getExecutor() {
+		return executorService;
 	}
 
 	@Override

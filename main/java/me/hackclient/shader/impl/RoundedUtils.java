@@ -30,7 +30,7 @@ public class RoundedUtils implements InstanceAccess {
     }
 
     public static void drawRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {
-        draw(x, y, width - x, height - y, radius, color);
+        draw(x, y, width, height, radius, color);
     }
 
 }

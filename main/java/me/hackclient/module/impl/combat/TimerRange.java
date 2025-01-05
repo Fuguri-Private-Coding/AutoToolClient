@@ -17,8 +17,8 @@ import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
-@ModuleInfo(name = "TickBase", category = Category.COMBAT, toggled = true)
-public class TickBase extends Module {
+@ModuleInfo(name = "TimerRange", category = Category.COMBAT, toggled = true)
+public class TimerRange extends Module {
 
     FloatSettings startDistance = new FloatSettings("StartDistance", this, 3f, 6, 3.8f, 0.1f);
     IntegerSetting limitTicks = new IntegerSetting("LimitTick", this, 1,20,2);
@@ -60,9 +60,13 @@ public class TickBase extends Module {
             }
         }
 
-        if (event instanceof TickEvent tickEvent) {
+        if (balance > 0 && event instanceof TickEvent tickEvent) {
+            tickEvent.setCanceled(true);
+            balance--;
+            return;
+        }
+        if (event instanceof RunGameLoopEvent) {
             if (balance > 0) {
-                tickEvent.setCanceled(true);
                 balance--;
                 return;
             }
@@ -79,8 +83,7 @@ public class TickBase extends Module {
                         balance++;
                         if (balance >= limitTicks.getValue() || mc.thePlayer.moveForward == 0f)
                             break;
-                    } catch (Exception ignored) {
-                    }
+                    } catch (Exception ignored) {}
                 }
                 if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
                     killAura.clickManager.clicks++;

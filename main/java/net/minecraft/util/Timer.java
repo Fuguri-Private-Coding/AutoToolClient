@@ -56,7 +56,7 @@ public class Timer
         double d2 = (d0 - this.lastHRTime) * this.timeSyncAdjustment;
         this.lastHRTime = d0;
         d2 = MathHelper.clamp(d2, 0.0D, 1.0D);
-        this.elapsedPartialTicks = (float)((double)this.elapsedPartialTicks + d2 * (double)this.timerSpeed * (double)this.ticksPerSecond);
+        this.elapsedPartialTicks += (float) (d2 * timerSpeed * ticksPerSecond);
         this.elapsedTicks = (int)this.elapsedPartialTicks;
         this.elapsedPartialTicks -= (float)this.elapsedTicks;
 

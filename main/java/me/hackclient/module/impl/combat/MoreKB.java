@@ -71,18 +71,9 @@ public class MoreKB extends Module {
 
 		if (ticks > 0) {
 			switch (mode.getMode()) {
-				case "LegitFast": {
-					handleLegitFast(event);
-					break;
-				}
-				case "One": {
-					handleOne(event);
-					break;
-				}
-				case "Legit": {
-					handleLegit(event);
-					break;
-				}
+				case "LegitFast" -> handleLegitFast(event);
+				case "One" -> handleOne(event);
+				case "Legit" -> handleLegit(event);
 			}
 		}
 	}
