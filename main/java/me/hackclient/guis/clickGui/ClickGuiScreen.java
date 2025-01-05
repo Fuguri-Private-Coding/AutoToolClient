@@ -68,7 +68,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, 2, BACKGROUND_COLOR);
 		RoundedUtils.drawRect(pos.x + size.x - 5, pos.y + size.y - 5, 5, 5, 1, BACKGROUND_COLOR);
-		fontRenderer.drawString(Client.INSTANCE.getName(), pos.x + 2, pos.y + 2, MAIN_COLOR_INT);
+		fontRenderer.drawString(Client.INSTANCE.getName(), pos.x + 14, pos.y + 4, MAIN_COLOR_INT);
 
 		float widthestModule = 0;
 		for (Module module : Client.INSTANCE.getModuleManager().modules) {
@@ -78,14 +78,14 @@ public class ClickGuiScreen extends GuiScreen {
 				widthestModule = moduleWidth;
 			}
 		}
-		float verticalLineXOffset = max(clientNameWidth, widthestModule) + 5;
+		float verticalLineXOffset = max(clientNameWidth + 14, widthestModule) + 7;
 
 
 		for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selectedCategory))	{
 			fontRenderer.drawString(
 					module.getName(),
-					pos.x + 2,
-					pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset,
+					pos.x + 4,
+					pos.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset,
 					module.isToggled() ? MAIN_COLOR_INT : -1
 					);
 			offset += fontRenderer.FONT_HEIGHT + 2;
@@ -98,13 +98,13 @@ public class ClickGuiScreen extends GuiScreen {
 		for (Category category : Category.values()) {
 			if (category == selectedCategory) {
 				categoryLine.endX = pos.x + verticalLineXOffset + 5 + 5 + offset;
-				categoryLine.endY = pos.y + 2 + fontRenderer.FONT_HEIGHT + 2;
+				categoryLine.endY = pos.y + 3 + fontRenderer.FONT_HEIGHT;
 				RoundedUtils.drawRect((float) categoryLine.x, (float) categoryLine.y, fontRenderer.getStringWidth(selectedCategory.name), 1, 3, MAIN_COLOR);
 			}
 			fontRenderer.drawString(
 					category.name,
 					pos.x + verticalLineXOffset + 5 + 5 + offset,
-					pos.y + 2,
+					pos.y + 3,
 					-1
 			);
 			offset += fontRenderer.getStringWidth(category.name) + 5;
@@ -115,7 +115,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		offset = 0;
 		if (selectedModule != null) {
-			RoundedUtils.drawRect(pos.x + verticalLineXOffset - 3, (float) moduleLine.y - 12, 1, 9, 3, MAIN_COLOR);
+			RoundedUtils.drawRect(pos.x + 2, (float) moduleLine.y - 12, 1, 12, 3, MAIN_COLOR);
 			fontRenderer.drawString(
 					selectedModule.getName(),
 					pos.x + verticalLineXOffset + 5,
@@ -169,10 +169,10 @@ public class ClickGuiScreen extends GuiScreen {
 
 		for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selectedCategory))	{
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
-			if (mouseX > pos.x + 2
-			&& mouseX < pos.x + 2 + moduleWidth
-			&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset
-			&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 10) {
+			if (mouseX > pos.x + 3
+			&& mouseX < pos.x + 3 + moduleWidth
+			&& mouseY > pos.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset
+			&& mouseY < pos.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 10) {
 				switch (mouseButton) {
 					case 0 -> module.toggle();
 					case 1 -> selectedModule = module;
