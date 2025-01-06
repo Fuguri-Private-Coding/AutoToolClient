@@ -66,11 +66,6 @@ public class TimerRange extends Module {
             return;
         }
         if (event instanceof RunGameLoopEvent) {
-            if (balance > 0) {
-                balance--;
-                return;
-            }
-
             EntityLivingBase target = killAura.getTarget();
             if (target != null && mc.thePlayer.motionX != 0 && mc.thePlayer.motionZ != 0) {
                 double distance = DistanceUtils.getDistanceToEntity(target);
