@@ -46,8 +46,8 @@ public class MoreKB extends Module {
 		if (event instanceof RunGameLoopEvent && debug.isToggled()) {
 			if (delayTicks > 0) {
 				ClientUtils.chatLog("Delaying ticks " + delayTicks);
+				return;
 			}
-
 			if (ticks > 0) {
 				ClientUtils.chatLog("Resetting ticks " + ticks);
 			}
@@ -82,8 +82,6 @@ public class MoreKB extends Module {
 
 	private void handleLegit(Event event) {
 		if (event instanceof MoveButtonEvent e) {
-			SprintResetEvent event1 = new SprintResetEvent();
-			Client.INSTANCE.getObjectsCaller().onEvent(event1);
 			e.setForward(false);
 			ticks--;
 		}
@@ -91,8 +89,6 @@ public class MoreKB extends Module {
 
 	private void handleOne(Event event) {
 		if (event instanceof UpdateEvent) {
-			SprintResetEvent event1 = new SprintResetEvent();
-			Client.INSTANCE.getObjectsCaller().onEvent(event1);
 			mc.thePlayer.setSprinting(true);
 			if (serverSprintToggle.isToggled()) {
 				mc.thePlayer.setServerSprintState(true);
@@ -103,15 +99,10 @@ public class MoreKB extends Module {
 	}
 
 	private void handleLegitFast(Event event) {
-
 		if (event instanceof TickEvent) {
-			if (mc.thePlayer.isSprinting()) {
-				SprintResetEvent event1 = new SprintResetEvent();
-				Client.INSTANCE.getObjectsCaller().onEvent(event1);
-				mc.thePlayer.setSprinting(false);
-				mc.thePlayer.setServerSprintState(false);
-				ticks--;
-			}
+			mc.thePlayer.setSprinting(false);
+			mc.thePlayer.setServerSprintState(false);
+			ticks--;
 		}
 	}
 }

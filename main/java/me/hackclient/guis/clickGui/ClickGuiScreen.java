@@ -12,9 +12,11 @@ import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
+import me.hackclient.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
@@ -71,6 +73,9 @@ public class ClickGuiScreen extends GuiScreen {
 		final FontRenderer fontRenderer = mc.fontRendererObj;
 		final float clientNameWidth = fontRenderer.getStringWidth(Client.INSTANCE.getName());
 		float offset = 0;
+
+		ScissorUtils.enableScissor();
+		ScissorUtils.scissor(new ScaledResolution(mc), pos.x, pos.y, size.x, size.y);
 
 		RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, 2, BACKGROUND_COLOR);
 		RoundedUtils.drawRect(pos.x + size.x - 5, pos.y + size.y - 5, 5, 5, 1, BACKGROUND_COLOR);
@@ -256,6 +261,7 @@ public class ClickGuiScreen extends GuiScreen {
 				offset += 11;
 			}
 		}
+		ScissorUtils.disableScissor();
 
 		categoryLine.update(10f);
 		moduleLine.update(10f);

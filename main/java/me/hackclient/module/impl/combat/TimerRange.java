@@ -67,7 +67,7 @@ public class TimerRange extends Module {
         }
         if (event instanceof RunGameLoopEvent) {
             EntityLivingBase target = killAura.getTarget();
-            if (target != null && mc.thePlayer.motionX != 0 && mc.thePlayer.motionZ != 0) {
+            if (target != null && mc.thePlayer.getBps(false) > 0) {
                 double distance = DistanceUtils.getDistanceToEntity(target);
                 while (distance < startDistance.getValue()
                         && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target

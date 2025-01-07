@@ -15,9 +15,11 @@ import me.hackclient.event.events.EntityKilledEvent;
 import me.hackclient.event.events.JumpEvent;
 import me.hackclient.event.events.UpdateBodyRotationEvent;
 import me.hackclient.module.impl.move.NoJumpDelay;
+import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -58,7 +60,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public abstract class EntityLivingBase extends Entity
+public abstract class EntityLivingBase extends Entity implements InstanceAccess
 {
     private static final UUID sprintingSpeedBoostModifierUUID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
     private static final AttributeModifier sprintingSpeedBoostModifier = (new AttributeModifier(sprintingSpeedBoostModifierUUID, "Sprinting speed boost", 0.30000001192092896D, 2)).setSaved(false);
@@ -96,8 +98,8 @@ public abstract class EntityLivingBase extends Entity
     protected int entityAge;
     protected float prevOnGroundSpeedFactor;
     protected float onGroundSpeedFactor;
-    protected float movedDistance;
-    protected float prevMovedDistance;
+    public float movedDistance;
+    public float prevMovedDistance;
     protected float unused180;
     protected int scoreValue;
     protected float lastDamage;
@@ -1605,7 +1607,7 @@ public abstract class EntityLivingBase extends Entity
         if (f > 0.0025000002F)
         {
             f3 = 1.0F;
-            f2 = (float)Math.sqrt((double)f) * 3.0F;
+            f2 = (float)Math.sqrt(f) * 3.0F;
             f1 = (float)MathHelper.atan2(d1, d0) * 180.0F / (float)Math.PI - 90.0F;
         }
 
@@ -1678,7 +1680,6 @@ public abstract class EntityLivingBase extends Entity
             Client.INSTANCE.getObjectsCaller().onEvent(event);
             yaw = event.getYaw();
         }
-
 
         float f = MathHelper.wrapDegree(p_110146_1_ - this.renderYawOffset);
         this.renderYawOffset += f * 0.3F;
@@ -1813,6 +1814,13 @@ public abstract class EntityLivingBase extends Entity
     {
     }
 
+    public double getBps(boolean includeY) {
+        double dx = posX - lastTickPosX;
+        double dy = includeY ? posY - lastTickPosY : 0;
+        double dz = posZ - lastTickPosZ;
+        return Math.sqrt(dx * dx + dy * dy + dz * dz) * mc.timer.ticksPerSecond * mc.timer.timerSpeed;
+    }
+
     protected void collideWithNearbyEntities()
     {
         List<Entity> list = this.worldObj.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().expand(0.20000000298023224D, 0.0D, 0.20000000298023224D), Predicates.<Entity> and (EntitySelectors.NOT_SPECTATING, new Predicate<Entity>()
@@ -1825,9 +1833,7 @@ public abstract class EntityLivingBase extends Entity
 
         if (!list.isEmpty())
         {
-            for (int i = 0; i < list.size(); ++i)
-            {
-                Entity entity = (Entity)list.get(i);
+            for (Entity entity : list) {
                 this.collideWithEntity(entity);
             }
         }

@@ -30,20 +30,21 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-@ModuleInfo(name = "Ping", category = Category.CONNECTION, toggled = true)
+@ModuleInfo(name = "Ping", category = Category.CONNECTION)
 public class Ping extends Module {
 
 	IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 500);
 	IntegerSetting attackDelay = new IntegerSetting("AttackConditionTime", this, 0, 20, 10);
 	IntegerSetting flagDelay = new IntegerSetting("FlagConditionTime", this, 0, 20, 10);
-	IntegerSetting sprintResetDelay = new IntegerSetting("SprintResetTime", this, 0, 10, 1);
 	BooleanSetting damageFlush = new BooleanSetting("DamageFlush", this, true);
 	BooleanSetting guiFlush = new BooleanSetting("GuiFlush", this, true);
 	BooleanSetting itemFlush = new BooleanSetting("ItemFlush", this, true);
 	IntegerSetting blockPlacementDelay = new IntegerSetting("BlockPlacementConditionTime", this, 0, 20, 10);
 
 	// Таймер для задержки после ресета, помогает обходить античиты
+	long lastMS;
 	private int stoppingTime;
+	final List<Long> resets;
 	private final LinkedHashMap<Packet<?>, Long> packetBuffer;
 	private final List<Doubles<Vec3, Long>> posBuffer;
 
@@ -53,6 +54,7 @@ public class Ping extends Module {
 	}
 
 	public Ping() {
+		resets = new ArrayList<>();
 		packetBuffer = new LinkedHashMap<>();
 		posBuffer = new ArrayList<>();
 		stoppingTime = 0;
@@ -61,9 +63,6 @@ public class Ping extends Module {
 	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
-		if (event instanceof SprintResetEvent) {
-			stoppingTime = sprintResetDelay.getValue();
-		}
 		if (event instanceof PacketEvent packetEvent) {
 			Packet<?> packet = packetEvent.getPacket();
 			PackerDirection direction = packetEvent.getDirection();
