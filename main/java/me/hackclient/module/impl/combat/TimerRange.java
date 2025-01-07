@@ -60,19 +60,18 @@ public class TimerRange extends Module {
             }
         }
 
-        if (balance > 0 && event instanceof TickEvent tickEvent) {
-            tickEvent.setCanceled(true);
-            balance--;
-            return;
-        }
-        if (event instanceof RunGameLoopEvent) {
+        if (event instanceof TickEvent tickEvent) {
+            if (balance > 0) {
+                tickEvent.setCanceled(true);
+                balance--;
+                return;
+            }
             EntityLivingBase target = killAura.getTarget();
             if (target != null && mc.thePlayer.getBps(false) > 0) {
                 double distance = DistanceUtils.getDistanceToEntity(target);
                 while (distance < startDistance.getValue()
                         && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
-                        && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
-                        && mc.thePlayer.hurtTime == 0) {
+                        && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
                     try {
                         mc.runTick();
                         balance++;

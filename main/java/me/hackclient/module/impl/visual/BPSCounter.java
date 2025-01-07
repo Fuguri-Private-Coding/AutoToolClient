@@ -24,7 +24,7 @@ public class BPSCounter extends Module {
             x.setMax(sc.getScaledWidth());
             y.setMax(sc.getScaledHeight());
             mc.fontRendererObj.drawString(
-                String.valueOf(mc.thePlayer.getBps(includeY.isToggled())),
+                String.format("%.3f", mc.thePlayer.getBps(includeY.isToggled())),
                 x.getValue(),
                 y.getValue(),
                 -1

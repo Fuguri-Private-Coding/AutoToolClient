@@ -56,6 +56,7 @@ public class ModuleManager {
 				 new FlyTimer(),
 				 new MLG(),
 				 new TimerRangeV2(),
+				 new TimeChanger(),
 				 //new KillEvents(),
 				 new NameTags(),
 				 new NoRender(),
