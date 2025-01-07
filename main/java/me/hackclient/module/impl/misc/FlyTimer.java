@@ -4,6 +4,7 @@ import me.hackclient.event.Event;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
+import me.hackclient.event.events.WorldChangeEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -32,6 +33,10 @@ public class FlyTimer extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (event instanceof WorldChangeEvent) {
+            canUse = true;
+            leftTime = 0;
+        }
         if (event instanceof PacketEvent packetEvent) {
             Packet packet = packetEvent.getPacket();
             if (packet instanceof S02PacketChat s02 && s02.getType() != 2) {

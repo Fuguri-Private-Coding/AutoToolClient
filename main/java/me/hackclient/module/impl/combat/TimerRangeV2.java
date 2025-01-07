@@ -16,15 +16,15 @@ import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
 
-import java.io.IOException;
 import java.util.Comparator;
-import java.util.Timer;
 
 @ModuleInfo(name = "TimerRangeV2", category = Category.COMBAT)
 public class TimerRangeV2 extends Module {
 
     BooleanSetting limitTicks = new BooleanSetting("LimitTeleportTicks", this, true);
     IntegerSetting ticks = new IntegerSetting("Ticks", this, () -> limitTicks.isToggled(), 1,20,2);
+    IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 2);
+    IntegerSetting maxPlayerHurtTime = new IntegerSetting("MaxPlayerHurtTime", this, 0, 10, 0);
     BooleanSetting testAutoDistance = new BooleanSetting("TestAutoDistance", this, false);
     FloatSetting startDistance = new FloatSetting("StartDistance", this, () -> !testAutoDistance.isToggled(), 3f, 6, 3.6f, 0.1f);
 
@@ -72,16 +72,15 @@ public class TimerRangeV2 extends Module {
                 if (event instanceof RunGameLoopEvent) {
                     try {
                         while (target != null
-                                && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
-                                && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
+                        && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
+                        && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
+                        && target.hurtTime <= maxTargetHurtTime.getValue()
+                        && mc.thePlayer.hurtTime <= maxPlayerHurtTime.getValue()
+                        && notReachedTicks(balance)) {
                             mc.runTick();
                             balance++;
-                            if (!notReachedTicks(balance))
-                                break;
                         }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    } catch (Exception e) { throw new RuntimeException(e); }
                     if (balance > 0) {
                         state = TimerState.FREEZE;
                         click = true;

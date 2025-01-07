@@ -4,6 +4,9 @@ import com.google.common.collect.Sets;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Callable;
+
+import me.hackclient.Client;
+import me.hackclient.event.events.WorldChangeEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -53,6 +56,7 @@ public class WorldClient extends World
     public WorldClient(NetHandlerPlayClient netHandler, WorldSettings settings, int dimension, EnumDifficulty difficulty, Profiler profilerIn)
     {
         super(new SaveHandlerMP(), new WorldInfo(settings, "MpServer"), WorldProvider.getProviderForDimension(dimension), profilerIn, true);
+        Client.INSTANCE.getObjectsCaller().onEvent(new WorldChangeEvent());
         this.sendQueue = netHandler;
         this.getWorldInfo().setDifficulty(difficulty);
         this.provider.registerWorld(this);

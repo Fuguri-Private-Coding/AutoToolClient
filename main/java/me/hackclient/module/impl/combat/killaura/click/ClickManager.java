@@ -8,6 +8,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import org.apache.commons.lang3.RandomUtils;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class ClickManager implements InstanceAccess {
 
 	final StopWatch timer, hitSelectTimer;

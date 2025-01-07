@@ -6,6 +6,7 @@ import me.hackclient.event.events.MoveFlyingEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import org.lwjgl.input.Keyboard;
@@ -23,7 +24,16 @@ public class Speed extends Module {
 			}
 	);
 
+	BooleanSetting resetMotion = new BooleanSetting("ResetMotionOnDisable", this, true);
 	FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 0.1f, 2f, 1.7f, 0.1f);
+
+	@Override
+	public void onDisable() {
+		super.onDisable();
+		if (resetMotion.isToggled()) {
+			mc.thePlayer.stopMotion();
+		}
+	}
 
 	@Override
 	public void onEvent(Event event) {

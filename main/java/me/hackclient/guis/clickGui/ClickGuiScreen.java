@@ -1,6 +1,7 @@
 package me.hackclient.guis.clickGui;
 
 import me.hackclient.Client;
+import me.hackclient.event.events.PacketEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.impl.visual.ClickGui;
@@ -8,6 +9,7 @@ import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import net.minecraft.client.Minecraft;
@@ -138,6 +140,35 @@ public class ClickGuiScreen extends GuiScreen {
 						pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
 						-1
 				);
+				if (setting instanceof ModeSetting modeSetting) {
+					float xOffset = 0;
+					float yOffset = 0;
+					for (String mode : modeSetting.getModes()) {
+						int length = modeSetting.getModes().length;
+						boolean isSelected = mode.equals(modeSetting.getMode());
+						boolean notLast = !mode.equals(modeSetting.getModes()[length - 1]);
+						if (pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= pos.x + size.x) {
+							xOffset = 0;
+							yOffset += 11;
+						}
+						fontRenderer.drawString(
+								mode,
+								pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset,
+								pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
+								isSelected ? MAIN_COLOR_INT : -1
+						);
+						if (notLast) {
+							fontRenderer.drawString(
+									",",
+									pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode),
+									pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
+									-1
+							);
+						}
+						xOffset += fontRenderer.getStringWidth(mode) + 5;
+					}
+					offset += yOffset;
+				}
 				if (setting instanceof BooleanSetting booleanSetting) {
 					fontRenderer.drawString(
 							String.valueOf(booleanSetting.isToggled()),
@@ -288,6 +319,9 @@ public class ClickGuiScreen extends GuiScreen {
 			&& mouseY > pos.y + 2
 			&& mouseY < pos.y + 2 + fontRenderer.FONT_HEIGHT) {
 				selectedCategory = category;
+				selectedModule = null;
+				moduleLine.x = 0;
+				moduleLine.y = 0;
 			}
 			offset += fontRenderer.getStringWidth(category.name) + 5;
 		}
@@ -314,6 +348,41 @@ public class ClickGuiScreen extends GuiScreen {
 						pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
 						-1
 				);
+				if (setting instanceof ModeSetting modeSetting) {
+					float xOffset = 0;
+					float yOffset = 0;
+					for (String mode : modeSetting.getModes()) {
+//						int length = modeSetting.getModes().length;
+//						boolean isSelected = mode.equals(modeSetting.getMode());
+//						boolean notLast = !mode.equals(modeSetting.getModes()[length - 1]);
+						if (pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= pos.x + size.x) {
+							xOffset = 0;
+							yOffset += 11;
+						}
+						if (mouseX > pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset
+						&& mouseX < pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode)
+						&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset
+						&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset + 10) {
+							modeSetting.setMode(mode);
+						}
+//						fontRenderer.drawString(
+//								mode,
+//								pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset,
+//								pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
+//								isSelected ? MAIN_COLOR_INT : -1
+//						);
+//						if (notLast) {
+//							fontRenderer.drawString(
+//									",",
+//									pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode),
+//									pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
+//									-1
+//							);
+//						}
+						xOffset += fontRenderer.getStringWidth(mode) + 5;
+					}
+					offset += yOffset;
+				}
 				if (setting instanceof BooleanSetting booleanSetting) {
 					if (mouseX > pos.x + verticalLineXOffset + 5 + settingWidth + 1
 					&& mouseX < pos.x + verticalLineXOffset + 5 + settingWidth + 1 + fontRenderer.getStringWidth(String.valueOf(booleanSetting.isToggled()))

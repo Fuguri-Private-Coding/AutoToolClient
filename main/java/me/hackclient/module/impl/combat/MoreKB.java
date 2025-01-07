@@ -6,6 +6,8 @@ import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.module.impl.connection.Ping;
+import me.hackclient.module.impl.move.Sprint;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
@@ -80,6 +82,8 @@ public class MoreKB extends Module {
 
 	private void handleLegit(Event event) {
 		if (event instanceof MoveButtonEvent e) {
+			SprintResetEvent event1 = new SprintResetEvent();
+			Client.INSTANCE.getObjectsCaller().onEvent(event1);
 			e.setForward(false);
 			ticks--;
 		}
@@ -87,6 +91,8 @@ public class MoreKB extends Module {
 
 	private void handleOne(Event event) {
 		if (event instanceof UpdateEvent) {
+			SprintResetEvent event1 = new SprintResetEvent();
+			Client.INSTANCE.getObjectsCaller().onEvent(event1);
 			mc.thePlayer.setSprinting(true);
 			if (serverSprintToggle.isToggled()) {
 				mc.thePlayer.setServerSprintState(true);
@@ -97,8 +103,11 @@ public class MoreKB extends Module {
 	}
 
 	private void handleLegitFast(Event event) {
+
 		if (event instanceof TickEvent) {
 			if (mc.thePlayer.isSprinting()) {
+				SprintResetEvent event1 = new SprintResetEvent();
+				Client.INSTANCE.getObjectsCaller().onEvent(event1);
 				mc.thePlayer.setSprinting(false);
 				mc.thePlayer.setServerSprintState(false);
 				ticks--;

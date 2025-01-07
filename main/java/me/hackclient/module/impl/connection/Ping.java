@@ -2,10 +2,7 @@ package me.hackclient.module.impl.connection;
 
 import me.hackclient.event.PackerDirection;
 import me.hackclient.event.Event;
-import me.hackclient.event.events.PacketEvent;
-import me.hackclient.event.events.Render3DEvent;
-import me.hackclient.event.events.RunGameLoopEvent;
-import me.hackclient.event.events.TickEvent;
+import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -39,6 +36,7 @@ public class Ping extends Module {
 	IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 500);
 	IntegerSetting attackDelay = new IntegerSetting("AttackConditionTime", this, 0, 20, 10);
 	IntegerSetting flagDelay = new IntegerSetting("FlagConditionTime", this, 0, 20, 10);
+	IntegerSetting sprintResetDelay = new IntegerSetting("SprintResetTime", this, 0, 10, 1);
 	BooleanSetting damageFlush = new BooleanSetting("DamageFlush", this, true);
 	BooleanSetting guiFlush = new BooleanSetting("GuiFlush", this, true);
 	BooleanSetting itemFlush = new BooleanSetting("ItemFlush", this, true);
@@ -63,6 +61,9 @@ public class Ping extends Module {
 	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
+		if (event instanceof SprintResetEvent) {
+			stoppingTime = sprintResetDelay.getValue();
+		}
 		if (event instanceof PacketEvent packetEvent) {
 			Packet<?> packet = packetEvent.getPacket();
 			PackerDirection direction = packetEvent.getDirection();
@@ -146,7 +147,7 @@ public class Ping extends Module {
 		posBuffer.removeIf(doubles -> System.currentTimeMillis() >= doubles.getSecond() + delay.getValue());
 	}
 
-	private void resetPackets() {
+	public void resetPackets() {
 		mc.addScheduledTask(() -> {
 			packetBuffer.forEach( (packet, aLong) -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet) );
 			packetBuffer.clear();
