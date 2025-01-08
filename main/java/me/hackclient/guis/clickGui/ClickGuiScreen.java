@@ -89,15 +89,15 @@ public class ClickGuiScreen extends GuiScreen {
 		RoundedUtils.drawRect(pos.x + size.x - 5, pos.y + size.y - 5, 5, 5, 1, BACKGROUND_COLOR);
 		fontRenderer.drawString(Client.INSTANCE.getName(), pos.x + 14, pos.y + 4, MAIN_COLOR_INT);
 
-		float widthestModule = 0;
+		float widthsModule = 0;
 		for (Module module : Client.INSTANCE.getModuleManager().modules) {
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
 
-			if (moduleWidth > widthestModule) {
-				widthestModule = moduleWidth;
+			if (moduleWidth > widthsModule) {
+				widthsModule = moduleWidth;
 			}
 		}
-		float verticalLineXOffset = max(clientNameWidth + 14, widthestModule) + 7;
+		float verticalLineXOffset = max(clientNameWidth + 14, widthsModule) + 7;
 
 		for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selectedCategory))	{
 			fontRenderer.drawString(
@@ -135,7 +135,7 @@ public class ClickGuiScreen extends GuiScreen {
 		if (selectedModule != null) {
 			RoundedUtils.drawRect(pos.x + 2, (float) moduleLine.y - 12, 1, 12, 3, MAIN_COLOR);
 			fontRenderer.drawString(
-					"Keybind: " + (binding ? "..." : Keyboard.getKeyName(selectedModule.getKey())),
+					"Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())),
 					pos.x + verticalLineXOffset + 5,
 					pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6,
 					-1
@@ -277,6 +277,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		if (mouseX > pos.x + size.x || mouseY > pos.y + size.y) return;
 		final FontRenderer fontRenderer = mc.fontRendererObj;
 		final float clientNameWidth = fontRenderer.getStringWidth(Client.INSTANCE.getName());
 		float offset = 0;
@@ -289,15 +290,15 @@ public class ClickGuiScreen extends GuiScreen {
 			lastMouse.set(mouseX, mouseY);
 		}
 
-		float widthestModule = 0;
+		float widthsModule = 0;
 		for (Module module : Client.INSTANCE.getModuleManager().modules) {
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
 
-			if (moduleWidth > widthestModule) {
-				widthestModule = moduleWidth;
+			if (moduleWidth > widthsModule) {
+				widthsModule = moduleWidth;
 			}
 		}
-		float verticalLineXOffset = max(clientNameWidth, widthestModule) + 5;
+		float verticalLineXOffset = max(clientNameWidth, widthsModule) + 5;
 
 		if (mouseX > pos.x
 				&& mouseX < pos.x + verticalLineXOffset
@@ -341,10 +342,8 @@ public class ClickGuiScreen extends GuiScreen {
 
 		offset = 0;
 		if (selectedModule != null) {
-			float moduleWidth = fontRenderer.getStringWidth(selectedModule.getName());
-
             if (mouseX > pos.x + verticalLineXOffset + 5
-			&& mouseX < pos.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Keybind: " + (binding ? "..." : Keyboard.getKeyName(selectedModule.getKey())))
+			&& mouseX < pos.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())))
 			&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6
 			&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9) {
 				binding = true;

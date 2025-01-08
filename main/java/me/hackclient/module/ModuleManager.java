@@ -57,6 +57,7 @@ public class ModuleManager {
 				 new MLG(),
 				 new TimerRangeV2(),
 				 new TimeChanger(),
+				 new Test(),
 				 //new KillEvents(),
 				 new NameTags(),
 				 new NoRender(),
