@@ -4,6 +4,8 @@ public interface IClickingCFG {
 	boolean clickFix();
 	boolean mineBlazeKbFix();
 	int minPlayerHurtTime();
+	int minRandomizeDelay();
+	int maxRandomizeDelay();
 
 	int minCps();
 	int maxCps();

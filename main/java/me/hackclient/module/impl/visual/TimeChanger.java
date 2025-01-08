@@ -13,7 +13,7 @@ import net.minecraft.network.play.server.S03PacketTimeUpdate;
 public class TimeChanger extends Module {
 
     IntegerSetting time = new IntegerSetting("Time", this, 1, 20, 20);
- 
+
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);

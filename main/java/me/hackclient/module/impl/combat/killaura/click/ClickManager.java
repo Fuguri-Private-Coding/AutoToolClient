@@ -14,6 +14,8 @@ public class ClickManager implements InstanceAccess {
 
 	final StopWatch timer, hitSelectTimer;
 	int nextDelay;
+
+	int hitSelectDelay = 500;
 	public int clicks;
 
 	public int hurtTime;
@@ -29,13 +31,13 @@ public class ClickManager implements InstanceAccess {
 		}
 
 		for (int i = 0; i < clicks; i++) {
-			if (hitSelectTimer.reachedMS() >= 500) {
+			if (hitSelectTimer.reachedMS() >= hitSelectDelay || mc.thePlayer.hurtTime > (cfg.mineBlazeKbFix() ? cfg.minPlayerHurtTime() : 0) ) {
 				mouseClick(cfg.minCps(), cfg.maxCps(), target);
-				if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
+				if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
+						&& hitSelectTimer.reachedMS() >= hitSelectDelay) {
 					hitSelectTimer.reset();
+					hitSelectDelay = 500 + RandomUtils.nextInt(cfg.minRandomizeDelay(), cfg.maxRandomizeDelay());
 				}
-			} else if (mc.thePlayer.hurtTime > (cfg.mineBlazeKbFix() ? cfg.minPlayerHurtTime() : 0)) {
-				mouseClick(cfg.minCps(), cfg.maxCps(), target);
 			}
 		}
 
@@ -57,7 +59,6 @@ public class ClickManager implements InstanceAccess {
 		if (timer.reachedMS() >= nextDelay) {
 			clicks++;
 			timer.reset();
-			nextDelay = 1000 / 18;
 		}
 	}
 }

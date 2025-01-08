@@ -38,6 +38,9 @@ public class KillAura extends Module {
 	BooleanSetting clickFix = new BooleanSetting("ClickFix", this, true);
 	BooleanSetting mineBlazeFix = new BooleanSetting("MineBlazeFix", this, true);
 	IntegerSetting minPlayerHurtTime = new IntegerSetting("MinPlayerHurtTime", this, () -> mineBlazeFix.isToggled(), 0, 9, 7);
+	IntegerSetting minRandomizeDelay = new IntegerSetting("MinRandomizeDelay", this, () -> mineBlazeFix.isToggled(), 0, 200, 0);
+	IntegerSetting maxRandomizeDelay = new IntegerSetting("MaxRandomizeDelay", this, () -> mineBlazeFix.isToggled(), 0, 200, 50);
+
 	BooleanSetting moveFix = new BooleanSetting("SilentMoveFix", this, true);
 	BooleanSetting fakeAutoBlock = new BooleanSetting("FakeAutoBlock", this, true);
 
@@ -139,6 +142,16 @@ public class KillAura extends Module {
 					@Override
 					public int maxCps() {
 						return maxCps.getValue();
+					}
+
+					@Override
+					public int minRandomizeDelay() {
+						return minRandomizeDelay.getValue();
+					}
+
+					@Override
+					public int maxRandomizeDelay() {
+						return maxRandomizeDelay.getValue();
 					}
 				});
 			}
