@@ -55,6 +55,7 @@ public class Handler extends Module {
 				event1.setYaw(Rotation.getServerRotation().getYaw());
 				event1.setPitch(Rotation.getServerRotation().getPitch());
 			}
+
 			if (event instanceof UpdateBodyRotationEvent UpdateBodyRotationEvent) {
 				UpdateBodyRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
 			}

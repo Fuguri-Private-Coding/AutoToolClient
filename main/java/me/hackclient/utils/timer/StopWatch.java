@@ -1,8 +1,7 @@
 package me.hackclient.utils.timer;
 
 public class StopWatch {
-	private long lastMS;
-	private long lastNS;
+	long lastMS, lastNS;
 
 	public StopWatch() {
 		reset();
@@ -14,6 +13,14 @@ public class StopWatch {
 
 	public long reachedNS() {
 		return System.nanoTime() - lastNS;
+	}
+
+	public boolean reachedMS(long time) {
+		return reachedMS() >= time;
+	}
+
+	public boolean reachedNS(long time) {
+		return reachedNS() >= time;
 	}
 
 	public void reset() {

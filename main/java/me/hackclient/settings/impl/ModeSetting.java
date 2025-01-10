@@ -1,5 +1,7 @@
 package me.hackclient.settings.impl;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.hackclient.module.Module;
 import me.hackclient.settings.Setting;
 
@@ -7,8 +9,8 @@ import java.util.function.BooleanSupplier;
 
 public class ModeSetting extends Setting {
 
-    private String mode;
-    private final String[] modes;
+    @Getter @Setter String mode;
+    @Getter final String[] modes;
 
     public ModeSetting(String name, Module parent, String mode, String[] modes) {
         super(name, parent);
@@ -21,17 +23,5 @@ public class ModeSetting extends Setting {
         this.mode = mode;
         this.modes = modes;
         this.setVisible(visible);
-    }
-
-    public String getMode() {
-        return mode;
-    }
-
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
-
-    public String[] getModes() {
-        return modes;
     }
 }

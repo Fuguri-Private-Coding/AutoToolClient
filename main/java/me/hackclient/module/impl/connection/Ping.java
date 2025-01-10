@@ -42,11 +42,9 @@ public class Ping extends Module {
 	IntegerSetting blockPlacementDelay = new IntegerSetting("BlockPlacementConditionTime", this, 0, 20, 10);
 
 	// Таймер для задержки после ресета, помогает обходить античиты
-	long lastMS;
-	private int stoppingTime;
-	final List<Long> resets;
-	private final LinkedHashMap<Packet<?>, Long> packetBuffer;
-	private final List<Doubles<Vec3, Long>> posBuffer;
+	int stoppingTime;
+	final List<Doubles<Packet, Long>> packetBuffer;
+	final List<Doubles<Vec3, Long>> posBuffer;
 
 	@Override
 	public void onDisable() {
@@ -54,8 +52,7 @@ public class Ping extends Module {
 	}
 
 	public Ping() {
-		resets = new ArrayList<>();
-		packetBuffer = new LinkedHashMap<>();
+		packetBuffer = new ArrayList<>();
 		posBuffer = new ArrayList<>();
 		stoppingTime = 0;
 	}
@@ -108,7 +105,7 @@ public class Ping extends Module {
 				resetPackets();
 			} else if (direction == PackerDirection.OUTGOING) {
 				packetEvent.setCanceled(true);
-				packetBuffer.put(packet, System.currentTimeMillis());
+				packetBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
 				if (packet instanceof C03PacketPlayer c03 && c03.isMoving()) {
 					posBuffer.add(new Doubles<>(c03.getPosVec(), System.currentTimeMillis()));
 				}
@@ -136,21 +133,20 @@ public class Ping extends Module {
 		if (packetBuffer.isEmpty())
 			return;
 
-		mc.addScheduledTask(() -> packetBuffer.forEach( (packet, aLong) -> {
-            if (System.currentTimeMillis() - aLong >= delay.getValue()) {
-                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet);
-                packetBuffer.remove(packet);
-            }
-        }));
+		packetBuffer.removeIf( pair -> {
+			if (System.currentTimeMillis() - pair.getSecond() >= delay.getValue()) {
+				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(pair.getFirst());
+				return true;
+			}
+			return false;
+		});
 
 		posBuffer.removeIf(doubles -> System.currentTimeMillis() >= doubles.getSecond() + delay.getValue());
 	}
 
 	public void resetPackets() {
-		mc.addScheduledTask(() -> {
-			packetBuffer.forEach( (packet, aLong) -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet) );
-			packetBuffer.clear();
-			posBuffer.clear();
-		});
+		packetBuffer.forEach( pair -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(pair.getFirst()) );
+		packetBuffer.clear();
+		posBuffer.clear();
 	}
 }

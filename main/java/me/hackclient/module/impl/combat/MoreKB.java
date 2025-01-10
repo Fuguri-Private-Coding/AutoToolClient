@@ -48,9 +48,7 @@ public class MoreKB extends Module {
 				ClientUtils.chatLog("Delaying ticks " + delayTicks);
 				return;
 			}
-			if (ticks > 0) {
-				ClientUtils.chatLog("Resetting ticks " + ticks);
-			}
+			if (ticks > 0) ClientUtils.chatLog("Resetting ticks " + ticks);
 		}
 
 		if (killAura == null) {
@@ -59,7 +57,7 @@ public class MoreKB extends Module {
 			delayTicks = 0;
 		}
 
-		if (killAura.getTarget() != null && killAura.getTarget().hurtTime == 10 && ticks == 0 && event instanceof TickEvent) {
+		if (killAura.getTarget() != null && killAura.getTarget().hurtTime == 10 && ticks == 0 && mc.thePlayer.getBps(false) > 0 && event instanceof TickEvent) {
 			delayTicks = RandomUtils.nextInt(MinDelayTicks.getValue(), MaxDelayTicks.getValue());
 			ticks = RandomUtils.nextInt(MinResetTicks.getValue(), MaxResetTicks.getValue());
 		}

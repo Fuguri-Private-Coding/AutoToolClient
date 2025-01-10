@@ -1,5 +1,6 @@
 package me.hackclient.module.impl.combat;
 
+import lombok.Getter;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
@@ -26,6 +27,7 @@ import java.util.List;
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, key = Keyboard.KEY_R)
 public class KillAura extends Module {
 
+    @Getter
     EntityLivingBase target;
 
 	final List<Rotation> rotations;
@@ -65,11 +67,7 @@ public class KillAura extends Module {
 		Animations.setAnimate(false);
 	}
 
-	public EntityLivingBase getTarget() {
-		return target;
-	}
-
-	@Override
+    @Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
 		if (event instanceof TickEvent) {

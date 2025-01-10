@@ -1,5 +1,7 @@
 package me.hackclient.module;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.hackclient.event.ConditionCallableObject;
 import me.hackclient.event.Event;
 import me.hackclient.settings.Setting;
@@ -12,13 +14,11 @@ public class Module implements InstanceAccess, ConditionCallableObject {
 
 	private final ModuleInfo annotation = getClass().getAnnotation(ModuleInfo.class);
 
-	private final String name = annotation.name();
-	private final Category category = annotation.category();
-
-	private int key = annotation.key();
-	private boolean toggled = annotation.toggled();
-
-	private final List<Setting> settings;
+	@Getter final String name = annotation.name();
+	@Getter final Category category = annotation.category();
+	@Setter @Getter int key = annotation.key();
+	@Getter boolean toggled = annotation.toggled();
+	@Getter private final List<Setting> settings;
 
 	public Module() {
 		callables.add(this);
@@ -50,31 +50,7 @@ public class Module implements InstanceAccess, ConditionCallableObject {
 		}
 	}
 
-	public List<Setting> getSettings() {
-		return settings;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public Category getCategory() {
-		return category;
-	}
-
-	public int getKey() {
-		return key;
-	}
-
-	public void setKey(int key) {
-		this.key = key;
-	}
-
-	public boolean isToggled() {
-		return toggled;
-	}
-
-	public void setToggled(boolean toggled) {
+    public void setToggled(boolean toggled) {
 		this.toggled = toggled;
 		checkToggled();
 	}

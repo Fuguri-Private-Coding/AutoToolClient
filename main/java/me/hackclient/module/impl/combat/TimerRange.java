@@ -34,30 +34,25 @@ public class TimerRange extends Module {
                     "PizdecPolniy"
             });
 
-    private KillAura killAura;
+    KillAura killAura;
 
-    private int flagDelayTicks;
-    private float balance;
+    int flagDelayTicks;
+    float balance;
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
         if (killAura == null) killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
-        if (event instanceof TickEvent) {
-            if (flagDelayTicks > 0) {
-                flagDelayTicks--;
-            }
-        }
 
         if (flagDelayTicks > 0) {
+            if (event instanceof TickEvent) flagDelayTicks--;
             return;
         }
 
-        if (event instanceof PacketEvent packetEvent) {
-            if (packetEvent.getPacket() instanceof S08PacketPlayerPosLook) {
-                flagDelayTicks = disabledTicks.getValue();
-                return;
-            }
+        if (event instanceof PacketEvent packetEvent
+        && packetEvent.getPacket() instanceof S08PacketPlayerPosLook) {
+            flagDelayTicks = disabledTicks.getValue();
+            return;
         }
 
         if (event instanceof TickEvent tickEvent) {
@@ -79,27 +74,14 @@ public class TimerRange extends Module {
                             break;
                     } catch (Exception ignored) {}
                 }
-                if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
-                    killAura.clickManager.clicks++;
-                }
+                if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) killAura.clickManager.clicks++;
             }
         }
-        if (event instanceof RunGameLoopEvent) {
-            if (balance > 0) {
-                switch (freezeMode.getMode()) {
-                    case "TimerRangeV2": {
-                        mc.timer.renderPartialTicks = 0;
-                        break;
-                    }
-                    case "TimeManipulation": {
-                        mc.timer.renderPartialTicks = 1;
-                        break;
-                    }
-                    case "PizdecPolniy": {
-                        mc.timer.renderPartialTicks = 20;
-                        break;
-                    }
-                }
+        if (balance > 0 && event instanceof RunGameLoopEvent) {
+            switch (freezeMode.getMode()) {
+                case "TimerRangeV2" -> mc.timer.renderPartialTicks = 0;
+                case "TimeManipulation" -> mc.timer.renderPartialTicks = 1;
+                case "PizdecPolniy" -> mc.timer.renderPartialTicks = 20;
             }
         }
     }
