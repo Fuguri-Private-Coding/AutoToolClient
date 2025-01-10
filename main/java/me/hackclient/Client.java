@@ -1,5 +1,6 @@
 package me.hackclient;
 
+import lombok.Getter;
 import me.hackclient.cfg.ConfigManager;
 import me.hackclient.event.CallableObject;
 import me.hackclient.event.Event;
@@ -18,6 +19,7 @@ import org.lwjgl.opengl.Display;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+@Getter
 public enum Client implements CallableObject {
 	INSTANCE;
 
@@ -58,37 +60,8 @@ public enum Client implements CallableObject {
 		return "1.0";
 	}
 
-	// Это надо для того, что-бы не писать каждый раз "getName() + " " + getVersion();", а получать сразу название + версия
 	public String getFullName() {
 		return getName() + " " + getVersion();
-	}
-
-	public ModuleManager getModuleManager() {
-		return moduleManager;
-	}
-
-	public ShaderManager getShaderManager() {
-		return shaderManager;
-	}
-
-	public ObjectsCaller getObjectsCaller() {
-		return objectsCaller;
-	}
-
-	public FriendManager getFriendManager() {
-		return friendManager;
-	}
-
-	public TimeScheduler getTimeScheduler() {
-		return timeScheduler;
-	}
-
-	public ClickGuiScreen getClickGui() {
-		return clickGui;
-	}
-
-	public ScheduledExecutorService getExecutor() {
-		return executorService;
 	}
 
 	@Override
