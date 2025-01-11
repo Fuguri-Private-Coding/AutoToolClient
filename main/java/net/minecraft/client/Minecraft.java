@@ -175,6 +175,7 @@ import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -195,7 +196,8 @@ import org.lwjgl.util.glu.GLU;
 public class Minecraft implements IThreadListener, IPlayerUsage
 {
     private static final Logger logger = LogManager.getLogger();
-    private static final ResourceLocation locationMojangPng = new ResourceLocation("textures/gui/title/mojang.png");
+    //private static final ResourceLocation locationMojangPng = new ResourceLocation("textures/gui/title/mojang.png");
+    private static final ResourceLocation locationMojangPng = new ResourceLocation("minecraft","hackclient/splashscreen/splash" + RandomUtils.nextInt(1, 3) + ".png");
     public static final boolean isRunningOnMac = Util.getOSType() == Util.EnumOS.OSX;
     public static byte[] memoryReserve = new byte[10485760];
     private static final List<DisplayMode> macDisplayModes = Lists.newArrayList(new DisplayMode[] {new DisplayMode(2560, 1600), new DisplayMode(2880, 1800)});
@@ -833,18 +835,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         GlStateManager.enableTexture2D();
         InputStream inputstream = null;
 
-        try
-        {
-            inputstream = this.mcDefaultResourcePack.getInputStream(locationMojangPng);
-            this.mojangLogo = textureManagerInstance.getDynamicTextureLocation("logo", new DynamicTexture(ImageIO.read(inputstream)));
-            textureManagerInstance.bindTexture(this.mojangLogo);
-        }
-        catch (IOException ioexception)
-        {
-            logger.error((String)("Unable to load logo: " + locationMojangPng), (Throwable)ioexception);
-        }
-        finally
-        {
+        try {
+            //inputstream = this.mcDefaultResourcePack.getInputStream(locationMojangPng);
+            //this.mojangLogo = textureManagerInstance.getDynamicTextureLocation("logo", new DynamicTexture(ImageIO.read(inputstream)));
+            textureManagerInstance.bindTexture(locationMojangPng);
+        } finally {
             IOUtils.closeQuietly(inputstream);
         }
 
@@ -1015,6 +1010,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         for (int j = 0; j < this.timer.elapsedTicks; ++j)
         {
             Client.INSTANCE.getModuleManager().getModule(TimerRangeV2.class).handleTick();
+            TickEvent tickEvent = new TickEvent();
+            Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
+            if (tickEvent.isCanceled()) return;
             runTick();
         }
 
@@ -1605,10 +1603,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     public void runTick() throws IOException
     {
-
-        TickEvent tickEvent = new TickEvent();
-        Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
-        if (tickEvent.isCanceled()) return;
 
         if (this.rightClickDelayTimer > 0)
         {

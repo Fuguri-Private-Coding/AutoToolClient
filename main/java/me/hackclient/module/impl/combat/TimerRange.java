@@ -61,9 +61,6 @@ public class TimerRange extends Module {
                 balance--;
                 return;
             }
-        }
-
-        if (event instanceof RunGameLoopEvent) {
             EntityLivingBase target = killAura.getTarget();
             if (target != null && mc.thePlayer.getBps(false) > 0) {
                 double distance = DistanceUtils.getDistanceToEntity(target);
@@ -80,6 +77,7 @@ public class TimerRange extends Module {
                 if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) killAura.clickManager.clicks++;
             }
         }
+
         if (balance > 0 && event instanceof RunGameLoopEvent) {
             switch (freezeMode.getMode()) {
                 case "TimerRangeV2" -> mc.timer.renderPartialTicks = 0;

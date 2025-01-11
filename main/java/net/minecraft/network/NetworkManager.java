@@ -85,7 +85,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private Channel channel;
     private SocketAddress socketAddress;
-    private INetHandler packetListener;
+    public INetHandler packetListener;
     private IChatComponent terminationReason;
     private boolean isEncrypted;
     private boolean disconnected;

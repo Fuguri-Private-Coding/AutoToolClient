@@ -128,25 +128,30 @@ public class Ping extends Module {
 		}
 	}
 	private void handleStandAlone() {
-		if (packetBuffer.isEmpty())
-			return;
-
-		packetBuffer.removeIf( pair -> {
-			if (System.currentTimeMillis() - pair.getSecond() >= delay.getValue()) {
-				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(pair.getFirst());
-				return true;
+		if (!packetBuffer.isEmpty()) {
+			synchronized (packetBuffer) {
+				for (Doubles<Packet, Long> packetLongDoubles : packetBuffer) {
+					if (System.currentTimeMillis() - packetLongDoubles.getSecond() >= delay.getValue()) {
+						mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetLongDoubles.getFirst());
+						packetBuffer.remove(packetLongDoubles);
+					}
+				}
 			}
-			return false;
-		});
-
-		posBuffer.removeIf(doubles -> System.currentTimeMillis() >= doubles.getSecond() + delay.getValue());
+		}
+		if (!posBuffer.isEmpty()) {
+			posBuffer.removeIf(doubles -> System.currentTimeMillis() >= doubles.getSecond() + delay.getValue());
+		}
 	}
 
 	public void resetPackets() {
-		mc.addScheduledTask(() -> {
-			packetBuffer.forEach( pair -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(pair.getFirst()));
-			packetBuffer.clear();
-			posBuffer.clear();
-		});
+		if (!packetBuffer.isEmpty()) {
+			synchronized (packetBuffer) {
+				for (Doubles<Packet, Long> packetLongDoubles : packetBuffer) {
+					mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetLongDoubles.getFirst());
+				}
+				packetBuffer.clear();
+			}
+		}
+		posBuffer.clear();
 	}
 }
