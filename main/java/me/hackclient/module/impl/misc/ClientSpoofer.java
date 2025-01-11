@@ -11,4 +11,9 @@ public class ClientSpoofer extends Module {
     public ModeSetting brand = new ModeSetting("Brand", this, "LunarClient",
             new String[]{"LunarClient", "LabyMod", "FML", "Optifine", "Forge"});
 
+
+    @Override
+    public String getSuffix() {
+        return brand.getMode();
+    }
 }

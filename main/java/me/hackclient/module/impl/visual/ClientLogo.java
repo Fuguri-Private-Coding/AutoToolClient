@@ -37,7 +37,6 @@ public class ClientLogo extends Module {
                 BloomUtils.drawBloom(list);
             }
             RenderUtils.drawImage(molotok400panage, X.getValue(), Y.getValue(), scale.getValue(), scale.getValue());
-
         }
     }
 }

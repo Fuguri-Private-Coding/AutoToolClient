@@ -17,4 +17,9 @@ public class Timer extends Module {
 	public void onDisable() {
 		mc.timer.timerSpeed = 1.0F;
 	}
+
+	@Override
+	public String getSuffix() {
+		return String.valueOf(timerSpeed.getValue());
+	}
 }

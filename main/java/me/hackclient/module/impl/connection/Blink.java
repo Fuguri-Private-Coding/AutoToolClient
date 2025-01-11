@@ -35,4 +35,9 @@ public class Blink extends Module {
             packets.add(packetEvent.getPacket());
         }
     }
+
+    @Override
+    public String getSuffix() {
+        return String.valueOf(packets.size());
+    }
 }

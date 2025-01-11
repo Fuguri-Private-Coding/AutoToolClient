@@ -59,6 +59,7 @@ public class ModuleManager {
 				 new TimerRangeV2(),
 				 new TimeChanger(),
 				 new Test(),
+				 new TrashTalk(),
 				 //new KillEvents(),
 				 new NameTags(),
 				 new NoRender(),

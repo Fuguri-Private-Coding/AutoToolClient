@@ -74,4 +74,9 @@ public class Velocity extends Module {
 			}
 		}
 	}
+
+	@Override
+	public String getSuffix() {
+		return mode.getMode();
+	}
 }

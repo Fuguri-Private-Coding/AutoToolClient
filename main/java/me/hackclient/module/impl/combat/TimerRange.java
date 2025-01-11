@@ -17,7 +17,7 @@ import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
-@ModuleInfo(name = "TimerRange", category = Category.COMBAT, toggled = true)
+@ModuleInfo(name = "TimerRange", category = Category.COMBAT)
 public class TimerRange extends Module {
 
     FloatSetting startDistance = new FloatSetting("StartDistance", this, 3f, 6, 3.8f, 0.1f);
@@ -61,6 +61,9 @@ public class TimerRange extends Module {
                 balance--;
                 return;
             }
+        }
+
+        if (event instanceof RunGameLoopEvent) {
             EntityLivingBase target = killAura.getTarget();
             if (target != null && mc.thePlayer.getBps(false) > 0) {
                 double distance = DistanceUtils.getDistanceToEntity(target);

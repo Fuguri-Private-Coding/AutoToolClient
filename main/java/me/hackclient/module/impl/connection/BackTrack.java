@@ -56,7 +56,7 @@ public class BackTrack extends Module {
             Packet packet = packetEvent.getPacket();
 
             if (packet instanceof S14PacketEntity s14
-            && mc.theWorld.getEntityByID(s14.entityId) instanceof EntityLivingBase entityLivingBase) {
+                    && mc.theWorld.getEntityByID(s14.entityId) instanceof EntityLivingBase entityLivingBase) {
                 entityLivingBase.realX += s14.func_149062_c();
                 entityLivingBase.realY += s14.func_149061_d();
                 entityLivingBase.realZ += s14.func_149064_e();
@@ -86,18 +86,20 @@ public class BackTrack extends Module {
             }
 
             if (!packetBuffer.isEmpty()) {
-                packetBuffer.removeIf(pair -> {
-                    if (System.currentTimeMillis() - pair.getSecond() >= timeToLag.getValue()) {
-                        pair.getFirst().processPacket(mc.getNetHandler().getNetworkManager().getNetHandler());
-                        return true;
-                    }
-                    return false;
+                mc.addScheduledTask(() -> {
+                    packetBuffer.removeIf(pair -> {
+                        if (System.currentTimeMillis() - pair.getSecond() >= timeToLag.getValue()) {
+                            pair.getFirst().processPacket(mc.getNetHandler().getNetworkManager().getNetHandler());
+                            return true;
+                        }
+                        return false;
+                    });
                 });
             }
         }
 
         if (event instanceof AttackEvent attackEvent
-        && attackEvent.getHittingEntity() instanceof EntityLivingBase newTarget) {
+                && attackEvent.getHittingEntity() instanceof EntityLivingBase newTarget) {
             attackTimer.reset();
             target = newTarget;
         }
@@ -126,5 +128,10 @@ public class BackTrack extends Module {
                 RenderUtils.stop3D();
             }
         }
+    }
+
+    @Override
+    public String getSuffix() {
+        return timeToLag.getValue() + "ms";
     }
 }

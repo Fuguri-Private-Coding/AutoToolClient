@@ -103,4 +103,9 @@ public class MoreKB extends Module {
 			ticks--;
 		}
 	}
+
+	@Override
+	public String getSuffix() {
+		return mode.getMode();
+	}
 }

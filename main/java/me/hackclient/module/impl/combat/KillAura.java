@@ -67,7 +67,12 @@ public class KillAura extends Module {
 		Animations.setAnimate(false);
 	}
 
-    @Override
+	@Override
+	public String getSuffix() {
+		return target == null ? "none" : target.getName();
+	}
+
+	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
 		if (event instanceof TickEvent) {

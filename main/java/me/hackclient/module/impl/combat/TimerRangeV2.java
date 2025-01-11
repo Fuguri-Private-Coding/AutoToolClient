@@ -18,15 +18,15 @@ import net.minecraft.entity.EntityLivingBase;
 
 import java.util.Comparator;
 
-@ModuleInfo(name = "TimerRangeV2", category = Category.COMBAT)
+@ModuleInfo(name = "TimerRangeV2", category = Category.COMBAT, toggled = true)
 public class TimerRangeV2 extends Module {
 
     BooleanSetting limitTicks = new BooleanSetting("LimitTeleportTicks", this, true);
-    IntegerSetting ticks = new IntegerSetting("Ticks", this, () -> limitTicks.isToggled(), 1,20,2);
-    IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 2);
-    IntegerSetting maxPlayerHurtTime = new IntegerSetting("MaxPlayerHurtTime", this, 0, 10, 0);
+    IntegerSetting ticks = new IntegerSetting("Ticks", this, () -> limitTicks.isToggled(), 1, 20, 2);
+    IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 10);
+    IntegerSetting maxPlayerHurtTime = new IntegerSetting("MaxPlayerHurtTime", this, 0, 10, 10);
     BooleanSetting testAutoDistance = new BooleanSetting("TestAutoDistance", this, false);
-    FloatSetting startDistance = new FloatSetting("StartDistance", this, () -> !testAutoDistance.isToggled(), 3f, 6, 3.6f, 0.1f);
+    FloatSetting startDistance = new FloatSetting("StartDistance", this, () -> !testAutoDistance.isToggled(), 3f, 6, 3.8f, 0.1f);
 
     FloatSetting renderPartialTicks = new FloatSetting("RenderPartialTicksAtFreeze", this, 0, 2, 1, 0.1f);
 
@@ -72,15 +72,17 @@ public class TimerRangeV2 extends Module {
                 if (event instanceof RunGameLoopEvent) {
                     try {
                         while (target != null
-                        && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
-                        && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
-                        && target.hurtTime <= maxTargetHurtTime.getValue()
-                        && mc.thePlayer.hurtTime <= maxPlayerHurtTime.getValue()
-                        && notReachedTicks(balance)) {
+                                && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
+                                && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
+                                && target.hurtTime <= maxTargetHurtTime.getValue()
+                                && mc.thePlayer.hurtTime <= maxPlayerHurtTime.getValue()
+                                && notReachedTicks(balance)) {
                             mc.runTick();
                             balance++;
                         }
-                    } catch (Exception e) { throw new RuntimeException(e); }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                     if (balance > 0) {
                         state = TimerState.FREEZE;
                         click = true;
@@ -127,5 +129,28 @@ public class TimerRangeV2 extends Module {
         NONE,
         FREEZE,
         TIMER
+    }
+
+    public void handleTick() {
+        if (state != TimerState.TIMER) return;
+        try {
+            while (target != null
+                    && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
+                    && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
+                    && target.hurtTime <= maxTargetHurtTime.getValue()
+                    && mc.thePlayer.hurtTime <= maxPlayerHurtTime.getValue()
+                    && notReachedTicks(balance)) {
+                mc.runTick();
+                balance++;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        if (balance > 0) {
+            state = TimerState.FREEZE;
+            click = true;
+        } else {
+            state = TimerState.NONE;
+        }
     }
 }

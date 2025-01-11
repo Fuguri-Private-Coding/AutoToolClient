@@ -12,13 +12,14 @@ import java.util.List;
 
 public class Module implements InstanceAccess, ConditionCallableObject {
 
-	private final ModuleInfo annotation = getClass().getAnnotation(ModuleInfo.class);
+	final ModuleInfo annotation = getClass().getAnnotation(ModuleInfo.class);
 
 	@Getter final String name = annotation.name();
 	@Getter final Category category = annotation.category();
 	@Setter @Getter int key = annotation.key();
 	@Getter boolean toggled = annotation.toggled();
-	@Getter private final List<Setting> settings;
+	@Getter final List<Setting> settings;
+	//@Getter @Setter String suffix = "";
 
 	public Module() {
 		callables.add(this);
@@ -38,7 +39,7 @@ public class Module implements InstanceAccess, ConditionCallableObject {
 
 	}
 
-	private void checkToggled() {
+	void checkToggled() {
 		if (toggled) {
 			try {
 				onEnable();
@@ -53,6 +54,10 @@ public class Module implements InstanceAccess, ConditionCallableObject {
     public void setToggled(boolean toggled) {
 		this.toggled = toggled;
 		checkToggled();
+	}
+
+	public String getSuffix() {
+		return "";
 	}
 
 	@Override

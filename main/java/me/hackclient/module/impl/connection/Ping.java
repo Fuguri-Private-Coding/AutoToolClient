@@ -145,8 +145,10 @@ public class Ping extends Module {
 	}
 
 	public void resetPackets() {
-		packetBuffer.forEach( pair -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(pair.getFirst()) );
-		packetBuffer.clear();
-		posBuffer.clear();
+		mc.addScheduledTask(() -> {
+			packetBuffer.forEach( pair -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(pair.getFirst()));
+			packetBuffer.clear();
+			posBuffer.clear();
+		});
 	}
 }
