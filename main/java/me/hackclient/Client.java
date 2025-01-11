@@ -7,7 +7,6 @@ import me.hackclient.event.Event;
 import me.hackclient.event.ObjectsCaller;
 import me.hackclient.event.events.KeyEvent;
 import me.hackclient.friend.FriendManager;
-import me.hackclient.guis.altManager.AltManagerGuiScreen;
 import me.hackclient.guis.clickGui.ClickGuiScreen;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleManager;
@@ -23,7 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
 public enum Client implements CallableObject {
 	INSTANCE;
 
-	final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
+	ScheduledExecutorService executorService;
 
 	TimeScheduler timeScheduler;
 	FriendManager friendManager;
@@ -38,6 +37,8 @@ public enum Client implements CallableObject {
 
 	public void init() {
 		callables.add(this);
+
+		executorService = Executors.newScheduledThreadPool(4);
 
 		timeScheduler = new TimeScheduler();
 		friendManager = new FriendManager();
