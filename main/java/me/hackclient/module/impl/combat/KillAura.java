@@ -34,8 +34,8 @@ public class KillAura extends Module {
 	final TargetSelector targetSelector;
 	public final ClickManager clickManager;
 
-	IntegerSetting minCps = new IntegerSetting("MinCps", this, 1,20, 18);
-	IntegerSetting maxCps = new IntegerSetting("MaxCps", this, 1,20, 18);
+	IntegerSetting minCps = new IntegerSetting("MinCps", this, 1, 25, 18);
+	IntegerSetting maxCps = new IntegerSetting("MaxCps", this, 1, 25, 18);
 
 	BooleanSetting clickFix = new BooleanSetting("ClickFix", this, true);
 	BooleanSetting mineBlazeFix = new BooleanSetting("MineBlazeFix", this, true);
@@ -159,8 +159,8 @@ public class KillAura extends Module {
 				});
 			}
 			if (event instanceof TickEvent) {
-                IKillAuraRotation selectedRotation = new IntaveRotation();
 				if (mc.currentScreen == null) {
+					IKillAuraRotation selectedRotation = new IntaveRotation();
 					rotations.add(selectedRotation.compute(getLastRotation(), target, speedYawRotation.getValue(), speedPitchRotation.getValue()));
 
 					Rotation.setServerRotation(rotations.get(0));

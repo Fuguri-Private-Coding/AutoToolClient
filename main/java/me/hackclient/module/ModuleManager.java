@@ -2,6 +2,7 @@ package me.hackclient.module;
 
 import me.hackclient.module.impl.combat.*;
 import me.hackclient.module.impl.connection.*;
+import me.hackclient.module.impl.legit.*;
 import me.hackclient.module.impl.misc.*;
 import me.hackclient.module.impl.move.*;
 import me.hackclient.module.impl.player.*;
@@ -22,10 +23,12 @@ public class ModuleManager {
 				 new Bloom(),
 				 new AntiBot(),
 				 new KillAura(),
+				 new Dot(),
 				 new MoreKB(),
 				 new Teams(),
 				 new Velocity(),
 				 new Fly(),
+				 new AutoClicker(),
 				 new HighJump(),
 				 new LongJump(),
 				 new NoSlow(),
@@ -45,6 +48,7 @@ public class ModuleManager {
 				 new DelayFix(),
 				 new Handler(),
 				 new FlagDetector(),
+				 new AimAssist(),
 				 new BPSCounter(),
 				 new SwagMode(),
 				 new Blink(),

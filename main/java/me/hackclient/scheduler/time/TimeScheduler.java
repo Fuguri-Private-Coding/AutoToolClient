@@ -1,6 +1,6 @@
 package me.hackclient.scheduler.time;
 
-import me.hackclient.event.CallableObject;
+import me.hackclient.event.callable.CallableObject;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.utils.doubles.Doubles;

@@ -22,14 +22,12 @@ public class IntaveRotation implements IKillAuraRotation {
 				box.minY + box.getLengthY() * 0.5,
 				box.minZ + box.getLengthZ() * 0.4,
 				box.minX + box.getLengthX() * 0.6,
-				box.minY + box.getLengthY() * 0.85,
+				box.minY + box.getLengthY() * 0.8,
 				box.minZ + box.getLengthZ() * 0.6
 		);
 
 		Rotation nearest = RotationUtils.getNearestRotation(current, box);
-		if (nearest == null) {
-			return new Rotation(current.getYaw(), current.getPitch());
-		}
+		if (nearest == null) { return new Rotation(current.getYaw(), current.getPitch()); }
 
 		Delta delta = RotationUtils.getDelta(current, nearest);
 

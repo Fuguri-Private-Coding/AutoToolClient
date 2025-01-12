@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "BackTrack", category = Category.CONNECTION)
 public class BackTrack extends Module {
@@ -51,15 +52,16 @@ public class BackTrack extends Module {
     final BooleanSetting renderClientPos = new BooleanSetting("RenderClientPos", this, false);
     final BooleanSetting renderServerPos = new BooleanSetting("RenderServerPos", this, true);
 
-    final StopWatch attackTimer, resetTimer;
+    final StopWatch attackTimer, resetTimer, flagTimer;
     final List<Doubles<Packet, Long>> serverPackets;
 
     EntityLivingBase target;
 
     public BackTrack() {
+        flagTimer = new StopWatch();
         resetTimer = new StopWatch();
         attackTimer = new StopWatch();
-        serverPackets = new ArrayList<>();
+        serverPackets = new CopyOnWriteArrayList<>();
     }
 
     @Override
@@ -73,7 +75,7 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof RunGameLoopEvent) {
-            if (attackTimer.reachedMS(timeToCancel.getValue() * 1000L)) {
+            if (attackTimer.reachedMS(timeToCancel.getValue() * 1000L) || !flagTimer.reachedMS(1500)) {
                 target = null;
             }
             if (target == null) {
@@ -82,14 +84,20 @@ public class BackTrack extends Module {
             } else {
                 handlePackets();
                 double distance = mc.thePlayer.getDistance(target.realX / 32, target.realY / 32, target.realZ / 32);
-                if (distance > (limitDistance.isToggled() ? maxDistance.getValue() : Double.MAX_VALUE) || distance < 3 || distance < mc.thePlayer.getDistanceToEntity(target)) {
+                if (distance > (limitDistance.isToggled() ? maxDistance.getValue() : Double.MAX_VALUE) || distance < 3 || distance <= mc.thePlayer.getDistanceToEntity(target)) {
                     resetPackets();
+                    return;
                 }
             }
         }
 
         if (event instanceof PacketEvent packetEvent) {
             Packet packet = packetEvent.getPacket();
+
+            if (packet instanceof S08PacketPlayerPosLook) {
+                flagTimer.reset();
+                return;
+            }
 
             if (packet instanceof S14PacketEntity s14
                     && mc.theWorld.getEntityByID(s14.entityId) instanceof EntityLivingBase entityLivingBase) {
@@ -106,13 +114,14 @@ public class BackTrack extends Module {
             }
 
             if (target != null
-                    && packetEvent.getDirection() == PackerDirection.INCOMING
-                    && (packet instanceof S32PacketConfirmTransaction
-                    || (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId())
-                    || packet instanceof S14PacketEntity
-                    || packet instanceof S18PacketEntityTeleport
-                    || packet instanceof S03PacketTimeUpdate
-                    || packet instanceof S27PacketExplosion)) {
+            && packetEvent.getDirection() == PackerDirection.INCOMING
+            && (packet instanceof S32PacketConfirmTransaction
+            || packet instanceof S00PacketKeepAlive
+            || (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId())
+            || packet instanceof S14PacketEntity
+            || packet instanceof S18PacketEntityTeleport
+            || packet instanceof S03PacketTimeUpdate
+            || packet instanceof S27PacketExplosion)) {
                 serverPackets.add(new Doubles<>(packet, System.currentTimeMillis()));
                 packetEvent.setCanceled(true);
             }
@@ -143,41 +152,37 @@ public class BackTrack extends Module {
             }
             RenderUtils.stop3D();
         }
+        if (event instanceof Render2DEvent) {
+            mc.fontRendererObj.drawString("Packets " + serverPackets.size(), 300, 300, -1, true);
+        }
     }
 
     void handlePackets() {
-        mc.addScheduledTask(() -> {
-            switch (lagMode.getMode()) {
-                case "Pulse" -> {
-                    if (resetTimer.reachedMS(delay.getValue())) {
-                        resetTimer.reset();
-                        resetPackets();
-                    }
-                }
-                case "Smooth" -> {
-                    synchronized (serverPackets) {
-                        for (Doubles<Packet, Long> serverPacket : serverPackets) {
-                            if (System.currentTimeMillis() - serverPacket.getSecond() >= delay.getValue()) {
-                                serverPacket.getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
-                                serverPackets.remove(serverPacket);
-                            }
-                        }
-                    }
+        switch (lagMode.getMode()) {
+            case "Pulse" -> {
+                if (resetTimer.reachedMS(delay.getValue())) {
+                    resetTimer.reset();
+                    resetPackets();
                 }
             }
-        });
+            case "Smooth" -> serverPackets.forEach(packetLongDoubles -> {
+                if (System.currentTimeMillis() - packetLongDoubles.getSecond() >= delay.getValue()) {
+                    packetLongDoubles.getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
+                    serverPackets.remove(packetLongDoubles);
+                }
+            });
+        }
     }
 
     void resetPackets() {
-        if (serverPackets.isEmpty())
-            return;
-
         synchronized (serverPackets) {
             while (!serverPackets.isEmpty()) {
                 if (serverPackets.get(0) == null) return;
                 if (serverPackets.get(0).getFirst() == null) return;
 
-                serverPackets.get(0).getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
+                try {
+                    serverPackets.get(0).getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
+                } catch (Exception ignored) {}
                 serverPackets.remove(0);
             }
         }

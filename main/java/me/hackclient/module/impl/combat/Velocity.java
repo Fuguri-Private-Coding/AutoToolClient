@@ -1,15 +1,13 @@
 package me.hackclient.module.impl.combat;
 
 import me.hackclient.event.Event;
-import me.hackclient.event.events.AttackEvent;
-import me.hackclient.event.events.MoveButtonEvent;
-import me.hackclient.event.events.PacketEvent;
-import me.hackclient.event.events.UpdateEvent;
+import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 
 import javax.swing.table.AbstractTableModel;
@@ -20,7 +18,7 @@ public class Velocity extends Module {
 	ModeSetting mode = new ModeSetting(
 			"Mode",
 			this,
-			"Vanilla",
+			"Intave",
 			new String[] {
 					"Legit",
 					"Vanilla",
@@ -52,10 +50,20 @@ public class Velocity extends Module {
 			}
 
 			case "Intave" -> {
-				if (event instanceof AttackEvent && mc.thePlayer.isSprinting()) {
-					mc.thePlayer.setSprinting(false);
-					mc.thePlayer.motionX *= 0.6;
-					mc.thePlayer.motionZ *= 0.6;
+				if (mc.thePlayer.hurtTime > 0) {
+					if (event instanceof AttackEvent attackEvent
+					&& attackEvent.getHittingEntity() instanceof EntityLivingBase
+					&& mc.thePlayer.isSprinting()) {
+						mc.thePlayer.setSprinting(false);
+						mc.thePlayer.motionX *= 0.6;
+						mc.thePlayer.motionZ *= 0.6;
+					}
+					if (event instanceof MoveButtonEvent moveButtonEvent) {
+						moveButtonEvent.setForward(true);
+//						if (mc.thePlayer.onGround && mc.thePlayer.hurtTime > 8) {
+//							moveButtonEvent.setJump(true);
+//						}
+					}
 				}
 			}
 

@@ -1,11 +1,12 @@
 package me.hackclient.utils.rotation;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.util.MathHelper;
 
 public class Rotation {
-	private static Rotation serverRotation = new Rotation();
-
-	private float yaw, pitch;
+	@Getter @Setter static Rotation serverRotation = new Rotation();
+	@Getter @Setter float yaw, pitch;
 
 	public Rotation() {
 		yaw = 0;
@@ -14,22 +15,6 @@ public class Rotation {
 
 	public Rotation(float yaw, float pitch) {
 		this.yaw = yaw;
-		this.pitch = pitch;
-	}
-
-	public float getYaw() {
-		return yaw;
-	}
-
-	public void setYaw(float yaw) {
-		this.yaw = yaw;
-	}
-
-	public float getPitch() {
-		return pitch;
-	}
-
-	public void setPitch(float pitch) {
 		this.pitch = pitch;
 	}
 
@@ -63,11 +48,7 @@ public class Rotation {
 		return Math.hypot(yaw, pitch);
 	}
 
-	public static Rotation getServerRotation() {
-		return serverRotation;
-	}
-
-	public static void setServerRotation(Rotation serverRotation) {
+    public static void setServerRotation(Rotation serverRotation) {
 		Rotation.serverRotation = serverRotation;
 	}
 }

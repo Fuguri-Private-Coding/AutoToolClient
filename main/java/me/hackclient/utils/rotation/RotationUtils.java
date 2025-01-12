@@ -22,7 +22,7 @@ public class RotationUtils implements InstanceAccess {
 
 	public static Delta getDeltaToPoint(Rotation startRotation, Vec3 needPoint) {
 		Rotation endRotation = getRotationToPoint(needPoint);
-		return (Delta) endRotation.subtract(startRotation);
+		return getDelta(startRotation, endRotation);
 	}
 
 	public static Rotation getRotationToPoint(Vec3 needPoint) {

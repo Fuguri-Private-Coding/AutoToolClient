@@ -2,7 +2,7 @@ package me.hackclient;
 
 import lombok.Getter;
 import me.hackclient.cfg.ConfigManager;
-import me.hackclient.event.CallableObject;
+import me.hackclient.event.callable.CallableObject;
 import me.hackclient.event.Event;
 import me.hackclient.event.ObjectsCaller;
 import me.hackclient.event.events.KeyEvent;

@@ -3,6 +3,9 @@ package net.minecraft.client.renderer.entity;
 import com.google.common.collect.Maps;
 import java.util.Collections;
 import java.util.Map;
+
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
@@ -108,6 +111,7 @@ import net.optifine.shaders.Shaders;
 
 public class RenderManager
 {
+    @Getter
     private Map<Class, Render> entityRenderMap = Maps.newHashMap();
     private Map<String, RenderPlayer> skinMap = Maps.<String, RenderPlayer>newHashMap();
     private RenderPlayer playerRenderer;
@@ -119,14 +123,20 @@ public class RenderManager
     public World worldObj;
     public Entity livingPlayer;
     public Entity pointedEntity;
+    @Setter
     public float playerViewY;
     public float playerViewX;
     public GameSettings options;
     public double viewerPosX;
     public double viewerPosY;
     public double viewerPosZ;
+    @Setter
     private boolean renderOutlines = false;
+    @Getter
+    @Setter
     private boolean renderShadow = true;
+    @Getter
+    @Setter
     private boolean debugBoundingBox = false;
     public Render renderRender = null;
 
@@ -280,31 +290,6 @@ public class RenderManager
         this.viewerPosZ = livingPlayerIn.lastTickPosZ + (livingPlayerIn.posZ - livingPlayerIn.lastTickPosZ) * (double)partialTicks;
     }
 
-    public void setPlayerViewY(float playerViewYIn)
-    {
-        this.playerViewY = playerViewYIn;
-    }
-
-    public boolean isRenderShadow()
-    {
-        return this.renderShadow;
-    }
-
-    public void setRenderShadow(boolean renderShadowIn)
-    {
-        this.renderShadow = renderShadowIn;
-    }
-
-    public void setDebugBoundingBox(boolean debugBoundingBoxIn)
-    {
-        this.debugBoundingBox = debugBoundingBoxIn;
-    }
-
-    public boolean isDebugBoundingBox()
-    {
-        return this.debugBoundingBox;
-    }
-
     public boolean renderEntitySimple(Entity entityIn, float partialTicks)
     {
         return this.renderEntityStatic(entityIn, partialTicks, false);
@@ -338,7 +323,7 @@ public class RenderManager
 
         int j = i % 65536;
         int k = i / 65536;
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j / 1.0F, (float)k / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j, (float) k);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         return this.doRenderEntity(entity, d0 - this.renderPosX, d1 - this.renderPosY, d2 - this.renderPosZ, f, partialTicks, hideDebugBox);
     }
@@ -370,21 +355,15 @@ public class RenderManager
     {
         Render<Entity> render = null;
 
-        try
-        {
-            render = this.<Entity>getEntityRenderObject(entity);
-
-            if (render != null && this.renderEngine != null)
-            {
-                try
-                {
-                    if (render instanceof RendererLivingEntity)
-                    {
+        try {
+            render = this.getEntityRenderObject(entity);
+            if (render != null && this.renderEngine != null) {
+                try {
+                    if (render instanceof RendererLivingEntity) {
                         ((RendererLivingEntity)render).setRenderOutlines(this.renderOutlines);
                     }
 
-                    if (CustomEntityModels.isActive())
-                    {
+                    if (CustomEntityModels.isActive()) {
                         this.renderRender = render;
                     }
 
@@ -491,16 +470,6 @@ public class RenderManager
     public FontRenderer getFontRenderer()
     {
         return this.textRenderer;
-    }
-
-    public void setRenderOutlines(boolean renderOutlinesIn)
-    {
-        this.renderOutlines = renderOutlinesIn;
-    }
-
-    public Map<Class, Render> getEntityRenderMap()
-    {
-        return this.entityRenderMap;
     }
 
     public void setEntityRenderMap(Map p_setEntityRenderMap_1_)

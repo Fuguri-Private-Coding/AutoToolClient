@@ -27,6 +27,7 @@ import net.minecraft.util.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "Ping", category = Category.CONNECTION)
 public class Ping extends Module {
@@ -50,8 +51,8 @@ public class Ping extends Module {
 	}
 
 	public Ping() {
-		packetBuffer = new ArrayList<>();
-		posBuffer = new ArrayList<>();
+		packetBuffer = new CopyOnWriteArrayList<>();
+		posBuffer = new CopyOnWriteArrayList<>();
 		stoppingTime = 0;
 	}
 
@@ -65,7 +66,7 @@ public class Ping extends Module {
 			if (mc.isSingleplayer())
 				return;
 
-			// Пропускает некоторые пакеты, также нужно для чего-то там
+			// Пропускает некоторые пакеты
 			if (packet instanceof C00Handshake || packet instanceof C00PacketServerQuery
 					|| packet instanceof C01PacketPing || packet instanceof C01PacketChatMessage
 					|| packet instanceof S01PacketPong) {
@@ -128,16 +129,12 @@ public class Ping extends Module {
 		}
 	}
 	private void handleStandAlone() {
-		if (!packetBuffer.isEmpty()) {
-			synchronized (packetBuffer) {
-				for (Doubles<Packet, Long> packetLongDoubles : packetBuffer) {
-					if (System.currentTimeMillis() - packetLongDoubles.getSecond() >= delay.getValue()) {
-						mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetLongDoubles.getFirst());
-						packetBuffer.remove(packetLongDoubles);
-					}
-				}
+		packetBuffer.forEach(packetLongDoubles -> {
+			if (System.currentTimeMillis() - packetLongDoubles.getSecond() >= delay.getValue()) {
+				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetLongDoubles.getFirst());
+				packetBuffer.remove(packetLongDoubles);
 			}
-		}
+		});
 		if (!posBuffer.isEmpty()) {
 			posBuffer.removeIf(doubles -> System.currentTimeMillis() >= doubles.getSecond() + delay.getValue());
 		}

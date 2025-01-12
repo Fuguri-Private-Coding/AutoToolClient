@@ -216,6 +216,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     public int displayHeight;
     private boolean connectedToRealms = false;
     public Timer timer = new Timer(20.0F);
+    public Timer secondTimer = new Timer(20.0F);
     private PlayerUsageSnooper usageSnooper = new PlayerUsageSnooper("client", this, MinecraftServer.getCurrentTimeMillis());
     public WorldClient theWorld;
     public RenderGlobal renderGlobal;
@@ -984,10 +985,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         {
             float f = this.timer.renderPartialTicks;
             this.timer.updateTimer();
+            secondTimer.updateTimer();
             this.timer.renderPartialTicks = f;
         }
         else
         {
+            secondTimer.updateTimer();
             this.timer.updateTimer();
         }
 
@@ -1010,10 +1013,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         for (int j = 0; j < this.timer.elapsedTicks; ++j)
         {
             Client.INSTANCE.getModuleManager().getModule(TimerRangeV2.class).handleTick();
-            TickEvent tickEvent = new TickEvent();
-            Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
-            if (tickEvent.isCanceled()) return;
             runTick();
+        }
+
+        for (int j = 0; j < secondTimer.elapsedTicks; j++) {
+            Client.INSTANCE.getObjectsCaller().onEvent(new WaitTickEvent());
         }
 
         this.mcProfiler.endStartSection("preRenderErrors");
@@ -1603,6 +1607,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     public void runTick() throws IOException
     {
+        TickEvent tickEvent = new TickEvent();
+        Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
+
+        if (tickEvent.isCanceled())
+            return;
 
         if (this.rightClickDelayTimer > 0)
         {

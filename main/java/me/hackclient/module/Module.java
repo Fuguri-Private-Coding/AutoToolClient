@@ -2,7 +2,7 @@ package me.hackclient.module;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.hackclient.event.ConditionCallableObject;
+import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.Event;
 import me.hackclient.settings.Setting;
 import me.hackclient.utils.interfaces.InstanceAccess;

@@ -2,13 +2,17 @@ package me.hackclient.module.impl.visual;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.events.DrawEntityEvent;
 import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.shader.impl.TextFadeUtils;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 
 import java.awt.*;
 import java.util.List;
@@ -21,6 +25,10 @@ public class ArrayList extends Module {
 	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
+//		if (event instanceof DrawEntityEvent drawEntityEvent
+//		&& drawEntityEvent.getDrawingEntity() != null) {
+//			TextFadeUtils.draw(() -> mc.getRenderManager().renderEntitySimple(drawEntityEvent.getDrawingEntity(), mc.timer.renderPartialTicks), Color.MAGENTA, Color.CYAN);
+//		}
 		if (event instanceof Render2DEvent) {
 			Bloom bloomModule = mm.getModule(Bloom.class);
 			if (bloomModule.isToggled() && bloomModule.arrayList.isToggled()) {
@@ -64,8 +72,11 @@ public class ArrayList extends Module {
 						new Color(0, 0, 0, 75).getRGB()
 				);
 			}
-			mc.fontRendererObj.drawString(module.getName(), 5, 5 + offset, Color.WHITE.getRGB(), true);
+
+			int finalOffset = offset;
+			mc.fontRendererObj.drawString(module.getName(), 5, 5 + finalOffset, Color.WHITE.getRGB());
 			offset += mc.fontRendererObj.FONT_HEIGHT + 3;
 		}
+
 	}
 }

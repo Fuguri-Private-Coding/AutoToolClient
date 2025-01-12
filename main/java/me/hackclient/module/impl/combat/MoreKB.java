@@ -97,7 +97,7 @@ public class MoreKB extends Module {
 	}
 
 	private void handleLegitFast(Event event) {
-		if (event instanceof TickEvent) {
+		if (event instanceof TickEvent && mc.thePlayer.isSprinting()) {
 			mc.thePlayer.setSprinting(false);
 			mc.thePlayer.setServerSprintState(false);
 			ticks--;

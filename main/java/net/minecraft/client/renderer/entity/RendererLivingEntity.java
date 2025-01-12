@@ -3,6 +3,9 @@ package net.minecraft.client.renderer.entity;
 import com.google.common.collect.Lists;
 import java.nio.FloatBuffer;
 import java.util.List;
+
+import me.hackclient.Client;
+import me.hackclient.event.events.DrawEntityEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -102,6 +105,14 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
     {
         if (!Reflector.RenderLivingEvent_Pre_Constructor.exists() || !Reflector.postForgeBusEvent(Reflector.RenderLivingEvent_Pre_Constructor, new Object[] {entity, this, Double.valueOf(x), Double.valueOf(y), Double.valueOf(z)}))
         {
+            DrawEntityEvent event = new DrawEntityEvent(entity);
+            if (entity != null) {
+                Client.INSTANCE.getObjectsCaller().onEvent(event);
+            }
+
+            if (event.isCanceled())
+                return;
+
             if (animateModelLiving)
             {
                 entity.limbSwingAmount = 1.0F;

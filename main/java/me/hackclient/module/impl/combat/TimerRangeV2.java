@@ -45,13 +45,14 @@ public class TimerRangeV2 extends Module {
         super.onEvent(event);
         if (killAura == null) {
             killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
+            return;
         }
 
         switch (state) {
             case NONE -> {
                 target = killAura.getTarget();
 
-                if (!onlyKillAura.isToggled() && target == null) {
+                if (!onlyKillAura.isToggled() && killAura.getTarget() == null) {
                     if (mc.thePlayer != null && mc.theWorld != null) {
                         target = (EntityLivingBase) mc.theWorld.loadedEntityList.parallelStream()
                                 .filter(entity -> entity instanceof EntityLivingBase)
