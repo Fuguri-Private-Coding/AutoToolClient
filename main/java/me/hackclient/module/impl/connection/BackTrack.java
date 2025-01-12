@@ -101,6 +101,9 @@ public class BackTrack extends Module {
 
             if (packet instanceof S14PacketEntity s14
                     && mc.theWorld.getEntityByID(s14.entityId) instanceof EntityLivingBase entityLivingBase) {
+                entityLivingBase.lastRealX = entityLivingBase.realX;
+                entityLivingBase.lastRealY = entityLivingBase.realY;
+                entityLivingBase.lastRealZ = entityLivingBase.realZ;
                 entityLivingBase.realX += s14.func_149062_c();
                 entityLivingBase.realY += s14.func_149061_d();
                 entityLivingBase.realZ += s14.func_149064_e();
@@ -108,6 +111,9 @@ public class BackTrack extends Module {
 
             if (packet instanceof S18PacketEntityTeleport s18
                     && mc.theWorld.getEntityByID(s18.getEntityId()) instanceof EntityLivingBase entityLivingBase) {
+                entityLivingBase.lastRealX = entityLivingBase.realX;
+                entityLivingBase.lastRealY = entityLivingBase.realY;
+                entityLivingBase.lastRealZ = entityLivingBase.realZ;
                 entityLivingBase.realX = s18.getX();
                 entityLivingBase.realY = s18.getY();
                 entityLivingBase.realZ = s18.getZ();
@@ -143,9 +149,13 @@ public class BackTrack extends Module {
             }
             if (renderServerPos.isToggled()) {
                 GL11.glColor4f(1f, 1f, 1f, 1f);
+                double smoothX = target.lastRealX + (target.realX - target.lastRealX) * mc.timer.renderPartialTicks;
+                double smoothY = target.lastRealY + (target.realY - target.lastRealY) * mc.timer.renderPartialTicks;
+                double smoothZ = target.lastRealZ + (target.realZ - target.lastRealZ) * mc.timer.renderPartialTicks;
+
                 RenderUtils.renderHitBox(
                         target.getEntityBoundingBox()
-                                .offset(target.realX / 32 - target.posX, target.realY / 32 - target.posY, target.realZ / 32 - target.posZ)
+                                .offset(smoothX / 32 - target.posX, smoothY / 32 - target.posY, smoothZ / 32 - target.posZ)
                                 .offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ),
                         GL11.GL_LINE_LOOP
                 );

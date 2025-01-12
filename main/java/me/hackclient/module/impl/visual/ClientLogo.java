@@ -34,7 +34,7 @@ public class ClientLogo extends Module {
             if (bloomModule.isToggled() && bloomModule.clientLogo.isToggled()) {
                 List<Runnable> list = new ArrayList<>();
                 list.add(() -> RenderUtils.drawImage(molotok400panage, X.getValue(), Y.getValue(), scale.getValue(), scale.getValue()));
-                BloomUtils.drawBloom(list);
+                //BloomUtils.drawBloom(list);
             }
             RenderUtils.drawImage(molotok400panage, X.getValue(), Y.getValue(), scale.getValue(), scale.getValue());
         }

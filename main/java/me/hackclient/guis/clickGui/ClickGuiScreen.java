@@ -65,7 +65,7 @@ public class ClickGuiScreen extends GuiScreen {
 		if (bloom.clickGui.isToggled() && bloom.isToggled()) {
 			List<Runnable> list = new ArrayList<>();
 			list.add(() -> RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, 2, Color.WHITE));
-			BloomUtils.drawBloom(list);
+			//BloomUtils.drawBloom(list);
 		}
 		if (resizing
 		&& mouseX > pos.x + 100

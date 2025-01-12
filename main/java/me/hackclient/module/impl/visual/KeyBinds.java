@@ -23,7 +23,7 @@ public class KeyBinds extends Module {
             if (bloomModule.isToggled() && bloomModule.keyBinds.isToggled()) {
                 List<Runnable> list = new ArrayList<>();
                 //list.add(() -> );
-                BloomUtils.drawBloom(list);
+                //BloomUtils.drawBloom(list);
             }
         }
         drawMain();
