@@ -8,6 +8,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.combat.KillAura;
 import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
@@ -18,6 +19,7 @@ import org.lwjgl.opengl.GL11;
 )
 public class Dot extends Module {
 
+    final FloatSetting size = new FloatSetting("Size", this, 1.0f, 20.0f, 5.0f, 0.1f);
     final BooleanSetting onlyKillAura = new BooleanSetting("OnlyKillAura", this, true);
 
     @Override
@@ -31,10 +33,12 @@ public class Dot extends Module {
 
             RenderUtils.start3D();
             Vec3 vec = mc.objectMouseOver.hitVec.addVector(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
+            GL11.glPointSize(size.getValue());
             GL11.glBegin(GL11.GL_POINTS);
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
             GL11.glVertex3d(vec.xCoord, vec.yCoord, vec.zCoord);
             GL11.glEnd();
+            GL11.glPointSize(1);
             RenderUtils.stop3D();
         }
     }
