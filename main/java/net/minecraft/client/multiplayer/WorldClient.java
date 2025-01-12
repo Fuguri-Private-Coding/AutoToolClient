@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import me.hackclient.Client;
+import me.hackclient.event.events.EntityKilledEvent;
 import me.hackclient.event.events.WorldChangeEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

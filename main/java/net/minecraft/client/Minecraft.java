@@ -1013,6 +1013,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         for (int j = 0; j < this.timer.elapsedTicks; ++j)
         {
             Client.INSTANCE.getModuleManager().getModule(TimerRangeV2.class).handleTick();
+            TickEvent tickEvent = new TickEvent();
+            Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
+            if (tickEvent.isCanceled()) return;
             runTick();
         }
 
@@ -1607,12 +1610,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     public void runTick() throws IOException
     {
-        TickEvent tickEvent = new TickEvent();
-        Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
-
-        if (tickEvent.isCanceled())
-            return;
-
         if (this.rightClickDelayTimer > 0)
         {
             --this.rightClickDelayTimer;

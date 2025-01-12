@@ -108,5 +108,4 @@ public class RenderUtils implements InstanceAccess {
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
     }
-
 }

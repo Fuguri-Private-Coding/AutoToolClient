@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.combat;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -37,7 +38,7 @@ public class AutoSoup extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof UpdateEvent) {
+        if (event instanceof RunGameLoopEvent) {
             int slot;
             if (mc.currentScreen == null) {
                 if ((mc.thePlayer.getCurrentEquippedItem() != null && mc.thePlayer.getCurrentEquippedItem().getItem() == Items.bowl || this.clicked) && mc.thePlayer.inventory.currentItem == this.slotOnLastTick) {
@@ -95,7 +96,6 @@ public class AutoSoup extends Module {
                                 continue;
                             }
 
-                            full = false;
                         }
                         mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 0, 1, mc.thePlayer);
                         break;
@@ -116,7 +116,7 @@ public class AutoSoup extends Module {
             GuiInventory inventory = (GuiInventory)mc.currentScreen;
 
             for(int i = 36; i < 45; ++i) {
-                ItemStack item = (ItemStack)inventory.inventorySlots.getInventory().get(i);
+                ItemStack item = inventory.inventorySlots.getInventory().get(i);
                 if (item != null && item.getItem() == Items.bowl) {
                     return i;
                 }

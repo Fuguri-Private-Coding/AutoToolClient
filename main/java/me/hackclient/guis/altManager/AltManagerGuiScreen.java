@@ -1,6 +1,5 @@
 package me.hackclient.guis.altManager;
 
-import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
