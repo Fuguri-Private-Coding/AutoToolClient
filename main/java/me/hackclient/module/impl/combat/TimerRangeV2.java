@@ -21,12 +21,13 @@ import java.util.Comparator;
 @ModuleInfo(name = "TimerRangeV2", category = Category.COMBAT, toggled = true)
 public class TimerRangeV2 extends Module {
 
-    BooleanSetting limitTicks = new BooleanSetting("LimitTeleportTicks", this, true);
-    IntegerSetting ticks = new IntegerSetting("Ticks", this, () -> limitTicks.isToggled(), 1, 20, 2);
-    IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 10);
-    IntegerSetting maxPlayerHurtTime = new IntegerSetting("MaxPlayerHurtTime", this, 0, 10, 10);
-    BooleanSetting testAutoDistance = new BooleanSetting("TestAutoDistance", this, false);
-    FloatSetting startDistance = new FloatSetting("StartDistance", this, () -> !testAutoDistance.isToggled(), 3f, 6, 3.8f, 0.1f);
+    final BooleanSetting limitTicks = new BooleanSetting("LimitTeleportTicks", this, true);
+    final IntegerSetting ticks = new IntegerSetting("Ticks", this, limitTicks::isToggled, 1, 20, 2);
+    final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 10);
+    final IntegerSetting maxPlayerHurtTime = new IntegerSetting("MaxPlayerHurtTime", this, 0, 10, 10);
+    final BooleanSetting testAutoDistance = new BooleanSetting("TestAutoDistance", this, false);
+    final FloatSetting startDistance = new FloatSetting("StartDistance", this, () -> !testAutoDistance.isToggled(), 3f, 6, 3.8f, 0.1f);
+    final FloatSetting tolerance = new FloatSetting("Tolerance", this, 0.0f, 2.0f, 1.5f, 0.1f);
 
     FloatSetting renderPartialTicks = new FloatSetting("RenderPartialTicksAtFreeze", this, 0, 2, 1, 0.1f);
 
@@ -38,7 +39,7 @@ public class TimerRangeV2 extends Module {
     KillAura killAura;
 
     boolean click;
-    int balance;
+    float balance;
 
     @Override
     public void onEvent(Event event) {
@@ -69,40 +70,37 @@ public class TimerRangeV2 extends Module {
                     }
                 }
             }
-            case TIMER -> {
-                if (event instanceof RunGameLoopEvent) {
-                    try {
-                        while (target != null
-                                && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
-                                && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
-                                && target.hurtTime <= maxTargetHurtTime.getValue()
-                                && mc.thePlayer.hurtTime <= maxPlayerHurtTime.getValue()
-                                && notReachedTicks(balance)) {
-                            mc.runTick();
-                            balance++;
-                        }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                    if (balance > 0) {
-                        state = TimerState.FREEZE;
-                        click = true;
-                    } else {
-                        state = TimerState.NONE;
-                    }
-                }
-            }
+//            case TIMER -> {
+//                if (event instanceof RunGameLoopEvent) {
+//                    try {
+//                        while (target != null
+//                                && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
+//                                && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
+//                                && target.hurtTime <= maxTargetHurtTime.getValue()
+//                                && mc.thePlayer.hurtTime <= maxPlayerHurtTime.getValue()
+//                                && notReachedTicks(balance)) {
+//                            mc.runTick();
+//                            balance++;
+//                        }
+//                    } catch (Exception e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    if (balance > 0) {
+//                        state = TimerState.FREEZE;
+//                        click = true;
+//                    } else {
+//                        state = TimerState.NONE;
+//                    }
+//                }
+//            }
             case FREEZE -> {
-                if (balance == 0) {
+                if (balance <= 0) {
+                    balance = 0.0f;
                     state = TimerState.NONE;
                 }
                 if (balance > 0 && event instanceof TickEvent tickEvent) {
                     tickEvent.setCanceled(true);
                     balance--;
-                }
-                if (event instanceof LegitClickTimingEvent && click) {
-                    mc.clickMouse();
-                    click = false;
                 }
                 if (event instanceof RunGameLoopEvent) {
                     mc.timer.renderPartialTicks = renderPartialTicks.getValue();
@@ -111,7 +109,7 @@ public class TimerRangeV2 extends Module {
         }
     }
 
-    boolean notReachedTicks(int balance) {
+    boolean notReachedTicks(float balance) {
         return !limitTicks.isToggled() || balance < ticks.getValue();
     }
 
@@ -124,12 +122,6 @@ public class TimerRangeV2 extends Module {
         } else {
             return startDistance.getValue();
         }
-    }
-
-    enum TimerState {
-        NONE,
-        FREEZE,
-        TIMER
     }
 
     public void handleTick() {
@@ -148,10 +140,17 @@ public class TimerRangeV2 extends Module {
             throw new RuntimeException(e);
         }
         if (balance > 0) {
+            balance *= tolerance.getValue();
             state = TimerState.FREEZE;
-            click = true;
+            mc.clickMouse();
         } else {
             state = TimerState.NONE;
         }
+    }
+
+    public enum TimerState {
+        NONE,
+        TIMER,
+        FREEZE
     }
 }

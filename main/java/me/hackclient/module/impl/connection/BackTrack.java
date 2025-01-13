@@ -153,9 +153,13 @@ public class BackTrack extends Module {
                 double smoothY = target.lastRealY + (target.realY - target.lastRealY) * mc.timer.renderPartialTicks;
                 double smoothZ = target.lastRealZ + (target.realZ - target.lastRealZ) * mc.timer.renderPartialTicks;
 
+                double smoothX1 = target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks;
+                double smoothY1 = target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks;
+                double smoothZ1 = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks;
+
                 RenderUtils.renderHitBox(
                         target.getEntityBoundingBox()
-                                .offset(smoothX / 32 - target.posX, smoothY / 32 - target.posY, smoothZ / 32 - target.posZ)
+                                .offset(smoothX / 32 - smoothX1, smoothY / 32 - smoothY1, smoothZ / 32 - smoothZ1)
                                 .offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ),
                         GL11.GL_LINE_LOOP
                 );
