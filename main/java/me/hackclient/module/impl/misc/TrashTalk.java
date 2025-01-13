@@ -642,6 +642,7 @@ public class TrashTalk extends Module {
         if (event instanceof TickEvent) {
             if (timer.reachedMS(delay.getValue() * 1000L)) {
                 mc.thePlayer.sendQueue.addToSendQueue(new C01PacketChatMessage(
+                        "!" +
                         trash.get(RandomUtils.nextInt(0, trash.size() - 1)) +
                                 (Math.random() > 0.5 && smile.isToggled() ? smiles.get(RandomUtils.nextInt(0, smiles.size() - 1)) : "")));
                 timer.reset();

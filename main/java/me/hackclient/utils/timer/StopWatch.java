@@ -15,6 +15,10 @@ public class StopWatch {
 		return System.nanoTime() - lastNS;
 	}
 
+	public long reachedS() {
+		return reachedMS() / 1000;
+	}
+
 	public boolean reachedMS(long time) {
 		return reachedMS() >= time;
 	}

@@ -32,6 +32,7 @@ public class ModuleManager {
 				 new Fly(),
 				 new AutoClicker(),
 				 new HighJump(),
+				 new BridgeAssist(),
 				 new LongJump(),
 				 new NoSlow(),
 				 new NoWeb(),
