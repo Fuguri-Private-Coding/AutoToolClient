@@ -10,6 +10,7 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.timer.StopWatch;
@@ -18,7 +19,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.*;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -52,7 +52,10 @@ public class BackTrack extends Module {
     final BooleanSetting renderClientPos = new BooleanSetting("RenderClientPos", this, false);
     final BooleanSetting renderServerPos = new BooleanSetting("RenderServerPos", this, true);
 
+    final Animation3D animation3D;
+
     final StopWatch attackTimer, resetTimer, flagTimer;
+
     final List<Doubles<Packet, Long>> serverPackets;
 
     EntityLivingBase target;
@@ -62,6 +65,7 @@ public class BackTrack extends Module {
         resetTimer = new StopWatch();
         attackTimer = new StopWatch();
         serverPackets = new CopyOnWriteArrayList<>();
+        animation3D = new Animation3D();
     }
 
     @Override
@@ -84,14 +88,14 @@ public class BackTrack extends Module {
             } else {
                 handlePackets();
                 double distance = mc.thePlayer.getDistance(target.realX / 32, target.realY / 32, target.realZ / 32);
-                if (distance > (limitDistance.isToggled() ? maxDistance.getValue() : Double.MAX_VALUE) || distance < 3 || distance <= mc.thePlayer.getDistanceToEntity(target)) {
+                if (distance > (limitDistance.isToggled() ? maxDistance.getValue() : Double.MAX_VALUE) /*ц|| distance < 3*/ || distance <= mc.thePlayer.getDistanceToEntity(target)) {
                     resetPackets();
                     return;
                 }
             }
         }
 
-        if (event instanceof PacketEvent packetEvent) {
+        if (event instanceof PacketEvent packetEvent && packetEvent.getDirection() == PackerDirection.INCOMING) {
             Packet packet = packetEvent.getPacket();
 
             if (packet instanceof S08PacketPlayerPosLook) {
@@ -101,9 +105,6 @@ public class BackTrack extends Module {
 
             if (packet instanceof S14PacketEntity s14
                     && mc.theWorld.getEntityByID(s14.entityId) instanceof EntityLivingBase entityLivingBase) {
-                entityLivingBase.lastRealX = entityLivingBase.realX;
-                entityLivingBase.lastRealY = entityLivingBase.realY;
-                entityLivingBase.lastRealZ = entityLivingBase.realZ;
                 entityLivingBase.realX += s14.func_149062_c();
                 entityLivingBase.realY += s14.func_149061_d();
                 entityLivingBase.realZ += s14.func_149064_e();
@@ -111,9 +112,6 @@ public class BackTrack extends Module {
 
             if (packet instanceof S18PacketEntityTeleport s18
                     && mc.theWorld.getEntityByID(s18.getEntityId()) instanceof EntityLivingBase entityLivingBase) {
-                entityLivingBase.lastRealX = entityLivingBase.realX;
-                entityLivingBase.lastRealY = entityLivingBase.realY;
-                entityLivingBase.lastRealZ = entityLivingBase.realZ;
                 entityLivingBase.realX = s18.getX();
                 entityLivingBase.realY = s18.getY();
                 entityLivingBase.realZ = s18.getZ();
@@ -149,25 +147,19 @@ public class BackTrack extends Module {
             }
             if (renderServerPos.isToggled()) {
                 GL11.glColor4f(1f, 1f, 1f, 1f);
-                double smoothX = target.lastRealX + (target.realX - target.lastRealX) * mc.timer.renderPartialTicks;
-                double smoothY = target.lastRealY + (target.realY - target.lastRealY) * mc.timer.renderPartialTicks;
-                double smoothZ = target.lastRealZ + (target.realZ - target.lastRealZ) * mc.timer.renderPartialTicks;
-
-                double smoothX1 = target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks;
-                double smoothY1 = target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks;
-                double smoothZ1 = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks;
+                animation3D.update(20);
+                animation3D.endX = target.realX;
+                animation3D.endY = target.realY;
+                animation3D.endZ = target.realZ;
 
                 RenderUtils.renderHitBox(
                         target.getEntityBoundingBox()
-                                .offset(smoothX / 32 - smoothX1, smoothY / 32 - smoothY1, smoothZ / 32 - smoothZ1)
+                                .offset(animation3D.x / 32 - target.posX, animation3D.y / 32 - target.posY, animation3D.z / 32 - target.posZ)
                                 .offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ),
                         GL11.GL_LINE_LOOP
                 );
             }
             RenderUtils.stop3D();
-        }
-        if (event instanceof Render2DEvent) {
-            mc.fontRendererObj.drawString("Packets " + serverPackets.size(), 300, 300, -1, true);
         }
     }
 
@@ -181,24 +173,19 @@ public class BackTrack extends Module {
             }
             case "Smooth" -> serverPackets.forEach(packetLongDoubles -> {
                 if (System.currentTimeMillis() - packetLongDoubles.getSecond() >= delay.getValue()) {
-                    packetLongDoubles.getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
+                    processPacket(packetLongDoubles.getFirst());
                     serverPackets.remove(packetLongDoubles);
                 }
             });
         }
     }
 
-    void resetPackets() {
-        synchronized (serverPackets) {
-            while (!serverPackets.isEmpty()) {
-                if (serverPackets.get(0) == null) return;
-                if (serverPackets.get(0).getFirst() == null) return;
+    void processPacket(Packet packet) {
+        packet.processPacket(mc.getNetHandler().getNetworkManager().packetListener);
+    }
 
-                try {
-                    serverPackets.get(0).getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
-                } catch (Exception ignored) {}
-                serverPackets.remove(0);
-            }
-        }
+    void resetPackets() {
+        serverPackets.forEach(packetLongDoubles -> processPacket(packetLongDoubles.getFirst()));
+        serverPackets.clear();
     }
 }
