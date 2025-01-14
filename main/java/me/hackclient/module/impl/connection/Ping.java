@@ -135,9 +135,8 @@ public class Ping extends Module {
 				packetBuffer.remove(packetLongDoubles);
 			}
 		});
-		if (!posBuffer.isEmpty()) {
-			posBuffer.removeIf(doubles -> System.currentTimeMillis() >= doubles.getSecond() + delay.getValue());
-		}
+
+		posBuffer.removeIf(doubles -> System.currentTimeMillis() >= doubles.getSecond() + delay.getValue());
 	}
 
 	public void resetPackets() {

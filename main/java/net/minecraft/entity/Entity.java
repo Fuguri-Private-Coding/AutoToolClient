@@ -1134,7 +1134,7 @@ public abstract class Entity implements ICommandSender
         double d0 = this.posX - x;
         double d1 = this.posY - y;
         double d2 = this.posZ - z;
-        return (double)MathHelper.sqrt_double(d0 * d0 + d1 * d1 + d2 * d2);
+        return Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
     }
 
     public double getDistanceSqToEntity(Entity entityIn)

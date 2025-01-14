@@ -34,7 +34,7 @@ public class Util
             logger.fatal((String)"Error executing task", (Throwable)interruptedexception);
         }
 
-        return (V)((Object)null);
+        return null;
     }
 
     public static enum EnumOS

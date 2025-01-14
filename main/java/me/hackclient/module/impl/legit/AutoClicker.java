@@ -8,9 +8,9 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
+import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.util.MovingObjectPosition;
-import org.apache.commons.lang3.RandomUtils;
 import org.lwjgl.input.Mouse;
 
 @ModuleInfo(

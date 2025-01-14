@@ -87,6 +87,17 @@ public class KillAura extends Module {
 			if (event instanceof MotionEvent motionEvent) {
 				motionEvent.setYaw(Rotation.getServerRotation().getYaw());
 				motionEvent.setPitch(Rotation.getServerRotation().getPitch());
+
+				if (mc.currentScreen == null) {
+					IKillAuraRotation selectedRotation = new IntaveRotation();
+					rotations.add(selectedRotation.compute(getLastRotation(), target, speedYawRotation.getValue(), speedPitchRotation.getValue()));
+
+					Rotation.setServerRotation(rotations.get(0));
+
+					while (rotations.size() > reactionTime.getValue()) {
+						rotations.remove(0);
+					}
+				}
 			}
 
 			if (event instanceof LookEvent lookEvent) {
@@ -158,18 +169,6 @@ public class KillAura extends Module {
 					}
 				});
 			}
-			if (event instanceof TickEvent) {
-				if (mc.currentScreen == null) {
-					IKillAuraRotation selectedRotation = new IntaveRotation();
-					rotations.add(selectedRotation.compute(getLastRotation(), target, speedYawRotation.getValue(), speedPitchRotation.getValue()));
-
-					Rotation.setServerRotation(rotations.get(0));
-
-					while (rotations.size() > reactionTime.getValue()) {
-						rotations.remove(0);
-					}
-				}
-            }
 		} else {
 			Animations.setAnimate(false);
 		}

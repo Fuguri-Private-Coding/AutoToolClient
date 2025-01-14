@@ -19,6 +19,7 @@ public class FullBright extends Module {
         super.onEvent(event);
         if (event instanceof UpdateEvent) {
             mc.gameSettings.gammaSetting = 10000;
+            mc.entityRenderer.enableLightmap();
         }
     }
 }

@@ -1,57 +1,80 @@
 package me.hackclient.module.impl.player;
 
-import me.hackclient.event.PackerDirection;
 import me.hackclient.event.Event;
-import me.hackclient.event.events.MotionEvent;
+import me.hackclient.event.PackerDirection;
 import me.hackclient.event.events.PacketEvent;
+import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
-import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
-import net.minecraft.util.ChatComponentText;
+import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.utils.doubles.Doubles;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S03PacketTimeUpdate;
+import net.minecraft.network.play.server.S12PacketEntityVelocity;
+import net.minecraft.network.play.server.S27PacketExplosion;
+import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "Disabler", category = Category.PLAYER)
 public class Disabler extends Module {
 
-	private final CopyOnWriteArrayList<C0FPacketConfirmTransaction> c0fs = new CopyOnWriteArrayList<>();
+	final ModeSetting mode = new ModeSetting(
+			"Mode",
+			this,
+			"IntaveTimer",
+			new String[] {
+					"IntaveTimer"
+			}
+	);
+
+	final IntegerSetting delay = new IntegerSetting("Delay", this, () -> mode.getMode().equals("IntaveTimer"), 100, 5000, 200);
+
+	final CopyOnWriteArrayList<Doubles<Packet, Long>> packets;
+
+	public Disabler() {
+		packets = new CopyOnWriteArrayList<>();
+	}
 
 	public void onEnable() {
-		c0fs.clear();
+
 	}
 
 	public void onDisable() {
-		while (!c0fs.isEmpty()) {
-			mc.getNetHandler().getNetworkManager().sendPacketNoEvent(c0fs.get(0));
-			c0fs.remove(0);
+		for (Doubles<Packet, Long> packet : packets) {
+			packet.getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
 		}
+		packets.clear();
 	}
 
 	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
-		if (event instanceof PacketEvent packetEvent) {
-			if (packetEvent.getDirection() == PackerDirection.INCOMING)
-				return;
+		if (event instanceof PacketEvent packetEvent
+		&& packetEvent.getDirection() == PackerDirection.INCOMING) {
+			Packet packet = packetEvent.getPacket();
 
-			if (packetEvent.getPacket() instanceof C0FPacketConfirmTransaction c0f) {
-				packetEvent.setCanceled(true);
-				c0fs.add(c0f);
-				mc.thePlayer.addChatMessage(new ChatComponentText("canceled C0f " + c0fs.size()));
-			}
-
-			int delay = 20;
-			if (c0fs.size() < delay) {
+			if (packet instanceof S32PacketConfirmTransaction
+			|| packet instanceof S03PacketTimeUpdate
+			|| (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId())
+			|| packet instanceof S27PacketExplosion) {
+				packets.add(new Doubles<>(packet, System.currentTimeMillis()));
 				packetEvent.setCanceled(true);
 			}
 		}
-		if (event instanceof MotionEvent) {
-			int delay = 500;
-			while (c0fs.size() > delay) {
-				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(c0fs.get(0));
-				c0fs.remove(0);
+		if (event instanceof RunGameLoopEvent) {
+			if (packets.isEmpty())
+				return;
+			
+			synchronized (packets) {
+				for (Doubles<Packet, Long> packet : packets) {
+					if (System.currentTimeMillis() - packet.getSecond() >= delay.getValue()) {
+						packet.getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
+						packets.remove(packet);
+					}
+				}	
 			}
 		}
 	}

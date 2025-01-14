@@ -528,7 +528,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
                 entity.setPositionAndRotation2(d0, d1, d2, f, f1, 3, true);
             }
 
-            entity.onGround = packetIn.getOnGround();
+            entity.onGround = packetIn.isOnGround();
         }
     }
 
