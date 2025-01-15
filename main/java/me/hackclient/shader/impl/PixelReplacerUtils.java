@@ -59,7 +59,7 @@ public class PixelReplacerUtils implements CallableObject, InstanceAccess {
             Uniform.uniform1f(id, "r_offset", pixelReplacer.getROffset().getValue() / 255f);
             Uniform.uniform1f(id, "g_offset", pixelReplacer.getGOffset().getValue() / 255f);
             Uniform.uniform1f(id, "b_offset", pixelReplacer.getBOffset().getValue() / 255f);
-            Uniform.uniform1f(id, "time", timer.reachedMS() / 1000f);
+            Uniform.uniform1f(id, "time", timer.reachedMS() / (1000f * 10));
             Uniform.uniform1i(id, "texture", 19);
             Uniform.uniform1f(id, "texel_size", 1f / mc.displayHeight);
             GlStateManager.enableBlend();

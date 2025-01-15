@@ -12,6 +12,7 @@ import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.render.scissor.ScissorUtils;
@@ -84,7 +85,7 @@ public class ClickGuiScreen extends GuiScreen {
 		ScissorUtils.enableScissor();
 		ScissorUtils.scissor(new ScaledResolution(mc), pos.x, pos.y, size.x, size.y);
 
-		RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, 2, BACKGROUND_COLOR);
+		PixelReplacerUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, 2, new Color(15, 15, 15, 200)));
 		RoundedUtils.drawRect(pos.x + size.x - 5, pos.y + size.y - 5, 5, 5, 1, BACKGROUND_COLOR);
 		fontRenderer.drawString(Client.INSTANCE.getName(), pos.x + 14, pos.y + 4, MAIN_COLOR_INT);
 
