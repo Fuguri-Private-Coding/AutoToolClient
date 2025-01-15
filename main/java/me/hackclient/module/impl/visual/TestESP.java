@@ -6,6 +6,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.shader.impl.PixelReplacerUtils;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -33,6 +34,8 @@ public class TestESP extends Module {
 
                     mc.getRenderManager().renderEntityStatic(entityPlayer, mc.timer.renderPartialTicks, false);
                 }
+                GlStateManager.enableAlpha();
+                GlStateManager.enableBlend();
             });
             kostil = false;
         }

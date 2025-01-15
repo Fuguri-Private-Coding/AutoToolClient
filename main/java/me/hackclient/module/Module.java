@@ -20,9 +20,7 @@ public class Module implements InstanceAccess, ConditionCallableObject {
 	@Getter boolean toggled = annotation.toggled();
 	@Getter final List<Setting> settings;
 
-	{
-		callables.add(this);
-	}
+	{ callables.add(this); }
 
 	public Module() {
 		checkToggled();

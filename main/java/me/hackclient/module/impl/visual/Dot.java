@@ -9,6 +9,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.combat.KillAura;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
+import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.render.RenderUtils;
@@ -43,19 +44,23 @@ public class Dot extends Module {
                 return;
             }
 
-            RenderUtils.start3D();
-            Vec3 vec = mc.objectMouseOver.hitVec.addVector(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
-            GL11.glPointSize(size.getValue());
-            GL11.glBegin(GL11.GL_POINTS);
-            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            animation3D.update(30);
-            animation3D.endX = vec.xCoord;
-            animation3D.endY = vec.yCoord;
-            animation3D.endZ = vec.zCoord;
-            GL11.glVertex3d(animation3D.x,animation3D.y,animation3D.z);
-            GL11.glEnd();
-            GL11.glPointSize(1);
-            RenderUtils.stop3D();
+            PixelReplacerUtils.addToDraw(() -> {
+                RenderUtils.start3D();
+                Vec3 vec = mc.objectMouseOver.hitVec.addVector(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
+                GL11.glPointSize(size.getValue());
+                GL11.glEnable(GL11.GL_POINT_SMOOTH);
+                GL11.glBegin(GL11.GL_POINTS);
+                GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                animation3D.update(30);
+                animation3D.endX = vec.xCoord;
+                animation3D.endY = vec.yCoord;
+                animation3D.endZ = vec.zCoord;
+                GL11.glVertex3d(animation3D.x,animation3D.y,animation3D.z);
+                GL11.glEnd();
+                GL11.glDisable(GL11.GL_POINT_SMOOTH);
+                GL11.glPointSize(1);
+                RenderUtils.stop3D();
+            });
         }
     }
 }
