@@ -9,18 +9,30 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.combat.KillAura;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
+import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
+
 @ModuleInfo(
         name = "Dot",
-        category = Category.VISUAL
+        category = Category.VISUAL,
+        toggled = true
 )
 public class Dot extends Module {
 
-    final FloatSetting size = new FloatSetting("Size", this, 1.0f, 20.0f, 5.0f, 0.1f);
+    final FloatSetting size = new FloatSetting("Size", this, 1.0f, 20.0f, 10.0f, 0.1f);
     final BooleanSetting onlyKillAura = new BooleanSetting("OnlyKillAura", this, true);
+
+    final Animation3D animation3D;
+
+
+    public Dot() {
+        animation3D = new Animation3D();
+    }
 
     @Override
     public void onEvent(Event event) {
@@ -36,7 +48,11 @@ public class Dot extends Module {
             GL11.glPointSize(size.getValue());
             GL11.glBegin(GL11.GL_POINTS);
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            GL11.glVertex3d(vec.xCoord, vec.yCoord, vec.zCoord);
+            animation3D.update(30);
+            animation3D.endX = vec.xCoord;
+            animation3D.endY = vec.yCoord;
+            animation3D.endZ = vec.zCoord;
+            GL11.glVertex3d(animation3D.x,animation3D.y,animation3D.z);
             GL11.glEnd();
             GL11.glPointSize(1);
             RenderUtils.stop3D();

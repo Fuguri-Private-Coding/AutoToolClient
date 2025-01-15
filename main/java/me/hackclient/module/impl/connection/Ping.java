@@ -8,6 +8,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -42,6 +43,7 @@ public class Ping extends Module {
 
 	// Таймер для задержки после ресета, помогает обходить античиты
 	int stoppingTime;
+	final Animation3D animation3D;
 	final List<Doubles<Packet, Long>> packetBuffer;
 	final List<Doubles<Vec3, Long>> posBuffer;
 
@@ -51,6 +53,7 @@ public class Ping extends Module {
 	}
 
 	public Ping() {
+		animation3D = new Animation3D();
 		packetBuffer = new CopyOnWriteArrayList<>();
 		posBuffer = new CopyOnWriteArrayList<>();
 		stoppingTime = 0;
@@ -116,15 +119,21 @@ public class Ping extends Module {
 		}
 
 		if (event instanceof Render3DEvent && !posBuffer.isEmpty() && mc.gameSettings.thirdPersonView != 0) {
+			Vec3 vec = posBuffer.get(0).getFirst();
+			animation3D.endX = vec.xCoord;
+			animation3D.endY = vec.yCoord;
+			animation3D.endZ = vec.zCoord;
+			animation3D.update(20f);
+
 			RenderUtils.start3D();
-			Vec3 dif = posBuffer.get(0).getFirst().subtract(mc.thePlayer.getPositionVector());
-			AxisAlignedBB box = mc.thePlayer.getEntityBoundingBox().offset(dif).
+			Vec3 diff = new Vec3(animation3D.x, animation3D.y, animation3D.z).subtract(mc.thePlayer.getPositionVector());
+			AxisAlignedBB box = mc.thePlayer.getEntityBoundingBox().offset(diff).
 					offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
 			RenderUtils.renderHitBox(box);
 			RenderUtils.stop3D();
 		}
 
-		if (event instanceof TickEvent) {
+		if (event instanceof RunGameLoopEvent) {
 			if (stoppingTime > 0) stoppingTime--;
 		}
 	}

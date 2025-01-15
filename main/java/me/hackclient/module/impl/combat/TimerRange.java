@@ -23,6 +23,7 @@ public class TimerRange extends Module {
     FloatSetting startDistance = new FloatSetting("StartDistance", this, 3f, 6, 3.8f, 0.1f);
     IntegerSetting limitTicks = new IntegerSetting("LimitTick", this, 1,20,2);
     IntegerSetting disabledTicks = new IntegerSetting("FlagDelayTicks", this, 0, 20, 0);
+    IntegerSetting addictingFreezeTicks = new IntegerSetting("AddictingFreezeTicks", this, 0, 4, 0);
 
     ModeSetting freezeMode = new ModeSetting(
             "FreezeAnimation",
@@ -70,8 +71,10 @@ public class TimerRange extends Module {
                     try {
                         mc.runTick();
                         balance++;
-                        if (balance >= limitTicks.getValue() || mc.thePlayer.moveForward == 0f)
+                        if (balance >= limitTicks.getValue()) {
+                            balance += addictingFreezeTicks.getValue();
                             break;
+                        }
                     } catch (Exception ignored) {}
                 }
                 if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) killAura.clickManager.clicks++;

@@ -22,7 +22,6 @@ public class AutoPlace extends Module {
 
     long lastTime = 0L;
     int delay = 0;
-    MovingObjectPosition movingObjectPosition = null;
     BlockPos blockPos = null;
 
     FloatSetting frameDelay = new FloatSetting("FrameDelay", this, 0f, 10f, 0f, 1f);

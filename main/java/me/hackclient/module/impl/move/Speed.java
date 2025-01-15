@@ -24,7 +24,7 @@ public class Speed extends Module {
 			}
 	);
 
-	BooleanSetting resetMotion = new BooleanSetting("ResetMotionOnDisable", this, true);
+	BooleanSetting resetMotion = new BooleanSetting("ResetMotionOnDisable", this, false);
 	FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 0.1f, 2f, 1.7f, 0.1f);
 
 	@Override

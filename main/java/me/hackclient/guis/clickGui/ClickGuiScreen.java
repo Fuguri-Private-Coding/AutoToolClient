@@ -35,7 +35,6 @@ public class ClickGuiScreen extends GuiScreen {
 	final Color BACKGROUND_COLOR = new Color(15, 15, 15, 100);
 	final Color MAIN_COLOR = new Color(0, 255, 209, 255);
 	final int MAIN_COLOR_INT = MAIN_COLOR.getRGB();
-	final int BACKGROUND_COLOR_INT = BACKGROUND_COLOR.getRGB();
 
 	Vector2f pos, size, lastMouse;
 	Bloom bloom = Client.INSTANCE.getModuleManager().getModule(Bloom.class);
@@ -65,7 +64,7 @@ public class ClickGuiScreen extends GuiScreen {
 		if (bloom.clickGui.isToggled() && bloom.isToggled()) {
 			List<Runnable> list = new ArrayList<>();
 			list.add(() -> RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, 2, Color.WHITE));
-			//BloomUtils.drawBloom(list);
+			BloomUtils.drawBloom(list);
 		}
 		if (resizing
 		&& mouseX > pos.x + 100

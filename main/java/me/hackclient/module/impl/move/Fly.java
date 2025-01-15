@@ -19,14 +19,14 @@ public class Fly extends Module {
     ModeSetting mode = new ModeSetting(
             "Mode",
             this,
-            "Matrix test",
+            "Vanilla",
             new String[] {
                     "Vanilla",
                     "Matrix test"
             }
     );
 
-    FloatSetting speed = new FloatSetting("Speed", this, 0.1f, 0.6f, 0.6f, 0.1f);
+    final FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 0.1f, 0.6f, 0.6f, 0.1f);
 
     int jumps;
 

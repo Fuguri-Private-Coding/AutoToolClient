@@ -46,7 +46,7 @@ public class ArrayList extends Module {
 						offset += mc.fontRendererObj.FONT_HEIGHT + 3;
 					}
 				});
-				//BloomUtils.drawBloom(list);
+				BloomUtils.drawBloom(list);
 			}
 			drawMain();
 		}

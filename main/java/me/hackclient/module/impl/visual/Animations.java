@@ -24,7 +24,6 @@ public class Animations extends Module {
             "Gothaj",
             "Spin",
             "Basic",
-
     });
 
     FloatSetting X = new FloatSetting("X", this, -1f, 1f, -0.1f, 0.1f);

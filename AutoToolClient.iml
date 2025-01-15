@@ -25,7 +25,7 @@
         </CLASSES>
         <JAVADOC />
         <NATIVE>
-          <root url="file://$MODULE_DIR$/jars/versions/1.8.9/1.8.9-natives" />
+          <root url="file://$MODULE_DIR$/jars/versions/1.8.9/natives" />
         </NATIVE>
         <SOURCES />
       </library>
