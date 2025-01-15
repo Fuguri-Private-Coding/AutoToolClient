@@ -6,21 +6,17 @@ import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.connection.Ping;
-import me.hackclient.module.impl.move.Sprint;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
-import me.hackclient.utils.move.MoveUtils;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import org.apache.commons.lang3.RandomUtils;
 
 @ModuleInfo(name = "MoreKB", category = Category.COMBAT, toggled = true)
 public class MoreKB extends Module {
 
-    private KillAura killAura;
+	private KillAura killAura;
 	public int ticks, delayTicks;
 
 	ModeSetting mode = new ModeSetting(
@@ -29,8 +25,10 @@ public class MoreKB extends Module {
 			"LegitFast",
 			new String[] {
 					"LegitFast",
+					"LegitFist",
 					"Legit",
 					"One"
+
 			}
 	);
 
@@ -45,10 +43,6 @@ public class MoreKB extends Module {
 	public void onEvent(Event event) {
 		super.onEvent(event);
 		if (event instanceof RunGameLoopEvent && debug.isToggled()) {
-			if (delayTicks > 0) {
-				ClientUtils.chatLog("Delaying ticks " + delayTicks);
-				return;
-			}
 			if (ticks > 0) ClientUtils.chatLog("Resetting ticks " + ticks);
 		}
 
@@ -56,14 +50,9 @@ public class MoreKB extends Module {
 			killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
 			ticks = 0;
 			delayTicks = 0;
-			return;
 		}
 
-		EntityLivingBase target = killAura.getTarget();
-		if (target == null && mc.objectMouseOver != null && mc.objectMouseOver.entityHit instanceof EntityLivingBase newTarget) {
-			target = newTarget;
-		}
-		if (target != null && target.hurtTime == 10 && ticks == 0 && mc.thePlayer.getBps(false) > 0 && event instanceof TickEvent) {
+		if (killAura.getTarget() != null && killAura.getTarget().hurtTime == 10 && ticks == 0 && mc.thePlayer.getBps(false) > 0 && event instanceof TickEvent) {
 			delayTicks = RandomUtils.nextInt(MinDelayTicks.getValue(), MaxDelayTicks.getValue());
 			ticks = RandomUtils.nextInt(MinResetTicks.getValue(), MaxResetTicks.getValue());
 		}
@@ -80,6 +69,7 @@ public class MoreKB extends Module {
 				case "LegitFast" -> handleLegitFast(event);
 				case "One" -> handleOne(event);
 				case "Legit" -> handleLegit(event);
+				case "LegitFist" -> handleLegitFist(event);
 			}
 		}
 	}
@@ -103,11 +93,17 @@ public class MoreKB extends Module {
 	}
 
 	private void handleLegitFast(Event event) {
-		if (event instanceof SprintEvent) {
-			if (mc.thePlayer.isSprinting()) {
-				mc.thePlayer.setSprinting(false);
-				ticks--;
-			}
+		if (event instanceof TickEvent && mc.thePlayer.isSprinting()) {
+			mc.thePlayer.setSprinting(false);
+			mc.thePlayer.setServerSprintState(false);
+			ticks--;
+		}
+	}
+
+	private void handleLegitFist(Event event) {
+		if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
+			mc.thePlayer.setSprinting(false);
+			ticks--;
 		}
 	}
 
