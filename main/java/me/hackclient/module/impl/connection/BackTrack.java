@@ -117,15 +117,7 @@ public class BackTrack extends Module {
                 entityLivingBase.realZ = s18.getZ();
             }
 
-            if (target != null
-            && packetEvent.getDirection() == PackerDirection.INCOMING
-            && (packet instanceof S32PacketConfirmTransaction
-            || packet instanceof S00PacketKeepAlive
-            || (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId())
-            || packet instanceof S14PacketEntity
-            || packet instanceof S18PacketEntityTeleport
-            || packet instanceof S03PacketTimeUpdate
-            || packet instanceof S27PacketExplosion)) {
+            if (target != null && packetEvent.getDirection() == PackerDirection.INCOMING) {
                 serverPackets.add(new Doubles<>(packet, System.currentTimeMillis()));
                 packetEvent.setCanceled(true);
             }

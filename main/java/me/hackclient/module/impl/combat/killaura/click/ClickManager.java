@@ -45,6 +45,9 @@ public class ClickManager implements InstanceAccess {
 	}
 
 	void mouseClick(int minCps, int maxCps, EntityLivingBase target) {
+		if (mc.currentScreen != null)
+			return;
+
 		Entity entity = RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity1 -> true);
 		if (entity == null || entity == target) {
 			mc.clickMouse();

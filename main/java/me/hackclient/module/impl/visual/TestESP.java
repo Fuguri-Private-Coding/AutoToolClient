@@ -1,23 +1,13 @@
 package me.hackclient.module.impl.visual;
 
-import me.hackclient.Client;
 import me.hackclient.event.Event;
-import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.shader.Shader;
-import me.hackclient.shader.Uniform;
-import me.hackclient.utils.timer.StopWatch;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
+import me.hackclient.shader.impl.PixelReplacerUtils;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.player.EntityPlayer;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 
 
 @ModuleInfo(
@@ -26,82 +16,81 @@ import org.lwjgl.opengl.GL13;
 )
 public class TestESP extends Module {
 
-    final StopWatch timer;
-    Framebuffer framebuffer;
-
-    final FloatSetting rOffset = new FloatSetting("RedOffset", this, 0.0f, 1.0f, 0.0f, 0.1f);
-    final FloatSetting gOffset = new FloatSetting("GreenOffset", this, 0.0f, 1.0f, 0.0f, 0.1f);
-    final FloatSetting bOffset = new FloatSetting("BlueOffset", this, 0.0f, 1.0f, 0.0f, 0.1f);
-
-    public TestESP() {
-        timer = new StopWatch();
-        framebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
-    }
-
-    @Override
-    public void onEnable() {
-        super.onEnable();
-        timer.reset();
-    }
+    public static boolean kostil;
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof Render3DEvent) {
-            framebuffer = createFrameBuffer(framebuffer);
-            framebuffer.framebufferClear();
-            framebuffer.bindFramebuffer(true);
-            for (EntityPlayer entityPlayer : mc.theWorld.playerEntities) {
-                final Render<EntityPlayer> render = mc.getRenderManager().getEntityRenderObject(entityPlayer);
+            kostil = true;
+            PixelReplacerUtils.addToDraw(() -> {
+                for (EntityPlayer entityPlayer : mc.theWorld.playerEntities) {
+                    final Render<EntityPlayer> render = mc.getRenderManager().getEntityRenderObject(entityPlayer);
 
-                if (mc.getRenderManager() == null || render == null || (entityPlayer == mc.thePlayer)) {
-                    continue;
+                    if (mc.getRenderManager() == null || render == null || (entityPlayer == mc.thePlayer)) {
+                        continue;
+                    }
+
+                    mc.getRenderManager().renderEntityStatic(entityPlayer, mc.timer.renderPartialTicks, false);
                 }
-
-                mc.getRenderManager().renderEntityStatic(entityPlayer, mc.timer.renderPartialTicks, false);
-            }
-            // тут рендерить то что должно изменяться на шейдер
-            framebuffer.unbindFramebuffer();
-            mc.getFramebuffer().bindFramebuffer(true);
+            });
+            kostil = false;
         }
-        if (event instanceof Render2DEvent) {
-            ScaledResolution sc = new ScaledResolution(mc);
-            final Shader shader = Client.INSTANCE.getShaderManager().getRUSSIANSHADER();
-
-            if (shader == null) {
-                return;
-            }
-
-            final int id = shader.getProgram();
-
-            shader.start();
-            Uniform.uniform1f(id, "r_offset", rOffset.getValue());
-            Uniform.uniform1f(id, "g_offset", gOffset.getValue());
-            Uniform.uniform1f(id, "b_offset", bOffset.getValue());
-            Uniform.uniform1f(id, "time", timer.reachedMS() / 1000f);
-            Uniform.uniform1i(id, "texture", 19);
-            Uniform.uniform1f(id, "texel_size", 1f / mc.displayHeight);
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            GlStateManager.enableAlpha();
-            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.0F);
-            GL13.glActiveTexture(GL13.GL_TEXTURE19);
-            framebuffer.bindFramebufferTexture();
-            GL13.glActiveTexture(GL13.GL_TEXTURE0);
-            mc.getFramebuffer().bindFramebuffer(true);
-            shader.renderShader(0, 0, sc.getScaledWidth(), sc.getScaledHeight());
-            GlStateManager.disableBlend();
-            shader.stop();
-        }
+//        if (event instanceof Render3DEvent) {
+//            framebuffer = createFrameBuffer(framebuffer);
+//            framebuffer.framebufferClear();
+//            framebuffer.bindFramebuffer(true);
+//            for (EntityPlayer entityPlayer : mc.theWorld.playerEntities) {
+//                final Render<EntityPlayer> render = mc.getRenderManager().getEntityRenderObject(entityPlayer);
+//
+//                if (mc.getRenderManager() == null || render == null || (entityPlayer == mc.thePlayer)) {
+//                    continue;
+//                }
+//
+//                mc.getRenderManager().renderEntityStatic(entityPlayer, mc.timer.renderPartialTicks, false);
+//            }
+//            // тут рендерить то что должно изменяться на шейдер
+//            framebuffer.unbindFramebuffer();
+//            mc.getFramebuffer().bindFramebuffer(true);
+//        }
+//        if (event instanceof Render2DEvent) {
+//            ScaledResolution sc = new ScaledResolution(mc);
+//            final Shader shader = Client.INSTANCE.getShaderManager().getPixelReplacer();
+//
+//            if (shader == null) {
+//                return;
+//            }
+//
+//            final int id = shader.getProgram();
+//
+//            shader.start();
+//            Uniform.uniform1f(id, "r_offset", rOffset.getValue());
+//            Uniform.uniform1f(id, "g_offset", gOffset.getValue());
+//            Uniform.uniform1f(id, "b_offset", bOffset.getValue());
+//            Uniform.uniform1f(id, "time", timer.reachedMS() / 1000f);
+//            Uniform.uniform1i(id, "texture", 19);
+//            Uniform.uniform1f(id, "texel_size", 1f / mc.displayHeight);
+//            GlStateManager.enableBlend();
+//            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+//            GlStateManager.enableAlpha();
+//            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.0F);
+//            GL13.glActiveTexture(GL13.GL_TEXTURE19);
+//            framebuffer.bindFramebufferTexture();
+//            GL13.glActiveTexture(GL13.GL_TEXTURE0);
+//            mc.getFramebuffer().bindFramebuffer(true);
+//            shader.renderShader(0, 0, sc.getScaledWidth(), sc.getScaledHeight());
+//            GlStateManager.disableBlend();
+//            shader.stop();
+//        }
     }
-
-    Framebuffer createFrameBuffer(Framebuffer framebuffer) {
-        if (framebuffer == null || framebuffer.framebufferWidth != mc.displayWidth || framebuffer.framebufferHeight != mc.displayHeight) {
-            if (framebuffer != null) {
-                framebuffer.deleteFramebuffer();
-            }
-            return new Framebuffer(mc.displayWidth, mc.displayHeight, true);
-        }
-        return framebuffer;
-    }
+//
+//    Framebuffer createFrameBuffer(Framebuffer framebuffer) {
+//        if (framebuffer == null || framebuffer.framebufferWidth != mc.displayWidth || framebuffer.framebufferHeight != mc.displayHeight) {
+//            if (framebuffer != null) {
+//                framebuffer.deleteFramebuffer();
+//            }
+//            return new Framebuffer(mc.displayWidth, mc.displayHeight, true);
+//        }
+//        return framebuffer;
+//    }
 }

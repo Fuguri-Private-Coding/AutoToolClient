@@ -19,10 +19,12 @@ public class Module implements InstanceAccess, ConditionCallableObject {
 	@Setter @Getter int key = annotation.key();
 	@Getter boolean toggled = annotation.toggled();
 	@Getter final List<Setting> settings;
-	//@Getter @Setter String suffix = "";
+
+	{
+		callables.add(this);
+	}
 
 	public Module() {
-		callables.add(this);
 		checkToggled();
 		settings = new ArrayList<>();
 	}
@@ -30,14 +32,8 @@ public class Module implements InstanceAccess, ConditionCallableObject {
 	public void toggle() {
 		setToggled(!toggled);
 	}
-
-	public void onEnable() {
-
-	}
-
-	public void onDisable() {
-
-	}
+	public void onEnable() {}
+	public void onDisable() {}
 
 	void checkToggled() {
 		if (toggled) {

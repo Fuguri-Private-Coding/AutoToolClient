@@ -1,12 +1,13 @@
 package me.hackclient.shader;
 
 import lombok.Getter;
+import me.hackclient.shader.impl.PixelReplacerUtils;
 import net.minecraft.util.ResourceLocation;
 
 @Getter
 public class ShaderManager {
 
-	Shader testBloom, rounded, textFade, RUSSIANSHADER, glowEsp;
+	Shader testBloom, rounded, textFade, pixelReplacer, glowEsp;
 
 	public ShaderManager() {
 		init();
@@ -14,7 +15,8 @@ public class ShaderManager {
 
 	public void init() {
 		glowEsp = new Shader(getShaderSource("GlowEsp.glsl"), getShaderSource("vertex.txt"));
-		RUSSIANSHADER = new Shader(getShaderSource("RUSSIANSHADER.glsl"), getShaderSource("vertex.txt"));
+		pixelReplacer = new Shader(getShaderSource("PixelReplacer.glsl"), getShaderSource("vertex.txt"));
+		new PixelReplacerUtils();
 		textFade = new Shader(getShaderSource("TextFade.glsl"), getShaderSource("vertex.txt"));
 		testBloom = new Shader(getShaderSource("TestBloom.glsl"), getShaderSource("vertex.txt"));
 		rounded = new Shader(getShaderSource("rounded.glsl"), getShaderSource("vertex.txt"));

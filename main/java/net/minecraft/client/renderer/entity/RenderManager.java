@@ -359,8 +359,8 @@ public class RenderManager
             render = this.getEntityRenderObject(entity);
             if (render != null && this.renderEngine != null) {
                 try {
-                    if (render instanceof RendererLivingEntity) {
-                        ((RendererLivingEntity)render).setRenderOutlines(this.renderOutlines);
+                    if (render instanceof RendererLivingEntity rendererLivingEntity) {
+                        rendererLivingEntity.setRenderOutlines(this.renderOutlines);
                     }
 
                     if (CustomEntityModels.isActive()) {

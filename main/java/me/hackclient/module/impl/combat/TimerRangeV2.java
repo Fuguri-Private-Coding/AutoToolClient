@@ -51,6 +51,9 @@ public class TimerRangeV2 extends Module {
 
         switch (state) {
             case NONE -> {
+                if (!(event instanceof TickEvent))
+                    break;
+
                 target = killAura.getTarget();
 
                 if (!onlyKillAura.isToggled() && killAura.getTarget() == null) {

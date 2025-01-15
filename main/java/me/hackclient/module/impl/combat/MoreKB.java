@@ -13,6 +13,7 @@ import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.move.MoveUtils;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -55,9 +56,14 @@ public class MoreKB extends Module {
 			killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
 			ticks = 0;
 			delayTicks = 0;
+			return;
 		}
 
-		if (killAura.getTarget() != null && killAura.getTarget().hurtTime == 10 && ticks == 0 && mc.thePlayer.getBps(false) > 0 && event instanceof TickEvent) {
+		EntityLivingBase target = killAura.getTarget();
+		if (target == null && mc.objectMouseOver != null && mc.objectMouseOver.entityHit instanceof EntityLivingBase newTarget) {
+			target = newTarget;
+		}
+		if (target != null && target.hurtTime == 10 && ticks == 0 && mc.thePlayer.getBps(false) > 0 && event instanceof TickEvent) {
 			delayTicks = RandomUtils.nextInt(MinDelayTicks.getValue(), MaxDelayTicks.getValue());
 			ticks = RandomUtils.nextInt(MinResetTicks.getValue(), MaxResetTicks.getValue());
 		}
@@ -97,10 +103,11 @@ public class MoreKB extends Module {
 	}
 
 	private void handleLegitFast(Event event) {
-		if (event instanceof TickEvent && mc.thePlayer.isSprinting()) {
-			mc.thePlayer.setSprinting(false);
-			mc.thePlayer.setServerSprintState(false);
-			ticks--;
+		if (event instanceof SprintEvent) {
+			if (mc.thePlayer.isSprinting()) {
+				mc.thePlayer.setSprinting(false);
+				ticks--;
+			}
 		}
 	}
 

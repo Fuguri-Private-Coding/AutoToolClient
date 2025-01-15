@@ -11,6 +11,7 @@ import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
+import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.network.Packet;
@@ -33,16 +34,17 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleInfo(name = "Ping", category = Category.CONNECTION)
 public class Ping extends Module {
 
-	IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 500);
-	IntegerSetting attackDelay = new IntegerSetting("AttackConditionTime", this, 0, 20, 10);
-	IntegerSetting flagDelay = new IntegerSetting("FlagConditionTime", this, 0, 20, 10);
+	IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 420);
+	IntegerSetting attackDelay = new IntegerSetting("AttackConditionTime", this, 0, 1000, 20);
+	IntegerSetting flagDelay = new IntegerSetting("FlagConditionTime", this, 0, 1000, 200);
 	BooleanSetting damageFlush = new BooleanSetting("DamageFlush", this, true);
 	BooleanSetting guiFlush = new BooleanSetting("GuiFlush", this, true);
 	BooleanSetting itemFlush = new BooleanSetting("ItemFlush", this, true);
 	IntegerSetting blockPlacementDelay = new IntegerSetting("BlockPlacementConditionTime", this, 0, 20, 10);
 
 	// Таймер для задержки после ресета, помогает обходить античиты
-	int stoppingTime;
+	int nextDelay;
+	final StopWatch resetTimer;
 	final Animation3D animation3D;
 	final List<Doubles<Packet, Long>> packetBuffer;
 	final List<Doubles<Vec3, Long>> posBuffer;
@@ -56,7 +58,7 @@ public class Ping extends Module {
 		animation3D = new Animation3D();
 		packetBuffer = new CopyOnWriteArrayList<>();
 		posBuffer = new CopyOnWriteArrayList<>();
-		stoppingTime = 0;
+		resetTimer = new StopWatch();
 	}
 
 	@Override
@@ -70,20 +72,20 @@ public class Ping extends Module {
 				return;
 
 			// Пропускает некоторые пакеты
-			if (packet instanceof C00Handshake || packet instanceof C00PacketServerQuery
-					|| packet instanceof C01PacketPing || packet instanceof C01PacketChatMessage
-					|| packet instanceof S01PacketPong) {
+			if (packet instanceof C01PacketChatMessage) {
 				return;
 			}
 
 			// Ресет при атаке
 			if (packet instanceof C02PacketUseEntity) {
-				stoppingTime = attackDelay.getValue();
+				resetTimer.reset();
+				nextDelay = attackDelay.getValue();
 			}
 
 			// Ресет при поставке блока, использовании придмета
 			if (packet instanceof C08PacketPlayerBlockPlacement) {
-				stoppingTime = blockPlacementDelay.getValue();
+				resetTimer.reset();
+				nextDelay = blockPlacementDelay.getValue();
 			}
 
 			// Ресет при получении урона
@@ -100,12 +102,16 @@ public class Ping extends Module {
 			}
 
 			if (packet instanceof S08PacketPlayerPosLook) {
-				stoppingTime = flagDelay.getValue();
+				resetTimer.reset();
+				nextDelay = flagDelay.getValue();
 			}
 
-			if (stoppingTime > 0) {
+			if (resetTimer.reachedMS() < nextDelay) {
 				resetPackets();
-			} else if (direction == PackerDirection.OUTGOING) {
+				return;
+			}
+
+			if (direction == PackerDirection.OUTGOING) {
 				packetEvent.setCanceled(true);
 				packetBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
 				if (packet instanceof C03PacketPlayer c03 && c03.isMoving()) {
@@ -115,6 +121,7 @@ public class Ping extends Module {
 		}
 
 		if (event instanceof RunGameLoopEvent) {
+
 			handleStandAlone();
 		}
 
@@ -131,10 +138,6 @@ public class Ping extends Module {
 					offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
 			RenderUtils.renderHitBox(box);
 			RenderUtils.stop3D();
-		}
-
-		if (event instanceof RunGameLoopEvent) {
-			if (stoppingTime > 0) stoppingTime--;
 		}
 	}
 	private void handleStandAlone() {

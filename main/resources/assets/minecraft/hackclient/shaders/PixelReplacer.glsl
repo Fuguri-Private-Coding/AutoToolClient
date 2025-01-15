@@ -17,7 +17,7 @@ void main( void ) {
             p += sin(p.yx * vec2(1.6, 1.1) * float(i + 11) + time * float(i) * vec2(3.4, 0.5) / 10.0) * 0.1;
         }
         float c = (abs(sin(p.y + time * 0.0) + sin(p.x + time * 0.0))) * 0.5;
-        gl_FragColor = vec4(vec3(r_offset, g_offset, b_offset + c), 1.0);
+        gl_FragColor = vec4(vec3(r_offset + c, g_offset + c, b_offset + c), 1.0);
     } else {
         discard;
     }
