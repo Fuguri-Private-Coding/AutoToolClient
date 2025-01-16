@@ -93,7 +93,7 @@ public class MoreKB extends Module {
 	}
 
 	private void handleLegitFast(Event event) {
-		if (event instanceof SprintEvent && mc.thePlayer.moveForward > 0.8) {
+		if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
 			mc.thePlayer.setSprinting(false);
 			mc.getNetHandler().addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
 			mc.thePlayer.setServerSprintState(false);
