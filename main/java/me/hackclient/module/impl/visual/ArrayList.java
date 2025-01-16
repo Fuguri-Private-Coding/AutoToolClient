@@ -23,13 +23,15 @@ public class ArrayList extends Module {
 
 	BooleanSetting background = new BooleanSetting("Background", this, false);
 
+	ClientShader clientShader;
+
 	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
-//		if (event instanceof DrawEntityEvent drawEntityEvent
-//		&& drawEntityEvent.getDrawingEntity() != null) {
-//			TextFadeUtils.draw(() -> mc.getRenderManager().renderEntitySimple(drawEntityEvent.getDrawingEntity(), mc.timer.renderPartialTicks), Color.MAGENTA, Color.CYAN);
-//		}
+		if (clientShader == null) {
+			clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
+			return;
+		}
 		if (event instanceof Render2DEvent) {
 			Bloom bloomModule = mm.getModule(Bloom.class);
 			if (bloomModule.isToggled() && bloomModule.arrayList.isToggled()) {
@@ -37,13 +39,7 @@ public class ArrayList extends Module {
 				list.add(() -> {
 					int offset = 0;
 					for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
-						Gui.drawRect(
-								3,
-								3 + offset,
-								6 + mc.fontRendererObj.getStringWidth(module.getName()),
-								5 + offset + 10,
-								new Color(255, 255, 255, 255).getRGB()
-						);
+						Gui.drawRect(3, 3 + offset, 6 + mc.fontRendererObj.getStringWidth(module.getName()), 5 + offset + 10, new Color(255, 255, 255, 255).getRGB());
 						offset += mc.fontRendererObj.FONT_HEIGHT + 3;
 					}
 				});
@@ -62,22 +58,26 @@ public class ArrayList extends Module {
 					return Integer.compare(width2, width1);
 				}
 		);
-		PixelReplacerUtils.addToDraw(() -> {
+		if (clientShader.isToggled() && clientShader.arrayList.isToggled()) {
+			PixelReplacerUtils.addToDraw(() -> {
+				int offset = 0;
+				for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
+					if (background.isToggled()) {
+						Gui.drawRect(3, 3 + offset, 6 + mc.fontRendererObj.getStringWidth(module.getName()), 5 + offset + 10, new Color(0, 0, 0, 75).getRGB());
+					}
+					mc.fontRendererObj.drawString(module.getName(), 5, 5 + offset, Color.WHITE.getRGB());
+					offset += mc.fontRendererObj.FONT_HEIGHT + 3;
+				}
+			});
+		} else {
 			int offset = 0;
 			for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
 				if (background.isToggled()) {
-					Gui.drawRect(
-							3,
-							3 + offset,
-							6 + mc.fontRendererObj.getStringWidth(module.getName()),
-							5 + offset + 10,
-							new Color(0, 0, 0, 75).getRGB()
-					);
+					Gui.drawRect(3, 3 + offset, 6 + mc.fontRendererObj.getStringWidth(module.getName()), 5 + offset + 10, new Color(0, 0, 0, 75).getRGB());
 				}
-
 				mc.fontRendererObj.drawString(module.getName(), 5, 5 + offset, Color.WHITE.getRGB());
 				offset += mc.fontRendererObj.FONT_HEIGHT + 3;
 			}
-		});
+		}
 	}
 }

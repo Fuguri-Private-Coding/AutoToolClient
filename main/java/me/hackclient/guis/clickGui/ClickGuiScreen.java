@@ -6,6 +6,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.impl.visual.Bloom;
 import me.hackclient.module.impl.visual.ClickGui;
+import me.hackclient.module.impl.visual.ClientShader;
 import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
@@ -39,6 +40,8 @@ public class ClickGuiScreen extends GuiScreen {
 
 	Vector2f pos, size, lastMouse;
 	Bloom bloom = Client.INSTANCE.getModuleManager().getModule(Bloom.class);
+	ClickGui clickGui = Client.INSTANCE.getModuleManager().getModule(ClickGui.class);
+	ClientShader clientShader;
 
 	Category selectedCategory = Category.COMBAT;
 	Module selectedModule = null;
@@ -62,9 +65,13 @@ public class ClickGuiScreen extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		if (clientShader == null) {
+			clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
+			return;
+		}
 		if (bloom.clickGui.isToggled() && bloom.isToggled()) {
 			List<Runnable> list = new ArrayList<>();
-			list.add(() -> RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, 2, Color.WHITE));
+			list.add(() -> RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, clickGui.backgroundRadius.getValue(), Color.WHITE));
 			BloomUtils.drawBloom(list);
 		}
 		if (resizing
@@ -85,7 +92,11 @@ public class ClickGuiScreen extends GuiScreen {
 		ScissorUtils.enableScissor();
 		ScissorUtils.scissor(new ScaledResolution(mc), pos.x, pos.y, size.x, size.y);
 
-		PixelReplacerUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, 2, new Color(15, 15, 15, 200)));
+		if (clientShader.isToggled() && clientShader.clickGui.isToggled()) {
+			PixelReplacerUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, clickGui.backgroundRadius.getValue(), new Color(15, 15, 15, clickGui.backgroundAlpha.getValue())));
+		} else {
+			RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, clickGui.backgroundRadius.getValue(), new Color(15, 15, 15, clickGui.backgroundAlpha.getValue()));
+		}
 		RoundedUtils.drawRect(pos.x + size.x - 5, pos.y + size.y - 5, 5, 5, 1, BACKGROUND_COLOR);
 		fontRenderer.drawString(Client.INSTANCE.getName(), pos.x + 14, pos.y + 4, MAIN_COLOR_INT);
 
@@ -270,9 +281,9 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 		ScissorUtils.disableScissor();
 
-		categoryLine.update(10f);
-		moduleLine.update(10f);
-		settingLine.update(10f);
+		categoryLine.update(clickGui.animationSpeed.getValue());
+		moduleLine.update(clickGui.animationSpeed.getValue());
+		settingLine.update(clickGui.animationSpeed.getValue());
 	}
 
 	@Override

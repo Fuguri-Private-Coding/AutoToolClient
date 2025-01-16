@@ -1,13 +1,16 @@
 package me.hackclient.module.impl.connection;
 
+import me.hackclient.Client;
 import me.hackclient.event.PackerDirection;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.module.impl.visual.ClientShader;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
@@ -47,6 +50,7 @@ public class Ping extends Module {
 	final StopWatch resetTimer;
 	final Animation3D animation3D;
 	final List<Doubles<Packet, Long>> packetBuffer;
+	ClientShader clientShader;
 	final List<Doubles<Vec3, Long>> posBuffer;
 
 	@Override
@@ -64,6 +68,10 @@ public class Ping extends Module {
 	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
+		if (clientShader == null) {
+			clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
+			return;
+		}
 		if (event instanceof PacketEvent packetEvent) {
 			Packet<?> packet = packetEvent.getPacket();
 			PackerDirection direction = packetEvent.getDirection();
@@ -136,10 +144,17 @@ public class Ping extends Module {
 			Vec3 diff = new Vec3(animation3D.x, animation3D.y, animation3D.z).subtract(mc.thePlayer.getPositionVector());
 			AxisAlignedBB box = mc.thePlayer.getEntityBoundingBox().offset(diff).
 					offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
-			RenderUtils.renderHitBox(box);
+			if (clientShader.isToggled() && clientShader.ping.isToggled()) {
+				PixelReplacerUtils.addToDraw(() ->
+					RenderUtils.renderHitBox(box)
+				);
+			} else {
+				RenderUtils.renderHitBox(box);
+			}
 			RenderUtils.stop3D();
 		}
 	}
+
 	private void handleStandAlone() {
 		packetBuffer.forEach(packetLongDoubles -> {
 			if (System.currentTimeMillis() - packetLongDoubles.getSecond() >= delay.getValue()) {

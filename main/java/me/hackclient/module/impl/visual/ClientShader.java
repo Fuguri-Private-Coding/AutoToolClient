@@ -11,7 +11,7 @@ import me.hackclient.settings.impl.ModeSetting;
 import java.awt.*;
 
 @ModuleInfo(
-        name = "PixelReplacer",
+        name = "ClientShader",
         category = Category.VISUAL
 )
 @Getter
@@ -49,6 +49,12 @@ public class ClientShader extends Module {
     rOffset = new IntegerSetting("RedOffset", this, customColor::isToggled, 0, 255, 0),
     gOffset = new IntegerSetting("GreenOffset", this, customColor::isToggled, 0, 255, 0),
     bOffset = new IntegerSetting("BlueOffset", this, customColor::isToggled, 0, 255, 0);
+
+    public BooleanSetting clickGui = new BooleanSetting("ClickGui", this, true);
+    public BooleanSetting arrayList = new BooleanSetting("ArrayList", this, true);
+    public BooleanSetting chat = new BooleanSetting("Chat", this, true);
+    public BooleanSetting backtrack = new BooleanSetting("Backtrack", this, true);
+    public BooleanSetting ping = new BooleanSetting("Ping", this, true);
 
     public Color getColor() {
         if (customColor.isToggled()) {

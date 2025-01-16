@@ -6,6 +6,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
+import me.hackclient.Client;
+import me.hackclient.module.impl.visual.ClientShader;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
@@ -24,6 +26,7 @@ import org.lwjgl.input.Mouse;
 public class GuiChat extends GuiScreen
 {
     private static final Logger logger = LogManager.getLogger();
+    ClientShader clientShader;
     private String historyBuffer = "";
     private int sentHistoryCursor = -1;
     private boolean playerNamesFound;
@@ -271,14 +274,20 @@ public class GuiChat extends GuiScreen
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
+        if (clientShader == null) {
+            clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
+            return;
+        }
         animation2D.endX = fontRendererObj.getStringWidth(inputField.getText());
         animation2D.update(50f);
+        if (clientShader.isToggled() && clientShader.chat.isToggled()) {
+            PixelReplacerUtils.addToDraw(() -> {
+                RoundedUtils.drawRect(2, height - 14f, (float) animation2D.x + 11, 12f, 3, new Color(0, 0, 0, 255));
+            });
+        } else {
+            drawRect(2f, this.height - 14f, 2f + (float) animation2D.x, this.height - 2f, Integer.MIN_VALUE);
+        }
 
-        PixelReplacerUtils.addToDraw(() -> {
-            //drawRect(2f, this.height - 14f, 2f + (float) animation2D.x, this.height - 2f, Integer.MIN_VALUE);
-            RoundedUtils.drawRect(2, height - 14f, (float) animation2D.x + 11, 12f, 3, new Color(0, 0, 0, 255));
-
-        });
         this.inputField.drawTextBox();
         IChatComponent ichatcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
 

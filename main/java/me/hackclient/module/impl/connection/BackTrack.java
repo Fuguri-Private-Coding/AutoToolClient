@@ -1,11 +1,13 @@
 package me.hackclient.module.impl.connection;
 
+import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.PackerDirection;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.module.impl.visual.ClientShader;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
@@ -59,6 +61,8 @@ public class BackTrack extends Module {
 
     final List<Doubles<Packet, Long>> serverPackets;
 
+    ClientShader clientShader;
+
     EntityLivingBase target;
 
     public BackTrack() {
@@ -72,7 +76,10 @@ public class BackTrack extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-
+        if (clientShader == null) {
+            clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
+            return;
+        }
         if (event instanceof AttackEvent attackEvent
                 && attackEvent.getHittingEntity() instanceof EntityLivingBase newTarget) {
             attackTimer.reset();
@@ -151,14 +158,21 @@ public class BackTrack extends Module {
                 animation3D.endX = target.realX;
                 animation3D.endY = target.realY;
                 animation3D.endZ = target.realZ;
-
-                PixelReplacerUtils.addToDraw(() -> RenderUtils.renderHitBox(
-                        target.getEntityBoundingBox()
-                                .offset(animation3D.x / 32 - target.posX, animation3D.y / 32 - target.posY, animation3D.z / 32 - target.posZ)
-                                .offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ),
-                        GL11.GL_LINE_LOOP
-                ));
-
+                if (clientShader.isToggled() && clientShader.backtrack.isToggled()) {
+                    PixelReplacerUtils.addToDraw(() -> RenderUtils.renderHitBox(
+                            target.getEntityBoundingBox()
+                                    .offset(animation3D.x / 32 - target.posX, animation3D.y / 32 - target.posY, animation3D.z / 32 - target.posZ)
+                                    .offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ),
+                            GL11.GL_LINE_LOOP
+                    ));
+                } else {
+                    RenderUtils.renderHitBox(
+                            target.getEntityBoundingBox()
+                                    .offset(animation3D.x / 32 - target.posX, animation3D.y / 32 - target.posY, animation3D.z / 32 - target.posZ)
+                                    .offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ),
+                            GL11.GL_LINE_LOOP
+                    );
+                }
             }
             RenderUtils.stop3D();
         }
