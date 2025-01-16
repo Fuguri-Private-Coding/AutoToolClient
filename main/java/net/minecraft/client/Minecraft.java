@@ -344,27 +344,18 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             return;
         }
 
-        while (true)
-        {
-            try
-            {
-                while (this.running)
-                {
-                    if (!this.hasCrashed || this.crashReporter == null)
-                    {
-                        try
-                        {
+        while (true) {
+            try {
+                while (this.running) {
+                    if (!this.hasCrashed || this.crashReporter == null) {
+                        try {
                             this.runGameLoop();
-                        }
-                        catch (OutOfMemoryError var10)
-                        {
+                        } catch (OutOfMemoryError var10) {
                             this.freeMemory();
                             this.displayGuiScreen(new GuiMemoryErrorScreen());
                             System.gc();
                         }
-                    }
-                    else
-                    {
+                    } else {
                         this.displayCrashReport(this.crashReporter);
                     }
                 }
@@ -943,6 +934,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     {
         try
         {
+            Client.INSTANCE.onClose();
             this.stream.shutdownStream();
             logger.info("Stopping!");
 

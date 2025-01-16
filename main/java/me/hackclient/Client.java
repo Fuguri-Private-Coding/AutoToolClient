@@ -15,12 +15,18 @@ import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
 import org.lwjgl.opengl.Display;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 @Getter
 public enum Client implements CallableObject {
 	INSTANCE;
+
+	final File directory = new File("AutoTool/configs");
+	final File defaultConfig = new File(directory, "default.json");
+
 
 	ScheduledExecutorService executorService;
 
@@ -47,10 +53,24 @@ public enum Client implements CallableObject {
 		objectsCaller = new ObjectsCaller();
 		configManager = new ConfigManager();
 
+		try {
+			configManager.load(defaultConfig);
+		} catch (IOException e) {
+			System.out.println("Error while loading cfg");
+			throw new RuntimeException(e);
+		}
 		clickGui = new ClickGuiScreen();
 
 		clickManager = new ClickManager();
 		Display.setTitle(getFullName());
+	}
+
+	public void onClose() {
+		try {
+			configManager.save(defaultConfig);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public String getName() {
