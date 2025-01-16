@@ -11,43 +11,25 @@ import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.interfaces.InstanceAccess;
 
 import java.io.*;
-import java.util.Iterator;
 import java.util.Map;
 
 public class ConfigManager implements InstanceAccess {
 
-    File directory = new File("AutoTool/configs");
-    File defaultConfig = new File(directory, "default.json");
 
     public void save(File file) throws IOException {
-        if (!directory.exists()) {
-            directory.mkdirs();
+        if (!Client.INSTANCE.getClientDirectory().exists()) {
+            Client.INSTANCE.getClientDirectory().mkdirs();
         }
-        if (!defaultConfig.exists()) {
-            defaultConfig.createNewFile();
+        if (!Client.INSTANCE.getDefaultConfig().exists()) {
+            Client.INSTANCE.getDefaultConfig().createNewFile();
         }
 
         try {
             JsonObject json = new JsonObject();
-            defaultConfig = file;
+            Client.INSTANCE.setDefaultConfig(file);
 
             for (Module module : Client.INSTANCE.getModuleManager().modules) {
-                JsonObject jsonModule = new JsonObject();
-                jsonModule.addProperty("toggled", module.isToggled());
-                for (Setting setting : module.getSettings()) {
-                    if (setting instanceof IntegerSetting integerSetting) {
-                        jsonModule.addProperty(setting.getName(), integerSetting.getValue());
-                    }
-                    if (setting instanceof FloatSetting floatSetting) {
-                        jsonModule.addProperty(setting.getName(), floatSetting.getValue());
-                    }
-                    if (setting instanceof BooleanSetting booleanSetting) {
-                        jsonModule.addProperty(setting.getName(), booleanSetting.isToggled());
-                    }
-                    if (setting instanceof ModeSetting modeSetting) {
-                        jsonModule.addProperty(setting.getName(), modeSetting.getMode());
-                    }
-                }
+                JsonObject jsonModule = getJsonObject(module);
                 json.add(module.getName(), jsonModule);
             }
 
@@ -60,9 +42,29 @@ public class ConfigManager implements InstanceAccess {
         }
     }
 
+    private static JsonObject getJsonObject(Module module) {
+        JsonObject jsonModule = new JsonObject();
+        jsonModule.addProperty("toggled", module.isToggled());
+        for (Setting setting : module.getSettings()) {
+            if (setting instanceof IntegerSetting integerSetting) {
+                jsonModule.addProperty(setting.getName(), integerSetting.getValue());
+            }
+            if (setting instanceof FloatSetting floatSetting) {
+                jsonModule.addProperty(setting.getName(), floatSetting.getValue());
+            }
+            if (setting instanceof BooleanSetting booleanSetting) {
+                jsonModule.addProperty(setting.getName(), booleanSetting.isToggled());
+            }
+            if (setting instanceof ModeSetting modeSetting) {
+                jsonModule.addProperty(setting.getName(), modeSetting.getMode());
+            }
+        }
+        return jsonModule;
+    }
+
     public void load(File file) throws IOException {
-        if (!directory.exists()) {
-            directory.mkdirs();
+        if (!Client.INSTANCE.getClientDirectory().exists()) {
+            Client.INSTANCE.getClientDirectory().mkdirs();
         }
 
         if (!file.exists()) {
@@ -73,7 +75,7 @@ public class ConfigManager implements InstanceAccess {
         BufferedReader load = new BufferedReader(new FileReader(file));
         JsonParser jsonParser = new JsonParser();
         JsonObject json = (JsonObject) jsonParser.parse(load);
-        defaultConfig = file;
+        Client.INSTANCE.setDefaultConfig(file);
         load.close();
 
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {

@@ -1,6 +1,7 @@
 package me.hackclient;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.hackclient.cfg.ConfigManager;
 import me.hackclient.event.callable.CallableObject;
 import me.hackclient.event.Event;
@@ -24,8 +25,8 @@ import java.util.concurrent.ScheduledExecutorService;
 public enum Client implements CallableObject {
 	INSTANCE;
 
-	final File directory = new File("AutoTool/configs");
-	final File defaultConfig = new File(directory, "default.json");
+	@Getter final File clientDirectory = new File("AutoTool/configs");
+	@Getter @Setter File defaultConfig = new File(clientDirectory, "default.json");
 
 
 	ScheduledExecutorService executorService;

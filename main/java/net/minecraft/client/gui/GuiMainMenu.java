@@ -81,49 +81,35 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         this.splashText = "missingno";
         BufferedReader bufferedreader = null;
 
-        try
-        {
+        try {
             List<String> list = Lists.<String>newArrayList();
             bufferedreader = new BufferedReader(new InputStreamReader(Minecraft.getMinecraft().getResourceManager().getResource(splashTexts).getInputStream(), Charsets.UTF_8));
             String s;
 
-            while ((s = bufferedreader.readLine()) != null)
-            {
+            while ((s = bufferedreader.readLine()) != null) {
                 s = s.trim();
 
-                if (!s.isEmpty())
-                {
+                if (!s.isEmpty()) {
                     list.add(s);
                 }
             }
 
-            if (!list.isEmpty())
-            {
-                while (true)
-                {
+            if (!list.isEmpty()) {
+                while (true) {
                     this.splashText = list.get(RANDOM.nextInt(list.size()));
 
-                    if (this.splashText.hashCode() != 125780783)
-                    {
+                    if (this.splashText.hashCode() != 125780783) {
                         break;
                     }
                 }
             }
         }
-        catch (IOException ignored)
-        {}
-        finally
-        {
-            if (bufferedreader != null)
-            {
-                try
-                {
+        catch (IOException ignored) {}
+        finally {
+            if (bufferedreader != null) {
+                try {
                     bufferedreader.close();
-                }
-                catch (IOException var11)
-                {
-                    ;
-                }
+                } catch (IOException ignored) {}
             }
         }
 

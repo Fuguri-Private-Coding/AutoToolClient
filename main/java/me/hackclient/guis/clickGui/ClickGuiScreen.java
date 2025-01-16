@@ -2,6 +2,7 @@ package me.hackclient.guis.clickGui;
 
 import me.hackclient.Client;
 import me.hackclient.event.events.PacketEvent;
+import me.hackclient.guis.config.ConfigEditorGui;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.impl.visual.Bloom;
@@ -49,7 +50,7 @@ public class ClickGuiScreen extends GuiScreen {
 	boolean resizing, moving, binding;
 
 	// Animations
-	final Animation2D categoryLine, moduleLine, settingLine;
+	final Animation2D categoryLine, moduleLine, settingLine, cfgButton, cfgButton2;
 
 	public ClickGuiScreen() {
 		lastMouse = new Vector2f(0, 0);
@@ -58,6 +59,8 @@ public class ClickGuiScreen extends GuiScreen {
 
 		mc = Minecraft.getMinecraft();
 
+		cfgButton2 = new Animation2D();
+		cfgButton = new Animation2D();
 		categoryLine = new Animation2D();
 		moduleLine = new Animation2D();
 		settingLine = new Animation2D();
@@ -99,6 +102,7 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 		RoundedUtils.drawRect(pos.x + size.x - 5, pos.y + size.y - 5, 5, 5, 1, BACKGROUND_COLOR);
 		fontRenderer.drawString(Client.INSTANCE.getName(), pos.x + 14, pos.y + 4, MAIN_COLOR_INT);
+
 
 		float widthsModule = 0;
 		for (Module module : Client.INSTANCE.getModuleManager().modules) {
@@ -281,14 +285,46 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 		ScissorUtils.disableScissor();
 
+		ScaledResolution sc = new ScaledResolution(Minecraft.getMinecraft());
+
+		boolean flag = mouseX > sc.getScaledWidth() / 2f - 25
+				&& mouseX < sc.getScaledWidth() / 2f - 25 + 50
+				&& mouseY > sc.getScaledHeight() - 18.5;
+
+		if (mouseX > sc.getScaledWidth() / 2f - 25
+		&& mouseX < sc.getScaledWidth() / 2f - 25 + 50
+		&& mouseY > sc.getScaledHeight() - 50) {
+			cfgButton.endY = 15 + 3 + 0.5f;
+			cfgButton2.endY = 0;
+		} else {
+			cfgButton.endY = 0;
+			cfgButton2.endY = 10;
+		}
+
+		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 25, (float) (sc.getScaledHeight() - cfgButton.y), 50, 15, 5f, flag ? new Color(15, 15, 15, 110) : new Color(15, 15, 15, 100));
+		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 10, (float) (sc.getScaledHeight() - cfgButton2.y), 20, 20, 5f, new Color(15, 15, 15, 110));
+		mc.fontRendererObj.drawCenteredString("configs", sc.getScaledWidth() / 2f, (float) (sc.getScaledHeight() - cfgButton.y) + 3, -1);
+
 		categoryLine.update(clickGui.animationSpeed.getValue());
 		moduleLine.update(clickGui.animationSpeed.getValue());
 		settingLine.update(clickGui.animationSpeed.getValue());
+		cfgButton.update(clickGui.animationSpeed.getValue());
+		cfgButton2.update(clickGui.animationSpeed.getValue());
 	}
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		ScaledResolution sc = new ScaledResolution(Minecraft.getMinecraft());
+		if (mouseX > sc.getScaledWidth() / 2f - 25
+		&& mouseX < sc.getScaledWidth() / 2f - 25 + 50
+		&& mouseY > sc.getScaledHeight() - (15 + 3 + 0.5f)
+		&& mouseButton == 0) {
+			mc.displayGuiScreen(new ConfigEditorGui(this));
+		}
+
 		if (mouseX > pos.x + size.x || mouseY > pos.y + size.y) return;
+
+
 		final FontRenderer fontRenderer = mc.fontRendererObj;
 		final float clientNameWidth = fontRenderer.getStringWidth(Client.INSTANCE.getName());
 		float offset = 0;
