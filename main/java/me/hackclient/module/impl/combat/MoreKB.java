@@ -26,10 +26,8 @@ public class MoreKB extends Module {
 			"LegitFast",
 			new String[] {
 					"LegitFast",
-					"LegitFist",
 					"Legit",
-					"One"
-
+					"One",
 			}
 	);
 
@@ -43,9 +41,6 @@ public class MoreKB extends Module {
 	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
-		if (event instanceof RunGameLoopEvent && debug.isToggled()) {
-			if (ticks > 0) ClientUtils.chatLog("Resetting ticks " + ticks);
-		}
 
 		if (killAura == null) {
 			killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
@@ -75,7 +70,6 @@ public class MoreKB extends Module {
 				case "LegitFast" -> handleLegitFast(event);
 				case "One" -> handleOne(event);
 				case "Legit" -> handleLegit(event);
-				case "LegitFist" -> handleLegitFist(event);
 			}
 		}
 	}
@@ -99,16 +93,10 @@ public class MoreKB extends Module {
 	}
 
 	private void handleLegitFast(Event event) {
-		if (event instanceof TickEvent && mc.thePlayer.isSprinting()) {
+		if (event instanceof SprintEvent && mc.thePlayer.moveForward > 0.8) {
 			mc.thePlayer.setSprinting(false);
+			mc.getNetHandler().addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
 			mc.thePlayer.setServerSprintState(false);
-			ticks--;
-		}
-	}
-
-	private void handleLegitFist(Event event) {
-		if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
-			mc.thePlayer.setSprinting(false);
 			ticks--;
 		}
 	}
