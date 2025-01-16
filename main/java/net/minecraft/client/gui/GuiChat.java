@@ -1,8 +1,14 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
+
+import java.awt.*;
 import java.io.IOException;
 import java.util.List;
+
+import me.hackclient.shader.impl.PixelReplacerUtils;
+import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.utils.animation.Animation2D;
 import net.minecraft.network.play.client.C14PacketTabComplete;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -26,6 +32,12 @@ public class GuiChat extends GuiScreen
     private List<String> foundPlayerNames = Lists.<String>newArrayList();
     protected GuiTextField inputField;
     private String defaultInputFieldText = "";
+
+    Animation2D animation2D;
+
+    {
+        animation2D = new Animation2D();
+    }
 
     public GuiChat()
     {
@@ -251,7 +263,7 @@ public class GuiChat extends GuiScreen
                     this.historyBuffer = this.inputField.getText();
                 }
 
-                this.inputField.setText((String)this.mc.ingameGUI.getChatGUI().getSentMessages().get(i));
+                this.inputField.setText(this.mc.ingameGUI.getChatGUI().getSentMessages().get(i));
                 this.sentHistoryCursor = i;
             }
         }
@@ -259,7 +271,14 @@ public class GuiChat extends GuiScreen
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        drawRect(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
+        animation2D.endX = fontRendererObj.getStringWidth(inputField.getText());
+        animation2D.update(50f);
+
+        PixelReplacerUtils.addToDraw(() -> {
+            //drawRect(2f, this.height - 14f, 2f + (float) animation2D.x, this.height - 2f, Integer.MIN_VALUE);
+            RoundedUtils.drawRect(2, height - 14f, (float) animation2D.x + 11, 12f, 3, new Color(0, 0, 0, 255));
+
+        });
         this.inputField.drawTextBox();
         IChatComponent ichatcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
 

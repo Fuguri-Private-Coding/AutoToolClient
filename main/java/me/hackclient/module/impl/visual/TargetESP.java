@@ -7,11 +7,13 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.combat.KillAura;
+import me.hackclient.module.impl.legit.AimAssist;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 
 import static java.lang.Math.*;
@@ -33,7 +35,7 @@ public class TargetESP extends Module {
         if (killAura == null)
             killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
 
-        if (killAura.getTarget() == null)
+        if (killAura.getTarget() == null )
             return;
 
         if (event instanceof Render3DEvent) {

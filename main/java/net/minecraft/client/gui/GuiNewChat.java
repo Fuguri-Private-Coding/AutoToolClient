@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import lombok.Getter;
 import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.animation.Animation2D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,16 +20,17 @@ import org.apache.logging.log4j.Logger;
 
 public class GuiNewChat extends Gui
 {
-    private static final Logger logger = LogManager.getLogger();
-    private final Minecraft mc;
-    private final List<String> sentMessages = Lists.<String>newArrayList();
-    private final List<ChatLine> chatLines = Lists.<ChatLine>newArrayList();
-    private final List<ChatLine> drawnChatLines = Lists.<ChatLine>newArrayList();
-    private int scrollPos;
-    private boolean isScrolled;
+    static final Logger logger = LogManager.getLogger();
+    final Minecraft mc;
+    @Getter
+    final List<String> sentMessages = Lists.<String>newArrayList();
+    final List<ChatLine> chatLines = Lists.<ChatLine>newArrayList();
+    final List<ChatLine> drawnChatLines = Lists.<ChatLine>newArrayList();
+    int scrollPos;
+    boolean isScrolled;
 
-    public GuiNewChat(Minecraft mcIn)
-    {
+
+    public GuiNewChat(Minecraft mcIn) {
         this.mc = mcIn;
     }
 
@@ -56,7 +59,7 @@ public class GuiNewChat extends Gui
 
                 for (int i1 = 0; i1 + this.scrollPos < this.drawnChatLines.size() && i1 < i; ++i1)
                 {
-                    ChatLine chatline = (ChatLine)this.drawnChatLines.get(i1 + this.scrollPos);
+                    ChatLine chatline = this.drawnChatLines.get(i1 + this.scrollPos);
 
                     if (chatline != null)
                     {
@@ -183,11 +186,6 @@ public class GuiNewChat extends Gui
             ChatLine chatline = (ChatLine)this.chatLines.get(i);
             this.setChatLine(chatline.getChatComponent(), chatline.getChatLineID(), chatline.getUpdatedCounter(), true);
         }
-    }
-
-    public List<String> getSentMessages()
-    {
-        return this.sentMessages;
     }
 
     public void addToSentMessages(String message)

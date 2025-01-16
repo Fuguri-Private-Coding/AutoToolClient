@@ -4,8 +4,7 @@ import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.callable.CallableObject;
 import me.hackclient.event.events.Render2DEvent;
-import me.hackclient.event.events.Render3DEvent;
-import me.hackclient.module.impl.visual.PixelReplacer;
+import me.hackclient.module.impl.visual.ClientShader;
 import me.hackclient.shader.Shader;
 import me.hackclient.shader.Uniform;
 import me.hackclient.utils.interfaces.InstanceAccess;
@@ -26,7 +25,7 @@ public class PixelReplacerUtils implements CallableObject, InstanceAccess {
 
     static StopWatch timer;
     static Framebuffer framebuffer = new Framebuffer(1, 1, true);
-    static PixelReplacer pixelReplacer;
+    static ClientShader pixelReplacer;
 
     public static void addToDraw(Runnable runnable) {
         framebuffer.bindFramebuffer(true);
@@ -42,7 +41,7 @@ public class PixelReplacerUtils implements CallableObject, InstanceAccess {
                 return;
             }
             if (pixelReplacer == null) {
-                pixelReplacer = Client.INSTANCE.getModuleManager().getModule(PixelReplacer.class);
+                pixelReplacer = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
                 return;
             }
 
@@ -56,9 +55,9 @@ public class PixelReplacerUtils implements CallableObject, InstanceAccess {
             final int id = shader.getProgram();
 
             shader.start();
-            Uniform.uniform1f(id, "r_offset", pixelReplacer.getROffset().getValue() / 255f);
-            Uniform.uniform1f(id, "g_offset", pixelReplacer.getGOffset().getValue() / 255f);
-            Uniform.uniform1f(id, "b_offset", pixelReplacer.getBOffset().getValue() / 255f);
+            Uniform.uniform1f(id, "r_offset", pixelReplacer.getColor().getRed() / 255f);
+            Uniform.uniform1f(id, "g_offset", pixelReplacer.getColor().getGreen() / 255f);
+            Uniform.uniform1f(id, "b_offset", pixelReplacer.getColor().getBlue() / 255f);
             Uniform.uniform1f(id, "time", timer.reachedMS() / (1000f * 10));
             Uniform.uniform1i(id, "texture", 19);
             Uniform.uniform1f(id, "texel_size", 1f / mc.displayHeight);

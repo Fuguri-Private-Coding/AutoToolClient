@@ -10,6 +10,7 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -52,7 +53,12 @@ public class MoreKB extends Module {
 			delayTicks = 0;
 		}
 
-		if (killAura.getTarget() != null && killAura.getTarget().hurtTime == 10 && ticks == 0 && mc.thePlayer.getBps(false) > 0 && event instanceof TickEvent) {
+		EntityLivingBase target = killAura.getTarget();
+		if (target == null && mc.objectMouseOver != null && mc.objectMouseOver.entityHit instanceof EntityLivingBase ent) {
+			target = ent;
+		}
+
+		if (target != null && target.hurtTime == 10 && ticks == 0 && mc.thePlayer.getBps(false) > 0 && event instanceof TickEvent) {
 			delayTicks = RandomUtils.nextInt(MinDelayTicks.getValue(), MaxDelayTicks.getValue());
 			ticks = RandomUtils.nextInt(MinResetTicks.getValue(), MaxResetTicks.getValue());
 		}

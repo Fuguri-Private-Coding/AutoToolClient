@@ -10,6 +10,7 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
@@ -117,7 +118,14 @@ public class BackTrack extends Module {
                 entityLivingBase.realZ = s18.getZ();
             }
 
-            if (target != null && packetEvent.getDirection() == PackerDirection.INCOMING) {
+            if (target != null && packetEvent.getDirection() == PackerDirection.INCOMING
+            && ((packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId()))
+            || packet instanceof S32PacketConfirmTransaction
+            || packet instanceof S14PacketEntity
+            || packet instanceof S19PacketEntityHeadLook
+            || packet instanceof S00PacketKeepAlive
+            || packet instanceof S27PacketExplosion
+            || packet instanceof S18PacketEntityTeleport) {
                 serverPackets.add(new Doubles<>(packet, System.currentTimeMillis()));
                 packetEvent.setCanceled(true);
             }
@@ -144,12 +152,13 @@ public class BackTrack extends Module {
                 animation3D.endY = target.realY;
                 animation3D.endZ = target.realZ;
 
-                RenderUtils.renderHitBox(
+                PixelReplacerUtils.addToDraw(() -> RenderUtils.renderHitBox(
                         target.getEntityBoundingBox()
                                 .offset(animation3D.x / 32 - target.posX, animation3D.y / 32 - target.posY, animation3D.z / 32 - target.posZ)
                                 .offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ),
                         GL11.GL_LINE_LOOP
-                );
+                ));
+
             }
             RenderUtils.stop3D();
         }

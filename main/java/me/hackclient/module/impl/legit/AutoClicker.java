@@ -44,7 +44,7 @@ public class AutoClicker extends Module {
             clicks = 0;
         }
         if (event instanceof RunGameLoopEvent) {
-            if (stopWatch.reachedMS(delay) && Mouse.isButtonDown(0)) {
+            if (stopWatch.reachedMS(delay) && Mouse.isButtonDown(0) && mc.currentScreen == null) {
                 stopWatch.reset();
                 clicks++;
                 delay = Math.round(1000f / RandomUtils.nextFloat(minCps.getValue(), maxCps.getValue()));

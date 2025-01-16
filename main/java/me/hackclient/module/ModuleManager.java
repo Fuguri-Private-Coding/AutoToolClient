@@ -33,7 +33,7 @@ public class ModuleManager {
 				 new AutoClicker(),
 				 new HighJump(),
 				 new BridgeAssist(),
-				 new PixelReplacer(),
+				 new ClientShader(),
 				 new LongJump(),
 				 new NoSlow(),
 				 new NoWeb(),
