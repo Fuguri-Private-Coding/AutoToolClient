@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.visual;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.events.DrawEntityEvent;
 import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -22,6 +23,9 @@ public class TestESP extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (event instanceof DrawEntityEvent drawEntityEvent) {
+            drawEntityEvent.setCanceled(true);
+        }
         if (event instanceof Render3DEvent) {
             kostil = true;
             PixelReplacerUtils.addToDraw(() -> {

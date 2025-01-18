@@ -9,6 +9,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
@@ -17,11 +18,13 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
 
 import java.util.Comparator;
+import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "TimerRangeV2", category = Category.COMBAT, toggled = true)
 public class TimerRangeV2 extends Module {
 
     final BooleanSetting limitTicks = new BooleanSetting("LimitTeleportTicks", this, true);
+    final ModeSetting predictMode = new ModeSetting("PredictMode", this, "RayCast", new String[]{ "RayCast", "Distance" });
     final IntegerSetting ticks = new IntegerSetting("Ticks", this, limitTicks::isToggled, 1, 20, 2);
     final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 10);
     final IntegerSetting maxPlayerHurtTime = new IntegerSetting("MaxPlayerHurtTime", this, 0, 10, 10);
@@ -40,6 +43,8 @@ public class TimerRangeV2 extends Module {
 
     boolean click;
     float balance;
+
+    BooleanSupplier condition;
 
     @Override
     public void onEvent(Event event) {
@@ -73,29 +78,6 @@ public class TimerRangeV2 extends Module {
                     }
                 }
             }
-//            case TIMER -> {
-//                if (event instanceof RunGameLoopEvent) {
-//                    try {
-//                        while (target != null
-//                                && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
-//                                && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
-//                                && target.hurtTime <= maxTargetHurtTime.getValue()
-//                                && mc.thePlayer.hurtTime <= maxPlayerHurtTime.getValue()
-//                                && notReachedTicks(balance)) {
-//                            mc.runTick();
-//                            balance++;
-//                        }
-//                    } catch (Exception e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                    if (balance > 0) {
-//                        state = TimerState.FREEZE;
-//                        click = true;
-//                    } else {
-//                        state = TimerState.NONE;
-//                    }
-//                }
-//            }
             case FREEZE -> {
                 if (balance <= 0) {
                     balance = 0.0f;
@@ -129,10 +111,16 @@ public class TimerRangeV2 extends Module {
 
     public void handleTick() {
         if (state != TimerState.TIMER) return;
+
+        condition = switch (predictMode.getMode()) {
+            case "RayCast" -> () -> RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target;
+            case "Distance" -> () -> DistanceUtils.getDistanceToEntity(target) < startDistance.getValue() && DistanceUtils.getDistanceToEntity(target) > 3;
+            default -> throw new IllegalStateException("Unexpected value: " + predictMode.getMode());
+        };
+
         try {
             while (target != null
-                    && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
-                    && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
+                    && condition.getAsBoolean()
                     && target.hurtTime <= maxTargetHurtTime.getValue()
                     && mc.thePlayer.hurtTime <= maxPlayerHurtTime.getValue()
                     && notReachedTicks(balance)) {

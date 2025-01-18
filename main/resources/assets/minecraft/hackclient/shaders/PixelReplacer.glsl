@@ -7,7 +7,7 @@ uniform float r_offset;
 uniform float g_offset;
 uniform float b_offset;
 
-#define MAX_ITER 4
+#define MAX_ITER 20
 void main( void ) {
     vec2 zv = gl_TexCoord[0].st;
     vec4 pix_color = texture2D(texture, zv);
