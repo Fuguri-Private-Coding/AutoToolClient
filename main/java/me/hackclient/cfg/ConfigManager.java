@@ -15,10 +15,10 @@ import java.util.Map;
 
 public class ConfigManager implements InstanceAccess {
 
-
     public void save(File file) throws IOException {
-        if (!Client.INSTANCE.getClientDirectory().exists()) {
-            Client.INSTANCE.getClientDirectory().mkdirs();
+        File directory = Client.INSTANCE.getClientDirectory();
+        if (!directory.exists()) {
+            directory.mkdirs();
         }
         if (!Client.INSTANCE.getDefaultConfig().exists()) {
             Client.INSTANCE.getDefaultConfig().createNewFile();
@@ -63,8 +63,9 @@ public class ConfigManager implements InstanceAccess {
     }
 
     public void load(File file) throws IOException {
-        if (!Client.INSTANCE.getClientDirectory().exists()) {
-            Client.INSTANCE.getClientDirectory().mkdirs();
+        File directory = Client.INSTANCE.getClientDirectory();
+        if (!directory.exists()) {
+            directory.mkdirs();
         }
 
         if (!file.exists()) {

@@ -1,5 +1,7 @@
 package net.minecraft.client.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.hackclient.Client;
 import me.hackclient.event.events.MotionEvent;
 import me.hackclient.event.events.SprintEvent;
@@ -65,8 +67,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
     private double lastReportedPosZ;
     private float lastReportedYaw;
     private float lastReportedPitch;
-    private boolean serverSneakState;
-    private boolean serverSprintState;
+    @Getter @Setter boolean serverSneakState;
+    @Getter @Setter boolean serverSprintState;
     private int positionUpdateTicks;
     private boolean hasValidHealth;
     private String clientBrand;
@@ -83,6 +85,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
     public float timeInPortal;
     public float prevTimeInPortal;
     public int serverSlot;
+    public boolean canceling;
 
     public static boolean forceSprint;
 
@@ -128,35 +131,22 @@ public class EntityPlayerSP extends AbstractClientPlayer
         {
             super.onUpdate();
 
-            if (this.isRiding())
-            {
+            if (this.isRiding()) {
                 this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
                 this.sendQueue.addToSendQueue(new C0CPacketInput(this.moveStrafing, this.moveForward, this.movementInput.jump, this.movementInput.sneak));
-            }
-            else
-            {
+            } else {
                 this.onUpdateWalkingPlayer();
             }
         }
     }
 
-    public void onUpdateWalkingPlayer()
-    {
+    public void onUpdateWalkingPlayer() {
+        boolean sprinting = this.isSprinting();
 
-        boolean flag = this.isSprinting();
-
-        if (flag != this.serverSprintState)
-        {
-            if (flag)
-            {
-                this.sendQueue.addToSendQueue(new C0BPacketEntityAction(this, C0BPacketEntityAction.Action.START_SPRINTING));
-            }
-            else
-            {
-                this.sendQueue.addToSendQueue(new C0BPacketEntityAction(this, C0BPacketEntityAction.Action.STOP_SPRINTING));
-            }
-
-            this.serverSprintState = flag;
+        if (sprinting != serverSprintState) {
+            C0BPacketEntityAction.Action action = sprinting ? C0BPacketEntityAction.Action.START_SPRINTING : C0BPacketEntityAction.Action.STOP_SPRINTING;
+            sendQueue.addToSendQueue(new C0BPacketEntityAction(this, action));
+            serverSprintState = sprinting;
         }
 
         boolean flag1 = this.isSneaking();
@@ -241,22 +231,6 @@ public class EntityPlayerSP extends AbstractClientPlayer
         C07PacketPlayerDigging.Action c07packetplayerdigging$action = dropAll ? C07PacketPlayerDigging.Action.DROP_ALL_ITEMS : C07PacketPlayerDigging.Action.DROP_ITEM;
         this.sendQueue.addToSendQueue(new C07PacketPlayerDigging(c07packetplayerdigging$action, BlockPos.ORIGIN, EnumFacing.DOWN));
         return null;
-    }
-
-    public boolean isServerSneakState() {
-        return serverSneakState;
-    }
-
-    public void setServerSneakState(boolean serverSneakState) {
-        this.serverSneakState = serverSneakState;
-    }
-
-    public boolean isServerSprintState() {
-        return serverSprintState;
-    }
-
-    public void setServerSprintState(boolean serverSprintState) {
-        this.serverSprintState = serverSprintState;
     }
 
     protected void joinEntityItemWithWorld(EntityItem itemIn)
@@ -725,8 +699,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
             this.setSprinting(true);
         }
 
-        if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3))
-        {
+        if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3 || canceling)) {
+            if (canceling) canceling = false;
             this.setSprinting(false);
         }
 

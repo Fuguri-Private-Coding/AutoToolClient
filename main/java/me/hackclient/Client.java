@@ -3,6 +3,7 @@ package me.hackclient;
 import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.cfg.ConfigManager;
+import me.hackclient.combatmanager.CombatManager;
 import me.hackclient.event.callable.CallableObject;
 import me.hackclient.event.Event;
 import me.hackclient.event.ObjectsCaller;
@@ -11,7 +12,7 @@ import me.hackclient.friend.FriendManager;
 import me.hackclient.guis.clickGui.ClickGuiScreen;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleManager;
-import me.hackclient.module.impl.combat.killaura.click.ClickManager;
+//import me.hackclient.module.impl.combat.killaura.click.ClickManager;
 import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
 import org.lwjgl.opengl.Display;
@@ -25,12 +26,13 @@ import java.util.concurrent.ScheduledExecutorService;
 public enum Client implements CallableObject {
 	INSTANCE;
 
-	@Getter final File clientDirectory = new File("AutoTool/configs");
-	@Getter @Setter File defaultConfig = new File(clientDirectory, "default.json");
-
+	final File clientDirectory = new File("AutoTool/configs");
+	@Setter File defaultConfig = new File(clientDirectory, "default.json");
+	@Setter File bindsDirectory = new File(clientDirectory, "default.json");
 
 	ScheduledExecutorService executorService;
 
+	CombatManager combatManager;
 	TimeScheduler timeScheduler;
 	FriendManager friendManager;
 	ModuleManager moduleManager;
@@ -40,13 +42,14 @@ public enum Client implements CallableObject {
 
 	ClickGuiScreen clickGui;
 
-	ClickManager clickManager;
+	//ClickManager clickManager;
 
 	public void init() {
 		callables.add(this);
 
 		executorService = Executors.newScheduledThreadPool(4);
 
+		combatManager = new CombatManager();
 		timeScheduler = new TimeScheduler();
 		friendManager = new FriendManager();
 		moduleManager = new ModuleManager();
@@ -62,7 +65,7 @@ public enum Client implements CallableObject {
 		}
 		clickGui = new ClickGuiScreen();
 
-		clickManager = new ClickManager();
+		//clickManager = new ClickManager();
 		Display.setTitle(getFullName());
 	}
 

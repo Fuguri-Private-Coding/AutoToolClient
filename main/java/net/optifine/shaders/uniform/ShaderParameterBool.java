@@ -48,9 +48,8 @@ public enum ShaderParameterBool implements IExpressionBool
     {
         Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
 
-        if (entity instanceof EntityLivingBase)
+        if (entity instanceof EntityLivingBase entitylivingbase)
         {
-            EntityLivingBase entitylivingbase = (EntityLivingBase)entity;
 
             switch (this)
             {

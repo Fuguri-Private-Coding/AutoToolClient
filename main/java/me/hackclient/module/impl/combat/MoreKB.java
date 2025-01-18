@@ -1,108 +1,96 @@
 package me.hackclient.module.impl.combat;
 
-import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
-import me.hackclient.utils.client.ClientUtils;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
-import org.apache.commons.lang3.RandomUtils;
+import me.hackclient.utils.math.RandomUtils;
+import me.hackclient.utils.timer.StopWatch;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.item.ItemSword;
 
-@ModuleInfo(name = "MoreKB", category = Category.COMBAT, toggled = true)
+@ModuleInfo(
+        name = "MoreKB",
+        category = Category.COMBAT
+)
 public class MoreKB extends Module {
 
-	private KillAura killAura;
-	public int ticks, delayTicks;
+    final StopWatch stopWatch;
 
-	ModeSetting mode = new ModeSetting(
-			"Mode",
-			this,
-			"LegitFast",
-			new String[] {
-					"LegitFast",
-					"Legit",
-					"One",
-			}
-	);
+    final ModeSetting mode = new ModeSetting(
+            "Mode",
+            this,
+            "LegitFast",
+            new String[] {
+                    "Legit",
+                    "LegitFast",
+                    "LegitSneak",
+                    "LegitBlock"
+            }
+    );
 
-	IntegerSetting MinDelayTicks = new IntegerSetting("MinDelayTicks", this, 1, 5, 3);
-	IntegerSetting MaxDelayTicks = new IntegerSetting("MaxDelayTicks", this, 1, 5, 3);
-	IntegerSetting MinResetTicks = new IntegerSetting("MinTicks", this, 1, 5, 1);
-	IntegerSetting MaxResetTicks = new IntegerSetting("MaxTicks", this, 1, 5, 1);
-	BooleanSetting serverSprintToggle = new BooleanSetting("ServerSprintToggle", this, () -> mode.getMode().equalsIgnoreCase("One"), true);
-	BooleanSetting debug = new BooleanSetting("Debug", this, false);
+    final IntegerSetting minDelay = new IntegerSetting("MinTickDelayAfterHit", this, 0, 10, 3);
+    final IntegerSetting maxDelay = new IntegerSetting("MinTickDelayAfterHit", this, 0, 10, 3);
+    final IntegerSetting minReset = new IntegerSetting("MinTickResetDuration", this, 0, 10, 1);
+    final IntegerSetting maxReset = new IntegerSetting("MaxTickResetDuration", this, 0, 10, 1);
 
-	@Override
-	public void onEvent(Event event) {
-		super.onEvent(event);
+    public MoreKB() {
+        stopWatch = new StopWatch();
+    }
 
-		if (killAura == null) {
-			killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
-			ticks = 0;
-			delayTicks = 0;
-		}
+    int delay, reset;
 
-		EntityLivingBase target = killAura.getTarget();
-		if (target == null && mc.objectMouseOver != null && mc.objectMouseOver.entityHit instanceof EntityLivingBase ent) {
-			target = ent;
-		}
+    @Override
+    public void onEvent(Event event) {
+        super.onEvent(event);
 
-		if (target != null && target.hurtTime == 10 && ticks == 0 && mc.thePlayer.getBps(false) > 0 && event instanceof TickEvent) {
-			delayTicks = RandomUtils.nextInt(MinDelayTicks.getValue(), MaxDelayTicks.getValue());
-			ticks = RandomUtils.nextInt(MinResetTicks.getValue(), MaxResetTicks.getValue());
-		}
+        if (event instanceof AttackEvent && stopWatch.reachedMS(500)) {
+            stopWatch.reset();
+            delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
+            reset = RandomUtils.nextInt(minReset.getValue(), maxReset.getValue());
+        }
 
-		if (delayTicks > 0) {
-			if (event instanceof TickEvent) {
-				delayTicks--;
-			}
-			return;
-		}
+        if (delay > 0) {
+            if (event instanceof TickEvent) delay--;
+            return;
+        }
 
-		if (ticks > 0) {
-			switch (mode.getMode()) {
-				case "LegitFast" -> handleLegitFast(event);
-				case "One" -> handleOne(event);
-				case "Legit" -> handleLegit(event);
-			}
-		}
-	}
+        if (reset == 0) return;
 
-	private void handleLegit(Event event) {
-		if (event instanceof MoveButtonEvent e) {
-			e.setForward(false);
-			ticks--;
-		}
-	}
+        switch (mode.getMode()) {
+            case "Legit" -> {
+                if (event instanceof MoveButtonEvent moveButtonEvent) {
+                    moveButtonEvent.setForward(false);
+                }
+            }
+            case "LegitFast" -> {
+                if (event instanceof SprintEvent) {
+                    mc.thePlayer.setSprinting(false);
+                }
+            }
+            case "LegitSneak" -> {
+                if (event instanceof MoveButtonEvent moveButtonEvent) {
+                    moveButtonEvent.setSneak(true);
+                }
+            }
+            case "LegitBlock" -> {
+                if (mc.thePlayer.getHeldItem() == null)
+                    break;
 
-	private void handleOne(Event event) {
-		if (event instanceof UpdateEvent) {
-			mc.thePlayer.setSprinting(true);
-			if (serverSprintToggle.isToggled()) {
-				mc.thePlayer.setServerSprintState(true);
-			}
-			mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
-			ticks--;
-		}
-	}
+                if (!(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword))
+                    break;
 
-	private void handleLegitFast(Event event) {
-		if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
-			mc.thePlayer.setSprinting(false);
-			mc.getNetHandler().addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
-			mc.thePlayer.setServerSprintState(false);
-			ticks--;
-		}
-	}
+                if (event instanceof RunGameLoopEvent) {
+                    KeyBinding.onTick(mc.gameSettings.keyBindUseItem.getKeyCode());
+                }
+            }
+        }
 
-	@Override
-	public String getSuffix() {
-		return mode.getMode();
-	}
+        if (event instanceof TickEvent && reset > 0) {
+            reset--;
+        }
+    }
 }

@@ -39,8 +39,8 @@ import javax.imageio.ImageIO;
 import me.hackclient.Client;
 import me.hackclient.event.events.*;
 import me.hackclient.module.impl.combat.DelayFix;
-import me.hackclient.module.impl.combat.TimerRange;
-import me.hackclient.module.impl.combat.TimerRangeV2;
+//import me.hackclient.module.impl.combat.TimerRange;
+//import me.hackclient.module.impl.combat.TimerRangeV2;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;
@@ -1004,7 +1004,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         for (int j = 0; j < this.timer.elapsedTicks; ++j)
         {
-            Client.INSTANCE.getModuleManager().getModule(TimerRangeV2.class).handleTick();
+//            Client.INSTANCE.getModuleManager().getModule(TimerRangeV2.class).handleTick();
             TickEvent tickEvent = new TickEvent();
             Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
             if (tickEvent.isCanceled()) return;

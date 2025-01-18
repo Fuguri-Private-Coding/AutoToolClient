@@ -6,7 +6,7 @@ import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.combat.KillAura;
+//import me.hackclient.module.impl.combat.KillAura;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.shader.impl.PixelReplacerUtils;
@@ -38,8 +38,8 @@ public class Dot extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof Render3DEvent) {
-            KillAura killAura = Client.INSTANCE.getModuleManager().getModule("KillAura");
-            if (onlyKillAura.isToggled() && (killAura == null || killAura.getTarget() == null)) return;
+//            KillAura killAura = Client.INSTANCE.getModuleManager().getModule("KillAura");
+//            if (onlyKillAura.isToggled() && (killAura == null || killAura.getTarget() == null)) return;
             RenderUtils.start3D();
             Vec3 vec = mc.objectMouseOver.hitVec.addVector(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
             GL11.glPointSize(size.getValue());

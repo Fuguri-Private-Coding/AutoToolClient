@@ -11,7 +11,7 @@ public class MovementInputFromOptions extends MovementInput
 
     public MovementInputFromOptions(GameSettings gameSettingsIn)
     {
-        this.gameSettings = gameSettingsIn;
+        gameSettings = gameSettingsIn;
     }
 
     public void updatePlayerMoveState()
@@ -26,41 +26,40 @@ public class MovementInputFromOptions extends MovementInput
         );
         Client.INSTANCE.getObjectsCaller().onEvent(event);
 
-        this.moveStrafe = 0.0F;
-        this.moveForward = 0.0F;
+        moveStrafe = 0.0F;
+        moveForward = 0.0F;
 
         if (event.isForward())
         {
-            ++this.moveForward;
+            ++moveForward;
         }
 
         if (event.isBack())
         {
-            --this.moveForward;
+            --moveForward;
         }
 
         if (event.isLeft())
         {
-            ++this.moveStrafe;
+            ++moveStrafe;
         }
 
         if (event.isRight())
         {
-            --this.moveStrafe;
+            --moveStrafe;
         }
 
-        this.jump = event.isJump();
-        this.sneak = event.isSneak();
+        jump = event.isJump();
+        sneak = event.isSneak();
 
+        if (sneak) {
+            moveStrafe *= 0.3F;
+            moveForward *= 0.3F;
+        }
+        
         MoveEvent moveEvent = new MoveEvent(moveForward, moveStrafe);
         Client.INSTANCE.getObjectsCaller().onEvent(moveEvent);
         moveStrafe = moveEvent.getStrafe();
         moveForward = moveEvent.getForward();
-
-        if (this.sneak)
-        {
-            this.moveStrafe *= 0.3F;
-            this.moveForward *= 0.3F;
-        }
     }
 }

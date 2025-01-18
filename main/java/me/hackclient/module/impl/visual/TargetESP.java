@@ -6,7 +6,7 @@ import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.combat.KillAura;
+//import me.hackclient.module.impl.combat.KillAura;
 import me.hackclient.module.impl.legit.AimAssist;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
@@ -27,22 +27,22 @@ public class TargetESP extends Module {
     FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f);
     BooleanSetting changeColorToHit = new BooleanSetting("ChangeColorDueHurtTime", this, true);
 
-    private KillAura killAura;
+//    private KillAura killAura;
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (killAura == null)
-            killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
+//        if (killAura == null)
+//            killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
 
-        if (killAura.getTarget() == null )
+        if (true)
             return;
 
         if (event instanceof Render3DEvent) {
             PixelReplacerUtils.addToDraw(() -> {
                 double animationTranslate = sin(System.currentTimeMillis() / 1000.0 * speed.getValue());
 
-                final EntityLivingBase target = killAura.getTarget();
+                final EntityLivingBase target = null;
 
                 final RenderManager renderManager = mc.getRenderManager();
                 final double viewerPosX = renderManager.viewerPosX;
@@ -67,13 +67,13 @@ public class TargetESP extends Module {
                     double x1 = x + sin(i * Math.PI / 180) * 0.7;
                     double z1 = z + cos(i * Math.PI / 180) * 0.7;
                     double y1 = y + (animationTranslate + 1) / 2 * target.height;
-                    if (killAura.getTarget().hurtTime > 0 && changeColorToHit.isToggled()) {
+                    if (target.hurtTime > 0 && changeColorToHit.isToggled()) {
                         glColor4f(1f, 0f, 0f, 1f);
                     } else {
                         glColor4f(1f, 1f, 1f, 1f);
                     }
                     glVertex3d(x1, y1, z1);
-                    if (killAura.getTarget().hurtTime > 0 && changeColorToHit.isToggled()) {
+                    if (target.hurtTime > 0 && changeColorToHit.isToggled()) {
                         glColor4f(1f, 0f, 0f, 0f);
                     } else {
                         glColor4f(1f, 1f, 1f, 0f);

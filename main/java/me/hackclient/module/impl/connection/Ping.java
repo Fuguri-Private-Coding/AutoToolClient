@@ -19,11 +19,10 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.network.Packet;
 import net.minecraft.network.handshake.client.C00Handshake;
-import net.minecraft.network.play.client.C01PacketChatMessage;
-import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.network.login.client.C00PacketLoginStart;
+import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
+import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.network.status.client.C00PacketServerQuery;
 import net.minecraft.network.status.client.C01PacketPing;
 import net.minecraft.network.status.server.S01PacketPong;
@@ -37,10 +36,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleInfo(name = "Ping", category = Category.CONNECTION)
 public class Ping extends Module {
 
-	IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 420);
-	IntegerSetting attackDelay = new IntegerSetting("AttackConditionTime", this, 0, 1000, 20);
+	IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 500);
+	IntegerSetting attackDelay = new IntegerSetting("AttackConditionTime", this, 0, 1000, 1);
+	IntegerSetting sprintResetDelay = new IntegerSetting("SprintConditionTime", this, 0, 500, 1);
 	IntegerSetting flagDelay = new IntegerSetting("FlagConditionTime", this, 0, 1000, 200);
-	BooleanSetting damageFlush = new BooleanSetting("DamageFlush", this, true);
+	IntegerSetting velocityDelay = new IntegerSetting("VelocityConditionTime", this, 0, 1000, 1);
 	BooleanSetting guiFlush = new BooleanSetting("GuiFlush", this, true);
 	BooleanSetting itemFlush = new BooleanSetting("ItemFlush", this, true);
 	IntegerSetting blockPlacementDelay = new IntegerSetting("BlockPlacementConditionTime", this, 0, 20, 10);
@@ -80,7 +80,9 @@ public class Ping extends Module {
 				return;
 
 			// Пропускает некоторые пакеты
-			if (packet instanceof C01PacketChatMessage) {
+			if (packet instanceof C01PacketChatMessage
+			|| packet instanceof C00PacketServerQuery
+			|| packet instanceof C00PacketLoginStart) {
 				return;
 			}
 
@@ -96,9 +98,15 @@ public class Ping extends Module {
 				nextDelay = blockPlacementDelay.getValue();
 			}
 
+			if (packet instanceof C0BPacketEntityAction c0b && (c0b.getAction() == C0BPacketEntityAction.Action.START_SPRINTING || c0b.getAction() == C0BPacketEntityAction.Action.STOP_SPRINTING)) {
+				resetTimer.reset();
+				nextDelay = sprintResetDelay.getValue();
+			}
+
 			// Ресет при получении урона
-			if (mc.thePlayer.hurtTime > 0 && damageFlush.isToggled()) {
-				resetPackets();
+			if (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId()) {
+				resetTimer.reset();
+				nextDelay = velocityDelay.getValue();
 			}
 
 			if (mc.currentScreen instanceof GuiInventory && guiFlush.isToggled() || mc.currentScreen instanceof GuiContainer && guiFlush.isToggled()) {
