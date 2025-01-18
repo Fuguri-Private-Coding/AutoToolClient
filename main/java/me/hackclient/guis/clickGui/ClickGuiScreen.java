@@ -100,9 +100,8 @@ public class ClickGuiScreen extends GuiScreen {
 		} else {
 			RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, clickGui.backgroundRadius.getValue(), new Color(15, 15, 15, clickGui.backgroundAlpha.getValue()));
 		}
-		RoundedUtils.drawRect(pos.x + size.x - 5, pos.y + size.y - 5, 5, 5, 1, BACKGROUND_COLOR);
+		RoundedUtils.drawRect(pos.x + size.x - 5, pos.y + size.y - 5, 5, 5, 1, new Color(15,15,15, 200));
 		fontRenderer.drawString(Client.INSTANCE.getName(), pos.x + 14, pos.y + 4, MAIN_COLOR_INT);
-
 
 		float widthsModule = 0;
 		for (Module module : Client.INSTANCE.getModuleManager().modules) {

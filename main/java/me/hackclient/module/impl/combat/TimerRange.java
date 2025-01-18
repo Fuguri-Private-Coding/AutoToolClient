@@ -8,9 +8,11 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
@@ -20,10 +22,21 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT)
 public class TimerRange extends Module {
 
+    ModeSetting predict = new ModeSetting(
+            "Mode",
+            this,
+            "RayCast",
+            new String[] {
+                    "Distance",
+                    "RayCast",
+            }
+    );
+
     FloatSetting startDistance = new FloatSetting("StartDistance", this, 3f, 6, 3.8f, 0.1f);
     IntegerSetting limitTicks = new IntegerSetting("LimitTick", this, 1,20,2);
     IntegerSetting disabledTicks = new IntegerSetting("FlagDelayTicks", this, 0, 20, 0);
-    IntegerSetting addictingFreezeTicks = new IntegerSetting("AddictingFreezeTicks", this, 0, 4, 0);
+    final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 10);
+    BooleanSetting debug = new BooleanSetting("Debug", this, true);
 
     ModeSetting freezeMode = new ModeSetting(
             "FreezeAnimation",
@@ -33,7 +46,8 @@ public class TimerRange extends Module {
                     "TimerRangeV2",
                     "TimeManipulation",
                     "PizdecPolniy"
-            });
+            }
+    );
 
     KillAura killAura;
 
@@ -51,7 +65,7 @@ public class TimerRange extends Module {
         }
 
         if (event instanceof PacketEvent packetEvent
-        && packetEvent.getPacket() instanceof S08PacketPlayerPosLook) {
+                && packetEvent.getPacket() instanceof S08PacketPlayerPosLook) {
             flagDelayTicks = disabledTicks.getValue();
             return;
         }
@@ -65,19 +79,24 @@ public class TimerRange extends Module {
             EntityLivingBase target = killAura.getTarget();
             if (target != null && mc.thePlayer.getBps(false) > 0) {
                 double distance = DistanceUtils.getDistanceToEntity(target);
-                while (distance < startDistance.getValue()
-                        && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
-                        && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
+                while ((predict.getMode().equals("Distance") ? distance <= startDistance.getValue()
+                    && distance > 3
+                    && target.hurtTime <= maxTargetHurtTime.getValue() : distance <= startDistance.getValue() && RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
+                    && RayCastUtils.raycastEntity(6, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
+                    && target.hurtTime <= maxTargetHurtTime.getValue())) {
                     try {
+                        if (debug.isToggled()) ClientUtils.chatLog(String.format("%.1f, %.3f, %.3f",  balance, distance, mc.thePlayer.getBps(false)));
                         mc.runTick();
                         balance++;
-                        if (balance >= limitTicks.getValue()) {
-                            balance += addictingFreezeTicks.getValue();
+                        if (balance >= limitTicks.getValue() || distance >= 3) {
+                            if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
+                                if (debug.isToggled()) ClientUtils.chatLog(String.format("%.3f, %.1f", distance, killAura.clickManager.clicks++));
+                                killAura.clickManager.clicks++;
+                            }
                             break;
                         }
                     } catch (Exception ignored) {}
                 }
-                if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) killAura.clickManager.clicks++;
             }
         }
 

@@ -9,6 +9,7 @@ import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 @ModuleInfo(name = "Animations", category = Category.VISUAL, toggled = true)
@@ -24,6 +25,7 @@ public class Animations extends Module {
             "Gothaj",
             "Spin",
             "Basic",
+            "Slide",
     });
 
     FloatSetting X = new FloatSetting("X", this, -1f, 1f, -0.1f, 0.1f);
@@ -40,6 +42,16 @@ public class Animations extends Module {
             float convertedProgress = (float) Math.sin(Math.sqrt(renderItemEvent.getSwingProgress()) * Math.PI);
             float y;
             switch (mode.getMode()) {
+                case "Slide":
+                    itemRenderer.transformFirstPersonItem(animationProgression, 0.0f);
+                    float var15 = MathHelper.sin(MathHelper.sqrt_float(renderItemEvent.getSwingProgress()) * 3.1415927F);
+                    GlStateManager.rotate(-var15 * 55.0F / 2.0F, -8.0F, -0.0F, 9.0F);
+                    GlStateManager.rotate(-var15 * 45.0F, 1.0F, var15 / 2.0F, -0.0F);
+                    itemRenderer.doBlockTransformations();
+                    GL11.glTranslated(1.2D, 0.3D, 0.5D);
+                    GL11.glTranslatef(-1.0F, mc.thePlayer.isSneaking() ? -0.1F : -0.2F, 0.2F);
+                    GlStateManager.scale(1.2F, 1.2F, 1.2F);
+                    break;
                 case "Basic":
                     itemRenderer.transformFirstPersonItem(-0.25F, 1.0F + convertedProgress / 10.0F);
                     GL11.glRotated((-convertedProgress * 25.0F), 1.0, 0.0, 0.0);

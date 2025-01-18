@@ -6,6 +6,7 @@ import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
@@ -30,6 +31,7 @@ public class Velocity extends Module {
 					"Legit",
 					"Vanilla",
 					"Intave",
+					"IntaveReduce",
 					"Lag",
 					"Matrix",
 					"Test",
@@ -38,6 +40,7 @@ public class Velocity extends Module {
 
 	IntegerSetting chance = new IntegerSetting("Chance", this, 0, 100, 100);
 	IntegerSetting lag = new IntegerSetting("Lag", this, () -> mode.getMode().equals("Lag"), 1, 20, 5);
+	IntegerSetting hurtTime = new IntegerSetting("HurtTime", this, () -> mode.getMode().equals("IntaveReduce"), 0, 10, 6);
 
 	final List<Doubles<Packet, Long>> packetsBuffer;
 
@@ -57,8 +60,13 @@ public class Velocity extends Module {
 		switch (mode.getMode()) {
 			case "Legit" -> {
 				if (event instanceof MoveButtonEvent moveButtonEvent && mc.thePlayer.hurtTime == 10) {
-					// TODO: ДАБАВИТЬ ДЕЛАЙ И РАНДАМ, И ПЕНИС ТОЖЕ ДИСВЕС ОЦЕНИТ.
 					moveButtonEvent.setJump(true);
+				}
+			}
+			case "IntaveReduce" -> {
+				if (event instanceof AttackEvent && mc.thePlayer.hurtTime == hurtTime.getValue()) {
+					mc.thePlayer.motionX *= 0.6f;
+					mc.thePlayer.motionZ *= 0.6f;
 				}
 			}
 

@@ -4,10 +4,13 @@ import com.google.common.collect.Lists;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import me.hackclient.Client;
+import me.hackclient.module.impl.visual.Bloom;
 import me.hackclient.module.impl.visual.ClientShader;
+import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
@@ -272,8 +275,7 @@ public class GuiChat extends GuiScreen
         }
     }
 
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (clientShader == null) {
             clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
             return;
@@ -281,9 +283,7 @@ public class GuiChat extends GuiScreen
         animation2D.endX = fontRendererObj.getStringWidth(inputField.getText());
         animation2D.update(50f);
         if (clientShader.isToggled() && clientShader.chat.isToggled()) {
-            PixelReplacerUtils.addToDraw(() -> {
-                RoundedUtils.drawRect(2, height - 14f, (float) animation2D.x + 11, 12f, 3, new Color(0, 0, 0, 255));
-            });
+            PixelReplacerUtils.addToDraw(() -> RoundedUtils.drawRect(2, height - 14f, (float) animation2D.x + 11, 12f, 3, new Color(0, 0, 0, 255)));
         } else {
             drawRect(2f, this.height - 14f, 2f + (float) animation2D.x, this.height - 2f, Integer.MIN_VALUE);
         }
