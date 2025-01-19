@@ -22,6 +22,7 @@ public class TargetFinder implements InstanceAccess {
                 .filter(entity -> entity != mc.thePlayer)
                 .filter(entity -> entity instanceof EntityLivingBase)
                 .filter(entity -> (entity instanceof EntityPlayer && players) || (entity instanceof EntityMob && mobs) || (entity instanceof EntityAnimal && animal))
+                .filter(entity -> !(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isFriend())
                 .filter(entity -> DistanceUtils.getDistanceToEntity(entity) < distance)
                 .min(Comparator.comparing(RotationUtils::getFovToEntity)).orElse(null);
     }

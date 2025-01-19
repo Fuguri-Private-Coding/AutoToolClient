@@ -72,6 +72,10 @@ public class Ping extends Module {
 			clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
 			return;
 		}
+		if (event instanceof ChangeSprintEvent) {
+			resetTimer.reset();
+			nextDelay = sprintResetDelay.getValue();
+		}
 		if (event instanceof PacketEvent packetEvent) {
 			Packet<?> packet = packetEvent.getPacket();
 			PackerDirection direction = packetEvent.getDirection();
@@ -88,19 +92,14 @@ public class Ping extends Module {
 
 			// Ресет при атаке
 			if (packet instanceof C02PacketUseEntity) {
-				resetTimer.reset();
-				nextDelay = attackDelay.getValue();
+				//resetTimer.reset();
+				//nextDelay = attackDelay.getValue();
 			}
 
 			// Ресет при поставке блока, использовании придмета
 			if (packet instanceof C08PacketPlayerBlockPlacement) {
 				resetTimer.reset();
 				nextDelay = blockPlacementDelay.getValue();
-			}
-
-			if (packet instanceof C0BPacketEntityAction c0b && (c0b.getAction() == C0BPacketEntityAction.Action.START_SPRINTING || c0b.getAction() == C0BPacketEntityAction.Action.STOP_SPRINTING)) {
-				resetTimer.reset();
-				nextDelay = sprintResetDelay.getValue();
 			}
 
 			// Ресет при получении урона

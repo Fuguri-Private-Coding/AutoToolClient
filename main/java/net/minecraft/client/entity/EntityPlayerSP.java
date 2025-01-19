@@ -6,6 +6,8 @@ import me.hackclient.Client;
 import me.hackclient.event.events.MotionEvent;
 import me.hackclient.event.events.SprintEvent;
 import me.hackclient.event.events.UpdateEvent;
+import me.hackclient.utils.rotation.Rotation;
+import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -185,22 +187,16 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
             if (this.ridingEntity == null)
             {
-                if (flag2 && flag3)
-                {
+                if (flag2 && flag3) {
                     this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(event.getX(), event.getY(), event.getZ(), event.getYaw(), event.getPitch(), event.isOnGround()));
-                }
-                else if (flag2)
-                {
+                } else if (flag2) {
                     this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(event.getX(), event.getY(), event.getZ(), event.isOnGround()));
-                }
-                else if (flag3)
-                {
+                } else if (flag3) {
                     this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(event.getYaw(), event.getPitch(), event.isOnGround()));
-                }
-                else
-                {
+                } else {
                     this.sendQueue.addToSendQueue(new C03PacketPlayer(event.isOnGround()));
                 }
+                Rotation.setServerRotation(new Rotation(event.getYaw(), event.getPitch()));
             }
             else
             {

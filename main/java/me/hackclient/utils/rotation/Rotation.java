@@ -47,8 +47,4 @@ public class Rotation {
 	public double hypot() {
 		return Math.hypot(yaw, pitch);
 	}
-
-    public static void setServerRotation(Rotation serverRotation) {
-		Rotation.serverRotation = serverRotation;
-	}
 }

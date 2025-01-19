@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import me.hackclient.Client;
+import me.hackclient.event.events.ChangeSprintEvent;
 import me.hackclient.event.events.MoveFlyingEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
@@ -1809,8 +1810,9 @@ public abstract class Entity implements ICommandSender
         return this.getFlag(3);
     }
 
-    public void setSprinting(boolean sprinting)
-    {
+    public void setSprinting(boolean sprinting) {
+        ChangeSprintEvent event = new ChangeSprintEvent();
+        Client.INSTANCE.getObjectsCaller().onEvent(event);
         this.setFlag(3, sprinting);
     }
 

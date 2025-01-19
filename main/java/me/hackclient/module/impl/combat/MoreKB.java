@@ -11,6 +11,9 @@ import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemSword;
+import net.minecraft.network.play.client.C0BPacketEntityAction;
+
+import static net.minecraft.network.play.client.C0BPacketEntityAction.Action.STOP_SPRINTING;
 
 @ModuleInfo(
         name = "MoreKB",
@@ -67,8 +70,8 @@ public class MoreKB extends Module {
                 }
             }
             case "LegitFast" -> {
-                if (event instanceof SprintEvent) {
-                    mc.thePlayer.setSprinting(false);
+                if (event instanceof RunGameLoopEvent) {
+                    mc.thePlayer.canceling = true;
                 }
             }
             case "LegitSneak" -> {

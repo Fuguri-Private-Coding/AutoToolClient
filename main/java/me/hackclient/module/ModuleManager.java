@@ -41,6 +41,7 @@ public class ModuleManager {
 				 new Sprint(),
 				 new Timer(),
 				 new Disabler(),
+				 new LagRange(),
 				 new ArrayList(),
 				 new MoreSwing(),
 				 new Ping(),
