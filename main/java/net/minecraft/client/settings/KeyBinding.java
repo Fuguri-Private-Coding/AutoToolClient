@@ -24,7 +24,7 @@ public class KeyBinding implements Comparable<KeyBinding>
     @Setter
     @Getter
     int keyCode;
-    boolean pressed;
+    public boolean pressed;
     @Getter @Setter int pressTime;
 
     public static void onTick(int keyCode)

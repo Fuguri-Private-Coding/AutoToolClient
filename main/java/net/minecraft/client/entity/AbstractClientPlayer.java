@@ -5,6 +5,7 @@ import java.io.File;
 
 import me.hackclient.Client;
 import me.hackclient.event.events.LookEvent;
+import me.hackclient.module.impl.visual.CustomCape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.ImageBufferDownload;
@@ -82,8 +83,16 @@ public abstract class AbstractClientPlayer extends EntityPlayer
         return networkplayerinfo == null ? DefaultPlayerSkin.getDefaultSkin(this.getUniqueID()) : networkplayerinfo.getLocationSkin();
     }
 
-    public ResourceLocation getLocationCape()
-    {
+    public ResourceLocation getLocationCape() {
+        if (this instanceof EntityPlayerSP) {
+            CustomCape customCape = Client.INSTANCE.getModuleManager().getModule(CustomCape.class);
+            ResourceLocation capeLocation = customCape.getCape();
+
+            if (customCape.isToggled() && capeLocation != null) {
+                return capeLocation;
+            }
+        }
+
         if (!Config.isShowCapes())
         {
             return null;
