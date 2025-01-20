@@ -15,7 +15,6 @@ import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
 
-import javax.swing.text.TabableView;
 
 @ModuleInfo(
         name = "LagRange",

@@ -22,7 +22,7 @@ public class ModuleManager {
 //				 new AutoSoup(),
 				 new Bloom(),
 //				 new AntiBot(),
-//				 new KillAura(),
+				 new KillAura(),
 				 new Dot(),
 				 new TestESP(),
 				 new MoreKB(),

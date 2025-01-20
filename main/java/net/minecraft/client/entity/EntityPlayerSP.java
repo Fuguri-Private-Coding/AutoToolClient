@@ -196,7 +196,6 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 } else {
                     this.sendQueue.addToSendQueue(new C03PacketPlayer(event.isOnGround()));
                 }
-                Rotation.setServerRotation(new Rotation(event.getYaw(), event.getPitch()));
             }
             else
             {
@@ -594,15 +593,15 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void onLivingUpdate()
     {
-        if (this.sprintingTicksLeft > 0)
-        {
-            --this.sprintingTicksLeft;
-
-            if (this.sprintingTicksLeft == 0)
-            {
-                this.setSprinting(false);
-            }
-        }
+//        if (this.sprintingTicksLeft > 0)
+//        {
+//            --this.sprintingTicksLeft;
+//
+//            if (this.sprintingTicksLeft == 0)
+//            {
+//                this.setSprinting(false);
+//            }
+//        }
 
         if (this.sprintToggleTimer > 0)
         {
@@ -678,25 +677,21 @@ public class EntityPlayerSP extends AbstractClientPlayer
         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double)this.width * 0.35D);
         boolean flag3 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
 
-        if (this.onGround && !flag1 && !flag2 && this.movementInput.moveForward >= f && !this.isSprinting() && flag3 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness))
+        if (onGround && !flag1 && !flag2 && movementInput.moveForward >= f && !isSprinting() && flag3 && !isUsingItem() && !isPotionActive(Potion.blindness))
         {
-            if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.isKeyDown())
-            {
-                this.sprintToggleTimer = 7;
-            }
-            else
-            {
-                this.setSprinting(true);
+            if (sprintToggleTimer <= 0 && !mc.gameSettings.keyBindSprint.isKeyDown()) {
+                sprintToggleTimer = 7;
+            } else {
+                setSprinting(true);
             }
         }
 
-        if (!this.isSprinting() && this.movementInput.moveForward >= f && flag3 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness) && (forceSprint || mc.gameSettings.keyBindSprint.isKeyDown()))
+        if (!isSprinting() && movementInput.moveForward >= f && flag3 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness) && (forceSprint || mc.gameSettings.keyBindSprint.isKeyDown()))
         {
             this.setSprinting(true);
         }
 
-        if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3 || canceling)) {
-            if (canceling) canceling = false;
+        if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3)) {
             this.setSprinting(false);
         }
 

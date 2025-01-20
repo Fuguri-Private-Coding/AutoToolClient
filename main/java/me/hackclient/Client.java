@@ -13,6 +13,7 @@ import me.hackclient.guis.clickGui.ClickGuiScreen;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleManager;
 //import me.hackclient.module.impl.combat.killaura.click.ClickManager;
+import me.hackclient.module.impl.combat.killaura.click.ClickManager;
 import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
 import org.lwjgl.opengl.Display;
@@ -42,7 +43,7 @@ public enum Client implements CallableObject {
 
 	ClickGuiScreen clickGui;
 
-	//ClickManager clickManager;
+	ClickManager clickManager;
 
 	public void init() {
 		callables.add(this);
@@ -65,7 +66,7 @@ public enum Client implements CallableObject {
 		}
 		clickGui = new ClickGuiScreen();
 
-		//clickManager = new ClickManager();
+		clickManager = new ClickManager();
 		Display.setTitle(getFullName());
 	}
 

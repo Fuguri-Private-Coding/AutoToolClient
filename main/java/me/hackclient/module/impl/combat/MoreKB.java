@@ -1,5 +1,6 @@
 package me.hackclient.module.impl.combat;
 
+import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
@@ -7,6 +8,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.settings.KeyBinding;
@@ -50,6 +52,7 @@ public class MoreKB extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
 
+
         if (event instanceof AttackEvent && stopWatch.reachedMS(500)) {
             stopWatch.reset();
             delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
@@ -71,7 +74,7 @@ public class MoreKB extends Module {
             }
             case "LegitFast" -> {
                 if (event instanceof RunGameLoopEvent) {
-                    mc.thePlayer.canceling = true;
+                   mc.thePlayer.canceling = true;
                 }
             }
             case "LegitSneak" -> {

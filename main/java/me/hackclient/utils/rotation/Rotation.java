@@ -47,4 +47,13 @@ public class Rotation {
 	public double hypot() {
 		return Math.hypot(yaw, pitch);
 	}
+
+	public Rotation fix() {
+		float gcd = RotationUtils.getMouseGCD();
+		Delta delta = RotationUtils.getDelta(serverRotation, this);
+		return new Rotation(
+				yaw + (delta.getYaw() - delta.getYaw() % gcd),
+				pitch + (delta.getPitch() - delta.getPitch() % gcd)
+		);
+	}
 }

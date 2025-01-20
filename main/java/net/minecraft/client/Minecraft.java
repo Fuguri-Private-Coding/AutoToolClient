@@ -1399,7 +1399,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     public void clickMouse()
     {
-        if (this.leftClickCounter <= 0 || Client.INSTANCE.getModuleManager().getModule(DelayFix.class).isToggled())
+        if (this.leftClickCounter <= 0)
         {
             this.thePlayer.swingItem();
 
@@ -1433,7 +1433,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                     default:
                         if (this.playerController.isNotCreative())
                         {
-                            this.leftClickCounter = 10;
+                            this.leftClickCounter = Client.INSTANCE.getModuleManager().getModule(DelayFix.class).isToggled() ? -1 : 10;
                         }
                 }
             }

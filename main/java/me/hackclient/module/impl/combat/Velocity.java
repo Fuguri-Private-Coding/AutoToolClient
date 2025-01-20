@@ -76,7 +76,7 @@ public class Velocity extends Module {
                 boolean attacking = event instanceof AttackEvent attackEvent && attackEvent.getHittingEntity() instanceof EntityLivingBase;
                 boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTimeIntave.getValue();
 
-                if (event instanceof MoveButtonEvent moveButtonEvent && damaged && mc.thePlayer.onGround) {
+                if (event instanceof MoveButtonEvent moveButtonEvent && damaged && mc.thePlayer.onGround && jump.isToggled()) {
                     moveButtonEvent.setJump(true);
                     moveButtonEvent.setForward(true);
                     moveButtonEvent.setBack(false);
