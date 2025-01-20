@@ -23,7 +23,7 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
             EntityLivingBase rayCast = (EntityLivingBase) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityLivingBase);
             for (int i = 0; i < clicks; i++) {
                 if (rayCast instanceof EntityPlayer entityPlayer && entityPlayer.isFriend()) { break; }
-                if (delay == 0 || mc.thePlayer.hurtTime > 6) {
+                if (delay == 0 || mc.thePlayer.hurtTime > 7) {
                     mc.clickMouse();
                     if (delay == 0) {
                         if (rayCast != null) {

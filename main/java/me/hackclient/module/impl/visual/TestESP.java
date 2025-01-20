@@ -24,7 +24,7 @@ public class TestESP extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof DrawEntityEvent drawEntityEvent) {
-            drawEntityEvent.setCanceled(true);
+            //drawEntityEvent.setCanceled(true);
         }
         if (event instanceof Render3DEvent) {
             kostil = true;

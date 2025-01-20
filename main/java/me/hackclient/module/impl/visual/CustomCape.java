@@ -20,6 +20,16 @@ public class CustomCape extends Module {
             new String[] {
                     "Russian",
                     "AutoTool",
+                    "AugustusRose",
+                    "AugustusMango",
+                    "AugustusMagma",
+                    "AugustusTitanium",
+                    "AugustusMagic",
+                    "AugustusClassic",
+                    "AugustusAmethyst",
+                    "AugustusCandy",
+                    "Augustus",
+                    "ESound",
             }
     );
 

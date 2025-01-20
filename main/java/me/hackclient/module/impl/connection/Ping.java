@@ -15,6 +15,7 @@ import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.timer.StopWatch;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.network.Packet;
@@ -52,6 +53,7 @@ public class Ping extends Module {
 	final List<Doubles<Packet, Long>> packetBuffer;
 	ClientShader clientShader;
 	final List<Doubles<Vec3, Long>> posBuffer;
+	EntityOtherPlayerMP Player = null;
 
 	@Override
 	public void onDisable() {
@@ -92,8 +94,8 @@ public class Ping extends Module {
 
 			// Ресет при атаке
 			if (packet instanceof C02PacketUseEntity) {
-				//resetTimer.reset();
-				//nextDelay = attackDelay.getValue();
+				resetTimer.reset();
+				nextDelay = attackDelay.getValue();
 			}
 
 			// Ресет при поставке блока, использовании придмета
@@ -136,7 +138,27 @@ public class Ping extends Module {
 		}
 
 		if (event instanceof RunGameLoopEvent) {
-
+			//if (posBuffer.isEmpty() || mc.gameSettings.thirdPersonView == 0) {
+			//	mc.theWorld.removeEntityFromWorld(Player.getEntityId());
+			//} else {
+			//	Player = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
+			//	Player.setPosition(animation3D.x, animation3D.y, animation3D.z);
+			//	Player.prevRenderYawOffset = mc.thePlayer.prevRenderYawOffset;
+			//	Player.rotationYaw = mc.thePlayer.rotationYaw;
+			//	Player.rotationPitch = mc.thePlayer.rotationPitch;
+			//	Player.rotationYawHead = mc.thePlayer.rotationYawHead;
+			//	Player.rotationPitchHead = mc.thePlayer.rotationPitchHead;
+			//	Player.prevRotationYaw = mc.thePlayer.prevRotationYaw;
+			//	Player.prevRotationPitch = mc.thePlayer.prevRotationPitch;
+			//	Player.prevLimbSwingAmount = mc.thePlayer.prevLimbSwingAmount;
+			//	Player.prevSwingProgress = mc.thePlayer.prevSwingProgress;
+			//	Player.swingProgress = mc.thePlayer.swingProgress;
+			//	Player.limbSwingAmount = mc.thePlayer.limbSwingAmount;
+			//	Player.limbSwing = mc.thePlayer.limbSwing;
+			//	Player.prevCameraYaw = mc.thePlayer.prevCameraPitch;
+			//	Player.prevCameraPitch = mc.thePlayer.prevCameraYaw;
+			//	mc.theWorld.addEntityToWorld(-1000, Player);
+			//}
 			handleStandAlone();
 		}
 

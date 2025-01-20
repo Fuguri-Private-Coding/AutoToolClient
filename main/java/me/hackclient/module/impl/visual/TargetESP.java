@@ -1,19 +1,17 @@
 package me.hackclient.module.impl.visual;
 
 import me.hackclient.Client;
+import me.hackclient.combatmanager.CombatManager;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-//import me.hackclient.module.impl.combat.KillAura;
-import me.hackclient.module.impl.legit.AimAssist;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 
 import static java.lang.Math.*;
@@ -27,22 +25,16 @@ public class TargetESP extends Module {
     FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f);
     BooleanSetting changeColorToHit = new BooleanSetting("ChangeColorDueHurtTime", this, true);
 
-//    private KillAura killAura;
-
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-//        if (killAura == null)
-//            killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
-
-        if (true)
-            return;
-
         if (event instanceof Render3DEvent) {
             PixelReplacerUtils.addToDraw(() -> {
                 double animationTranslate = sin(System.currentTimeMillis() / 1000.0 * speed.getValue());
 
-                final EntityLivingBase target = null;
+                final EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
+
+                if (target == null) { return; }
 
                 final RenderManager renderManager = mc.getRenderManager();
                 final double viewerPosX = renderManager.viewerPosX;

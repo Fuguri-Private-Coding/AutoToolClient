@@ -193,7 +193,6 @@ import org.lwjgl.util.glu.GLU;
 public class Minecraft implements IThreadListener, IPlayerUsage
 {
     private static final Logger logger = LogManager.getLogger();
-    //private static final ResourceLocation locationMojangPng = new ResourceLocation("textures/gui/title/mojang.png");
     private static final ResourceLocation locationMojangPng = new ResourceLocation("minecraft","hackclient/splashscreen/splash" + RandomUtils.nextInt(1, 3) + ".png");
     public static final boolean isRunningOnMac = Util.getOSType() == Util.EnumOS.OSX;
     public static byte[] memoryReserve = new byte[10485760];
@@ -1430,7 +1429,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                     default:
                         if (this.playerController.isNotCreative())
                         {
-                            this.leftClickCounter = Client.INSTANCE.getModuleManager().getModule(DelayFix.class).isToggled() ? -1 : 10;
+                            this.leftClickCounter = 10;
                         }
                 }
             }

@@ -1157,7 +1157,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
                 float f = (float)this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
                 int i = 0;
-                float f1 = 0;
+                float f1;
 
                 if (targetEntity instanceof EntityLivingBase)
                 {
