@@ -50,7 +50,7 @@ public class ModuleManager {
 				 new ClientSpoofer(),
 //				 new TimerRange(),
 				 new ClickGui(),
-				 new DelayFix(),
+				 new Fixes(),
 //				 new Handler(),
 				 new FlagDetector(),
 				 new AimAssist(),
@@ -73,7 +73,8 @@ public class ModuleManager {
 				 new NameTags(),
 				 new NoRender(),
 				 new MidClick(),
-				 new AutoBot()
+				 new AutoBot(),
+				 new CustomCape()
 		);
 	}
 

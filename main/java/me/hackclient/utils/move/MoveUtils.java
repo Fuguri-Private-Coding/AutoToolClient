@@ -3,6 +3,7 @@ package me.hackclient.utils.move;
 import me.hackclient.event.events.MoveFlyingEvent;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.rotation.Rotation;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.MathHelper;
 
 public class MoveUtils implements InstanceAccess {
@@ -150,5 +151,14 @@ public class MoveUtils implements InstanceAccess {
         }
 
         return Math.toRadians(rotationYaw);
+    }
+
+    public static void updateControls() {
+        mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward);
+        mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack);
+        mc.gameSettings.keyBindRight.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindRight);
+        mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft);
+        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump);
+        mc.gameSettings.keyBindSprint.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSprint);
     }
 }

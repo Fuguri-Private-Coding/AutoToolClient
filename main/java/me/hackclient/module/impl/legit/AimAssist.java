@@ -31,7 +31,7 @@ public class AimAssist extends Module {
     final FloatSetting hSpeed = new FloatSetting("HorizontalSpeed", this, 0.1f, 30.0f, 5.0f, 0.1f);
     final FloatSetting vSpeed = new FloatSetting("VerticalSpeed", this, moveVertical::isToggled, 0.1f, 15.0f, 2.5f, 0.1f);
     final FloatSetting distance = new FloatSetting("Distance", this, 3.0f, 12.0f, 6.0f, 0.1f);
-    final IntegerSetting fov = new IntegerSetting("Fov", this, 10, 90, 35);
+    final IntegerSetting fov = new IntegerSetting("Fov", this, 10, 180, 35);
 
     @Override
     public void onEvent(Event event) {

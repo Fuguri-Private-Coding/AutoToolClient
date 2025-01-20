@@ -1,4 +1,4 @@
-package me.hackclient.module.impl.visual;
+package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
 import me.hackclient.event.events.MotionEvent;
