@@ -99,10 +99,10 @@ public class Ping extends Module {
 			}
 
 			// Ресет при атаке
-			if (packet instanceof C02PacketUseEntity) {
-				resetTimer.reset();
-				nextDelay = attackDelay.getValue();
-			}
+//			if (packet instanceof C02PacketUseEntity) {
+//				resetTimer.reset();
+//				nextDelay = attackDelay.getValue();
+//			}
 
 			// Ресет при поставке блока, использовании придмета
 			if (packet instanceof C08PacketPlayerBlockPlacement) {
@@ -157,6 +157,11 @@ public class Ping extends Module {
 			animation3D.update(20f);
 
 			if (mc.gameSettings.thirdPersonView == 0 && onlyThirdPerson.isToggled()) {
+				if (player != null) {
+					mc.theWorld.removeEntity(player);
+					player = null;
+					ClientUtils.chatLog("Removed fakePlayer");
+				}
 				return;
 			}
 
@@ -204,5 +209,11 @@ public class Ping extends Module {
 			}
 		}
 		posBuffer.clear();
+
+		if (player != null) {
+			animation3D.endX = mc.thePlayer.posX;
+			animation3D.endY = mc.thePlayer.posY;
+			animation3D.endZ = mc.thePlayer.posZ;
+		}
 	}
 }
