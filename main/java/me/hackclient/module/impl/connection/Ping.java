@@ -12,6 +12,7 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.utils.animation.Animation3D;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.timer.StopWatch;
@@ -28,6 +29,7 @@ import net.minecraft.network.status.client.C00PacketServerQuery;
 import net.minecraft.network.status.client.C01PacketPing;
 import net.minecraft.network.status.server.S01PacketPong;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ public class Ping extends Module {
 	BooleanSetting guiFlush = new BooleanSetting("GuiFlush", this, true);
 	BooleanSetting itemFlush = new BooleanSetting("ItemFlush", this, true);
 	IntegerSetting blockPlacementDelay = new IntegerSetting("BlockPlacementConditionTime", this, 0, 20, 10);
+	BooleanSetting onlyThirdPerson = new BooleanSetting("OnlyThirdPerson", this, true);
 
 	// Таймер для задержки после ресета, помогает обходить античиты
 	int nextDelay;
@@ -53,7 +56,7 @@ public class Ping extends Module {
 	final List<Doubles<Packet, Long>> packetBuffer;
 	ClientShader clientShader;
 	final List<Doubles<Vec3, Long>> posBuffer;
-	EntityOtherPlayerMP Player = null;
+	EntityOtherPlayerMP player;
 
 	@Override
 	public void onDisable() {
@@ -74,6 +77,9 @@ public class Ping extends Module {
 			clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
 			return;
 		}
+		if (event instanceof WorldChangeEvent) {
+			player = null;
+		}
 		if (event instanceof ChangeSprintEvent) {
 			resetTimer.reset();
 			nextDelay = sprintResetDelay.getValue();
@@ -87,8 +93,8 @@ public class Ping extends Module {
 
 			// Пропускает некоторые пакеты
 			if (packet instanceof C01PacketChatMessage
-			|| packet instanceof C00PacketServerQuery
-			|| packet instanceof C00PacketLoginStart) {
+					|| packet instanceof C00PacketServerQuery
+					|| packet instanceof C00PacketLoginStart) {
 				return;
 			}
 
@@ -106,8 +112,8 @@ public class Ping extends Module {
 
 			// Ресет при получении урона
 			if (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId()) {
-				//resetTimer.reset();
-				//nextDelay = velocityDelay.getValue();
+				resetTimer.reset();
+				nextDelay = velocityDelay.getValue();
 			}
 
 			if (mc.currentScreen instanceof GuiInventory && guiFlush.isToggled() || mc.currentScreen instanceof GuiContainer && guiFlush.isToggled()) {
@@ -138,49 +144,42 @@ public class Ping extends Module {
 		}
 
 		if (event instanceof RunGameLoopEvent) {
-			//if (posBuffer.isEmpty() || mc.gameSettings.thirdPersonView == 0) {
-			//	mc.theWorld.removeEntityFromWorld(Player.getEntityId());
-			//} else {
-			//	Player = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
-			//	Player.setPosition(animation3D.x, animation3D.y, animation3D.z);
-			//	Player.prevRenderYawOffset = mc.thePlayer.prevRenderYawOffset;
-			//	Player.rotationYaw = mc.thePlayer.rotationYaw;
-			//	Player.rotationPitch = mc.thePlayer.rotationPitch;
-			//	Player.rotationYawHead = mc.thePlayer.rotationYawHead;
-			//	Player.rotationPitchHead = mc.thePlayer.rotationPitchHead;
-			//	Player.prevRotationYaw = mc.thePlayer.prevRotationYaw;
-			//	Player.prevRotationPitch = mc.thePlayer.prevRotationPitch;
-			//	Player.prevLimbSwingAmount = mc.thePlayer.prevLimbSwingAmount;
-			//	Player.prevSwingProgress = mc.thePlayer.prevSwingProgress;
-			//	Player.swingProgress = mc.thePlayer.swingProgress;
-			//	Player.limbSwingAmount = mc.thePlayer.limbSwingAmount;
-			//	Player.limbSwing = mc.thePlayer.limbSwing;
-			//	Player.prevCameraYaw = mc.thePlayer.prevCameraPitch;
-			//	Player.prevCameraPitch = mc.thePlayer.prevCameraYaw;
-			//	mc.theWorld.addEntityToWorld(-1000, Player);
-			//}
 			handleStandAlone();
-		}
 
-		if (event instanceof Render3DEvent && !posBuffer.isEmpty() && mc.gameSettings.thirdPersonView != 0) {
+			if (posBuffer.isEmpty()) {
+				return;
+			}
+
 			Vec3 vec = posBuffer.get(0).getFirst();
 			animation3D.endX = vec.xCoord;
 			animation3D.endY = vec.yCoord;
 			animation3D.endZ = vec.zCoord;
 			animation3D.update(20f);
 
-			RenderUtils.start3D();
-			Vec3 diff = new Vec3(animation3D.x, animation3D.y, animation3D.z).subtract(mc.thePlayer.getPositionVector());
-			AxisAlignedBB box = mc.thePlayer.getEntityBoundingBox().offset(diff).
-					offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
-			if (clientShader.isToggled() && clientShader.ping.isToggled()) {
-				PixelReplacerUtils.addToDraw(() ->
-					RenderUtils.renderHitBox(box)
-				);
-			} else {
-				RenderUtils.renderHitBox(box);
+			if (mc.gameSettings.thirdPersonView == 0 && onlyThirdPerson.isToggled()) {
+				return;
 			}
-			RenderUtils.stop3D();
+
+			if (player == null) {
+				player = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
+				mc.theWorld.addEntityToWorld(player.getEntityId(), player);
+				ClientUtils.chatLog("Created fakePlayer width id: " + player.getEntityId());
+			} else {
+				player.setPositionAndRotation(
+						animation3D.x,
+						animation3D.y,
+						animation3D.z,
+						MathHelper.wrapDegree(mc.thePlayer.rotationYaw),
+						mc.thePlayer.rotationPitch
+				);
+				player.rotationYawHead = mc.thePlayer.rotationYawHead;
+				player.limbSwing = mc.thePlayer.limbSwing;
+				player.prevLimbSwingAmount = mc.thePlayer.prevLimbSwingAmount;
+				player.limbSwingAmount = mc.thePlayer.limbSwingAmount;
+				player.swingProgressInt = mc.thePlayer.swingProgressInt;
+				player.swingProgress = mc.thePlayer.swingProgress;
+				player.renderYawOffset = mc.thePlayer.renderYawOffset;
+			}
 		}
 	}
 
