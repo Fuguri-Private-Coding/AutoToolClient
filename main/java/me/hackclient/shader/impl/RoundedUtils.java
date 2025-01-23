@@ -15,7 +15,7 @@ public class RoundedUtils implements InstanceAccess {
 
     private static void draw(final float x, final float y, final float width, final float height, final float radius, final Color color) {
         if (program == null) program = Client.INSTANCE.getShaderManager().getRounded();
-        int id = program.getProgram();
+        int id = program.getProgramId();
         program.start();
         Uniform.uniform2f(id, "u_size", width, height);
         Uniform.uniform1f(id, "u_radius", radius);

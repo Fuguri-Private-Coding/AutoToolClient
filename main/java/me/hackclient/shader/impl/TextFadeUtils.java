@@ -19,7 +19,7 @@ public class TextFadeUtils implements InstanceAccess {
     public static void draw(Runnable runnable, Color color, Color color1) {
         ScaledResolution sc = new ScaledResolution(mc);
         Shader shader = Client.INSTANCE.getShaderManager().getTextFade();
-        final int id = shader.getProgram();
+        final int id = shader.getProgramId();
 
         if (mc.displayWidth != framebuffer.framebufferWidth || mc.displayHeight != framebuffer.framebufferHeight) {
             framebuffer.deleteFramebuffer();

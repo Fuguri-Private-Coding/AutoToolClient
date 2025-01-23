@@ -5,6 +5,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.hackclient.Client;
 import me.hackclient.event.events.ChangeSprintEvent;
 import me.hackclient.event.events.MoveFlyingEvent;
@@ -56,6 +58,8 @@ public abstract class Entity implements ICommandSender
 {
     private static final AxisAlignedBB ZERO_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
     private static int nextEntityID;
+    @Getter
+    @Setter
     private int entityId;
     public double renderDistanceWeight;
     public boolean preventEntitySpawning;
@@ -128,16 +132,6 @@ public abstract class Entity implements ICommandSender
     private boolean invulnerable;
     protected UUID entityUniqueID;
     private final CommandResultStats cmdResultStats;
-
-    public int getEntityId()
-    {
-        return this.entityId;
-    }
-
-    public void setEntityId(int id)
-    {
-        this.entityId = id;
-    }
 
     public void onKillCommand()
     {

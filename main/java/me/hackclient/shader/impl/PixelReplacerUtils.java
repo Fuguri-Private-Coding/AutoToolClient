@@ -52,7 +52,7 @@ public class PixelReplacerUtils implements CallableObject, InstanceAccess {
                 return;
             }
 
-            final int id = shader.getProgram();
+            final int id = shader.getProgramId();
 
             shader.start();
             Uniform.uniform1f(id, "r_offset", pixelReplacer.getColor().getRed() / 255f);

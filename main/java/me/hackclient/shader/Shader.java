@@ -1,5 +1,6 @@
 package me.hackclient.shader;
 
+import lombok.Getter;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
@@ -9,18 +10,20 @@ import org.lwjgl.opengl.GL20;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.FloatBuffer;
 
-public class Shader implements InstanceAccess {
-	private final int program;
+@Getter
+public class Shader implements InstanceAccess { 
+	final int programId;
 
 	public Shader(ResourceLocation fragmentShaderDir, ResourceLocation vertexShaderDir) {
-		program = GL20.glCreateProgram();
+		programId = GL20.glCreateProgram();
 		String vertex = convertFileToString(vertexShaderDir);
 		String fragment = convertFileToString(fragmentShaderDir);
 
-		GL20.glAttachShader(program, createShader(fragment, GL20.GL_FRAGMENT_SHADER));
-		GL20.glAttachShader(program, createShader(vertex, GL20.GL_VERTEX_SHADER));
-		GL20.glLinkProgram(program);
+		GL20.glAttachShader(programId, createShader(fragment, GL20.GL_FRAGMENT_SHADER));
+		GL20.glAttachShader(programId, createShader(vertex, GL20.GL_VERTEX_SHADER));
+		GL20.glLinkProgram(programId);
 	}
 
 	private String convertFileToString(ResourceLocation file) {
@@ -60,15 +63,43 @@ public class Shader implements InstanceAccess {
 		GL11.glEnd();
 	}
 
-	public int getProgram() {
-		return program;
-	}
-
 	public void start() {
-		GL20.glUseProgram(program);
+		GL20.glUseProgram(programId);
 	}
 
 	public void stop() {
 		GL20.glUseProgram(0);
+	}
+
+	public void uniformFB(final String name, final FloatBuffer floatBuffer) {
+		GL20.glUniform1(getLocation(name), floatBuffer);
+	}
+
+	public void uniform1i(final String name, final int i) {
+		GL20.glUniform1i(getLocation(name), i);
+	}
+
+	public void uniform2i(final String name, final int i, final int j) {
+		GL20.glUniform2i(getLocation(name), i, j);
+	}
+
+	public void uniform1f(final String name, final float f) {
+		GL20.glUniform1f(getLocation(name), f);
+	}
+
+	public void uniform2f(final String name, final float f, final float g) {
+		GL20.glUniform2f(getLocation(name), f, g);
+	}
+
+	public void uniform3f(final String name, final float f, final float g, final float h) {
+		GL20.glUniform3f(getLocation(name), f, g, h);
+	}
+
+	public void uniform4f(final String name, final float f, final float g, final float h, final float i) {
+		GL20.glUniform4f(getLocation(name), f, g, h, i);
+	}
+
+	public int getLocation(final String name) {
+		return GL20.glGetUniformLocation(programId, name);
 	}
 }

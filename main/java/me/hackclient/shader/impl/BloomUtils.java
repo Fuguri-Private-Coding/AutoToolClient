@@ -46,7 +46,7 @@ public class BloomUtils implements InstanceAccess {
 
 		final int radius = Client.INSTANCE.getModuleManager().getModule(Bloom.class).radius.getValue();
 		final float compression = Client.INSTANCE.getModuleManager().getModule(Bloom.class).compression.getValue();
-		final int programID = bloom.getProgram();
+		final int programID = bloom.getProgramId();
 
 		inputFramebuffer.bindFramebuffer(true);
 		runnables.forEach(Runnable::run);

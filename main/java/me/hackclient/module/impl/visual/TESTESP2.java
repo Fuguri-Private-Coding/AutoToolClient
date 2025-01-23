@@ -56,7 +56,7 @@ public class TESTESP2 extends Module {
                 return;
             }
 
-            final int id = shader.getProgram();
+            final int id = shader.getProgramId();
 
             shader.start();
             Uniform.uniform1f(id, "radius", 15f);

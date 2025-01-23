@@ -69,7 +69,7 @@ public class LoadingScreenRenderer implements IProgressUpdate
             else
             {
                 ScaledResolution scaledresolution = new ScaledResolution(this.mc);
-                GlStateManager.ortho(0.0D, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0D, 100.0D, 300.0D);
+                GlStateManager.ortho(0.0D, scaledresolution.getScaledWidthD(), scaledresolution.getScaledHeightD(), 0.0D, 100.0D, 300.0D);
             }
 
             GlStateManager.matrixMode(5888);
@@ -129,7 +129,7 @@ public class LoadingScreenRenderer implements IProgressUpdate
                 this.framebuffer.bindFramebuffer(false);
                 GlStateManager.matrixMode(5889);
                 GlStateManager.loadIdentity();
-                GlStateManager.ortho(0.0D, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0D, 100.0D, 300.0D);
+                GlStateManager.ortho(0.0D, scaledresolution.getScaledWidthD(), scaledresolution.getScaledHeightD(), 0.0D, 100.0D, 300.0D);
                 GlStateManager.matrixMode(5888);
                 GlStateManager.loadIdentity();
                 GlStateManager.translate(0.0F, 0.0F, -200.0F);

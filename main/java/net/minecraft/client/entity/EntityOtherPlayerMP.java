@@ -38,8 +38,8 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
         this.otherPlayerMPX = x;
         this.otherPlayerMPY = y;
         this.otherPlayerMPZ = z;
-        this.otherPlayerMPYaw = (double)yaw;
-        this.otherPlayerMPPitch = (double)pitch;
+        this.otherPlayerMPYaw = yaw;
+        this.otherPlayerMPPitch = pitch;
         this.otherPlayerMPPosRotationIncrements = posRotationIncrements;
     }
 
@@ -75,8 +75,7 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
 
     public void onLivingUpdate()
     {
-        if (this.otherPlayerMPPosRotationIncrements > 0)
-        {
+        if (this.otherPlayerMPPosRotationIncrements > 0) {
             double d0 = this.posX + (this.otherPlayerMPX - this.posX) / (double)this.otherPlayerMPPosRotationIncrements;
             double d1 = this.posY + (this.otherPlayerMPY - this.posY) / (double)this.otherPlayerMPPosRotationIncrements;
             double d2 = this.posZ + (this.otherPlayerMPZ - this.posZ) / (double)this.otherPlayerMPPosRotationIncrements;
