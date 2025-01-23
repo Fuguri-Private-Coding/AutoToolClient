@@ -54,16 +54,18 @@ public class KillAura extends Module {
         stopWatch = new StopWatch();
     }
 
+    CombatManager combatManager = Client.INSTANCE.getCombatManager();
+
     @Override
     public void onDisable() {
         super.onDisable();
         Animations.setAnimate(false);
+        combatManager.setTarget(null);
     }
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        CombatManager combatManager = Client.INSTANCE.getCombatManager();
         if (event instanceof UpdateEvent) {
             combatManager.setTarget(TargetFinder.findTarget(distance.getValue(), players.isToggled(), mobs.isToggled(), animals.isToggled()));
         }

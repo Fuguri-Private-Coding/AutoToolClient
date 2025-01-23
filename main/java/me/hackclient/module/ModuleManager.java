@@ -19,7 +19,7 @@ public class ModuleManager {
 	public ModuleManager() {
 		INSTANCE = this;
 		 register(
-//				 new AutoSoup(),
+				 new AutoSoup(),
 				 new Bloom(),
 //				 new AntiBot(),
 				 new KillAura(),
@@ -48,7 +48,7 @@ public class ModuleManager {
 				 new TargetESP(),
 				 new FullBright(),
 				 new ClientSpoofer(),
-//				 new TimerRange(),
+				 new TimerRange(),
 				 new ClickGui(),
 				 new Fixes(),
 //				 new Handler(),
@@ -65,7 +65,6 @@ public class ModuleManager {
 				 new BackTrack(),
 				 new FlyTimer(),
 				 new MLG(),
-//				 new TimerRangeV2(),
 				 new TimeChanger(),
 				 new Test(),
 				 new TrashTalk(),

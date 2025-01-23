@@ -38,7 +38,7 @@ public class Dot extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof Render3DEvent) {
-            if (Client.INSTANCE.getCombatManager().getTarget() == null && mc.theWorld == null && mc.thePlayer == null && onlyKillAura.isToggled()) { return; }
+            if (Client.INSTANCE.getCombatManager().getTarget() == null && onlyKillAura.isToggled()) { return; }
             RenderUtils.start3D();
             Vec3 vec = mc.objectMouseOver.hitVec.addVector(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
             GL11.glPointSize(size.getValue());

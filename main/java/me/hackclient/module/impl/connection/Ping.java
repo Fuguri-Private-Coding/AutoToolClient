@@ -106,8 +106,8 @@ public class Ping extends Module {
 
 			// Ресет при получении урона
 			if (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId()) {
-				resetTimer.reset();
-				nextDelay = velocityDelay.getValue();
+				//resetTimer.reset();
+				//nextDelay = velocityDelay.getValue();
 			}
 
 			if (mc.currentScreen instanceof GuiInventory && guiFlush.isToggled() || mc.currentScreen instanceof GuiContainer && guiFlush.isToggled()) {
