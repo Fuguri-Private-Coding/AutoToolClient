@@ -25,16 +25,21 @@ public class TargetESP extends Module {
     FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f);
     BooleanSetting changeColorToHit = new BooleanSetting("ChangeColorDueHurtTime", this, true);
 
+    ClientShader clientShader;
+
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (clientShader == null) clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
         if (event instanceof Render3DEvent) {
             PixelReplacerUtils.addToDraw(() -> {
                 double animationTranslate = sin(System.currentTimeMillis() / 1000.0 * speed.getValue());
 
                 final EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
 
-                if (target == null) { return; }
+                if (target == null) {
+                    return;
+                }
 
                 final RenderManager renderManager = mc.getRenderManager();
                 final double viewerPosX = renderManager.viewerPosX;
@@ -82,7 +87,6 @@ public class TargetESP extends Module {
                 glEnable(GL_TEXTURE_2D);
                 glPopMatrix();
             });
-
         }
     }
 }

@@ -2,7 +2,6 @@ package me.hackclient.module.impl.combat;
 
 import me.hackclient.event.Event;
 import me.hackclient.event.events.RunGameLoopEvent;
-import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -14,7 +13,6 @@ import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.network.play.client.C16PacketClientStatus;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
@@ -71,11 +69,6 @@ public class AutoSoup extends Module {
                             mc.thePlayer.inventory.currentItem = slot;
                         }
                     }
-                } else {
-                    slot = this.getSoupInWholeInventory();
-                    if (slot != -1) {
-                        this.openInventory();
-                    }
                 }
             } else if (mc.currentScreen instanceof GuiInventory) {
                 slot = this.getEmptySoup();
@@ -104,11 +97,6 @@ public class AutoSoup extends Module {
             }
             this.slotOnLastTick = mc.thePlayer.inventory.currentItem;
         }
-    }
-
-    public void openInventory() {
-        mc.getNetHandler().addToSendQueue(new C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT));
-        mc.displayGuiScreen(new GuiInventory(mc.thePlayer));
     }
 
     public int getEmptySoup() {

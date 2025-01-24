@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.combat.killaura.click;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.hackclient.event.Event;
 import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.events.LegitClickTimingEvent;

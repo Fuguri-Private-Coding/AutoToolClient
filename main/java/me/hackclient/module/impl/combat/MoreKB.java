@@ -39,7 +39,7 @@ public class MoreKB extends Module {
     final IntegerSetting maxDelay = new IntegerSetting("MinTickDelayAfterHit", this, 0, 10, 3);
     final IntegerSetting minReset = new IntegerSetting("MinTickResetDuration", this, 0, 10, 1);
     final IntegerSetting maxReset = new IntegerSetting("MaxTickResetDuration", this, 0, 10, 1);
-    final IntegerSetting xznahui = new IntegerSetting("xznahui", this, 0, 500, 450);
+    final IntegerSetting delayBetweenHit = new IntegerSetting("DelayBetweenHit", this, 0, 500, 450);
 
     public MoreKB() {
         stopWatch = new StopWatch();
@@ -50,7 +50,7 @@ public class MoreKB extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof AttackEvent && stopWatch.reachedMS(xznahui.getValue())) {
+        if (event instanceof AttackEvent && stopWatch.reachedMS(delayBetweenHit.getValue())) {
             delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
             reset = RandomUtils.nextInt(minReset.getValue(), maxReset.getValue());
             stopWatch.reset();
@@ -71,9 +71,9 @@ public class MoreKB extends Module {
             }
 
             case "LegitFast" -> {
-                if (event instanceof TickEvent) {
+                if (event instanceof SprintEvent) {
                     mc.thePlayer.setSprinting(false);
-                    //mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, STOP_SPRINTING));
+                    mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, STOP_SPRINTING));
                     mc.thePlayer.setServerSprintState(false);
                 }
             }

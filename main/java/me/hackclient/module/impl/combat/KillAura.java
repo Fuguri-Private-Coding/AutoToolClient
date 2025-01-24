@@ -8,6 +8,7 @@ import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.module.impl.combat.killaura.click.ClickManager;
 import me.hackclient.module.impl.combat.killaura.rotation.KillAuraRotation;
 import me.hackclient.module.impl.combat.killaura.rotation.impl.IntaveRotation;
 import me.hackclient.module.impl.visual.Animations;
@@ -34,7 +35,7 @@ public class KillAura extends Module {
     final FloatSetting distance = new FloatSetting("Distance", this, 3.0f, 6.0f, 6.0f, 0.1f);
     final BooleanSetting players = new BooleanSetting("Players", this, true);
     final BooleanSetting animals = new BooleanSetting("Animals", this, false);
-    final BooleanSetting mobs = new BooleanSetting("mobs", this, false);
+    final BooleanSetting mobs = new BooleanSetting("Mobs", this, false);
 
     // Настройки ротации
     final ModeSetting rotationMode = new ModeSetting(
@@ -46,7 +47,7 @@ public class KillAura extends Module {
                     "Intave"
             }
     );
-
+    final IntegerSetting clickDelay = new IntegerSetting("ClickDelay", this, 0, 12, 10);
     final IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 0, 180, 90);
     final IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 0, 180, 30);
 

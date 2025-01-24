@@ -66,6 +66,7 @@ public class ModuleManager {
 				 new FlyTimer(),
 				 new MLG(),
 				 new TimeChanger(),
+				 new Particle(),
 				 new Test(),
 				 new TrashTalk(),
 				 //new KillEvents(),

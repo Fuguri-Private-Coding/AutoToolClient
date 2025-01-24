@@ -158,9 +158,8 @@ public class Ping extends Module {
 
 			if (mc.gameSettings.thirdPersonView == 0 && onlyThirdPerson.isToggled()) {
 				if (player != null) {
-					mc.theWorld.removeEntity(player);
+					mc.theWorld.removeEntityFromWorld(player.getEntityId());
 					player = null;
-					ClientUtils.chatLog("Removed fakePlayer");
 				}
 				return;
 			}
@@ -168,7 +167,6 @@ public class Ping extends Module {
 			if (player == null) {
 				player = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
 				mc.theWorld.addEntityToWorld(player.getEntityId(), player);
-				ClientUtils.chatLog("Created fakePlayer width id: " + player.getEntityId());
 			} else {
 				player.setPositionAndRotation(
 						animation3D.x,
@@ -209,11 +207,9 @@ public class Ping extends Module {
 			}
 		}
 		posBuffer.clear();
-
 		if (player != null) {
-			animation3D.endX = mc.thePlayer.posX;
-			animation3D.endY = mc.thePlayer.posY;
-			animation3D.endZ = mc.thePlayer.posZ;
+			mc.theWorld.removeEntity(player);
+			player = null;
 		}
 	}
 }
