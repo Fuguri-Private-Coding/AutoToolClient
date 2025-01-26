@@ -32,11 +32,9 @@ public class IntaveRotation extends KillAuraRotation {
         final Delta originalDelta = RotationUtils.getDelta(startsFrom, nearest);
         Delta delta = originalDelta.copy();
 
-        // Ограничение скорости
         delta.setYaw(MathHelper.clamp(delta.getYaw(), -simpleYawSpeed, simpleYawSpeed));
         delta.setPitch(MathHelper.clamp(delta.getPitch() , -simplePitchSpeed, simplePitchSpeed));
 
-        // Плавность + небольшое замедление
         delta.setYaw(delta.getYaw() * RandomUtils.nextFloat(0.6F, 0.7F));
         delta.setPitch(delta.getPitch() * RandomUtils.nextFloat(0.6F, 0.7F));
 

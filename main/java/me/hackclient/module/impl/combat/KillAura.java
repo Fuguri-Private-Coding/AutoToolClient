@@ -8,18 +8,18 @@ import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.combat.killaura.click.ClickManager;
 import me.hackclient.module.impl.combat.killaura.rotation.KillAuraRotation;
 import me.hackclient.module.impl.combat.killaura.rotation.impl.IntaveRotation;
+import me.hackclient.module.impl.combat.killaura.rotation.impl.VanillaRotation;
 import me.hackclient.module.impl.visual.Animations;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
+import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
 import me.hackclient.utils.rotation.Rotation;
-import me.hackclient.utils.rotation.RotationUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.util.MathHelper;
 
@@ -83,7 +83,7 @@ public class KillAura extends Module {
             motionEvent.setPitch(Rotation.getServerRotation().getPitch());
 
             KillAuraRotation rotation = switch (rotationMode.getMode()) {
-                case "Vanilla" -> null; // TODO: Написать ванила ротацию
+                case "Vanilla" -> new VanillaRotation(); // TODO: Написать ванила ротацию
                 case "Intave" -> new IntaveRotation();
                 default -> throw new IllegalStateException("Unexpected value: " + rotationMode.getMode());
             };
@@ -97,7 +97,7 @@ public class KillAura extends Module {
                 Rotation.setServerRotation(rotation.compute(
                         Rotation.getServerRotation(),
                         combatManager.getTarget(),
-                        yawSpeed.getValue(), pitchSpeed.getValue()
+                        yawSpeed.getValue() + RandomUtils.nextFloat(0, 10), pitchSpeed.getValue() + RandomUtils.nextFloat(0, 10)
                 ));
             }
         }

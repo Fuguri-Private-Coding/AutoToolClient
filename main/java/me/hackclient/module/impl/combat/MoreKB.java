@@ -71,10 +71,8 @@ public class MoreKB extends Module {
             }
 
             case "LegitFast" -> {
-                if (event instanceof SprintEvent) {
+                if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
                     mc.thePlayer.setSprinting(false);
-                    mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, STOP_SPRINTING));
-                    mc.thePlayer.setServerSprintState(false);
                 }
             }
 

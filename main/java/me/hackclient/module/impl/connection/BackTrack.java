@@ -57,7 +57,7 @@ public class BackTrack extends Module {
 
     final Animation3D animation3D;
 
-    final StopWatch attackTimer, resetTimer, flagTimer;
+    final StopWatch attackTimer, resetTimer;
 
     final List<Doubles<Packet, Long>> serverPackets;
 
@@ -66,7 +66,6 @@ public class BackTrack extends Module {
     EntityLivingBase target;
 
     public BackTrack() {
-        flagTimer = new StopWatch();
         resetTimer = new StopWatch();
         attackTimer = new StopWatch();
         serverPackets = new CopyOnWriteArrayList<>();
@@ -87,7 +86,7 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof RunGameLoopEvent) {
-            if (attackTimer.reachedMS(timeToCancel.getValue() * 1000L) || !flagTimer.reachedMS(1500)) {
+            if (attackTimer.reachedMS(timeToCancel.getValue() * 1000L)) {
                 target = null;
             }
             if (target == null) {
@@ -96,7 +95,7 @@ public class BackTrack extends Module {
             } else {
                 handlePackets();
                 double distance = mc.thePlayer.getDistance(target.realX / 32, target.realY / 32, target.realZ / 32);
-                if (distance > (limitDistance.isToggled() ? maxDistance.getValue() : Double.MAX_VALUE) /*ц|| distance < 3*/ || distance <= mc.thePlayer.getDistanceToEntity(target)) {
+                if (distance > (limitDistance.isToggled() ? maxDistance.getValue() : Double.MAX_VALUE) /*|| distance < 3*/ || distance <= mc.thePlayer.getDistanceToEntity(target)) {
                     resetPackets();
                     return;
                 }
@@ -105,11 +104,6 @@ public class BackTrack extends Module {
 
         if (event instanceof PacketEvent packetEvent && packetEvent.getDirection() == PackerDirection.INCOMING) {
             Packet packet = packetEvent.getPacket();
-
-            if (packet instanceof S08PacketPlayerPosLook) {
-                flagTimer.reset();
-                return;
-            }
 
             if (packet instanceof S14PacketEntity s14
                     && mc.theWorld.getEntityByID(s14.entityId) instanceof EntityLivingBase entityLivingBase) {
@@ -125,14 +119,7 @@ public class BackTrack extends Module {
                 entityLivingBase.realZ = s18.getZ();
             }
 
-            if (target != null && packetEvent.getDirection() == PackerDirection.INCOMING
-            && ((packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId()))
-            || packet instanceof S32PacketConfirmTransaction
-            || packet instanceof S14PacketEntity
-            || packet instanceof S19PacketEntityHeadLook
-            || packet instanceof S00PacketKeepAlive
-            || packet instanceof S27PacketExplosion
-            || packet instanceof S18PacketEntityTeleport) {
+            if (target != null) {
                 serverPackets.add(new Doubles<>(packet, System.currentTimeMillis()));
                 packetEvent.setCanceled(true);
             }

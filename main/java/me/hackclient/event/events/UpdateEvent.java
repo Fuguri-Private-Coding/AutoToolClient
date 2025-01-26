@@ -1,6 +1,6 @@
 package me.hackclient.event.events;
 
-import me.hackclient.event.Event;
+import me.hackclient.event.CancelableEvent;
 
-public class UpdateEvent extends Event {
+public class UpdateEvent extends CancelableEvent {
 }

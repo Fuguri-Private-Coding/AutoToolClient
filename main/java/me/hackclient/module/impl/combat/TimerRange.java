@@ -4,10 +4,13 @@ import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.TickEvent;
+import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.module.impl.connection.Ping;
 import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
@@ -16,11 +19,14 @@ import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.entity.EntityLivingBase;
 
+import java.io.IOException;
+
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT)
 public class TimerRange extends Module {
 
+    FloatSetting startDistance = new FloatSetting("Distance", this, 3, 6, 3.5f, 0.1f);
     IntegerSetting limitTicks = new IntegerSetting("Ticks", this, 1,10,2);
-    final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 10);
+    final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this,0, 10, 10);
     BooleanSetting debug = new BooleanSetting("Debug", this, true);
 
     ModeSetting freezeMode = new ModeSetting(
@@ -39,7 +45,6 @@ public class TimerRange extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        double tickDistance = new double[]{0, 3.3, 3.6, 3.9, 4.2, 4.5, 4.8, 5.1, 5.4, 5.7, 6.0}[Math.min(10, Math.max(1, limitTicks.getValue()))];
         if (killAura == null) killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
         if (event instanceof TickEvent tickEvent) {
             if (balance > 0) {
@@ -48,31 +53,31 @@ public class TimerRange extends Module {
                 return;
             }
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
-            if (target != null && mc.thePlayer.getBps(false) > 0 && killAura.isToggled() && mc.thePlayer.moveForward > 0) {
+            if (target != null && mc.thePlayer.getBps(false) > 0 && killAura.isToggled() && mc.thePlayer.moveForward > 0.6) {
                 double distance = DistanceUtils.getDistanceToEntity(target);
-                if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
-                        && RayCastUtils.raycastEntity(tickDistance, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
+                while (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
+                        && RayCastUtils.raycastEntity(startDistance.getValue(), Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
                         && target.hurtTime <= maxTargetHurtTime.getValue()) {
-                    while (true) {
-                        try {
-                            mc.runTick();
-                            balance++;
-                            if (debug.isToggled()) ClientUtils.chatLog(String.format("%.1f, %.3f, %.3f", balance, distance, mc.thePlayer.getBps(false)));
-                            if (mc.thePlayer.isCollidedHorizontally) {
-                                if (debug.isToggled()) ClientUtils.chatLog("Stopped due PlayerCollidedHorizontally");
-                                break;
-                            }
-                            if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
-                                Client.INSTANCE.getClickManager().addClick();
-                                if (debug.isToggled()) ClientUtils.chatLog("Clicked due RayCast");
-                                break;
-                            }
-                            if (balance >= limitTicks.getValue()) {
-                                Client.INSTANCE.getClickManager().addClick();
-                                if (debug.isToggled()) ClientUtils.chatLog("Clicked due LimitTick");
-                                break;
-                            }
-                        } catch (Exception ignored) { }
+                    try {
+                        mc.runTick();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    balance++;
+                    if (debug.isToggled()) ClientUtils.chatLog(String.format("%.1f, %.3f", balance, distance));
+                    if (mc.thePlayer.isCollidedHorizontally) {
+                        if (debug.isToggled()) ClientUtils.chatLog("Stopped due PlayerCollidedHorizontally");
+                        break;
+                    }
+                    if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
+                        Client.INSTANCE.getClickManager().addClick();
+                        if (debug.isToggled()) ClientUtils.chatLog("Clicked due RayCast");
+                        break;
+                    }
+                    if (balance >= limitTicks.getValue()) {
+                        Client.INSTANCE.getClickManager().addClick();
+                        if (debug.isToggled()) ClientUtils.chatLog("Clicked due LimitTick");
+                        break;
                     }
                 }
             }

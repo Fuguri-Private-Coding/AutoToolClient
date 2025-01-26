@@ -67,7 +67,7 @@ public class Velocity extends Module {
                         moveButtonEvent.setBack(false);
                         moveButtonEvent.setForward(true);
                     }
-                    if (mc.thePlayer.onGround) {
+                    if (mc.thePlayer.onGround && Math.random() < 0.5) {
                         moveButtonEvent.setJump(true);
                     }
                 }

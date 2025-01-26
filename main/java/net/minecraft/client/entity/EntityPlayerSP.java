@@ -127,7 +127,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void onUpdate()
     {
-        Client.INSTANCE.getObjectsCaller().onEvent(new UpdateEvent());
+        UpdateEvent event = new UpdateEvent();
+        Client.INSTANCE.getObjectsCaller().onEvent(event);
+
+        if (event.isCanceled()) { return; }
 
         if (this.worldObj.isBlockLoaded(new BlockPos(this.posX, 0.0D, this.posZ)))
         {

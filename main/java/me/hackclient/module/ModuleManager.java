@@ -35,6 +35,7 @@ public class ModuleManager {
 				 new BridgeAssist(),
 				 new ClientShader(),
 				 new LongJump(),
+				 new TestPing(),
 				 new NoSlow(),
 				 new NoWeb(),
 				 new Speed(),

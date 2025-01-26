@@ -10,6 +10,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.visual.ClientShader;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.client.ClientUtils;
@@ -39,19 +40,31 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleInfo(name = "Ping", category = Category.CONNECTION)
 public class Ping extends Module {
 
-	IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 500);
-	IntegerSetting attackDelay = new IntegerSetting("AttackConditionTime", this, 0, 1000, 1);
-	IntegerSetting sprintResetDelay = new IntegerSetting("SprintConditionTime", this, 0, 500, 1);
-	IntegerSetting flagDelay = new IntegerSetting("FlagConditionTime", this, 0, 1000, 200);
-	IntegerSetting velocityDelay = new IntegerSetting("VelocityConditionTime", this, 0, 1000, 1);
-	BooleanSetting guiFlush = new BooleanSetting("GuiFlush", this, true);
-	BooleanSetting itemFlush = new BooleanSetting("ItemFlush", this, true);
-	IntegerSetting blockPlacementDelay = new IntegerSetting("BlockPlacementConditionTime", this, 0, 20, 10);
+	MultiBooleanSetting flushes = new MultiBooleanSetting("FlushConditions", this)
+			.add("Attack", false)
+			.add("SprintChange", true)
+			.add("Flag", true)
+			.add("Velocity", false)
+			.add("OpenedInv", true)
+			.add("UsingItem", true)
+			.add("BlockPlace", true)
+			.add("WorldChange", false);
+
+	IntegerSetting delay = new IntegerSetting("Delay", this, 50, 1000, 500);
+
+	IntegerSetting attackFlush = new IntegerSetting("AttackTime", this, () -> flushes.get("Attack"), 10, 1000, 20);
+	IntegerSetting sprintFlush = new IntegerSetting("SprintChangeTime", this, () -> flushes.get("SprintChange"), 10, 1000, 100);
+	IntegerSetting flagFlush = new IntegerSetting("FlagTime", this, () -> flushes.get("Flag"), 10, 1000, 200);
+	IntegerSetting velocityFlush = new IntegerSetting("VelocityTime", this, () -> flushes.get("Velocity"), 10, 1000, 500);
+	IntegerSetting openInvFlush = new IntegerSetting("OpenedInvTime", this, () -> flushes.get("OpenedInv"), 10, 1000, 50);
+	IntegerSetting usingItemFlush = new IntegerSetting("UsingItemTime", this, () -> flushes.get("UsingItem"), 10, 1000, 50);
+	IntegerSetting blockPlaceFlush = new IntegerSetting("BlockPlaceTime", this, () -> flushes.get("BlockPlace"), 10, 1000, 50);
+	IntegerSetting worldChangeFlush = new IntegerSetting("WorldChangeTime", this, () -> flushes.get("WorldChange"), 10, 1000, 50);
+
 	BooleanSetting onlyThirdPerson = new BooleanSetting("OnlyThirdPerson", this, true);
 
-	// Таймер для задержки после ресета, помогает обходить античиты
 	int nextDelay;
-	final StopWatch resetTimer;
+	final StopWatch timer;
 	final Animation3D animation3D;
 	final List<Doubles<Packet, Long>> packetBuffer;
 	ClientShader clientShader;
@@ -67,7 +80,7 @@ public class Ping extends Module {
 		animation3D = new Animation3D();
 		packetBuffer = new CopyOnWriteArrayList<>();
 		posBuffer = new CopyOnWriteArrayList<>();
-		resetTimer = new StopWatch();
+		timer = new StopWatch();
 	}
 
 	@Override
@@ -79,10 +92,18 @@ public class Ping extends Module {
 		}
 		if (event instanceof WorldChangeEvent) {
 			player = null;
+			if (flushes.get("WorldChange")) {
+				resetPackets();
+				nextDelay = worldChangeFlush.getValue();
+			}
 		}
-		if (event instanceof ChangeSprintEvent) {
-			resetTimer.reset();
-			nextDelay = sprintResetDelay.getValue();
+		if (event instanceof AttackEvent && flushes.get("Attack")) {
+			resetPackets();
+			nextDelay = attackFlush.getValue();
+		}
+		if (event instanceof ChangeSprintEvent && flushes.get("SprintChange")) {
+			resetPackets();
+			nextDelay = sprintFlush.getValue();
 		}
 		if (event instanceof PacketEvent packetEvent) {
 			Packet<?> packet = packetEvent.getPacket();
@@ -91,45 +112,38 @@ public class Ping extends Module {
 			if (mc.isSingleplayer())
 				return;
 
-			// Пропускает некоторые пакеты
 			if (packet instanceof C01PacketChatMessage
 					|| packet instanceof C00PacketServerQuery
 					|| packet instanceof C00PacketLoginStart) {
 				return;
 			}
 
-			// Ресет при атаке
-//			if (packet instanceof C02PacketUseEntity) {
-//				resetTimer.reset();
-//				nextDelay = attackDelay.getValue();
-//			}
-
-			// Ресет при поставке блока, использовании придмета
-			if (packet instanceof C08PacketPlayerBlockPlacement) {
-				resetTimer.reset();
-				nextDelay = blockPlacementDelay.getValue();
+			if (packet instanceof C08PacketPlayerBlockPlacement && flushes.get("BlockPlace")) {
+				nextDelay = blockPlaceFlush.getValue();
 			}
 
 			// Ресет при получении урона
-			if (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId()) {
-				resetTimer.reset();
-				nextDelay = velocityDelay.getValue();
-			}
-
-			if (mc.currentScreen instanceof GuiInventory && guiFlush.isToggled() || mc.currentScreen instanceof GuiContainer && guiFlush.isToggled()) {
+			if (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId() && flushes.get("Velocity")) {
 				resetPackets();
+				nextDelay = velocityFlush.getValue();
 			}
 
-			if (mc.thePlayer.isUsingItem() && itemFlush.isToggled()) {
+			if (mc.currentScreen != null && flushes.get("OpenedInv")) {
 				resetPackets();
+				nextDelay = openInvFlush.getValue();
 			}
 
-			if (packet instanceof S08PacketPlayerPosLook) {
-				resetTimer.reset();
-				nextDelay = flagDelay.getValue();
+			if (mc.thePlayer.isUsingItem() && flushes.get("UsingItem")) {
+				resetPackets();
+				nextDelay = usingItemFlush.getValue();
 			}
 
-			if (resetTimer.reachedMS() < nextDelay) {
+			if (packet instanceof S08PacketPlayerPosLook && flushes.get("Flag")) {
+				resetPackets();
+				nextDelay = flagFlush.getValue();
+			}
+
+			if (nextDelay > 0) {
 				resetPackets();
 				return;
 			}
@@ -144,6 +158,13 @@ public class Ping extends Module {
 		}
 
 		if (event instanceof RunGameLoopEvent) {
+			nextDelay -= (int) timer.reachedMS();
+			timer.reset();
+
+			if (nextDelay < 0) {
+				nextDelay = 0;
+			}
+
 			handleStandAlone();
 
 			if (posBuffer.isEmpty()) {
@@ -198,14 +219,8 @@ public class Ping extends Module {
 	}
 
 	public void resetPackets() {
-		if (!packetBuffer.isEmpty()) {
-			synchronized (packetBuffer) {
-				for (Doubles<Packet, Long> packetLongDoubles : packetBuffer) {
-					mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetLongDoubles.getFirst());
-				}
-				packetBuffer.clear();
-			}
-		}
+		packetBuffer.forEach(packet -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet.getFirst()));
+		packetBuffer.clear();
 		posBuffer.clear();
 		if (player != null) {
 			mc.theWorld.removeEntity(player);

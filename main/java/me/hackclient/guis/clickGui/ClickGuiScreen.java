@@ -1,7 +1,6 @@
 package me.hackclient.guis.clickGui;
 
 import me.hackclient.Client;
-import me.hackclient.event.events.PacketEvent;
 import me.hackclient.guis.config.ConfigEditorGui;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -9,19 +8,19 @@ import me.hackclient.module.impl.visual.Bloom;
 import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.module.impl.visual.ClientShader;
 import me.hackclient.settings.Setting;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.*;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
+import me.hackclient.utils.doubles.Doubles;
+import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
@@ -66,8 +65,11 @@ public class ClickGuiScreen extends GuiScreen {
 		settingLine = new Animation2D();
 	}
 
+	final ResourceLocation shesterenka = new ResourceLocation("minecraft", "hackclient/image/shesterenka.png");
+
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		RenderUtils.drawImage(shesterenka, 5, 5, 30, 30);
 		if (clientShader == null) {
 			clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
 			return;
@@ -166,6 +168,36 @@ public class ClickGuiScreen extends GuiScreen {
 						pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
 						-1
 				);
+				if (setting instanceof MultiBooleanSetting multiBooleanSetting) {
+					float xOffset = 0;
+					float yOffset = 0;
+					int length = multiBooleanSetting.getValues().size();
+					for (Doubles<String, Boolean> value : multiBooleanSetting.getValues()) {
+						String mode = value.getFirst();
+						boolean isSelected = value.getSecond();
+						boolean notLast = value != multiBooleanSetting.getValues().get(length - 1);
+						if (pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= pos.x + size.x) {
+							xOffset = 0;
+							yOffset += 11;
+						}
+						fontRenderer.drawString(
+								mode,
+								pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset,
+								pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
+								isSelected ? MAIN_COLOR_INT : -1
+						);
+						if (notLast) {
+							fontRenderer.drawString(
+									",",
+									pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode),
+									pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
+									-1
+							);
+						}
+						xOffset += fontRenderer.getStringWidth(mode) + 5;
+					}
+					offset += yOffset;
+				}
 				if (setting instanceof ModeSetting modeSetting) {
 					float xOffset = 0;
 					float yOffset = 0;
@@ -406,6 +438,26 @@ public class ClickGuiScreen extends GuiScreen {
 						pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
 						-1
 				);
+				if (setting instanceof MultiBooleanSetting multiBooleanSetting) {
+					float xOffset = 0;
+					float yOffset = 0;
+					for (Doubles<String, Boolean> value : multiBooleanSetting.getValues()) {
+						String mode = value.getFirst();
+						boolean isSelected = value.getSecond();
+						if (pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= pos.x + size.x) {
+							xOffset = 0;
+							yOffset += 11;
+						}
+						if (mouseX > pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset
+						&& mouseX < pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode)
+						&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset
+						&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset + 10) {
+							multiBooleanSetting.set(mode, !isSelected);
+						}
+						xOffset += fontRenderer.getStringWidth(mode) + 5;
+					}
+					offset += yOffset;
+				}
 				if (setting instanceof ModeSetting modeSetting) {
 					float xOffset = 0;
 					float yOffset = 0;

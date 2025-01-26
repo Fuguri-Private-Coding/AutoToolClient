@@ -37,7 +37,7 @@ public class Dot extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof Render3DEvent) {
+        if (event instanceof Render3DEvent) { // ЭТО ПЕРВЫЙ
             if (Client.INSTANCE.getCombatManager().getTarget() == null && onlyKillAura.isToggled()) { return; }
             RenderUtils.start3D();
             Vec3 vec = mc.objectMouseOver.hitVec.addVector(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);

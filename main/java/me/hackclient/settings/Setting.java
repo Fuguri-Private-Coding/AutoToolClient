@@ -5,8 +5,8 @@ import me.hackclient.module.Module;
 import java.util.function.BooleanSupplier;
 
 public class Setting implements ISetting {
-	private final String name;
-	private BooleanSupplier visible;
+	final String name;
+	BooleanSupplier visible;
 
 	public Setting(String name, Module parent) {
 		this.name = name;

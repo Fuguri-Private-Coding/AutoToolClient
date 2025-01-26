@@ -8,6 +8,7 @@ import me.hackclient.event.callable.CallableObject;
 import me.hackclient.event.Event;
 import me.hackclient.event.ObjectsCaller;
 import me.hackclient.event.events.KeyEvent;
+import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.friend.FriendManager;
 import me.hackclient.guis.clickGui.ClickGuiScreen;
 import me.hackclient.module.Module;
@@ -28,7 +29,7 @@ public enum Client implements CallableObject {
 
 	final File clientDirectory = new File("AutoTool/configs");
 	@Setter File defaultConfig = new File(clientDirectory, "default.json");
-	@Setter File bindsDirectory = new File(clientDirectory, "default.json");
+	@Setter File bindsDirectory = new File(clientDirectory, "binds.json");
 
 	ScheduledExecutorService executorService;
 
@@ -44,7 +45,11 @@ public enum Client implements CallableObject {
 
 	ClickManager clickManager;
 
+	long lastMS;
+
 	public void init() {
+		long start = System.nanoTime();
+
 		callables.add(this);
 
 		executorService = Executors.newScheduledThreadPool(4);
@@ -63,16 +68,38 @@ public enum Client implements CallableObject {
 			System.out.println("Error while loading cfg");
 			throw new RuntimeException(e);
 		}
+
+		try {
+			configManager.loadBinds(bindsDirectory);
+		} catch (IOException e) {
+			System.out.println("Error while loading binds");
+			throw new RuntimeException(e);
+		}
+
 		clickGui = new ClickGuiScreen();
 
 		clickManager = new ClickManager();
 		Display.setTitle(getFullName());
+		long elapsedNanos = System.nanoTime() - start;
+		System.out.println("Started client in " + elapsedNanos / 1000000000D + " seconds");
 	}
 
 	public void onClose() {
+		saveAll();
+	}
+
+	public void saveAll() {
 		try {
 			configManager.save(defaultConfig);
 		} catch (IOException e) {
+			System.out.println("Error while saving cfg");
+			throw new RuntimeException(e);
+		}
+
+		try {
+			configManager.saveBinds(bindsDirectory);
+		} catch (IOException e) {
+			System.out.println("Error while saving binds");
 			throw new RuntimeException(e);
 		}
 	}
@@ -96,6 +123,12 @@ public enum Client implements CallableObject {
 				if (module.getKey() == keyEvent.getKey()) {
 					module.toggle();
 				}
+			}
+		}
+		if (event instanceof RunGameLoopEvent) {
+			if (System.currentTimeMillis() - lastMS >= 15000) {
+				saveAll();
+				lastMS = System.currentTimeMillis();
 			}
 		}
 	}

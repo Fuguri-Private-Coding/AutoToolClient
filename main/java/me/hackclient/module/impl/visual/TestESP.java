@@ -36,6 +36,11 @@ public class TestESP extends Module {
                         continue;
                     }
 
+                    if (entityPlayer == null) {
+                        continue;
+                    }
+
+
                     mc.getRenderManager().renderEntityStatic(entityPlayer, mc.timer.renderPartialTicks, false);
                 }
                 GlStateManager.enableAlpha();

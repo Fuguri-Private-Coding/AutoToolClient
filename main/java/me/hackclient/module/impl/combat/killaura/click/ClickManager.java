@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.event.Event;
 import me.hackclient.event.callable.ConditionCallableObject;
+import me.hackclient.event.events.AttackEvent;
 import me.hackclient.event.events.LegitClickTimingEvent;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.utils.interfaces.InstanceAccess;
@@ -26,14 +27,14 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
                 if (rayCast instanceof EntityPlayer entityPlayer && entityPlayer.isFriend()) { break; }
                 if (delay == 0 || mc.thePlayer.hurtTime > 7) {
                     mc.clickMouse();
-                    if (delay == 0) {
-                        if (rayCast != null) {
-                            delay = 10;
-                        }
-                    }
                 }
             }
             clicks = 0;
+        }
+        if (event instanceof AttackEvent) {
+            if (delay == 0) {
+                delay = 10;
+            }
         }
         if (event instanceof TickEvent) {
             if (delay > 0) {

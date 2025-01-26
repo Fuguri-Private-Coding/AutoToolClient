@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.visual;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.events.AttackEvent;
 import me.hackclient.event.events.RenderItemEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -20,6 +21,7 @@ public class Animations extends Module {
     ModeSetting mode = new ModeSetting("Mode", this, "Sigma", new String[]{
             "Sigma",
             "Sigma 2",
+            "Scale",
             "Exhibition",
             "Chill",
             "Gothaj",
@@ -35,6 +37,7 @@ public class Animations extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+
         if (event instanceof RenderItemEvent renderItemEvent) {
             GlStateManager.translate(X.getValue(), Y.getValue(), Z.getValue());
             ItemRenderer itemRenderer = mc.getItemRenderer();
@@ -42,6 +45,12 @@ public class Animations extends Module {
             float convertedProgress = (float) Math.sin(Math.sqrt(renderItemEvent.getSwingProgress()) * Math.PI);
             float y;
             switch (mode.getMode()) {
+                case "Scale":
+                    GlStateManager.translate(0, 0, convertedProgress * -0.2);
+                    itemRenderer.transformFirstPersonItem(animationProgression, 0.0f);
+                    itemRenderer.doBlockTransformations();
+                    break;
+
                 case "Slide":
                     itemRenderer.transformFirstPersonItem(animationProgression, 0.0f);
                     float var15 = MathHelper.sin(MathHelper.sqrt_float(renderItemEvent.getSwingProgress()) * 3.1415927F);
