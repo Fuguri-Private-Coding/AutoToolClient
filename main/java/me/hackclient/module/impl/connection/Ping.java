@@ -40,6 +40,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleInfo(name = "Ping", category = Category.CONNECTION)
 public class Ping extends Module {
 
+	IntegerSetting delay = new IntegerSetting("Delay", this, 50, 1000, 500);
+
 	MultiBooleanSetting flushes = new MultiBooleanSetting("FlushConditions", this)
 			.add("Attack", false)
 			.add("SprintChange", true)
@@ -49,8 +51,6 @@ public class Ping extends Module {
 			.add("UsingItem", true)
 			.add("BlockPlace", true)
 			.add("WorldChange", false);
-
-	IntegerSetting delay = new IntegerSetting("Delay", this, 50, 1000, 500);
 
 	IntegerSetting attackFlush = new IntegerSetting("AttackTime", this, () -> flushes.get("Attack"), 10, 1000, 20);
 	IntegerSetting sprintFlush = new IntegerSetting("SprintChangeTime", this, () -> flushes.get("SprintChange"), 10, 1000, 100);
