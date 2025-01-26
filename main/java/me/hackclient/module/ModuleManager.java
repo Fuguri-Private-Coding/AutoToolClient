@@ -70,6 +70,7 @@ public class ModuleManager {
 				 new Particle(),
 				 new Test(),
 				 new TrashTalk(),
+				 new TimerRangeV2(),
 				 //new KillEvents(),
 				 new NameTags(),
 				 new NoRender(),
