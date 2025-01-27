@@ -138,8 +138,8 @@ public class MoreKB extends Module {
 
     void handleCustomReset() {
         if (customSettings.get("CancelSprint")) mc.thePlayer.setSprinting(false);
-        if (customSettings.get("CancelServerSprint")) mc.thePlayer.setServerSprintState(false);
         if (customSettings.get("Packet STOP_SPRINTING")) mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
         if (customSettings.get("Packet START_SPRINTING")) mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
+        if (customSettings.get("CancelServerSprint")) mc.thePlayer.setServerSprintState(false);
     }
 }
