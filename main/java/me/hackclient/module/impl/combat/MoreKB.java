@@ -36,7 +36,7 @@ public class MoreKB extends Module {
     );
 
     final IntegerSetting minDelay = new IntegerSetting("MinTickDelayAfterHit", this, 0, 10, 3);
-    final IntegerSetting maxDelay = new IntegerSetting("MinTickDelayAfterHit", this, 0, 10, 3);
+    final IntegerSetting maxDelay = new IntegerSetting("MaxTickDelayAfterHit", this, 0, 10, 3);
     final IntegerSetting minReset = new IntegerSetting("MinTickResetDuration", this, 0, 10, 1);
     final IntegerSetting maxReset = new IntegerSetting("MaxTickResetDuration", this, 0, 10, 1);
     final IntegerSetting delayBetweenHit = new IntegerSetting("DelayBetweenHit", this, 0, 500, 450);
