@@ -7,13 +7,12 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
-
-import static net.minecraft.network.play.client.C0BPacketEntityAction.Action.STOP_SPRINTING;
 
 @ModuleInfo(
         name = "MoreKB",
@@ -31,7 +30,8 @@ public class MoreKB extends Module {
                     "Legit",
                     "LegitFast",
                     "LegitSneak",
-                    "LegitBlock"
+                    "LegitBlock",
+                    "CustomLegitFast"
             }
     );
 
@@ -40,6 +40,22 @@ public class MoreKB extends Module {
     final IntegerSetting minReset = new IntegerSetting("MinTickResetDuration", this, 0, 10, 1);
     final IntegerSetting maxReset = new IntegerSetting("MaxTickResetDuration", this, 0, 10, 1);
     final IntegerSetting delayBetweenHit = new IntegerSetting("DelayBetweenHit", this, 0, 500, 450);
+    final ModeSetting customEventSettings = new ModeSetting(
+            "CustomEventMode",
+            this,
+            "Tick",
+            new String[]{
+                    "Tick",
+                    "Sprint",
+                    "Update"
+            }
+    );
+    final MultiBooleanSetting customSettings = new MultiBooleanSetting("CustomModes", this)
+            .add("CancelSprint")
+            .add("CancelServerSprint")
+            .add("Packet STOP_SPRINTING")
+            .add("Packet START_SPRINTING");
+
 
     public MoreKB() {
         stopWatch = new StopWatch();
@@ -64,6 +80,26 @@ public class MoreKB extends Module {
         if (reset == 0) return;
 
         switch (mode.getMode()) {
+            case "CustomLegitFast" -> {
+                if (!mc.thePlayer.isSprinting()) break;
+                switch (customEventSettings.getMode()) {
+                    case "Tick" -> {
+                        if (event instanceof TickEvent) {
+                            handleCustomReset();
+                        }
+                    }
+                    case "Sprint" -> {
+                        if (event instanceof SprintEvent) {
+                            handleCustomReset();
+                        }
+                    }
+                    case "Update" -> {
+                        if (event instanceof UpdateEvent) {
+                            handleCustomReset();
+                        }
+                    }
+                }
+            }
             case "Legit" -> {
                 if (event instanceof MoveButtonEvent moveButtonEvent) {
                     moveButtonEvent.setForward(false);
@@ -98,5 +134,12 @@ public class MoreKB extends Module {
         if (event instanceof TickEvent && reset > 0) {
             reset--;
         }
+    }
+
+    void handleCustomReset() {
+        if (customSettings.get("CancelSprint")) mc.thePlayer.setSprinting(false);
+        if (customSettings.get("CancelServerSprint")) mc.thePlayer.setServerSprintState(false);
+        if (customSettings.get("Packet STOP_SPRINTING")) mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
+        if (customSettings.get("Packet START_SPRINTING")) mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
     }
 }
