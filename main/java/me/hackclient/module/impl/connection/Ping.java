@@ -66,7 +66,7 @@ public class Ping extends Module {
 	int nextDelay;
 	final StopWatch timer;
 	final Animation3D animation3D;
-	final List<Doubles<Packet, Long>> packetBuffer;
+	final public List<Doubles<Packet, Long>> packetBuffer;
 	ClientShader clientShader;
 	final List<Doubles<Vec3, Long>> posBuffer;
 	EntityOtherPlayerMP player;
