@@ -5,8 +5,14 @@ import lombok.Setter;
 import net.minecraft.util.MathHelper;
 
 public class Rotation {
-	@Getter @Setter static Rotation serverRotation = new Rotation();
+	@Getter @Setter static boolean changed;
+	@Getter static Rotation serverRotation = new Rotation();
 	@Getter @Setter float yaw, pitch;
+
+	public static void setServerRotation(Rotation serverRotation) {
+		Rotation.serverRotation = serverRotation;
+		changed = true;
+	}
 
 	public Rotation() {
 		yaw = 0;

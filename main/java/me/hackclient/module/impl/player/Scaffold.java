@@ -22,7 +22,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
-import org.lwjgl.input.Mouse;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -37,7 +36,9 @@ public class Scaffold extends Module {
     IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 1, 180, 15);
     FloatSetting smoothes = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f);
     BooleanSetting saveWalk = new BooleanSetting("SneakOnFirstBlock", this, true);
+    BooleanSetting placeOnlyHorizontal = new BooleanSetting("PlaceOnlyHorizontal", this, false);
 
+    int lastSlot;
     int placedBlocks;
     long lastTime = 0L;
     BlockPos blockPos = null;
@@ -48,6 +49,12 @@ public class Scaffold extends Module {
             new Rotation(-135.0f, 77.0f),
             new Rotation(45.0f, 77.0f)
     };
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
+        lastSlot = 0;
+    }
 
     @Override
     public void onDisable() {
@@ -79,8 +86,7 @@ public class Scaffold extends Module {
 
             if (mouse == null
                     || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                    || mouse.sideHit == EnumFacing.UP
-                    || mouse.sideHit == EnumFacing.DOWN) {
+                    || ((mouse.sideHit == EnumFacing.UP || mouse.sideHit == EnumFacing.DOWN)) && placeOnlyHorizontal.isToggled()) {
                 return;
             }
 
@@ -102,7 +108,7 @@ public class Scaffold extends Module {
         }
         if (event instanceof TickEvent) {
             Rotation playerRotation = new Rotation(
-                    MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180),
+                    (float) MathHelper.wrapDegree(Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw)) + 180),
                     mc.thePlayer.rotationPitch
             );
             Rotation nearest = Arrays.stream(bestGodbrigdeRotations).min(Comparator.comparing(rotation -> RotationUtils.getDelta(playerRotation, rotation).hypot())).orElse(null);

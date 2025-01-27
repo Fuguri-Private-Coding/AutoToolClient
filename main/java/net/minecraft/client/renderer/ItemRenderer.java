@@ -1,5 +1,7 @@
 package net.minecraft.client.renderer;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.hackclient.Client;
 import me.hackclient.event.events.RenderItemEvent;
 import me.hackclient.module.impl.visual.Animations;
@@ -41,7 +43,8 @@ public class ItemRenderer
     private static final ResourceLocation RES_MAP_BACKGROUND = new ResourceLocation("textures/map/map_background.png");
     private static final ResourceLocation RES_UNDERWATER_OVERLAY = new ResourceLocation("textures/misc/underwater.png");
     private final Minecraft mc;
-    private ItemStack itemToRender;
+    @Getter @Setter
+    ItemStack itemToRender;
     private float equippedProgress;
     private float prevEquippedProgress;
     private final RenderManager renderManager;

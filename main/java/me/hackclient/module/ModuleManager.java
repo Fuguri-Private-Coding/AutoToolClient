@@ -29,6 +29,7 @@ public class ModuleManager {
 //				 new Teams(),
 				 new Velocity(),
 				 new TESTESP2(),
+				 new RotationHandler(),
 				 new Fly(),
 				 new Farm(),
 				 new AutoClicker(),
