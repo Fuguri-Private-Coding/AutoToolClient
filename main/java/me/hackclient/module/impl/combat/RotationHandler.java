@@ -8,6 +8,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.move.MoveUtils;
 import me.hackclient.utils.rotation.Delta;
 import me.hackclient.utils.rotation.Rotation;
@@ -22,7 +23,7 @@ public class RotationHandler extends Module {
 
     final IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 0, 180, 30);
     final IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 0, 180, 30);
-    final FloatSetting stopTreshold = new FloatSetting("StopTrashold", this, 0f, 10f, 0.1f, 0.1f);
+    final FloatSetting stopThreshold = new FloatSetting("StopThreshold", this, 0f, 10f, 0.1f, 0.1f);
 
     @Override
     public void onEvent(Event event) {
@@ -32,7 +33,7 @@ public class RotationHandler extends Module {
                 if (event instanceof TickEvent) {
                     Delta delta = RotationUtils.getDelta(Rotation.getServerRotation(), getPlayerRotation());
 
-                    if (delta.fix().hypot() < stopTreshold.getValue()) {
+                    if (RotationUtils.fixDelta(delta).hypot() <= stopThreshold.getValue()) {
                         Rotation.setChanged(false);
                         return;
                     }
@@ -76,7 +77,7 @@ public class RotationHandler extends Module {
                     UpdateBodyRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
                 }
             } else {
-                Rotation.setServerRotation(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch));
+                Rotation.setServerRotation(getPlayerRotation());
                 Rotation.setChanged(false);
             }
         }

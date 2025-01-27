@@ -18,6 +18,7 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
@@ -36,7 +37,7 @@ public class Scaffold extends Module {
     IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 1, 180, 15);
     FloatSetting smoothes = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f);
     BooleanSetting saveWalk = new BooleanSetting("SneakOnFirstBlock", this, true);
-    BooleanSetting placeOnlyHorizontal = new BooleanSetting("PlaceOnlyHorizontal", this, false);
+    BooleanSetting placeOnlyHorizontal = new BooleanSetting("PlaceOnlyHorizontal", this, true);
 
     int lastSlot;
     int placedBlocks;
@@ -96,9 +97,9 @@ public class Scaffold extends Module {
                 if (b != null && b != Blocks.air && !(b instanceof BlockLiquid)) {
                     if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25)  {
                         mc.rightClickMouse();
-                        mc.thePlayer.swingItem();
-                        mc.getItemRenderer().resetEquippedProgress();
-                        mc.rightClickMouse();
+//                        mc.thePlayer.swingItem();
+//                        mc.getItemRenderer().resetEquippedProgress();
+//                        mc.rightClickMouse();
                         blockPos = pos;
                         lastTime = System.currentTimeMillis();
                         placedBlocks++;

@@ -10,7 +10,7 @@ public class Rotation {
 	@Getter @Setter float yaw, pitch;
 
 	public static void setServerRotation(Rotation serverRotation) {
-		Rotation.serverRotation = serverRotation;
+		Rotation.serverRotation = serverRotation.copy();
 		changed = true;
 	}
 
