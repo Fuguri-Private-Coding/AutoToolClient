@@ -14,17 +14,20 @@ import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.distance.DistanceUtils;
+import me.hackclient.utils.predict.PlayerInfo;
+import me.hackclient.utils.predict.SimulatedPlayer;
 import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.Vec3;
+
+import java.io.IOException;
 
 @ModuleInfo(name = "TimerRangeV2", category = Category.COMBAT)
 public class TimerRangeV2 extends Module {
 
-    final FloatSetting startDistance = new FloatSetting("StartDistance", this, 3, 6, 3.8f, 0.1f);
     IntegerSetting limitTicks = new IntegerSetting("Ticks", this, 1, 10, 2);
-    final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 10);
-    BooleanSetting onlyPing = new BooleanSetting("OnlyPing", this, true);
     BooleanSetting debug = new BooleanSetting("Debug", this, true);
 
     ModeSetting freezeMode = new ModeSetting(
@@ -43,8 +46,6 @@ public class TimerRangeV2 extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (killAura == null) killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
-        Ping ping = Client.INSTANCE.getModuleManager().getModule(Ping.class);
         if (event instanceof TickEvent tickEvent) {
             if (balance > 0) {
                 tickEvent.setCanceled(true);
@@ -52,29 +53,63 @@ public class TimerRangeV2 extends Module {
                 return;
             }
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
-            if (target != null && mc.thePlayer.getBps(false) > 0 && killAura.isToggled() && mc.thePlayer.moveForward > 0) {
-                double distance = DistanceUtils.getDistanceToEntity(target);
-                while (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target && RayCastUtils.raycastEntity(startDistance.getValue(), Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target && target.hurtTime <= maxTargetHurtTime.getValue()) {
+            if (target != null && RayCastUtils.raycastEntity(3, entity -> true) != target && RayCastUtils.raycastEntity(6, entity -> true) == target) {
+                int finalTeleportTicks = 0;
+
+                PlayerInfo pos = new PlayerInfo(
+                        mc.thePlayer.posX,
+                        mc.thePlayer.posY,
+                        mc.thePlayer.posZ,
+                        mc.thePlayer.motionX,
+                        mc.thePlayer.motionY,
+                        mc.thePlayer.motionZ
+                );
+                for (int predictingTick = 1; predictingTick <= limitTicks.getValue(); predictingTick++) {
+                    pos = SimulatedPlayer.getPredictedPos(
+                            mc.thePlayer.moveForward,
+                            mc.thePlayer.moveStrafing,
+                            pos.getMotionX(),
+                            pos.getMotionY(),
+                            pos.getMotionZ(),
+                            pos.getPosX(),
+                            pos.getPosY(),
+                            pos.getPosZ(),
+                            mc.thePlayer.movementInput.jump
+                    );
+//                    ClientUtils.chatLog(String.format("%.2f %.2f %.2f %.2f %.2f %.2f",
+//                            pos.getPosX(),
+//                            pos.getPosY(),
+//                            pos.getPosZ(),
+//                            pos.getMotionX(),
+//                            pos.getMotionY(),
+//                            pos.getMotionZ()) + " " + predictingTick
+//                    );
+                    Vec3 eyesPos = new Vec3(pos.getPosX(), pos.getPosY() + mc.thePlayer.getEyeHeight(), pos.getPosZ());
+                    if (RayCastUtils.raycastEntityFromPos(eyesPos, 3, entity -> true) == target) {
+                        finalTeleportTicks = predictingTick;
+                        ClientUtils.chatLog("Final predicted ticks " + finalTeleportTicks);
+                        break;
+                    }
+                }
+
+                if (finalTeleportTicks <= 0) {
+                    return;
+                }
+
+
+                for (int i = 0; i < finalTeleportTicks; i++) {
                     try {
-                        if (onlyPing.isToggled() && ping.packetBuffer.isEmpty()) break;
                         mc.runTick();
                         balance++;
-                        if (debug.isToggled()) ClientUtils.chatLog(String.format("%.1f, %.3f, %.3f", balance, distance, mc.thePlayer.getBps(false)));
-                        if (mc.thePlayer.isCollidedHorizontally) {
-                            if (debug.isToggled()) ClientUtils.chatLog("Stopped due CollidedHorizontally");
-                            break;
-                        }
-                        if (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target) {
-                            Client.INSTANCE.getClickManager().addClick();
-                            if (debug.isToggled()) ClientUtils.chatLog("Clicked due RayCast");
-                            break;
-                        }
-                        if (balance >= limitTicks.getValue()) {
-                            Client.INSTANCE.getClickManager().addClick();
-                            if (debug.isToggled()) ClientUtils.chatLog("Clicked due LimitTick");
-                            break;
-                        }
-                    } catch (Exception ignored) { }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+
+                    if (i + 1 == finalTeleportTicks) {
+                        Client.INSTANCE.getClickManager().addClick();
+                        break;
+                    }
                 }
             }
         }

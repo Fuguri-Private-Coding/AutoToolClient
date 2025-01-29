@@ -71,17 +71,28 @@ public class Ping extends Module {
 	final List<Doubles<Vec3, Long>> posBuffer;
 	EntityOtherPlayerMP player;
 
-	@Override
-	public void onDisable() {
-		resetPackets();
-	}
+	static final long checkPerSecond = 200;
+	final StopWatch timer2;
 
 	public Ping() {
 		animation3D = new Animation3D();
 		packetBuffer = new CopyOnWriteArrayList<>();
 		posBuffer = new CopyOnWriteArrayList<>();
 		timer = new StopWatch();
-		startThread();
+		timer2 = new StopWatch();
+	}
+
+	Thread thread;
+
+	@Override
+	public void onEnable() {
+		super.onEnable();
+	}
+
+	@Override
+	public void onDisable() {
+		resetPackets();
+		thread.stop();
 	}
 
 	@Override
@@ -166,7 +177,7 @@ public class Ping extends Module {
 				nextDelay = 0;
 			}
 
-//			handleStandAlone();
+			handleStandAlone();
 
 			if (posBuffer.isEmpty()) {
 				return;
@@ -206,23 +217,6 @@ public class Ping extends Module {
 				player.renderYawOffset = mc.thePlayer.renderYawOffset;
 			}
 		}
-	}
-
-	void startThread() {
-		Thread thread = new Thread("Thread-PingPacketHandler") {
-			@Override
-			public void run() {
-				while (true) {
-					if (packetBuffer.isEmpty())
-						continue;
-
-					handleStandAlone();
-				}
-			}
-		};
-
-		thread.setDaemon(true);
-		thread.start();
 	}
 
 	private void handleStandAlone() {
