@@ -47,7 +47,7 @@ public class KillAura extends Module {
                     "Intave"
             }
     );
-    final IntegerSetting clickDelay = new IntegerSetting("ClickDelay", this, 0, 12, 10);
+
     final IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 0, 180, 90);
     final IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 0, 180, 30);
 
@@ -74,8 +74,8 @@ public class KillAura extends Module {
         if (combatManager.getTarget() == null) { return; }
         if (event instanceof RunGameLoopEvent) {
             if (stopWatch.reachedMS() >= 1000 / 17) {
-                stopWatch.reset();
                 Client.INSTANCE.getClickManager().addClick();
+                stopWatch.reset();
             }
         }
         if (event instanceof MotionEvent motionEvent) {

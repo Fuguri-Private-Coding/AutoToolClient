@@ -9,6 +9,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.client.ClientUtils;
+import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
 import me.hackclient.utils.rotation.Delta;
 import me.hackclient.utils.rotation.Rotation;
@@ -23,6 +24,8 @@ public class RotationHandler extends Module {
 
     final IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 0, 180, 30);
     final IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 0, 180, 30);
+    final FloatSetting maxSmoothes = new FloatSetting("MaxSmooth", this, 1, 10, 2f, 0.1f);
+    final FloatSetting minSmoothes = new FloatSetting("MinSmooth", this, 1, 10, 2f, 0.1f);
     final FloatSetting stopThreshold = new FloatSetting("StopThreshold", this, 0f, 10f, 0.1f, 0.1f);
 
     @Override
@@ -38,8 +41,13 @@ public class RotationHandler extends Module {
                         return;
                     }
 
+                    float randomizedSmooth = RandomUtils.nextFloat(minSmoothes.getValue(), maxSmoothes.getValue());
+
                     delta.setYaw(MathHelper.clamp(delta.getYaw(), -yawSpeed.getValue(), yawSpeed.getValue()));
                     delta.setPitch(MathHelper.clamp(delta.getPitch(), -pitchSpeed.getValue(), pitchSpeed.getValue()));
+
+                    delta.setYaw(delta.getYaw() / randomizedSmooth);
+                    delta.setPitch(delta.getPitch() / randomizedSmooth);
 
                     delta = RotationUtils.fixDelta(delta);
                     Rotation.setServerRotation(
@@ -86,7 +94,6 @@ public class RotationHandler extends Module {
     static Rotation getPlayerRotation() {
         return new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
     }
-
 
     @Override
     public boolean handleEvents() {

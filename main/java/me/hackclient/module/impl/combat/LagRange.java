@@ -26,6 +26,12 @@ public class LagRange extends Module {
     final BooleanSetting onlyOnGround = new BooleanSetting("OnlyOnGround", this, false);
 
     @Override
+    public void onDisable() {
+        super.onDisable();
+        Client.INSTANCE.getCombatManager().setTarget(null);
+    }
+
+    @Override
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof UpdateEvent) {

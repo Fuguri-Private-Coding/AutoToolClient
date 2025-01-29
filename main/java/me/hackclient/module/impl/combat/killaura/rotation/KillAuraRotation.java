@@ -7,7 +7,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.Vec3;
 
 public abstract class KillAuraRotation {
-    @Getter @Setter Vec3 offset;
+    @Getter @Setter Vec3 offset = new Vec3(0,0,0);
 
     public abstract Rotation compute(final Rotation startsFrom, final EntityLivingBase target, final float simpleYawSpeed, final float simplePitchSpeed);
 }

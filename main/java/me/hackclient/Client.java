@@ -16,6 +16,7 @@ import me.hackclient.module.ModuleManager;
 import me.hackclient.module.impl.combat.killaura.click.ClickManager;
 import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
+import me.hackclient.utils.sound.SoundsManager;
 import org.lwjgl.opengl.Display;
 
 import java.io.File;
@@ -28,6 +29,7 @@ public enum Client implements CallableObject {
 	INSTANCE;
 
 	final File clientDirectory = new File("AutoTool/configs");
+	final File soundsDirectory = new File("AutoTool/sounds");
 	@Setter File defaultConfig = new File(clientDirectory, "default.json");
 	@Setter File bindsDirectory = new File(clientDirectory, "binds.json");
 
@@ -40,6 +42,7 @@ public enum Client implements CallableObject {
 	ShaderManager shaderManager;
 	ObjectsCaller objectsCaller;
 	ConfigManager configManager;
+	SoundsManager soundsManager;
 
 	ClickGuiScreen clickGui;
 
@@ -47,7 +50,7 @@ public enum Client implements CallableObject {
 
 	long lastMS;
 
-	public void init() {
+	public void init() throws IOException {
 		long start = System.nanoTime();
 
 		callables.add(this);
@@ -61,6 +64,7 @@ public enum Client implements CallableObject {
 		shaderManager = new ShaderManager();
 		objectsCaller = new ObjectsCaller();
 		configManager = new ConfigManager();
+		soundsManager = new SoundsManager();
 
 		try {
 			configManager.load(defaultConfig);

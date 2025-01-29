@@ -18,7 +18,6 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
@@ -33,11 +32,14 @@ import java.util.Comparator;
 )
 public class Scaffold extends Module {
 
-    IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 1, 180, 30);
-    IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 1, 180, 15);
-    FloatSetting smoothes = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f);
+    IntegerSetting maxYawSpeed = new IntegerSetting("MaxYawSpeed", this, 1, 180, 30);
+    IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 1, 180, 30);
+    IntegerSetting maxPitchSpeed = new IntegerSetting("MaxPitchSpeed", this, 1, 180, 15);
+    IntegerSetting minPitchSpeed = new IntegerSetting("MinPitchSpeed", this, 1, 180, 15);
+    FloatSetting smooth = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f);
     BooleanSetting saveWalk = new BooleanSetting("SneakOnFirstBlock", this, true);
     BooleanSetting placeOnlyHorizontal = new BooleanSetting("PlaceOnlyHorizontal", this, true);
+    BooleanSetting swingItem = new BooleanSetting("PlayerSwingItem", this, true);
 
     int lastSlot;
     int placedBlocks;
@@ -48,7 +50,7 @@ public class Scaffold extends Module {
             new Rotation(-45.0f, 77.0f),
             new Rotation(135.0f, 77.0f),
             new Rotation(-135.0f, 77.0f),
-            new Rotation(45.0f, 77.0f)
+            new Rotation(45.0f, 77.0f),
     };
 
     @Override
@@ -93,13 +95,15 @@ public class Scaffold extends Module {
 
             BlockPos pos = mouse.getBlockPos();
             if (blockPos == null || pos.getX() != blockPos.getX() || pos.getY() != blockPos.getY() || pos.getZ() != blockPos.getZ()) {
-                Block b = mc.theWorld.getBlockState(pos).getBlock();
-                if (b != null && b != Blocks.air && !(b instanceof BlockLiquid)) {
+                Block block = mc.theWorld.getBlockState(pos).getBlock();
+                if (block != null && block != Blocks.air && !(block instanceof BlockLiquid)) {
                     if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25)  {
                         mc.rightClickMouse();
-//                        mc.thePlayer.swingItem();
-//                        mc.getItemRenderer().resetEquippedProgress();
-//                        mc.rightClickMouse();
+                        if (swingItem.isToggled()) {
+                            mc.thePlayer.swingItem();
+                            mc.getItemRenderer().resetEquippedProgress();
+                            mc.rightClickMouse();
+                        }
                         blockPos = pos;
                         lastTime = System.currentTimeMillis();
                         placedBlocks++;
@@ -117,11 +121,14 @@ public class Scaffold extends Module {
 
             Delta delta = RotationUtils.getDelta(Rotation.getServerRotation(), nearest);
 
-            delta.setYaw(MathHelper.clamp(delta.getYaw(), -yawSpeed.getValue(), yawSpeed.getValue()));
-            delta.setPitch(MathHelper.clamp(delta.getPitch() , -pitchSpeed.getValue(), pitchSpeed.getValue()));
+            float randomizedYawSpeed = RandomUtils.nextFloat(minYawSpeed.getValue(), maxYawSpeed.getValue());
+            float randomizedPitchSpeed = RandomUtils.nextFloat(minPitchSpeed.getValue(), maxPitchSpeed.getValue());
 
-            delta.setYaw(delta.getYaw() / smoothes.getValue());
-            delta.setPitch(delta.getPitch() / smoothes.getValue());
+            delta.setYaw(MathHelper.clamp(delta.getYaw(), -randomizedYawSpeed, randomizedYawSpeed));
+            delta.setPitch(MathHelper.clamp(delta.getPitch() , -randomizedPitchSpeed, randomizedPitchSpeed));
+
+            delta.setYaw(delta.getYaw() / smooth.getValue());
+            delta.setPitch(delta.getPitch() / smooth.getValue());
 
             delta = RotationUtils.fixDelta(delta);
             Rotation.setServerRotation(

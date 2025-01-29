@@ -31,7 +31,7 @@ public class MoreKB extends Module {
                     "LegitFast",
                     "LegitSneak",
                     "LegitBlock",
-                    "CustomLegitFast"
+                    "Custom"
             }
     );
 
@@ -40,9 +40,11 @@ public class MoreKB extends Module {
     final IntegerSetting minReset = new IntegerSetting("MinTickResetDuration", this, 0, 10, 1);
     final IntegerSetting maxReset = new IntegerSetting("MaxTickResetDuration", this, 0, 10, 1);
     final IntegerSetting delayBetweenHit = new IntegerSetting("DelayBetweenHit", this, 0, 500, 450);
+
     final ModeSetting customEventSettings = new ModeSetting(
             "CustomEventMode",
             this,
+            () -> mode.getMode().equals("Custom"),
             "Tick",
             new String[]{
                     "Tick",
@@ -50,7 +52,8 @@ public class MoreKB extends Module {
                     "Update"
             }
     );
-    final MultiBooleanSetting customSettings = new MultiBooleanSetting("CustomModes", this)
+
+    final MultiBooleanSetting customSettings = new MultiBooleanSetting("CustomModes", this, () -> mode.getMode().equals("Custom"))
             .add("CancelSprint")
             .add("CancelServerSprint")
             .add("Packet STOP_SPRINTING")
@@ -80,7 +83,7 @@ public class MoreKB extends Module {
         if (reset == 0) return;
 
         switch (mode.getMode()) {
-            case "CustomLegitFast" -> {
+            case "Custom" -> {
                 if (!mc.thePlayer.isSprinting()) break;
                 switch (customEventSettings.getMode()) {
                     case "Tick" -> {

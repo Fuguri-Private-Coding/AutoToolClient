@@ -24,13 +24,12 @@ public class Animation3D {
 
     public void update(float smooth) {
         smooth /= 1000f;
+        smooth *= stopWatch.reachedMS();
+        Vector3f delta = getDelta();
 
-        for (int i = 0; i < stopWatch.reachedMS(); i++) {
-            Vector3f delta = getDelta();
-            x += delta.x * smooth;
-            y += delta.y * smooth;
-            z += delta.z * smooth;
-        }
+        x += delta.x * smooth;
+        y += delta.y * smooth;
+        z += delta.z * smooth;
 
         stopWatch.reset();
     }

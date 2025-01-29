@@ -13,6 +13,8 @@ import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -20,6 +22,7 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "TargetESP", category = Category.VISUAL, toggled = true)
 public class TargetESP extends Module {
 
+    private static final Log log = LogFactory.getLog(TargetESP.class);
     FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f);
     IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
     FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f);

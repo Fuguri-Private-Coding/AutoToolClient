@@ -32,6 +32,12 @@ public class AimAssist extends Module {
     final BooleanSetting onlyWhenSprinting = new BooleanSetting("OnlyWhenSprinting", this, false);
 
     @Override
+    public void onDisable() {
+        super.onDisable();
+        Client.INSTANCE.getCombatManager().setTarget(null);
+    }
+
+    @Override
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof MotionEvent) {

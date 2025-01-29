@@ -22,12 +22,11 @@ public class Animation2D {
 
     public void update(float smooth) {
         smooth /= 1000f;
+        smooth *= stopWatch.reachedMS();
 
-        for (int i = 0; i < stopWatch.reachedMS(); i++) {
-            Vector2f delta = getDelta();
-            x += delta.x * smooth;
-            y += delta.y * smooth;
-        }
+        Vector2f delta = getDelta();
+        x += delta.x * smooth;
+        y += delta.y * smooth;
 
         stopWatch.reset();
     }

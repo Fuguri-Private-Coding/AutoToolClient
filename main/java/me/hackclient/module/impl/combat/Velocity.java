@@ -40,7 +40,7 @@ public class Velocity extends Module {
 
     // Intave
     final IntegerSetting minPlayerHurtTimeIntave = new IntegerSetting("MinPlayerHurtTime", this, () -> mode.getMode().equals("Intave"), 0, 9, 7);
-    final BooleanSetting jump = new BooleanSetting("Jump", this, true);
+    final BooleanSetting jump = new BooleanSetting("Jump", this, () -> mode.getMode().equals("Intave"), true);
     final BooleanSetting cancelSprint = new BooleanSetting("CancelSprintAtSprintHit", this, () -> mode.getMode().equals("Intave"), true);
     final FloatSetting sprintReduce = new FloatSetting("SprintReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 0.6f, 0.1f);
     final FloatSetting normalReduce = new FloatSetting("NormalReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 1.0f, 0.1f);

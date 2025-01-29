@@ -2,8 +2,11 @@ package me.hackclient.module;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.hackclient.Client;
 import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.Event;
+import me.hackclient.guis.clickGui.ClickGuiScreen;
+import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.settings.Setting;
 import me.hackclient.utils.interfaces.InstanceAccess;
 
@@ -37,10 +40,12 @@ public class Module implements InstanceAccess, ConditionCallableObject {
 		if (toggled) {
 			try {
 				onEnable();
+				Client.INSTANCE.getSoundsManager().getEnableSound().asyncPlay(Client.INSTANCE.getModuleManager().getModule(ClickGui.class).toggleModuleVolume.getValue());
 			} catch (Exception ignored) {}
 		} else {
 			try {
 				onDisable();
+				Client.INSTANCE.getSoundsManager().getDisableSound().asyncPlay(Client.INSTANCE.getModuleManager().getModule(ClickGui.class).toggleModuleVolume.getValue());
 			} catch (Exception ignored) {}
 		}
 	}
@@ -55,9 +60,7 @@ public class Module implements InstanceAccess, ConditionCallableObject {
 	}
 
 	@Override
-	public void onEvent(Event event) {
-
-	}
+	public void onEvent(Event event) { }
 
 	@Override
 	public boolean handleEvents() {

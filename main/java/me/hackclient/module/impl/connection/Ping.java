@@ -81,6 +81,7 @@ public class Ping extends Module {
 		packetBuffer = new CopyOnWriteArrayList<>();
 		posBuffer = new CopyOnWriteArrayList<>();
 		timer = new StopWatch();
+		startThread();
 	}
 
 	@Override
@@ -165,7 +166,7 @@ public class Ping extends Module {
 				nextDelay = 0;
 			}
 
-			handleStandAlone();
+//			handleStandAlone();
 
 			if (posBuffer.isEmpty()) {
 				return;
@@ -205,6 +206,23 @@ public class Ping extends Module {
 				player.renderYawOffset = mc.thePlayer.renderYawOffset;
 			}
 		}
+	}
+
+	void startThread() {
+		Thread thread = new Thread("Thread-PingPacketHandler") {
+			@Override
+			public void run() {
+				while (true) {
+					if (packetBuffer.isEmpty())
+						continue;
+
+					handleStandAlone();
+				}
+			}
+		};
+
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	private void handleStandAlone() {
