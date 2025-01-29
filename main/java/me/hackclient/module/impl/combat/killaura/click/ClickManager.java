@@ -28,8 +28,6 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
     @Override
     public void onEvent(Event event) {
         if (clickSettings == null) clickSettings = Client.INSTANCE.getModuleManager().getModule(ClickSettings.class);
-        int startRandomizedHurtTime = RandomUtils.nextInt(clickSettings.minStartHurtTime.getValue(), clickSettings.maxStartHurtTime.getValue());
-        int endRandomizedHurtTime = RandomUtils.nextInt(clickSettings.minEndHurtTime.getValue(), clickSettings.maxEndHurtTime.getValue());
         if (event instanceof TickEvent) {
             if (clicks < 1) {
                 clicks = 0;
@@ -39,6 +37,8 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
             if (target == null) return;
             EntityLivingBase rayCast = (EntityLivingBase) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityLivingBase);
+            int startRandomizedHurtTime = RandomUtils.nextInt(clickSettings.minStartHurtTime.getValue(), clickSettings.maxStartHurtTime.getValue());
+            int endRandomizedHurtTime = RandomUtils.nextInt(clickSettings.minEndHurtTime.getValue(), clickSettings.maxEndHurtTime.getValue());
             for (int i = 0; i < clicks; i++) {
                 if (rayCast instanceof EntityPlayer entityPlayer && entityPlayer.isFriend()) { break; }
                 if (target.hurtTime <= startRandomizedHurtTime || mc.thePlayer.hurtTime > endRandomizedHurtTime) {
