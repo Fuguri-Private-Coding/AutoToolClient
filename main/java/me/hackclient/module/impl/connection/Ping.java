@@ -16,6 +16,8 @@ import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
+import me.hackclient.utils.rotation.RayCastUtils;
+import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -103,6 +105,7 @@ public class Ping extends Module {
 			return;
 		}
 		if (event instanceof WorldChangeEvent) {
+			mc.theWorld.removeEntity(player);
 			player = null;
 			if (flushes.get("WorldChange")) {
 				resetPackets();
@@ -184,27 +187,21 @@ public class Ping extends Module {
 			}
 
 			Vec3 vec = posBuffer.get(0).getFirst();
-			animation3D.endX = vec.xCoord;
-			animation3D.endY = vec.yCoord;
-			animation3D.endZ = vec.zCoord;
-			animation3D.update(20f);
 
-			if (mc.gameSettings.thirdPersonView == 0 && onlyThirdPerson.isToggled()) {
-				if (player != null) {
-					mc.theWorld.removeEntityFromWorld(player.getEntityId());
-					player = null;
-				}
+			if (mc.gameSettings.thirdPersonView == 0 && onlyThirdPerson.isToggled() && player != null) {
+				mc.theWorld.removeEntityFromWorld(player.getEntityId());
 				return;
 			}
 
 			if (player == null) {
 				player = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
 				mc.theWorld.addEntityToWorld(player.getEntityId(), player);
+				player.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
 			} else {
 				player.setPositionAndRotation(
-						animation3D.x,
-						animation3D.y,
-						animation3D.z,
+						vec.xCoord,
+						vec.yCoord,
+						vec.zCoord,
 						MathHelper.wrapDegree(mc.thePlayer.rotationYaw),
 						mc.thePlayer.rotationPitch
 				);
@@ -219,7 +216,7 @@ public class Ping extends Module {
 		}
 	}
 
-	private void handleStandAlone() {
+	void handleStandAlone() {
 		packetBuffer.forEach(packetLongDoubles -> {
 			if (System.currentTimeMillis() - packetLongDoubles.getSecond() >= delay.getValue()) {
 				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetLongDoubles.getFirst());
@@ -231,12 +228,7 @@ public class Ping extends Module {
 	}
 
 	public void resetPackets() {
-		packetBuffer.forEach(packet -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet.getFirst()));
+		packetBuffer.forEach(packetLongDoubles -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetLongDoubles.getFirst()));
 		packetBuffer.clear();
-		posBuffer.clear();
-		if (player != null) {
-			mc.theWorld.removeEntity(player);
-			player = null;
-		}
 	}
 }

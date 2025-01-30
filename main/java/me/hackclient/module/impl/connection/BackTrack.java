@@ -20,6 +20,7 @@ import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.*;
+import net.minecraft.util.BlockPos;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -95,14 +96,15 @@ public class BackTrack extends Module {
             } else {
                 handlePackets();
                 double distance = mc.thePlayer.getDistance(target.realX / 32, target.realY / 32, target.realZ / 32);
-                if (distance > (limitDistance.isToggled() ? maxDistance.getValue() : Double.MAX_VALUE) /*|| distance < 3*/ || distance <= mc.thePlayer.getDistanceToEntity(target)) {
+                if (distance > (limitDistance.isToggled() ? maxDistance.getValue() : Double.MAX_VALUE) || distance < 3 || distance <= mc.thePlayer.getDistanceToEntity(target)) {
                     resetPackets();
                     return;
                 }
             }
         }
 
-        if (event instanceof PacketEvent packetEvent && packetEvent.getDirection() == PackerDirection.INCOMING) {
+        if (event instanceof PacketEvent packetEvent && packetEvent.getDirection() == PackerDirection.INCOMING
+        && mc.theWorld.isBlockLoaded(new BlockPos(mc.thePlayer.posX, 0, mc.thePlayer.posZ))) {
             Packet packet = packetEvent.getPacket();
 
             if (packet instanceof S14PacketEntity s14

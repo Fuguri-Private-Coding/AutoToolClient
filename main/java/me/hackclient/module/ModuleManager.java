@@ -13,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class ModuleManager {
+
 	public CopyOnWriteArrayList<Module> modules;
 	public static ModuleManager INSTANCE;
 
@@ -39,7 +40,7 @@ public class ModuleManager {
 				 new TestPing(),
 				 new NoSlow(),
 				 new NoWeb(),
-				 new KBLagger(),
+				 new KBLager(),
 				 new Speed(),
 				 new Sprint(),
 				 new Timer(),
