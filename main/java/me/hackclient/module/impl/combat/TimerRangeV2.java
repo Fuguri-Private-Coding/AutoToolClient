@@ -9,16 +9,12 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.connection.Ping;
 import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
-import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.predict.PlayerInfo;
 import me.hackclient.utils.predict.SimulatedPlayer;
 import me.hackclient.utils.rotation.RayCastUtils;
-import me.hackclient.utils.rotation.Rotation;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.Vec3;
 
@@ -29,6 +25,7 @@ public class TimerRangeV2 extends Module {
 
     IntegerSetting limitTicks = new IntegerSetting("Ticks", this, 1, 10, 2);
     BooleanSetting debug = new BooleanSetting("Debug", this, true);
+    BooleanSetting onlyPing = new BooleanSetting("OnlyPing", this, true);
 
     ModeSetting freezeMode = new ModeSetting(
             "FreezeAnimation",
@@ -46,6 +43,7 @@ public class TimerRangeV2 extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (killAura == null) killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
         if (event instanceof TickEvent tickEvent) {
             if (balance > 0) {
                 tickEvent.setCanceled(true);
@@ -53,7 +51,7 @@ public class TimerRangeV2 extends Module {
                 return;
             }
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
-            if (target != null && RayCastUtils.raycastEntity(3, entity -> true) != target && RayCastUtils.raycastEntity(6, entity -> true) == target) {
+            if (target != null && killAura.isToggled() && mc.thePlayer.moveForward > 0 && RayCastUtils.raycastEntity(3, entity -> true) != target && RayCastUtils.raycastEntity(6, entity -> true) == target) {
                 int finalTeleportTicks = 0;
 
                 PlayerInfo pos = new PlayerInfo(
@@ -76,14 +74,6 @@ public class TimerRangeV2 extends Module {
                             pos.getPosZ(),
                             mc.thePlayer.movementInput.jump
                     );
-//                    ClientUtils.chatLog(String.format("%.2f %.2f %.2f %.2f %.2f %.2f",
-//                            pos.getPosX(),
-//                            pos.getPosY(),
-//                            pos.getPosZ(),
-//                            pos.getMotionX(),
-//                            pos.getMotionY(),
-//                            pos.getMotionZ()) + " " + predictingTick
-//                    );
                     Vec3 eyesPos = new Vec3(pos.getPosX(), pos.getPosY() + mc.thePlayer.getEyeHeight(), pos.getPosZ());
                     if (RayCastUtils.raycastEntityFromPos(eyesPos, 3, entity -> true) == target) {
                         finalTeleportTicks = predictingTick;
@@ -96,6 +86,7 @@ public class TimerRangeV2 extends Module {
                     return;
                 }
 
+                if (onlyPing.isToggled() && mm.getModule(Ping.class).packetBuffer.isEmpty()) return;
 
                 for (int i = 0; i < finalTeleportTicks; i++) {
                     try {
@@ -104,7 +95,6 @@ public class TimerRangeV2 extends Module {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-
 
                     if (i + 1 == finalTeleportTicks) {
                         Client.INSTANCE.getClickManager().addClick();

@@ -29,7 +29,7 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
     public void onEvent(Event event) {
         if (clickSettings == null) clickSettings = Client.INSTANCE.getModuleManager().getModule(ClickSettings.class);
         if (event instanceof TickEvent) {
-            if (clicks < 1) {
+            if (clicks > 1) {
                 clicks = 0;
             }
         }
