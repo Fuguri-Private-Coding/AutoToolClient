@@ -1,5 +1,6 @@
 package me.hackclient.module.impl.combat;
 
+import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
@@ -8,9 +9,11 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
@@ -28,6 +31,7 @@ public class MoreKB extends Module {
             "LegitFast",
             new String[] {
                     "Legit",
+                    "LegitBack",
                     "LegitFast",
                     "LegitSneak",
                     "LegitBlock",
@@ -39,7 +43,6 @@ public class MoreKB extends Module {
     final IntegerSetting maxDelay = new IntegerSetting("MaxTickDelayAfterHit", this, 0, 10, 3);
     final IntegerSetting minReset = new IntegerSetting("MinTickResetDuration", this, 0, 10, 1);
     final IntegerSetting maxReset = new IntegerSetting("MaxTickResetDuration", this, 0, 10, 1);
-    final IntegerSetting delayBetweenHit = new IntegerSetting("DelayBetweenHit", this, 0, 500, 450);
 
     final ModeSetting customEventSettings = new ModeSetting(
             "CustomEventMode",
@@ -69,10 +72,12 @@ public class MoreKB extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof AttackEvent && stopWatch.reachedMS(delayBetweenHit.getValue())) {
+        EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
+        if (target == null) return;
+        if (event instanceof UpdateEvent && target.hurtTime == 10) {
             delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
             reset = RandomUtils.nextInt(minReset.getValue(), maxReset.getValue());
-            stopWatch.reset();
+            ClientUtils.chatLog("reset" + delay + reset);
         }
 
         if (delay > 0) {
@@ -103,9 +108,17 @@ public class MoreKB extends Module {
                     }
                 }
             }
+
             case "Legit" -> {
                 if (event instanceof MoveButtonEvent moveButtonEvent) {
                     moveButtonEvent.setForward(false);
+                }
+            }
+
+            case "LegitBack" -> {
+                if (event instanceof MoveButtonEvent moveButtonEvent) {
+                    moveButtonEvent.setForward(false);
+                    moveButtonEvent.setBack(true);
                 }
             }
 
