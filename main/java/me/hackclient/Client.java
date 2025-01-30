@@ -84,8 +84,9 @@ public enum Client implements CallableObject {
 
 		clickManager = new ClickManager();
 		Display.setTitle(getFullName());
+
 		long elapsedNanos = System.nanoTime() - start;
-		System.out.println("Started client in " + elapsedNanos / 1000000000D + " seconds");
+		System.out.println("Started client in " + (float) (elapsedNanos / 1000000000L) + " seconds");
 	}
 
 	public void onClose() {
