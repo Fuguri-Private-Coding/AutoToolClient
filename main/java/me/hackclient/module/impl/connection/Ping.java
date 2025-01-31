@@ -145,9 +145,9 @@ public class Ping extends Module {
 
 	void resetPackets() {
 		PacketHandler.clientPacketBuffer.forEach(p -> sendPacket(new Doubles<>(p.getFirst(), PacketDirection.OUTGOING)));
-		PacketHandler.serverPacketBuffer.forEach(p -> sendPacket(new Doubles<>(p.getFirst(), PacketDirection.INCOMING)));
+		//PacketHandler.serverPacketBuffer.forEach(p -> sendPacket(new Doubles<>(p.getFirst(), PacketDirection.INCOMING)));
 		PacketHandler.clientPacketBuffer.clear();
-		PacketHandler.serverPacketBuffer.clear();
+		//PacketHandler.serverPacketBuffer.clear();
 
 		outDelay = RandomUtils.nextInt(minOutDelay.getValue(), maxOutDelay.getValue());
 	}

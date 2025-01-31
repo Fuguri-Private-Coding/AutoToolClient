@@ -20,6 +20,7 @@ import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.*;
+import net.minecraft.network.status.server.S01PacketPong;
 import net.minecraft.util.BlockPos;
 import org.lwjgl.opengl.GL11;
 
@@ -118,7 +119,7 @@ public class BackTrack extends Module {
                 entityLivingBase.realZ = s18.getZ();
             }
 
-            if (target != null) {
+            if (target != null && (packet instanceof S32PacketConfirmTransaction || packet instanceof S12PacketEntityVelocity || packet instanceof S14PacketEntity || packet instanceof S18PacketEntityTeleport || packet instanceof S19PacketEntityHeadLook || packet instanceof S08PacketPlayerPosLook || packet instanceof S01PacketPong || packet instanceof S03PacketTimeUpdate)) {
                 PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
                 packetEvent.setCanceled(true);
             }
