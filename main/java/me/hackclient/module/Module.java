@@ -22,6 +22,7 @@ public class Module implements InstanceAccess, ConditionCallableObject {
 	@Setter @Getter int key = annotation.key();
 	@Getter boolean toggled = annotation.toggled();
 	@Getter final List<Setting> settings;
+	@Getter @Setter boolean hide = annotation.hide();
 
 	{ callables.add(this); }
 

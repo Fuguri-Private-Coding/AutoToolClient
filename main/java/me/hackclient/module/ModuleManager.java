@@ -27,6 +27,7 @@ public class ModuleManager {
 				 new TestESP(),
 				 new MoreKB(),
 				 new Velocity(),
+				 new PacketHandler(),
 				 new TESTESP2(),
 				 new RotationHandler(),
 				 new Fly(),

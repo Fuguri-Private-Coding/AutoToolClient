@@ -89,6 +89,16 @@ public enum Client implements CallableObject {
 		System.out.println("Started client in " + (float) (elapsedNanos / 1000000000L) + " seconds");
 	}
 
+	public String getChangeLog() {
+		StringBuilder builder = new StringBuilder();
+
+		builder .append("\n Added changelog")
+				.append("\n Recoded Ping")
+				.append("\n Recoded TimerRangeV2");
+
+		return builder.toString();
+	}
+
 	public void onClose() {
 		saveAll();
 	}

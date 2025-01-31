@@ -1,7 +1,7 @@
 package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
-import me.hackclient.event.PackerDirection;
+import me.hackclient.event.PacketDirection;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.module.Category;
@@ -53,7 +53,7 @@ public class Disabler extends Module {
 	public void onEvent(Event event) {
 		super.onEvent(event);
 		if (event instanceof PacketEvent packetEvent
-		&& packetEvent.getDirection() == PackerDirection.INCOMING) {
+		&& packetEvent.getDirection() == PacketDirection.INCOMING) {
 			Packet packet = packetEvent.getPacket();
 
 			if (packet instanceof S32PacketConfirmTransaction

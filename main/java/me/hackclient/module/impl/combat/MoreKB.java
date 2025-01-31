@@ -16,6 +16,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
+import org.w3c.dom.Entity;
 
 @ModuleInfo(
         name = "MoreKB",
@@ -24,6 +25,8 @@ import net.minecraft.network.play.client.C0BPacketEntityAction;
 public class MoreKB extends Module {
 
     final StopWatch stopWatch;
+
+    final IntegerSetting delayTime = new IntegerSetting("Delay", this, 0, 500, 300);
 
     final ModeSetting mode = new ModeSetting(
             "Mode",
@@ -72,12 +75,11 @@ public class MoreKB extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
-        if (target == null) return;
-        if (event instanceof UpdateEvent && target.hurtTime == 10) {
+
+        if (event instanceof AttackEvent && stopWatch.reachedMS() >= delayTime.getValue()) {
+            stopWatch.reset();
             delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
             reset = RandomUtils.nextInt(minReset.getValue(), maxReset.getValue());
-            ClientUtils.chatLog("reset" + delay + reset);
         }
 
         if (delay > 0) {
@@ -110,8 +112,8 @@ public class MoreKB extends Module {
             }
 
             case "Legit" -> {
-                if (event instanceof MoveButtonEvent moveButtonEvent) {
-                    moveButtonEvent.setForward(false);
+                if (event instanceof MoveEvent moveEvent) {
+                    moveEvent.setForward(0f);
                 }
             }
 

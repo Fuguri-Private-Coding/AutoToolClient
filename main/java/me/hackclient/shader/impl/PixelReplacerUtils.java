@@ -61,6 +61,7 @@ public class PixelReplacerUtils implements CallableObject, InstanceAccess {
             Uniform.uniform1f(id, "time", timer.reachedMS() / (1000f * 10));
             Uniform.uniform1i(id, "texture", 19);
             Uniform.uniform1f(id, "texel_size", 1f / mc.displayHeight);
+
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             GlStateManager.enableAlpha();

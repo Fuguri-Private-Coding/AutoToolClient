@@ -40,7 +40,7 @@ public class ArrayList extends Module {
 				list.add(() -> {
 					int offset = 0;
 					for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
-						if (skipRenderModules.isToggled() && module.getCategory() == Category.VISUAL) continue;
+						if (skipRenderModules.isToggled() && module.getCategory() == Category.VISUAL || module.isHide()) continue;
 						Gui.drawRect(3, 3 + offset, 6 + mc.fontRendererObj.getStringWidth(module.getName()), 5 + offset + 10, new Color(255, 255, 255, 255).getRGB());
 						offset += mc.fontRendererObj.FONT_HEIGHT + 3;
 					}
@@ -64,7 +64,7 @@ public class ArrayList extends Module {
 			PixelReplacerUtils.addToDraw(() -> {
 				int offset = 0;
 				for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
-					if (skipRenderModules.isToggled() && module.getCategory() == Category.VISUAL) continue;
+					if (skipRenderModules.isToggled() && module.getCategory() == Category.VISUAL || module.isHide()) continue;
 					if (background.isToggled()) {
 						Gui.drawRect(3, 3 + offset, 6 + mc.fontRendererObj.getStringWidth(module.getName()), 5 + offset + 10, new Color(0, 0, 0, 75).getRGB());
 					}
@@ -75,7 +75,7 @@ public class ArrayList extends Module {
 		} else {
 			int offset = 0;
 			for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
-				if (skipRenderModules.isToggled() && module.getCategory() == Category.VISUAL) continue;
+				if (skipRenderModules.isToggled() && module.getCategory() == Category.VISUAL || module.isHide()) continue;
 				if (background.isToggled()) {
 					Gui.drawRect(3, 3 + offset, 6 + mc.fontRendererObj.getStringWidth(module.getName()), 5 + offset + 10, new Color(0, 0, 0, 75).getRGB());
 				}

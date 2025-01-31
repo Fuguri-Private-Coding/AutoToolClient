@@ -1,7 +1,6 @@
 package me.hackclient.module.impl.legit;
 
 import me.hackclient.event.Event;
-import me.hackclient.event.PackerDirection;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.module.Category;
@@ -9,8 +8,11 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.doubles.Doubles;
+import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.server.*;
+import net.minecraft.network.status.server.S01PacketPong;
 import net.minecraft.util.BlockPos;
 
 import java.util.List;
@@ -26,7 +28,10 @@ public class KBLager extends Module {
 
     final List<Doubles<Packet, Long>> clientPackets, serverPackets;
 
+    final StopWatch stopWatch;
+
     public KBLager() {
+        stopWatch = new StopWatch();
         clientPackets = new CopyOnWriteArrayList<>();
         serverPackets = new CopyOnWriteArrayList<>();
     }
@@ -41,7 +46,19 @@ public class KBLager extends Module {
             if (!mc.theWorld.isBlockLoaded(new BlockPos(mc.thePlayer.posX, 0, mc.thePlayer.posZ)))
                 return;
 
+            if (mc.objectMouseOver == null || mc.objectMouseOver.entityHit == null)
+                return;
+
+
             Packet packet = packetEvent.getPacket();
+
+            if (packet instanceof S08PacketPlayerPosLook) {
+                stopWatch.reset();
+                return;
+            }
+
+            if (!stopWatch.reachedMS(500))
+                return;
 
             if (packet instanceof S12PacketEntityVelocity
             || packet instanceof S32PacketConfirmTransaction
@@ -49,7 +66,8 @@ public class KBLager extends Module {
             || packet instanceof S14PacketEntity
             || packet instanceof S18PacketEntityTeleport
             || packet instanceof S03PacketTimeUpdate
-            || packet instanceof S00PacketKeepAlive) {
+            || packet instanceof S19PacketEntityHeadLook
+            || packet instanceof S01PacketPong) {
                 serverPackets.add(new Doubles<>(packet, packetEvent.getSendTime()));
                 packetEvent.setCanceled(true);
             }

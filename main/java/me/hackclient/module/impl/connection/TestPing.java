@@ -1,7 +1,7 @@
 package me.hackclient.module.impl.connection;
 
 import me.hackclient.event.Event;
-import me.hackclient.event.PackerDirection;
+import me.hackclient.event.PacketDirection;
 import me.hackclient.event.events.ChangeSprintEvent;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
@@ -74,7 +74,7 @@ public class TestPing extends Module {
                 return;
             }
 
-            if (packetEvent.getDirection() == PackerDirection.OUTGOING) {
+            if (packetEvent.getDirection() == PacketDirection.OUTGOING) {
                 buffer.add(new Doubles<>(packet, sendTime));
                 if (packet instanceof C03PacketPlayer c03 && c03.isMoving()) {
                     posBuffer.add(new Doubles<>(c03.getPosVec(), sendTime));

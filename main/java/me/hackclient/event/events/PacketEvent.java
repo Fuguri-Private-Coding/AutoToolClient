@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.event.CancelableEvent;
-import me.hackclient.event.PackerDirection;
+import me.hackclient.event.PacketDirection;
 import net.minecraft.network.Packet;
 
 @Setter
@@ -14,9 +14,9 @@ public class PacketEvent extends CancelableEvent {
 
 	Packet packet;
 	final long sendTime;
-	final PackerDirection direction;
+	final PacketDirection direction;
 
-	public PacketEvent(Packet packet, PackerDirection direction) {
+	public PacketEvent(Packet packet, PacketDirection direction) {
 		this.packet = packet;
 		sendTime = System.currentTimeMillis();
 		this.direction = direction;

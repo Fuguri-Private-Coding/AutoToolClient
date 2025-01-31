@@ -1,7 +1,7 @@
 package me.hackclient.module.impl.legit;
 
+import me.hackclient.Client;
 import me.hackclient.event.Event;
-import me.hackclient.event.events.LegitClickTimingEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -20,7 +20,7 @@ import org.lwjgl.input.Mouse;
 public class AutoClicker extends Module {
 
     final StopWatch stopWatch;
-    int clicks, delay;
+    int delay;
 
     final FloatSetting minCps = new FloatSetting("MinCps", this, 0.0f, 25.0f, 13.0f, 0.1f);
     final FloatSetting maxCps = new FloatSetting("MaxCps", this, 0.0f, 25.0f, 17.0f, 0.1f);
@@ -33,20 +33,23 @@ public class AutoClicker extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof LegitClickTimingEvent) {
-            if (mc.currentScreen == null && !mc.thePlayer.isUsingItem()) {
-                for (int i = 0; i < clicks; i++) {
-                    if (!allowBreakBlock.isToggled() || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
-                        mc.clickMouse();
-                    }
-                }
-            }
-            clicks = 0;
-        }
         if (event instanceof RunGameLoopEvent) {
-            if (stopWatch.reachedMS(delay) && Mouse.isButtonDown(0) && mc.currentScreen == null) {
+            if (!Mouse.isButtonDown(0))
+                return;
+
+            if (mc.thePlayer.isUsingItem())
+                return;
+
+            if (mc.currentScreen != null)
+                return;
+
+            if (allowBreakBlock.isToggled() && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+                return;
+
+
+            if (stopWatch.reachedMS(delay)) {
                 stopWatch.reset();
-                clicks++;
+                Client.INSTANCE.getClickManager().addClick();
                 delay = Math.round(1000f / RandomUtils.nextFloat(minCps.getValue(), maxCps.getValue()));
             }
         }

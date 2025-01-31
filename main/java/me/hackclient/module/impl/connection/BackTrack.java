@@ -2,7 +2,7 @@ package me.hackclient.module.impl.connection;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
-import me.hackclient.event.PackerDirection;
+import me.hackclient.event.PacketDirection;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -60,8 +60,6 @@ public class BackTrack extends Module {
 
     final StopWatch attackTimer, resetTimer;
 
-    final List<Doubles<Packet, Long>> serverPackets;
-
     ClientShader clientShader;
 
     EntityLivingBase target;
@@ -69,7 +67,6 @@ public class BackTrack extends Module {
     public BackTrack() {
         resetTimer = new StopWatch();
         attackTimer = new StopWatch();
-        serverPackets = new CopyOnWriteArrayList<>();
         animation3D = new Animation3D();
     }
 
@@ -103,7 +100,7 @@ public class BackTrack extends Module {
             }
         }
 
-        if (event instanceof PacketEvent packetEvent && packetEvent.getDirection() == PackerDirection.INCOMING
+        if (event instanceof PacketEvent packetEvent && packetEvent.getDirection() == PacketDirection.INCOMING
         && mc.theWorld.isBlockLoaded(new BlockPos(mc.thePlayer.posX, 0, mc.thePlayer.posZ))) {
             Packet packet = packetEvent.getPacket();
 
@@ -122,7 +119,7 @@ public class BackTrack extends Module {
             }
 
             if (target != null) {
-                serverPackets.add(new Doubles<>(packet, System.currentTimeMillis()));
+                PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
                 packetEvent.setCanceled(true);
             }
         }
@@ -175,10 +172,10 @@ public class BackTrack extends Module {
                     resetPackets();
                 }
             }
-            case "Smooth" -> serverPackets.forEach(packetLongDoubles -> {
+            case "Smooth" -> PacketHandler.serverPacketBuffer.forEach(packetLongDoubles -> {
                 if (System.currentTimeMillis() - packetLongDoubles.getSecond() >= delay.getValue()) {
                     processPacket(packetLongDoubles.getFirst());
-                    serverPackets.remove(packetLongDoubles);
+                    PacketHandler.serverPacketBuffer.remove(packetLongDoubles);
                 }
             });
         }
@@ -189,7 +186,7 @@ public class BackTrack extends Module {
     }
 
     void resetPackets() {
-        serverPackets.forEach(packetLongDoubles -> processPacket(packetLongDoubles.getFirst()));
-        serverPackets.clear();
+        PacketHandler.serverPacketBuffer.forEach(packetLongDoubles -> processPacket(packetLongDoubles.getFirst()));
+        PacketHandler.serverPacketBuffer.clear();
     }
 }

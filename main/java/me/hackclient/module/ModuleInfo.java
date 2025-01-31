@@ -12,4 +12,5 @@ public @interface ModuleInfo {
 	Category category();
 	int key() default 0;
 	boolean toggled() default false;
+	boolean hide() default false;
 }
