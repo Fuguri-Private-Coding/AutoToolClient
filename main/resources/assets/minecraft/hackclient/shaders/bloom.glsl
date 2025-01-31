@@ -14,12 +14,12 @@ void main ( void ) {
         discard;
     }
 
-    vec4 final_color = vec4(vec3(0.0), 1.0);
+    vec4 final_color = vec4(0.0, 0.0, 0.0, 1.0);
 
     for (float f = -radius; f <= radius; f++) {
         for (float f1 = -radius; f1 <= radius; f1++) {
-            vec2 offset = vec2(f, f1) * texel_size;
-            vec4 color_in_offset = texture2D(texture, offset);
+            vec2 offset = vec2(f, f1) * texel_size.xy;
+            vec4 color_in_offset = texture2D(texture, uv + offset);
 
             color_in_offset.rgb *= color_in_offset.a;
 

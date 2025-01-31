@@ -10,6 +10,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.combat.killaura.rotation.KillAuraRotation;
 import me.hackclient.module.impl.combat.killaura.rotation.impl.IntaveRotation;
+import me.hackclient.module.impl.combat.killaura.rotation.impl.TestRotation;
 import me.hackclient.module.impl.combat.killaura.rotation.impl.VanillaRotation;
 import me.hackclient.module.impl.visual.Animations;
 import me.hackclient.settings.impl.BooleanSetting;
@@ -44,6 +45,7 @@ public class KillAura extends Module {
             "Intave",
             new String[] {
                     "Vanilla",
+                    "Test",
                     "Intave"
             }
     );
@@ -87,7 +89,8 @@ public class KillAura extends Module {
             motionEvent.setPitch(Rotation.getServerRotation().getPitch());
 
             KillAuraRotation rotation = switch (rotationMode.getMode()) {
-                case "Vanilla" -> new VanillaRotation(); // TODO: Написать ванила ротацию
+                case "Test" -> new TestRotation();
+                case "Vanilla" -> new VanillaRotation();
                 case "Intave" -> new IntaveRotation();
                 default -> throw new IllegalStateException("Unexpected value: " + rotationMode.getMode());
             };

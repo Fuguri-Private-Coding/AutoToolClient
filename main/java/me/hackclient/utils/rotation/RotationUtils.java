@@ -1,5 +1,6 @@
 package me.hackclient.utils.rotation;
 
+import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
@@ -18,6 +19,10 @@ public class RotationUtils implements InstanceAccess {
 	public static Vec3 getBestHitVec(AxisAlignedBB bb) {
 		Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
 		return bb.clampVecToInside(eyes);
+	}
+
+	public static Vec3 getBestHitVec(Vec3 from, AxisAlignedBB bb) {
+		return bb.clampVecToInside(from);
 	}
 
 	public static Delta getDeltaToPoint(Rotation startRotation, Vec3 needPoint) {
@@ -72,6 +77,20 @@ public class RotationUtils implements InstanceAccess {
 		return possibleRotations.stream().findFirst().orElse(null);
 	}
 
+	public static Vec3 getTestNearestRotation(Rotation rotation, AxisAlignedBB to) {
+		Rotation r = rotation.copy();
+
+		 double distance = DistanceUtils.getDistanceToVec(new Vec3(
+				 to.minX + to.getLengthX() * 0.5,
+				 to.minY + to.getLengthY() * 0.5,
+				 to.minZ + to.getLengthZ() * 0.5
+		 ));
+
+		 Vec3 rotationVec = getVectorForRotation(rotation).multiple(distance);
+
+		return getBestHitVec(rotationVec, to);
+	}
+
 	public static List<Rotation> getPossibleRotations(AxisAlignedBB box, boolean removeInvisible) {
 		List<Rotation> rotations = new ArrayList<>();
 
@@ -100,5 +119,13 @@ public class RotationUtils implements InstanceAccess {
 				MathHelper.wrapDegree(end.getYaw() - start.getYaw()),
 				end.getPitch() - start.getPitch()
 		);
+	}
+
+	public static Vec3 getVectorForRotation(Rotation rotation) {
+		float f = MathHelper.cos(-rotation.getYaw() * 0.017453292F - (float)Math.PI);
+		float f1 = MathHelper.sin(-rotation.getYaw() * 0.017453292F - (float)Math.PI);
+		float f2 = -MathHelper.cos(-rotation.getPitch() * 0.017453292F);
+		float f3 = MathHelper.sin(-rotation.getPitch() * 0.017453292F);
+		return new Vec3(f1 * f2, f3, f * f2);
 	}
 }

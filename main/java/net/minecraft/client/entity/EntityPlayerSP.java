@@ -6,6 +6,7 @@ import me.hackclient.Client;
 import me.hackclient.event.events.MotionEvent;
 import me.hackclient.event.events.SprintEvent;
 import me.hackclient.event.events.UpdateEvent;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.client.Minecraft;
@@ -87,7 +88,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
     public float timeInPortal;
     public float prevTimeInPortal;
     public int serverSlot;
-    public boolean canceling;
+    public boolean test;
 
     public static boolean forceSprint;
 
@@ -680,6 +681,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double)this.width * 0.35D);
         boolean flag3 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
 
+        float prevMoveForward = 0;
+        if (test) {
+            prevMoveForward = movementInput.moveForward;
+            movementInput.moveForward = 0.0f;
+        }
+
         if (onGround && !flag1 && !flag2 && movementInput.moveForward >= f && !isSprinting() && flag3 && !isUsingItem() && !isPotionActive(Potion.blindness))
         {
             if (sprintToggleTimer <= 0 && !mc.gameSettings.keyBindSprint.isKeyDown()) {
@@ -696,6 +703,11 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
         if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3)) {
             this.setSprinting(false);
+        }
+
+        if (test) {
+            movementInput.moveForward = prevMoveForward;
+            test = false;
         }
 
         Client.INSTANCE.getObjectsCaller().onEvent(new SprintEvent());
