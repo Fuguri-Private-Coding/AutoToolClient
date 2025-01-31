@@ -11,22 +11,18 @@ import me.hackclient.module.impl.connection.Ping;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
-import me.hackclient.utils.predict.PlayerInfo;
-import me.hackclient.utils.predict.SimulatedPlayer;
 import me.hackclient.utils.rotation.RayCastUtils;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.Vec3;
-
-import java.io.IOException;
 
 @ModuleInfo(name = "TimerRangeV2", category = Category.COMBAT)
 public class TimerRangeV2 extends Module {
 
     FloatSetting startDistance = new FloatSetting("StartDistance", this, 3.1f, 10.0f, 3.6f, 0.1f);
     IntegerSetting limitTicks = new IntegerSetting("Ticks", this, 1, 10, 2);
+    IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 1, 10, 2);
     BooleanSetting debug = new BooleanSetting("Debug", this, true);
+    BooleanSetting onlyPing = new BooleanSetting("OnlyPing", this, true);
 
     boolean teleporting;
     double balance;
@@ -34,9 +30,7 @@ public class TimerRangeV2 extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-
-        if (teleporting)
-            return;
+        if (teleporting) { return; }
 
         if (balance > 0) {
             if (event instanceof TickEvent tickEvent) {
@@ -55,6 +49,9 @@ public class TimerRangeV2 extends Module {
             if (target == null) { return; }
             if (RayCastUtils.raycastEntity(3, entity -> true) == target) { return; }
             if (RayCastUtils.raycastEntity(startDistance.getValue(), entity -> true) != target) { return; }
+            if (onlyPing.isToggled() && mm.getModule(Ping.class).packetBuffer.isEmpty()) { return; }
+            if (target.hurtTime > maxTargetHurtTime.getValue()) { return; }
+            if (mc.thePlayer.moveForward <= 0) return;
 
             teleporting = true; // Нужно для того чтобы в TimerRangeV2 не использовались никакие евенты в время телепорта, а в других модулях все евенты будут работать
 
@@ -65,19 +62,18 @@ public class TimerRangeV2 extends Module {
                 if (debug.isToggled() && RayCastUtils.raycastEntity(startDistance.getValue(), entity -> true) != target
                 && RayCastUtils.raycastEntity(6, entity -> true) == target) {
                     double distance = mc.thePlayer.getPositionEyes(1.0f).distanceTo(mc.objectMouseOver.hitVec);
-                    ClientUtils.chatLog("distance = " + String.format("%.3f", distance) + " at tick " + balance);
+                    ClientUtils.chatLog("Distance = " + String.format("%.3f", distance) + " at tick " + balance);
                 }
 
                 if (RayCastUtils.raycastEntity(3, entity -> true) == target) {
                     Client.INSTANCE.getClickManager().addClick();
                     if (debug.isToggled()) {
                         double distance = mc.thePlayer.getPositionEyes(1.0f).distanceTo(mc.objectMouseOver.hitVec);
-                        ClientUtils.chatLog("ended teleport at " + String.format("%.3f", distance));
+                        ClientUtils.chatLog("Ended teleport at " + String.format("%.3f", distance));
                     }
                     break;
                 }
             }
-
             teleporting = false;
         }
     }

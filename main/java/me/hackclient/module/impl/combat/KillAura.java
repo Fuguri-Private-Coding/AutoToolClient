@@ -48,6 +48,9 @@ public class KillAura extends Module {
             }
     );
 
+    final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 0, 20, 17);
+    final IntegerSetting maxCPS = new IntegerSetting("MaxCPS", this, 0, 20, 17);
+
     final IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 0, 180, 90);
     final IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 0, 180, 30);
 
@@ -73,7 +76,8 @@ public class KillAura extends Module {
         Animations.setAnimate(combatManager.getTarget() != null);
         if (combatManager.getTarget() == null) { return; }
         if (event instanceof RunGameLoopEvent) {
-            if (stopWatch.reachedMS() >= 1000 / 17) {
+            int randomizeCPS = RandomUtils.nextInt(minCPS.getValue(), maxCPS.getValue());
+            if (stopWatch.reachedMS() >= 1000 / randomizeCPS) {
                 Client.INSTANCE.getClickManager().addClick();
                 stopWatch.reset();
             }
