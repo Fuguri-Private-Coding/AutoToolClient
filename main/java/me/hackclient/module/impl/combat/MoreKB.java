@@ -24,28 +24,24 @@ import org.w3c.dom.Entity;
 )
 public class MoreKB extends Module {
 
-    final StopWatch stopWatch;
-
-    final IntegerSetting delayTime = new IntegerSetting("Delay", this, 0, 500, 300);
-
     final ModeSetting mode = new ModeSetting(
             "Mode",
             this,
             "LegitFast",
             new String[] {
-                    "Legit",
-                    "LegitBack",
-                    "LegitFast",
-                    "LegitSneak",
-                    "LegitBlock",
+                    "WTap",
+                    "STap",
+                    "SprintReset",
+                    "SneakTap",
+                    "BlockHit",
                     "Custom"
             }
     );
 
-    final IntegerSetting minDelay = new IntegerSetting("MinTickDelayAfterHit", this, 0, 10, 3);
-    final IntegerSetting maxDelay = new IntegerSetting("MaxTickDelayAfterHit", this, 0, 10, 3);
-    final IntegerSetting minReset = new IntegerSetting("MinTickResetDuration", this, 0, 10, 1);
-    final IntegerSetting maxReset = new IntegerSetting("MaxTickResetDuration", this, 0, 10, 1);
+    final IntegerSetting minDelay = new IntegerSetting("MinDelayAfterHit", this, 0, 10, 3);
+    final IntegerSetting maxDelay = new IntegerSetting("MaxDelayAfterHit", this, 0, 10, 3);
+    final IntegerSetting minReset = new IntegerSetting("MinResetDuration", this, 0, 10, 1);
+    final IntegerSetting maxReset = new IntegerSetting("MaxResetDuration", this, 0, 10, 1);
 
     final ModeSetting customEventSettings = new ModeSetting(
             "CustomEventMode",
@@ -66,20 +62,17 @@ public class MoreKB extends Module {
             .add("Packet START_SPRINTING");
 
 
-    public MoreKB() {
-        stopWatch = new StopWatch();
-    }
-
     int delay, reset;
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-
-        if (event instanceof AttackEvent && stopWatch.reachedMS() >= delayTime.getValue()) {
-            stopWatch.reset();
-            delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
-            reset = RandomUtils.nextInt(minReset.getValue(), maxReset.getValue());
+        if (event instanceof TickEvent) {
+            EntityLivingBase target = Client.INSTANCE.getCombatManager().getTargetOrSelectedEntity();
+            if (target != null && target.hurtTime == 10) {
+                delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
+                reset = RandomUtils.nextInt(minReset.getValue(), maxReset.getValue());
+            }
         }
 
         if (delay > 0) {
@@ -90,6 +83,42 @@ public class MoreKB extends Module {
         if (reset == 0) return;
 
         switch (mode.getMode()) {
+            case "WTap" -> {
+                if (event instanceof MoveEvent moveEvent) {
+                    moveEvent.setForward(0.0f);
+                }
+            }
+
+            case "STap" -> {
+                if (event instanceof MoveEvent moveEvent) {
+                    moveEvent.setForward(-1.0f);
+                }
+            }
+
+            case "SprintReset" -> {
+                if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
+                    mc.thePlayer.setSprinting(false);
+                }
+            }
+
+            case "SneakTap" -> {
+                if (event instanceof MoveButtonEvent moveButtonEvent) {
+                    moveButtonEvent.setSneak(true);
+                }
+            }
+
+            case "BlockHit" -> {
+                if (mc.thePlayer.getHeldItem() == null)
+                    break;
+
+                if (!(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword))
+                    break;
+
+                if (event instanceof RunGameLoopEvent) {
+                    KeyBinding.onTick(mc.gameSettings.keyBindUseItem.getKeyCode());
+                }
+            }
+
             case "Custom" -> {
                 if (!mc.thePlayer.isSprinting()) break;
                 switch (customEventSettings.getMode()) {
@@ -108,43 +137,6 @@ public class MoreKB extends Module {
                             handleCustomReset();
                         }
                     }
-                }
-            }
-
-            case "Legit" -> {
-                if (event instanceof MoveEvent moveEvent) {
-                    moveEvent.setForward(0f);
-                }
-            }
-
-            case "LegitBack" -> {
-                if (event instanceof MoveButtonEvent moveButtonEvent) {
-                    moveButtonEvent.setForward(false);
-                    moveButtonEvent.setBack(true);
-                }
-            }
-
-            case "LegitFast" -> {
-                if (event instanceof TickEvent) {
-                    mc.thePlayer.test = true;
-                }
-            }
-
-            case "LegitSneak" -> {
-                if (event instanceof MoveButtonEvent moveButtonEvent) {
-                    moveButtonEvent.setSneak(true);
-                }
-            }
-
-            case "LegitBlock" -> {
-                if (mc.thePlayer.getHeldItem() == null)
-                    break;
-
-                if (!(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword))
-                    break;
-
-                if (event instanceof RunGameLoopEvent) {
-                    KeyBinding.onTick(mc.gameSettings.keyBindUseItem.getKeyCode());
                 }
             }
         }

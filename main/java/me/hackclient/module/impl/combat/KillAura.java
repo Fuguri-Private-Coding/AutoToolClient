@@ -77,7 +77,7 @@ public class KillAura extends Module {
         }
         Animations.setAnimate(combatManager.getTarget() != null);
         if (combatManager.getTarget() == null) { return; }
-        if (event instanceof RunGameLoopEvent) {
+        if (event instanceof RunGameLoopEvent && mc.currentScreen == null) {
             int randomizeCPS = RandomUtils.nextInt(minCPS.getValue(), maxCPS.getValue());
             if (stopWatch.reachedMS() >= 1000 / randomizeCPS) {
                 Client.INSTANCE.getClickManager().addClick();

@@ -1339,7 +1339,7 @@ public class GameSettings
     public void setSoundLevel(SoundCategory sndCategory, float soundLevel)
     {
         this.mc.getSoundHandler().setSoundLevel(sndCategory, soundLevel);
-        this.mapSoundLevels.put(sndCategory, Float.valueOf(soundLevel));
+        this.mapSoundLevels.put(sndCategory, soundLevel);
     }
 
     public void sendSettingsToServer()
