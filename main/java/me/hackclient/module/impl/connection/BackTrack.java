@@ -4,18 +4,17 @@ import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.PacketDirection;
 import me.hackclient.event.callable.ConditionCallableObject;
-import me.hackclient.event.events.PacketEvent;
-import me.hackclient.event.events.Render3DEvent;
-import me.hackclient.event.events.RunGameLoopEvent;
-import me.hackclient.event.events.TickEvent;
+import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.module.impl.misc.ClientHandler;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.Utils;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.interfaces.InstanceAccess;
@@ -24,7 +23,11 @@ import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
+import net.minecraft.network.handshake.client.C00Handshake;
+import net.minecraft.network.login.client.C00PacketLoginStart;
 import net.minecraft.network.play.server.*;
+import net.minecraft.network.status.client.C00PacketServerQuery;
+import net.minecraft.network.status.server.S01PacketPong;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 
@@ -67,6 +70,9 @@ public class BackTrack extends Module {
         if (event instanceof TickEvent && target != null) {
             delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
         }
+        if (event instanceof AttackEvent && mode.getMode().equals("LagBased")) {
+            resetPackets();
+        }
         if (event instanceof PacketEvent packetEvent) {
             if (target == null) { return; }
 
@@ -77,10 +83,20 @@ public class BackTrack extends Module {
                 return;
             }
 
+            //if (packet instanceof C00Handshake || packet instanceof C00PacketServerQuery || packet instanceof S02PacketChat || packet instanceof S01PacketPong) {
+            //    return;
+            //}
+
+            if (packet instanceof S13PacketDestroyEntities) {
+                resetPackets();
+                return;
+            }
+
+
             switch (mode.getMode()) {
                 case "Classic" -> {
                     if (isValidPacket(packet) && packetEvent.getDirection() == PacketDirection.INCOMING) {
-                        PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, packetEvent.getSendTime()));
+                        ClientHandler.PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
                     }
                 }
                 case "Ping" -> {
@@ -88,14 +104,20 @@ public class BackTrack extends Module {
                         return;
 
                     // Отменяет все принимаемые пакеты, более легитно с сервер сайда
-                    PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, packetEvent.getSendTime()));
+                    ClientHandler.PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
                 }
                 case "LagBased" -> {
                     // Отменяет вообще все пакеты, самый легитный вариант
                     if (packetEvent.getDirection() == PacketDirection.OUTGOING) {
-                        PacketHandler.clientPacketBuffer.add(new Doubles<>(packet, packetEvent.getSendTime()));
+                        ClientHandler.PacketHandler.clientPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
                     } else if (packetEvent.getDirection() == PacketDirection.INCOMING) {
-                        PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, packetEvent.getSendTime()));
+                        if (packet instanceof S14PacketEntity
+                                || packet instanceof S18PacketEntityTeleport
+                                || packet instanceof S19PacketEntityHeadLook
+                                || packet instanceof S0FPacketSpawnMob
+                                || packet instanceof S08PacketPlayerPosLook) {
+                            ClientHandler.PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
+                        }
                     }
                 }
             }
@@ -107,19 +129,29 @@ public class BackTrack extends Module {
                 return;
             }
 
-            double distance = DistanceUtils.getDistanceToVec(new Vec3(target.realX / 32, target.realY / 32, target.realZ / 32));
-            if (distance < minDistance.getValue() || distance > maxDistance.getValue()) {
+            double distance = DistanceUtils.getDistanceToVec(new Vec3(target.realX / 32, target.realY / 32 + target.getEyeHeight(), target.realZ / 32));
+            if (distance < minDistance.getValue() || distance > maxDistance.getValue() || distance < DistanceUtils.getDistanceToVec(target.getPositionEyes(1.0f))) {
                 resetPackets();
                 return;
             }
 
-            PacketHandler.serverPacketBuffer.forEach(p -> {
+            ClientHandler.PacketHandler.serverPacketBuffer.forEach(p -> {
                 if (System.currentTimeMillis() - p.getSecond() >= delay) {
                     try {
                         p.getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
+                        ClientHandler.PacketHandler.serverPacketBuffer.remove(p);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
-                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> {
+                if (System.currentTimeMillis() - p.getSecond() >= delay) {
+                    try {
+                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(p.getFirst());
+                        ClientHandler.PacketHandler.clientPacketBuffer.remove(p);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
                 }
             });
@@ -158,55 +190,10 @@ public class BackTrack extends Module {
 
     void resetPackets() {
         switch (mode.getMode()) {
-            case "Classic", "Ping" -> {
-                PacketHandler.serverPacketBuffer.forEach(p -> {
-                    try {
-                        p.getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                });
-                PacketHandler.serverPacketBuffer.clear();
-            }
+            case "Classic", "Ping" -> ClientHandler.PacketHandler.resetServerPackets();
             case "LagBased" -> {
-                PacketHandler.serverPacketBuffer.forEach(p -> {
-                    try {
-                        p.getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                });
-                PacketHandler.clientPacketBuffer.forEach(p -> {
-                    mc.getNetHandler().getNetworkManager().sendPacketNoEvent(p.getFirst());
-                });
-                PacketHandler.serverPacketBuffer.clear();
-            }
-        }
-    }
-
-    static class PositionResolver implements InstanceAccess, ConditionCallableObject {
-
-        @Override
-        public boolean handleEvents() {
-            return Utils.isWorldLoaded();
-        }
-
-        @Override
-        public void onEvent(Event event) {
-            if (event instanceof PacketEvent packetEvent) {
-                Packet packet = packetEvent.getPacket();
-                if (packet instanceof S14PacketEntity s14 && s14.getEntity(mc.theWorld) instanceof EntityLivingBase entityLivingBase) {
-                    entityLivingBase.realX += s14.getPositionX();
-                    entityLivingBase.realY += s14.getPositionY();
-                    entityLivingBase.realZ += s14.getPositionZ();
-                }
-                if (packet instanceof S18PacketEntityTeleport s18 && mc.theWorld.getEntityByID(s18.getEntityId()) instanceof EntityLivingBase entityLivingBase) {
-                    entityLivingBase.realX = s18.getX();
-                    entityLivingBase.realY = s18.getY();
-                    entityLivingBase.realZ = s18.getZ();
-                }
+                ClientHandler.PacketHandler.resetClientPackets();
+                ClientHandler.PacketHandler.resetServerPackets();
             }
         }
     }
@@ -229,5 +216,32 @@ public class BackTrack extends Module {
                 || packet instanceof S19PacketEntityHeadLook
                 || packet instanceof S0FPacketSpawnMob
                 || packet instanceof S08PacketPlayerPosLook;
+    }
+
+    static class PositionResolver implements InstanceAccess, ConditionCallableObject {
+
+        { callables.add(this); }
+
+        @Override
+        public boolean handleEvents() {
+            return Utils.isWorldLoaded();
+        }
+
+        @Override
+        public void onEvent(Event event) {
+            if (event instanceof PacketEvent packetEvent) {
+                Packet packet = packetEvent.getPacket();
+                if (packet instanceof S14PacketEntity s14 && s14.getEntity(mc.theWorld) instanceof EntityLivingBase entityLivingBase) {
+                    entityLivingBase.realX += s14.getPositionX();
+                    entityLivingBase.realY += s14.getPositionY();
+                    entityLivingBase.realZ += s14.getPositionZ();
+                }
+                if (packet instanceof S18PacketEntityTeleport s18 && mc.theWorld.getEntityByID(s18.getEntityId()) instanceof EntityLivingBase entityLivingBase) {
+                    entityLivingBase.realX = s18.getX();
+                    entityLivingBase.realY = s18.getY();
+                    entityLivingBase.realZ = s18.getZ();
+                }
+            }
+        }
     }
 }

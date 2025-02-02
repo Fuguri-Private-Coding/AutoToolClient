@@ -13,7 +13,8 @@ public enum SoundCategory
     MOBS("hostile", 5),
     ANIMALS("neutral", 6),
     PLAYERS("player", 7),
-    AMBIENT("ambient", 8);
+    AMBIENT("ambient", 8),
+    CLIENT("client", 9);
 
     private static final Map<String, SoundCategory> NAME_CATEGORY_MAP = Maps.<String, SoundCategory>newHashMap();
     private static final Map<Integer, SoundCategory> ID_CATEGORY_MAP = Maps.<Integer, SoundCategory>newHashMap();

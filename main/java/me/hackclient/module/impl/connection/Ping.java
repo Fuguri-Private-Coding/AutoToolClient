@@ -6,6 +6,7 @@ import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.module.impl.misc.ClientHandler;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.utils.doubles.Doubles;
@@ -67,6 +68,12 @@ public class Ping extends Module {
 	}
 
 	@Override
+	public void onDisable() {
+		super.onDisable();
+		resetPackets();
+	}
+
+	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
 		if (mc.isSingleplayer())
@@ -120,17 +127,17 @@ public class Ping extends Module {
 
 			if (!recoilStopWatch.reachedMS(recoilDelay))
 				return;
-
+ 
 			if (packetEvent.getDirection() == PacketDirection.OUTGOING) {
-				PacketHandler.clientPacketBuffer.add(new Doubles<>(packet, packetEvent.getSendTime()));
+				ClientHandler.PacketHandler.clientPacketBuffer.add(new Doubles<>(packet, packetEvent.getSendTime()));
 				packetEvent.setCanceled(true);
 			}
 		}
 		if (event instanceof RunGameLoopEvent) {
-			PacketHandler.clientPacketBuffer.forEach(p -> {
+			ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> {
 				if (System.currentTimeMillis() - p.getSecond() >= (long) outDelay) {
 					mc.getNetHandler().getNetworkManager().sendPacketNoEvent(p.getFirst());
-					PacketHandler.clientPacketBuffer.remove(p);
+					ClientHandler.PacketHandler.clientPacketBuffer.remove(p);
 				}
 			});
 		}
@@ -153,10 +160,10 @@ public class Ping extends Module {
 	}
 
 	void resetPackets() {
-		PacketHandler.clientPacketBuffer.forEach(p -> sendPacket(new Doubles<>(p.getFirst(), PacketDirection.OUTGOING)));
-		//PacketHandler.serverPacketBuffer.forEach(p -> sendPacket(new Doubles<>(p.getFirst(), PacketDirection.INCOMING)));
-		PacketHandler.clientPacketBuffer.clear();
-		//PacketHandler.serverPacketBuffer.clear();
+		ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> sendPacket(new Doubles<>(p.getFirst(), PacketDirection.OUTGOING)));
+		//ClientHandler.PacketHandler.serverPacketBuffer.forEach(p -> sendPacket(new Doubles<>(p.getFirst(), PacketDirection.INCOMING)));
+		ClientHandler.PacketHandler.clientPacketBuffer.clear();
+		//ClientHandler.PacketHandler.serverPacketBuffer.clear();
 
 		outDelay = RandomUtils.nextInt(minOutDelay.getValue(), maxOutDelay.getValue());
 	}

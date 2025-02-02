@@ -4,6 +4,7 @@ import me.hackclient.Client;
 import me.hackclient.combatmanager.CombatManager;
 import me.hackclient.combatmanager.TargetFinder;
 import me.hackclient.event.Event;
+import me.hackclient.event.events.MotionEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.event.events.UpdateEvent;
@@ -34,10 +35,7 @@ public class LagRange extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof UpdateEvent) {
-            Client.INSTANCE.getCombatManager().setTarget(TargetFinder.findTarget(6.0, true, false, false));
-        }
-        if (event instanceof TickEvent) {
+        if (event instanceof MotionEvent) {
             if (!needTeleport()) return;
 
             try {

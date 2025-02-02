@@ -8,6 +8,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
 import me.hackclient.utils.rotation.Delta;
@@ -16,7 +17,9 @@ import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -63,17 +66,31 @@ public class Scaffold extends Module {
     public void onDisable() {
         super.onDisable();
         placedBlocks = 0;
+        mc.thePlayer.inventory.currentItem = lastSlot;
     }
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof MoveButtonEvent moveButtonEvent && saveWalk.isToggled()) {
-            if (placedBlocks == 0 && mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1, mc.thePlayer.posZ))) {
+            if (placedBlocks == 0 && mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1, mc.thePlayer.posZ)) || mc.thePlayer.inventory.getCurrentItem() == null) {
                 moveButtonEvent.setSneak(true);
             }
+            if (mc.thePlayer.inventory.getCurrentItem() == null) {
+                ClientUtils.chatLog("ДИБИЛ У ТЕБЯ РУКА ПУСТАЯ НАСРИ ТУДА ");
+            }
         }
-        if (event instanceof DrawBlockHighlightEvent) {
+        if (event instanceof LegitClickTimingEvent) {
+            if (mc.thePlayer.inventory.getCurrentItem() != null && !(mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock)) {
+                int slot = findBlock();
+
+                if (slot == -1)
+                    return;
+
+                lastSlot = mc.thePlayer.inventory.currentItem;
+                mc.thePlayer.inventory.currentItem = slot;
+            }
+
             if (mc.currentScreen != null)
                 return;
 
@@ -97,7 +114,7 @@ public class Scaffold extends Module {
             if (blockPos == null || pos.getX() != blockPos.getX() || pos.getY() != blockPos.getY() || pos.getZ() != blockPos.getZ()) {
                 Block block = mc.theWorld.getBlockState(pos).getBlock();
                 if (block != null && block != Blocks.air && !(block instanceof BlockLiquid)) {
-                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25)  {
+                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec))  {
                         mc.rightClickMouse();
                         if (swingItem.isToggled()) {
                             mc.thePlayer.swingItem();
@@ -116,6 +133,19 @@ public class Scaffold extends Module {
                     (float) MathHelper.wrapDegree(Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw)) + 180),
                     mc.thePlayer.rotationPitch
             );
+
+            boolean moveDiagonal;
+
+            int xzKakNazvat = Math.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw) / 45f);
+
+            moveDiagonal = xzKakNazvat != 0 && xzKakNazvat % 2 != 0;
+
+            if (!moveDiagonal) {
+                playerRotation.setYaw(
+                        MathHelper.wrapDegree(playerRotation.getYaw() + 45)
+                );
+            }
+
             Rotation nearest = Arrays.stream(bestGodbrigdeRotations).min(Comparator.comparing(rotation -> RotationUtils.getDelta(playerRotation, rotation).hypot())).orElse(null);
             if (nearest == null) { return; }
 
@@ -166,4 +196,19 @@ public class Scaffold extends Module {
             UpdateBodyRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
         }
     }
+
+    int findBlock() {
+        int bestSlot = -1;
+        int bestCount = 0;
+
+        for (int i = 0; i < 9; i++) {
+            ItemStack item = mc.thePlayer.inventory.mainInventory[i];
+            if (item == null || !(item.getItem() instanceof ItemBlock) || item.stackSize <= bestCount) continue;
+            bestSlot = i;
+            bestCount = item.stackSize;
+        }
+
+        return bestSlot;
+    }
+
 }

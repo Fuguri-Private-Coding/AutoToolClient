@@ -90,13 +90,14 @@ public enum Client implements CallableObject {
 	}
 
 	public String getChangeLog() {
-		StringBuilder builder = new StringBuilder();
-
-		builder .append("\n Added changelog")
-				.append("\n Recoded Ping")
-				.append("\n Recoded TimerRangeV2");
-
-		return builder.toString();
+		return """
+				Added changelog
+				Recoded Ping
+				Recoded BackTrack
+				Added ClickSettings
+				Added KBLagger (test)
+				Recoded TimerRangeV2
+				""";
 	}
 
 	public void onClose() {

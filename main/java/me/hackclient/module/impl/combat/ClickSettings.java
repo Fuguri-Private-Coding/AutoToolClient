@@ -12,15 +12,11 @@ import me.hackclient.settings.impl.IntegerSetting;
 )
 public class ClickSettings extends Module {
 
-    public IntegerSetting maxStartHurtTime = new IntegerSetting("MaxStartHurtTime", this, 0, 10, 3);
-    public IntegerSetting minStartHurtTime = new IntegerSetting("MinStartHurtTime", this, 0, 10, 3);
-    public IntegerSetting maxEndHurtTime = new IntegerSetting("MaxEndHurtTime", this, 0, 10, 7);
-    public IntegerSetting minEndHurtTime = new IntegerSetting("MinEndHurtTime", this, 0, 10, 7);
 
-    @Override
-    public boolean handleEvents() {
-        return mc.thePlayer != null && mc.theWorld != null;
-    }
+    public final IntegerSetting maxStartHurtTime = new IntegerSetting("MaxStartHurtTime", this, 0, 10, 3);
+    public final IntegerSetting minStartHurtTime = new IntegerSetting("MinStartHurtTime", this, 0, 10, 3);
+    public final IntegerSetting maxEndHurtTime = new IntegerSetting("MaxEndHurtTime", this, 0, 10, 7);
+    public final IntegerSetting minEndHurtTime = new IntegerSetting("MinEndHurtTime", this, 0, 10, 7);
 
     @Override
     public boolean isToggled() { return true; }

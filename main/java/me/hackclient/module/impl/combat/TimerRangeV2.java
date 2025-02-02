@@ -14,6 +14,7 @@ import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.network.play.client.C0APacketAnimation;
 
 @ModuleInfo(name = "TimerRangeV2", category = Category.COMBAT)
 public class TimerRangeV2 extends Module {
@@ -21,6 +22,7 @@ public class TimerRangeV2 extends Module {
     FloatSetting startDistance = new FloatSetting("StartDistance", this, 3.1f, 10.0f, 3.6f, 0.1f);
     IntegerSetting limitTicks = new IntegerSetting("Ticks", this, 1, 10, 2);
     IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 1, 10, 2);
+    BooleanSetting LegitClick = new BooleanSetting("LegitClick", this, false);
     BooleanSetting debug = new BooleanSetting("Debug", this, true);
     BooleanSetting onlyPing = new BooleanSetting("OnlyPing", this, true);
 
@@ -66,7 +68,12 @@ public class TimerRangeV2 extends Module {
                 }
 
                 if (RayCastUtils.raycastEntity(3, entity -> true) == target) {
-                    Client.INSTANCE.getClickManager().addClick();
+                    if (LegitClick.isToggled()) {
+                        Client.INSTANCE.getClickManager().addClick();
+                    } else {
+                        mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+                        mc.playerController.attackEntity(mc.thePlayer, target);
+                    }
                     if (debug.isToggled()) {
                         double distance = mc.thePlayer.getPositionEyes(1.0f).distanceTo(mc.objectMouseOver.hitVec);
                         ClientUtils.chatLog("Ended teleport at " + String.format("%.3f", distance));
