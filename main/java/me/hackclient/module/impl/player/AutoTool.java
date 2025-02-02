@@ -47,13 +47,19 @@ public class AutoTool extends Module {
     }
 
     int getBestSlot(BlockPos blockPos) {
-        float bestEff = 0;
-        int bestSlot = -1;
+        float bestEff = mc.thePlayer.inventory.getCurrentItem() != null ? mc.thePlayer.inventory.getCurrentItem().getStrVsBlock(mc.theWorld.getBlockState(blockPos).getBlock()) : 0.0f;
+        int bestSlot = mc.thePlayer.inventory.currentItem;
         for (int i = 0; i < 9; i++) {
             ItemStack item = mc.thePlayer.inventory.mainInventory[i];
+
             if (item == null) { continue; }
+
             float eff = item.getStrVsBlock(mc.theWorld.getBlockState(blockPos).getBlock());
-            if (eff <= bestEff) { continue; }
+
+            if (eff <= bestEff) {
+                continue;
+            }
+
             bestEff = eff;
             bestSlot = i;
         }

@@ -1,5 +1,6 @@
 package me.hackclient.module.impl.player;
 
+import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
@@ -76,57 +77,6 @@ public class Scaffold extends Module {
             if (placedBlocks == 0 && mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1, mc.thePlayer.posZ)) || mc.thePlayer.inventory.getCurrentItem() == null) {
                 moveButtonEvent.setSneak(true);
             }
-            if (mc.thePlayer.inventory.getCurrentItem() == null) {
-                ClientUtils.chatLog("ДИБИЛ У ТЕБЯ РУКА ПУСТАЯ НАСРИ ТУДА ");
-            }
-        }
-        if (event instanceof LegitClickTimingEvent) {
-            if (mc.thePlayer.inventory.getCurrentItem() != null && !(mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock)) {
-                int slot = findBlock();
-
-                if (slot == -1)
-                    return;
-
-                lastSlot = mc.thePlayer.inventory.currentItem;
-                mc.thePlayer.inventory.currentItem = slot;
-            }
-
-            if (mc.currentScreen != null)
-                return;
-
-            ItemStack stack = mc.thePlayer.getHeldItem();
-
-            if (stack == null)
-                return;
-
-            if (!(stack.getItem() instanceof ItemBlock))
-                return;
-
-            MovingObjectPosition mouse = mc.objectMouseOver;
-
-            if (mouse == null
-                    || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                    || ((mouse.sideHit == EnumFacing.UP || mouse.sideHit == EnumFacing.DOWN)) && placeOnlyHorizontal.isToggled()) {
-                return;
-            }
-
-            BlockPos pos = mouse.getBlockPos();
-            if (blockPos == null || pos.getX() != blockPos.getX() || pos.getY() != blockPos.getY() || pos.getZ() != blockPos.getZ()) {
-                Block block = mc.theWorld.getBlockState(pos).getBlock();
-                if (block != null && block != Blocks.air && !(block instanceof BlockLiquid)) {
-                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec))  {
-                        mc.rightClickMouse();
-                        if (swingItem.isToggled()) {
-                            mc.thePlayer.swingItem();
-                            mc.getItemRenderer().resetEquippedProgress();
-                            mc.rightClickMouse();
-                        }
-                        blockPos = pos;
-                        lastTime = System.currentTimeMillis();
-                        placedBlocks++;
-                    }
-                }
-            }
         }
         if (event instanceof TickEvent) {
             Rotation playerRotation = new Rotation(
@@ -134,13 +84,9 @@ public class Scaffold extends Module {
                     mc.thePlayer.rotationPitch
             );
 
-            boolean moveDiagonal;
-
             int xzKakNazvat = Math.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw) / 45f);
 
-            moveDiagonal = xzKakNazvat != 0 && xzKakNazvat % 2 != 0;
-
-            if (!moveDiagonal) {
+            if (xzKakNazvat % 2 == 0) {
                 playerRotation.setYaw(
                         MathHelper.wrapDegree(playerRotation.getYaw() + 45)
                 );
@@ -168,6 +114,61 @@ public class Scaffold extends Module {
                     )
             );
         }
+        if (event instanceof LegitClickTimingEvent) {
+            if (mc.thePlayer.inventory.getCurrentItem() == null || !(mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock)) {
+                int slot = findBlock();
+
+                if (slot == -1)
+                    return;
+
+                lastSlot = mc.thePlayer.inventory.currentItem;
+                mc.thePlayer.inventory.currentItem = slot;
+            }
+        }
+        if (event instanceof MoveFlyingEvent moveFlyingEvent) {
+            moveFlyingEvent.setCanceled(true);
+            MoveUtils.silentMoveFix(moveFlyingEvent);
+
+            if (mc.currentScreen != null)
+                return;
+
+            ItemStack stack = mc.thePlayer.getHeldItem();
+
+            if (stack == null)
+                return;
+
+            if (!(stack.getItem() instanceof ItemBlock))
+                return;
+
+            MovingObjectPosition mouse = mc.objectMouseOver;
+
+            if (mouse == null
+                    || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+                    || ((mouse.sideHit == EnumFacing.UP || mouse.sideHit == EnumFacing.DOWN)) && placeOnlyHorizontal.isToggled()) {
+                return;
+            }
+
+            ClientUtils.chatLog(mouse.sideHit.toString());
+            ClientUtils.chatLog(Rotation.getServerRotation().getPitch());
+
+            BlockPos pos = mouse.getBlockPos();
+            if (blockPos == null || pos.getX() != blockPos.getX() || pos.getY() != blockPos.getY() || pos.getZ() != blockPos.getZ()) {
+                Block block = mc.theWorld.getBlockState(pos).getBlock();
+                if (block != null && block != Blocks.air && !(block instanceof BlockLiquid)) {
+                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec))  {
+                        mc.rightClickMouse();
+                        if (swingItem.isToggled()) {
+                            mc.thePlayer.swingItem();
+                            mc.getItemRenderer().resetEquippedProgress();
+                            mc.rightClickMouse();
+                        }
+                        blockPos = pos;
+                        lastTime = System.currentTimeMillis();
+                        placedBlocks++;
+                    }
+                }
+            }
+        }
         if (event instanceof MotionEvent motionEvent) {
             motionEvent.setYaw(Rotation.getServerRotation().getYaw());
             motionEvent.setPitch(Rotation.getServerRotation().getPitch());
@@ -175,10 +176,6 @@ public class Scaffold extends Module {
         if (event instanceof LookEvent lookEvent) {
             lookEvent.setYaw(Rotation.getServerRotation().getYaw());
             lookEvent.setPitch(Rotation.getServerRotation().getPitch());
-        }
-        if (event instanceof MoveFlyingEvent moveFlyingEvent) {
-            moveFlyingEvent.setCanceled(true);
-            MoveUtils.silentMoveFix(moveFlyingEvent);
         }
         if (event instanceof SprintEvent) {
             if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {

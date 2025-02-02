@@ -2,6 +2,7 @@ package me.hackclient.utils.rotation;
 
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.math.MathUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
@@ -60,9 +61,9 @@ public class RotationUtils implements InstanceAccess {
 	public static Delta fixDelta(Rotation delta) {
 		final float gcd = getMouseGCD();
 		return new Delta(
-				delta.getYaw() - (delta.getYaw() % gcd),
-				delta.getPitch() - (delta.getPitch() % gcd)
-		);
+                (float) MathUtils.round(delta.getYaw(), gcd),
+                (float) MathUtils.round(delta.getPitch(), gcd)
+        );
 	}
 
 	public static Rotation getNearestRotation(Rotation from, AxisAlignedBB to) {

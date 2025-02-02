@@ -152,14 +152,10 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 
         if (this.channel.isOpen())
         {
-            try
-            {
+            try {
                 p_channelRead0_2_.processPacket(this.packetListener);
             }
-            catch (ThreadQuickExitException var4)
-            {
-                ;
-            }
+            catch (ThreadQuickExitException ignored) {}
         }
     }
 

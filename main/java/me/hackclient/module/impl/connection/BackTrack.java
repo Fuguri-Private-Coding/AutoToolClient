@@ -83,21 +83,16 @@ public class BackTrack extends Module {
                 return;
             }
 
-            //if (packet instanceof C00Handshake || packet instanceof C00PacketServerQuery || packet instanceof S02PacketChat || packet instanceof S01PacketPong) {
-            //    return;
-            //}
-
-            if (packet instanceof S13PacketDestroyEntities) {
-                resetPackets();
+            if (packet instanceof C00Handshake || packet instanceof C00PacketServerQuery || packet instanceof S02PacketChat || packet instanceof S01PacketPong) {
                 return;
             }
-
 
             switch (mode.getMode()) {
                 case "Classic" -> {
                     if (isValidPacket(packet) && packetEvent.getDirection() == PacketDirection.INCOMING) {
                         ClientHandler.PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
                     }
+                    packetEvent.setCanceled(true);
                 }
                 case "Ping" -> {
                     if (packetEvent.getDirection() != PacketDirection.INCOMING)
@@ -105,6 +100,7 @@ public class BackTrack extends Module {
 
                     // Отменяет все принимаемые пакеты, более легитно с сервер сайда
                     ClientHandler.PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
+                    packetEvent.setCanceled(true);
                 }
                 case "LagBased" -> {
                     // Отменяет вообще все пакеты, самый легитный вариант
@@ -119,9 +115,9 @@ public class BackTrack extends Module {
                             ClientHandler.PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
                         }
                     }
+                    packetEvent.setCanceled(true);
                 }
             }
-            packetEvent.setCanceled(true);
         }
         if (event instanceof RunGameLoopEvent) {
             if (target == null) {
@@ -163,12 +159,12 @@ public class BackTrack extends Module {
             if (showOnlyOnTarget.isToggled() && target != null) {
                 RenderUtils.start3D();
                 RenderUtils.renderHitBox(new AxisAlignedBB(
-                        target.realX / 32 - target.width / 2,
-                        target.realY / 32 + 0,
-                        target.realZ / 32 - target.width / 2,
-                        target.realX / 32 + target.width / 2,
-                        target.realY / 32 + target.height,
-                        target.realZ / 32 + target.width / 2
+                        target.realX / 32D - target.width / 2,
+                        target.realY / 32D + 0,
+                        target.realZ / 32D - target.width / 2,
+                        target.realX / 32D + target.width / 2,
+                        target.realY / 32D + target.height,
+                        target.realZ / 32D + target.width / 2
                 ).offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ));
                 RenderUtils.stop3D();
             } else {
