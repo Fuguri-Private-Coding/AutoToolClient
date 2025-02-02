@@ -26,6 +26,7 @@ public class AutoPlace extends Module {
 
     FloatSetting frameDelay = new FloatSetting("FrameDelay", this, 0f, 10f, 0f, 1f);
     BooleanSetting needHoldRight = new BooleanSetting("HoldRight", this, true);
+    BooleanSetting swingItem = new BooleanSetting("PlayerSwingItem", this, true);
 
     @Override
     public void onEvent(Event event) {
@@ -63,9 +64,11 @@ public class AutoPlace extends Module {
                     if (!needHoldRight.isToggled() || Mouse.isButtonDown(1)) {
                         if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25)  {
                             mc.rightClickMouse();
-                            mc.thePlayer.swingItem();
-                            mc.getItemRenderer().resetEquippedProgress();
-                            mc.rightClickMouse();
+                            if (swingItem.isToggled()) {
+                                mc.thePlayer.swingItem();
+                                mc.getItemRenderer().resetEquippedProgress();
+                                mc.rightClickMouse();
+                            }
                             blockPos = pos;
                             lastTime = System.currentTimeMillis();
                             delay = 0;

@@ -15,8 +15,8 @@ import net.minecraft.util.ResourceLocation;
 import java.util.ArrayList;
 import java.util.List;
 
-@ModuleInfo(name = "ClientLogo", category = Category.VISUAL)
-public class ClientLogo extends Module {
+@ModuleInfo(name = "WaterMark", category = Category.VISUAL)
+public class WaterMark extends Module {
 
     IntegerSetting X = new IntegerSetting("X", this, 0, 10, 0);
     IntegerSetting Y = new IntegerSetting("Y", this, 0, 10, 0);

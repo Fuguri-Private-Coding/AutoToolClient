@@ -67,17 +67,9 @@ public class TargetESP extends Module {
                     double x1 = x + sin(i * Math.PI / 180) * 0.7;
                     double z1 = z + cos(i * Math.PI / 180) * 0.7;
                     double y1 = y + (animationTranslate + 1) / 2 * target.height;
-                    if (target.hurtTime > 0 && changeColorToHit.isToggled()) {
-                        glColor4f(1f, 0f, 0f, 1f);
-                    } else {
-                        glColor4f(1f, 1f, 1f, 1f);
-                    }
+                    glColor4f(1f, 1f, 1f, 1f);
                     glVertex3d(x1, y1, z1);
-                    if (target.hurtTime > 0 && changeColorToHit.isToggled()) {
-                        glColor4f(1f, 0f, 0f, 0f);
-                    } else {
-                        glColor4f(1f, 1f, 1f, 0f);
-                    }
+                    glColor4f(1f, 1f, 1f, 0f);
                     glVertex3d(x1, y1 + animationTranslate * length.getValue(), z1);
                 }
                 glEnd();

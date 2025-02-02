@@ -40,11 +40,13 @@ public class TimerRange extends Module {
     );
 
     KillAura killAura;
+    boolean teleporting;
     double balance;
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (teleporting) { return; }
         if (killAura == null) killAura = Client.INSTANCE.getModuleManager().getModule(KillAura.class);
         if (event instanceof TickEvent tickEvent) {
             if (balance > 0) {
@@ -55,6 +57,7 @@ public class TimerRange extends Module {
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
             if (target != null && mc.thePlayer.getBps(false) > 0 && killAura.isToggled() && mc.thePlayer.moveForward > 0.6) {
                 double distance = DistanceUtils.getDistanceToEntity(target);
+                teleporting = true;
                 while (RayCastUtils.raycastEntity(3, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) != target
                         && RayCastUtils.raycastEntity(startDistance.getValue(), Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entity -> true) == target
                         && target.hurtTime <= maxTargetHurtTime.getValue()) {
@@ -80,6 +83,7 @@ public class TimerRange extends Module {
                         break;
                     }
                 }
+                teleporting = false;
             }
         }
 

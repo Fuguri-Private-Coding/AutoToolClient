@@ -1,6 +1,5 @@
 package me.hackclient.module.impl.connection;
 
-import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.PacketDirection;
 import me.hackclient.event.events.*;
@@ -8,18 +7,19 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.math.RandomUtils;
-import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.timer.StopWatch;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.network.Packet;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.client.C00PacketLoginStart;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.network.status.client.C00PacketServerQuery;
@@ -51,7 +51,6 @@ public class Ping extends Module {
 			.add("Velocity")
 			.add("WorldChange")
 			.add("UsingItem")
-			//.add("")
 			;
 
 	IntegerSetting attackFlush = new IntegerSetting("AttackTime", this, () -> flushes.get("Attack"), 10, 1000, 20);
@@ -104,9 +103,19 @@ public class Ping extends Module {
 				recoilDelay = velocityFlush.getValue();
 			}
 
-			if (packet instanceof S08PacketPlayerPosLook) {
+			if (packet instanceof S08PacketPlayerPosLook && flushes.get("Teleport")) {
 				resetPackets();
 				recoilDelay = flagFlush.getValue();
+			}
+
+			if (packet instanceof C08PacketPlayerBlockPlacement && flushes.get("PlaceBlock")) {
+				resetPackets();
+				recoilDelay = blockPlaceFlush.getValue();
+			}
+
+			if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiContainer) && flushes.get("OpenedInv")) {
+				resetPackets();
+				recoilDelay = openInvFlush.getValue();
 			}
 
 			if (!recoilStopWatch.reachedMS(recoilDelay))

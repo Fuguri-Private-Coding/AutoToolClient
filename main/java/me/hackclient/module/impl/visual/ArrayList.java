@@ -36,19 +36,24 @@ public class ArrayList extends Module {
 		if (event instanceof Render2DEvent) {
 			Bloom bloomModule = mm.getModule(Bloom.class);
 			if (bloomModule.isToggled() && bloomModule.arrayList.isToggled()) {
-				List<Runnable> list = new java.util.ArrayList<>();
-				list.add(() -> {
-					int offset = 0;
-					for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
-						if (skipRenderModules.isToggled() && module.getCategory() == Category.VISUAL || module.isHide()) continue;
-						Gui.drawRect(3, 3 + offset, 6 + mc.fontRendererObj.getStringWidth(module.getName()), 5 + offset + 10, new Color(255, 255, 255, 255).getRGB());
-						offset += mc.fontRendererObj.FONT_HEIGHT + 3;
-					}
-				});
+				List<Runnable> list = getRunnables();
 				BloomUtils.drawBloom(list);
 			}
 			drawMain();
 		}
+	}
+
+	private List<Runnable> getRunnables() {
+		List<Runnable> list = new java.util.ArrayList<>();
+		list.add(() -> {
+			int offset = 0;
+			for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
+				if (skipRenderModules.isToggled() && module.getCategory() == Category.VISUAL || module.isHide()) continue;
+				Gui.drawRect(3, 3 + offset, 6 + mc.fontRendererObj.getStringWidth(module.getName()), 5 + offset + 10, new Color(255, 255, 255, 255).getRGB());
+				offset += mc.fontRendererObj.FONT_HEIGHT + 3;
+			}
+		});
+		return list;
 	}
 
 	public void drawMain() {

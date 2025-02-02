@@ -16,7 +16,7 @@ import org.lwjgl.input.Mouse;
 @ModuleInfo(name = "MidClick", category = Category.MISC, toggled = true)
 public class MidClick extends Module {
     FloatSetting range = new FloatSetting("Range", this, 3f, 1000f, 1000f, 1f);
-    public BooleanSetting reverseFriends = new BooleanSetting("ReverseFriend", this, true);
+    public BooleanSetting reverseFriends = new BooleanSetting("Reverse", this, true);
     public BooleanSetting showInName = new BooleanSetting("ShowFriendPrefixInName", this, true);
 
     boolean down;

@@ -2,6 +2,10 @@ package me.hackclient.module;
 
 import me.hackclient.module.impl.combat.*;
 import me.hackclient.module.impl.connection.*;
+import me.hackclient.module.impl.exploit.Disabler;
+import me.hackclient.module.impl.exploit.GodMode;
+import me.hackclient.module.impl.exploit.InBlocks;
+import me.hackclient.module.impl.exploit.MaxClip;
 import me.hackclient.module.impl.legit.*;
 import me.hackclient.module.impl.misc.*;
 import me.hackclient.module.impl.move.*;
@@ -39,6 +43,9 @@ public class ModuleManager {
 				 new Scaffold(),
 				 new ClientShader(),
 				 new LongJump(),
+				 new Phase(),
+				 new MaxClip(),
+				 new InBlocks(),
 				 new TestPing(),
 				 new NoSlow(),
 				 new NoWeb(),
@@ -60,11 +67,11 @@ public class ModuleManager {
 				 new FlagDetector(),
 				 new AimAssist(),
 				 new BPSCounter(),
-				 new SwagMode(),
+				 new GodMode(),
 				 new Blink(),
 				 new Animations(),
 				 new MotionBlur(),
-				 new ClientLogo(),
+				 new WaterMark(),
 				 new AutoPlace(),
 				 new NoJumpDelay(),
 				 new BackTrack(),
