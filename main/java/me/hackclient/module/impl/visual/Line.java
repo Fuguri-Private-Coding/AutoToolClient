@@ -6,6 +6,7 @@ import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.ModeSetting;
@@ -38,6 +39,7 @@ public class Line extends Module {
 
     final IntegerSetting lifeTime = new IntegerSetting("LifeTime", this, 1, 30, 5);
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 1f, 10f, 5f, 0.1f);
+    final BooleanSetting onlyThirdPerson = new BooleanSetting("OnlyThirdPerson", this, true);
 
     public Line() {
         topList = new CopyOnWriteArrayList<>();
@@ -47,6 +49,7 @@ public class Line extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (onlyThirdPerson.isToggled() && mc.gameSettings.thirdPersonView == 0) return;
         if (event instanceof Render3DEvent) {
             Vec3 smoothVec = new Vec3(
                     mc.thePlayer.lastTickPosX + (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * mc.timer.renderPartialTicks,
