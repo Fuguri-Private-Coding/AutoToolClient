@@ -5,6 +5,7 @@ import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,8 +29,12 @@ public class ESP extends Module {
             RenderUtils.start3D();
             GL11.glTranslated(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
 
-            for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
-                RenderUtils.renderHitBox(playerEntity.getEntityBoundingBox());
+            if (modes.get("Box")) {
+                for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
+                    if (!playerEntity.equals(mc.thePlayer)) {
+                        RenderUtils.renderHitBox(playerEntity.getEntityBoundingBox());
+                    }
+                }
             }
 
             GL11.glTranslated(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);

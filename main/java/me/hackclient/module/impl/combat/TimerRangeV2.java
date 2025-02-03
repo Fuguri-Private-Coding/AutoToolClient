@@ -8,6 +8,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.connection.Ping;
+import me.hackclient.module.impl.misc.ClientHandler;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
@@ -51,7 +52,7 @@ public class TimerRangeV2 extends Module {
             if (target == null) { return; }
             if (RayCastUtils.raycastEntity(3, entity -> true) == target) { return; }
             if (RayCastUtils.raycastEntity(startDistance.getValue(), entity -> true) != target) { return; }
-            //if (onlyPing.isToggled() && mm.getModule(Ping.class).packetBuffer.isEmpty()) { return; }
+            if (onlyPing.isToggled() && ClientHandler.PacketHandler.clientPacketBuffer.isEmpty()) { return; }
             if (target.hurtTime > maxTargetHurtTime.getValue()) { return; }
             if (mc.thePlayer.moveForward <= 0) return;
 

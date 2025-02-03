@@ -40,7 +40,7 @@ public class AntiFireball extends Module {
                 mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
                 mc.playerController.attackEntity(mc.thePlayer, entity);
                 stopWatch.reset();
-                ClientUtils.chatLog("УБИЛ ФАЕРБОЛ");
+                ClientUtils.chatLog("Fireball detected.");
             }
         }
     }
