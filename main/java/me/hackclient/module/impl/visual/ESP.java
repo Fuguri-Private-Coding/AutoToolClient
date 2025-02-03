@@ -5,6 +5,7 @@ import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,6 +43,9 @@ public class ESP extends Module {
                     Vec3 diff = smoothPos.subtract(playerEntity.getPositionVector());
 
                     RenderUtils.renderHitBox(playerEntity.getEntityBoundingBox().offset(diff));
+                    if (!playerEntity.equals(mc.thePlayer)) {
+                        RenderUtils.renderHitBox(playerEntity.getEntityBoundingBox());
+                    }
                 }
             }
 
