@@ -27,7 +27,7 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
     public void onEvent(Event event) {
         if (clickSettings == null) clickSettings = Client.INSTANCE.getModuleManager().getModule(ClickSettings.class);
 
-        if (event instanceof TickEvent) {
+        if (event instanceof TickEvent tickEvent && !tickEvent.isCanceled()) {
             int iters = clicks;
             clicks = 0;
 

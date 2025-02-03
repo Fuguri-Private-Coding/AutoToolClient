@@ -7,6 +7,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.misc.ClientHandler;
+import me.hackclient.utils.Utils;
 import me.hackclient.utils.doubles.Doubles;
 
 @ModuleInfo(name = "Blink", category = Category.CONNECTION)
@@ -22,7 +23,7 @@ public class Blink extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof PacketEvent packetEvent && packetEvent.getDirection() == PacketDirection.OUTGOING && !packetEvent.isCanceled()) {
+        if (event instanceof PacketEvent packetEvent && packetEvent.getDirection() == PacketDirection.OUTGOING && !packetEvent.isCanceled() && Utils.isWorldLoaded()) {
             packetEvent.setCanceled(true);
             ClientHandler.PacketHandler.clientPacketBuffer.add(new Doubles<>(packetEvent.getPacket(), packetEvent.getSendTime()));
         }

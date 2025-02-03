@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.combat.killaura.rotation.impl;
 
 import me.hackclient.module.impl.combat.killaura.rotation.KillAuraRotation;
+import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.rotation.Delta;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
@@ -8,12 +9,12 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
-public class TestRotation extends KillAuraRotation {
+public class TestRotation extends KillAuraRotation implements InstanceAccess {
 
 
     @Override
     public Rotation compute(Rotation startsFrom, EntityLivingBase target, float simpleYawSpeed, float simplePitchSpeed) {
-        Vec3 needVec = RotationUtils.getTestNearestRotation(startsFrom, target.getEntityBoundingBox()).add(getOffset());
+        Vec3 needVec = RotationUtils.getBestHitVec(target).add(getOffset()).add(new Vec3(target.realX / 32, target.realY / 32, target.realZ / 32).subtract(target.getPositionVector()));
         Delta delta = RotationUtils.getDeltaToPoint(startsFrom, needVec);
 
         delta.setYaw(MathHelper.clamp(delta.getYaw(), -simpleYawSpeed, simpleYawSpeed));

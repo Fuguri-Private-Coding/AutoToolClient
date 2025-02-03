@@ -86,24 +86,28 @@ public class MoreKB extends Module {
             case "WTap" -> {
                 if (event instanceof MoveEvent moveEvent) {
                     moveEvent.setForward(0.0f);
+                    reset--;
                 }
             }
 
             case "STap" -> {
                 if (event instanceof MoveEvent moveEvent) {
                     moveEvent.setForward(-1.0f);
+                    reset--;
                 }
             }
 
             case "SprintReset" -> {
                 if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
                     mc.thePlayer.setSprinting(false);
+                    reset--;
                 }
             }
 
             case "SneakTap" -> {
                 if (event instanceof MoveButtonEvent moveButtonEvent) {
                     moveButtonEvent.setSneak(true);
+                    reset--;
                 }
             }
 
@@ -116,6 +120,7 @@ public class MoreKB extends Module {
 
                 if (event instanceof RunGameLoopEvent) {
                     KeyBinding.onTick(mc.gameSettings.keyBindUseItem.getKeyCode());
+                    reset--;
                 }
             }
 
@@ -125,24 +130,23 @@ public class MoreKB extends Module {
                     case "Tick" -> {
                         if (event instanceof TickEvent) {
                             handleCustomReset();
+                            reset--;
                         }
                     }
                     case "Sprint" -> {
                         if (event instanceof SprintEvent) {
                             handleCustomReset();
+                            reset--;
                         }
                     }
                     case "Update" -> {
                         if (event instanceof UpdateEvent) {
                             handleCustomReset();
+                            reset--;
                         }
                     }
                 }
             }
-        }
-
-        if (event instanceof TickEvent && reset > 0) {
-            reset--;
         }
     }
 

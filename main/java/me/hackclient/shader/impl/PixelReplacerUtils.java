@@ -40,6 +40,7 @@ public class PixelReplacerUtils implements CallableObject, InstanceAccess {
             if (!Display.isVisible() || !Display.isActive()) {
                 return;
             }
+
             if (pixelReplacer == null) {
                 pixelReplacer = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
                 return;

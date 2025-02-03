@@ -116,8 +116,27 @@ public class MoveUtils implements InstanceAccess {
         }
     }
 
-    public static boolean isMoving() {
-        return mc.thePlayer.moveForward != 0;
+    public static float getSpeed() {
+        double powX = Math.pow(mc.thePlayer.motionX, 2);
+        double powY = Math.pow(mc.thePlayer.motionY, 2);
+        double powZ = Math.pow(mc.thePlayer.motionZ, 2);
+        return (float) Math.sqrt(powX + powY + powZ);
+    }
+
+    public static void strafe() {
+        strafe(getSpeed());
+    }
+
+    public static void strafe(float speed) {
+        strafe((float) MathHelper.wrapDegree(Math.toDegrees(getDirection(mc.thePlayer.rotationYaw))), speed);
+    }
+
+    public static void strafe(float yaw, float speed) {
+        double yawRad = Math.toRadians(yaw);
+        double yawSin = Math.sin(yawRad);
+        double yawCos = Math.cos(yawRad);
+        mc.thePlayer.motionX = -yawSin * speed;
+        mc.thePlayer.motionZ = yawCos * speed;
     }
 
     public static double getDirection(float yaw)

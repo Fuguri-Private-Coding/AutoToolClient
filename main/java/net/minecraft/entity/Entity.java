@@ -10,6 +10,7 @@ import lombok.Setter;
 import me.hackclient.Client;
 import me.hackclient.event.events.ChangeSprintEvent;
 import me.hackclient.event.events.MoveFlyingEvent;
+import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -1227,7 +1228,7 @@ public abstract class Entity implements ICommandSender
         }
     }
 
-    protected final Vec3 getVectorForRotation(float pitch, float yaw)
+    public final Vec3 getVectorForRotation(float pitch, float yaw)
     {
         float f = MathHelper.cos(-yaw * 0.017453292F - (float)Math.PI);
         float f1 = MathHelper.sin(-yaw * 0.017453292F - (float)Math.PI);
@@ -1255,6 +1256,14 @@ public abstract class Entity implements ICommandSender
     {
         Vec3 vec3 = this.getPositionEyes(partialTicks);
         Vec3 vec31 = this.getLook(partialTicks);
+        Vec3 vec32 = vec3.addVector(vec31.xCoord * blockReachDistance, vec31.yCoord * blockReachDistance, vec31.zCoord * blockReachDistance);
+        return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true);
+    }
+
+    public MovingObjectPosition rayTrace(double blockReachDistance, float partialTicks, Rotation rotation)
+    {
+        Vec3 vec3 = this.getPositionEyes(partialTicks);
+        Vec3 vec31 = getVectorForRotation(rotation.getPitch(), rotation.getYaw());
         Vec3 vec32 = vec3.addVector(vec31.xCoord * blockReachDistance, vec31.yCoord * blockReachDistance, vec31.zCoord * blockReachDistance);
         return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true);
     }

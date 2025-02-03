@@ -8,6 +8,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
 
 @ModuleInfo(
@@ -28,8 +29,20 @@ public class ESP extends Module {
             RenderUtils.start3D();
             GL11.glTranslated(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
 
-            for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
-                RenderUtils.renderHitBox(playerEntity.getEntityBoundingBox());
+            if (modes.get("Box")) {
+                for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
+                    if (playerEntity.equals(mc.thePlayer)) { continue; }
+
+                    Vec3 smoothPos = new Vec3(
+                            playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * mc.timer.renderPartialTicks,
+                            playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * mc.timer.renderPartialTicks,
+                            playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * mc.timer.renderPartialTicks
+                    );
+
+                    Vec3 diff = smoothPos.subtract(playerEntity.getPositionVector());
+
+                    RenderUtils.renderHitBox(playerEntity.getEntityBoundingBox().offset(diff));
+                }
             }
 
             GL11.glTranslated(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);

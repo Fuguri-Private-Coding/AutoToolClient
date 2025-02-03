@@ -2,6 +2,7 @@ package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
 import me.hackclient.event.events.LegitClickTimingEvent;
+import me.hackclient.event.events.UpdateRenderingItem;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -23,11 +24,10 @@ public class AutoTool extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (mc.objectMouseOver == null)
+            return;
+
         if (event instanceof LegitClickTimingEvent) {
-            if (mc.objectMouseOver == null)
-                return;
-
-
             if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.gameSettings.keyBindAttack.isKeyDown()) {
                 flag = true;
                 BlockPos blockPos = mc.objectMouseOver.getBlockPos();
@@ -44,11 +44,17 @@ public class AutoTool extends Module {
                 lastSlot = -1;
             }
         }
+        if (event instanceof UpdateRenderingItem updateRenderingItem) {
+            if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.gameSettings.keyBindAttack.isKeyDown() && lastSlot != -1) {
+                updateRenderingItem.setStack(mc.thePlayer.inventory.mainInventory[lastSlot]);
+            }
+        }
     }
 
     int getBestSlot(BlockPos blockPos) {
         float bestEff = mc.thePlayer.inventory.getCurrentItem() != null ? mc.thePlayer.inventory.getCurrentItem().getStrVsBlock(mc.theWorld.getBlockState(blockPos).getBlock()) : 0.0f;
         int bestSlot = mc.thePlayer.inventory.currentItem;
+
         for (int i = 0; i < 9; i++) {
             ItemStack item = mc.thePlayer.inventory.mainInventory[i];
 

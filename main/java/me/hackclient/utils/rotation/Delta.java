@@ -1,5 +1,7 @@
 package me.hackclient.utils.rotation;
 
+import net.minecraft.util.MathHelper;
+
 public class Delta extends Rotation {
 
 	public Delta() {
@@ -10,6 +12,27 @@ public class Delta extends Rotation {
 	public Delta(float yaw, float pitch) {
 		setYaw(yaw);
 		setPitch(pitch);
+	}
+
+	public Delta limit(float yaw, float pitch) {
+		return new Delta(
+				MathHelper.clamp(getYaw(), -yaw, yaw),
+				MathHelper.clamp(getPitch() , -pitch, pitch)
+		);
+	}
+
+	public Delta multi(float yaw, float pitch) {
+		return new Delta(
+				getYaw() * yaw,
+				getPitch() * pitch
+		);
+	}
+
+	public Delta divine(float yaw, float pitch) {
+		return new Delta(
+				getYaw() / yaw,
+				getPitch() / pitch
+		);
 	}
 
 	@Override

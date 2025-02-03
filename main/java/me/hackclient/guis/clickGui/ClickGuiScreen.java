@@ -294,7 +294,7 @@ public class ClickGuiScreen extends GuiScreen {
 							MAIN_COLOR
 					);
 					fontRenderer.drawString(
-							String.format("%.1f", floatSetting.getValue()),
+							String.format("%.2f", floatSetting.getValue()),
 							pos.x + verticalLineXOffset + 5 + settingWidth + 1 + length + 1,
 							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
 							-1

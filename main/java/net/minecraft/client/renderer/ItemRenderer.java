@@ -4,8 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.Client;
 import me.hackclient.event.events.RenderItemEvent;
+import me.hackclient.event.events.UpdateRenderingItem;
 import me.hackclient.module.impl.visual.Animations;
 import me.hackclient.module.impl.visual.NoRender;
+import me.hackclient.utils.client.ClientUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -546,6 +548,14 @@ public class ItemRenderer
         EntityPlayer entityplayer = this.mc.thePlayer;
         ItemStack itemstack = entityplayer.inventory.getCurrentItem();
         boolean flag = false;
+
+        UpdateRenderingItem updateRenderingItem = new UpdateRenderingItem(itemstack);
+        Client.INSTANCE.getObjectsCaller().onEvent(updateRenderingItem);
+        itemstack = updateRenderingItem.getStack();
+
+        if (updateRenderingItem.isCanceled()) {
+            return;
+        }
 
         if (this.itemToRender != null && itemstack != null)
         {
