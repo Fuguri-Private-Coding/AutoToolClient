@@ -37,6 +37,7 @@ public class TextFadeUtils implements InstanceAccess {
         Uniform.uniform1f(id, "texel_size", 1f / mc.displayHeight);
         Uniform.uniform4f(id, "startColor", color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, color.getAlpha() / 255.0F);
         Uniform.uniform4f(id, "endColor", color1.getRed() / 255.0F, color1.getGreen() / 255.0F, color1.getBlue() / 255.0F, color1.getAlpha() / 255.0F);
+
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableAlpha();

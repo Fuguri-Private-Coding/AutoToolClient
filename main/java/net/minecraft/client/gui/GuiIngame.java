@@ -348,7 +348,17 @@ public class GuiIngame extends Gui
             float f = this.zLevel;
             this.zLevel = -90.0F;
             this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
-            this.drawTexturedModalRect(i - 91 - 1 + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+
+            if (entityplayer.inventory.fakeCurrentItem != entityplayer.inventory.currentItem) {
+                GlStateManager.color(1f, 0f, 0f, 1f);
+                this.drawTexturedModalRect(i - 91 - 1 + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+                GlStateManager.color(1f, 1f, 1f, 1f);
+                this.drawTexturedModalRect(i - 91 - 1 + entityplayer.inventory.fakeCurrentItem * 20, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+
+            } else {
+                this.drawTexturedModalRect(i - 91 - 1 + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+            }
+
             this.zLevel = f;
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();

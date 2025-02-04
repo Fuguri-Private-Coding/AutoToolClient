@@ -539,6 +539,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         if (packetIn.getHeldItemHotbarIndex() >= 0 && packetIn.getHeldItemHotbarIndex() < InventoryPlayer.getHotbarSize())
         {
             this.gameController.thePlayer.inventory.currentItem = packetIn.getHeldItemHotbarIndex();
+            this.gameController.thePlayer.inventory.fakeCurrentItem = packetIn.getHeldItemHotbarIndex();
         }
     }
 

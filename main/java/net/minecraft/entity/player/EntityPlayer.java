@@ -115,7 +115,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
     private ItemStack itemInUse;
     private int itemInUseCount;
     protected float speedOnGround = 0.1F;
-    protected float speedInAir = 0.02F;
+    public float speedInAir = 0.02F;
     private int lastXPSound;
     private final GameProfile gameProfile;
     private boolean hasReducedDebug = false;
@@ -942,6 +942,10 @@ public abstract class EntityPlayer extends EntityLivingBase {
     }
 
     public void attackTargetEntityWithCurrentItem(Entity targetEntity) {
+        attackTargetEntityWithCurrentItem(targetEntity, 0.6D, true);
+    }
+
+    public void attackTargetEntityWithCurrentItem(Entity targetEntity, double slowDown, boolean cancelSprint) {
         if (targetEntity.canAttackWithItem()) {
             if (!targetEntity.hitByEntity(this)) {
                 AttackEvent event = new AttackEvent(targetEntity);
@@ -991,9 +995,9 @@ public abstract class EntityPlayer extends EntityLivingBase {
                     if (flag2) {
                         if (i > 0) {
                             targetEntity.addVelocity((double) (-MathHelper.sin(this.rotationYaw * (float) Math.PI / 180.0F) * (float) i * 0.5F), 0.1D, (double) (MathHelper.cos(this.rotationYaw * (float) Math.PI / 180.0F) * (float) i * 0.5F));
-                            this.motionX *= 0.6D;
-                            this.motionZ *= 0.6D;
-                            this.setSprinting(false);
+                            this.motionX *= slowDown;
+                            this.motionZ *= slowDown;
+                            if (cancelSprint) { setSprinting(false); }
                         }
 
                         if (targetEntity instanceof EntityPlayerMP && targetEntity.velocityChanged) {

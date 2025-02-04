@@ -11,8 +11,10 @@ import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
+import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MovingObjectPosition;
 
 public class ClickManager implements InstanceAccess, ConditionCallableObject {
 
@@ -37,6 +39,13 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
             if (rayCast != null && rayCast.isFriend() || !clicking) { return; }
 
             for (int i = 0; i < iters; i++) {
+//                MovingObjectPosition mouse = RayCastUtils.rayCast(5, Rotation.getServerRotation());
+//
+//                if (mouse != null) {
+//                    ClientUtils.chatLog(mouse.typeOfHit.toString() + " " + mouse.entityHit);
+//                }
+//
+//                mc.clickMouseCustom(mouse, false);
                 mc.clickMouse();
             }
         }
@@ -50,9 +59,9 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
 
         if (target.hurtTime <= startRandomizedHurtTime) { return true; }
 
-        if (target.hurtTime >= endRandomizedHurtTime) { return false; }
+        if (target.hurtTime <= endRandomizedHurtTime) { return false; }
 
-        return false;
+        return clicking ;
     }
 
     @Override

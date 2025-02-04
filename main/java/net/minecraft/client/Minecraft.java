@@ -1393,6 +1393,45 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         }
     }
 
+    public void clickMouseCustom(MovingObjectPosition mouseOver, boolean useDelay)
+    {
+        if (this.leftClickCounter <= 0 || !useDelay)
+        {
+            thePlayer.swingItem();
+
+            if (mouseOver == null) {
+                logger.error("Null returned as \'hitResult\', this shouldn\'t happen!");
+
+                if (playerController.isNotCreative() && useDelay) {
+                    leftClickCounter = 10;
+                }
+            } else {
+                switch (mouseOver.typeOfHit)
+                {
+                    case ENTITY:
+                        playerController.attackEntity(thePlayer, mouseOver.entityHit);
+                        break;
+
+                    case BLOCK:
+                        BlockPos blockpos = mouseOver.getBlockPos();
+
+                        if (theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air)
+                        {
+                            playerController.clickBlock(blockpos, mouseOver.sideHit);
+                            break;
+                        }
+
+                    case MISS:
+                    default:
+                        if (playerController.isNotCreative() && useDelay)
+                        {
+                            leftClickCounter = 10;
+                        }
+                }
+            }
+        }
+    }
+
     public void clickMouse()
     {
         if (this.leftClickCounter <= 0)
@@ -1957,6 +1996,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                     else
                     {
                         this.thePlayer.inventory.currentItem = l;
+                        this.thePlayer.inventory.fakeCurrentItem = l;
                     }
                 }
             }

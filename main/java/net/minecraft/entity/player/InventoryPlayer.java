@@ -21,6 +21,7 @@ public class InventoryPlayer implements IInventory
     public ItemStack[] mainInventory = new ItemStack[36];
     public ItemStack[] armorInventory = new ItemStack[4];
     public int currentItem;
+    public int fakeCurrentItem;
     public EntityPlayer player;
     private ItemStack itemStack;
     public boolean inventoryChanged;
@@ -100,6 +101,7 @@ public class InventoryPlayer implements IInventory
         if (i >= 0 && i < 9)
         {
             this.currentItem = i;
+            fakeCurrentItem = i;
         }
         else if (p_146030_4_ && itemIn != null)
         {
@@ -108,6 +110,7 @@ public class InventoryPlayer implements IInventory
             if (j >= 0 && j < 9)
             {
                 this.currentItem = j;
+                fakeCurrentItem = j;
             }
 
             if (itemstack == null || !itemstack.isItemEnchantable() || this.getInventorySlotContainItemAndDamage(itemstack.getItem(), itemstack.getItemDamage()) != this.currentItem)
@@ -150,6 +153,16 @@ public class InventoryPlayer implements IInventory
         while (this.currentItem >= 9)
         {
             this.currentItem -= 9;
+        }
+
+        for (this.fakeCurrentItem -= direction; this.fakeCurrentItem < 0; this.fakeCurrentItem += 9)
+        {
+            ;
+        }
+
+        while (this.fakeCurrentItem >= 9)
+        {
+            this.fakeCurrentItem -= 9;
         }
     }
 
@@ -731,6 +744,7 @@ public class InventoryPlayer implements IInventory
         }
 
         this.currentItem = playerInventory.currentItem;
+        this.fakeCurrentItem = playerInventory.fakeCurrentItem;
     }
 
     public int getField(int id)

@@ -435,11 +435,34 @@ public class PlayerControllerMP
                 }
             }
 
-            return true;
+            if (!flag && this.currentGameType != WorldSettings.GameType.SPECTATOR)
+            {
+                if (heldStack == null)
+                {
+                    return false;
+                }
+                else if (this.currentGameType.isCreative())
+                {
+                    int i = heldStack.getMetadata();
+                    int j = heldStack.stackSize;
+                    boolean flag1 = heldStack.onItemUse(player, worldIn, hitPos, side, f, f1, f2);
+                    heldStack.setItemDamage(i);
+                    heldStack.stackSize = j;
+                    return flag1;
+                }
+                else
+                {
+                    return heldStack.onItemUse(player, worldIn, hitPos, side, f, f1, f2);
+                }
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 
-    public boolean sendUseItem(EntityPlayer playerIn, World worldIn, ItemStack itemStackIn)
+    public boolean c(EntityPlayer playerIn, World worldIn, ItemStack itemStackIn)
     {
         if (this.currentGameType == WorldSettings.GameType.SPECTATOR)
         {

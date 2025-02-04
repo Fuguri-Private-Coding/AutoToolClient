@@ -7,6 +7,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.utils.client.ClientUtils;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
@@ -18,8 +19,11 @@ import org.lwjgl.input.Mouse;
 )
 public class AutoTool extends Module {
 
-    int lastSlot;
-    boolean flag;
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        switchBack();
+    }
 
     @Override
     public void onEvent(Event event) {
@@ -27,40 +31,58 @@ public class AutoTool extends Module {
         if (mc.objectMouseOver == null)
             return;
 
+        final MovingObjectPosition mouse = mc.objectMouseOver;
+
         if (event instanceof LegitClickTimingEvent) {
-            if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.gameSettings.keyBindAttack.isKeyDown()) {
-                flag = true;
-                BlockPos blockPos = mc.objectMouseOver.getBlockPos();
-                int bestSlot = getBestSlot(blockPos);
-                if (mc.thePlayer.inventory.currentItem != bestSlot && bestSlot != -1) {
-                    lastSlot = mc.thePlayer.inventory.currentItem;
-                    mc.thePlayer.inventory.currentItem = bestSlot;
-                }
-            } else if (flag) {
-                flag = false;
-                if (lastSlot != -1) {
-                    mc.thePlayer.inventory.currentItem = lastSlot;
-                }
-                lastSlot = -1;
+            if (mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mouse.getBlockPos() == null || !mc.gameSettings.keyBindAttack.isKeyDown()) {
+                switchBack();
+                return;
             }
+
+            final BlockPos block = mouse.getBlockPos();
+
+            mc.thePlayer.inventory.currentItem = getBestSlot(mc.theWorld.getBlockState(block).getBlock());
         }
         if (event instanceof UpdateRenderingItem updateRenderingItem) {
-            if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.gameSettings.keyBindAttack.isKeyDown() && lastSlot != -1) {
-                updateRenderingItem.setStack(mc.thePlayer.inventory.mainInventory[lastSlot]);
-            }
+            updateRenderingItem.setStack(mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.fakeCurrentItem]);
         }
+
+//        if (event instanceof LegitClickTimingEvent) {
+//            if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.gameSettings.keyBindAttack.isKeyDown()) {
+//                flag = true;
+//                BlockPos blockPos = mc.objectMouseOver.getBlockPos();
+//                int bestSlot = getBestSlot(blockPos);
+//                if (mc.thePlayer.inventory.currentItem != bestSlot && bestSlot != -1) {
+//                    lastSlot = mc.thePlayer.inventory.currentItem;
+//                    mc.thePlayer.inventory.currentItem = bestSlot;
+//                }
+//            } else if (flag) {
+//                flag = false;
+//                if (lastSlot != -1) {
+//                    mc.thePlayer.inventory.currentItem = lastSlot;
+//                }
+//                lastSlot = -1;
+//            }
+//        }
+//        if (event instanceof UpdateRenderingItem updateRenderingItem) {
+//            if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.gameSettings.keyBindAttack.isKeyDown() && lastSlot != -1) {
+//                updateRenderingItem.setStack(mc.thePlayer.inventory.mainInventory[lastSlot]);
+//            }
+//        }
     }
 
-    int getBestSlot(BlockPos blockPos) {
-        float bestEff = mc.thePlayer.inventory.getCurrentItem() != null ? mc.thePlayer.inventory.getCurrentItem().getStrVsBlock(mc.theWorld.getBlockState(blockPos).getBlock()) : 0.0f;
+    int getBestSlot(Block block) {
+        float bestEff = 1f;
         int bestSlot = mc.thePlayer.inventory.currentItem;
 
         for (int i = 0; i < 9; i++) {
             ItemStack item = mc.thePlayer.inventory.mainInventory[i];
 
-            if (item == null) { continue; }
+            if (item == null) {
+                continue;
+            }
 
-            float eff = item.getStrVsBlock(mc.theWorld.getBlockState(blockPos).getBlock());
+            final float eff = item.getStrVsBlock(block);
 
             if (eff <= bestEff) {
                 continue;
@@ -69,6 +91,11 @@ public class AutoTool extends Module {
             bestEff = eff;
             bestSlot = i;
         }
+
         return bestSlot;
+    }
+
+    void switchBack() {
+        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
     }
 }

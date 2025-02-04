@@ -13,12 +13,6 @@ void main( void ) {
     vec4 pix_color = texture2D(texture, zv);
 
     if (pix_color.a > 0.0) {
-  //      vec2 p = zv.xy;
-  //      for(int i = 1; i < 10; i++) {
-  //          p += sin(p.yx * vec2(1.6, 1.1) * float(i + 11) + time * float(i) * vec2(3.4, 0.5) / 10.0) * 0.1;
-  //      }
-  //      float c = (abs(sin(p.y + time * 0.0) + sin(p.x + time * 0.0))) * 0.5;
-//        gl_FragColor = vec4(vec3(r_offset + c, g_offset + c, b_offset + c), pix_color.a);
         vec2 sp = zv;
     	vec2 p = sp*5.0 - vec2(10.0);
     	vec2 i = p;

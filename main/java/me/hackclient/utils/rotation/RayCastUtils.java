@@ -131,63 +131,18 @@ public final class RayCastUtils implements InstanceAccess {
     public static MovingObjectPosition rayCast(double range, Rotation rotation) {
         if (!Utils.isWorldLoaded() || mc.getRenderViewEntity() == null) { return null; }
 
-        Entity entity = mc.getRenderViewEntity();
-        MovingObjectPosition mouseOver = entity.rayTrace(range, 1f, rotation);
+        final Entity renderViewEntity = mc.getRenderViewEntity();
+        final Vec3 eyesPosition = renderViewEntity.getPositionEyes(1f);
 
-        Vec3 eyes = entity.getPositionEyes(1f);
-        Vec3 look = entity.getVectorForRotation(rotation.getPitch(), rotation.getYaw());
-        Vec3 extendedLook = new Vec3(look.xCoord * range, look.yCoord * range, look.zCoord * range);
-        List<Entity> list = mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(extendedLook.xCoord, extendedLook.yCoord, extendedLook.zCoord).expand(1f, 1f, 1f), entity1 -> entity1.canBeCollidedWith() && (!(entity1 instanceof EntityPlayer player) || !player.isSpectator()));
-
-        Vec3 vec = null;
+        MovingObjectPosition mouse = renderViewEntity.rayTrace(range, 1f, rotation);
         Entity pointedEntity = null;
 
-        double d1 = range;
+        final Vec3 entityLook = RotationUtils.getVectorForRotation(rotation);
+        final Vec3 extendedEntityLook = entityLook.multiple(range);
 
-        if (mouseOver != null) {
-            d1 = mouseOver.hitVec.distanceTo(eyes);
-        }
 
-        for (Entity ent : list) {
-            double d2;
-            float f1 = ent.getCollisionBorderSize();
-            AxisAlignedBB box = ent.getEntityBoundingBox().expand(f1, f1, f1);
-            MovingObjectPosition movingObjectPosition = box.calculateIntercept(eyes, extendedLook);
 
-            if (box.isVecInside(eyes)) {
-                pointedEntity = ent;
-                vec = movingObjectPosition == null ? eyes : movingObjectPosition.hitVec;
-                d1 = 0D;
-                continue;
-            }
-
-            if (movingObjectPosition == null || !((d2 = eyes.distanceTo(movingObjectPosition.hitVec)) < d1) && d1 != 0.0) continue;
-
-            boolean flag2 = false;
-            if (Reflector.ForgeEntity_canRiderInteract.exists()) {
-                flag2 = Reflector.callBoolean(ent, Reflector.ForgeEntity_canRiderInteract);
-            }
-
-            if (ent != entity.ridingEntity || flag2) {
-                pointedEntity = ent;
-                vec = movingObjectPosition.hitVec;
-                d1 = d2;
-            }
-
-            if (d1 != 0D) continue;
-
-            pointedEntity = ent;
-            vec = movingObjectPosition.hitVec;
-        }
-        if (pointedEntity != null && eyes.distanceTo(vec) > range) {
-            pointedEntity = null;
-            mouseOver = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, vec, null, new BlockPos(vec));
-        }
-        if (pointedEntity != null && (d1 < range || mouseOver == null)) {
-            mouseOver = new MovingObjectPosition(pointedEntity, vec);
-        }
-
-        return mouseOver;
+        return mouse;
     }
 
     public interface IEntityFilter {

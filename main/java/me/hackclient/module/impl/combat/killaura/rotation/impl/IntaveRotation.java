@@ -11,7 +11,7 @@ import net.minecraft.util.MathHelper;
 
 public class IntaveRotation extends KillAuraRotation {
 
-    boolean startSlow;
+    //boolean startSlow;
 
     @Override
     public Rotation compute(Rotation startsFrom, EntityLivingBase target, final float simpleYawSpeed, final float simplePitchSpeed) {
@@ -19,7 +19,7 @@ public class IntaveRotation extends KillAuraRotation {
 
         box = new AxisAlignedBB(
                 box.minX + box.getLengthX() * 0.4,
-                box.minY + box.getLengthY() * 0.5,
+                box.minY + box.getLengthY() * 0.0,
                 box.minZ + box.getLengthZ() * 0.4,
                 box.minX + box.getLengthX() * 0.6,
                 box.minY + box.getLengthY() * 0.8,
@@ -38,13 +38,13 @@ public class IntaveRotation extends KillAuraRotation {
         delta.setYaw(delta.getYaw() * 0.5f);
         delta.setPitch(delta.getPitch() * 0.5f);
 
-        if (startSlow) {
-            delta.setYaw(delta.getYaw() * 0.2F);
-            delta.setPitch(delta.getPitch() * 0.2F);
-            startSlow = false;
-        }
-
-        if (originalDelta.hypot() < 1) { startSlow = true; }
+//        if (startSlow) {
+//            delta.setYaw(delta.getYaw() * 0.2F);
+//            delta.setPitch(delta.getPitch() * 0.2F);
+//            startSlow = false;
+//        }
+//
+//        if (originalDelta.hypot() < 1) { startSlow = true; }
 
         delta = RotationUtils.fixDelta(delta);
 

@@ -10,6 +10,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.PixelReplacerUtils;
+import me.hackclient.shader.impl.TestBloomUtils;
 import me.hackclient.shader.impl.TextFadeUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.Entity;
@@ -66,17 +67,17 @@ public class ArrayList extends Module {
 				}
 		);
 		if (clientShader.isToggled() && clientShader.arrayList.isToggled()) {
-			PixelReplacerUtils.addToDraw(() -> {
-				int offset = 0;
-				for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
-					if (skipRenderModules.isToggled() && module.getCategory() == Category.VISUAL || module.isHide()) continue;
-					if (background.isToggled()) {
-						Gui.drawRect(3, 3 + offset, 6 + mc.fontRendererObj.getStringWidth(module.getName()), 5 + offset + 10, new Color(0, 0, 0, 75).getRGB());
-					}
-					mc.fontRendererObj.drawString(module.getName(), 5, 5 + offset, Color.WHITE.getRGB());
-					offset += mc.fontRendererObj.FONT_HEIGHT + 3;
-				}
-			});
+			TestBloomUtils.add(() -> PixelReplacerUtils.addToDraw(() -> {
+                int offset = 0;
+                for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {
+                    if (skipRenderModules.isToggled() && module.getCategory() == Category.VISUAL || module.isHide()) continue;
+                    if (background.isToggled()) {
+                        Gui.drawRect(3, 3 + offset, 6 + mc.fontRendererObj.getStringWidth(module.getName()), 5 + offset + 10, new Color(0, 0, 0, 75).getRGB());
+                    }
+                    mc.fontRendererObj.drawString(module.getName(), 5, 5 + offset, Color.WHITE.getRGB());
+                    offset += mc.fontRendererObj.FONT_HEIGHT + 3;
+                }
+            }));
 		} else {
 			int offset = 0;
 			for (Module module : Client.INSTANCE.getModuleManager().getEnabledModules()) {

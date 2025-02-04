@@ -50,11 +50,20 @@ public class KillAura extends Module {
             }
     );
 
+
+    // Клики
     final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 0, 20, 17);
     final IntegerSetting maxCPS = new IntegerSetting("MaxCPS", this, 0, 20, 17);
 
+
+    // Ротация
     final IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 0, 180, 90);
     final IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 0, 180, 30);
+
+    // Мувмент
+    final BooleanSetting moveFix = new BooleanSetting("MoveFix", this, true);
+    final BooleanSetting silent = new BooleanSetting("Silent", this, moveFix::isToggled, true);
+    final BooleanSetting jumpFix = new BooleanSetting("JumpFix", this, true);
 
     public KillAura() {
         stopWatch = new StopWatch();
@@ -95,11 +104,6 @@ public class KillAura extends Module {
                 default -> throw new IllegalStateException("Unexpected value: " + rotationMode.getMode());
             };
 
-            if (rotation == null) {
-                ClientUtils.chatLog("Not found rotation");
-                return;
-            }
-
             if (mc.currentScreen == null) {
                 Rotation.setServerRotation(rotation.compute(
                         Rotation.getServerRotation(),
@@ -112,24 +116,30 @@ public class KillAura extends Module {
             lookEvent.setYaw(Rotation.getServerRotation().getYaw());
             lookEvent.setPitch(Rotation.getServerRotation().getPitch());
         }
-        if (event instanceof MoveFlyingEvent moveFlyingEvent) {
-            moveFlyingEvent.setCanceled(true);
-            MoveUtils.silentMoveFix(moveFlyingEvent);
-        }
-        if (event instanceof SprintEvent) {
-            if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
-                mc.thePlayer.setSprinting(false);
-            }
-        }
-        if (event instanceof JumpEvent jumpEvent) {
-            jumpEvent.setYaw(Rotation.getServerRotation().getYaw());
-        }
         if (event instanceof ChangeHeadRotationEvent changeHeadRotationEvent) {
             changeHeadRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
             changeHeadRotationEvent.setPitch(Rotation.getServerRotation().getPitch());
         }
         if (event instanceof UpdateBodyRotationEvent UpdateBodyRotationEvent) {
             UpdateBodyRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
+        }
+        if (moveFix.isToggled()) {
+            if (event instanceof MoveFlyingEvent moveFlyingEvent) {
+                if (silent.isToggled()) {
+                    moveFlyingEvent.setCanceled(true);
+                    MoveUtils.silentMoveFix(moveFlyingEvent);
+                } else {
+                    moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
+                }
+            }
+            if (event instanceof SprintEvent && silent.isToggled()) {
+                if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
+                    mc.thePlayer.setSprinting(false);
+                }
+            }
+            if (event instanceof JumpEvent jumpEvent && jumpFix.isToggled()) {
+                jumpEvent.setYaw(Rotation.getServerRotation().getYaw());
+            }
         }
     }
 }

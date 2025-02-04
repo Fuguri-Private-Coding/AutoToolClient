@@ -79,6 +79,7 @@ public class PixelReplacerUtils implements CallableObject, InstanceAccess {
             framebuffer = updateFramebuffer(framebuffer);
             framebuffer.framebufferClear();
             mc.getFramebuffer().bindFramebuffer(true);
+            GL11.glColor4f(1f, 1f, 1f, 1f);
         }
     }
 

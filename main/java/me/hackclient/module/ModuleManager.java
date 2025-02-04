@@ -2,10 +2,7 @@ package me.hackclient.module;
 
 import me.hackclient.module.impl.combat.*;
 import me.hackclient.module.impl.connection.*;
-import me.hackclient.module.impl.exploit.Disabler;
-import me.hackclient.module.impl.exploit.GodMode;
-import me.hackclient.module.impl.exploit.InBlocks;
-import me.hackclient.module.impl.exploit.MaxClip;
+import me.hackclient.module.impl.exploit.*;
 import me.hackclient.module.impl.legit.*;
 import me.hackclient.module.impl.misc.*;
 import me.hackclient.module.impl.move.*;
@@ -28,11 +25,15 @@ public class ModuleManager {
 				 new Bloom(),
 				 new KillAura(),
 				 new Dot(),
+				 new Criticals(),
 				 new TestESP(),
+				 new Jesus(),
 				 new MoreKB(),
 				 new Velocity(),
 				 new MurderDetector(),
 				 new ClientHandler(),
+				 new InvManager(),
+				 new AutoLeave(),
 				 new Line(),
 				 new ESP(),
 				 new TESTESP2(),

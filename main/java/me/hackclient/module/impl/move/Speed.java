@@ -45,6 +45,7 @@ public class Speed extends Module {
 			mc.thePlayer.stopMotion();
 		}
 		mc.timer.timerSpeed = 1f;
+		mc.thePlayer.speedInAir = 0.02f;
 	}
 
 	@Override
@@ -73,33 +74,15 @@ public class Speed extends Module {
 				if (event instanceof UpdateEvent) {
 					if (mc.thePlayer.onGround) {
 						ticks = 0;
-						ClientUtils.chatLog("Set tick to 0");
-
 						mc.thePlayer.jump();
 						mc.thePlayer.motionY = 0.4D;
-
-						// test
-						double testSpeed = 0D;
-						double yaw = Math.toRadians(mc.thePlayer.rotationYaw);
-						mc.thePlayer.motionX -= Math.sin(yaw) * testSpeed;
-						mc.thePlayer.motionZ += Math.cos(yaw) * testSpeed;
 					} else {
-						if (++ticks == tickAtBoostDown.getValue()) {
-							mc.thePlayer.motionY -= boostDownAmount.getValue();
+						if (ticks < 10) {
+							double[] motions = new double[]{0, 0, 0, 0, 0.1912, 0.3, 1, 0, 0, 0, 0};
+							double motion = motions[ticks++];
+							mc.thePlayer.motionY -= motion;
 						}
-						ClientUtils.chatLog("Tick pre " + ticks);
-
-
 					}
-
-					if (mc.thePlayer.motionY > 0) {
-						mc.timer.timerSpeed = timerBoostSpeed.getValue();
-					} else {
-						mc.timer.timerSpeed = 1f;
-					}
-
-					ClientUtils.chatLog(MoveUtils.getSpeed());
-					MoveUtils.strafe();
 				}
 			}
 		}

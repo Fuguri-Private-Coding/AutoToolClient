@@ -732,6 +732,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
         if (packetIn.getSlotId() >= 0 && packetIn.getSlotId() < InventoryPlayer.getHotbarSize())
         {
             this.playerEntity.inventory.currentItem = packetIn.getSlotId();
+            this.playerEntity.inventory.fakeCurrentItem = packetIn.getSlotId();
             this.playerEntity.markPlayerActive();
         }
         else
