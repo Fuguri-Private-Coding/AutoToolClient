@@ -31,9 +31,12 @@ public class InventoryPlayer implements IInventory
         this.player = playerIn;
     }
 
-    public ItemStack getCurrentItem()
-    {
+    public ItemStack getCurrentItem() {
         return this.currentItem < 9 && this.currentItem >= 0 ? this.mainInventory[this.currentItem] : null;
+    }
+
+    public ItemStack getFakeCurrentItem() {
+        return this.fakeCurrentItem < 9 && this.fakeCurrentItem >= 0 ? this.mainInventory[this.fakeCurrentItem] : null;
     }
 
     public static int getHotbarSize()

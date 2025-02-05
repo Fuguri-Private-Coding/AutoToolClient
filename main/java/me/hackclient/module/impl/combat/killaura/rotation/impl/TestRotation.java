@@ -1,7 +1,6 @@
 package me.hackclient.module.impl.combat.killaura.rotation.impl;
 
 import me.hackclient.module.impl.combat.killaura.rotation.KillAuraRotation;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.rotation.Delta;

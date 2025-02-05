@@ -8,6 +8,8 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.FloatSetting;
+import me.hackclient.settings.impl.ModeSetting;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.util.MathHelper;
@@ -30,9 +32,9 @@ public class Animations extends Module {
             "Slide",
     });
 
-    FloatSetting X = new FloatSetting("X", this, -1f, 1f, -0.1f, 0.1f);
-    FloatSetting Y = new FloatSetting("Y", this, -1f, 1f, 0.2f, 0.1f);
-    FloatSetting Z = new FloatSetting("Z", this, -1f, 1f, -0.1f, 0.1f);
+    FloatSetting X = new FloatSetting("X", this, -1f, 1f, -0.1f, 0.1f) {};
+    FloatSetting Y = new FloatSetting("Y", this, -1f, 1f, 0.2f, 0.1f) {};
+    FloatSetting Z = new FloatSetting("Z", this, -1f, 1f, -0.1f, 0.1f) {};
 
     @Override
     public void onEvent(Event event) {

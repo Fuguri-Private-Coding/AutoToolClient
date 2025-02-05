@@ -7,6 +7,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.IntegerSetting;
 import net.minecraft.network.play.server.S03PacketTimeUpdate;
 
 @ModuleInfo(name = "TimeChanger", category = Category.VISUAL, toggled = true)

@@ -8,6 +8,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.shader.impl.TestBloomUtils;

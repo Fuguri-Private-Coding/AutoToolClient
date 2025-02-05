@@ -546,7 +546,7 @@ public class ItemRenderer
     {
         this.prevEquippedProgress = this.equippedProgress;
         EntityPlayer entityplayer = this.mc.thePlayer;
-        ItemStack itemstack = entityplayer.inventory.getCurrentItem();
+        ItemStack itemstack = entityplayer.inventory.getStackInSlot(entityplayer.inventory.fakeCurrentItem); //entityplayer.inventory.getCurrentItem();
         boolean flag = false;
 
         UpdateRenderingItem updateRenderingItem = new UpdateRenderingItem(itemstack);

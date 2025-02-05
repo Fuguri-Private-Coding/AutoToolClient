@@ -9,10 +9,10 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S02PacketChat;
 

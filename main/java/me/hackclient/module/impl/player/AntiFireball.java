@@ -7,6 +7,8 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.FloatSetting;
+import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.timer.StopWatch;
@@ -23,7 +25,7 @@ public class AntiFireball extends Module {
     final StopWatch stopWatch;
 
     final IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 500);
-    final FloatSetting distance = new FloatSetting("Distance", this, 3f, 12f, 6f, 0.5f);
+    final FloatSetting distance = new FloatSetting("Distance", this, 3f, 12f, 6f, 0.5f) {};
 
     public AntiFireball() {
         stopWatch = new StopWatch();
@@ -34,10 +36,10 @@ public class AntiFireball extends Module {
         super.onEvent(event);
         if (event instanceof TickEvent) {
             for (Entity entity : mc.theWorld.loadedEntityList) {
-                if (!(entity instanceof EntityFireball) || DistanceUtils.getDistanceToEntity(entity) > distance.getValue() || !stopWatch.reachedMS(delay.getValue()))
+                if (!(entity instanceof EntityFireball entityFireball) || entityFireball.shootingEntity == mc.thePlayer || DistanceUtils.getDistanceToEntity(entity) > distance.getValue() || !stopWatch.reachedMS(delay.getValue()))
                     continue;
 
-                mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+                mc.thePlayer.swingItem();
                 mc.playerController.attackEntity(mc.thePlayer, entity);
                 stopWatch.reset();
                 ClientUtils.chatLog("Fireball detected.");

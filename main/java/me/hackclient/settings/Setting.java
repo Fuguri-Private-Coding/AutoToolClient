@@ -1,6 +1,7 @@
 package me.hackclient.settings;
 
 import me.hackclient.module.Module;
+import me.hackclient.settings.impl.BooleanSetting;
 
 import java.util.function.BooleanSupplier;
 
@@ -11,6 +12,12 @@ public class Setting implements ISetting {
 	public Setting(String name, Module parent) {
 		this.name = name;
 		visible = () -> true;
+		parent.getSettings().add(this);
+	}
+
+	public Setting(String name, Module parent, BooleanSupplier visible) {
+		this.name = name;
+		this.visible = visible;
 		parent.getSettings().add(this);
 	}
 

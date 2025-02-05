@@ -9,6 +9,8 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.FloatSetting;
+import me.hackclient.settings.impl.ModeSetting;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import org.lwjgl.input.Keyboard;
@@ -26,7 +28,7 @@ public class Fly extends Module {
             }
     );
 
-    final FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 0.1f, 0.6f, 0.6f, 0.1f);
+    final FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 0.1f, 0.6f, 0.6f, 0.1f) {};
 
     int jumps;
 

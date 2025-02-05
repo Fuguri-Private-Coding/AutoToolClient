@@ -4,9 +4,7 @@ import lombok.Getter;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.*;
 
 import java.awt.*;
 

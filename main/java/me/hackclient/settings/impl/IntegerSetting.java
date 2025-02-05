@@ -10,7 +10,7 @@ import java.util.function.BooleanSupplier;
 @Getter
 @Setter
 public class IntegerSetting extends Setting {
-	int min, max, value;
+	public int min, max, value;
 
 	public IntegerSetting(String name, Module parent, int min, int max, int value) {
 		super(name, parent);
@@ -20,11 +20,10 @@ public class IntegerSetting extends Setting {
 	}
 
 	public IntegerSetting(String name, Module parent, BooleanSupplier visible, int min, int max, int value) {
-		super(name, parent);
+		super(name, parent, visible);
 		this.min = min;
 		this.max = max;
 		this.value = value;
-		this.setVisible(visible);
 	}
 
 	public float normalize() {

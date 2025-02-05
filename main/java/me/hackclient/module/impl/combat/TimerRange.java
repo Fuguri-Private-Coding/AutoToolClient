@@ -4,15 +4,10 @@ import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.TickEvent;
-import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.connection.Ping;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.*;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
@@ -24,7 +19,7 @@ import java.io.IOException;
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT)
 public class TimerRange extends Module {
 
-    FloatSetting startDistance = new FloatSetting("Distance", this, 3, 6, 3.5f, 0.1f);
+    FloatSetting startDistance = new FloatSetting("Distance", this, 3, 6, 3.5f, 0.1f) {};
     IntegerSetting limitTicks = new IntegerSetting("Ticks", this, 1,10,2);
     final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this,0, 10, 10);
     BooleanSetting debug = new BooleanSetting("Debug", this, true);

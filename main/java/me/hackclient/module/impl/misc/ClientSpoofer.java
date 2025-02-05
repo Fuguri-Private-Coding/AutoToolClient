@@ -4,6 +4,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.ModeSetting;
 
 @ModuleInfo(name = "ClientSpoofer", category = Category.MISC, toggled = true)
 public class ClientSpoofer extends Module {

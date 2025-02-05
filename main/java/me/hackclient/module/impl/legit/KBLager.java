@@ -7,6 +7,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.network.Packet;

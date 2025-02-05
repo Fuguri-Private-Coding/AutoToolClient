@@ -9,10 +9,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.misc.ClientHandler;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.*;
 import me.hackclient.utils.Utils;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.distance.DistanceUtils;
@@ -24,7 +21,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.handshake.client.C00Handshake;
-import net.minecraft.network.login.client.C00PacketLoginStart;
 import net.minecraft.network.play.server.*;
 import net.minecraft.network.status.client.C00PacketServerQuery;
 import net.minecraft.network.status.server.S01PacketPong;
@@ -51,8 +47,8 @@ public class BackTrack extends Module {
     final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 5000, 90);
     final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 0, 5000, 120);
 
-    final FloatSetting minDistance = new FloatSetting("MinDistance", this, 0.0f, 3.0f, 3.0f, 0.1f);
-    final FloatSetting maxDistance = new FloatSetting("MaxDistance", this, 3.0f, 12.0f, 6.0f, 0.1f);
+    final FloatSetting minDistance = new FloatSetting("MinDistance", this, 0.0f, 3.0f, 3.0f, 0.1f) {};
+    final FloatSetting maxDistance = new FloatSetting("MaxDistance", this, 3.0f, 12.0f, 6.0f, 0.1f) {};
 
     final BooleanSetting showOnlyWorking = new BooleanSetting("ShowOnlyWhenWorking", this, true);
     final BooleanSetting showOnlyOnTarget = new BooleanSetting("ShowOnlyOnTarget", this, true);

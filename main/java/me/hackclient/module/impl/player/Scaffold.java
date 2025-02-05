@@ -5,10 +5,7 @@ import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.*;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.doubles.Doubles;
@@ -21,13 +18,10 @@ import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
 import me.hackclient.utils.timer.StopWatch;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockSand;
 import net.minecraft.block.BlockSoulSand;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -45,7 +39,7 @@ public class Scaffold extends Module {
     IntegerSetting maxYawSpeed = new IntegerSetting("MaxYawSpeed", this, 1, 180, 30);
     IntegerSetting minPitchSpeed = new IntegerSetting("MinPitchSpeed", this, 1, 180, 15);
     IntegerSetting maxPitchSpeed = new IntegerSetting("MaxPitchSpeed", this, 1, 180, 15);
-    FloatSetting smooth = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f);
+    FloatSetting smooth = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f) {};
 
     IntegerSetting minCps = new IntegerSetting("MinCps", this, 0, 40, 7);
     IntegerSetting maxCps = new IntegerSetting("MaxCps", this, 0, 40, 11);
@@ -53,17 +47,13 @@ public class Scaffold extends Module {
     final StopWatch stopWatch;
     static final float bestPitch = 75.5f;
 
-    int lastSlot = -1;
     int delay = 0;
     BlockPos standingOn = null;
 
     @Override
     public void onDisable() {
         super.onDisable();
-        if (lastSlot != -1) {
-            mc.thePlayer.inventory.currentItem = lastSlot;
-            lastSlot = -1;
-        }
+        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
     }
 
     public Scaffold() {
@@ -99,12 +89,8 @@ public class Scaffold extends Module {
             if (slot == -1) { return; }
 
             if (mc.thePlayer.inventory.currentItem != slot) {
-                lastSlot = mc.thePlayer.inventory.currentItem;
                 mc.thePlayer.inventory.currentItem = slot;
             }
-        }
-        if (event instanceof UpdateRenderingItem updateRenderingItem && lastSlot != -1) {
-            updateRenderingItem.setStack(mc.thePlayer.inventory.mainInventory[lastSlot]);
         }
         if (event instanceof PacketEvent packetEvent && packetEvent.getPacket() instanceof C08PacketPlayerBlockPlacement) {
             ClientUtils.chatLog("C08PacketBlockPlacement");

@@ -24,13 +24,12 @@ public class BooleanSetting extends Setting {
 	}
 
 	public BooleanSetting(String name, Module parent, BooleanSupplier visible) {
-		super(name, parent);
+		super(name, parent, visible);
 		toggled = false;
-		this.setVisible(visible);
 	}
 
 	public BooleanSetting(String name, Module parent, BooleanSupplier visible, boolean toggled) {
-		super(name, parent);
+		super(name, parent, visible);
 		this.setVisible(visible);
 		this.toggled = toggled;
 	}

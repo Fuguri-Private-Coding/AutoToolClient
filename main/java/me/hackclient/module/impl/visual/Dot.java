@@ -9,6 +9,8 @@ import me.hackclient.module.ModuleInfo;
 //import me.hackclient.module.impl.combat.KillAura;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
+import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation3D;
@@ -25,7 +27,7 @@ import java.awt.*;
 )
 public class Dot extends Module {
 
-    final FloatSetting size = new FloatSetting("Size", this, 1.0f, 20.0f, 10.0f, 0.1f);
+    final FloatSetting size = new FloatSetting("Size", this, 1.0f, 20.0f, 10.0f, 0.1f) {};
     final BooleanSetting onlyKillAura = new BooleanSetting("OnlyKillAura", this, true);
 
     final Animation3D animation3D;

@@ -6,9 +6,7 @@ import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
-import me.hackclient.settings.impl.MultiBooleanSetting;
+import me.hackclient.settings.impl.*;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.timer.StopWatch;
@@ -38,10 +36,37 @@ public class MoreKB extends Module {
             }
     );
 
-    final IntegerSetting minDelay = new IntegerSetting("MinDelayAfterHit", this, 0, 10, 3);
-    final IntegerSetting maxDelay = new IntegerSetting("MaxDelayAfterHit", this, 0, 10, 3);
-    final IntegerSetting minReset = new IntegerSetting("MinResetDuration", this, 0, 10, 1);
-    final IntegerSetting maxReset = new IntegerSetting("MaxResetDuration", this, 0, 10, 1);
+    final IntegerSetting minDelay = new IntegerSetting("MinDelayAfterHit", this, 0, 10, 3) {
+        @Override
+        public int getValue() {
+            if (maxDelay.value < value) { value = maxDelay.value; }
+            return super.getValue();
+        }
+    };
+
+    final IntegerSetting maxDelay = new IntegerSetting("MaxDelayAfterHit", this, 0, 10, 3) {
+        @Override
+        public int getValue() {
+            if (minDelay.value > value) { value = minDelay.value; }
+            return super.getValue();
+        }
+    };
+
+    final IntegerSetting minReset = new IntegerSetting("MinResetDuration", this, 1, 5, 1) {
+        @Override
+        public int getValue() {
+            if (maxReset.value < value) { value = maxReset.value; }
+            return super.getValue();
+        }
+    };
+
+    final IntegerSetting maxReset = new IntegerSetting("MaxResetDuration", this, 1, 5, 1) {
+        @Override
+        public int getValue() {
+            if (minReset.value > value) { value = minReset.value; }
+            return super.getValue();
+        }
+    };
 
     final ModeSetting customEventSettings = new ModeSetting(
             "CustomEventMode",
@@ -98,8 +123,8 @@ public class MoreKB extends Module {
             }
 
             case "SprintReset" -> {
-                if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
-                    mc.thePlayer.setSprinting(false);
+                if (event instanceof TickEvent && !mc.thePlayer.test) {
+                    mc.thePlayer.test = true;
                     reset--;
                 }
             }

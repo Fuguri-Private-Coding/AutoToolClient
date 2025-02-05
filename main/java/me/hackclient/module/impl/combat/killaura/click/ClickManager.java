@@ -39,14 +39,14 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
             if (rayCast != null && rayCast.isFriend() || !clicking) { return; }
 
             for (int i = 0; i < iters; i++) {
-//                MovingObjectPosition mouse = RayCastUtils.rayCast(5, Rotation.getServerRotation());
-//
-//                if (mouse != null) {
-//                    ClientUtils.chatLog(mouse.typeOfHit.toString() + " " + mouse.entityHit);
-//                }
-//
-//                mc.clickMouseCustom(mouse, false);
-                mc.clickMouse();
+                MovingObjectPosition mouse = RayCastUtils.rayCast(5, Rotation.getServerRotation());
+
+                if (mouse != null) {
+                    ClientUtils.chatLog(mouse.typeOfHit.toString() + " " + mouse.entityHit);
+                }
+
+                mc.clickMouseCustom(mouse, false);
+//                mc.clickMouse();
             }
         }
     }

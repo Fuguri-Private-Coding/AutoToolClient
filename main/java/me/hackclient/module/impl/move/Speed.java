@@ -7,12 +7,7 @@ import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
-import me.hackclient.utils.client.ClientUtils;
-import me.hackclient.utils.move.MoveUtils;
+import me.hackclient.settings.impl.*;
 import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "Speed", category = Category.MOVE, key = Keyboard.KEY_V)
@@ -31,12 +26,8 @@ public class Speed extends Module {
 			}
 	);
 
-	final FloatSetting timerBoostSpeed = new FloatSetting("TimerBoostSpeed", this, () -> mode.getMode().equals("FunnyMcSkyPvp"),  1.0f, 2.0f, 1.2f, 0.1f);
-	final IntegerSetting tickAtBoostDown = new IntegerSetting("TickAtBoostMotionYDown", this, () -> mode.getMode().equals("FunnyMcSkyPvp"),  1, 8, 6);
-	final FloatSetting boostDownAmount = new FloatSetting("BoostDownAmount", this, () -> mode.getMode().equals("FunnyMcSkyPvp"),  0, 0.05f, 0.04f, 0.01f);
-
 	BooleanSetting resetMotion = new BooleanSetting("ResetMotionOnDisable", this, false);
-	FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 0.1f, 2f, 1.7f, 0.1f);
+	FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 0.1f, 2f, 1.7f, 0.1f) {};
 
 	@Override
 	public void onDisable() {
@@ -46,6 +37,7 @@ public class Speed extends Module {
 		}
 		mc.timer.timerSpeed = 1f;
 		mc.thePlayer.speedInAir = 0.02f;
+		ticks = 0;
 	}
 
 	@Override
@@ -81,6 +73,9 @@ public class Speed extends Module {
 							double[] motions = new double[]{0, 0, 0, 0, 0.1912, 0.3, 1, 0, 0, 0, 0};
 							double motion = motions[ticks++];
 							mc.thePlayer.motionY -= motion;
+						}
+						if (mc.thePlayer.isBurning()) {
+							mc.thePlayer.motionY = -1;
 						}
 					}
 				}

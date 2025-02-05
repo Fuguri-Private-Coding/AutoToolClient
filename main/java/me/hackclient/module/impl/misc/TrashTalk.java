@@ -7,6 +7,8 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import org.apache.commons.lang3.RandomUtils;

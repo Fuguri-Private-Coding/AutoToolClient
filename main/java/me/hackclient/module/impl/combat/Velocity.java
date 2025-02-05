@@ -8,10 +8,7 @@ import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.*;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
@@ -34,24 +31,25 @@ public class Velocity extends Module {
             }
     );
 
+    final IntegerSetting minPlayerHurtTimeLegit = new IntegerSetting("MinPlayerHurtTime", this, 0, 9, 7);
+
     // Legit
-    final IntegerSetting minPlayerHurtTimeLegit = new IntegerSetting("MinPlayerHurtTime", this, () -> mode.getMode().equals("Legit"), 0, 9, 7);
     final BooleanSetting forceHoldForwardWhenDamaged = new BooleanSetting("ForceHoldForwardWhenDamaged", this, () -> mode.getMode().equals("Legit"), true);
 
     // Intave
     final IntegerSetting minPlayerHurtTimeIntave = new IntegerSetting("MinPlayerHurtTime", this, () -> mode.getMode().equals("Intave"), 0, 9, 7);
     final BooleanSetting jump = new BooleanSetting("Jump", this, () -> mode.getMode().equals("Intave"), true);
     final BooleanSetting cancelSprint = new BooleanSetting("CancelSprintAtSprintHit", this, () -> mode.getMode().equals("Intave"), true);
-    final FloatSetting sprintReduce = new FloatSetting("SprintReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 0.6f, 0.1f);
-    final FloatSetting normalReduce = new FloatSetting("NormalReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 1.0f, 0.1f);
+    final FloatSetting sprintReduce = new FloatSetting("SprintReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 0.6f, 0.1f) {};
+    final FloatSetting normalReduce = new FloatSetting("NormalReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 1.0f, 0.1f) {};
 
     // Vanilla
-    final FloatSetting xz = new FloatSetting("XZ", this, () -> mode.getMode().equals("Vanilla"), -1.0f, 1.0f, 0.0f, 0.1f);
-    final FloatSetting y = new FloatSetting("Y", this, () -> mode.getMode().equals("Vanilla"), 0, 1.0f, 0.0f, 0.1f);
+    final FloatSetting xz = new FloatSetting("XZ", this, () -> mode.getMode().equals("Vanilla"), -1.0f, 1.0f, 0.0f, 0.1f) {};
+    final FloatSetting y = new FloatSetting("Y", this, () -> mode.getMode().equals("Vanilla"), 0, 1.0f, 0.0f, 0.1f) {};
     final BooleanSetting saveMotion = new BooleanSetting("SaveMotion", this, () -> mode.getMode().equals("Vanilla"), true);
 
     // Push
-    final FloatSetting pushMotion = new FloatSetting("Motion (Divide by 100)", this, () -> mode.getMode().equals("Push"), 1, 10, 2, 0.1f);
+    final FloatSetting pushMotion = new FloatSetting("Motion (Divide by 100)", this, () -> mode.getMode().equals("Push"), 1, 10, 2, 0.1f) {};
     final IntegerSetting startHurtTimeToPush = new IntegerSetting("Start", this, () -> mode.getMode().equals("Push"), 0, 9, 0);
     final IntegerSetting endHurtTimeToPush = new IntegerSetting("End", this, () -> mode.getMode().equals("Push"), 0, 9, 3);
 
@@ -75,7 +73,6 @@ public class Velocity extends Module {
             case "Intave" -> {
                 boolean attacking = event instanceof AttackEvent attackEvent && attackEvent.getHittingEntity() instanceof EntityLivingBase;
                 boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTimeIntave.getValue();
-
                 if (event instanceof MoveButtonEvent moveButtonEvent && damaged && mc.thePlayer.onGround && jump.isToggled()) {
                     moveButtonEvent.setJump(true);
                     moveButtonEvent.setForward(true);

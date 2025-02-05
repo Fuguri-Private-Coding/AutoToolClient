@@ -7,9 +7,7 @@ import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.*;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.shader.impl.TestBloomUtils;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -23,10 +21,12 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "TargetESP", category = Category.VISUAL, toggled = true)
 public class TargetESP extends Module {
 
+
+
     private static final Log log = LogFactory.getLog(TargetESP.class);
-    FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f);
+    FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f) {};
     IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
-    FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f);
+    FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f) {};
     BooleanSetting changeColorToHit = new BooleanSetting("ChangeColorDueHurtTime", this, true);
 
     ClientShader clientShader;

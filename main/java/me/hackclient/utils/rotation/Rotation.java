@@ -55,11 +55,11 @@ public class Rotation {
 	}
 
 	public Rotation fix() {
-		float gcd = RotationUtils.getMouseGCD();
 		Delta delta = RotationUtils.getDelta(serverRotation, this);
+		delta = RotationUtils.fixDelta(delta);
 		return new Rotation(
-				yaw + (delta.getYaw() - delta.getYaw() % gcd),
-				pitch + (delta.getPitch() - delta.getPitch() % gcd)
+				serverRotation.getYaw() + delta.getYaw(),
+				serverRotation.getPitch() + delta.getPitch()
 		);
 	}
 }

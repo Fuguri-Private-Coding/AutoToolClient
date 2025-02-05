@@ -13,6 +13,8 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
 

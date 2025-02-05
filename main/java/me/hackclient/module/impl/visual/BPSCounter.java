@@ -7,6 +7,8 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.IntegerSetting;
 import net.minecraft.client.gui.ScaledResolution;
 
 @ModuleInfo(name = "BPSCounter", category = Category.VISUAL)

@@ -6,6 +6,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.utils.rotation.Delta;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
@@ -22,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class BridgeAssist extends Module {
 
     final List<Rotation> rotations;
-    final FloatSetting minDelta = new FloatSetting("MinRotationDiff", this, 0.1f, 10.0f, 5.0f, 0.1f);
+    final FloatSetting minDelta = new FloatSetting("MinRotationDiff", this, 0.1f, 10.0f, 5.0f, 0.1f) {};
 
     public BridgeAssist() {
         rotations = new CopyOnWriteArrayList<>();

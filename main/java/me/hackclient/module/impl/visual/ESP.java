@@ -7,6 +7,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
+import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.shader.impl.TestBloomUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.entity.player.EntityPlayer;

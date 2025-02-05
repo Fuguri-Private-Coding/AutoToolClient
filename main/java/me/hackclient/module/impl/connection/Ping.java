@@ -9,6 +9,8 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.misc.ClientHandler;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
+import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.rotation.Rotation;

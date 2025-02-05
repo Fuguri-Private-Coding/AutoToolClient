@@ -6,6 +6,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.utils.move.MoveUtils;
 
 @ModuleInfo(
@@ -15,8 +16,12 @@ import me.hackclient.utils.move.MoveUtils;
 )
 public class Fixes extends Module {
 
-    BooleanSetting clickFix = new BooleanSetting("ClickFix", this, true);
-    BooleanSetting saveMoveKeys = new BooleanSetting("SaveMoveKeys", this, true);
+    MultiBooleanSetting fixes = new MultiBooleanSetting("Fixes", this)
+            .add("ClickDelay", true)
+            .add("SaveMoveKeys", true)
+            ;
+
+
 
     boolean prevGui = false;
 
@@ -24,11 +29,11 @@ public class Fixes extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof MotionEvent) {
-            if (mc.thePlayer != null && mc.theWorld != null && clickFix.isToggled()) {
-                mc.leftClickCounter = 0;
+            if (mc.thePlayer != null && mc.theWorld != null && fixes.get("ClickDelay")) {
+                mc.leftClickCounter = -1;
             }
 
-            if (mc.currentScreen == null && saveMoveKeys.isToggled()) {
+            if (mc.currentScreen == null && fixes.get("SaveMoveKeys")) {
                 if (prevGui) MoveUtils.updateControls();
                 prevGui = false;
             } else {

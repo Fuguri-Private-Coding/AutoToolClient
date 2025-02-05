@@ -1252,6 +1252,12 @@ public abstract class Entity implements ICommandSender
         }
     }
 
+    public Vec3 getMotionVector() {
+        return new Vec3(
+                motionX, motionY, motionZ
+        );
+    }
+
     public MovingObjectPosition rayTrace(double blockReachDistance, float partialTicks)
     {
         Vec3 vec3 = this.getPositionEyes(partialTicks);
@@ -1814,8 +1820,6 @@ public abstract class Entity implements ICommandSender
     }
 
     public void setSprinting(boolean sprinting) {
-        ChangeSprintEvent event = new ChangeSprintEvent();
-        Client.INSTANCE.getObjectsCaller().onEvent(event);
         this.setFlag(3, sprinting);
     }
 

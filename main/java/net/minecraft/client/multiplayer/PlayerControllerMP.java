@@ -326,15 +326,25 @@ public class PlayerControllerMP
         return pos.equals(this.currentBlock) && flag;
     }
 
-    private void syncCurrentPlayItem()
+    public void syncCurrentPlayItem()
     {
         int i = this.mc.thePlayer.inventory.currentItem;
 
         if (i != this.currentPlayerItem)
         {
-            mc.thePlayer.serverSlot = i;
             this.currentPlayerItem = i;
             this.netClientHandler.addToSendQueue(new C09PacketHeldItemChange(this.currentPlayerItem));
+        }
+    }
+
+    public void syncCurrentPlayItemNoEvent()
+    {
+        int i = this.mc.thePlayer.inventory.currentItem;
+
+        if (i != this.currentPlayerItem)
+        {
+            this.currentPlayerItem = i;
+            mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C09PacketHeldItemChange(this.currentPlayerItem));
         }
     }
 
@@ -462,7 +472,7 @@ public class PlayerControllerMP
         }
     }
 
-    public boolean c(EntityPlayer playerIn, World worldIn, ItemStack itemStackIn)
+    public boolean sendUseItem(EntityPlayer playerIn, World worldIn, ItemStack itemStackIn)
     {
         if (this.currentGameType == WorldSettings.GameType.SPECTATOR)
         {

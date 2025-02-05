@@ -3,6 +3,7 @@ package net.minecraft.client.entity;
 import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.Client;
+import me.hackclient.event.events.ChangeSprintEvent;
 import me.hackclient.event.events.MotionEvent;
 import me.hackclient.event.events.SprintEvent;
 import me.hackclient.event.events.UpdateEvent;
@@ -87,7 +88,6 @@ public class EntityPlayerSP extends AbstractClientPlayer
     private float horseJumpPower;
     public float timeInPortal;
     public float prevTimeInPortal;
-    public int serverSlot;
     public boolean test;
 
     public static boolean forceSprint;
@@ -430,6 +430,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void setSprinting(boolean sprinting)
     {
+        ChangeSprintEvent event = new ChangeSprintEvent();
+        Client.INSTANCE.getObjectsCaller().onEvent(event);
         super.setSprinting(sprinting);
         this.sprintingTicksLeft = sprinting ? 600 : 0;
     }
@@ -681,12 +683,6 @@ public class EntityPlayerSP extends AbstractClientPlayer
         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double)this.width * 0.35D);
         boolean flag3 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
 
-        float prevMoveForward = 0;
-        if (test) {
-            prevMoveForward = movementInput.moveForward;
-            movementInput.moveForward = 0.0f;
-        }
-
         if (onGround && !flag1 && !flag2 && movementInput.moveForward >= f && !isSprinting() && flag3 && !isUsingItem() && !isPotionActive(Potion.blindness))
         {
             if (sprintToggleTimer <= 0 && !mc.gameSettings.keyBindSprint.isKeyDown()) {
@@ -701,13 +697,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
             this.setSprinting(true);
         }
 
-        if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3)) {
+        if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3 || test)) {
             this.setSprinting(false);
-        }
-
-        if (test) {
-            movementInput.moveForward = prevMoveForward;
-            test = false;
+            if (test) { test = false; }
         }
 
         Client.INSTANCE.getObjectsCaller().onEvent(new SprintEvent());

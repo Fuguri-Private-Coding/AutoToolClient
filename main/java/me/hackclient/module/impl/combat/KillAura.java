@@ -13,10 +13,7 @@ import me.hackclient.module.impl.combat.killaura.rotation.impl.IntaveRotation;
 import me.hackclient.module.impl.combat.killaura.rotation.impl.TestRotation;
 import me.hackclient.module.impl.combat.killaura.rotation.impl.VanillaRotation;
 import me.hackclient.module.impl.visual.Animations;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.*;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
@@ -33,7 +30,7 @@ public class KillAura extends Module {
     final StopWatch stopWatch;
 
     // Настройки поиска противника
-    final FloatSetting distance = new FloatSetting("Distance", this, 3.0f, 6.0f, 6.0f, 0.1f);
+    final FloatSetting distance = new FloatSetting("Distance", this, 3.0f, 6.0f, 6.0f, 0.1f) {};
     final BooleanSetting players = new BooleanSetting("Players", this, true);
     final BooleanSetting animals = new BooleanSetting("Animals", this, false);
     final BooleanSetting mobs = new BooleanSetting("Mobs", this, false);

@@ -6,10 +6,7 @@ import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.*;
 import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
@@ -38,7 +35,7 @@ public class Line extends Module {
     final List<Doubles<Vec3, Long>> bottomList, topList;
 
     final IntegerSetting lifeTime = new IntegerSetting("LifeTime", this, 1, 30, 5);
-    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 1f, 10f, 5f, 0.1f);
+    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 1f, 10f, 5f, 0.1f) {};
     final BooleanSetting onlyThirdPerson = new BooleanSetting("OnlyThirdPerson", this, true);
 
     public Line() {
