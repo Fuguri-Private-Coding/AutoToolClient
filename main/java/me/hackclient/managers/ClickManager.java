@@ -41,10 +41,6 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
                 MovingObjectPosition mouse = RayCastUtils.rayCast(Client.INSTANCE.getCombatManager().getReach(), Rotation.getServerRotation());
 
                 mc.clickMouseCustom(mouse, false);
-<<<<<<< Updated upstream:main/java/me/hackclient/module/impl/combat/killaura/click/ClickManager.java
-                mc.clickMouse();
-=======
->>>>>>> Stashed changes:main/java/me/hackclient/managers/ClickManager.java
             }
         }
     }

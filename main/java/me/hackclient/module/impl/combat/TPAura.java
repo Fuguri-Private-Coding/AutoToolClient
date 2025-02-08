@@ -27,10 +27,7 @@ public class TPAura extends Module {
 
     final StopWatch stopWatch;
 
-<<<<<<< Updated upstream
-=======
     final FloatSetting range = new FloatSetting("Range", this, 6, 100, 16, 1f);
->>>>>>> Stashed changes
     final IntegerSetting packets = new IntegerSetting("Packets", this, 1, 10, 1);
 
     public TPAura() {
