@@ -25,7 +25,7 @@ public class TPAura extends Module {
 
     final StopWatch stopWatch;
 
-    final IntegerSetting packets = new IntegerSetting("Packtes", this, 1, 10, 1);
+    final IntegerSetting packets = new IntegerSetting("Packets", this, 1, 10, 1);
 
     public TPAura() {
         stopWatch = new StopWatch();

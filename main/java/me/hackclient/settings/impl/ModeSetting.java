@@ -7,10 +7,11 @@ import me.hackclient.settings.Setting;
 
 import java.util.function.BooleanSupplier;
 
+@Getter
 public class ModeSetting extends Setting {
 
-    @Getter @Setter String mode;
-    @Getter final String[] modes;
+    @Setter String mode;
+    final String[] modes;
 
     public ModeSetting(String name, Module parent, String mode, String[] modes) {
         super(name, parent);

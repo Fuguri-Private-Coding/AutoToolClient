@@ -46,7 +46,7 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
                 }
 
                 mc.clickMouseCustom(mouse, false);
-//                mc.clickMouse();
+                mc.clickMouse();
             }
         }
     }

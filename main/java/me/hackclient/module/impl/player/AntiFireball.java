@@ -5,8 +5,7 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.*;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.client.ClientUtils;
@@ -26,6 +25,7 @@ public class AntiFireball extends Module {
 
     final IntegerSetting delay = new IntegerSetting("Delay", this, 0, 1000, 500);
     final FloatSetting distance = new FloatSetting("Distance", this, 3f, 12f, 6f, 0.5f) {};
+    final BooleanSetting debug = new BooleanSetting("Debug", this, false);
 
     public AntiFireball() {
         stopWatch = new StopWatch();
@@ -42,7 +42,7 @@ public class AntiFireball extends Module {
                 mc.thePlayer.swingItem();
                 mc.playerController.attackEntity(mc.thePlayer, entity);
                 stopWatch.reset();
-                ClientUtils.chatLog("Fireball detected.");
+                if (debug.isToggled()) ClientUtils.chatLog("Fireball detected.");
             }
         }
     }
