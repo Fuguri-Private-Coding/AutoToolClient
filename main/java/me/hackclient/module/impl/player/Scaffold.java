@@ -222,6 +222,12 @@ public class Scaffold extends Module {
             rotation = new Rotation(roundedYaw, bestPitch);
         }
 
+        if (mc.thePlayer.hurtResistantTime > 0) {
+            for (float i = 0; i < 180; i += 0.1f) {
+
+            }
+        }
+
         if (rotation == null) {
             return;
         }
