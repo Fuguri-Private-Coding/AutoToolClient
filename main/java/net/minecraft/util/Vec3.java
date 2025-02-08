@@ -28,6 +28,10 @@ public class Vec3
         this.zCoord = z;
     }
 
+    public Vec3(Vec3 src) {
+        this(src.xCoord, src.yCoord, src.zCoord);
+    }
+
     public Vec3(Vec3i p_i46377_1_)
     {
         this((double)p_i46377_1_.getX(), (double)p_i46377_1_.getY(), (double)p_i46377_1_.getZ());

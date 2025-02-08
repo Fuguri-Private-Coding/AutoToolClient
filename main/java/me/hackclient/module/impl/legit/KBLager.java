@@ -1,6 +1,8 @@
 package me.hackclient.module.impl.legit;
 
+import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.PacketDirection;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.module.Category;
@@ -8,6 +10,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.utils.Utils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.network.Packet;
@@ -27,13 +30,12 @@ public class KBLager extends Module {
 
     final IntegerSetting delay = new IntegerSetting("Delay", this, 10, 500, 200);
 
-    final List<Doubles<Packet, Long>> clientPackets, serverPackets;
+    final List<Doubles<Packet, Long>> serverPackets;
 
     final StopWatch stopWatch;
 
     public KBLager() {
         stopWatch = new StopWatch();
-        clientPackets = new CopyOnWriteArrayList<>();
         serverPackets = new CopyOnWriteArrayList<>();
     }
 
@@ -41,17 +43,10 @@ public class KBLager extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof PacketEvent packetEvent) {
-            if (mc.objectMouseOver == null)
+            if (!Utils.isWorldLoaded() || Client.INSTANCE.getCombatManager().getTargetOrSelectedEntity() == null)
                 return;
 
-            if (!mc.theWorld.isBlockLoaded(new BlockPos(mc.thePlayer.posX, 0, mc.thePlayer.posZ)))
-                return;
-
-            if (mc.objectMouseOver == null || mc.objectMouseOver.entityHit == null)
-                return;
-
-
-            Packet packet = packetEvent.getPacket();
+            final Packet packet = packetEvent.getPacket();
 
             if (packet instanceof S08PacketPlayerPosLook) {
                 stopWatch.reset();
@@ -61,14 +56,7 @@ public class KBLager extends Module {
             if (!stopWatch.reachedMS(500))
                 return;
 
-            if (packet instanceof S12PacketEntityVelocity
-            || packet instanceof S32PacketConfirmTransaction
-            || packet instanceof S27PacketExplosion
-            || packet instanceof S14PacketEntity
-            || packet instanceof S18PacketEntityTeleport
-            || packet instanceof S03PacketTimeUpdate
-            || packet instanceof S19PacketEntityHeadLook
-            || packet instanceof S01PacketPong) {
+            if (packetEvent.getDirection() == PacketDirection.INCOMING) {
                 serverPackets.add(new Doubles<>(packet, packetEvent.getSendTime()));
                 packetEvent.setCanceled(true);
             }

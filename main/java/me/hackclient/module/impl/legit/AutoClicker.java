@@ -9,6 +9,8 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.utils.math.RandomUtils;
+import me.hackclient.utils.rotation.RayCastUtils;
+import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.input.Mouse;
@@ -57,9 +59,8 @@ public class AutoClicker extends Module {
             if (mc.currentScreen != null)
                 return;
 
-            if (allowBreakBlock.isToggled() && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+            if (allowBreakBlock.isToggled() && RayCastUtils.rayCast(Client.INSTANCE.getCombatManager().getReach(), Rotation.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
                 return;
-
 
             if (stopWatch.reachedMS(delay)) {
                 stopWatch.reset();

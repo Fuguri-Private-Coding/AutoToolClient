@@ -19,6 +19,8 @@ import org.lwjgl.input.Mouse;
 )
 public class AutoTool extends Module {
 
+    boolean flag;
+
     @Override
     public void onDisable() {
         super.onDisable();
@@ -35,40 +37,17 @@ public class AutoTool extends Module {
 
         if (event instanceof LegitClickTimingEvent) {
             if (mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mouse.getBlockPos() == null || !mc.gameSettings.keyBindAttack.isKeyDown()) {
-                switchBack();
+                if (flag) {
+                    flag = false;
+                    switchBack();
+                }
                 return;
             }
 
+            flag = true;
             final BlockPos block = mouse.getBlockPos();
-
             mc.thePlayer.inventory.currentItem = getBestSlot(mc.theWorld.getBlockState(block).getBlock());
         }
-        if (event instanceof UpdateRenderingItem updateRenderingItem) {
-            updateRenderingItem.setStack(mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.fakeCurrentItem]);
-        }
-
-//        if (event instanceof LegitClickTimingEvent) {
-//            if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.gameSettings.keyBindAttack.isKeyDown()) {
-//                flag = true;
-//                BlockPos blockPos = mc.objectMouseOver.getBlockPos();
-//                int bestSlot = getBestSlot(blockPos);
-//                if (mc.thePlayer.inventory.currentItem != bestSlot && bestSlot != -1) {
-//                    lastSlot = mc.thePlayer.inventory.currentItem;
-//                    mc.thePlayer.inventory.currentItem = bestSlot;
-//                }
-//            } else if (flag) {
-//                flag = false;
-//                if (lastSlot != -1) {
-//                    mc.thePlayer.inventory.currentItem = lastSlot;
-//                }
-//                lastSlot = -1;
-//            }
-//        }
-//        if (event instanceof UpdateRenderingItem updateRenderingItem) {
-//            if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.gameSettings.keyBindAttack.isKeyDown() && lastSlot != -1) {
-//                updateRenderingItem.setStack(mc.thePlayer.inventory.mainInventory[lastSlot]);
-//            }
-//        }
     }
 
     int getBestSlot(Block block) {

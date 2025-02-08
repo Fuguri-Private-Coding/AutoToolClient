@@ -1,4 +1,4 @@
-package me.hackclient.friend;
+package me.hackclient.managers;
 
 import java.util.ArrayList;
 import java.util.List;

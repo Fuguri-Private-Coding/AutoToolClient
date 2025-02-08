@@ -16,7 +16,9 @@ import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.math.RandomUtils;
+import me.hackclient.utils.packet.PacketUtils;
 import me.hackclient.utils.render.RenderUtils;
+import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
@@ -42,6 +44,8 @@ public class BackTrack extends Module {
             }
     );
 
+    double testX, testY, testZ;
+    final StopWatch renderStopWatch;
     int delay;
 
     final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 5000, 90);
@@ -55,13 +59,14 @@ public class BackTrack extends Module {
 
     public BackTrack() {
         new PositionResolver();
+        renderStopWatch = new StopWatch();
     }
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
 
-        EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
+        EntityLivingBase target = Client.INSTANCE.getCombatManager().getTargetOrSelectedEntity();
 
         if (event instanceof TickEvent && target != null) {
             delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
@@ -70,16 +75,21 @@ public class BackTrack extends Module {
             resetPackets();
         }
         if (event instanceof PacketEvent packetEvent) {
-            if (target == null) { return; }
+            if (target == null) {
+                resetPackets();
+                return;
+            }
+
+            double distance = DistanceUtils.getDistanceToVec(new Vec3(target.realX, target.realY + target.getEyeHeight(), target.realZ));
+            if (distance < minDistance.getValue() || distance > maxDistance.getValue() || distance < DistanceUtils.getDistanceToVec(target.getPositionEyes(1.0f))) {
+                resetPackets();
+                return;
+            }
 
             Packet packet = packetEvent.getPacket();
 
             if (packet instanceof S06PacketUpdateHealth s06 && s06.getHealth() <= 0.0f) {
                 resetPackets();
-                return;
-            }
-
-            if (packet instanceof C00Handshake || packet instanceof C00PacketServerQuery || packet instanceof S02PacketChat || packet instanceof S01PacketPong) {
                 return;
             }
 
@@ -116,66 +126,49 @@ public class BackTrack extends Module {
             }
         }
         if (event instanceof RunGameLoopEvent) {
-            if (target == null) {
-                resetPackets();
-                return;
-            }
-
-            double distance = DistanceUtils.getDistanceToVec(new Vec3(target.realX / 32, target.realY / 32 + target.getEyeHeight(), target.realZ / 32));
-            if (distance < minDistance.getValue() || distance > maxDistance.getValue() || distance < DistanceUtils.getDistanceToVec(target.getPositionEyes(1.0f))) {
-                resetPackets();
-                return;
-            }
-
             ClientHandler.PacketHandler.serverPacketBuffer.forEach(p -> {
                 if (System.currentTimeMillis() - p.getSecond() >= delay) {
-                    try {
-                        p.getFirst().processPacket(mc.getNetHandler().getNetworkManager().packetListener);
-                        ClientHandler.PacketHandler.serverPacketBuffer.remove(p);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
+                    PacketUtils.recievePacket(p.getFirst());
+                    ClientHandler.PacketHandler.serverPacketBuffer.remove(p);
                 }
             });
             ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> {
                 if (System.currentTimeMillis() - p.getSecond() >= delay) {
-                    try {
-                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(p.getFirst());
-                        ClientHandler.PacketHandler.clientPacketBuffer.remove(p);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
+                    PacketUtils.sendPacket(p.getFirst());
+                    ClientHandler.PacketHandler.clientPacketBuffer.remove(p);
                 }
             });
         }
         if (event instanceof Render3DEvent) {
-            if (showOnlyWorking.isToggled() && target == null)
+            if (showOnlyWorking.isToggled() && (ClientHandler.PacketHandler.serverPacketBuffer.isEmpty() || target == null))
                 return;
 
-            if (showOnlyOnTarget.isToggled() && target != null) {
+            if (target != null) {
                 RenderUtils.start3D();
-                RenderUtils.renderHitBox(new AxisAlignedBB(
-                        target.realX / 32D - target.width / 2,
-                        target.realY / 32D + 0,
-                        target.realZ / 32D - target.width / 2,
-                        target.realX / 32D + target.width / 2,
-                        target.realY / 32D + target.height,
-                        target.realZ / 32D + target.width / 2
-                ).offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ));
-                RenderUtils.stop3D();
-            } else {
-                for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
-                    RenderUtils.start3D();
-                    RenderUtils.renderHitBox(new AxisAlignedBB(
-                            playerEntity.realX / 32 - playerEntity.width / 2,
-                            playerEntity.realY / 32 + 0,
-                            playerEntity.realZ / 32 - playerEntity.width / 2,
-                            playerEntity.realX / 32 + playerEntity.width / 2,
-                            playerEntity.realY / 32 + playerEntity.height,
-                            playerEntity.realZ / 32 + playerEntity.width / 2
-                    ).offset(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ));
-                    RenderUtils.stop3D();
+
+                if (target.realX != testX && target.realY != testY && target.realZ != testZ) {
+                    renderStopWatch.reset();
+                    testX = target.realX;
+                    testY = target.realY;
+                    testZ = target.realZ;
                 }
+
+                double d1 = Math.min(renderStopWatch.reachedMS(), 50);
+                d1 /= 50D;
+
+                double smoothX = target.lRealX + (target.realX - target.lRealX) * d1 - mc.getRenderManager().viewerPosX;
+                double smoothY = target.lRealY + (target.realY - target.lRealY) * d1 - mc.getRenderManager().viewerPosY;
+                double smoothZ = target.lRealZ + (target.realZ - target.lRealZ) * d1 - mc.getRenderManager().viewerPosZ;
+
+                RenderUtils.renderHitBox(new AxisAlignedBB(
+                        smoothX - target.width / 2,
+                        smoothY + 0,
+                        smoothZ - target.width / 2,
+                        smoothX + target.width / 2,
+                        smoothY + target.height,
+                        smoothZ + target.width / 2
+                ));
+                RenderUtils.stop3D();
             }
         }
     }
@@ -224,14 +217,20 @@ public class BackTrack extends Module {
             if (event instanceof PacketEvent packetEvent) {
                 Packet packet = packetEvent.getPacket();
                 if (packet instanceof S14PacketEntity s14 && s14.getEntity(mc.theWorld) instanceof EntityLivingBase entityLivingBase) {
-                    entityLivingBase.realX += s14.getPositionX();
-                    entityLivingBase.realY += s14.getPositionY();
-                    entityLivingBase.realZ += s14.getPositionZ();
+                    entityLivingBase.lRealX = entityLivingBase.realX;
+                    entityLivingBase.lRealY = entityLivingBase.realY;
+                    entityLivingBase.lRealZ = entityLivingBase.realZ;
+                    entityLivingBase.realX += (double) s14.getPositionX() / 32;
+                    entityLivingBase.realY += (double) s14.getPositionY() / 32;
+                    entityLivingBase.realZ += (double) s14.getPositionZ() / 32;
                 }
                 if (packet instanceof S18PacketEntityTeleport s18 && mc.theWorld.getEntityByID(s18.getEntityId()) instanceof EntityLivingBase entityLivingBase) {
-                    entityLivingBase.realX = s18.getX();
-                    entityLivingBase.realY = s18.getY();
-                    entityLivingBase.realZ = s18.getZ();
+                    entityLivingBase.lRealX = entityLivingBase.realX;
+                    entityLivingBase.lRealY = entityLivingBase.realY;
+                    entityLivingBase.lRealZ = entityLivingBase.realZ;
+                    entityLivingBase.realX = (double) s18.getX() / 32;
+                    entityLivingBase.realY = (double) s18.getY() / 32;
+                    entityLivingBase.realZ = (double) s18.getZ() / 32;
                 }
             }
         }

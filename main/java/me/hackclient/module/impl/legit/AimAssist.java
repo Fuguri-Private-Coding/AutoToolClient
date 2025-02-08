@@ -1,7 +1,7 @@
 package me.hackclient.module.impl.legit;
 
 import me.hackclient.Client;
-import me.hackclient.combatmanager.TargetFinder;
+import me.hackclient.utils.target.TargetFinder;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.MotionEvent;
 import me.hackclient.module.Category;

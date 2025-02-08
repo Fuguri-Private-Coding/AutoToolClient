@@ -8,7 +8,7 @@ import me.hackclient.settings.impl.IntegerSetting;
 @ModuleInfo(
         name = "ClickSettings",
         category = Category.COMBAT,
-        toggled = true
+          toggled = true
 )
 public class ClickSettings extends Module {
 

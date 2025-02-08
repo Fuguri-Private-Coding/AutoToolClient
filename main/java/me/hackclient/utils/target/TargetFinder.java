@@ -1,4 +1,4 @@
-package me.hackclient.combatmanager;
+package me.hackclient.utils.target;
 
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.interfaces.InstanceAccess;

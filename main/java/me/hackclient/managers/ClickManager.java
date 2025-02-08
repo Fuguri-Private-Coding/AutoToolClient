@@ -1,4 +1,4 @@
-package me.hackclient.module.impl.combat.killaura.click;
+package me.hackclient.managers;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,6 @@ import me.hackclient.event.Event;
 import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.impl.combat.ClickSettings;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
@@ -39,14 +38,13 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
             if (rayCast != null && rayCast.isFriend() || !clicking) { return; }
 
             for (int i = 0; i < iters; i++) {
-                MovingObjectPosition mouse = RayCastUtils.rayCast(5, Rotation.getServerRotation());
-
-                if (mouse != null) {
-                    ClientUtils.chatLog(mouse.typeOfHit.toString() + " " + mouse.entityHit);
-                }
+                MovingObjectPosition mouse = RayCastUtils.rayCast(Client.INSTANCE.getCombatManager().getReach(), Rotation.getServerRotation());
 
                 mc.clickMouseCustom(mouse, false);
+<<<<<<< Updated upstream:main/java/me/hackclient/module/impl/combat/killaura/click/ClickManager.java
                 mc.clickMouse();
+=======
+>>>>>>> Stashed changes:main/java/me/hackclient/managers/ClickManager.java
             }
         }
     }

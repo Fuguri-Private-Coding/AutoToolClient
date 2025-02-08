@@ -7,9 +7,11 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.RandomUtils;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -28,7 +30,7 @@ public class AutoSoup extends Module {
         @Override
         public int getValue() {
             if (maxHealth.value < value) { value = maxHealth.value; }
-            return super.getValue();
+            return value;
         }
     };
 
@@ -36,7 +38,7 @@ public class AutoSoup extends Module {
         @Override
         public int getValue() {
             if (minHealth.value > value) { value = minHealth.value; }
-            return super.getValue();
+            return value;
         }
     };
 
@@ -45,7 +47,7 @@ public class AutoSoup extends Module {
         @Override
         public int getValue() {
             if (maxDelayBetweenUse.value < value) { value = maxDelayBetweenUse.value; }
-            return super.getValue();
+            return value;
         }
     };
 
@@ -53,9 +55,11 @@ public class AutoSoup extends Module {
         @Override
         public int getValue() {
             if (minDelayBetweenUse.value > value) { value = minDelayBetweenUse.value; }
-            return super.getValue();
+            return value;
         }
     };
+
+    int soupSlot;
 
     final BooleanSetting randomSlot = new BooleanSetting("RandomSlot", this, false);
 
@@ -71,9 +75,10 @@ public class AutoSoup extends Module {
 
             } else {
                 if (mc.thePlayer.inventory.getCurrentItem() != null && mc.thePlayer.inventory.getCurrentItem().getItem() == Items.bowl) {
-                    mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ALL_ITEMS, BlockPos.ORIGIN, EnumFacing.DOWN));
-                    mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+                    mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
                     resetValues();
+                    mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+
                     return;
                 }
 
@@ -82,13 +87,17 @@ public class AutoSoup extends Module {
                     return;
                 }
 
-                final int soupSlot = getSoupInHotBar();
-                if (mc.thePlayer.getHealth() <= health && soupSlot != -1) {
-                    mc.thePlayer.inventory.currentItem = soupSlot;
+                if (soupSlot == -1) {
+                    soupSlot = getSoupInHotBar();
+                }
+                if (mc.thePlayer.getHealth() < health && soupSlot != -1) {
+                    if (mc.thePlayer.inventory.currentItem != soupSlot) {
+                        mc.thePlayer.inventory.currentItem = soupSlot;
+                        mc.playerController.syncCurrentPlayItemNoEvent();
+                        return;
+                    }
 
-                    mc.playerController.syncCurrentPlayItemNoEvent();
                     mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
-
                     delayBetweenUse = RandomUtils.nextInt(minDelayBetweenUse.getValue(), maxDelayBetweenUse.getValue());
                 }
             }
@@ -99,9 +108,9 @@ public class AutoSoup extends Module {
         List<Integer> possibleSlots = new ArrayList<>();
 
         for (int i = 0; i < 9; i++) {
-            final ItemStack item = mc.thePlayer.inventory.mainInventory[i];
+            final ItemStack item = mc.thePlayer.inventory.getStackInSlot(i);
 
-            if (item == null || item.getItem() != Items.mushroom_stew) { continue; }
+            if (item == null || !(item.getItem() instanceof ItemSoup)) { continue; }
 
             possibleSlots.add(i);
         }
@@ -118,6 +127,7 @@ public class AutoSoup extends Module {
     }
 
     void resetValues() {
+        soupSlot = -1;
         health = RandomUtils.nextInt(minHealth.getValue(), maxHealth.getValue());
         delayBetweenUse = RandomUtils.nextInt(minDelayBetweenUse.getValue(), maxDelayBetweenUse.getValue());
     }

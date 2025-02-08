@@ -1,16 +1,15 @@
 package me.hackclient.module.impl.combat;
 
 import me.hackclient.event.Event;
-import me.hackclient.event.events.AttackEvent;
-import me.hackclient.event.events.MoveButtonEvent;
-import me.hackclient.event.events.PacketEvent;
-import me.hackclient.event.events.UpdateEvent;
+import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
+import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 
 @ModuleInfo(
@@ -26,18 +25,20 @@ public class Velocity extends Module {
             new String[] {
                     "Legit",
                     "Intave",
+                    "IntaveFlag",
                     "Vanilla",
                     "Push"
             }
     );
 
-    final IntegerSetting minPlayerHurtTimeLegit = new IntegerSetting("MinPlayerHurtTime", this, 0, 9, 7);
+    boolean velocity, sendedFlag;
+
+    final IntegerSetting minPlayerHurtTime = new IntegerSetting("MinPlayerHurtTime", this, 0, 9, 7);
 
     // Legit
     final BooleanSetting forceHoldForwardWhenDamaged = new BooleanSetting("ForceHoldForwardWhenDamaged", this, () -> mode.getMode().equals("Legit"), true);
 
     // Intave
-    final IntegerSetting minPlayerHurtTimeIntave = new IntegerSetting("MinPlayerHurtTime", this, () -> mode.getMode().equals("Intave"), 0, 9, 7);
     final BooleanSetting jump = new BooleanSetting("Jump", this, () -> mode.getMode().equals("Intave"), true);
     final BooleanSetting cancelSprint = new BooleanSetting("CancelSprintAtSprintHit", this, () -> mode.getMode().equals("Intave"), true);
     final FloatSetting sprintReduce = new FloatSetting("SprintReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 0.6f, 0.1f) {};
@@ -58,7 +59,7 @@ public class Velocity extends Module {
         super.onEvent(event);
         switch (mode.getMode()) {
             case "Legit" -> {
-                boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTimeLegit.getValue();
+                boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTime.getValue();
 
                 if (event instanceof MoveButtonEvent moveButtonEvent && mc.currentScreen == null && damaged) {
                     if (forceHoldForwardWhenDamaged.isToggled()) {
@@ -72,7 +73,7 @@ public class Velocity extends Module {
             }
             case "Intave" -> {
                 boolean attacking = event instanceof AttackEvent attackEvent && attackEvent.getHittingEntity() instanceof EntityLivingBase;
-                boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTimeIntave.getValue();
+                boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTime.getValue();
                 if (event instanceof MoveButtonEvent moveButtonEvent && damaged && mc.thePlayer.onGround && jump.isToggled()) {
                     moveButtonEvent.setJump(true);
                     moveButtonEvent.setForward(true);
@@ -89,6 +90,26 @@ public class Velocity extends Module {
                         mc.thePlayer.motionX *= normalReduce.getValue();
                         mc.thePlayer.motionZ *= normalReduce.getValue();
                     }
+                }
+            }
+            case "IntaveFlag" -> {
+                if (event instanceof PacketEvent packetEvent) {
+                    final Packet packet = packetEvent.getPacket();
+
+                    if (mc.thePlayer.hurtTime != 0 && packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId()) {
+                        velocity = true;
+                    }
+                    if (packet instanceof C0FPacketConfirmTransaction && velocity) {
+                        packetEvent.setCanceled(true);
+                    }
+                    if (packet instanceof S08PacketPlayerPosLook) {
+                        velocity = false;
+                        sendedFlag = false;
+                    }
+                }
+                if (event instanceof MotionEvent motionEvent && velocity && !sendedFlag) {
+                    motionEvent.setY(999);
+                    sendedFlag = true;
                 }
             }
             case "Vanilla" -> {

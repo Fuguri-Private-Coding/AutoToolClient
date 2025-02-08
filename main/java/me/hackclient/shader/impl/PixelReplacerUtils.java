@@ -3,6 +3,7 @@ package me.hackclient.shader.impl;
 import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.callable.CallableObject;
+import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.module.impl.visual.ClientShader;
 import me.hackclient.shader.Shader;
@@ -16,7 +17,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
-public class PixelReplacerUtils implements CallableObject, InstanceAccess {
+public class PixelReplacerUtils implements ConditionCallableObject, InstanceAccess {
 
     {
         callables.add(this);
@@ -37,7 +38,7 @@ public class PixelReplacerUtils implements CallableObject, InstanceAccess {
     @Override
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent) {
-            if (!Display.isVisible() || !Display.isActive()) {
+            if (!Display.isVisible() || !Display.isActive() || !mm.getModule("ClientShader").isToggled()) {
                 return;
             }
 
@@ -89,5 +90,10 @@ public class PixelReplacerUtils implements CallableObject, InstanceAccess {
             return new Framebuffer(mc.displayWidth, mc.displayHeight, true);
         }
         return toUpdate;
+    }
+
+    @Override
+    public boolean handleEvents() {
+        return true;
     }
 }

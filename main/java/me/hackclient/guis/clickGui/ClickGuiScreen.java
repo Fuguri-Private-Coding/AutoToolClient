@@ -69,6 +69,15 @@ public class ClickGuiScreen extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+				Client.INSTANCE.getModuleManager().modules.sort(
+				(o1, o2) -> {
+					int width1 = mc.fontRendererObj.getStringWidth(o1.getName());
+					int width2 = mc.fontRendererObj.getStringWidth(o2.getName());
+
+					return Integer.compare(width2, width1);
+				}
+		);
+
 		RenderUtils.drawImage(shesterenka, 5, 5, 30, 30);
 		if (clientShader == null) {
 			clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
@@ -102,6 +111,7 @@ public class ClickGuiScreen extends GuiScreen {
 		} else {
 			RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, clickGui.backgroundRadius.getValue(), new Color(15, 15, 15, clickGui.backgroundAlpha.getValue()));
 		}
+
 		RoundedUtils.drawRect(pos.x + size.x - 5, pos.y + size.y - 5, 5, 5, 1, BACKGROUND_COLOR);
 		fontRenderer.drawString(Client.INSTANCE.getName(), pos.x + 20, pos.y + 4, MAIN_COLOR_INT);
 

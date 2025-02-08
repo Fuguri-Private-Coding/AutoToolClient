@@ -548,8 +548,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.gameController);
         Entity entity = packetIn.getEntity(this.clientWorldController);
 
-        if (entity != null)
-        {
+        if (entity != null) {
             entity.serverPosX += packetIn.getPositionX();
             entity.serverPosY += packetIn.getPositionY();
             entity.serverPosZ += packetIn.getPositionZ();
@@ -633,6 +632,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         }
 
         entityplayer.setPositionAndRotation(d0, d1, d2, f, f1);
+        this.netManager.sendPacket(new C03PacketPlayer(entityplayer.onGround));
         this.netManager.sendPacket(new C03PacketPlayer.C06PacketPlayerPosLook(entityplayer.posX, entityplayer.getEntityBoundingBox().minY, entityplayer.posZ, entityplayer.rotationYaw, entityplayer.rotationPitch, false));
 
         if (!this.doneLoadingTerrain)

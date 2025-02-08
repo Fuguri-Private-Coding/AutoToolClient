@@ -3,6 +3,7 @@ package me.hackclient.module.impl.visual;
 import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.Render3DEvent;
+import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -15,6 +16,9 @@ import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.render.RenderUtils;
+import me.hackclient.utils.rotation.RayCastUtils;
+import me.hackclient.utils.rotation.Rotation;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
 
@@ -30,31 +34,44 @@ public class Dot extends Module {
     final FloatSetting size = new FloatSetting("Size", this, 1.0f, 20.0f, 10.0f, 0.1f) {};
     final BooleanSetting onlyKillAura = new BooleanSetting("OnlyKillAura", this, true);
 
-    final Animation3D animation3D;
-
-    public Dot() {
-        animation3D = new Animation3D();
-    }
+    Vec3 lastVec, currentVec;
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (event instanceof TickEvent) {
+
+            MovingObjectPosition mouse =  RayCastUtils.rayCast(6, Rotation.getServerRotation());
+
+            if (currentVec != null) {
+                lastVec = new Vec3(currentVec);
+            }
+
+            if (mouse != null) {
+                currentVec = mouse.hitVec;
+            }
+        }
         if (event instanceof Render3DEvent) {
-            if (Client.INSTANCE.getCombatManager().getTarget() == null && onlyKillAura.isToggled()) { return; }
+            if (Client.INSTANCE.getCombatManager().getTarget() == null && onlyKillAura.isToggled() || lastVec == null || currentVec == null) { return; }
+
+            double x = lastVec.xCoord + (currentVec.xCoord - lastVec.xCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
+            double y = lastVec.yCoord + (currentVec.yCoord - lastVec.yCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
+            double z = lastVec.zCoord + (currentVec.zCoord - lastVec.zCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
+
             RenderUtils.start3D();
-            Vec3 vec = mc.objectMouseOver.hitVec.addVector(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
             GL11.glPointSize(size.getValue());
             GL11.glEnable(GL11.GL_POINT_SMOOTH);
+
             GL11.glBegin(GL11.GL_POINTS);
-            animation3D.update(30);
-            animation3D.endX = vec.xCoord;
-            animation3D.endY = vec.yCoord;
-            animation3D.endZ = vec.zCoord;
-            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            GL11.glVertex3d(animation3D.x,animation3D.y,animation3D.z);
+            GL11.glVertex3d(x, y, z);
             GL11.glEnd();
+
             GL11.glDisable(GL11.GL_POINT_SMOOTH);
             GL11.glPointSize(1);
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
             RenderUtils.stop3D();
         }
     }

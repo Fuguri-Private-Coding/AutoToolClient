@@ -1,18 +1,12 @@
 package me.hackclient.module.impl.combat;
 
 import me.hackclient.Client;
-import me.hackclient.combatmanager.CombatManager;
-import me.hackclient.combatmanager.TargetFinder;
+import me.hackclient.managers.CombatManager;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.MotionEvent;
-import me.hackclient.event.events.RunGameLoopEvent;
-import me.hackclient.event.events.TickEvent;
-import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.distance.DistanceUtils;

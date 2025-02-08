@@ -11,12 +11,15 @@ import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.math.RandomUtils;
+import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.network.Packet;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.client.C00PacketLoginStart;
@@ -29,15 +32,17 @@ import net.minecraft.network.status.client.C00PacketServerQuery;
 import net.minecraft.network.status.client.C01PacketPing;
 import net.minecraft.network.status.server.S00PacketServerInfo;
 import net.minecraft.network.status.server.S01PacketPong;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 
 @ModuleInfo(name = "Ping", category = Category.CONNECTION)
 public class Ping extends Module {
 
-	Vec3 serverPos;
+	Vec3 serverPos, lServerPos;
 	Rotation serverRotation;
 	int outDelay, recoilDelay;
+	final StopWatch renderStopWatch;
 
 	final StopWatch recoilStopWatch;
 
@@ -67,6 +72,7 @@ public class Ping extends Module {
 
 	public Ping() {
 		recoilStopWatch = new StopWatch();
+		renderStopWatch = new StopWatch();
 	}
 
 	@Override
@@ -122,7 +128,7 @@ public class Ping extends Module {
 				recoilDelay = blockPlaceFlush.getValue();
 			}
 
-			if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiContainer) && flushes.get("OpenedInv")) {
+			if (mc.currentScreen instanceof GuiContainer && flushes.get("OpenedInv")) {
 				resetPackets();
 				recoilDelay = openInvFlush.getValue();
 			}
@@ -140,8 +146,38 @@ public class Ping extends Module {
 				if (System.currentTimeMillis() - p.getSecond() >= (long) outDelay) {
 					mc.getNetHandler().getNetworkManager().sendPacketNoEvent(p.getFirst());
 					ClientHandler.PacketHandler.clientPacketBuffer.remove(p);
+
+					if (p.getFirst() instanceof C03PacketPlayer c03 && c03.isMoving()) {
+						if (serverPos != null) {
+							lServerPos = new Vec3(serverPos);
+						}
+						serverPos = c03.getPosVec();
+						renderStopWatch.reset();
+					}
 				}
 			});
+		}
+		if (event instanceof Render3DEvent) {
+			if (serverPos != null && lServerPos != null) {
+				RenderUtils.start3D();
+
+				double d1 = Math.min(renderStopWatch.reachedMS(), 50D);
+				d1 /= 50d;
+
+				double smoothX = lServerPos.xCoord + (serverPos.xCoord - lServerPos.xCoord) * d1 - mc.getRenderManager().viewerPosX;
+				double smoothY = lServerPos.yCoord + (serverPos.yCoord - lServerPos.yCoord) * d1 - mc.getRenderManager().viewerPosY;
+				double smoothZ = lServerPos.zCoord + (serverPos.zCoord - lServerPos.zCoord) * d1 - mc.getRenderManager().viewerPosZ;
+
+				RenderUtils.renderHitBox(new AxisAlignedBB(
+						smoothX - mc.thePlayer.width / 2,
+						smoothY + 0,
+						smoothZ - mc.thePlayer.width / 2,
+						smoothX + mc.thePlayer.width / 2,
+						smoothY + mc.thePlayer.height,
+						smoothZ + mc.thePlayer.width / 2
+				));
+				RenderUtils.stop3D();
+			}
 		}
 		if (mc.thePlayer.isUsingItem() && flushes.get("UsingItem")) {
 			resetPackets();
@@ -162,10 +198,15 @@ public class Ping extends Module {
 	}
 
 	void resetPackets() {
-		ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> sendPacket(new Doubles<>(p.getFirst(), PacketDirection.OUTGOING)));
-		//ClientHandler.PacketHandler.serverPacketBuffer.forEach(p -> sendPacket(new Doubles<>(p.getFirst(), PacketDirection.INCOMING)));
+		ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> {
+			sendPacket(new Doubles<>(p.getFirst(), PacketDirection.OUTGOING));
+			if (p.getFirst() instanceof C03PacketPlayer c03PacketPlayer && c03PacketPlayer.isMoving()) {
+				lServerPos = new Vec3(serverPos);
+				serverPos = c03PacketPlayer.getPosVec();
+				renderStopWatch.reset();
+			}
+		});
 		ClientHandler.PacketHandler.clientPacketBuffer.clear();
-		//ClientHandler.PacketHandler.serverPacketBuffer.clear();
 
 		outDelay = RandomUtils.nextInt(minOutDelay.getValue(), maxOutDelay.getValue());
 	}
@@ -175,7 +216,9 @@ public class Ping extends Module {
 			mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet.getFirst());
 			if (packet.getFirst() instanceof C03PacketPlayer c03) {
 				if (c03.isMoving()) {
+					lServerPos = new Vec3(serverPos);
 					serverPos = c03.getPosVec();
+					renderStopWatch.reset();
 				}
 				if (c03.getRotating()) {
 					serverRotation = new Rotation(c03.getYaw(), c03.getPitch());

@@ -3,19 +3,20 @@ package me.hackclient;
 import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.cfg.ConfigManager;
-import me.hackclient.combatmanager.CombatManager;
+import me.hackclient.managers.CombatManager;
 import me.hackclient.event.callable.CallableObject;
 import me.hackclient.event.Event;
 import me.hackclient.event.ObjectsCaller;
 import me.hackclient.event.events.KeyEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
-import me.hackclient.friend.FriendManager;
+import me.hackclient.managers.FriendManager;
 import me.hackclient.guis.clickGui.ClickGuiScreen;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleManager;
-import me.hackclient.module.impl.combat.killaura.click.ClickManager;
+import me.hackclient.managers.ClickManager;
 import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
+import me.hackclient.utils.font.FontsRepository;
 import me.hackclient.utils.sound.SoundsManager;
 import org.lwjgl.opengl.Display;
 
@@ -28,10 +29,12 @@ import java.util.concurrent.ScheduledExecutorService;
 public enum Client implements CallableObject {
 	INSTANCE;
 
-	final File clientDirectory = new File("AutoTool/configs");
-	final File soundsDirectory = new File("AutoTool/sounds");
-	@Setter File defaultConfig = new File(clientDirectory, "default.json");
-	@Setter File bindsDirectory = new File(clientDirectory, "binds.json");
+	final File clientDirectory = new File("AutoTool");
+	final File configsDirectory = new File(clientDirectory, "configs");
+	final File bindsDirectory = new File(clientDirectory, "binds");
+	final File soundsDirectory = new File(clientDirectory, "sounds");
+	@Setter File defaultConfig = new File(configsDirectory, "default.json");
+	@Setter File defaultBinds = new File(bindsDirectory, "binds.json");
 
 	ScheduledExecutorService executorService;
 
@@ -48,10 +51,32 @@ public enum Client implements CallableObject {
 
 	ClickManager clickManager;
 
+	FontsRepository fontsRepository;
+
 	long lastMS;
 
 	public void init() throws IOException {
 		long start = System.nanoTime();
+
+		if (!clientDirectory.exists()) {
+			clientDirectory.mkdirs();
+			System.out.println("Created client directory");
+		}
+
+		if (!configsDirectory.exists()) {
+			configsDirectory.mkdirs();
+			System.out.println("Create config directory");
+		}
+
+		if (!bindsDirectory.exists()) {
+			bindsDirectory.mkdirs();
+			System.out.println("Create bind directory");
+		}
+
+		if (!soundsDirectory.exists()) {
+			soundsDirectory.mkdirs();
+			System.out.println("Create sound directory");
+		}
 
 		callables.add(this);
 
@@ -70,23 +95,24 @@ public enum Client implements CallableObject {
 			configManager.load(defaultConfig);
 		} catch (IOException e) {
 			System.out.println("Error while loading cfg");
-			throw new RuntimeException(e);
 		}
 
 		try {
-			configManager.loadBinds(bindsDirectory);
+			configManager.loadBinds(defaultBinds);
 		} catch (IOException e) {
 			System.out.println("Error while loading binds");
-			throw new RuntimeException(e);
 		}
 
 		clickGui = new ClickGuiScreen();
 
 		clickManager = new ClickManager();
+
+		fontsRepository = new FontsRepository();
+
 		Display.setTitle(getFullName());
 
-		long elapsedNanos = System.nanoTime() - start;
-		System.out.println("Started client in " + (float) (elapsedNanos / 1000000000L) + " seconds");
+		double elapsedNanos = System.nanoTime() - start;
+		System.out.println("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
 	}
 
 	public String getChangeLog() {
@@ -95,7 +121,7 @@ public enum Client implements CallableObject {
 				Recoded Ping
 				Recoded BackTrack
 				Added ClickSettings
-				Added KBLagger (test)
+				Added KBLager (test)
 				Recoded TimerRangeV2
 				""";
 	}
@@ -109,14 +135,12 @@ public enum Client implements CallableObject {
 			configManager.save(defaultConfig);
 		} catch (IOException e) {
 			System.out.println("Error while saving cfg");
-			throw new RuntimeException(e);
 		}
 
 		try {
-			configManager.saveBinds(bindsDirectory);
+			configManager.saveBinds(defaultBinds);
 		} catch (IOException e) {
 			System.out.println("Error while saving binds");
-			throw new RuntimeException(e);
 		}
 	}
 

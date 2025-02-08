@@ -5,6 +5,7 @@ import me.hackclient.Client;
 import me.hackclient.module.Module;
 import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.*;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.interfaces.InstanceAccess;
 
@@ -13,18 +14,20 @@ import java.util.Map;
 
 public class ConfigManager implements InstanceAccess {
 
+    /**
+     * Сохрянает текущие бинды в {@code file}
+     *
+     * @param file файл в который надо сохранить бинды
+     * @throws IOException
+     */
     public void saveBinds(File file) throws IOException {
-        File directory = Client.INSTANCE.getClientDirectory();
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
         if (!Client.INSTANCE.getBindsDirectory().exists()) {
             Client.INSTANCE.getBindsDirectory().createNewFile();
         }
 
         try {
             JsonObject json = new JsonObject();
-            Client.INSTANCE.setBindsDirectory(file);
+            Client.INSTANCE.setDefaultBinds(file);
 
             for (Module module : Client.INSTANCE.getModuleManager().modules) {
                 JsonObject jsonModule = new JsonObject();
@@ -37,16 +40,17 @@ public class ConfigManager implements InstanceAccess {
             printWriter.println(prettyGson.toJson(json));
             printWriter.close();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println("Error while save binds");
         }
     }
 
+    /**
+     * Загружает бинды в чит из {@code file}
+     *
+     * @param file файл из которого надо загрузить бинды
+     * @throws IOException
+     */
     public void loadBinds(File file) throws IOException {
-        File directory = Client.INSTANCE.getClientDirectory();
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-
         if (!file.exists()) {
             saveBinds(file);
             return;
@@ -55,7 +59,7 @@ public class ConfigManager implements InstanceAccess {
         BufferedReader load = new BufferedReader(new FileReader(file));
         JsonParser jsonParser = new JsonParser();
         JsonObject json = (JsonObject) jsonParser.parse(load);
-        Client.INSTANCE.setBindsDirectory(file);
+        Client.INSTANCE.setDefaultBinds(file);
         load.close();
 
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
@@ -72,10 +76,6 @@ public class ConfigManager implements InstanceAccess {
     }
 
     public void save(File file) throws IOException {
-        File directory = Client.INSTANCE.getClientDirectory();
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
         if (!Client.INSTANCE.getDefaultConfig().exists()) {
             Client.INSTANCE.getDefaultConfig().createNewFile();
         }
@@ -93,44 +93,12 @@ public class ConfigManager implements InstanceAccess {
             Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
             printWriter.println(prettyGson.toJson(json));
             printWriter.close();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception ignored) {
+            System.out.println("Error while save config");
         }
-    }
-
-    private static JsonObject getJsonObject(Module module) {
-        JsonObject jsonModule = new JsonObject();
-        jsonModule.addProperty("toggled", module.isToggled());
-        for (Setting setting : module.getSettings()) {
-            if (setting instanceof IntegerSetting integerSetting) {
-                jsonModule.addProperty(setting.getName(), integerSetting.getValue());
-            }
-            if (setting instanceof FloatSetting floatSetting) {
-                jsonModule.addProperty(setting.getName(), floatSetting.getValue());
-            }
-            if (setting instanceof BooleanSetting booleanSetting) {
-                jsonModule.addProperty(setting.getName(), booleanSetting.isToggled());
-            }
-            if (setting instanceof ModeSetting modeSetting) {
-                jsonModule.addProperty(setting.getName(), modeSetting.getMode());
-            }
-            if (setting instanceof MultiBooleanSetting multiBooleanSetting) {
-                JsonObject test = new JsonObject();
-                for (Doubles<String, Boolean> value : multiBooleanSetting.getValues()) {
-                    test.addProperty(value.getFirst(), value.getSecond());
-                }
-                jsonModule.add(multiBooleanSetting.getName(), test);
-            }
-        }
-        return jsonModule;
     }
 
     public void load(File file) throws IOException {
-        File directory = Client.INSTANCE.getClientDirectory();
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-
         if (!file.exists()) {
             save(file);
             return;
@@ -177,5 +145,32 @@ public class ConfigManager implements InstanceAccess {
                 }
             }
         }
+    }
+    
+    private static JsonObject getJsonObject(Module module) {
+        JsonObject jsonModule = new JsonObject();
+        jsonModule.addProperty("toggled", module.isToggled());
+        for (Setting setting : module.getSettings()) {
+            if (setting instanceof IntegerSetting integerSetting) {
+                jsonModule.addProperty(setting.getName(), integerSetting.getValue());
+            }
+            if (setting instanceof FloatSetting floatSetting) {
+                jsonModule.addProperty(setting.getName(), floatSetting.getValue());
+            }
+            if (setting instanceof BooleanSetting booleanSetting) {
+                jsonModule.addProperty(setting.getName(), booleanSetting.isToggled());
+            }
+            if (setting instanceof ModeSetting modeSetting) {
+                jsonModule.addProperty(setting.getName(), modeSetting.getMode());
+            }
+            if (setting instanceof MultiBooleanSetting multiBooleanSetting) {
+                JsonObject test = new JsonObject();
+                for (Doubles<String, Boolean> value : multiBooleanSetting.getValues()) {
+                    test.addProperty(value.getFirst(), value.getSecond());
+                }
+                jsonModule.add(multiBooleanSetting.getName(), test);
+            }
+        }
+        return jsonModule;
     }
 }

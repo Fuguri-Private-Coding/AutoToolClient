@@ -2257,6 +2257,11 @@ public abstract class Entity implements ICommandSender
         return this.boundingBox;
     }
 
+    public AxisAlignedBB getExpandedBoundingBox() {
+        double d = getCollisionBorderSize();
+        return getEntityBoundingBox().expand(d, d, d);
+    }
+
     public void setEntityBoundingBox(AxisAlignedBB bb)
     {
         this.boundingBox = bb;

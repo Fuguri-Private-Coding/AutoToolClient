@@ -1,14 +1,12 @@
 package me.hackclient.module.impl.visual;
 
 import me.hackclient.Client;
-import me.hackclient.combatmanager.CombatManager;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
-import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.shader.impl.TestBloomUtils;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;

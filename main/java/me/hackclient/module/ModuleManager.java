@@ -22,11 +22,14 @@ public class ModuleManager {
 		INSTANCE = this;
 		 register(
 				 new AutoSoup(),
+				 new Reach(),
+				 new ObshatsaKakDaun(),
 				 new Bloom(),
 				 new KillAura(),
 				 new Dot(),
 				 new Criticals(),
 				 new Regen(),
+				 new ChestStealer(),
 				 new TestESP(),
 				 new Jesus(),
 				 new TPAura(),

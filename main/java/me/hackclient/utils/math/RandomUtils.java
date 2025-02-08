@@ -6,6 +6,8 @@ import lombok.experimental.UtilityClass;
 public class RandomUtils {
 
     /**
+     * Возращает рандомное значение от {@code min} до {@code max}
+     *
      @param min Минимум рандомного значения
      @param max Максимум рандомного значения
      */
@@ -17,6 +19,8 @@ public class RandomUtils {
     }
 
     /**
+     * Возращает рандомное значение от {@code min} до {@code max}
+     *
      @param min Минимум рандомного значения
      @param max Максимум рандомного значения
      */
@@ -28,6 +32,8 @@ public class RandomUtils {
     }
 
     /**
+     * Возращает рандомное значение от {@code min} до {@code max}
+     *
      @param min Минимум рандомного значения
      @param max Максимум рандомного значения
      */
@@ -39,6 +45,8 @@ public class RandomUtils {
     }
 
     /**
+     * Возращает рандомное значение от {@code min} до {@code max}
+     *
      @param min Минимум рандомного значения
      @param max Максимум рандомного значения
      */

@@ -4,6 +4,7 @@ import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.events.Render2DEvent;
+import me.hackclient.module.impl.visual.Bloom;
 import me.hackclient.shader.Shader;
 import me.hackclient.shader.Uniform;
 import me.hackclient.utils.interfaces.InstanceAccess;
@@ -31,10 +32,6 @@ public class TestBloomUtils implements InstanceAccess, ConditionCallableObject {
     @Override
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent) {
-            if (!Display.isVisible() || !Display.isActive() || true) {
-                return;
-            }
-
             Shader shader = Client.INSTANCE.getShaderManager().getBloom();
 
             if (shader == null) {
@@ -81,7 +78,8 @@ public class TestBloomUtils implements InstanceAccess, ConditionCallableObject {
 
     @Override
     public boolean handleEvents() {
-        return Display.isActive() && Display.isVisible();
+        Bloom bloom = mm.getModule("Bloom");
+        return Display.isActive() && Display.isVisible() && bloom.isToggled();
     }
 
     static Framebuffer updateFramebuffer(Framebuffer toUpdate) {

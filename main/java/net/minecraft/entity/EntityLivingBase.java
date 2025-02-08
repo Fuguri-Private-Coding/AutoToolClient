@@ -121,7 +121,7 @@ public abstract class EntityLivingBase extends Entity implements InstanceAccess
     private float landMovementFactor;
     public int jumpTicks;
     private float absorptionAmount;
-    public double realX, realY, realZ;
+    public double lRealX, lRealY, lRealZ, realX, realY, realZ;
 
     public void onKillCommand()
     {

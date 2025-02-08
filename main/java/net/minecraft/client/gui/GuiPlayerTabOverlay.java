@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import me.hackclient.Client;
-import me.hackclient.friend.FriendManager;
+import me.hackclient.managers.FriendManager;
 import me.hackclient.module.impl.misc.MidClick;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;

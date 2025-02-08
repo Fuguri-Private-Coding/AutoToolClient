@@ -153,22 +153,15 @@ public class EntityPlayerSP extends AbstractClientPlayer
             C0BPacketEntityAction.Action action = sprinting ? C0BPacketEntityAction.Action.START_SPRINTING : C0BPacketEntityAction.Action.STOP_SPRINTING;
             sendQueue.addToSendQueue(new C0BPacketEntityAction(this, action));
             serverSprintState = sprinting;
+            test = false;
         }
 
-        boolean flag1 = this.isSneaking();
+        boolean sneaking = this.isSneaking();
 
-        if (flag1 != this.serverSneakState)
-        {
-            if (flag1)
-            {
-                this.sendQueue.addToSendQueue(new C0BPacketEntityAction(this, C0BPacketEntityAction.Action.START_SNEAKING));
-            }
-            else
-            {
-                this.sendQueue.addToSendQueue(new C0BPacketEntityAction(this, C0BPacketEntityAction.Action.STOP_SNEAKING));
-            }
-
-            this.serverSneakState = flag1;
+        if (sneaking != serverSneakState) {
+            C0BPacketEntityAction.Action action = sneaking ? C0BPacketEntityAction.Action.START_SNEAKING : C0BPacketEntityAction.Action.STOP_SNEAKING;
+            sendQueue.addToSendQueue(new C0BPacketEntityAction(this, action));
+            serverSneakState = sneaking;
         }
 
         if (this.isCurrentViewEntity())
@@ -699,7 +692,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
         if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3 || test)) {
             this.setSprinting(false);
-            if (test) { test = false; }
+            test = false;
         }
 
         Client.INSTANCE.getObjectsCaller().onEvent(new SprintEvent());

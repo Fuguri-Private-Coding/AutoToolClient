@@ -22,6 +22,9 @@ import org.w3c.dom.Entity;
 )
 public class MoreKB extends Module {
 
+    String lastMode = "";
+
+
     final ModeSetting mode = new ModeSetting(
             "Mode",
             this,
@@ -29,7 +32,7 @@ public class MoreKB extends Module {
             new String[] {
                     "WTap",
                     "STap",
-                    "SprintReset",
+                    "LegitFast",
                     "SneakTap",
                     "BlockHit",
                     "Custom"
@@ -92,6 +95,13 @@ public class MoreKB extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+
+        if (lastMode != mode.getMode() && mode.getMode().equals("LegitFast")) {
+            Client.INSTANCE.getSoundsManager().getLegitFast().asyncPlay(1f);
+        }
+
+        lastMode = mode.getMode();
+
         if (event instanceof TickEvent) {
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTargetOrSelectedEntity();
             if (target != null && target.hurtTime == 10) {
@@ -122,8 +132,8 @@ public class MoreKB extends Module {
                 }
             }
 
-            case "SprintReset" -> {
-                if (event instanceof TickEvent && !mc.thePlayer.test) {
+            case "LegitFast" -> {
+                if (event instanceof TickEvent) {
                     mc.thePlayer.test = true;
                     reset--;
                 }

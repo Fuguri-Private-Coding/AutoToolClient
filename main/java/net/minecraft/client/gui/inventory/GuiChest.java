@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.inventory;
 
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.ContainerChest;
@@ -9,8 +10,8 @@ import net.minecraft.util.ResourceLocation;
 public class GuiChest extends GuiContainer
 {
     private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
-    private IInventory upperChestInventory;
-    private IInventory lowerChestInventory;
+    @Getter IInventory upperChestInventory;
+    @Getter IInventory lowerChestInventory;
     private int inventoryRows;
 
     public GuiChest(IInventory upperInv, IInventory lowerInv)

@@ -21,6 +21,7 @@ public class Animations extends Module {
     static boolean animate;
 
     ModeSetting mode = new ModeSetting("Mode", this, "Sigma", new String[]{
+            "1.7",
             "Sigma",
             "Sigma 2",
             "Scale",
@@ -47,6 +48,11 @@ public class Animations extends Module {
             float convertedProgress = (float) Math.sin(Math.sqrt(renderItemEvent.getSwingProgress()) * Math.PI);
             float y;
             switch (mode.getMode()) {
+                case "1.7": {
+                    itemRenderer.transformFirstPersonItem(animationProgression, renderItemEvent.getSwingProgress());
+                    itemRenderer.doBlockTransformations();
+                    break;
+                }
                 case "Scale":
                     GlStateManager.translate(0, 0, convertedProgress * -0.2);
                     itemRenderer.transformFirstPersonItem(animationProgression, 0.0f);
@@ -114,6 +120,11 @@ public class Animations extends Module {
                     GlStateManager.rotate(-convertedProgress * 135.0F / 4.0F, 1.0F, 1.0F, 0.0F);
             }
         }
+    }
+
+    @Override
+    public boolean handleEvents() {
+        return true;
     }
 
     public static boolean isAnimate() {
