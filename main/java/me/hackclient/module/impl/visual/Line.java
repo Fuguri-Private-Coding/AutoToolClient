@@ -62,52 +62,47 @@ public class Line extends Module {
             GL11.glTranslated(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
             GL11.glLineWidth(lineWidth.getValue());
             GL11.glEnable(GL11.GL_DEPTH_TEST);
+             switch (mode.getMode()) {
+                 case "SingleLine" -> {
+                     GL11.glBegin(GL11.GL_LINE_STRIP);
+                     bottomList.forEach(p -> {
+                         Vec3 pos = p.getFirst();
+                         GL11.glColor4f(1f, 1f, 1f, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+                         GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
+                     });
+                     GL11.glEnd();
+                 }
+                 case "1.16.5 govno" -> {
+                     GL11.glBegin(GL11.GL_LINE_STRIP);
+                     bottomList.forEach(p -> {
+                         Vec3 pos = p.getFirst();
+                         GL11.glColor4f(1f, 1f, 1f, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+                         GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
+                     });
+                     GL11.glEnd();
 
-            PixelReplacerUtils.addToDraw( () -> {
-
-                switch (mode.getMode()) {
-                    case "SingleLine" -> {
-                        GL11.glBegin(GL11.GL_LINE_STRIP);
-                        bottomList.forEach(p -> {
-                            Vec3 pos = p.getFirst();
-                            GL11.glColor4f(1f, 1f, 1f, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
-                            GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
-                        });
-                        GL11.glEnd();
-                    }
-                    case "1.16.5 govno" -> {
-                        GL11.glBegin(GL11.GL_LINE_STRIP);
-                        bottomList.forEach(p -> {
-                            Vec3 pos = p.getFirst();
-                            GL11.glColor4f(1f, 1f, 1f, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
-                            GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
-                        });
-                        GL11.glEnd();
-
-                        GL11.glBegin(GL11.GL_LINE_STRIP);
-                        topList.forEach(p -> {
-                            Vec3 pos = p.getFirst();
-                            GL11.glColor4f(1f, 1f, 1f, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
-                            GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
-                        });
-                        GL11.glEnd();
+                     GL11.glBegin(GL11.GL_LINE_STRIP);
+                     topList.forEach(p -> {
+                         Vec3 pos = p.getFirst();
+                         GL11.glColor4f(1f, 1f, 1f, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+                         GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
+                     });
+                     GL11.glEnd();
 
 
-                        GL11.glShadeModel(GL11.GL_SMOOTH);
-                        GL11.glBegin(GL11.GL_QUAD_STRIP);
+                     GL11.glShadeModel(GL11.GL_SMOOTH);
+                     GL11.glBegin(GL11.GL_QUAD_STRIP);
 
-                        for (Doubles<Vec3, Long> bottomVec : bottomList) {
-                            GL11.glColor4f(1f, 1f, 1f, 0.6f * (1 - (float) (System.currentTimeMillis() - bottomVec.getSecond()) / (lifeTime.getValue() * 1000)));
-                            GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord, bottomVec.getFirst().zCoord);
-                            GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord + mc.thePlayer.height, bottomVec.getFirst().zCoord);
-                        }
+                     for (Doubles<Vec3, Long> bottomVec : bottomList) {
+                         GL11.glColor4f(1f, 1f, 1f, 0.6f * (1 - (float) (System.currentTimeMillis() - bottomVec.getSecond()) / (lifeTime.getValue() * 1000)));
+                         GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord, bottomVec.getFirst().zCoord);
+                         GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord + mc.thePlayer.height, bottomVec.getFirst().zCoord);
+                     }
 
-                        GL11.glEnd();
-                        GL11.glShadeModel(GL11.GL_FLAT);
-                    }
-                }
-            });
-
+                     GL11.glEnd();
+                     GL11.glShadeModel(GL11.GL_FLAT);
+                 }
+             }
             GL11.glEnable(GL11.GL_DEPTH_TEST);
             GL11.glLineWidth(1f);
             GL11.glTranslated(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);

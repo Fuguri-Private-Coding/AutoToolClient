@@ -38,7 +38,8 @@ public class PixelReplacerUtils implements ConditionCallableObject, InstanceAcce
     @Override
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent) {
-            if (!Display.isVisible() || !Display.isActive() || !mm.getModule("ClientShader").isToggled()) {
+            if (!Display.isVisible() || !Display.isActive()// || !mm.getModule("ClientShader").isToggled()
+            ) {
                 return;
             }
 

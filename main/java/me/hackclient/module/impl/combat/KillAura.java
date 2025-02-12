@@ -49,7 +49,6 @@ public class KillAura extends Module {
             }
     );
 
-
     // Клики
     final FloatSetting swingDistance = new FloatSetting("SwingDistance", this, 3.0f, 6.0f, 6.0f, 0.1f);
     final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 0, 20, 17);

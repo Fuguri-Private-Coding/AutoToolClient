@@ -78,8 +78,8 @@ public class TestBloomUtils implements InstanceAccess, ConditionCallableObject {
 
     @Override
     public boolean handleEvents() {
-        Bloom bloom = mm.getModule("Bloom");
-        return Display.isActive() && Display.isVisible() && bloom.isToggled();
+      //Bloom bloom = mm.getModule("Bloom");
+      return Display.isActive() && Display.isVisible();
     }
 
     static Framebuffer updateFramebuffer(Framebuffer toUpdate) {

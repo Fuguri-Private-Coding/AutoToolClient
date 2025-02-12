@@ -4,13 +4,9 @@ import me.hackclient.Client;
 import me.hackclient.guis.config.ConfigEditorGui;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
-import me.hackclient.module.impl.visual.Bloom;
 import me.hackclient.module.impl.visual.ClickGui;
-import me.hackclient.module.impl.visual.ClientShader;
 import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.*;
-import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.doubles.Doubles;
@@ -27,8 +23,6 @@ import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.lang.Math.*;
 
@@ -39,9 +33,7 @@ public class ClickGuiScreen extends GuiScreen {
 	final int MAIN_COLOR_INT = MAIN_COLOR.getRGB();
 
 	Vector2f pos, size, lastMouse;
-	Bloom bloom = Client.INSTANCE.getModuleManager().getModule(Bloom.class);
 	ClickGui clickGui = Client.INSTANCE.getModuleManager().getModule(ClickGui.class);
-	ClientShader clientShader;
 
 	Category selectedCategory = Category.COMBAT;
 	Module selectedModule = null;
@@ -79,15 +71,6 @@ public class ClickGuiScreen extends GuiScreen {
 		);
 
 		RenderUtils.drawImage(shesterenka, 5, 5, 30, 30);
-		if (clientShader == null) {
-			clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
-			return;
-		}
-		if (bloom.clickGui.isToggled() && bloom.isToggled()) {
-			List<Runnable> list = new ArrayList<>();
-			list.add(() -> RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, clickGui.backgroundRadius.getValue(), Color.WHITE));
-			BloomUtils.drawBloom(list);
-		}
 		if (resizing
 		&& mouseX > pos.x + 100
 		&& mouseY > pos.y + 100) {
@@ -105,12 +88,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		ScissorUtils.enableScissor();
 		ScissorUtils.scissor(new ScaledResolution(mc), pos.x, pos.y, size.x, size.y);
-
-		if (clientShader.isToggled() && clientShader.clickGui.isToggled()) {
-			PixelReplacerUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, clickGui.backgroundRadius.getValue(), new Color(15, 15, 15, clickGui.backgroundAlpha.getValue())));
-		} else {
-			RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, clickGui.backgroundRadius.getValue(), new Color(15, 15, 15, clickGui.backgroundAlpha.getValue()));
-		}
+		RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, clickGui.backgroundRadius.getValue(), new Color(15, 15, 15, clickGui.backgroundAlpha.getValue()));
 
 		RoundedUtils.drawRect(pos.x + size.x - 5, pos.y + size.y - 5, 5, 5, 1, BACKGROUND_COLOR);
 		fontRenderer.drawString(Client.INSTANCE.getName(), pos.x + 20, pos.y + 4, MAIN_COLOR_INT);

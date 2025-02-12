@@ -40,7 +40,6 @@ public class Dot extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof TickEvent) {
-
             MovingObjectPosition mouse =  RayCastUtils.rayCast(6, Rotation.getServerRotation());
 
             if (currentVec != null) {

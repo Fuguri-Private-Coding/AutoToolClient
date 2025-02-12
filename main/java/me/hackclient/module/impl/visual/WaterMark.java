@@ -30,12 +30,6 @@ public class WaterMark extends Module {
             X.setMax(sc.getScaledWidth());
             Y.setMax(sc.getScaledHeight());
             ResourceLocation molotok400panage = new ResourceLocation("minecraft", "hackclient/image/molotok400.png");
-            Bloom bloomModule = InstanceAccess.mm.getModule(Bloom.class);
-            if (bloomModule.isToggled() && bloomModule.clientLogo.isToggled()) {
-                List<Runnable> list = new ArrayList<>();
-                list.add(() -> RenderUtils.drawImage(molotok400panage, X.getValue(), Y.getValue(), scale.getValue(), scale.getValue()));
-                BloomUtils.drawBloom(list);
-            }
             RenderUtils.drawImage(molotok400panage, X.getValue(), Y.getValue(), scale.getValue(), scale.getValue());
         }
     }

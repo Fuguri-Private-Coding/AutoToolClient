@@ -6,9 +6,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
-import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.utils.client.ClientUtils;
-import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.math.MathUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
@@ -30,7 +28,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 @ModuleInfo(
@@ -59,10 +56,16 @@ public class Scaffold extends Module {
     IntegerSetting minCps = new IntegerSetting("MinCps", this,() -> clickMode.getMode().equals("Legit"), 0, 40, 7);
     IntegerSetting maxCps = new IntegerSetting("MaxCps", this,() -> clickMode.getMode().equals("Legit"), 0, 40, 11);
 
+    final BooleanSetting render = new BooleanSetting("Render", this, true);
     final BooleanSetting debug = new BooleanSetting("Debug", this, true);
 
     final StopWatch stopWatch;
-    static final float bestPitch = 75.5f;
+
+    final float bestPitch = switch (clickMode.getMode()) {
+        case "AutoPlace" -> 77.0f;
+        case "Legit" -> 75.5f;
+        default -> throw new IllegalStateException("Unexpected value: " + clickMode.getMode());
+    };
 
     int delay = 0;
     BlockPos standingOn = null;
@@ -81,21 +84,31 @@ public class Scaffold extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof TickEvent && mc.currentScreen == null) {
-            switch (clickMode.getMode()) {
-                case "AutoPlace" -> ragePlace(event);
-                case "Legit" -> legitPlace();
+        switch (clickMode.getMode()) {
+            case "AutoPlace" -> {
+                if (event instanceof DrawBlockHighlightEvent && mc.currentScreen == null) {
+                    ragePlace();
+                }
             }
+            case "Legit" -> {
+                if (event instanceof TickEvent && mc.currentScreen == null) {
+                    legitPlace();
+                }
+            }
+        }
+        if (event instanceof TickEvent && mc.currentScreen == null) {
             rotate();
         }
-        if (event instanceof Render3DEvent && standingOn != null) {
+        if (event instanceof Render3DEvent && standingOn != null && render.isToggled()) {
             RenderUtils.start3D();
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
             GlStateManager.disableDepth();
             GL11.glPointSize(10f);
             GL11.glBegin(GL11.GL_POINTS);
             GL11.glVertex3d(standingOn.getX() - mc.getRenderManager().viewerPosX + 0.5, standingOn.getY() - mc.getRenderManager().viewerPosY + 0.5, standingOn.getZ() - mc.getRenderManager().viewerPosZ + 0.5);
             GL11.glEnd();
             GL11.glPointSize(1f);
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
             GlStateManager.enableDepth();
             RenderUtils.stop3D();
@@ -163,37 +176,35 @@ public class Scaffold extends Module {
         }
     }
 
-    void ragePlace(Event event) {
-        if (event instanceof DrawBlockHighlightEvent) {
-            if (mc.currentScreen != null) return;
+    void ragePlace() {
+        if (mc.currentScreen != null) return;
 
-            ItemStack stack = mc.thePlayer.getHeldItem();
+        ItemStack stack = mc.thePlayer.getHeldItem();
 
-            if (stack == null) return;
+        if (stack == null) return;
 
-            if (!(stack.getItem() instanceof ItemBlock)) return;
+        if (!(stack.getItem() instanceof ItemBlock)) return;
 
-            MovingObjectPosition mouse = mc.objectMouseOver;
+        MovingObjectPosition mouse = mc.objectMouseOver;
 
-            if (mouse == null
-                    || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                    || mouse.sideHit == EnumFacing.UP
-                    || mouse.sideHit == EnumFacing.DOWN) return;
+        if (mouse == null
+                || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+                || mouse.sideHit == EnumFacing.UP
+                || mouse.sideHit == EnumFacing.DOWN) return;
 
-            BlockPos pos = mouse.getBlockPos();
-            if (standingOn == null || pos.getX() != standingOn.getX() || pos.getY() != standingOn.getY() || pos.getZ() != standingOn.getZ()) {
-                Block block = mc.theWorld.getBlockState(pos).getBlock();
-                if (block != null && block != Blocks.air && !(block instanceof BlockLiquid)) {
-                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25) {
+        BlockPos pos = mouse.getBlockPos();
+        if (standingOn == null || pos.getX() != standingOn.getX() || pos.getY() != standingOn.getY() || pos.getZ() != standingOn.getZ()) {
+            Block block = mc.theWorld.getBlockState(pos).getBlock();
+            if (block != null && block != Blocks.air && !(block instanceof BlockLiquid)) {
+                if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25) {
+                    mc.rightClickMouse();
+                    if (swingItem.isToggled()) {
+                        mc.thePlayer.swingItem();
+                        mc.getItemRenderer().resetEquippedProgress();
                         mc.rightClickMouse();
-                        if (swingItem.isToggled()) {
-                            mc.thePlayer.swingItem();
-                            mc.getItemRenderer().resetEquippedProgress();
-                            mc.rightClickMouse();
-                        }
-                        standingOn = pos;
-                        lastTime = System.currentTimeMillis();
                     }
+                    standingOn = pos;
+                    lastTime = System.currentTimeMillis();
                 }
             }
         }
@@ -222,11 +233,9 @@ public class Scaffold extends Module {
             rotation = new Rotation(roundedYaw, bestPitch);
         }
 
-        if (mc.thePlayer.hurtResistantTime > 0) {
-            for (float i = 0; i < 180; i += 0.1f) {
-
-            }
-        }
+        //if (mc.thePlayer.hurtResistantTime > 0) {
+        //    for (float i = 0; i < 180; i += 0.1f) {}
+        //}
 
         if (rotation == null) {
             return;
