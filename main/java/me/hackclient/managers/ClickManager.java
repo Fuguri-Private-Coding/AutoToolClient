@@ -38,7 +38,7 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
             if (rayCast != null && rayCast.isFriend() || !clicking) { return; }
 
             for (int i = 0; i < iters; i++) {
-                MovingObjectPosition mouse = RayCastUtils.rayCast(Client.INSTANCE.getCombatManager().getReach(), Rotation.getServerRotation());
+                MovingObjectPosition mouse = RayCastUtils.rayCast(Client.INSTANCE.getCombatManager().getEntityReach(), Client.INSTANCE.getCombatManager().getBlockReach(), Rotation.getServerRotation());
 
                 mc.clickMouseCustom(mouse, false);
             }

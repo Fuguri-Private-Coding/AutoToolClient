@@ -1,13 +1,13 @@
 package me.hackclient.module.impl.move;
 
 import me.hackclient.event.Event;
-import me.hackclient.event.events.MoveEvent;
-import me.hackclient.event.events.MoveFlyingEvent;
-import me.hackclient.event.events.UpdateEvent;
+import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
+import me.hackclient.utils.client.ClientUtils;
+import net.minecraft.network.play.client.C0BPacketEntityAction;
 import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "Speed", category = Category.MOVE, key = Keyboard.KEY_V)
@@ -22,7 +22,8 @@ public class Speed extends Module {
 			new String[] {
 					"45Degree",
 					"Vanilla",
-					"FunnyMcSkyPvp"
+					"FunnyMcSkyPvp",
+					"IntaveSneak"
 			}
 	);
 
@@ -44,6 +45,30 @@ public class Speed extends Module {
 	public void onEvent(Event event) {
 		super.onEvent(event);
 		switch (mode.getMode()) {
+			case "IntaveSneak" -> {
+				if (event instanceof MotionEvent) {
+					if (mc.thePlayer.onGround) {
+						ticks = 0;
+						mc.thePlayer.jump();
+					} else {
+						ticks++;
+					}
+				}
+				if (event instanceof MoveButtonEvent moveButtonEvent) {
+					if (ticks == 10) {
+						moveButtonEvent.setSneak(true);
+					}
+					if (ticks == 11) {
+
+						if (Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ) < 0.25) {
+							ClientUtils.chatLog(Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ));
+							mc.thePlayer.motionX *= 1.1;
+							mc.thePlayer.motionZ *= 1.1;
+							ClientUtils.chatLog(Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ));
+						}
+					}
+				}
+			}
 			case "45Degree" -> {
 				if (event instanceof MoveFlyingEvent moveFlyingEvent) {
 					if (moveFlyingEvent.getForward() > 0f) {

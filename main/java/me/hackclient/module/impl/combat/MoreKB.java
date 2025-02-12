@@ -119,22 +119,16 @@ public class MoreKB extends Module {
 
         switch (mode.getMode()) {
             case "WTap" -> {
-                if (event instanceof MoveEvent moveEvent) {
-                    moveEvent.setForward(0.0f);
+                if (event instanceof MoveButtonEvent moveButtonEvent) {
+                    moveButtonEvent.setForward(false);
                     reset--;
                 }
             }
 
             case "STap" -> {
-                if (event instanceof MoveEvent moveEvent) {
-                    moveEvent.setForward(-1.0f);
-                    reset--;
-                }
-            }
-
-            case "LegitFast" -> {
-                if (event instanceof TickEvent) {
-                    mc.thePlayer.test = true;
+                if (event instanceof MoveButtonEvent moveButtonEvent) {
+                    moveButtonEvent.setForward(false);
+                    moveButtonEvent.setBack(true);
                     reset--;
                 }
             }
@@ -142,6 +136,13 @@ public class MoreKB extends Module {
             case "SneakTap" -> {
                 if (event instanceof MoveButtonEvent moveButtonEvent) {
                     moveButtonEvent.setSneak(true);
+                    reset--;
+                }
+            }
+
+            case "LegitFast" -> {
+                if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
+                    mc.thePlayer.setSprinting(false);
                     reset--;
                 }
             }

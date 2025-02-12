@@ -59,7 +59,7 @@ public class AutoClicker extends Module {
             if (mc.currentScreen != null)
                 return;
 
-            if (allowBreakBlock.isToggled() && RayCastUtils.rayCast(Client.INSTANCE.getCombatManager().getReach(), Rotation.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+            if (allowBreakBlock.isToggled() && RayCastUtils.rayCast(Client.INSTANCE.getCombatManager().getEntityReach(), Client.INSTANCE.getCombatManager().getBlockReach(), Rotation.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
                 return;
 
             if (stopWatch.reachedMS(delay)) {

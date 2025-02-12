@@ -124,14 +124,15 @@ public class RayCastUtils implements InstanceAccess {
         return raycastEntityFromPos(pos, range, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entityFilter);
     }
 
-    public static MovingObjectPosition rayCast(Vec3 eyesPosition, double range, Rotation rotation) {
+    public static MovingObjectPosition rayCast(Vec3 eyesPosition, final double entityRange, final double blockRange, Rotation rotation) {
         if (mc.theWorld == null || mc.getRenderViewEntity() == null) { return null; }
 
-        double blockReachDistance = range;
+        double blockReachDistance = blockRange;
+        double entityBlockReach = entityRange;
 
         final Entity renderViewEntity = mc.getRenderViewEntity();
 
-        MovingObjectPosition mouse = renderViewEntity.rayTrace(range, 1f, rotation);
+        MovingObjectPosition mouse = renderViewEntity.rayTrace(blockReachDistance, 1f, rotation);
 
         Vec3 hittingVector = null;
         final float yawCos = MathHelper.cos(-rotation.getYaw() * 0.017453292F - (float) Math.PI);
@@ -140,11 +141,11 @@ public class RayCastUtils implements InstanceAccess {
         final float pitchSin = MathHelper.sin(-rotation.getPitch() * 0.017453292F);
 
         final Vec3 entityLook = new Vec3(yawSin * pitchCos, pitchSin, yawCos * pitchCos);
-        final Vec3 vector = eyesPosition.addVector(entityLook.xCoord * range, entityLook.yCoord * range, entityLook.zCoord * range);
+        final Vec3 vector = eyesPosition.addVector(entityLook.xCoord * entityBlockReach, entityLook.yCoord * entityBlockReach, entityLook.zCoord * entityBlockReach);
 
         final List<Entity> entityList = mc.theWorld.getEntitiesInAABBexcluding(
                 renderViewEntity,
-                renderViewEntity.getEntityBoundingBox().addCoord(entityLook.xCoord * range, entityLook.yCoord * range, entityLook.zCoord * range).expand(1d, 1d, 1d),
+                renderViewEntity.getEntityBoundingBox().addCoord(entityLook.xCoord * entityBlockReach, entityLook.yCoord * entityBlockReach, entityLook.zCoord * entityBlockReach).expand(1d, 1d, 1d),
                 Predicates.and(EntitySelectors.NOT_SPECTATING, Entity :: canBeCollidedWith)
         );
 
@@ -160,44 +161,43 @@ public class RayCastUtils implements InstanceAccess {
             final MovingObjectPosition movingObjectPosition = hitBox.calculateIntercept(eyesPosition, vector);
 
             if (hitBox.isVecInside(eyesPosition)) {
-                if (blockReachDistance >= 0d) {
+                if (entityBlockReach >= 0d) {
                     hittingVector = movingObjectPosition != null ? movingObjectPosition.hitVec : eyesPosition;
                     pointedEntity = entity;
-                    blockReachDistance = 0d;
+                    entityBlockReach = 0d;
                 }
             } else if (movingObjectPosition != null) {
                 final double eyeDistance = eyesPosition.distanceTo(movingObjectPosition.hitVec);
 
-                if (eyeDistance < blockReachDistance || range == 0d) {
+                if (eyeDistance < entityBlockReach || entityBlockReach == 0d) {
                     if (entity == renderViewEntity.ridingEntity) {
-                        if (blockReachDistance == 0d) {
+                        if (entityBlockReach == 0d) {
                             pointedEntity = entity;
                             hittingVector = movingObjectPosition.hitVec;
                         }
                     } else {
                         hittingVector = movingObjectPosition.hitVec;
                         pointedEntity = entity;
-                        blockReachDistance = eyeDistance;
+                        entityBlockReach = eyeDistance;
                     }
                 }
             }
         }
 
 
-        if (pointedEntity != null && (blockReachDistance < range || mouse == null)) {
+        if (pointedEntity != null && (entityBlockReach < entityRange || mouse == null)) {
             mouse = new MovingObjectPosition(pointedEntity, hittingVector);
         }
 
-        if (pointedEntity != null && eyesPosition.distanceTo(hittingVector) > range) {
-            ClientUtils.chatLog("Missed");
+        if (pointedEntity != null && eyesPosition.distanceTo(hittingVector) > entityBlockReach) {
             mouse = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, hittingVector, null, new BlockPos(hittingVector));
         }
 
         return mouse;
     }
 
-    public static MovingObjectPosition rayCast(double distance, Rotation rotation) {
-        return rayCast(mc.thePlayer.getPositionEyes(1f), distance, rotation);
+    public static MovingObjectPosition rayCast(final double entityRange, final double blockRange, Rotation rotation) {
+        return rayCast(mc.thePlayer.getPositionEyes(1f), entityRange, blockRange, rotation);
     }
 
     public interface IEntityFilter {

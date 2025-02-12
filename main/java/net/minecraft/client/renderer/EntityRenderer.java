@@ -15,6 +15,7 @@ import me.hackclient.Client;
 import me.hackclient.event.events.DrawBlockHighlightEvent;
 import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.event.events.Render3DEvent;
+import me.hackclient.guis.main.GuiClientMainMenu;
 import me.hackclient.module.impl.visual.NoRender;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
@@ -2601,9 +2602,9 @@ public class EntityRenderer implements IResourceManagerReloadListener
             }
         }
 
-        if (this.mc.currentScreen instanceof GuiMainMenu)
+        if (this.mc.currentScreen instanceof GuiClientMainMenu)
         {
-            this.updateMainMenu((GuiMainMenu)this.mc.currentScreen);
+            this.updateMainMenu((GuiClientMainMenu) this.mc.currentScreen);
         }
 
         if (this.updatedWorld != world)
@@ -2641,7 +2642,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
         }
     }
 
-    private void updateMainMenu(GuiMainMenu p_updateMainMenu_1_)
+    private void updateMainMenu(GuiClientMainMenu p_updateMainMenu_1_)
     {
         try
         {

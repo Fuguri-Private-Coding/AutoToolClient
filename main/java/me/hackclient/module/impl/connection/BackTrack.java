@@ -75,16 +75,7 @@ public class BackTrack extends Module {
             resetPackets();
         }
         if (event instanceof PacketEvent packetEvent) {
-            if (target == null) {
-                resetPackets();
-                return;
-            }
-
-            double distance = DistanceUtils.getDistanceToVec(new Vec3(target.realX, target.realY + target.getEyeHeight(), target.realZ));
-            if (distance < minDistance.getValue() || distance > maxDistance.getValue() || distance < DistanceUtils.getDistanceToVec(target.getPositionEyes(1.0f))) {
-                resetPackets();
-                return;
-            }
+            if (target == null || !Utils.isWorldLoaded()) { return; }
 
             Packet packet = packetEvent.getPacket();
 
@@ -126,6 +117,17 @@ public class BackTrack extends Module {
             }
         }
         if (event instanceof RunGameLoopEvent) {
+            if (target == null) {
+                resetPackets();
+                return;
+            }
+
+            double distance = DistanceUtils.getDistanceToVec(new Vec3(target.realX, target.realY + target.getEyeHeight(), target.realZ));
+            if (distance < minDistance.getValue() || distance > maxDistance.getValue() || distance < DistanceUtils.getDistanceToVec(target.getPositionEyes(1.0f))) {
+                resetPackets();
+                return;
+            }
+
             ClientHandler.PacketHandler.serverPacketBuffer.forEach(p -> {
                 if (System.currentTimeMillis() - p.getSecond() >= delay) {
                     PacketUtils.recievePacket(p.getFirst());

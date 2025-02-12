@@ -36,10 +36,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import javax.imageio.ImageIO;
 
+import lombok.Getter;
 import me.hackclient.Client;
 import me.hackclient.event.events.*;
 //import me.hackclient.module.impl.combat.TimerRange;
 //import me.hackclient.module.impl.combat.TimerRangeV2;
+import me.hackclient.guis.main.GuiClientMainMenu;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;
@@ -201,6 +203,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     private final PropertyMap twitchDetails;
     private final PropertyMap profileProperties;
     private ServerData currentServerData;
+    @Getter
     private TextureManager renderEngine;
     private static Minecraft theMinecraft;
     public PlayerControllerMP playerController;
@@ -484,11 +487,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         if (this.serverName != null)
         {
-            this.displayGuiScreen(new GuiConnecting(new GuiMainMenu(), this, this.serverName, this.serverPort));
+            this.displayGuiScreen(new GuiConnecting(new GuiClientMainMenu(), this, this.serverName, this.serverPort));
         }
         else
         {
-            this.displayGuiScreen(new GuiMainMenu());
+            this.displayGuiScreen(new GuiClientMainMenu());
         }
 
         this.renderEngine.deleteTexture(this.mojangLogo);
@@ -890,14 +893,14 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         if (guiScreenIn == null && this.theWorld == null)
         {
-            guiScreenIn = new GuiMainMenu();
+            guiScreenIn = new GuiClientMainMenu();
         }
         else if (guiScreenIn == null && this.thePlayer.getHealth() <= 0.0F)
         {
             guiScreenIn = new GuiGameOver();
         }
 
-        if (guiScreenIn instanceof GuiMainMenu)
+        if (guiScreenIn instanceof GuiClientMainMenu)
         {
             this.gameSettings.showDebugInfo = false;
             this.ingameGUI.getChatGUI().clearChatMessages();

@@ -14,13 +14,15 @@ import me.hackclient.settings.impl.FloatSetting;
 )
 public class Reach extends Module {
 
-    final FloatSetting reach = new FloatSetting("Reach", this, 3f, 6f, 3f, 0.1f);
+    final FloatSetting entityReach = new FloatSetting("EntityReach", this, 3f, 6f, 3f, 0.1f);
+    final FloatSetting blockReach = new FloatSetting("BlockReach", this, 3f, 6f, 4.5f, 0.1f);
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof TickEvent) {
-            Client.INSTANCE.getCombatManager().setReach(isToggled() ? reach.getValue() : 3d);
+            Client.INSTANCE.getCombatManager().setEntityReach(isToggled() ? entityReach.getValue() : 3d);
+            Client.INSTANCE.getCombatManager().setBlockReach(isToggled() ? blockReach.getValue() : 4.5d);
         }
     }
 

@@ -33,6 +33,22 @@ public class RenderUtils implements InstanceAccess {
         glDisable(GL_BLEND);
     }
 
+    public static void renderHitBoxWithYaw(AxisAlignedBB box, float yaw) {
+        final double yawR = Math.toRadians(yaw);
+
+        final double sin = Math.sin(yawR);
+        final double cos = Math.cos(yawR);
+
+        renderHitBox(new AxisAlignedBB(
+                        box.minX - sin,
+                        box.minY + 0,
+                        box.minZ + cos,
+                        box.maxX - sin,
+                        box.maxX + 0,
+                        box.maxZ + cos
+        ));
+    }
+
     public static void renderHitBox(AxisAlignedBB bb, int type) {
         glBegin(type);
 

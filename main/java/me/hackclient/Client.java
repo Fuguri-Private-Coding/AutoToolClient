@@ -86,7 +86,7 @@ public enum Client implements CallableObject {
 		timeScheduler = new TimeScheduler();
 		friendManager = new FriendManager();
 		moduleManager = new ModuleManager();
-		shaderManager = new ShaderManager();
+//		shaderManager = new ShaderManager();
 		objectsCaller = new ObjectsCaller();
 		configManager = new ConfigManager();
 		soundsManager = new SoundsManager();

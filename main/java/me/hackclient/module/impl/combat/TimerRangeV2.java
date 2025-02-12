@@ -7,7 +7,6 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.connection.Ping;
 import me.hackclient.module.impl.misc.ClientHandler;
 import me.hackclient.settings.impl.*;
 import me.hackclient.utils.client.ClientUtils;
