@@ -33,13 +33,13 @@ public class GuiClientMainMenu extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         final ScaledResolution sc = new ScaledResolution(mc);
         mc.getRenderEngine().bindTexture(backround);
-        drawModalRectWithCustomSizedTexture(0, 0, 0, 0, sc.getScaledWidth(), sc.getScaledHeight());
+        drawModalRectWithCustomSizedTexture(0, 0, 0, 0, sc.getScaledWidth(), sc.getScaledHeight(), 100f, 100f);
         GlStateManager.bindTexture(0);
 
-        final ClientFontRenderer font = Client.INSTANCE.getFontsRepository().fonts.get("Roboto");
+        final FontRenderer font = mc.fontRendererObj;
         final String name = Client.INSTANCE.getName();
 
-        font.drawString(name, sc.getScaledWidth() / 2f - font.getWidth(name) / 2f, sc.getScaledHeight() / 2f - 8, Color.WHITE);
+        font.drawString(name, sc.getScaledWidth() / 2f - font.getStringWidth(name) / 2f, sc.getScaledHeight() / 2f - 8, Color.WHITE.getRGB());
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -57,8 +57,8 @@ public class GuiClientMainMenu extends GuiScreen {
             case 0 -> mc.displayGuiScreen(new GuiSelectWorld(this));
             case 1 -> mc.displayGuiScreen(new GuiMultiplayer(this));
             case 2 -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
-            case 4 -> mc.displayGuiScreen(new AltManagerGuiScreen());
-            case 5 -> mc.shutdownMinecraftApplet();
+            case 3 -> mc.displayGuiScreen(new AltManagerGuiScreen());
+            case 4 -> mc.shutdownMinecraftApplet();
         }
     }
 }

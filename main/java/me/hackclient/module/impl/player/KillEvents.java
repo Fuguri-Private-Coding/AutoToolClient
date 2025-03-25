@@ -14,7 +14,7 @@ public class KillEvents extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof EntityKilledEvent) {
-            Client.INSTANCE.getSoundsManager().getPukpukSound().asyncPlay(1.0f);
+            //Client.INSTANCE.getSoundsManager().getPukpukSound().asyncPlay(1.0f);
         }
     }
 }

@@ -2,13 +2,10 @@ package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import lombok.Getter;
-import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.utils.animation.Animation2D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;

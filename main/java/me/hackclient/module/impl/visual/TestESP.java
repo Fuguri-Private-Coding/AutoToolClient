@@ -6,7 +6,6 @@ import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.shader.impl.PixelReplacerUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,24 +27,22 @@ public class TestESP extends Module {
         }
         if (event instanceof Render3DEvent) {
             kostil = true;
-            PixelReplacerUtils.addToDraw(() -> {
-                for (EntityPlayer entityPlayer : mc.theWorld.playerEntities) {
-                    final Render<EntityPlayer> render = mc.getRenderManager().getEntityRenderObject(entityPlayer);
+            for (EntityPlayer entityPlayer : mc.theWorld.playerEntities) {
+                final Render<EntityPlayer> render = mc.getRenderManager().getEntityRenderObject(entityPlayer);
 
-                    if (mc.getRenderManager() == null || render == null || (entityPlayer == mc.thePlayer)) {
-                        continue;
-                    }
-
-                    if (entityPlayer == null) {
-                        continue;
-                    }
-
-
-                    mc.getRenderManager().renderEntityStatic(entityPlayer, mc.timer.renderPartialTicks, false);
+                if (mc.getRenderManager() == null || render == null || (entityPlayer == mc.thePlayer)) {
+                    continue;
                 }
-                GlStateManager.enableAlpha();
-                GlStateManager.enableBlend();
-            });
+
+                if (entityPlayer == null) {
+                    continue;
+                }
+
+
+                mc.getRenderManager().renderEntityStatic(entityPlayer, mc.timer.renderPartialTicks, false);
+            }
+            GlStateManager.enableAlpha();
+            GlStateManager.enableBlend();
             kostil = false;
         }
     }

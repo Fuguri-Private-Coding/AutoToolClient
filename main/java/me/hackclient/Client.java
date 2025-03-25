@@ -60,7 +60,7 @@ public enum Client implements CallableObject {
 
 		if (!clientDirectory.exists()) {
 			clientDirectory.mkdirs();
-			System.out.println("Created client directory");
+			System.out.println("Create client directory");
 		}
 
 		if (!configsDirectory.exists()) {
@@ -86,10 +86,9 @@ public enum Client implements CallableObject {
 		timeScheduler = new TimeScheduler();
 		friendManager = new FriendManager();
 		moduleManager = new ModuleManager();
-//		shaderManager = new ShaderManager();
+		shaderManager = new ShaderManager();
 		objectsCaller = new ObjectsCaller();
 		configManager = new ConfigManager();
-		soundsManager = new SoundsManager();
 
 		try {
 			configManager.load(defaultConfig);
@@ -107,7 +106,9 @@ public enum Client implements CallableObject {
 
 		clickManager = new ClickManager();
 
-		fontsRepository = new FontsRepository();
+		//fontsRepository = new FontsRepository();
+
+		soundsManager = new SoundsManager();
 
 		Display.setTitle(getFullName());
 

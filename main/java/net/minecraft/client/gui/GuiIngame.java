@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
-import me.hackclient.shader.impl.BloomUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

@@ -7,14 +7,8 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-//import me.hackclient.module.impl.combat.KillAura;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.shader.impl.PixelReplacerUtils;
-import me.hackclient.shader.impl.RoundedUtils;
-import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
@@ -40,7 +34,7 @@ public class Dot extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof TickEvent) {
-            MovingObjectPosition mouse =  RayCastUtils.rayCast(6, Rotation.getServerRotation());
+            MovingObjectPosition mouse =  RayCastUtils.rayCast(6, 3, Rotation.getServerRotation());
 
             if (currentVec != null) {
                 lastVec = new Vec3(currentVec);

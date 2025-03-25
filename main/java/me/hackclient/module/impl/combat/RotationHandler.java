@@ -33,7 +33,7 @@ public class RotationHandler extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (!mm.getModule("Scaffold").isToggled() && (!mm.getModule("KillAura").isToggled() || Client.INSTANCE.getCombatManager().getTarget() == null)) {
+        if (!Client.INSTANCE.getModuleManager().getModule("Scaffold").isToggled() && (!Client.INSTANCE.getModuleManager().getModule("KillAura").isToggled() || Client.INSTANCE.getCombatManager().getTarget() == null)) {
             if (Rotation.isChanged()) {
                 if (event instanceof TickEvent) {
                     Delta delta = RotationUtils.getDelta(Rotation.getServerRotation(), getPlayerRotation());

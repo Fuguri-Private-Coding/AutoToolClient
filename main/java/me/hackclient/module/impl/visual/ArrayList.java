@@ -10,6 +10,7 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.font.ClientFontRenderer;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 
 import java.awt.*;
@@ -45,8 +46,8 @@ public class ArrayList extends Module {
 		Color color = new Color(red.getValue(), green.getValue(), blue.getValue(), alpha.getValue());
 
 		if (event instanceof Render2DEvent) {
-			final ClientFontRenderer font = Client.INSTANCE.getFontsRepository().fonts.get(selectedFont.getMode());
-			List<Module> moduleList = new CopyOnWriteArrayList<>(mm.getEnabledModules());
+			final FontRenderer font = mc.fontRendererObj;
+			List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INSTANCE.getModuleManager().getEnabledModules());
 
 			sort(moduleList, font);
 
@@ -56,7 +57,7 @@ public class ArrayList extends Module {
 					continue;
 				}
 
-				font.drawString(module.getName(), 5, 5 + offset, color, true);
+				font.drawString(module.getName(), 5, (float) (5 + offset), color.getRGB(), true);
 				offset += 12;
 			}
 
@@ -66,10 +67,10 @@ public class ArrayList extends Module {
 		}
 	}
 
-	void sort(final List<Module> toSort, final ClientFontRenderer fontToCalcWidth) {
+	void sort(final List<Module> toSort, final FontRenderer fontToCalcWidth) {
 		toSort.sort( (m1, m2) -> {
-			final double width1 = fontToCalcWidth.getWidth(m1.getName());
-			final double width2 = fontToCalcWidth.getWidth(m2.getName());
+			final double width1 = fontToCalcWidth.getStringWidth(m1.getName());
+			final double width2 = fontToCalcWidth.getStringWidth(m2.getName());
 
 			return Double.compare(width2, width1);
 		});

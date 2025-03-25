@@ -7,7 +7,6 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
-import me.hackclient.shader.impl.PixelReplacerUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.util.Vec3;

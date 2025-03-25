@@ -41,7 +41,6 @@ public class ModuleManager {
 				 new AutoLeave(),
 				 new Line(),
 				 new ESP(),
-				 new TESTESP2(),
 				 new RotationHandler(),
 				 new Fly(),
 				 new Farm(),

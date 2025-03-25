@@ -6,8 +6,6 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
