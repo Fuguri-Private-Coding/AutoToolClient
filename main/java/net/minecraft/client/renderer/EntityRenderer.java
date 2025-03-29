@@ -16,6 +16,7 @@ import me.hackclient.event.events.DrawBlockHighlightEvent;
 import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.guis.main.GuiClientMainMenu;
+import me.hackclient.module.impl.visual.CustomCamera;
 import me.hackclient.module.impl.visual.NoRender;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
@@ -683,11 +684,13 @@ public class EntityRenderer implements IResourceManagerReloadListener
         }
         else if (this.mc.gameSettings.thirdPersonView > 0)
         {
-            double d3 = (double)(this.thirdPersonDistanceTemp + (this.thirdPersonDistance - this.thirdPersonDistanceTemp) * partialTicks);
+            CustomCamera customCamera = Client.INSTANCE.getModuleManager().getModule(CustomCamera.class);
+
+            double d3 = customCamera.isToggled() ? customCamera.cameraDistance.getValue() : this.thirdPersonDistanceTemp + (this.thirdPersonDistance - this.thirdPersonDistanceTemp) * partialTicks;
 
             if (this.mc.gameSettings.debugCamEnable)
             {
-                GlStateManager.translate(0.0F, 0.0F, (float)(-d3));
+                GlStateManager.translate(0.0F, 0.0F, -customCamera.cameraDistance.getValue());
             }
             else
             {
@@ -717,8 +720,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
                     {
                         double d7 = movingobjectposition.hitVec.distanceTo(new Vec3(d0, d1, d2));
 
-                        if (d7 < d3)
-                        {
+                        if (d7 < d3 && (!customCamera.isToggled() || (customCamera.isToggled() && !customCamera.cameraClip.isToggled()))) {
                             d3 = d7;
                         }
                     }
@@ -1631,6 +1633,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
         {
             ShadersRender.endTerrain();
         }
+
 
         Lagometer.timerTerrain.end();
         GlStateManager.shadeModel(7424);
@@ -2738,13 +2741,11 @@ public class EntityRenderer implements IResourceManagerReloadListener
         }
     }
 
-    private void loadAllVisibleChunks(Entity p_loadAllVisibleChunks_1_, double p_loadAllVisibleChunks_2_, ICamera p_loadAllVisibleChunks_4_, boolean p_loadAllVisibleChunks_5_)
-    {
+    private void loadAllVisibleChunks(Entity p_loadAllVisibleChunks_1_, double p_loadAllVisibleChunks_2_, ICamera p_loadAllVisibleChunks_4_, boolean p_loadAllVisibleChunks_5_) {
         int i = this.mc.gameSettings.ofChunkUpdates;
         boolean flag = this.mc.gameSettings.ofLazyChunkLoading;
 
-        try
-        {
+        try {
             this.mc.gameSettings.ofChunkUpdates = 1000;
             this.mc.gameSettings.ofLazyChunkLoading = false;
             RenderGlobal renderglobal = Config.getRenderGlobal();
@@ -2755,49 +2756,41 @@ public class EntityRenderer implements IResourceManagerReloadListener
             int i1 = 0;
             boolean flag1 = false;
 
-            while (true)
-            {
+            while (true) {
                 flag1 = false;
 
-                for (int j1 = 0; j1 < 100; ++j1)
-                {
+                for (int j1 = 0; j1 < 100; ++j1) {
                     renderglobal.displayListEntitiesDirty = true;
                     renderglobal.setupTerrain(p_loadAllVisibleChunks_1_, p_loadAllVisibleChunks_2_, p_loadAllVisibleChunks_4_, this.frameCount++, p_loadAllVisibleChunks_5_);
 
-                    if (!renderglobal.hasNoChunkUpdates())
-                    {
+                    if (!renderglobal.hasNoChunkUpdates()) {
                         flag1 = true;
                     }
 
                     i1 = i1 + renderglobal.getCountChunksToUpdate();
 
-                    while (!renderglobal.hasNoChunkUpdates())
-                    {
+                    while (!renderglobal.hasNoChunkUpdates()) {
                         renderglobal.updateChunks(System.nanoTime() + 1000000000L);
                     }
 
                     i1 = i1 - renderglobal.getCountChunksToUpdate();
 
-                    if (!flag1)
-                    {
+                    if (!flag1) {
                         break;
                     }
                 }
 
-                if (renderglobal.getCountLoadedChunks() != j)
-                {
+                if (renderglobal.getCountLoadedChunks() != j) {
                     flag1 = true;
                     j = renderglobal.getCountLoadedChunks();
                 }
 
-                if (System.currentTimeMillis() > l)
-                {
+                if (System.currentTimeMillis() > l) {
                     Config.log("Chunks loaded: " + i1);
                     l = System.currentTimeMillis() + 5000L;
                 }
 
-                if (!flag1)
-                {
+                if (!flag1) {
                     break;
                 }
             }
@@ -2805,9 +2798,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
             Config.log("Chunks loaded: " + i1);
             Config.log("Finished loading visible chunks");
             RenderChunk.renderChunksUpdated = 0;
-        }
-        finally
-        {
+        } finally {
             this.mc.gameSettings.ofChunkUpdates = i;
             this.mc.gameSettings.ofLazyChunkLoading = flag;
         }

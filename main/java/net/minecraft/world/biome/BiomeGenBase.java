@@ -127,7 +127,7 @@ public abstract class BiomeGenBase
     protected List<BiomeGenBase.SpawnListEntry> spawnableCreatureList;
     protected List<BiomeGenBase.SpawnListEntry> spawnableWaterCreatureList;
     protected List<BiomeGenBase.SpawnListEntry> spawnableCaveCreatureList;
-    protected boolean enableSnow;
+    public boolean enableSnow;
     protected boolean enableRain;
     public final int biomeID;
     protected WorldGenTrees worldGeneratorTrees;

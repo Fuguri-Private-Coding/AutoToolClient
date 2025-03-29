@@ -33,7 +33,7 @@ public class GuiClientMainMenu extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         final ScaledResolution sc = new ScaledResolution(mc);
         mc.getRenderEngine().bindTexture(backround);
-        drawModalRectWithCustomSizedTexture(0, 0, 0, 0, sc.getScaledWidth(), sc.getScaledHeight(), 100f, 100f);
+        drawModalRectWithCustomSizedTexture(0, 0, 0, 0, sc.getScaledWidth(), sc.getScaledHeight(), sc.getScaledWidth(), sc.getScaledHeight());
         GlStateManager.bindTexture(0);
 
         final FontRenderer font = mc.fontRendererObj;

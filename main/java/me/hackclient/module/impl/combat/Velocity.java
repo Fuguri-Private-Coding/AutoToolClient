@@ -25,31 +25,25 @@ public class Velocity extends Module {
             new String[] {
                     "Legit",
                     "Intave",
-                    "IntaveFlag",
                     "Vanilla",
-                    "Push"
+                    "Push",
+                    "AttackReduce"
             }
     );
 
-    boolean velocity, sendedFlag;
-
     final IntegerSetting minPlayerHurtTime = new IntegerSetting("MinPlayerHurtTime", this, 0, 9, 7);
 
-    // Legit
-    final BooleanSetting forceHoldForwardWhenDamaged = new BooleanSetting("ForceHoldForwardWhenDamaged", this, () -> mode.getMode().equals("Legit"), true);
+    final BooleanSetting forceHoldForwardWhenDamaged = new BooleanSetting("ForceHoldForwardWhenDamaged", this, () -> mode.getMode().equals("Legit") || mode.getMode().equals("AttackReduce"), true);
 
-    // Intave
-    final BooleanSetting jump = new BooleanSetting("Jump", this, () -> mode.getMode().equals("Intave"), true);
+    final BooleanSetting jump = new BooleanSetting("Jump", this, () -> mode.getMode().equals("Intave") || mode.getMode().equals("AttackReduce"), true);
     final BooleanSetting cancelSprint = new BooleanSetting("CancelSprintAtSprintHit", this, () -> mode.getMode().equals("Intave"), true);
     final FloatSetting sprintReduce = new FloatSetting("SprintReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 0.6f, 0.1f) {};
     final FloatSetting normalReduce = new FloatSetting("NormalReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 1.0f, 0.1f) {};
 
-    // Vanilla
     final FloatSetting xz = new FloatSetting("XZ", this, () -> mode.getMode().equals("Vanilla"), -1.0f, 1.0f, 0.0f, 0.1f) {};
     final FloatSetting y = new FloatSetting("Y", this, () -> mode.getMode().equals("Vanilla"), 0, 1.0f, 0.0f, 0.1f) {};
     final BooleanSetting saveMotion = new BooleanSetting("SaveMotion", this, () -> mode.getMode().equals("Vanilla"), true);
 
-    // Push
     final FloatSetting pushMotion = new FloatSetting("Motion (Divide by 100)", this, () -> mode.getMode().equals("Push"), 1, 10, 2, 0.1f) {};
     final IntegerSetting startHurtTimeToPush = new IntegerSetting("Start", this, () -> mode.getMode().equals("Push"), 0, 9, 0);
     final IntegerSetting endHurtTimeToPush = new IntegerSetting("End", this, () -> mode.getMode().equals("Push"), 0, 9, 3);
@@ -58,6 +52,24 @@ public class Velocity extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         switch (mode.getMode()) {
+            case "AttackReduce" -> {
+                if (event instanceof AttackEvent attackEvent && mc.thePlayer.hurtTime != 0) {
+                    attackEvent.setCancelSprint(false);
+                }
+
+                boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTime.getValue() && jump.isToggled();
+
+                if (event instanceof MoveButtonEvent moveButtonEvent && mc.currentScreen == null && damaged) {
+                    if (forceHoldForwardWhenDamaged.isToggled()) {
+                        moveButtonEvent.setBack(false);
+                        moveButtonEvent.setForward(true);
+                    }
+                    if (mc.thePlayer.onGround && Math.random() < 0.5) {
+                        moveButtonEvent.setJump(true);
+                    }
+                }
+            }
+
             case "Legit" -> {
                 boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTime.getValue();
 
@@ -71,6 +83,7 @@ public class Velocity extends Module {
                     }
                 }
             }
+
             case "Intave" -> {
                 boolean attacking = event instanceof AttackEvent attackEvent && attackEvent.getHittingEntity() instanceof EntityLivingBase;
                 boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTime.getValue();
@@ -92,26 +105,7 @@ public class Velocity extends Module {
                     }
                 }
             }
-            case "IntaveFlag" -> {
-                if (event instanceof PacketEvent packetEvent) {
-                    final Packet packet = packetEvent.getPacket();
 
-                    if (mc.thePlayer.hurtTime != 0 && packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId()) {
-                        velocity = true;
-                    }
-                    if (packet instanceof C0FPacketConfirmTransaction && velocity) {
-                        packetEvent.setCanceled(true);
-                    }
-                    if (packet instanceof S08PacketPlayerPosLook) {
-                        velocity = false;
-                        sendedFlag = false;
-                    }
-                }
-                if (event instanceof MotionEvent motionEvent && velocity && !sendedFlag) {
-                    motionEvent.setY(999);
-                    sendedFlag = true;
-                }
-            }
             case "Vanilla" -> {
                 if (event instanceof PacketEvent packetEvent) {
                     Packet packet = packetEvent.getPacket();
@@ -136,6 +130,7 @@ public class Velocity extends Module {
                     }
                 }
             }
+
             case "Push" -> {
                 if (event instanceof UpdateEvent
                 && mc.thePlayer.hurtTime >= startHurtTimeToPush.getValue()
@@ -146,5 +141,10 @@ public class Velocity extends Module {
                 }
             }
         }
+    }
+
+    @Override
+    public String getSuffix() {
+        return String.valueOf(mode.getMode());
     }
 }

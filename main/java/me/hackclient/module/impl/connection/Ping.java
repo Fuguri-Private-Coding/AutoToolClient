@@ -47,7 +47,7 @@ public class Ping extends Module {
 	final StopWatch recoilStopWatch;
 
 	IntegerSetting minOutDelay = new IntegerSetting("MinOutDelay", this, 10, 1000, 450);
-	IntegerSetting maxOutDelay = new IntegerSetting("MinOutDelay", this, 10, 1000, 450);
+	IntegerSetting maxOutDelay = new IntegerSetting("MaxOutDelay", this, 10, 1000, 450);
 
 	MultiBooleanSetting flushes = new MultiBooleanSetting("FlushConditions", this)
 			.add("Attack")
@@ -99,7 +99,6 @@ public class Ping extends Module {
 
 			if (mc.thePlayer.isDead || mc.thePlayer.getHealth() <= 0)
 				return;
-
 
 			Packet packet = packetEvent.getPacket();
 
@@ -159,6 +158,7 @@ public class Ping extends Module {
 		}
 		if (event instanceof Render3DEvent) {
 			if (serverPos != null && lServerPos != null) {
+				if (mc.gameSettings.thirdPersonView == 0) return;
 				RenderUtils.start3D();
 
 				double d1 = Math.min(renderStopWatch.reachedMS(), 50D);
@@ -200,9 +200,9 @@ public class Ping extends Module {
 	void resetPackets() {
 		ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> {
 			sendPacket(new Doubles<>(p.getFirst(), PacketDirection.OUTGOING));
-			if (p.getFirst() instanceof C03PacketPlayer c03PacketPlayer && c03PacketPlayer.isMoving()) {
+			if (p.getFirst() instanceof C03PacketPlayer c03 && c03.isMoving()) {
 				lServerPos = new Vec3(serverPos);
-				serverPos = c03PacketPlayer.getPosVec();
+				serverPos = c03.getPosVec();
 				renderStopWatch.reset();
 			}
 		});

@@ -148,4 +148,9 @@ public class KillAura extends Module {
             }
         }
     }
+
+    @Override
+    public String getSuffix() {
+        return String.valueOf(rotationMode.getMode());
+    }
 }

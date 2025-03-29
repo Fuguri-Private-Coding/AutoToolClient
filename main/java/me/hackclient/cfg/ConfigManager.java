@@ -48,7 +48,6 @@ public class ConfigManager implements InstanceAccess {
      * Загружает бинды в чит из {@code file}
      *
      * @param file файл из которого надо загрузить бинды
-     * @throws IOException
      */
     public void loadBinds(File file) throws IOException {
         if (!file.exists()) {

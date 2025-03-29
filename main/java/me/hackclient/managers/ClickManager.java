@@ -53,9 +53,11 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
 
         if (target.hurtTime <= startRandomizedHurtTime) { return true; }
 
-        if (target.hurtTime <= endRandomizedHurtTime) { return false; }
+        if (target.hurtTime >= endRandomizedHurtTime) { return false; }
 
-        return clicking ;
+        if (mc.thePlayer.hurtTime > 0) return true;
+
+        return clicking;
     }
 
     @Override

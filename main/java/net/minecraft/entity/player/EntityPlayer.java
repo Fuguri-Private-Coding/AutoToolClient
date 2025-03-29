@@ -11,6 +11,7 @@ import me.hackclient.Client;
 import me.hackclient.event.events.AttackEvent;
 import me.hackclient.event.events.ChangeHeadRotationEvent;
 import me.hackclient.module.impl.misc.MidClick;
+import me.hackclient.module.impl.player.Phase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockDirectional;
@@ -185,7 +186,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
     }
 
     public void onUpdate() {
-        this.noClip = this.isSpectator();
+        this.noClip = Client.INSTANCE.getModuleManager().getModule(Phase.class).isToggled() || this.isSpectator();
 
         if (this.isSpectator()) {
             this.onGround = false;
@@ -948,7 +949,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
     public void attackTargetEntityWithCurrentItem(Entity targetEntity, double slowDown, boolean cancelSprint) {
         if (targetEntity.canAttackWithItem()) {
             if (!targetEntity.hitByEntity(this)) {
-                AttackEvent event = new AttackEvent(targetEntity);
+                AttackEvent event = new AttackEvent(targetEntity, true);
                 Client.INSTANCE.getObjectsCaller().onEvent(event);
 
                 if (event.isCanceled()) {
@@ -997,7 +998,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
                             targetEntity.addVelocity((double) (-MathHelper.sin(this.rotationYaw * (float) Math.PI / 180.0F) * (float) i * 0.5F), 0.1D, (double) (MathHelper.cos(this.rotationYaw * (float) Math.PI / 180.0F) * (float) i * 0.5F));
                             this.motionX *= slowDown;
                             this.motionZ *= slowDown;
-                            if (cancelSprint) { setSprinting(false); }
+                            if (event.isCancelSprint()) { setSprinting(false); }
                         }
 
                         if (targetEntity instanceof EntityPlayerMP && targetEntity.velocityChanged) {

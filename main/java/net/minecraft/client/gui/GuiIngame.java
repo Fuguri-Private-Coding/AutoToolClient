@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import me.hackclient.Client;
+import me.hackclient.module.impl.visual.CustomScoreBoard;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -46,6 +48,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraft.world.border.WorldBorder;
 import net.optifine.CustomColors;
+import org.lwjgl.opengl.GL11;
 
 public class GuiIngame extends Gui
 {
@@ -540,15 +543,11 @@ public class GuiIngame extends Gui
 
     private void renderScoreboard(ScoreObjective objective, ScaledResolution scaledRes)
     {
+        CustomScoreBoard customScoreBoard = Client.INSTANCE.getModuleManager().getModule(CustomScoreBoard.class);
+        if (customScoreBoard.isToggled() && customScoreBoard.remove.isToggled()) return;
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<Score> collection = scoreboard.getSortedScores(objective);
-        List<Score> list = Lists.newArrayList(Iterables.filter(collection, new Predicate<Score>()
-        {
-            public boolean apply(Score p_apply_1_)
-            {
-                return p_apply_1_.getPlayerName() != null && !p_apply_1_.getPlayerName().startsWith("#");
-            }
-        }));
+        List<Score> list = Lists.newArrayList(Iterables.filter(collection, p_apply_1_ -> p_apply_1_.getPlayerName() != null && !p_apply_1_.getPlayerName().startsWith("#")));
 
         if (list.size() > 15)
         {

@@ -1,5 +1,6 @@
 package me.hackclient.module.impl.player;
 
+import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
@@ -57,15 +58,10 @@ public class Scaffold extends Module {
     IntegerSetting maxCps = new IntegerSetting("MaxCps", this,() -> clickMode.getMode().equals("Legit"), 0, 40, 11);
 
     final BooleanSetting render = new BooleanSetting("Render", this, true);
-    final BooleanSetting debug = new BooleanSetting("Debug", this, true);
 
     final StopWatch stopWatch;
 
-    final float bestPitch = switch (clickMode.getMode()) {
-        case "AutoPlace" -> 77.0f;
-        case "Legit" -> 75.5f;
-        default -> throw new IllegalStateException("Unexpected value: " + clickMode.getMode());
-    };
+    float bestPitch = 77f;
 
     int delay = 0;
     BlockPos standingOn = null;
@@ -84,17 +80,24 @@ public class Scaffold extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (event instanceof RunGameLoopEvent) {
+            switch (clickMode.getMode()) {
+                case "AutoPlace" -> bestPitch = 77f;
+                case "Legit" -> bestPitch = 75f;
+                default -> throw new IllegalStateException("Unexpected value: " + clickMode.getMode());
+            }
+        }
         switch (clickMode.getMode()) {
             case "AutoPlace" -> {
                 if (event instanceof DrawBlockHighlightEvent && mc.currentScreen == null) {
                     ragePlace();
                 }
             }
-//            case "Legit" -> {
-//                if (event instanceof TickEvent && mc.currentScreen == null) {
-//                    legitPlace();
-//                }
-//            }
+            case "Legit" -> {
+                if (event instanceof TickEvent && mc.currentScreen == null) {
+                    legitPlace();
+                }
+            }
         }
         if (event instanceof TickEvent && mc.currentScreen == null) {
             rotate();
@@ -126,9 +129,6 @@ public class Scaffold extends Module {
                 mc.thePlayer.inventory.currentItem = slot;
             }
         }
-        if (event instanceof PacketEvent packetEvent && packetEvent.getPacket() instanceof C08PacketPlayerBlockPlacement && debug.isToggled()) {
-            ClientUtils.chatLog("C08PacketBlockPlacement");
-        }
         if (event instanceof SprintEvent) {
             if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
                 mc.thePlayer.setSprinting(false);
@@ -154,27 +154,28 @@ public class Scaffold extends Module {
         }
     }
 
-//    void legitPlace() {
-//        BlockPos analyzingBlock = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.5, mc.thePlayer.posZ);
-//        if (!mc.theWorld.isAirBlock(analyzingBlock)) {
-//            standingOn = analyzingBlock;
-//        }
-//
-//        MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, Rotation.getServerRotation());
-//
-//        if (mouseOver == null || mouseOver.getBlockPos() == null || mc.theWorld.getBlockState(mouseOver.getBlockPos()).getBlock().getMaterial() == Material.air) {
-//            return;
-//        }
-//
-//        if (stopWatch.reachedMS(delay)) {
-//            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
-//                mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
-//
-//                stopWatch.reset();
-//                delay = 1000 / RandomUtils.nextInt(minCps.getValue(), maxCps.getValue());
-//            }
-//        }
-//    }
+    void legitPlace() {
+        BlockPos analyzingBlock = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.5, mc.thePlayer.posZ);
+        if (!mc.theWorld.isAirBlock(analyzingBlock)) {
+            standingOn = analyzingBlock;
+        }
+
+        MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, 6.0, Rotation.getServerRotation());
+
+        if (mouseOver == null || mouseOver.getBlockPos() == null || mc.theWorld.getBlockState(mouseOver.getBlockPos()).getBlock().getMaterial() == Material.air) {
+            return;
+        }
+
+        if (stopWatch.reachedMS(delay)) {
+            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
+                mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+                Client.INSTANCE.getObjectsCaller().onEvent(new ClickEvent(ClickEvent.Button.RIGHT));
+
+                stopWatch.reset();
+                delay = 1000 / RandomUtils.nextInt(minCps.getValue(), maxCps.getValue());
+            }
+        }
+    }
 
     void ragePlace() {
         if (mc.currentScreen != null) return;
@@ -220,18 +221,18 @@ public class Scaffold extends Module {
 
         Rotation rotation = null;
 
-//        if (!moveDiagonally) {
-//            MovingObjectPosition leftRayCast = RayCastUtils.rayCast(4.5, new Rotation(roundedYaw + 45, bestPitch));
-//            MovingObjectPosition rightRayCast = RayCastUtils.rayCast(4.5, new Rotation(roundedYaw - 45, bestPitch));
-//
-//            if (leftRayCast != null && leftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-//                rotation = new Rotation(MathHelper.wrapDegree(roundedYaw + 45), bestPitch);
-//            } else if (rightRayCast != null && rightRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-//                rotation = new Rotation(MathHelper.wrapDegree(roundedYaw - 45), bestPitch);
-//            }
-//        } else {
-//            rotation = new Rotation(roundedYaw, bestPitch);
-//        }
+        if (!moveDiagonally) {
+            MovingObjectPosition leftRayCast = RayCastUtils.rayCast(4.5, 6.0, new Rotation(roundedYaw + 45, bestPitch));
+            MovingObjectPosition rightRayCast = RayCastUtils.rayCast(4.5, 6.0, new Rotation(roundedYaw - 45, bestPitch));
+
+            if (leftRayCast != null && leftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                rotation = new Rotation(MathHelper.wrapDegree(roundedYaw + 45), bestPitch);
+            } else if (rightRayCast != null && rightRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                rotation = new Rotation(MathHelper.wrapDegree(roundedYaw - 45), bestPitch);
+            }
+        } else {
+            rotation = new Rotation(roundedYaw, bestPitch);
+        }
 
         //if (mc.thePlayer.hurtResistantTime > 0) {
         //    for (float i = 0; i < 180; i += 0.1f) {}

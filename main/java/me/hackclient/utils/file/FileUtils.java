@@ -1,5 +1,6 @@
 package me.hackclient.utils.file;
 
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -20,7 +21,7 @@ public class FileUtils {
      * @throws IOException the io exception
      */
     public static void unpackFile(File file, String name) throws IOException {
-        file.getParentFile().mkdirs();
+        file.getParentFile().mkdirs(); // Создание папок для файла, если они не существуют
         try (FileOutputStream fos = new FileOutputStream(file);
              InputStream resourceStream = Objects.requireNonNull(FileUtils.class.getClassLoader().getResourceAsStream(name))) {
             IOUtils.copy(resourceStream, fos);

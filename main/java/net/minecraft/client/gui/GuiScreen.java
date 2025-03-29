@@ -15,6 +15,8 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.stream.GuiTwitchUserMode;
 import net.minecraft.client.renderer.GlStateManager;
@@ -60,7 +62,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     private GuiButton selectedButton;
     private int eventButton;
     private long lastMouseEvent;
-    private int touchValue;
+    public int touchValue;
     private URI clickedLinkURI;
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks)

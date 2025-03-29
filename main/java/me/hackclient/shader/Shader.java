@@ -21,8 +21,8 @@ public class Shader implements InstanceAccess {
 		String vertex = convertFileToString(vertexShaderDir);
 		String fragment = convertFileToString(fragmentShaderDir);
 
-		GL20.glAttachShader(programId, createShader("rounded.glsl", GL20.GL_FRAGMENT_SHADER));
-		GL20.glAttachShader(programId, createShader("vertex.txt", GL20.GL_VERTEX_SHADER));
+		GL20.glAttachShader(programId, createShader(fragment, GL20.GL_FRAGMENT_SHADER));
+		GL20.glAttachShader(programId, createShader(vertex, GL20.GL_VERTEX_SHADER));
 		GL20.glLinkProgram(programId);
 	}
 

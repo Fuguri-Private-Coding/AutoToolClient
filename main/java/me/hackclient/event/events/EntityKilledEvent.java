@@ -5,10 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.event.Event;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 
 @Setter
 @Getter
 @AllArgsConstructor
 public class EntityKilledEvent extends Event {
-    Entity entity;
+    EntityLivingBase entity;
 }

@@ -87,7 +87,7 @@ public abstract class Entity implements ICommandSender
     public boolean isCollidedVertically;
     public boolean isCollided;
     public boolean velocityChanged;
-    protected boolean isInWeb;
+    public boolean isInWeb;
     private boolean isOutsideBorder;
     public boolean isDead;
     public float width;
@@ -96,7 +96,7 @@ public abstract class Entity implements ICommandSender
     public float distanceWalkedModified;
     public float distanceWalkedOnStepModified;
     public float fallDistance;
-    private int nextStepDistance;
+    public int nextStepDistance;
     public double lastTickPosX;
     public double lastTickPosY;
     public double lastTickPosZ;
@@ -106,7 +106,7 @@ public abstract class Entity implements ICommandSender
     protected Random rand;
     public int ticksExisted;
     public int fireResistance;
-    private int fire;
+    public int fire;
     protected boolean inWater;
     public int hurtResistantTime;
     protected boolean firstUpdate;
@@ -1226,6 +1226,10 @@ public abstract class Entity implements ICommandSender
             float f1 = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * partialTicks;
             return this.getVectorForRotation(f, f1);
         }
+    }
+
+    public Vec3 getLook(Rotation rotation) {
+        return this.getVectorForRotation(rotation.getPitch(), rotation.getYaw());
     }
 
     public final Vec3 getVectorForRotation(float pitch, float yaw)

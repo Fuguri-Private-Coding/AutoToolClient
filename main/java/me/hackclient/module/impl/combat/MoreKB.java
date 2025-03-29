@@ -7,23 +7,17 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.RandomUtils;
-import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
-import org.w3c.dom.Entity;
 
 @ModuleInfo(
         name = "MoreKB",
         category = Category.COMBAT
 )
 public class MoreKB extends Module {
-
-    String lastMode = "";
-
 
     final ModeSetting mode = new ModeSetting(
             "Mode",
@@ -71,40 +65,14 @@ public class MoreKB extends Module {
         }
     };
 
-    final ModeSetting customEventSettings = new ModeSetting(
-            "CustomEventMode",
-            this,
-            () -> mode.getMode().equals("Custom"),
-            "Tick",
-            new String[]{
-                    "Tick",
-                    "Sprint",
-                    "Update"
-            }
-    );
-
-    final MultiBooleanSetting customSettings = new MultiBooleanSetting("CustomModes", this, () -> mode.getMode().equals("Custom"))
-            .add("CancelSprint")
-            .add("CancelServerSprint")
-            .add("Packet STOP_SPRINTING")
-            .add("Packet START_SPRINTING");
-
-
     int delay, reset;
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-
-        if (lastMode != mode.getMode() && mode.getMode().equals("LegitFast")) {
-            Client.INSTANCE.getSoundsManager().getLegitFast().asyncPlay(1f);
-        }
-
-        lastMode = mode.getMode();
-
         if (event instanceof TickEvent) {
-            EntityLivingBase target = Client.INSTANCE.getCombatManager().getTargetOrSelectedEntity();
-            if (target != null && target.hurtTime == 10) {
+            EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
+            if (target != null && target.hurtTime == 10 && delay == 0 && reset == 0) {
                 delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
                 reset = RandomUtils.nextInt(minReset.getValue(), maxReset.getValue());
             }
@@ -142,6 +110,8 @@ public class MoreKB extends Module {
 
             case "LegitFast" -> {
                 if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
+                    mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
+                    mc.thePlayer.setServerSprintState(false);
                     mc.thePlayer.setSprinting(false);
                     reset--;
                 }
@@ -159,37 +129,11 @@ public class MoreKB extends Module {
                     reset--;
                 }
             }
-
-            case "Custom" -> {
-                if (!mc.thePlayer.isSprinting()) break;
-                switch (customEventSettings.getMode()) {
-                    case "Tick" -> {
-                        if (event instanceof TickEvent) {
-                            handleCustomReset();
-                            reset--;
-                        }
-                    }
-                    case "Sprint" -> {
-                        if (event instanceof SprintEvent) {
-                            handleCustomReset();
-                            reset--;
-                        }
-                    }
-                    case "Update" -> {
-                        if (event instanceof UpdateEvent) {
-                            handleCustomReset();
-                            reset--;
-                        }
-                    }
-                }
-            }
         }
     }
 
-    void handleCustomReset() {
-        if (customSettings.get("CancelSprint")) mc.thePlayer.setSprinting(false);
-        if (customSettings.get("Packet STOP_SPRINTING")) mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
-        if (customSettings.get("Packet START_SPRINTING")) mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
-        if (customSettings.get("CancelServerSprint")) mc.thePlayer.setServerSprintState(false);
+    @Override
+    public String getSuffix() {
+        return String.valueOf(mode.getMode());
     }
 }

@@ -20,16 +20,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleInfo(name = "ArrayList", category = Category.VISUAL, toggled = true)
 public class ArrayList extends Module {
 
-	final ModeSetting selectedFont = new ModeSetting(
-			"Font",
-			this,
-			"Roboto",
-			new String[] {
-					"JetBrains",
-					"Roboto"
-			}
-	);
-
 	final BooleanSetting showRenderModules = new BooleanSetting("ShowRenderModules", this, false);
 	final BooleanSetting showLine = new BooleanSetting("Line", this, false);
 
@@ -62,7 +52,7 @@ public class ArrayList extends Module {
 			}
 
 			if (showLine.isToggled()) {
-				Gui.drawRect(0, 0, 2, (int) offset, color.getRGB());
+				Gui.drawRect(1, 0, 2, (int) offset, color.getRGB());
 			}
 		}
 	}

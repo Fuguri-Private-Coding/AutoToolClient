@@ -57,8 +57,6 @@ public class ClickGuiScreen extends GuiScreen {
 		settingLine = new Animation2D();
 	}
 
-	final ResourceLocation shesterenka = new ResourceLocation("minecraft", "hackclient/image/shesterenka.png");
-
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 				Client.INSTANCE.getModuleManager().modules.sort(
@@ -70,7 +68,6 @@ public class ClickGuiScreen extends GuiScreen {
 				}
 		);
 
-		RenderUtils.drawImage(shesterenka, 5, 5, 30, 30);
 		if (resizing
 		&& mouseX > pos.x + 100
 		&& mouseY > pos.y + 100) {

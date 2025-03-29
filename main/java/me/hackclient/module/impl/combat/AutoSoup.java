@@ -2,6 +2,7 @@ package me.hackclient.module.impl.combat;
 
 import me.hackclient.event.Event;
 import me.hackclient.event.events.LegitClickTimingEvent;
+import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -20,6 +21,7 @@ import net.minecraft.util.EnumFacing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @ModuleInfo(name = "AutoSoup", category = Category.COMBAT)
 public class AutoSoup extends Module {
@@ -70,10 +72,34 @@ public class AutoSoup extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof LegitClickTimingEvent) {
+        if (event instanceof RunGameLoopEvent) {
             if (mc.currentScreen instanceof GuiInventory) {
+                int emptySoup = getEmptySoup();
+                if (emptySoup != -1) {
+                    if (Math.sin(ThreadLocalRandom.current().nextDouble(0.0, Math.PI * 2)) <= 0.5) {
+                        mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, emptySoup, 1, 4, mc.thePlayer);
+                    }
+                } else {
+                    int slot = getSoupExceptHotbar();
+                    int i = 0;
 
-            } else {
+                    while (true) {
+                        if (i < 9) {
+                            ItemStack item = mc.thePlayer.inventory.mainInventory[i];
+                            if (item != null) {
+                                ++i;
+                                continue;
+                            }
+                        }
+
+                        mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 0, 1, mc.thePlayer);
+                        break;
+                    }
+                }
+            }
+        }
+        if (event instanceof LegitClickTimingEvent) {
+             if (mc.currentScreen == null) {
                 if (mc.thePlayer.inventory.getCurrentItem() != null && mc.thePlayer.inventory.getCurrentItem().getItem() == Items.bowl) {
                     mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
                     resetValues();
@@ -102,6 +128,30 @@ public class AutoSoup extends Module {
                 }
             }
         }
+    }
+
+    public int getSoupExceptHotbar() {
+        for (int i = 9; i < mc.thePlayer.inventory.mainInventory.length; ++i) {
+            ItemStack item = mc.thePlayer.inventory.mainInventory[i];
+            if (item != null && item.getItem() instanceof ItemSoup) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    public int getEmptySoup() {
+        if (mc.currentScreen instanceof GuiInventory inventory) {
+            for (int i = 36; i < 45; ++i) {
+                ItemStack item = inventory.inventorySlots.getInventory().get(i);
+                if (item != null && item.getItem() == Items.bowl) {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
     }
 
     int getSoupInHotBar() {
