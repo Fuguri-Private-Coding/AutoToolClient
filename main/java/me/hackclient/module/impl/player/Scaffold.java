@@ -37,10 +37,38 @@ import org.lwjgl.opengl.GL11;
 )
 public class Scaffold extends Module {
 
-    IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 1, 180, 30);
-    IntegerSetting maxYawSpeed = new IntegerSetting("MaxYawSpeed", this, 1, 180, 30);
-    IntegerSetting minPitchSpeed = new IntegerSetting("MinPitchSpeed", this, 1, 180, 15);
-    IntegerSetting maxPitchSpeed = new IntegerSetting("MaxPitchSpeed", this, 1, 180, 15);
+    IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 1, 180, 30) {
+        @Override
+        public int getValue() {
+            if (maxYawSpeed.value < value) { value = maxYawSpeed.value; }
+            return super.getValue();
+        }
+    };
+
+    IntegerSetting maxYawSpeed = new IntegerSetting("MaxYawSpeed", this, 1, 180, 30) {
+        @Override
+        public int getValue() {
+            if (minYawSpeed.value > value) { value = minYawSpeed.value; }
+            return super.getValue();
+        }
+    };
+
+    IntegerSetting minPitchSpeed = new IntegerSetting("MinPitchSpeed", this, 1, 180, 15) {
+        @Override
+        public int getValue() {
+            if (maxPitchSpeed.value < value) { value = maxPitchSpeed.value; }
+            return super.getValue();
+        }
+    };
+
+    IntegerSetting maxPitchSpeed = new IntegerSetting("MaxPitchSpeed", this, 1, 180, 15) {
+        @Override
+        public int getValue() {
+            if (minPitchSpeed.value > value) { value = minPitchSpeed.value; }
+            return super.getValue();
+        }
+    };
+
     FloatSetting smooth = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f) {};
 
     final ModeSetting clickMode = new ModeSetting(
@@ -54,8 +82,21 @@ public class Scaffold extends Module {
 
     final BooleanSetting swingItem = new BooleanSetting("SwingItem", this,() -> clickMode.getMode().equals("AutoPlace"), true);
 
-    IntegerSetting minCps = new IntegerSetting("MinCps", this,() -> clickMode.getMode().equals("Legit"), 0, 40, 7);
-    IntegerSetting maxCps = new IntegerSetting("MaxCps", this,() -> clickMode.getMode().equals("Legit"), 0, 40, 11);
+    IntegerSetting minCps = new IntegerSetting("MinCps", this,() -> clickMode.getMode().equals("Legit"), 0, 40, 7) {
+        @Override
+        public int getValue() {
+            if (maxCps.value < value) { value = maxCps.value; }
+            return super.getValue();
+        }
+    };
+
+    IntegerSetting maxCps = new IntegerSetting("MaxCps", this,() -> clickMode.getMode().equals("Legit"), 0, 40, 11) {
+        @Override
+        public int getValue() {
+            if (maxCps.value > value) { value = maxCps.value; }
+            return super.getValue();
+        }
+    };
 
     final BooleanSetting render = new BooleanSetting("Render", this, true);
 

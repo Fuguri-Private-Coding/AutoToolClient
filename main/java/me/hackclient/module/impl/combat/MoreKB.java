@@ -7,6 +7,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.RandomUtils;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
@@ -72,7 +73,7 @@ public class MoreKB extends Module {
         super.onEvent(event);
         if (event instanceof TickEvent) {
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
-            if (target != null && target.hurtTime == 10 && delay == 0 && reset == 0) {
+            if (target != null && target.hurtTime == 10) {
                 delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
                 reset = RandomUtils.nextInt(minReset.getValue(), maxReset.getValue());
             }
@@ -110,8 +111,6 @@ public class MoreKB extends Module {
 
             case "LegitFast" -> {
                 if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
-                    mc.thePlayer.setServerSprintState(false);
                     mc.thePlayer.setSprinting(false);
                     reset--;
                 }

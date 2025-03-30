@@ -26,8 +26,23 @@ public class RotationHandler extends Module {
 
     final IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 0, 180, 30);
     final IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 0, 180, 30);
-    final FloatSetting maxSmoothes = new FloatSetting("MaxSmooth", this, 1, 10, 2f, 0.1f) {};
-    final FloatSetting minSmoothes = new FloatSetting("MinSmooth", this, 1, 10, 2f, 0.1f) {};
+
+    final FloatSetting minSmoothes = new FloatSetting("MinSmooth", this, 1, 10, 2f, 0.1f) {
+        @Override
+        public float getValue() {
+            if (maxSmoothes.value < value) { value = maxSmoothes.value; }
+            return super.getValue();
+        }
+    };
+
+    final FloatSetting maxSmoothes = new FloatSetting("MaxSmooth", this, 1, 10, 2f, 0.1f) {
+        @Override
+        public float getValue() {
+            if (minSmoothes.value > value) { value = minSmoothes.value; }
+            return super.getValue();
+        }
+    };
+
     final FloatSetting stopThreshold = new FloatSetting("StopThreshold", this, 0f, 10f, 0.1f, 0.1f) {};
 
     @Override

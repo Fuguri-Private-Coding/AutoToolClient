@@ -9,17 +9,12 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.misc.ClientHandler;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.MultiBooleanSetting;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.network.Packet;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.client.C00PacketLoginStart;
@@ -41,13 +36,24 @@ public class Ping extends Module {
 
 	Vec3 serverPos, lServerPos;
 	Rotation serverRotation;
-	int outDelay, recoilDelay;
+	int outDelay, nextDelay;
 	final StopWatch renderStopWatch;
 
-	final StopWatch recoilStopWatch;
+	IntegerSetting minOutDelay = new IntegerSetting("MinOutDelay", this, 10, 1000, 450) {
+		@Override
+		public int getValue() {
+			if (maxOutDelay.value < value) { value = maxOutDelay.value; }
+			return super.getValue();
+		}
+	};
 
-	IntegerSetting minOutDelay = new IntegerSetting("MinOutDelay", this, 10, 1000, 450);
-	IntegerSetting maxOutDelay = new IntegerSetting("MaxOutDelay", this, 10, 1000, 450);
+	IntegerSetting maxOutDelay = new IntegerSetting("MaxOutDelay", this, 10, 1000, 450) {
+		@Override
+		public int getValue() {
+			if (minOutDelay.value > value) { value = minOutDelay.value; }
+			return super.getValue();
+		}
+	};
 
 	MultiBooleanSetting flushes = new MultiBooleanSetting("FlushConditions", this)
 			.add("Attack")
@@ -61,17 +67,21 @@ public class Ping extends Module {
 			.add("UsingItem")
 			;
 
-	IntegerSetting attackFlush = new IntegerSetting("AttackTime", this, () -> flushes.get("Attack"), 10, 1000, 20);
-	IntegerSetting sprintFlush = new IntegerSetting("SprintChangeTime", this, () -> flushes.get("SprintChange"), 10, 1000, 100);
-	IntegerSetting flagFlush = new IntegerSetting("TeleportTime", this, () -> flushes.get("Teleport"), 10, 1000, 200);
-	IntegerSetting velocityFlush = new IntegerSetting("VelocityTime", this, () -> flushes.get("Velocity"), 10, 1000, 500);
-	IntegerSetting openInvFlush = new IntegerSetting("OpenedInvTime", this, () -> flushes.get("OpenedInv"), 10, 1000, 50);
-	IntegerSetting usingItemFlush = new IntegerSetting("UsingItemTime", this, () -> flushes.get("UsingItem"), 10, 1000, 50);
-	IntegerSetting blockPlaceFlush = new IntegerSetting("BlockPlaceTime", this, () -> flushes.get("PlaceBlock"), 10, 1000, 50);
-	IntegerSetting worldChangeFlush = new IntegerSetting("WorldChangeTime", this, () -> flushes.get("WorldChange"), 10, 1000, 50);
+	IntegerSetting attackFlush = new IntegerSetting("AttackTime", this, () -> flushes.get("Attack"), 1, 20, 5);
+	IntegerSetting sprintFlush = new IntegerSetting("SprintChangeTime", this, () -> flushes.get("SprintChange"), 1, 20, 5);
+	IntegerSetting flagFlush = new IntegerSetting("TeleportTime", this, () -> flushes.get("Teleport"), 1, 20, 5);
+	IntegerSetting velocityFlush = new IntegerSetting("VelocityTime", this, () -> flushes.get("Velocity"), 1, 20, 5);
+	IntegerSetting openInvFlush = new IntegerSetting("OpenedInvTime", this, () -> flushes.get("OpenedInv"), 1, 20, 5);
+	IntegerSetting usingItemFlush = new IntegerSetting("UsingItemTime", this, () -> flushes.get("UsingItem"), 1, 20, 5);
+	IntegerSetting blockPlaceFlush = new IntegerSetting("BlockPlaceTime", this, () -> flushes.get("PlaceBlock"), 1, 20, 5);
+	IntegerSetting worldChangeFlush = new IntegerSetting("WorldChangeTime", this, () -> flushes.get("WorldChange"), 1, 20, 5);
+
+	MultiBooleanSetting render = new MultiBooleanSetting("Render", this)
+			.add("HitBox")
+			.add("Player")
+			;
 
 	public Ping() {
-		recoilStopWatch = new StopWatch();
 		renderStopWatch = new StopWatch();
 	}
 
@@ -114,32 +124,38 @@ public class Ping extends Module {
 
 			if (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId() && flushes.get("Velocity")) {
 				resetPackets();
-				recoilDelay = velocityFlush.getValue();
+				nextDelay = velocityFlush.getValue();
 			}
 
 			if (packet instanceof S08PacketPlayerPosLook && flushes.get("Teleport")) {
 				resetPackets();
-				recoilDelay = flagFlush.getValue();
+				nextDelay = flagFlush.getValue();
 			}
 
 			if (packet instanceof C08PacketPlayerBlockPlacement && flushes.get("PlaceBlock")) {
 				resetPackets();
-				recoilDelay = blockPlaceFlush.getValue();
+				nextDelay = blockPlaceFlush.getValue();
 			}
 
 			if (mc.currentScreen instanceof GuiContainer && flushes.get("OpenedInv")) {
 				resetPackets();
-				recoilDelay = openInvFlush.getValue();
+				nextDelay = openInvFlush.getValue();
 			}
 
-			if (!recoilStopWatch.reachedMS(recoilDelay))
-				return;
- 
+			if (nextDelay > 0) return;
+
 			if (packetEvent.getDirection() == PacketDirection.OUTGOING) {
 				ClientHandler.PacketHandler.clientPacketBuffer.add(new Doubles<>(packet, packetEvent.getSendTime()));
 				packetEvent.setCanceled(true);
 			}
 		}
+
+		if (event instanceof TickEvent && nextDelay > 0) {
+			resetPackets();
+			nextDelay--;
+			return;
+		}
+
 		if (event instanceof RunGameLoopEvent) {
 			ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> {
 				if (System.currentTimeMillis() - p.getSecond() >= (long) outDelay) {
@@ -156,44 +172,63 @@ public class Ping extends Module {
 				}
 			});
 		}
+
 		if (event instanceof Render3DEvent) {
 			if (serverPos != null && lServerPos != null) {
 				if (mc.gameSettings.thirdPersonView == 0) return;
-				RenderUtils.start3D();
 
-				double d1 = Math.min(renderStopWatch.reachedMS(), 50D);
-				d1 /= 50d;
+				double d1 = Math.min(renderStopWatch.reachedMS(), 50);
+				d1 /= 50;
 
 				double smoothX = lServerPos.xCoord + (serverPos.xCoord - lServerPos.xCoord) * d1 - mc.getRenderManager().viewerPosX;
 				double smoothY = lServerPos.yCoord + (serverPos.yCoord - lServerPos.yCoord) * d1 - mc.getRenderManager().viewerPosY;
 				double smoothZ = lServerPos.zCoord + (serverPos.zCoord - lServerPos.zCoord) * d1 - mc.getRenderManager().viewerPosZ;
 
-				RenderUtils.renderHitBox(new AxisAlignedBB(
-						smoothX - mc.thePlayer.width / 2,
-						smoothY + 0,
-						smoothZ - mc.thePlayer.width / 2,
-						smoothX + mc.thePlayer.width / 2,
-						smoothY + mc.thePlayer.height,
-						smoothZ + mc.thePlayer.width / 2
-				));
-				RenderUtils.stop3D();
+				if (nextDelay > 0) {
+					smoothX = mc.thePlayer.posX;
+					smoothY = mc.thePlayer.posY;
+					smoothZ = mc.thePlayer.posZ;
+				}
+
+				if (render.get("HitBox")) {
+					RenderUtils.start3D();
+					RenderUtils.renderHitBox(new AxisAlignedBB(
+							smoothX - mc.thePlayer.width / 2,
+							smoothY + 0,
+							smoothZ - mc.thePlayer.width / 2,
+							smoothX + mc.thePlayer.width / 2,
+							smoothY + mc.thePlayer.height,
+							smoothZ + mc.thePlayer.width / 2
+					));
+					RenderUtils.stop3D();
+				}
+
+				if (render.get("Player")) {
+					mc.getRenderManager().doRenderEntity(
+							mc.thePlayer,
+							smoothX, smoothY, smoothZ,
+							mc.thePlayer.rotationYawHead,
+							mc.timer.renderPartialTicks,
+							true
+					);
+				}
 			}
 		}
 		if (mc.thePlayer.isUsingItem() && flushes.get("UsingItem")) {
 			resetPackets();
-			recoilDelay = usingItemFlush.getValue();
+			nextDelay = usingItemFlush.getValue();
 		}
 		if (event instanceof AttackEvent && flushes.get("Attack")) {
 			resetPackets();
-			recoilDelay = attackFlush.getValue();
+			nextDelay = attackFlush.getValue();
 		}
 		if (event instanceof ChangeSprintEvent && flushes.get("SprintChange")) {
 			resetPackets();
-			recoilDelay = sprintFlush.getValue();
+			nextDelay = sprintFlush.getValue();
 		}
 		if (event instanceof WorldChangeEvent && flushes.get("WorldChange")) {
 			resetPackets();
-			recoilDelay = worldChangeFlush.getValue();
+			nextDelay = worldChangeFlush.getValue();
 		}
 	}
 
@@ -234,6 +269,16 @@ public class Ping extends Module {
 			}
 		}
 	}
+
+
+	//				RenderUtils.renderHitBox(new AxisAlignedBB(
+//						smoothX - mc.thePlayer.width / 2,
+//						smoothY + 0,
+//						smoothZ - mc.thePlayer.width / 2,
+//						smoothX + mc.thePlayer.width / 2,
+//						smoothY + mc.thePlayer.height,
+//						smoothZ + mc.thePlayer.width / 2
+//				));
 
 	//	IntegerSetting delay = new IntegerSetting("Delay", this, 50, 1000, 500);
 //

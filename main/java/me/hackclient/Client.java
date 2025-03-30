@@ -16,6 +16,7 @@ import me.hackclient.module.ModuleManager;
 import me.hackclient.managers.ClickManager;
 import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
+import me.hackclient.utils.font.FontsRepository;
 import me.hackclient.utils.sound.SoundsManager;
 import org.lwjgl.opengl.Display;
 

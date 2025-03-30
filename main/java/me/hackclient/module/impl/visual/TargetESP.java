@@ -7,10 +7,9 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
+import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
-
-import java.awt.*;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -18,13 +17,13 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "TargetESP", category = Category.VISUAL, toggled = true)
 public class TargetESP extends Module {
 
-    FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f) {};
-    IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
-    FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f) {};
-    FloatSetting red = new FloatSetting("Red", this, 0f, 1f,1f, 0.1f) {};
-    FloatSetting green = new FloatSetting("Green", this, 0f, 1f,1f, 0.1f) {};
-    FloatSetting blue = new FloatSetting("Blue", this, 0f, 1f,1f, 0.1f) {};
-    FloatSetting alpha = new FloatSetting("Alpha", this, 0f, 1f,1f, 0.1f) {};
+
+    final FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f) {};
+    final IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
+    final FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f) {};
+    final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
+    final BooleanSetting changeColorHit = new BooleanSetting("ChangeHitColor", this, false);
+    final ColorSetting hitColor = new ColorSetting("HitColor", this, changeColorHit::isToggled, 1f,1f,1f,1f);
 
     @Override
     public void onEvent(Event event) {
@@ -61,18 +60,18 @@ public class TargetESP extends Module {
                 double x1 = x + sin(i * Math.PI / 180) * 0.7;
                 double z1 = z + cos(i * Math.PI / 180) * 0.7;
                 double y1 = y + (animationTranslate + 1) / 2 * target.height;
-                glColor4f(red.getValue(), green.getValue(), blue.getValue(), alpha.getValue());
+                RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hitColor.getColor() : color.getColor());
                 glVertex3d(x1, y1, z1);
-                glColor4f(red.getValue(), green.getValue(), blue.getValue(), 0.0f);
+                RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hitColor.getColor() : color.getColor(), 0f);
                 glVertex3d(x1, y1 + animationTranslate * length.getValue(), z1);
             }
             for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
                 double x1 = x + sin(i * Math.PI / 180) * 0.7;
                 double z1 = z + cos(i * Math.PI / 180) * 0.7;
                 double y1 = y + (animationTranslate + 1) / 2 * target.height;
-                glColor4f(red.getValue(), green.getValue(), blue.getValue(), 1.0f);
+                RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hitColor.getColor() : color.getColor(), 1.0f);
                 glVertex3d(x1, y1, z1);
-                glColor4f(red.getValue(), green.getValue(), blue.getValue(), 1.0f);
+                RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hitColor.getColor() : color.getColor(), 1.0f);
                 glVertex3d(x1, y1 + 0.01f, z1);
             }
             glEnd();

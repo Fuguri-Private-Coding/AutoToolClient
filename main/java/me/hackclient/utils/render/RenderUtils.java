@@ -49,6 +49,137 @@ public class RenderUtils implements InstanceAccess {
         ));
     }
 
+    public static void drawFilledBox(AxisAlignedBB bb, int color) {
+        float alpha = (float)(color >> 24 & 255) / 255.0F;
+        float red = (float)(color >> 16 & 255) / 255.0F;
+        float green = (float)(color >> 8 & 255) / 255.0F;
+        float blue = (float)(color & 255) / 255.0F;
+
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(false);
+
+        glColor4f(red, green, blue, alpha);
+
+        drawFilledBoundingBox(bb);
+
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(true);
+        glDisable(GL_BLEND);
+        glPopMatrix();
+    }
+
+    public static void drawOutlinedBox(AxisAlignedBB bb, float lineWidth, int color) {
+        float alpha = (float)(color >> 24 & 255) / 255.0F;
+        float red = (float)(color >> 16 & 255) / 255.0F;
+        float green = (float)(color >> 8 & 255) / 255.0F;
+        float blue = (float)(color & 255) / 255.0F;
+
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(false);
+        glLineWidth(lineWidth);
+        glEnable(GL_LINE_SMOOTH);
+
+        glColor4f(red, green, blue, alpha);
+
+        drawOutlinedBoundingBox(bb);
+
+        glDisable(GL_LINE_SMOOTH);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(true);
+        glDisable(GL_BLEND);
+        glPopMatrix();
+    }
+
+    private static void drawFilledBoundingBox(AxisAlignedBB bb) {
+        glBegin(GL_QUADS);
+
+        glVertex3d(bb.minX, bb.minY, bb.minZ);
+        glVertex3d(bb.maxX, bb.minY, bb.minZ);
+        glVertex3d(bb.maxX, bb.minY, bb.maxZ);
+        glVertex3d(bb.minX, bb.minY, bb.maxZ);
+
+        glVertex3d(bb.minX, bb.maxY, bb.minZ);
+        glVertex3d(bb.minX, bb.maxY, bb.maxZ);
+        glVertex3d(bb.maxX, bb.maxY, bb.maxZ);
+        glVertex3d(bb.maxX, bb.maxY, bb.minZ);
+
+        glVertex3d(bb.minX, bb.minY, bb.minZ);
+        glVertex3d(bb.minX, bb.maxY, bb.minZ);
+        glVertex3d(bb.maxX, bb.maxY, bb.minZ);
+        glVertex3d(bb.maxX, bb.minY, bb.minZ);
+
+        glVertex3d(bb.minX, bb.minY, bb.maxZ);
+        glVertex3d(bb.maxX, bb.minY, bb.maxZ);
+        glVertex3d(bb.maxX, bb.maxY, bb.maxZ);
+        glVertex3d(bb.minX, bb.maxY, bb.maxZ);
+
+        glVertex3d(bb.minX, bb.minY, bb.minZ);
+        glVertex3d(bb.minX, bb.minY, bb.maxZ);
+        glVertex3d(bb.minX, bb.maxY, bb.maxZ);
+        glVertex3d(bb.minX, bb.maxY, bb.minZ);
+
+        glVertex3d(bb.maxX, bb.minY, bb.minZ);
+        glVertex3d(bb.maxX, bb.maxY, bb.minZ);
+        glVertex3d(bb.maxX, bb.maxY, bb.maxZ);
+        glVertex3d(bb.maxX, bb.minY, bb.maxZ);
+
+        glEnd();
+    }
+
+    public static void glColor(Color color) {
+        glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+    }
+
+    public static void glColor(Color color, float alpha) {
+        glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha);
+    }
+
+    private static void drawOutlinedBoundingBox(AxisAlignedBB bb) {
+        glBegin(GL_LINE_LOOP);
+
+        glVertex3d(bb.minX, bb.minY, bb.minZ);
+        glVertex3d(bb.maxX, bb.minY, bb.minZ);
+        glVertex3d(bb.maxX, bb.minY, bb.maxZ);
+        glVertex3d(bb.minX, bb.minY, bb.maxZ);
+
+        glEnd();
+
+        glBegin(GL_LINE_LOOP);
+
+        glVertex3d(bb.minX, bb.maxY, bb.minZ);
+        glVertex3d(bb.maxX, bb.maxY, bb.minZ);
+        glVertex3d(bb.maxX, bb.maxY, bb.maxZ);
+        glVertex3d(bb.minX, bb.maxY, bb.maxZ);
+
+        glEnd();
+
+        glBegin(GL_LINES);
+
+        glVertex3d(bb.minX, bb.minY, bb.minZ);
+        glVertex3d(bb.minX, bb.maxY, bb.minZ);
+
+        glVertex3d(bb.maxX, bb.minY, bb.minZ);
+        glVertex3d(bb.maxX, bb.maxY, bb.minZ);
+
+        glVertex3d(bb.maxX, bb.minY, bb.maxZ);
+        glVertex3d(bb.maxX, bb.maxY, bb.maxZ);
+
+        glVertex3d(bb.minX, bb.minY, bb.maxZ);
+        glVertex3d(bb.minX, bb.maxY, bb.maxZ);
+
+        glEnd();
+    }
+
     public static void renderHitBox(AxisAlignedBB bb, int type) {
         glBegin(type);
 

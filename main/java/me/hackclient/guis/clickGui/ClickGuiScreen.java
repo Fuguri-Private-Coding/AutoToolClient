@@ -1,6 +1,9 @@
 package me.hackclient.guis.clickGui;
 
 import me.hackclient.Client;
+import me.hackclient.event.Event;
+import me.hackclient.event.callable.ConditionCallableObject;
+import me.hackclient.event.events.TickEvent;
 import me.hackclient.guis.config.ConfigEditorGui;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -10,13 +13,11 @@ import me.hackclient.settings.impl.*;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.doubles.Doubles;
-import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
@@ -26,14 +27,19 @@ import java.io.IOException;
 
 import static java.lang.Math.*;
 
-public class ClickGuiScreen extends GuiScreen {
+public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject {
 
-	final Color BACKGROUND_COLOR = new Color(15, 15, 15, 100);
-	final Color MAIN_COLOR = new Color(0, 255, 209, 255);
-	final int MAIN_COLOR_INT = MAIN_COLOR.getRGB();
+	int delay = 10;
 
 	Vector2f pos, size, lastMouse;
 	ClickGui clickGui = Client.INSTANCE.getModuleManager().getModule(ClickGui.class);
+
+	Color BACKGROUND_COLOR = new Color(15,15,15,100);
+	Color MAIN_COLOR = new Color(255, 255, 209, 255);
+	Color HEADER_COLOR = new Color(255,255,255,255);
+	Color CATEGORY_COLOR = new Color(255,255,255,255);
+
+	int MAIN_COLOR_INT = MAIN_COLOR.getRGB();
 
 	Category selectedCategory = Category.COMBAT;
 	Module selectedModule = null;
@@ -41,24 +47,59 @@ public class ClickGuiScreen extends GuiScreen {
 	boolean resizing, moving, binding;
 
 	// Animations
-	final Animation2D categoryLine, moduleLine, settingLine, cfgButton, cfgButton2;
+	final Animation2D moduleLine, settingLine, cfgButton, cfgButton2, background, sizeBackground;
 
 	public ClickGuiScreen() {
+		callables.add(this);
 		lastMouse = new Vector2f(0, 0);
 		pos = new Vector2f(100, 100);
 		size = new Vector2f(350, 150);
 
 		mc = Minecraft.getMinecraft();
 
+		sizeBackground = new Animation2D();
+		background = new Animation2D();
 		cfgButton2 = new Animation2D();
 		cfgButton = new Animation2D();
-		categoryLine = new Animation2D();
 		moduleLine = new Animation2D();
 		settingLine = new Animation2D();
 	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		MAIN_COLOR = clickGui.color.getColor();
+		switch (clickGui.theme.getMode()) {
+			case "White" -> BACKGROUND_COLOR = new Color(255, 255, 255, clickGui.backgroundAlpha.getValue());
+			case "Black" -> BACKGROUND_COLOR = new Color(15, 15, 15, clickGui.backgroundAlpha.getValue());
+			default -> throw new IllegalStateException("Unexpected value: " + clickGui.theme.getMode());
+		}
+
+		switch (clickGui.theme.getMode()) {
+			case "White" -> HEADER_COLOR = new Color(255, 255, 255, 255);
+			case "Black" -> HEADER_COLOR = new Color(15, 15, 15, 255);
+			default -> throw new IllegalStateException("Unexpected value: " + clickGui.theme.getMode());
+		}
+
+		switch (clickGui.theme.getMode()) {
+			case "White" -> CATEGORY_COLOR = new Color(15, 15, 15, 255);
+			case "Black" -> CATEGORY_COLOR = new Color(255, 255, 255, 255);
+			default -> throw new IllegalStateException("Unexpected value: " + clickGui.theme.getMode());
+		}
+
+		String name = switch (delay) {
+			case 0, 1, 2 -> "Console_";
+			case 3, 4 -> "Console";
+			case 5, 6 -> "Consol";
+			case 7, 8 -> "Conso";
+			case 9, 10 -> "Cons";
+			case 11, 12, 13 -> "Con";
+			case 14, 15, 16 -> "Co";
+			case 17, 18, 19 -> "C";
+			case 20 -> "_";
+			default -> "§k" + "Console_".substring(0, min(delay - 20, 8));
+		};
+
+		MAIN_COLOR_INT = MAIN_COLOR.getRGB();
 				Client.INSTANCE.getModuleManager().modules.sort(
 				(o1, o2) -> {
 					int width1 = mc.fontRendererObj.getStringWidth(o1.getName());
@@ -70,7 +111,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		if (resizing
 		&& mouseX > pos.x + 100
-		&& mouseY > pos.y + 100) {
+		&& mouseY > background.y + 100) {
 			size.translate(mouseX - lastMouse.x, mouseY - lastMouse.y);
 			lastMouse.set(mouseX, mouseY);
 		}
@@ -83,12 +124,33 @@ public class ClickGuiScreen extends GuiScreen {
 		final float clientNameWidth = fontRenderer.getStringWidth(Client.INSTANCE.getName());
 		float offset = 0;
 
-		ScissorUtils.enableScissor();
-		ScissorUtils.scissor(new ScaledResolution(mc), pos.x, pos.y, size.x, size.y);
-		RoundedUtils.drawRect(pos.x, pos.y, size.x, size.y, clickGui.backgroundRadius.getValue(), new Color(15, 15, 15, clickGui.backgroundAlpha.getValue()));
+		background.endX = pos.x;
+		background.endY = pos.y;
+		sizeBackground.endX = size.x;
+		sizeBackground.endY = size.y;
 
-		RoundedUtils.drawRect(pos.x + size.x - 5, pos.y + size.y - 5, 5, 5, 1, BACKGROUND_COLOR);
-		fontRenderer.drawString(Client.INSTANCE.getName(), pos.x + 20, pos.y + 4, MAIN_COLOR_INT);
+		background.update(5f);
+		sizeBackground.update(5f);
+
+		ScissorUtils.enableScissor();
+		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
+		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
+		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clickGui.backgroundRadius.getValue(), HEADER_COLOR);
+
+		RoundedUtils.drawRect(background.x + sizeBackground.x - 5, background.y + sizeBackground.y - 5, 5, 5, 1, BACKGROUND_COLOR);
+		fontRenderer.drawString(
+				name,
+				background.x + 45, background.y + 4,
+				CATEGORY_COLOR.getRGB()
+		);
+
+		RoundedUtils.drawRect(background.x + 4.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
+		RoundedUtils.drawRect(background.x + 14.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
+		RoundedUtils.drawRect(background.x + 24.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
+
+		RoundedUtils.drawRect(background.x + 5, background.y + 4, 6.5f, 6.5f, 3f, Color.red);
+		RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
+		RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
 
 		float widthsModule = 0;
 		for (Module module : Client.INSTANCE.getModuleManager().modules) {
@@ -103,45 +165,38 @@ public class ClickGuiScreen extends GuiScreen {
 		for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selectedCategory))	{
 			fontRenderer.drawString(
 					module.getName(),
-					pos.x + 4,
-					pos.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset,
-					module.isToggled() ? MAIN_COLOR_INT : -1
+					background.x + 4,
+					background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset,
+					module.isToggled() ? MAIN_COLOR_INT : CATEGORY_COLOR.getRGB()
 					);
 			offset += fontRenderer.FONT_HEIGHT + 2;
 			if (module == selectedModule) {
-				moduleLine.endY = pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset;
+				moduleLine.endY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset;
 			}
 		}
 
 		offset = 0;
 		for (Category category : Category.values()) {
-			if (category == selectedCategory) {
-				categoryLine.endX = pos.x + verticalLineXOffset + 5 + 5 + offset;
-				categoryLine.endY = pos.y + 3 + fontRenderer.FONT_HEIGHT;
-				RoundedUtils.drawRect((float) categoryLine.x, (float) categoryLine.y, fontRenderer.getStringWidth(selectedCategory.name), 1, 3, MAIN_COLOR);
-			}
 			fontRenderer.drawString(
 					category.name,
-					pos.x + verticalLineXOffset + 5 + 5 + offset,
-					pos.y + 3,
-					-1
+					background.x + verticalLineXOffset + 5 + 5 + offset,
+					background.y + 4,
+					category == selectedCategory ? MAIN_COLOR.getRGB() : CATEGORY_COLOR.getRGB()
 			);
 			offset += fontRenderer.getStringWidth(category.name) + 5;
 		}
 
-		RoundedUtils.drawRect(pos.x + verticalLineXOffset, pos.y, 1, size.y, 3, MAIN_COLOR);
-		RoundedUtils.drawRect(pos.x, pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 2.5f, size.x, 1, 3, MAIN_COLOR);
+		RoundedUtils.drawRect(background.x + verticalLineXOffset, background.y + 15, 2, sizeBackground.y - 15, 0.2f, BACKGROUND_COLOR);
 
 		offset = 0;
 		if (selectedModule != null) {
-			RoundedUtils.drawRect(pos.x + 2, (float) moduleLine.y - 12, 1, 12, 3, MAIN_COLOR);
+			RoundedUtils.drawRect(background.x + 2, moduleLine.y - 12, 1, 12, 3, MAIN_COLOR);
 			fontRenderer.drawString(
 					"Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())),
-					pos.x + verticalLineXOffset + 5,
-					pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6,
-					-1
+					background.x + verticalLineXOffset + 5,
+					background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6,
+						CATEGORY_COLOR.getRGB()
 					);
-
 			for (Setting setting : selectedModule.getSettings()) {
 				if (!setting.isVisible())
 					continue;
@@ -149,9 +204,9 @@ public class ClickGuiScreen extends GuiScreen {
 				float settingWidth = fontRenderer.getStringWidth(setting.getName() + ": ");
 				fontRenderer.drawString(
 						setting.getName() + ": ",
-						pos.x + verticalLineXOffset + 5,
-						pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
-						-1
+						background.x + verticalLineXOffset + 5,
+						background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+						CATEGORY_COLOR.getRGB()
 				);
 				if (setting instanceof MultiBooleanSetting multiBooleanSetting) {
 					float xOffset = 0;
@@ -161,22 +216,22 @@ public class ClickGuiScreen extends GuiScreen {
 						String mode = value.getFirst();
 						boolean isSelected = value.getSecond();
 						boolean notLast = value != multiBooleanSetting.getValues().get(length - 1);
-						if (pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= pos.x + size.x) {
+						if (background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= background.x + sizeBackground.x) {
 							xOffset = 0;
 							yOffset += 11;
 						}
 						fontRenderer.drawString(
 								mode,
-								pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset,
-								pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
-								isSelected ? MAIN_COLOR_INT : -1
+								background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset,
+								background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
+								isSelected ? MAIN_COLOR_INT : CATEGORY_COLOR.getRGB()
 						);
 						if (notLast) {
 							fontRenderer.drawString(
 									",",
-									pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode),
-									pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
-									-1
+									background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode),
+									background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
+									CATEGORY_COLOR.getRGB()
 							);
 						}
 						xOffset += fontRenderer.getStringWidth(mode) + 5;
@@ -190,21 +245,21 @@ public class ClickGuiScreen extends GuiScreen {
 						int length = modeSetting.getModes().length;
 						boolean isSelected = mode.equals(modeSetting.getMode());
 						boolean notLast = !mode.equals(modeSetting.getModes()[length - 1]);
-						if (pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= pos.x + size.x) {
+						if (background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= background.x + sizeBackground.x) {
 							xOffset = 0;
 							yOffset += 11;
 						}
 						fontRenderer.drawString(
 								mode,
-								pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset,
-								pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
-								isSelected ? MAIN_COLOR_INT : -1
+								background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset,
+								background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
+								isSelected ? MAIN_COLOR_INT : CATEGORY_COLOR.getRGB()
 						);
 						if (notLast) {
 							fontRenderer.drawString(
 									",",
-									pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode),
-									pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
+									background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode),
+									background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
 									-1
 							);
 						}
@@ -215,8 +270,8 @@ public class ClickGuiScreen extends GuiScreen {
 				if (setting instanceof BooleanSetting booleanSetting) {
 					fontRenderer.drawString(
 							String.valueOf(booleanSetting.isToggled()),
-							pos.x + verticalLineXOffset + 5 + settingWidth + 1,
-							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
 							booleanSetting.isToggled() ? Color.GREEN.darker().getRGB() : Color.RED.getRGB()
 					);
 				}
@@ -225,16 +280,16 @@ public class ClickGuiScreen extends GuiScreen {
 					final float length = 75;
 					final float sliderLength = filledFactor * length;
 					RoundedUtils.drawRect(
-							pos.x + verticalLineXOffset + 5 + settingWidth + 1,
-							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
 							length,
 							4,
 							1.5f,
 							BACKGROUND_COLOR
 					);
 					RoundedUtils.drawRect(
-							pos.x + verticalLineXOffset + 5 + settingWidth + 1,
-							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
 							sliderLength,
 							4,
 							1.5f,
@@ -242,20 +297,20 @@ public class ClickGuiScreen extends GuiScreen {
 					);
 					fontRenderer.drawString(
 							String.valueOf(integerSetting.getValue()),
-							pos.x + verticalLineXOffset + 5 + settingWidth + 1 + length + 1,
-							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
-							-1
+							background.x + verticalLineXOffset + 5 + settingWidth + 1 + length + 1,
+							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+							CATEGORY_COLOR.getRGB()
 					);
 
 					if (Mouse.isButtonDown(0)
-					&& mouseX > pos.x + verticalLineXOffset + 5 + settingWidth
-					&& mouseX < pos.x + verticalLineXOffset + 5 + settingWidth + length + 1
-					&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
-					&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
-						float mx = mouseX - (pos.x + verticalLineXOffset + 5 + settingWidth);
+					&& mouseX > background.x + verticalLineXOffset + 5 + settingWidth
+					&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 1
+					&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
+					&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
+						float mx = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth);
 						float p = mx / length;
 						float normalize = integerSetting.getMin() + (integerSetting.getMax() - integerSetting.getMin()) * p;
-						integerSetting.setValue(Math.round(normalize));
+						integerSetting.setValue(round(normalize));
 					}
 				}
 				if (setting instanceof FloatSetting floatSetting) {
@@ -263,16 +318,16 @@ public class ClickGuiScreen extends GuiScreen {
 					final float length = 75;
 					final float sliderLength = filledFactor * length;
 					RoundedUtils.drawRect(
-							pos.x + verticalLineXOffset + 5 + settingWidth + 1,
-							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
 							length,
 							4,
 							1.5f,
 							BACKGROUND_COLOR
 					);
 					RoundedUtils.drawRect(
-							pos.x + verticalLineXOffset + 5 + settingWidth + 1,
-							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
 							sliderLength,
 							4,
 							1.5f,
@@ -280,21 +335,134 @@ public class ClickGuiScreen extends GuiScreen {
 					);
 					fontRenderer.drawString(
 							String.format("%.2f", floatSetting.getValue()),
-							pos.x + verticalLineXOffset + 5 + settingWidth + 1 + length + 1,
-							pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
-							-1
+							background.x + verticalLineXOffset + 5 + settingWidth + 1 + length + 1,
+							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+							CATEGORY_COLOR.getRGB()
 					);
 
 					if (Mouse.isButtonDown(0)
-							&& mouseX > pos.x + verticalLineXOffset + 5 + settingWidth
-							&& mouseX < pos.x + verticalLineXOffset + 5 + settingWidth + length + 1
-							&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
-							&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
-						float mx = mouseX - (pos.x + verticalLineXOffset + 5 + settingWidth);
+							&& mouseX > background.x + verticalLineXOffset + 5 + settingWidth
+							&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 1
+							&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
+							&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
+						float mx = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth);
 						float p = mx / length;
 						float normalize = floatSetting.getMin() + (floatSetting.getMax() - floatSetting.getMin()) * p;
 						floatSetting.setValue(normalize);
 					}
+				}
+				if (setting instanceof ColorSetting colorSetting) {
+					if (Mouse.isButtonDown(0)) {
+						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
+						&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + 75
+						&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
+						&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 3) {
+							float deltaX = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth + 1);
+							colorSetting.setRed(deltaX / 75);
+						}
+						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
+								&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + 75
+								&& mouseY > background.y + 5 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
+								&& mouseY < background.y + 5 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 3) {
+							float deltaX = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth + 1);
+							colorSetting.setGreen(deltaX / 75);
+						}
+						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
+								&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + 75
+								&& mouseY > background.y + 10 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
+								&& mouseY < background.y + 10 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 3) {
+							float deltaX = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth + 1);
+							colorSetting.setBlue(deltaX / 75);
+						}
+						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
+								&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + 75
+								&& mouseY > background.y + 15 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
+								&& mouseY < background.y + 15 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 3) {
+							float deltaX = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth + 1);
+							colorSetting.setAlpha(deltaX / 75);
+						}
+					}
+					RoundedUtils.drawRect(
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							75,
+							3,
+							1.5f,
+							BACKGROUND_COLOR
+					);
+					RoundedUtils.drawRect(
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							75 * colorSetting.getRed(),
+							3,
+							1.5f,
+							Color.red
+					);
+					RoundedUtils.drawRect(
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 5 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							75,
+							3,
+							1.5f,
+							BACKGROUND_COLOR
+					);
+					RoundedUtils.drawRect(
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 5 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							75 * colorSetting.getGreen(),
+							3,
+							1.5f,
+							Color.green
+					);
+					RoundedUtils.drawRect(
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 10 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							75,
+							3,
+							1.5f,
+							BACKGROUND_COLOR
+					);
+					RoundedUtils.drawRect(
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 10 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							75 * colorSetting.getBlue(),
+							3,
+							1.5f,
+							Color.blue
+					);
+					RoundedUtils.drawRect(
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 15 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							75,
+							3,
+							1.5f,
+							BACKGROUND_COLOR
+					);
+					RoundedUtils.drawRect(
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 15 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							75 * colorSetting.getAlpha(),
+							3,
+							1.5f,
+							Color.white
+					);
+					RoundedUtils.drawRect(
+							background.x + 80 + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 - 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							22,
+							22,
+							1.5f,
+							BACKGROUND_COLOR
+					);
+					RoundedUtils.drawRect(
+							background.x + 80 + 1 + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 - 1 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
+							20,
+							20,
+							1.5f,
+							colorSetting.getColor()
+					);
+					offset += 15;
 				}
 				offset += 11;
 			}
@@ -317,11 +485,10 @@ public class ClickGuiScreen extends GuiScreen {
 			cfgButton2.endY = 10;
 		}
 
-		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 25, (float) (sc.getScaledHeight() - cfgButton.y), 50, 15, 5f, flag ? new Color(15, 15, 15, 110) : new Color(15, 15, 15, 100));
-		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 10, (float) (sc.getScaledHeight() - cfgButton2.y), 20, 20, 5f, new Color(15, 15, 15, 110));
-		mc.fontRendererObj.drawCenteredString("configs", sc.getScaledWidth() / 2f, (float) (sc.getScaledHeight() - cfgButton.y) + 3, -1);
+		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 25, (sc.getScaledHeight() - cfgButton.y), 50, 15, 5f, flag ? new Color(15, 15, 15, 110) : new Color(15, 15, 15, 100));
+		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 10, (sc.getScaledHeight() - cfgButton2.y), 20, 20, 5f, new Color(15, 15, 15, 110));
+		mc.fontRendererObj.drawCenteredString("configs", sc.getScaledWidth() / 2f,  (sc.getScaledHeight() - cfgButton.y) + 3, -1);
 
-		categoryLine.update(clickGui.animationSpeed.getValue());
 		moduleLine.update(clickGui.animationSpeed.getValue());
 		settingLine.update(clickGui.animationSpeed.getValue());
 		cfgButton.update(clickGui.animationSpeed.getValue());
@@ -338,17 +505,37 @@ public class ClickGuiScreen extends GuiScreen {
 			mc.displayGuiScreen(new ConfigEditorGui(this));
 		}
 
-		if (mouseX > pos.x + size.x || mouseY > pos.y + size.y) return;
+		boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
+		boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
+		boolean collapse = mouseX > background.x + 25 && mouseX < background.x + 25 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 
+		if (Mouse.isButtonDown(0)) {
+			if (quit) {
+				mc.currentScreen.onGuiClosed();
+				mc.displayGuiScreen(null);
+			}
+
+			if (fullscreen) {
+				size.set(sc.getScaledWidth() - 10, sc.getScaledHeight() - 10);
+				pos.set(5f, 5f);
+			}
+
+			if (collapse) {
+				size.set(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+				pos.set(50f, 50f);
+			}
+		}
+
+		if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y) return;
 
 		final FontRenderer fontRenderer = mc.fontRendererObj;
 		final float clientNameWidth = fontRenderer.getStringWidth(Client.INSTANCE.getName());
 		float offset = 0;
 
-		if (mouseX > pos.x + size.x - 5
-		&& mouseX < pos.x + size.x
-		&& mouseY > pos.y + size.y - 5
-		&& mouseY < pos.y + size.y) {
+		if (mouseX > background.x + sizeBackground.x - 5
+			&& mouseX < background.x + sizeBackground.x
+			&& mouseY > background.y + sizeBackground.y - 5
+			&& mouseY < background.y + sizeBackground.y) {
 			resizing = true;
 			lastMouse.set(mouseX, mouseY);
 		}
@@ -363,20 +550,21 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 		float verticalLineXOffset = max(clientNameWidth, widthsModule) + 5;
 
-		if (mouseX > pos.x
-				&& mouseX < pos.x + verticalLineXOffset
-				&& mouseY > pos.y
-				&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT) {
+		if (mouseX > background.x
+				&& mouseX < background.x + verticalLineXOffset
+				&& mouseY > background.y
+				&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT) {
+			if (quit || fullscreen || collapse) return;
 			moving = true;
 			lastMouse.set(mouseX, mouseY);
 		}
 
 		for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selectedCategory))	{
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
-			if (mouseX > pos.x + 3
-			&& mouseX < pos.x + 3 + moduleWidth
-			&& mouseY > pos.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset
-			&& mouseY < pos.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 9) {
+			if (mouseX > background.x + 3
+			&& mouseX < background.x + 3 + moduleWidth
+			&& mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset
+			&& mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 9) {
 				switch (mouseButton) {
 					case 0 -> module.toggle();
 					case 1 -> selectedModule = module;
@@ -391,10 +579,10 @@ public class ClickGuiScreen extends GuiScreen {
 
 		offset = 0;
 		for (Category category : Category.values()) {
-			if (mouseX > pos.x + verticalLineXOffset + 5 + 5 + offset
-			&& mouseX < pos.x + verticalLineXOffset + 5 + 5 + offset + fontRenderer.getStringWidth(category.name)
-			&& mouseY > pos.y + 2
-			&& mouseY < pos.y + 2 + fontRenderer.FONT_HEIGHT) {
+			if (mouseX > background.x + verticalLineXOffset + 5 + 5 + offset
+			&& mouseX < background.x + verticalLineXOffset + 5 + 5 + offset + fontRenderer.getStringWidth(category.name)
+			&& mouseY > background.y + 2
+			&& mouseY < background.y + 2 + fontRenderer.FONT_HEIGHT) {
 				selectedCategory = category;
 				selectedModule = null;
 				moduleLine.x = 0;
@@ -405,10 +593,10 @@ public class ClickGuiScreen extends GuiScreen {
 
 		offset = 0;
 		if (selectedModule != null) {
-            if (mouseX > pos.x + verticalLineXOffset + 5
-			&& mouseX < pos.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())))
-			&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6
-			&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9) {
+            if (mouseX > background.x + verticalLineXOffset + 5
+			&& mouseX < background.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())))
+			&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6
+			&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9) {
 				binding = true;
 			}
 
@@ -419,8 +607,8 @@ public class ClickGuiScreen extends GuiScreen {
 				float settingWidth = fontRenderer.getStringWidth(setting.getName() + ": ");
 				fontRenderer.drawString(
 						setting.getName() + ": ",
-						pos.x + verticalLineXOffset + 5,
-						pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+						background.x + verticalLineXOffset + 5,
+						background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
 						-1
 				);
 				if (setting instanceof MultiBooleanSetting multiBooleanSetting) {
@@ -429,14 +617,14 @@ public class ClickGuiScreen extends GuiScreen {
 					for (Doubles<String, Boolean> value : multiBooleanSetting.getValues()) {
 						String mode = value.getFirst();
 						boolean isSelected = value.getSecond();
-						if (pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= pos.x + size.x) {
+						if (background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= background.x + sizeBackground.x) {
 							xOffset = 0;
 							yOffset += 11;
 						}
-						if (mouseX > pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset
-						&& mouseX < pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode)
-						&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset
-						&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset + 10) {
+						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset
+						&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode)
+						&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset
+						&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset + 10) {
 							multiBooleanSetting.set(mode, !isSelected);
 						}
 						xOffset += fontRenderer.getStringWidth(mode) + 5;
@@ -447,14 +635,14 @@ public class ClickGuiScreen extends GuiScreen {
 					float xOffset = 0;
 					float yOffset = 0;
 					for (String mode : modeSetting.getModes()) {
-						if (pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= pos.x + size.x) {
+						if (background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= background.x + sizeBackground.x) {
 							xOffset = 0;
 							yOffset += 11;
 						}
-						if (mouseX > pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset
-						&& mouseX < pos.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode)
-						&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset
-						&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset + 10) {
+						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset
+						&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode)
+						&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset
+						&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset + 10) {
 							modeSetting.setMode(mode);
 						}
 						xOffset += fontRenderer.getStringWidth(mode) + 5;
@@ -462,12 +650,15 @@ public class ClickGuiScreen extends GuiScreen {
 					offset += yOffset;
 				}
 				if (setting instanceof BooleanSetting booleanSetting) {
-					if (mouseX > pos.x + verticalLineXOffset + 5 + settingWidth + 1
-					&& mouseX < pos.x + verticalLineXOffset + 5 + settingWidth + 1 + fontRenderer.getStringWidth(String.valueOf(booleanSetting.isToggled()))
-					&& mouseY > pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset
-					&& mouseY < pos.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10) {
+					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
+					&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + fontRenderer.getStringWidth(String.valueOf(booleanSetting.isToggled()))
+					&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset
+					&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10) {
 						booleanSetting.setToggled(!booleanSetting.isToggled());
 					}
+				}
+				if (setting instanceof ColorSetting) {
+					offset += 14;
 				}
 				offset += 11;
 			}
@@ -500,5 +691,23 @@ public class ClickGuiScreen extends GuiScreen {
 	@Override
 	public void onGuiClosed() {
 		Client.INSTANCE.getModuleManager().getModule(ClickGui.class).setToggled(false);
+	}
+
+	@Override
+	public void onEvent(Event event) {
+		if (event instanceof TickEvent) {
+			if (delay > 0) {
+				delay--;
+				return;
+			}
+			if (delay == 0) {
+				delay = 30;
+			}
+		}
+	}
+
+	@Override
+	public boolean handleEvents() {
+		return mc.thePlayer != null && mc.theWorld != null && mc.currentScreen instanceof ClickGuiScreen;
 	}
 }

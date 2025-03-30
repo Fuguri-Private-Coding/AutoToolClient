@@ -4,7 +4,7 @@ import me.hackclient.utils.timer.StopWatch;
 import org.lwjgl.util.vector.Vector2f;
 
 public class Animation2D {
-    public double x, y, endX, endY;
+    public float x, y, endX, endY;
     final StopWatch stopWatch;
 
     public Animation2D() {
@@ -12,7 +12,7 @@ public class Animation2D {
         stopWatch = new StopWatch();
     }
 
-    public Animation2D(double x, double y, double endX, double endY) {
+    public Animation2D(float x, float y, float endX, float endY) {
         this.x = x;
         this.y = y;
         this.endX = endX;

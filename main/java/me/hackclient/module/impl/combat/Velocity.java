@@ -31,11 +31,13 @@ public class Velocity extends Module {
             }
     );
 
-    final IntegerSetting minPlayerHurtTime = new IntegerSetting("MinPlayerHurtTime", this, 0, 9, 7);
 
     final BooleanSetting forceHoldForwardWhenDamaged = new BooleanSetting("ForceHoldForwardWhenDamaged", this, () -> mode.getMode().equals("Legit") || mode.getMode().equals("AttackReduce"), true);
 
     final BooleanSetting jump = new BooleanSetting("Jump", this, () -> mode.getMode().equals("Intave") || mode.getMode().equals("AttackReduce"), true);
+
+    final IntegerSetting minPlayerHurtTime = new IntegerSetting("MinPlayerHurtTime", this,() -> (mode.getMode().equals("Intave") && jump.isToggled()) || (mode.getMode().equals("AttackReduce") && jump.isToggled()) || mode.getMode().equals("Legit"), 0, 9, 7);
+
     final BooleanSetting cancelSprint = new BooleanSetting("CancelSprintAtSprintHit", this, () -> mode.getMode().equals("Intave"), true);
     final FloatSetting sprintReduce = new FloatSetting("SprintReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 0.6f, 0.1f) {};
     final FloatSetting normalReduce = new FloatSetting("NormalReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 1.0f, 0.1f) {};

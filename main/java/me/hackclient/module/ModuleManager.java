@@ -62,7 +62,7 @@ public class ModuleManager {
 				 new TargetESP(),
 				 new FullBright(),
 				 new ClientSpoofer(),
-				 new TickBase(),
+				 new TimerRange(),
 				 new ClickGui(),
 				 new CPSCounter(),
 				 new Fixes(),
@@ -91,7 +91,7 @@ public class ModuleManager {
 				 new InvClicker(),
 				 new CustomCamera(),
 				 new KillEvents(),
-				 new CustomScoreBoard()
+				 new CustomScoreboard()
 		);
 	}
 

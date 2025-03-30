@@ -4,8 +4,7 @@ import me.hackclient.Client;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.*;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import org.lwjgl.input.Keyboard;
@@ -15,8 +14,20 @@ public class ClickGui extends Module {
 
 	public FloatSetting animationSpeed = new FloatSetting("AnimationSpeed", this, 1, 20, 10, 0.5f) {};
 	public FloatSetting backgroundRadius = new FloatSetting("BackgroundRadius", this, 0.5f, 10, 2, 0.5f) {};
-	public IntegerSetting backgroundAlpha = new IntegerSetting("BackgroundAlpha", this, 0, 255, 100);
+	public IntegerSetting backgroundAlpha = new IntegerSetting("BackgroundAlpha", this, 0, 240, 100);
 	public FloatSetting toggleModuleVolume = new FloatSetting("ToggleModuleVolume", this, 0.1f, 1, 1, 0.1f) {};
+
+	public ModeSetting theme = new ModeSetting(
+			"Themes",
+			this,
+			"Black",
+			new String[] {
+					"Black",
+					"White"
+			}
+	);
+
+	public final ColorSetting color = new ColorSetting("Color", this, 0f,1f,1f,1f);
 
 	@Override
 	public void onEnable() {

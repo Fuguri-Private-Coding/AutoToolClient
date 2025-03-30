@@ -91,7 +91,6 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     private float horseJumpPower;
     public float timeInPortal;
     public float prevTimeInPortal;
-    public boolean test;
 
     public static boolean forceSprint;
 
@@ -151,7 +150,6 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             C0BPacketEntityAction.Action action = sprinting ? C0BPacketEntityAction.Action.START_SPRINTING : C0BPacketEntityAction.Action.STOP_SPRINTING;
             sendQueue.addToSendQueue(new C0BPacketEntityAction(this, action));
             serverSprintState = sprinting;
-            test = false;
         }
 
         boolean sneaking = this.isSneaking();
@@ -582,9 +580,8 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             this.setSprinting(true);
         }
 
-        if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3 || test)) {
+        if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3)) {
             this.setSprinting(false);
-            test = false;
         }
 
         Client.INSTANCE.getObjectsCaller().onEvent(new SprintEvent());

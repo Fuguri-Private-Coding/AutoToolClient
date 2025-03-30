@@ -37,6 +37,8 @@ public class Line extends Module {
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 1f, 10f, 5f, 0.1f) {};
     final BooleanSetting onlyThirdPerson = new BooleanSetting("OnlyThirdPerson", this, true);
 
+    final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
+
     public Line() {
         topList = new CopyOnWriteArrayList<>();
         bottomList = new CopyOnWriteArrayList<>();
@@ -66,7 +68,7 @@ public class Line extends Module {
                      GL11.glBegin(GL11.GL_LINE_STRIP);
                      bottomList.forEach(p -> {
                          Vec3 pos = p.getFirst();
-                         GL11.glColor4f(1f, 1f, 1f, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+                         RenderUtils.glColor(color.getColor(), 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
                          GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
                      });
                      GL11.glEnd();
@@ -75,7 +77,7 @@ public class Line extends Module {
                      GL11.glBegin(GL11.GL_LINE_STRIP);
                      bottomList.forEach(p -> {
                          Vec3 pos = p.getFirst();
-                         GL11.glColor4f(1f, 1f, 1f, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+                         RenderUtils.glColor(color.getColor(), 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
                          GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
                      });
                      GL11.glEnd();
@@ -83,7 +85,7 @@ public class Line extends Module {
                      GL11.glBegin(GL11.GL_LINE_STRIP);
                      topList.forEach(p -> {
                          Vec3 pos = p.getFirst();
-                         GL11.glColor4f(1f, 1f, 1f, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+                         RenderUtils.glColor(color.getColor(), 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
                          GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
                      });
                      GL11.glEnd();
@@ -93,7 +95,7 @@ public class Line extends Module {
                      GL11.glBegin(GL11.GL_QUAD_STRIP);
 
                      for (Doubles<Vec3, Long> bottomVec : bottomList) {
-                         GL11.glColor4f(1f, 1f, 1f, 0.6f * (1 - (float) (System.currentTimeMillis() - bottomVec.getSecond()) / (lifeTime.getValue() * 1000)));
+                         RenderUtils.glColor(color.getColor(), 0.6f * (1 - (float) (System.currentTimeMillis() - bottomVec.getSecond()) / (lifeTime.getValue() * 1000)));
                          GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord, bottomVec.getFirst().zCoord);
                          GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord + mc.thePlayer.height, bottomVec.getFirst().zCoord);
                      }

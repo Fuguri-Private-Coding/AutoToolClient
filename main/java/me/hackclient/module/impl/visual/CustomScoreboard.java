@@ -7,10 +7,10 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 
 @ModuleInfo(
-        name = "CustomScoreBoard",
+        name = "CustomScoreboard",
         category = Category.VISUAL
 )
-public class CustomScoreBoard extends Module {
+public class CustomScoreboard extends Module {
 
     public final BooleanSetting remove = new BooleanSetting("Remove", this, true);
     public final FloatSetting scale = new FloatSetting("Scale", this, 0f, 2f, 1f, 0.1f);

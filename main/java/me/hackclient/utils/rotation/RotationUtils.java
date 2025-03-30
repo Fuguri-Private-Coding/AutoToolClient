@@ -9,6 +9,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -64,6 +65,31 @@ public class RotationUtils implements InstanceAccess {
                 (float) MathUtils.round(delta.getYaw(), gcd),
                 (float) MathUtils.round(delta.getPitch(), gcd)
         );
+	}
+
+	public static Rotation getRotationNearest(Rotation current, AxisAlignedBB box) {
+		Vec3[] points = {
+				new Vec3(box.minX, box.minY, box.minZ),
+				new Vec3(box.maxX, box.minY, box.minZ),
+				new Vec3(box.minX, box.maxY, box.minZ),
+				new Vec3(box.minX, box.minY, box.maxZ),
+				new Vec3(box.maxX, box.maxY, box.minZ),
+				new Vec3(box.maxX, box.minY, box.maxZ),
+				new Vec3(box.minX, box.maxY, box.maxZ),
+				new Vec3(box.maxX, box.maxY, box.maxZ)
+		};
+
+		List<Rotation> rotations = Arrays.stream(points)
+				.map(RotationUtils::getRotationToPoint)
+				.toList();
+
+		double minYaw = rotations.stream().mapToDouble(Rotation::getYaw).min().orElse(0D);
+		double maxYaw = rotations.stream().mapToDouble(Rotation::getYaw).max().orElse(0D);
+		double minPitch = rotations.stream().mapToDouble(Rotation::getPitch).min().orElse(0D);
+		double maxPitch = rotations.stream().mapToDouble(Rotation::getPitch).max().orElse(0D);
+
+		return new Rotation(Math.clamp(current.getYaw(), (float) minYaw, (float) maxYaw),
+				Math.clamp(current.getPitch(), (float) minPitch, (float) maxPitch));
 	}
 
 	public static Rotation getNearestRotation(Rotation from, AxisAlignedBB to) {

@@ -11,7 +11,6 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.misc.ClientHandler;
 import me.hackclient.settings.impl.*;
 import me.hackclient.utils.Utils;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.interfaces.InstanceAccess;
@@ -20,12 +19,8 @@ import me.hackclient.utils.packet.PacketUtils;
 import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
-import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.play.server.*;
-import net.minecraft.network.status.client.C00PacketServerQuery;
-import net.minecraft.network.status.server.S01PacketPong;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 
@@ -44,18 +39,49 @@ public class BackTrack extends Module {
             }
     );
 
-    double testX, testY, testZ;
     final StopWatch renderStopWatch;
     int delay;
 
-    final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 5000, 90);
-    final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 0, 5000, 120);
+    final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 500, 200) {
+        @Override
+        public int getValue() {
+            if (maxDelay.value < value) { value = maxDelay.value; }
+            return super.getValue();
+        }
+    };
 
-    final FloatSetting minDistance = new FloatSetting("MinDistance", this, 0.0f, 3.0f, 3.0f, 0.1f) {};
-    final FloatSetting maxDistance = new FloatSetting("MaxDistance", this, 3.0f, 12.0f, 6.0f, 0.1f) {};
+    final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 0, 500, 200) {
+        @Override
+        public int getValue() {
+            if (minDelay.value > value) { value = minDelay.value; }
+            return super.getValue();
+        }
+    };
+
+    final FloatSetting minDistance = new FloatSetting("MinDistance", this, 0.0f, 3.0f, 3.0f, 0.1f) {
+        @Override
+        public float getValue() {
+            if (maxDistance.value < value) { value = maxDistance.value; }
+            return super.getValue();
+        }
+    };
+
+    final FloatSetting maxDistance = new FloatSetting("MaxDistance", this, 3.0f, 12.0f, 6.0f, 0.1f) {
+        @Override
+        public float getValue() {
+            if (minDistance.value > value) { value = minDistance.value; }
+            return super.getValue();
+        }
+    };
 
     final BooleanSetting showOnlyWorking = new BooleanSetting("ShowOnlyWhenWorking", this, true);
     final BooleanSetting showOnlyOnTarget = new BooleanSetting("ShowOnlyOnTarget", this, true);
+    final BooleanSetting realTimeDamage = new BooleanSetting("RealTimeDamage", this,() -> mode.getMode().equals("Ping") , true);
+
+    MultiBooleanSetting render = new MultiBooleanSetting("Render", this)
+            .add("HitBox")
+            .add("Player")
+            ;
 
     public BackTrack() {
         new PositionResolver();
@@ -65,8 +91,7 @@ public class BackTrack extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-
-        EntityLivingBase target = Client.INSTANCE.getCombatManager().getTargetOrSelectedEntity();
+        EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
 
         if (event instanceof TickEvent && target != null) {
             delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
@@ -94,6 +119,8 @@ public class BackTrack extends Module {
                 case "Ping" -> {
                     if (packetEvent.getDirection() != PacketDirection.INCOMING)
                         return;
+
+                    if ((packet instanceof S0BPacketAnimation s0b && s0b.getAnimationType() == 1 || packet instanceof S29PacketSoundEffect || packet instanceof S06PacketUpdateHealth) && realTimeDamage.isToggled()) return;
 
                     // Отменяет все принимаемые пакеты, более легитно с сервер сайда
                     ClientHandler.PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
@@ -146,14 +173,6 @@ public class BackTrack extends Module {
                 return;
 
             if (target != null) {
-                RenderUtils.start3D();
-
-                if (target.realX != testX && target.realY != testY && target.realZ != testZ) {
-                    renderStopWatch.reset();
-                    testX = target.realX;
-                    testY = target.realY;
-                    testZ = target.realZ;
-                }
 
                 double d1 = Math.min(renderStopWatch.reachedMS(), 50);
                 d1 /= 50D;
@@ -162,25 +181,44 @@ public class BackTrack extends Module {
                 double smoothY = target.lRealY + (target.realY - target.lRealY) * d1 - mc.getRenderManager().viewerPosY;
                 double smoothZ = target.lRealZ + (target.realZ - target.lRealZ) * d1 - mc.getRenderManager().viewerPosZ;
 
-                RenderUtils.renderHitBox(new AxisAlignedBB(
-                        smoothX - target.width / 2,
-                        smoothY + 0,
-                        smoothZ - target.width / 2,
-                        smoothX + target.width / 2,
-                        smoothY + target.height,
-                        smoothZ + target.width / 2
-                ));
-                RenderUtils.stop3D();
+                if (render.get("HitBox")) {
+                    RenderUtils.start3D();
+                    RenderUtils.renderHitBox(new AxisAlignedBB(
+                            smoothX - target.width / 2,
+                            smoothY + 0,
+                            smoothZ - target.width / 2,
+                            smoothX + target.width / 2,
+                            smoothY + target.height,
+                            smoothZ + target.width / 2
+                    ));
+                    RenderUtils.stop3D();
+                }
+
+                if (render.get("Player")) {
+                    mc.getRenderManager().doRenderEntity(
+                            target,
+                            smoothX,
+                            smoothY,
+                            smoothZ,
+                            target.rotationYawHead,
+                            mc.timer.renderPartialTicks,
+                            true
+                    );
+                }
             }
         }
     }
 
     void resetPackets() {
         switch (mode.getMode()) {
-            case "Classic", "Ping" -> ClientHandler.PacketHandler.resetServerPackets();
+            case "Classic", "Ping" -> {
+                ClientHandler.PacketHandler.resetServerPackets();
+                renderStopWatch.reset();
+            }
             case "LagBased" -> {
                 ClientHandler.PacketHandler.resetClientPackets();
                 ClientHandler.PacketHandler.resetServerPackets();
+                renderStopWatch.reset();
             }
         }
     }

@@ -2,8 +2,12 @@ package me.hackclient.utils.math;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.Random;
+
 @UtilityClass
 public class RandomUtils {
+
+    Random random = new Random();
 
     /**
      * Возращает рандомное значение от {@code min} до {@code max}
@@ -15,7 +19,7 @@ public class RandomUtils {
         if (min >= max) {
             return min;
         }
-        return org.apache.commons.lang3.RandomUtils.nextInt(min, max);
+        return Math.round(random.nextFloat(min, max));
     }
 
     /**
@@ -28,7 +32,7 @@ public class RandomUtils {
         if (min >= max) {
             return min;
         }
-        return org.apache.commons.lang3.RandomUtils.nextFloat(min, max);
+        return random.nextFloat(min, max);
     }
 
     /**
@@ -41,7 +45,7 @@ public class RandomUtils {
         if (min >= max) {
             return min;
         }
-        return org.apache.commons.lang3.RandomUtils.nextDouble(min, max);
+        return random.nextDouble(min, max);
     }
 
     /**
@@ -54,6 +58,6 @@ public class RandomUtils {
         if (min >= max) {
             return min;
         }
-        return org.apache.commons.lang3.RandomUtils.nextLong(min, max);
+        return random.nextLong(min, max);
     }
 }

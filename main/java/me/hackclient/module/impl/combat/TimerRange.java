@@ -16,8 +16,8 @@ import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MovingObjectPosition;
 
-@ModuleInfo(name = "TickBase", category = Category.COMBAT)
-public class TickBase extends Module {
+@ModuleInfo(name = "TimerRange", category = Category.COMBAT)
+public class TimerRange extends Module {
 
     IntegerSetting limitTicks = new IntegerSetting("Ticks", this, 1,20,2);
 
@@ -74,7 +74,8 @@ public class TickBase extends Module {
                         click = true;
                         break;
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
             teleporting = false;
         }

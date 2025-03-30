@@ -142,6 +142,17 @@ public class ConfigManager implements InstanceAccess {
                         multiBooleanSetting.set(entry1.getKey(), entry1.getValue().getAsBoolean());
                     }
                 }
+                if (setting instanceof ColorSetting colorSetting) {
+                    JsonObject jsonObject = settingObject.getAsJsonObject();
+                    for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                        switch (entry1.getKey()) {
+                            case "Red" -> colorSetting.setRed(entry1.getValue().getAsFloat());
+                            case "Green" -> colorSetting.setGreen(entry1.getValue().getAsFloat());
+                            case "Blue" -> colorSetting.setBlue(entry1.getValue().getAsFloat());
+                            case "Alpha" -> colorSetting.setAlpha(entry1.getValue().getAsFloat());
+                        }
+                    }
+                }
             }
         }
     }
@@ -168,6 +179,14 @@ public class ConfigManager implements InstanceAccess {
                     test.addProperty(value.getFirst(), value.getSecond());
                 }
                 jsonModule.add(multiBooleanSetting.getName(), test);
+            }
+            if (setting instanceof ColorSetting colorSetting) {
+                JsonObject test = new JsonObject();
+                test.addProperty("Red", colorSetting.getRed());
+                test.addProperty("Green", colorSetting.getGreen());
+                test.addProperty("Blue", colorSetting.getBlue());
+                test.addProperty("Alpha", colorSetting.getAlpha());
+                jsonModule.add(colorSetting.getName(), test);
             }
         }
         return jsonModule;
