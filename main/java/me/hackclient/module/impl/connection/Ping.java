@@ -143,17 +143,15 @@ public class Ping extends Module {
 				nextDelay = openInvFlush.getValue();
 			}
 
-			if (nextDelay > 0) return;
-
 			if (packetEvent.getDirection() == PacketDirection.OUTGOING) {
 				ClientHandler.PacketHandler.clientPacketBuffer.add(new Doubles<>(packet, packetEvent.getSendTime()));
 				packetEvent.setCanceled(true);
 			}
 		}
 
-		if (event instanceof TickEvent && nextDelay > 0) {
+		if (nextDelay > 0) {
 			resetPackets();
-			nextDelay--;
+			if (event instanceof TickEvent) nextDelay--;
 			return;
 		}
 
@@ -187,11 +185,11 @@ public class Ping extends Module {
 
 				double smoothZ = lServerPos.zCoord + (serverPos.zCoord - lServerPos.zCoord) * d1 - mc.getRenderManager().viewerPosZ;
 
-				if (nextDelay > 0) {
-					smoothX = mc.thePlayer.posX;
-					smoothY = mc.thePlayer.posY;
-					smoothZ = mc.thePlayer.posZ;
-				}
+				//if (nextDelay > 0) {
+				//	smoothX = mc.thePlayer.posX;
+				//	smoothY = mc.thePlayer.posY;
+				//	smoothZ = mc.thePlayer.posZ;
+				//}
 
 				if (render.get("HitBox")) {
 					RenderUtils.start3D();

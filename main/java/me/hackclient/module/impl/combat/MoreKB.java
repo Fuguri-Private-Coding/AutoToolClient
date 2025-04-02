@@ -84,7 +84,7 @@ public class MoreKB extends Module {
 
         if (reset == 0) return;
 
-        if (mc.thePlayer.hurtTime > 0) return;
+        //if (mc.thePlayer.hurtTime > 0) return;
 
         switch (mode.getMode()) {
             case "WTap" -> {

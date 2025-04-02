@@ -40,7 +40,7 @@ public class Velocity extends Module {
 
     final BooleanSetting cancelSprint = new BooleanSetting("CancelSprintAtSprintHit", this, () -> mode.getMode().equals("Intave"), true);
     final FloatSetting sprintReduce = new FloatSetting("SprintReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 0.6f, 0.1f) {};
-    //final FloatSetting normalReduce = new FloatSetting("NormalReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 1.0f, 0.1f) {};
+    final FloatSetting normalReduce = new FloatSetting("NormalReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 1.0f, 0.1f) {};
 
     final FloatSetting xz = new FloatSetting("XZ", this, () -> mode.getMode().equals("Vanilla"), -1.0f, 1.0f, 0.0f, 0.1f) {};
     final FloatSetting y = new FloatSetting("Y", this, () -> mode.getMode().equals("Vanilla"), 0, 1.0f, 0.0f, 0.1f) {};
@@ -101,6 +101,9 @@ public class Velocity extends Module {
                         if (cancelSprint.isToggled()) {
                             mc.thePlayer.setSprinting(false);
                         }
+                    } else {
+                        mc.thePlayer.motionX *= normalReduce.getValue();
+                        mc.thePlayer.motionZ *= normalReduce.getValue();
                     }
                 }
             }
