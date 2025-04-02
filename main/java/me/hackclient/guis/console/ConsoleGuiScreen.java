@@ -120,6 +120,9 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 7f, new Color(0,0,0,200));
         RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, 7f, new Color(0,0,0,200));
 
+//        ScissorUtils.enableScissor();
+//
+//        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 35 : 18));
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 35 : 18));
 

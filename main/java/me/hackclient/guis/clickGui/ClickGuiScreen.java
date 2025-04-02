@@ -4,7 +4,6 @@ import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.events.TickEvent;
-import me.hackclient.guis.config.ConfigEditorGui;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.impl.visual.ClickGui;
@@ -82,16 +81,16 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
         }
 
 		String name = switch (delay) {
-			case 0, 1, 2 -> "Console_";
-			case 3, 4 -> "Console";
-			case 5, 6 -> "Consol";
-			case 7, 8 -> "Conso";
-			case 9, 10 -> "Cons";
-			case 11, 12, 13 -> "Con";
-			case 14, 15, 16 -> "Co";
-			case 17, 18, 19 -> "C";
+			case 0, 1, 2 -> "AutoTool_";
+			case 3, 4 -> "AutoToo";
+			case 5, 6 -> "AutoTo";
+			case 7, 8 -> "AutoT";
+			case 9, 10 -> "Auto";
+			case 11, 12, 13 -> "Aut";
+			case 14, 15, 16 -> "Au";
+			case 17, 18, 19 -> "A";
 			case 20 -> "_";
-			default -> "§k" + "Console_".substring(0, min(delay - 20, 8));
+			default -> "§k" + "AutoTool".substring(0, min(delay - 20, 8));
 		};
 
 		MAIN_COLOR_INT = MAIN_COLOR.getRGB();
@@ -136,17 +135,19 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		RoundedUtils.drawRect(background.x + sizeBackground.x - 5, background.y + sizeBackground.y - 5, 5, 5, 1, BACKGROUND_COLOR);
 		fontRenderer.drawString(
 				name,
-				background.x + 45, background.y + 4,
+				background.x + 50, background.y + 4,
 				CATEGORY_COLOR.getRGB()
 		);
 
 		RoundedUtils.drawRect(background.x + 4.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
 		RoundedUtils.drawRect(background.x + 14.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
 		RoundedUtils.drawRect(background.x + 24.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
+		RoundedUtils.drawRect(background.x + 34.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
 
 		RoundedUtils.drawRect(background.x + 5, background.y + 4, 6.5f, 6.5f, 3f, Color.red);
 		RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
 		RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
+		RoundedUtils.drawRect(background.x + 35, background.y + 4, 6.5f, 6.5f, 3f, Color.blue);
 
 		float widthsModule = 0;
 		for (Module module : Client.INSTANCE.getModuleManager().modules) {
@@ -467,24 +468,8 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 		ScaledResolution sc = new ScaledResolution(Minecraft.getMinecraft());
 
-		boolean hoverConsole = mouseX > sc.getScaledWidth() / 2f - 25 && mouseX < sc.getScaledWidth() / 2f - 25 + 50 && mouseY > sc.getScaledHeight() - 50;
-
-		if (hoverConsole) {
-			consoleButton.endY = 15 + 3 + 0.5f;
-			consoleButton2.endY = 0;
-		} else {
-			consoleButton.endY = 0;
-			consoleButton2.endY = 10;
-		}
-
-		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 25, (sc.getScaledHeight() - consoleButton.y), 50, 15, 5f, new Color(15, 15, 15, 100));
-		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 10, (sc.getScaledHeight() - consoleButton2.y), 20, 20, 5f, new Color(15, 15, 15, 110));
-		mc.fontRendererObj.drawCenteredString("Console", sc.getScaledWidth() / 2f,  (sc.getScaledHeight() - consoleButton.y) + 3, -1);
-
 		moduleLine.update(clickGui.animationSpeed.getValue());
 		settingLine.update(clickGui.animationSpeed.getValue());
-		consoleButton.update(clickGui.animationSpeed.getValue());
-		consoleButton2.update(clickGui.animationSpeed.getValue());
 	}
 
 	@Override
@@ -494,7 +479,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean collapse = mouseX > background.x + 25 && mouseX < background.x + 25 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
-		boolean console = mouseX > sc.getScaledWidth() / 2f - 25 && mouseX < sc.getScaledWidth() / 2f - 25 + 50 && mouseY > sc.getScaledHeight() - (15 + 3 + 0.5f) && mouseButton == 0;
+		boolean console = mouseX > background.x + 35 && mouseX < background.x + 35 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 
 		if (Mouse.isButtonDown(0)) {
 			if (quit) {
