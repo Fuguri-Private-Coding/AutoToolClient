@@ -7,12 +7,10 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.RandomUtils;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemSword;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 @ModuleInfo(
         name = "MoreKB",
@@ -85,6 +83,8 @@ public class MoreKB extends Module {
         }
 
         if (reset == 0) return;
+
+        if (mc.thePlayer.hurtTime > 0) return;
 
         switch (mode.getMode()) {
             case "WTap" -> {

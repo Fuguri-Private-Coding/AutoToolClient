@@ -3,6 +3,8 @@ package me.hackclient;
 import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.cfg.ConfigManager;
+import me.hackclient.command.CommandManager;
+import me.hackclient.guis.console.ConsoleGuiScreen;
 import me.hackclient.managers.CombatManager;
 import me.hackclient.event.callable.CallableObject;
 import me.hackclient.event.Event;
@@ -16,7 +18,7 @@ import me.hackclient.module.ModuleManager;
 import me.hackclient.managers.ClickManager;
 import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
-import me.hackclient.utils.font.FontsRepository;
+import me.hackclient.utils.discord.Discord;
 import me.hackclient.utils.sound.SoundsManager;
 import org.lwjgl.opengl.Display;
 
@@ -36,6 +38,8 @@ public enum Client implements CallableObject {
 	@Setter File defaultConfig = new File(configsDirectory, "default.json");
 	@Setter File defaultBinds = new File(bindsDirectory, "binds.json");
 
+	ConsoleGuiScreen console;
+
 	ScheduledExecutorService executorService;
 
 	CombatManager combatManager;
@@ -49,6 +53,10 @@ public enum Client implements CallableObject {
 
 	ClickGuiScreen clickGui;
 
+	Discord discord;
+
+	CommandManager commandManager;
+
 	ClickManager clickManager;
 
 	long lastMS;
@@ -56,24 +64,26 @@ public enum Client implements CallableObject {
 	public void init() throws IOException {
 		long start = System.nanoTime();
 
+		console = new ConsoleGuiScreen();
+
 		if (!clientDirectory.exists()) {
 			clientDirectory.mkdirs();
-			System.out.println("Create client directory");
+			console.log("Create client directory");
 		}
 
 		if (!configsDirectory.exists()) {
 			configsDirectory.mkdirs();
-			System.out.println("Create config directory");
+			console.log("Create config directory");
 		}
 
 		if (!bindsDirectory.exists()) {
 			bindsDirectory.mkdirs();
-			System.out.println("Create bind directory");
+			console.log("Create bind directory");
 		}
 
 		if (!soundsDirectory.exists()) {
 			soundsDirectory.mkdirs();
-			System.out.println("Create sound directory");
+			console.log("Create sound directory");
 		}
 
 		callables.add(this);
@@ -91,16 +101,20 @@ public enum Client implements CallableObject {
 		try {
 			configManager.load(defaultConfig);
 		} catch (IOException e) {
-			System.out.println("Error while loading cfg");
+			console.log("Error while loading cfg");
 		}
 
 		try {
 			configManager.loadBinds(defaultBinds);
 		} catch (IOException e) {
-			System.out.println("Error while loading binds");
+			console.log("Error while loading binds");
 		}
 
 		clickGui = new ClickGuiScreen();
+
+		discord = new Discord();
+
+		commandManager = new CommandManager();
 
 		clickManager = new ClickManager();
 
@@ -108,8 +122,14 @@ public enum Client implements CallableObject {
 
 		Display.setTitle(getFullName());
 
+		try {
+			discord.init();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
 		double elapsedNanos = System.nanoTime() - start;
-		System.out.println("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
+		console.log("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
 	}
 
 	public String getChangeLog() {
@@ -131,13 +151,13 @@ public enum Client implements CallableObject {
 		try {
 			configManager.save(defaultConfig);
 		} catch (IOException e) {
-			System.out.println("Error while saving cfg");
+			console.log("Error while saving cfg");
 		}
 
 		try {
 			configManager.saveBinds(defaultBinds);
 		} catch (IOException e) {
-			System.out.println("Error while saving binds");
+			console.log("Error while saving binds");
 		}
 	}
 

@@ -25,8 +25,8 @@ public class Animation2D {
         smooth *= stopWatch.reachedMS();
 
         Vector2f delta = getDelta();
-        x += delta.x * smooth;
-        y += delta.y * smooth;
+        x += delta.x * Math.min(smooth, 1);
+        y += delta.y * Math.min(smooth, 1);
 
         stopWatch.reset();
     }
@@ -36,5 +36,9 @@ public class Animation2D {
                 (float) (endX - x),
                 (float) (endY - y)
         );
+    }
+
+    public void reset() {
+        stopWatch.reset();
     }
 }

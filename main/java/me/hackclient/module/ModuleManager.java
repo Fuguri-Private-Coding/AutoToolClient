@@ -1,5 +1,6 @@
 package me.hackclient.module;
 
+import me.hackclient.module.impl.client.DiscordRPC;
 import me.hackclient.module.impl.combat.*;
 import me.hackclient.module.impl.connection.*;
 import me.hackclient.module.impl.exploit.*;
@@ -8,6 +9,7 @@ import me.hackclient.module.impl.misc.*;
 import me.hackclient.module.impl.move.*;
 import me.hackclient.module.impl.player.*;
 import me.hackclient.module.impl.visual.*;
+import me.hackclient.module.impl.visual.Test;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -23,7 +25,7 @@ public class ModuleManager {
 		 register(
 				 new AutoSoup(),
 				 new Reach(),
-				 new ObshatsaKakDaun(),
+				 new ChatBypass(),
 				 new KillAura(),
 				 new Dot(),
 				 new Criticals(),
@@ -46,6 +48,8 @@ public class ModuleManager {
 				 new BridgeAssist(),
 				 new Scaffold(),
 				 new AntiFireball(),
+				 new Test(),
+				 new DiscordRPC(),
 				 new LongJump(),
 				 new Phase(),
 				 new VClip(),
@@ -81,7 +85,7 @@ public class ModuleManager {
 				 new TimeChanger(),
 				 new ClickSettings(),
 				 new Particle(),
-				 new Test(),
+				 new me.hackclient.module.impl.misc.Test(),
 				 new TrashTalk(),
 				 new NameTags(),
 				 new NoRender(),

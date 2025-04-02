@@ -301,12 +301,10 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
 
         boolean b = entityIn instanceof EntityPlayer && Client.INSTANCE.getModuleManager().getModule(NameTags.class).isToggled();
 
+        boolean friend = entityIn instanceof EntityPlayer ent && Client.INSTANCE.getModuleManager().getModule(MidClick.class).showInName.isToggled() && ent.isFriend();
+
         if (d0 <= (double) (maxDistance * maxDistance) || b) {
-            if (entityIn instanceof EntityPlayer ent
-                    && Client.INSTANCE.getModuleManager().getModule(MidClick.class).showInName.isToggled()
-                    && ent.isFriend()) {
-                str = "§2[Friend]§9 " + str;
-            }
+            if (friend) str = "§2[Friend]§9 " + str;
             FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
             float f = Client.INSTANCE.getModuleManager().getModule(NameTags.class).scale.getValue();
             float f1 = (float) ((double) (0.016666668F * f) + Math.sqrt(d0) / 850.0);

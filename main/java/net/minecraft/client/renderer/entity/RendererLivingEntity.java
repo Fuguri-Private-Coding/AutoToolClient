@@ -6,6 +6,7 @@ import java.util.List;
 
 import me.hackclient.Client;
 import me.hackclient.event.events.DrawEntityEvent;
+import me.hackclient.module.impl.misc.MidClick;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;

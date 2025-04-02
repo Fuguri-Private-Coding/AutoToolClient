@@ -34,20 +34,20 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 	Vector2f pos, size, lastMouse;
 	ClickGui clickGui = Client.INSTANCE.getModuleManager().getModule(ClickGui.class);
 
-	Color BACKGROUND_COLOR = new Color(15,15,15,100);
+	Color BACKGROUND_COLOR = new Color(15, 15, 15, clickGui.backgroundAlpha.getValue());
 	Color MAIN_COLOR = new Color(255, 255, 209, 255);
-	Color HEADER_COLOR = new Color(255,255,255,255);
-	Color CATEGORY_COLOR = new Color(255,255,255,255);
+	Color HEADER_COLOR = new Color(15, 15, 15, 255);
+	Color CATEGORY_COLOR = new Color(255, 255, 255, 255);
 
 	int MAIN_COLOR_INT = MAIN_COLOR.getRGB();
 
 	Category selectedCategory = Category.COMBAT;
 	Module selectedModule = null;
 
-	boolean resizing, moving, binding;
+	boolean resizing, moving, binding, closing, showConsoleAfterClose;
 
 	// Animations
-	final Animation2D moduleLine, settingLine, cfgButton, cfgButton2, background, sizeBackground;
+	final Animation2D moduleLine, settingLine, consoleButton, consoleButton2, background, sizeBackground;
 
 	public ClickGuiScreen() {
 		callables.add(this);
@@ -59,8 +59,8 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 		sizeBackground = new Animation2D();
 		background = new Animation2D();
-		cfgButton2 = new Animation2D();
-		cfgButton = new Animation2D();
+		consoleButton2 = new Animation2D();
+		consoleButton = new Animation2D();
 		moduleLine = new Animation2D();
 		settingLine = new Animation2D();
 	}
@@ -68,23 +68,18 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		MAIN_COLOR = clickGui.color.getColor();
-		switch (clickGui.theme.getMode()) {
-			case "White" -> BACKGROUND_COLOR = new Color(255, 255, 255, clickGui.backgroundAlpha.getValue());
-			case "Black" -> BACKGROUND_COLOR = new Color(15, 15, 15, clickGui.backgroundAlpha.getValue());
-			default -> throw new IllegalStateException("Unexpected value: " + clickGui.theme.getMode());
-		}
-
-		switch (clickGui.theme.getMode()) {
-			case "White" -> HEADER_COLOR = new Color(255, 255, 255, 255);
-			case "Black" -> HEADER_COLOR = new Color(15, 15, 15, 255);
-			default -> throw new IllegalStateException("Unexpected value: " + clickGui.theme.getMode());
-		}
-
-		switch (clickGui.theme.getMode()) {
-			case "White" -> CATEGORY_COLOR = new Color(15, 15, 15, 255);
-			case "Black" -> CATEGORY_COLOR = new Color(255, 255, 255, 255);
-			default -> throw new IllegalStateException("Unexpected value: " + clickGui.theme.getMode());
-		}
+        if (closing) {
+            if (Math.hypot(sizeBackground.x, sizeBackground.y) < 1) {
+                closing = false;
+                mc.currentScreen.onGuiClosed();
+				mc.displayGuiScreen(null);
+				if (showConsoleAfterClose) {
+					mc.currentScreen = null;
+					mc.displayGuiScreen(Client.INSTANCE.getConsole());
+					showConsoleAfterClose = false;
+				}
+            }
+        }
 
 		String name = switch (delay) {
 			case 0, 1, 2 -> "Console_";
@@ -129,10 +124,11 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		sizeBackground.endX = size.x;
 		sizeBackground.endY = size.y;
 
-		background.update(5f);
-		sizeBackground.update(5f);
+		background.update(15f);
+		sizeBackground.update(15f);
 
 		ScissorUtils.enableScissor();
+
 		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
 		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
 		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clickGui.backgroundRadius.getValue(), HEADER_COLOR);
@@ -471,48 +467,42 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 		ScaledResolution sc = new ScaledResolution(Minecraft.getMinecraft());
 
-		boolean flag = mouseX > sc.getScaledWidth() / 2f - 25
-				&& mouseX < sc.getScaledWidth() / 2f - 25 + 50
-				&& mouseY > sc.getScaledHeight() - 18.5;
+		boolean hoverConsole = mouseX > sc.getScaledWidth() / 2f - 25 && mouseX < sc.getScaledWidth() / 2f - 25 + 50 && mouseY > sc.getScaledHeight() - 50;
 
-		if (mouseX > sc.getScaledWidth() / 2f - 25
-		&& mouseX < sc.getScaledWidth() / 2f - 25 + 50
-		&& mouseY > sc.getScaledHeight() - 50) {
-			cfgButton.endY = 15 + 3 + 0.5f;
-			cfgButton2.endY = 0;
+		if (hoverConsole) {
+			consoleButton.endY = 15 + 3 + 0.5f;
+			consoleButton2.endY = 0;
 		} else {
-			cfgButton.endY = 0;
-			cfgButton2.endY = 10;
+			consoleButton.endY = 0;
+			consoleButton2.endY = 10;
 		}
 
-		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 25, (sc.getScaledHeight() - cfgButton.y), 50, 15, 5f, flag ? new Color(15, 15, 15, 110) : new Color(15, 15, 15, 100));
-		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 10, (sc.getScaledHeight() - cfgButton2.y), 20, 20, 5f, new Color(15, 15, 15, 110));
-		mc.fontRendererObj.drawCenteredString("configs", sc.getScaledWidth() / 2f,  (sc.getScaledHeight() - cfgButton.y) + 3, -1);
+		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 25, (sc.getScaledHeight() - consoleButton.y), 50, 15, 5f, new Color(15, 15, 15, 100));
+		RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 10, (sc.getScaledHeight() - consoleButton2.y), 20, 20, 5f, new Color(15, 15, 15, 110));
+		mc.fontRendererObj.drawCenteredString("Console", sc.getScaledWidth() / 2f,  (sc.getScaledHeight() - consoleButton.y) + 3, -1);
 
 		moduleLine.update(clickGui.animationSpeed.getValue());
 		settingLine.update(clickGui.animationSpeed.getValue());
-		cfgButton.update(clickGui.animationSpeed.getValue());
-		cfgButton2.update(clickGui.animationSpeed.getValue());
+		consoleButton.update(clickGui.animationSpeed.getValue());
+		consoleButton2.update(clickGui.animationSpeed.getValue());
 	}
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		ScaledResolution sc = new ScaledResolution(Minecraft.getMinecraft());
-		if (mouseX > sc.getScaledWidth() / 2f - 25
-		&& mouseX < sc.getScaledWidth() / 2f - 25 + 50
-		&& mouseY > sc.getScaledHeight() - (15 + 3 + 0.5f)
-		&& mouseButton == 0) {
-			mc.displayGuiScreen(new ConfigEditorGui(this));
-		}
 
 		boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean collapse = mouseX > background.x + 25 && mouseX < background.x + 25 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
+		boolean console = mouseX > sc.getScaledWidth() / 2f - 25 && mouseX < sc.getScaledWidth() / 2f - 25 + 50 && mouseY > sc.getScaledHeight() - (15 + 3 + 0.5f) && mouseButton == 0;
 
 		if (Mouse.isButtonDown(0)) {
 			if (quit) {
-				mc.currentScreen.onGuiClosed();
-				mc.displayGuiScreen(null);
+				lastPos.set(pos);
+				lastSize.set(size);
+                closing = true;
+				size.set(0, 0);
+				pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
 			}
 
 			if (fullscreen) {
@@ -523,6 +513,15 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 			if (collapse) {
 				size.set(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
 				pos.set(50f, 50f);
+			}
+
+			if (console) {
+				showConsoleAfterClose = true;
+				lastPos.set(pos);
+				lastSize.set(size);
+				closing = true;
+				size.set(0, 0);
+				pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
 			}
 		}
 
@@ -554,7 +553,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 				&& mouseX < background.x + verticalLineXOffset
 				&& mouseY > background.y
 				&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT) {
-			if (quit || fullscreen || collapse) return;
+			if (quit || fullscreen || collapse || console) return;
 			moving = true;
 			lastMouse.set(mouseX, mouseY);
 		}
@@ -685,12 +684,34 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 			}
 			selectedModule.setKey(keyCode);
 		}
+
+		if (keyCode == Keyboard.KEY_ESCAPE && !closing) {
+			ScaledResolution sc = new ScaledResolution(mc);
+			lastPos.set(pos);
+			lastSize.set(size);
+			closing = true;
+			size.set(0, 0);
+			pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
+			return;
+		}
+
 		super.keyTyped(typedChar, keyCode);
 	}
+
+	Vector2f lastSize = new Vector2f(200, 200);
+	Vector2f lastPos = new Vector2f(200, 200);
 
 	@Override
 	public void onGuiClosed() {
 		Client.INSTANCE.getModuleManager().getModule(ClickGui.class).setToggled(false);
+	}
+
+	@Override
+	public void initGui() {
+		sizeBackground.reset();
+		background.reset();
+		pos.set(lastPos);
+		size.set(lastSize);
 	}
 
 	@Override

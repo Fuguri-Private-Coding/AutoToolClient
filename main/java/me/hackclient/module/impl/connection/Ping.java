@@ -15,6 +15,7 @@ import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.network.Packet;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.client.C00PacketLoginStart;
@@ -181,7 +182,9 @@ public class Ping extends Module {
 				d1 /= 50;
 
 				double smoothX = lServerPos.xCoord + (serverPos.xCoord - lServerPos.xCoord) * d1 - mc.getRenderManager().viewerPosX;
+
 				double smoothY = lServerPos.yCoord + (serverPos.yCoord - lServerPos.yCoord) * d1 - mc.getRenderManager().viewerPosY;
+
 				double smoothZ = lServerPos.zCoord + (serverPos.zCoord - lServerPos.zCoord) * d1 - mc.getRenderManager().viewerPosZ;
 
 				if (nextDelay > 0) {

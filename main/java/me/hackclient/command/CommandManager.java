@@ -1,0 +1,35 @@
+package me.hackclient.command;
+
+import lombok.Setter;
+import me.hackclient.command.impl.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Setter
+public class CommandManager {
+	private final List<Command> commands = new ArrayList<>();
+	
+	private String prefix = "/";
+
+	public CommandManager() {
+		commands.add(new CommandToggle());
+		commands.add(new CommandBind());
+	}
+	
+	public boolean handle(String msg) {
+		if (!msg.startsWith(prefix)) {
+			return false;
+		}
+		
+		String[] args = msg.substring(prefix.length()).split(" ");
+		for (Command command : commands) {
+			if (command.getAliases().contains(args[0])) {
+				command.execute(args);
+				return true;
+			}
+		}
+ 		
+		return false;
+	}
+}

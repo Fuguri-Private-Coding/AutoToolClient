@@ -9,6 +9,7 @@ public enum Category {
 	LEGIT("Legit"),
 	PLAYER("Player"),
 	MISC("Misc"),
+	CLIENT("Client"),
 	;
 
 	public final String name;

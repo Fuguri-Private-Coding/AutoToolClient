@@ -17,16 +17,6 @@ public class ClickGui extends Module {
 	public IntegerSetting backgroundAlpha = new IntegerSetting("BackgroundAlpha", this, 0, 240, 100);
 	public FloatSetting toggleModuleVolume = new FloatSetting("ToggleModuleVolume", this, 0.1f, 1, 1, 0.1f) {};
 
-	public ModeSetting theme = new ModeSetting(
-			"Themes",
-			this,
-			"Black",
-			new String[] {
-					"Black",
-					"White"
-			}
-	);
-
 	public final ColorSetting color = new ColorSetting("Color", this, 0f,1f,1f,1f);
 
 	@Override

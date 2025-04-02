@@ -25,7 +25,6 @@ public class FontsRepository implements InstanceAccess {
     }
 
     public Font generateFont(ResourceLocation fontFile, float size, boolean bold) {
-
         try {
             InputStream inputStream = mc.getResourceManager().getResource(fontFile).getInputStream();
             Font font = Font.createFont(0, inputStream);

@@ -9,10 +9,10 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 
 @ModuleInfo(
-        name = "ObshatsaKakDaun",
+        name = "ChatBypass",
         category = Category.MISC
 )
-public class ObshatsaKakDaun extends Module {
+public class ChatBypass extends Module {
 
     @Override
     public void onEvent(Event event) {
@@ -34,9 +34,20 @@ public class ObshatsaKakDaun extends Module {
                         .replace("ь", "b")
                         .replace("ш", "w")
                         .replace("н", "h")
-                        .replace("е", "e");
+                        .replace("е", "e")
+                        .replace("С", "C")
+                        .replace("А", "A")
+                        .replace("Р", "P")
+                        .replace("У", "Y")
+                        .replace("З", "Z")
+                        .replace("О", "O")
+                        .replace("Х", "X")
+                        .replace("Ь", "B")
+                        .replace("Ш", "W")
+                        .replace("Н", "H")
+                        .replace("У", "E");
 
-                c01.setMessage(msg.concat(" () -> AutoTool"));
+                c01.setMessage(msg.concat(""));
             }
         }
     }
