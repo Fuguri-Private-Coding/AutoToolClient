@@ -1,6 +1,7 @@
 package me.hackclient.guis.config;
 
 import me.hackclient.Client;
+import me.hackclient.shader.impl.BackgroundUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.Minecraft;
@@ -36,6 +37,7 @@ public class ConfigEditorGui extends GuiScreen {
                 300 + 8,
                 200 + 2
         );
+
         RoundedUtils.drawRect(
                 centerX - 150 - 4,
                 centerY - 100 - 1,

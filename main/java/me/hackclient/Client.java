@@ -12,13 +12,14 @@ import me.hackclient.event.ObjectsCaller;
 import me.hackclient.event.events.KeyEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.managers.FriendManager;
-import me.hackclient.guis.clickGui.ClickGuiScreen;
+import me.hackclient.guis.clickgui.ClickGuiScreen;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleManager;
 import me.hackclient.managers.ClickManager;
 import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
 import me.hackclient.utils.discord.Discord;
+import me.hackclient.utils.resource.ResourceUtils;
 import me.hackclient.utils.sound.SoundsManager;
 import org.lwjgl.opengl.Display;
 
@@ -119,6 +120,8 @@ public enum Client implements CallableObject {
 		clickManager = new ClickManager();
 
 		soundsManager = new SoundsManager();
+
+		Display.setIcon(ResourceUtils.getClientLogo());
 
 		Display.setTitle(getFullName());
 

@@ -15,7 +15,6 @@ import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.network.Packet;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.client.C00PacketLoginStart;
@@ -64,7 +63,6 @@ public class Ping extends Module {
 			.add("PlaceBlock")
 			.add("OpenedInv")
 			.add("Velocity")
-			.add("WorldChange")
 			.add("UsingItem")
 			;
 
@@ -75,7 +73,6 @@ public class Ping extends Module {
 	IntegerSetting openInvFlush = new IntegerSetting("OpenedInvTime", this, () -> flushes.get("OpenedInv"), 1, 20, 5);
 	IntegerSetting usingItemFlush = new IntegerSetting("UsingItemTime", this, () -> flushes.get("UsingItem"), 1, 20, 5);
 	IntegerSetting blockPlaceFlush = new IntegerSetting("BlockPlaceTime", this, () -> flushes.get("PlaceBlock"), 1, 20, 5);
-	IntegerSetting worldChangeFlush = new IntegerSetting("WorldChangeTime", this, () -> flushes.get("WorldChange"), 1, 20, 5);
 
 	MultiBooleanSetting render = new MultiBooleanSetting("Render", this)
 			.add("HitBox")
@@ -124,22 +121,18 @@ public class Ping extends Module {
 			}
 
 			if (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId() && flushes.get("Velocity")) {
-				resetPackets();
 				nextDelay = velocityFlush.getValue();
 			}
 
 			if (packet instanceof S08PacketPlayerPosLook && flushes.get("Teleport")) {
-				resetPackets();
 				nextDelay = flagFlush.getValue();
 			}
 
 			if (packet instanceof C08PacketPlayerBlockPlacement && flushes.get("PlaceBlock")) {
-				resetPackets();
 				nextDelay = blockPlaceFlush.getValue();
 			}
 
 			if (mc.currentScreen instanceof GuiContainer && flushes.get("OpenedInv")) {
-				resetPackets();
 				nextDelay = openInvFlush.getValue();
 			}
 
@@ -185,12 +178,6 @@ public class Ping extends Module {
 
 				double smoothZ = lServerPos.zCoord + (serverPos.zCoord - lServerPos.zCoord) * d1 - mc.getRenderManager().viewerPosZ;
 
-				//if (nextDelay > 0) {
-				//	smoothX = mc.thePlayer.posX;
-				//	smoothY = mc.thePlayer.posY;
-				//	smoothZ = mc.thePlayer.posZ;
-				//}
-
 				if (render.get("HitBox")) {
 					RenderUtils.start3D();
 					RenderUtils.renderHitBox(new AxisAlignedBB(
@@ -205,6 +192,7 @@ public class Ping extends Module {
 				}
 
 				if (render.get("Player")) {
+					mc.entityRenderer.enableLightmap();
 					mc.getRenderManager().doRenderEntity(
 							mc.thePlayer,
 							smoothX, smoothY, smoothZ,
@@ -212,24 +200,21 @@ public class Ping extends Module {
 							mc.timer.renderPartialTicks,
 							true
 					);
+					mc.entityRenderer.disableLightmap();
 				}
 			}
 		}
+
 		if (mc.thePlayer.isUsingItem() && flushes.get("UsingItem")) {
-			resetPackets();
 			nextDelay = usingItemFlush.getValue();
 		}
+
 		if (event instanceof AttackEvent && flushes.get("Attack")) {
-			resetPackets();
 			nextDelay = attackFlush.getValue();
 		}
+
 		if (event instanceof ChangeSprintEvent && flushes.get("SprintChange")) {
-			resetPackets();
 			nextDelay = sprintFlush.getValue();
-		}
-		if (event instanceof WorldChangeEvent && flushes.get("WorldChange")) {
-			resetPackets();
-			nextDelay = worldChangeFlush.getValue();
 		}
 	}
 
@@ -254,8 +239,8 @@ public class Ping extends Module {
 				if (c03.isMoving()) {
 					lServerPos = new Vec3(serverPos);
 					serverPos = c03.getPosVec();
-					renderStopWatch.reset();
 				}
+				renderStopWatch.reset();
 				if (c03.getRotating()) {
 					serverRotation = new Rotation(c03.getYaw(), c03.getPitch());
 				}

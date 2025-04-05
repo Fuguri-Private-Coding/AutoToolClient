@@ -40,6 +40,7 @@ import lombok.Getter;
 import me.hackclient.Client;
 import me.hackclient.event.events.*;
 import me.hackclient.guis.main.GuiClientMainMenu;
+import me.hackclient.utils.resource.ResourceUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;
@@ -232,6 +233,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     private final int tempDisplayWidth;
     private final int tempDisplayHeight;
     private IntegratedServer theIntegratedServer;
+    private final long startMillisTime = System.currentTimeMillis();
     public GuiAchievement guiAchievement;
     public GuiIngame ingameGUI;
     public boolean skipRenderWorld;
@@ -806,6 +808,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.mcSoundHandler.resumeSounds();
             this.setIngameFocus();
         }
+    }
+
+    public long getStartMillisTime() {
+        return startMillisTime;
     }
 
     private void checkGLError(String message) {

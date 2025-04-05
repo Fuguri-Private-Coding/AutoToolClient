@@ -4,8 +4,11 @@ import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.events.TickEvent;
+import me.hackclient.module.impl.visual.Shadows;
+import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
+import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -51,6 +54,8 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
 
     boolean openBrowser = false;
 
+    Shadows shadows;
+
     int delay = 30;
 
     private final GuiTextField textField = new GuiTextField(0, null, 0,0,0,0);
@@ -59,6 +64,7 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         scroll -= Mouse.getDWheel() / 120 * 10;
 
         if (scroll > 0) {
@@ -116,13 +122,17 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         background.update(15f);
         sizeBackground.update(15f);
 
+        if (shadows.isToggled() && shadows.console.isToggled()) {
+            InstanceAccess.NORMAL_BlOOM_RUNNABLES.add(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, 7f, shadows.color.getColor()));
+            BloomUtils.update();
+            BloomUtils.run(InstanceAccess.NORMAL_BlOOM_RUNNABLES);
+            InstanceAccess.clearRunnables();
+        }
+
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, 7f, new Color(15,15,15,150));
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 7f, new Color(0,0,0,200));
         RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, 7f, new Color(0,0,0,200));
 
-//        ScissorUtils.enableScissor();
-//
-//        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 35 : 18));
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 35 : 18));
 

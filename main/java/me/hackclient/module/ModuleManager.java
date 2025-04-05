@@ -41,6 +41,7 @@ public class ModuleManager {
 				 new Line(),
 				 new ESP(),
 				 new RotationHandler(),
+				 new Shadows(),
 				 new Fly(),
 				 new AutoClicker(),
 				 new AutoTool(),

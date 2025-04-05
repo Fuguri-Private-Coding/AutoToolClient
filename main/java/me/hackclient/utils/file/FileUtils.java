@@ -1,6 +1,5 @@
 package me.hackclient.utils.file;
 
-import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;

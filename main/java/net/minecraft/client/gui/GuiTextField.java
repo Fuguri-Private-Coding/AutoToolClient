@@ -12,11 +12,11 @@ import net.minecraft.util.MathHelper;
 public class GuiTextField extends Gui
 {
     private final int id;
-    private final FontRenderer fontRendererInstance;
+    public final FontRenderer fontRendererInstance;
     public int xPosition;
     public int yPosition;
-    private final int width;
-    private final int height;
+    public final int width;
+    public final int height;
     private String text = "";
     private int maxStringLength = 32;
     private int cursorCounter;

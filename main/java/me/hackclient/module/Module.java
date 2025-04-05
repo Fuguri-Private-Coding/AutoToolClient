@@ -5,7 +5,6 @@ import lombok.Setter;
 import me.hackclient.Client;
 import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.Event;
-import me.hackclient.guis.clickGui.ClickGuiScreen;
 import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.settings.Setting;
 import me.hackclient.utils.interfaces.InstanceAccess;

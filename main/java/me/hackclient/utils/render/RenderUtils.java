@@ -1,12 +1,16 @@
 package me.hackclient.utils.render;
 
 import me.hackclient.utils.interfaces.InstanceAccess;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
-import java.util.Iterator;
 
 import static net.minecraft.client.gui.Gui.drawModalRectWithCustomSizedTexture;
 import static net.minecraft.client.renderer.GlStateManager.resetColor;
@@ -31,6 +35,103 @@ public class RenderUtils implements InstanceAccess {
         glEnable(GL_DEPTH_TEST);
         glDepthMask(true);
         glDisable(GL_BLEND);
+    }
+
+    public static void drawBlockESP(BlockPos blockPos, float red, float green, float blue, float alpha, float lineAlpha, float lineWidth) {
+        GlStateManager.color(red, green, blue, alpha);
+        double x = blockPos.getX() - mc.getRenderManager().viewerPosX;
+        double y = blockPos.getY() - mc.getRenderManager().viewerPosY;
+        double z = blockPos.getZ() - mc.getRenderManager().viewerPosZ;
+        Block block = mc.theWorld.getBlockState(blockPos).getBlock();
+        drawBoundingBox(
+                new AxisAlignedBB(
+                        x, y, z,
+                        x + block.getBlockBoundsMaxX(),
+                        y + block.getBlockBoundsMaxY(),
+                        z + block.getBlockBoundsMaxZ()
+                )
+        );
+        if (lineWidth > 0.0F) {
+            glLineWidth(lineWidth);
+            GlStateManager.color(red, green, blue, lineAlpha);
+            drawOutlinedBoundingBox(
+                    new AxisAlignedBB(
+                            x,
+                            y,
+                            z,
+                            (double)x + block.getBlockBoundsMaxX(),
+                            (double)y + block.getBlockBoundsMaxY(),
+                            (double)z + block.getBlockBoundsMaxZ()
+                    )
+            );
+        }
+
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    public static void drawBoundingBox(AxisAlignedBB var0) {
+        Tessellator var1 = Tessellator.getInstance();
+        WorldRenderer var2 = var1.getWorldRenderer();
+        var2.begin(7, DefaultVertexFormats.POSITION);
+        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
+        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
+        var1.draw();
+        var2.begin(7, DefaultVertexFormats.POSITION);
+        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
+        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
+        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
+        var1.draw();
+        var2.begin(7, DefaultVertexFormats.POSITION);
+        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
+        var1.draw();
+        var2.begin(7, DefaultVertexFormats.POSITION);
+        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
+        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
+        var1.draw();
+        var2.begin(7, DefaultVertexFormats.POSITION);
+        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
+        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
+        var1.draw();
+        var2.begin(7, DefaultVertexFormats.POSITION);
+        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
+        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
+        var1.draw();
     }
 
     public static void renderHitBoxWithYaw(AxisAlignedBB box, float yaw) {

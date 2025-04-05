@@ -1,4 +1,4 @@
-package me.hackclient.guis.clickGui;
+package me.hackclient.guis.clickgui;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
@@ -7,11 +7,14 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.impl.visual.ClickGui;
+import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.*;
+import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.doubles.Doubles;
+import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -43,6 +46,8 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 	Category selectedCategory = Category.COMBAT;
 	Module selectedModule = null;
 
+	Shadows shadows;
+
 	boolean resizing, moving, binding, closing, showConsoleAfterClose;
 
 	// Animations
@@ -66,6 +71,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
 		MAIN_COLOR = clickGui.color.getColor();
         if (closing) {
             if (Math.hypot(sizeBackground.x, sizeBackground.y) < 1) {
@@ -126,9 +132,17 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		background.update(15f);
 		sizeBackground.update(15f);
 
+		if (shadows.isToggled() && shadows.clickGui.isToggled()) {
+			InstanceAccess.NORMAL_BlOOM_RUNNABLES.add(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), shadows.color.getColor()));
+			BloomUtils.update();
+			BloomUtils.run(InstanceAccess.NORMAL_BlOOM_RUNNABLES);
+			InstanceAccess.clearRunnables();
+		}
+
 		ScissorUtils.enableScissor();
 
 		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
+
 		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
 		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clickGui.backgroundRadius.getValue(), HEADER_COLOR);
 
@@ -239,9 +253,9 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 					float xOffset = 0;
 					float yOffset = 0;
 					for (String mode : modeSetting.getModes()) {
-						int length = modeSetting.getModes().length;
+						int length = modeSetting.getModes().size();
 						boolean isSelected = mode.equals(modeSetting.getMode());
-						boolean notLast = !mode.equals(modeSetting.getModes()[length - 1]);
+						boolean notLast = !mode.equals(modeSetting.getModes().get(length - 1));
 						if (background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= background.x + sizeBackground.x) {
 							xOffset = 0;
 							yOffset += 11;

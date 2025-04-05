@@ -2,6 +2,7 @@ package me.hackclient.shader;
 
 import lombok.Getter;
 import me.hackclient.utils.interfaces.InstanceAccess;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -13,7 +14,7 @@ import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 
 @Getter
-public class Shader implements InstanceAccess { 
+public class Shader implements InstanceAccess {
 	final int programId;
 
 	public Shader(ResourceLocation fragmentShaderDir, ResourceLocation vertexShaderDir) {
@@ -24,6 +25,24 @@ public class Shader implements InstanceAccess {
 		GL20.glAttachShader(programId, createShader(fragment, GL20.GL_FRAGMENT_SHADER));
 		GL20.glAttachShader(programId, createShader(vertex, GL20.GL_VERTEX_SHADER));
 		GL20.glLinkProgram(programId);
+	}
+
+	public static void drawQuad(final double x, final double y, final double width, final double height) {
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glTexCoord2f(0.0F, 0.0F);
+		GL11.glVertex2d(x, y + height);
+		GL11.glTexCoord2f(1.0F, 0.0F);
+		GL11.glVertex2d(x + width, y + height);
+		GL11.glTexCoord2f(1.0F, 1.0F);
+		GL11.glVertex2d(x + width, y);
+		GL11.glTexCoord2f(0.0F, 1.0F);
+		GL11.glVertex2d(x, y);
+		GL11.glEnd();
+	}
+
+	public static void drawQuad() {
+		final ScaledResolution scaledResolution = new ScaledResolution(mc);
+		drawQuad(0.0, 0.0, scaledResolution.getScaledWidthD(), scaledResolution.getScaledHeightD());
 	}
 
 	private String convertFileToString(ResourceLocation file) {
@@ -67,7 +86,7 @@ public class Shader implements InstanceAccess {
 		GL20.glUseProgram(programId);
 	}
 
-	public void stop() {
+	public static void stop() {
 		GL20.glUseProgram(0);
 	}
 

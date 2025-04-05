@@ -20,6 +20,8 @@ import net.minecraft.util.MovingObjectPosition;
 public class TimerRange extends Module {
 
     IntegerSetting limitTicks = new IntegerSetting("Ticks", this, 1,20,2);
+    IntegerSetting maxTargetHurtTime = new IntegerSetting("TargetHurtTime", this, 0,10,0);
+    FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0,1,1,0.1f);
 
     boolean teleporting = false;
     boolean click;
@@ -28,7 +30,6 @@ public class TimerRange extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (teleporting) return;
         if (event instanceof LegitClickTimingEvent && click) {
             click = false;
             mc.clickMouse();
@@ -42,7 +43,7 @@ public class TimerRange extends Module {
 
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
 
-            if (target == null || target.hurtTime != 0) {
+            if (target == null || target.hurtTime > maxTargetHurtTime.getValue()) {
                 return;
             }
 
@@ -74,16 +75,15 @@ public class TimerRange extends Module {
                         click = true;
                         break;
                     }
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) { }
             }
             teleporting = false;
         }
+        if (event instanceof RunGameLoopEvent && balance > 0) mc.timer.renderPartialTicks = partialTicks.getValue();
+    }
 
-        if (event instanceof RunGameLoopEvent) {
-            if (balance > 0) {
-                mc.timer.renderPartialTicks = 1.0f;
-            }
-        }
+    @Override
+    public boolean handleEvents() {
+        return !teleporting && isToggled();
     }
 }

@@ -195,6 +195,7 @@ public class BackTrack extends Module {
                 }
 
                 if (render.get("Player")) {
+                    mc.entityRenderer.enableLightmap();
                     mc.getRenderManager().doRenderEntity(
                             target,
                             smoothX,
@@ -204,6 +205,7 @@ public class BackTrack extends Module {
                             mc.timer.renderPartialTicks,
                             true
                     );
+                    mc.entityRenderer.disableLightmap();
                 }
             }
         }

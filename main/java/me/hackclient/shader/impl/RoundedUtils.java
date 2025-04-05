@@ -26,7 +26,7 @@ public class RoundedUtils implements InstanceAccess {
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.0F);
         program.renderShader(x, y, width, height);
         GlStateManager.disableBlend();
-        program.stop();
+        Shader.stop();
     }
 
     public static void drawRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {

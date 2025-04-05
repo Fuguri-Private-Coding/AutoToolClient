@@ -3,7 +3,6 @@ package net.minecraft.client.gui;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,7 +14,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import me.hackclient.Client;
-import me.hackclient.guis.altManager.AltManagerGuiScreen;
+import me.hackclient.guis.altmanager.AltManagerGuiScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;

@@ -10,6 +10,7 @@ import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
 
 public class BrowserGuiScreen extends GuiScreen {
+
     Vector2f pos, size, lastMouse;
     Vector2f lastSize = new Vector2f(800, 600);
     Vector2f lastPos = new Vector2f(200, 200);
