@@ -19,7 +19,7 @@ public class IntaveNewRotation extends KillAuraRotation {
         Rotation rots = RotationUtils.getRotationNearest(startsFrom, target.getEntityBoundingBox().contract(0.2, 0.3, 0.2));
         Rotation delta = new Rotation(MathHelper.wrapDegree(rots.getYaw() - startsFrom.getYaw()), rots.getPitch() - startsFrom.getPitch());
 
-        float accelSlowDown = 0.8f;
+        float accelSlowDown = 0.3f;
 
         float yawAccelSpeed = 15;
         float pitchAccelSpeed = 5;
