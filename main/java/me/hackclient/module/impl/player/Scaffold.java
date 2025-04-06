@@ -3,10 +3,12 @@ package me.hackclient.module.impl.player;
 import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.*;
+import me.hackclient.guis.console.ConsoleGuiScreen;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.MathUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
@@ -16,18 +18,16 @@ import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
 import me.hackclient.utils.timer.StopWatch;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.BlockSand;
-import net.minecraft.block.BlockSoulSand;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
 import org.lwjgl.opengl.GL11;
+
+import java.util.logging.ConsoleHandler;
 
 @ModuleInfo(
         name = "Scaffold",
@@ -80,8 +80,7 @@ public class Scaffold extends Module {
 
     final BooleanSetting swingItem = new BooleanSetting("SwingItem", this,() -> clickMode.getMode().equals("AutoPlace"), true);
 
-    IntegerSetting minCps = new IntegerSetting("MinCps", this, 1, 40, 7) {
-
+    IntegerSetting minCps = new IntegerSetting("MinCps", this, () -> clickMode.getMode().equals("Legit"), 1, 40, 7) {
         @Override
         public int getValue() {
             if (maxCps.value < value) { value = maxCps.value; }
@@ -89,13 +88,17 @@ public class Scaffold extends Module {
         }
     };
 
-    IntegerSetting maxCps = new IntegerSetting("MaxCps", this, 0, 40, 11) {
+    IntegerSetting maxCps = new IntegerSetting("MaxCps", this, () -> clickMode.getMode().equals("Legit"), 0, 40, 11) {
         @Override
         public int getValue() {
             if (minCps.value > value) { value = minCps.value; }
             return super.getValue();
         }
     };
+
+    FloatSetting bestPitchNoDiagonal = new FloatSetting("FrontPitch", this, 70, 85, 77,0.1f);
+
+    FloatSetting diagonalPitch = new FloatSetting("DiagonalPitch", this, 70, 85, 77,0.1f);
 
     final BooleanSetting render = new BooleanSetting("Render", this, true);
 
@@ -124,13 +127,6 @@ public class Scaffold extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof RunGameLoopEvent) {
-            switch (clickMode.getMode()) {
-                case "AutoPlace" -> bestPitch = 77f;
-                case "Legit" -> bestPitch = 75f;
-                default -> throw new IllegalStateException("Unexpected value: " + clickMode.getMode());
-            }
-        }
         switch (clickMode.getMode()) {
             case "AutoPlace" -> {
                 if (event instanceof DrawBlockHighlightEvent && mc.currentScreen == null) {
@@ -151,34 +147,10 @@ public class Scaffold extends Module {
             rotate();
         }
         if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {
-            GL11.glEnable(3042);
-            GL11.glBlendFunc(770, 771);
-            GL11.glEnable(2848);
-            GL11.glDisable(2929);
-            GL11.glDisable(3553);
-            GlStateManager.disableCull();
-            GL11.glDepthMask(false);
-            float lineWidth = 0.0F;
-            if (renderPos != null) {
-                if (mc.thePlayer.getDistance(renderPos.getX(), renderPos.getY(), renderPos.getZ()) > 1.0) {
-                    double d0 = 1.0 - mc.thePlayer.getDistance(renderPos.getX(), renderPos.getY(), renderPos.getZ()) / 20.0;
-                    if (d0 < 0.3) {
-                        d0 = 0.3;
-                    }
-
-                    lineWidth = (float) (lineWidth * d0);
-                }
-
-                RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 1.0F, lineWidth);
-            }
+            RenderUtils.start3D();
+            RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 1.0F, 0);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glDepthMask(true);
-            GlStateManager.enableCull();
-            GL11.glEnable(3553);
-            GL11.glEnable(2929);
-            GL11.glDisable(3042);
-            GL11.glBlendFunc(770, 771);
-            GL11.glDisable(2848);
+            RenderUtils.stop3D();
         }
         if (event instanceof MoveFlyingEvent moveFlyingEvent) {
             moveFlyingEvent.setCanceled(true);
@@ -196,7 +168,10 @@ public class Scaffold extends Module {
         if (event instanceof SprintEvent) {
             if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
                 mc.thePlayer.setSprinting(false);
+            } else if (MoveUtils.canSprint()) {
+                mc.thePlayer.setSprinting(true);
             }
+            Client.INSTANCE.getConsole().log("Sprint:" + mc.thePlayer.isSprinting());
         }
         if (event instanceof JumpEvent jumpEvent) {
             jumpEvent.setYaw(Rotation.getServerRotation().getYaw());
@@ -290,12 +265,15 @@ public class Scaffold extends Module {
             MovingObjectPosition leftRayCast = RayCastUtils.rayCast(4.5, 6.0, new Rotation(roundedYaw + 45, bestPitch));
             MovingObjectPosition rightRayCast = RayCastUtils.rayCast(4.5, 6.0, new Rotation(roundedYaw - 45, bestPitch));
 
+            bestPitch = bestPitchNoDiagonal.getValue();
+
             if (leftRayCast != null && leftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 rotation = new Rotation(MathHelper.wrapDegree(roundedYaw + 45), bestPitch);
             } else if (rightRayCast != null && rightRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 rotation = new Rotation(MathHelper.wrapDegree(roundedYaw - 45), bestPitch);
             }
         } else {
+            bestPitch = diagonalPitch.getValue();
             rotation = new Rotation(roundedYaw, bestPitch);
         }
 
@@ -329,13 +307,11 @@ public class Scaffold extends Module {
 
     int findBlock() {
         int bestSlot = -1;
-        int bestSize = 0;
 
         for (int i = 0; i < 9; i++) {
             ItemStack item = mc.thePlayer.inventory.mainInventory[i];
-            if (item == null || !(item.getItem() instanceof ItemBlock block) || item.stackSize <= bestSize ||  block.getBlock() instanceof BlockSand || block.getBlock() instanceof BlockSoulSand) continue;
+            if (item == null || !(item.getItem() instanceof ItemBlock block) || block.getBlock() instanceof BlockSand || block.getBlock() instanceof BlockSoulSand || block.getBlock() instanceof BlockTNT) continue;
             bestSlot = i;
-            bestSize = item.stackSize;
         }
 
         return bestSlot;

@@ -71,6 +71,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		int currentScroll = Mouse.getDWheel();
 		if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
 		MAIN_COLOR = clickGui.color.getColor();
         if (closing) {
@@ -313,15 +314,18 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 							CATEGORY_COLOR.getRGB()
 					);
 
-					if (Mouse.isButtonDown(0)
-					&& mouseX > background.x + verticalLineXOffset + 5 + settingWidth
+					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth
 					&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 1
 					&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
 					&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
-						float mx = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth);
-						float p = mx / length;
-						float normalize = integerSetting.getMin() + (integerSetting.getMax() - integerSetting.getMin()) * p;
-						integerSetting.setValue(round(normalize));
+						if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+							integerSetting.setValue((int) (integerSetting.getValue() + signum(currentScroll)));
+						} else if (Mouse.isButtonDown(0)) {
+							float mx = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth);
+							float p = mx / length;
+							float normalize = integerSetting.getMin() + (integerSetting.getMax() - integerSetting.getMin()) * p;
+							integerSetting.setValue(round(normalize));
+						}
 					}
 				}
 				if (setting instanceof FloatSetting floatSetting) {
@@ -351,15 +355,18 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 							CATEGORY_COLOR.getRGB()
 					);
 
-					if (Mouse.isButtonDown(0)
-							&& mouseX > background.x + verticalLineXOffset + 5 + settingWidth
+					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth
 							&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 1
 							&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
 							&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
-						float mx = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth);
-						float p = mx / length;
-						float normalize = floatSetting.getMin() + (floatSetting.getMax() - floatSetting.getMin()) * p;
-						floatSetting.setValue(normalize);
+						if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+							floatSetting.setValue(floatSetting.getValue() + Math.signum(currentScroll) * floatSetting.getStep());
+						} else if (Mouse.isButtonDown(0)) {
+							float mx = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth);
+							float p = mx / length;
+							float normalize = floatSetting.getMin() + (floatSetting.getMax() - floatSetting.getMin()) * p;
+							floatSetting.setValue(normalize);
+						}
 					}
 				}
 				if (setting instanceof ColorSetting colorSetting) {

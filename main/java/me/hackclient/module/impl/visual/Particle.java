@@ -8,6 +8,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 
 @ModuleInfo(
         name = "Particle",
@@ -22,8 +23,10 @@ public class Particle extends Module {
         super.onEvent(event);
         if (event instanceof AttackEvent attackEvent) {
             Entity target = attackEvent.getHittingEntity();
-            for (int i = 0; i < multiple.getValue(); i++) {
-                mc.thePlayer.onEnchantmentCritical(target);
+            if (target instanceof EntityLivingBase) {
+                for (int i = 0; i < multiple.getValue(); i++) {
+                    mc.thePlayer.onEnchantmentCritical(target);
+                }
             }
         }
     }

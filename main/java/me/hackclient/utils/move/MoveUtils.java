@@ -1,27 +1,23 @@
 package me.hackclient.utils.move;
 
+import lombok.experimental.UtilityClass;
 import me.hackclient.event.events.MoveFlyingEvent;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.MathHelper;
 
+@UtilityClass
 public class MoveUtils implements InstanceAccess {
 
-    static double bps = 0.0;
-    static double lastX = 0.0;
-    static double lastY = 0.0;
-    static double lastZ = 0.0;
-
-    public static void updateBlocksPerSecond() {
-        if (mc.thePlayer == null || mc.thePlayer.ticksExisted < 1) {
-            bps = 0.0;
-        }
-        double distance = mc.thePlayer.getDistance(lastX, lastY, lastZ);
-        lastX = mc.thePlayer.posX;
-        lastY = mc.thePlayer.posY;
-        lastZ = mc.thePlayer.posZ;
-        bps = distance * (20 * mc.timer.timerSpeed);
+    public boolean canSprint() {
+        return mc.thePlayer.moveForward >= 0.8F
+                && !mc.thePlayer.isCollidedHorizontally
+                && (mc.thePlayer.getFoodStats().getFoodLevel() > 6 || mc.thePlayer.capabilities.allowFlying)
+                && !mc.thePlayer.isPotionActive(Potion.blindness)
+                && !mc.thePlayer.isUsingItem()
+                && !mc.thePlayer.isSneaking();
     }
 
     public static void silentMoveFix(MoveFlyingEvent event)

@@ -26,6 +26,10 @@ public class IntegerSetting extends Setting {
 		this.value = value;
 	}
 
+	public void setValue(int value) {
+		this.value = Math.clamp(value, min, max);
+	}
+
 	public float normalize() {
 		return (float) (value - min) / (max - min);
 	}

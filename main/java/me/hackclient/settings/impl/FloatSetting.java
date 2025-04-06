@@ -32,7 +32,7 @@ public class FloatSetting extends Setting {
     }
 
     public void setValue(float value) {
-        this.value = (float) MathUtils.round(value, step);
+        this.value = (float) Math.clamp(MathUtils.round(value, step), min, max);
     }
 
     public float normalize() {
