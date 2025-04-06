@@ -2,456 +2,183 @@ package me.hackclient.module.impl.connection;
 
 import me.hackclient.event.Event;
 import me.hackclient.event.PacketDirection;
-import me.hackclient.event.events.*;
+import me.hackclient.event.events.PacketEvent;
+import me.hackclient.event.events.Render2DEvent;
+import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.misc.ClientHandler;
+import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
-import me.hackclient.utils.doubles.Doubles;
-import me.hackclient.utils.math.RandomUtils;
-import me.hackclient.utils.render.RenderUtils;
-import me.hackclient.utils.rotation.Rotation;
-import me.hackclient.utils.timer.StopWatch;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.handshake.client.C00Handshake;
-import net.minecraft.network.login.client.C00PacketLoginStart;
-import net.minecraft.network.play.client.C01PacketChatMessage;
+import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
-import net.minecraft.network.status.client.C00PacketServerQuery;
-import net.minecraft.network.status.client.C01PacketPing;
-import net.minecraft.network.status.server.S00PacketServerInfo;
-import net.minecraft.network.status.server.S01PacketPong;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
+import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.util.Vec3;
 
-@ModuleInfo(name = "Ping", category = Category.CONNECTION)
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+@ModuleInfo(
+        name = "Ping",
+        category = Category.CONNECTION
+)
 public class Ping extends Module {
 
-	Vec3 serverPos, lServerPos;
-	Rotation serverRotation;
-	int outDelay, nextDelay;
-	final StopWatch renderStopWatch;
+    // Debug
+    private final BooleanSetting debug = new BooleanSetting("Debug", this, false);
 
-	IntegerSetting minOutDelay = new IntegerSetting("MinOutDelay", this, 10, 1000, 450) {
-		@Override
-		public int getValue() {
-			if (maxOutDelay.value < value) { value = maxOutDelay.value; }
-			return super.getValue();
-		}
-	};
+    private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 50, 1000, 400);
 
-	IntegerSetting maxOutDelay = new IntegerSetting("MaxOutDelay", this, 10, 1000, 450) {
-		@Override
-		public int getValue() {
-			if (minOutDelay.value > value) { value = minOutDelay.value; }
-			return super.getValue();
-		}
-	};
+    private final IntegerSetting delayBeforeNextLagAfterReset = new IntegerSetting("DelayBeforeNextLagAfterReset", this, 0, 1000, 500);
+    private final MultiBooleanSetting actions = new MultiBooleanSetting("ActionsToReset", this)
+            .add("Attack", true)
+            .add("Damage")
+            .add("Velocity")
+            .add("Flag");
 
-	MultiBooleanSetting flushes = new MultiBooleanSetting("FlushConditions", this)
-			.add("Attack")
-			.add("SprintChange")
-			.add("Teleport")
-			.add("ToggledScaffold")
-			.add("PlaceBlock")
-			.add("OpenedInv")
-			.add("Velocity")
-			.add("UsingItem")
-			;
+    private long lastResetTime;
+    private long delayBeforeNextLag;
+    private final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
+    private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
 
-	IntegerSetting attackFlush = new IntegerSetting("AttackTime", this, () -> flushes.get("Attack"), 1, 20, 5);
-	IntegerSetting sprintFlush = new IntegerSetting("SprintChangeTime", this, () -> flushes.get("SprintChange"), 1, 20, 5);
-	IntegerSetting flagFlush = new IntegerSetting("TeleportTime", this, () -> flushes.get("Teleport"), 1, 20, 5);
-	IntegerSetting velocityFlush = new IntegerSetting("VelocityTime", this, () -> flushes.get("Velocity"), 1, 20, 5);
-	IntegerSetting openInvFlush = new IntegerSetting("OpenedInvTime", this, () -> flushes.get("OpenedInv"), 1, 20, 5);
-	IntegerSetting usingItemFlush = new IntegerSetting("UsingItemTime", this, () -> flushes.get("UsingItem"), 1, 20, 5);
-	IntegerSetting blockPlaceFlush = new IntegerSetting("BlockPlaceTime", this, () -> flushes.get("PlaceBlock"), 1, 20, 5);
+    @Override
+    public void onDisable() {
+        resetAllPackets();
+    }
 
-	MultiBooleanSetting render = new MultiBooleanSetting("Render", this)
-			.add("HitBox")
-			.add("Player")
-			;
+    @Override
+    public void onEvent(Event event) {
+        long currentTime = System.currentTimeMillis();
 
-	public Ping() {
-		renderStopWatch = new StopWatch();
-	}
+        switch (event) {
+            case PacketEvent e -> {
+                if (currentTime - lastResetTime < delayBeforeNextLag) {
+                    resetAllPackets();
+                    break;
+                }
 
-	@Override
-	public void onDisable() {
-		super.onDisable();
-		resetPackets();
-	}
+                if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) {
+                    reset();
+                    break;
+                }
 
-	@Override
-	public void onEvent(Event event) {
-		super.onEvent(event);
-		if (mc.isSingleplayer())
-			return;
+                Packet packet = e.getPacket();
 
-		if (event instanceof PacketEvent packetEvent) {
-			if (packetEvent.isCanceled())
-				return;
+                switch (packet) {
+                    case C02PacketUseEntity handlingPacket -> {
+                        if (actions.get("Attack") && handlingPacket.getAction() == C02PacketUseEntity.Action.ATTACK) {
+                            reset();
+                            return;
+                        }
+                    }
+                    case S12PacketEntityVelocity handlingPacket -> {
+                        if (actions.get("Velocity") && handlingPacket.getEntityID() == mc.thePlayer.getEntityId()) {
+                            reset();
+                            return;
+                        }
+                    }
+                    case S08PacketPlayerPosLook _ -> {
+                        if (actions.get("Flag")) {
+                            reset();
+                            return;
+                        }
+                    }
+                    default -> {}
+                }
 
-			if (!mc.theWorld.isBlockLoaded(new BlockPos(mc.thePlayer.posX, 0, mc.thePlayer.posZ)))
-				return;
+                if (e.getDirection() == PacketDirection.OUTGOING) {
+                    e.cancel();
+                    buffer.add(new PacketWithTime(packet, currentTime));
+                    if (packet instanceof C03PacketPlayer c03) {
+                        if (c03.isMoving()) {
+                            posBuffer.add(new VecWithTime(c03.getPosVec(), currentTime));
+                        }
+                    }
+                }
+            }
+            case Render2DEvent _ -> {
+                int prevSize = buffer.size();
+                handlePackets();
+                int postSize = buffer.size();
 
-			if (mc.thePlayer == null || mc.theWorld == null)
-				return;
+                if (debug.isToggled()) {
+                    mc.fontRendererObj.drawString(
+                            "Prev packets size: " + prevSize + "\n"
+                            + "Post packets size: " + postSize + "\n"
+                            + "Send: " + (prevSize - postSize) + "\n",
+                            200, 200, -1, true
+                    );
+                }
 
-			if (mc.thePlayer.isDead || mc.thePlayer.getHealth() <= 0)
-				return;
+            }
+            case Render3DEvent _ -> {
+                if (posBuffer.isEmpty() || mc.gameSettings.thirdPersonView == 0) {
+                    break;
+                }
 
-			Packet packet = packetEvent.getPacket();
+                EntityPlayerSP player = mc.thePlayer;
+                RenderManager renderManager = mc.renderManager;
+                EntityRenderer entityRenderer = mc.entityRenderer;
 
-			if (packet instanceof C00PacketLoginStart
-			|| packet instanceof C01PacketPing
-			|| packet instanceof C01PacketChatMessage
-			|| packet instanceof S01PacketPong
-			|| packet instanceof S00PacketServerInfo
-			|| packet instanceof C00PacketServerQuery
-			|| packet instanceof C00Handshake) {
-				return;
-			}
+                Vec3 lastPos = posBuffer.getFirst().pos();
 
-			if (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId() && flushes.get("Velocity")) {
-				nextDelay = velocityFlush.getValue();
-			}
+                double x = lastPos.xCoord - renderManager.viewerPosX;
+                double y = lastPos.yCoord - renderManager.viewerPosY;
+                double z = lastPos.zCoord - renderManager.viewerPosZ;
 
-			if (packet instanceof S08PacketPlayerPosLook && flushes.get("Teleport")) {
-				nextDelay = flagFlush.getValue();
-			}
+                entityRenderer.enableLightmap();
 
-			if (packet instanceof C08PacketPlayerBlockPlacement && flushes.get("PlaceBlock")) {
-				nextDelay = blockPlaceFlush.getValue();
-			}
+                int i = player.getBrightnessForRender(mc.timer.renderPartialTicks);
 
-			if (mc.currentScreen instanceof GuiContainer && flushes.get("OpenedInv")) {
-				nextDelay = openInvFlush.getValue();
-			}
+                if (player.isBurning()) {
+                    i = 15728880;
+                }
 
-			if (packetEvent.getDirection() == PacketDirection.OUTGOING) {
-				ClientHandler.PacketHandler.clientPacketBuffer.add(new Doubles<>(packet, packetEvent.getSendTime()));
-				packetEvent.setCanceled(true);
-			}
-		}
+                int j = i % 65536;
+                int k = i / 65536;
 
-		if (nextDelay > 0) {
-			resetPackets();
-			if (event instanceof TickEvent) nextDelay--;
-			return;
-		}
+                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j, (float) k);
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                entityRenderer.disableLightmap();
+                renderManager.doRenderEntity(player, x, y, z, player.rotationYaw, mc.timer.renderPartialTicks, true);
+            }
+            default -> {}
+        }
+    }
 
-		if (event instanceof RunGameLoopEvent) {
-			ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> {
-				if (System.currentTimeMillis() - p.getSecond() >= (long) outDelay) {
-					mc.getNetHandler().getNetworkManager().sendPacketNoEvent(p.getFirst());
-					ClientHandler.PacketHandler.clientPacketBuffer.remove(p);
+    private void handlePackets() {
+        buffer.removeIf(packetWithTime -> {
+           if (System.currentTimeMillis() - packetWithTime.time() >= maxDelay.getValue()) {
+               mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetWithTime.packet());
+               return true;
+           }
+           return false;
+        });
+        posBuffer.removeIf(pos -> System.currentTimeMillis() - pos.time() >= maxDelay.getValue());
+    }
 
-					if (p.getFirst() instanceof C03PacketPlayer c03 && c03.isMoving()) {
-						if (serverPos != null) {
-							lServerPos = new Vec3(serverPos);
-						}
-						serverPos = c03.getPosVec();
-						renderStopWatch.reset();
-					}
-				}
-			});
-		}
+    private void resetAllPackets() {
+        buffer.forEach(packetWithTime -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetWithTime.packet()));
+        buffer.clear();
+        posBuffer.clear();
+    }
 
-		if (event instanceof Render3DEvent) {
-			if (serverPos != null && lServerPos != null) {
-				if (mc.gameSettings.thirdPersonView == 0) return;
+    private void reset() {
+        resetAllPackets();
+        lastResetTime = System.currentTimeMillis();
+        delayBeforeNextLag = delayBeforeNextLagAfterReset.getValue();
+    }
 
-				double d1 = Math.min(renderStopWatch.reachedMS(), 50);
-				d1 /= 50;
-
-				double smoothX = lServerPos.xCoord + (serverPos.xCoord - lServerPos.xCoord) * d1 - mc.getRenderManager().viewerPosX;
-
-				double smoothY = lServerPos.yCoord + (serverPos.yCoord - lServerPos.yCoord) * d1 - mc.getRenderManager().viewerPosY;
-
-				double smoothZ = lServerPos.zCoord + (serverPos.zCoord - lServerPos.zCoord) * d1 - mc.getRenderManager().viewerPosZ;
-
-				if (render.get("HitBox")) {
-					RenderUtils.start3D();
-					RenderUtils.renderHitBox(new AxisAlignedBB(
-							smoothX - mc.thePlayer.width / 2,
-							smoothY + 0,
-							smoothZ - mc.thePlayer.width / 2,
-							smoothX + mc.thePlayer.width / 2,
-							smoothY + mc.thePlayer.height,
-							smoothZ + mc.thePlayer.width / 2
-					));
-					RenderUtils.stop3D();
-				}
-
-				if (render.get("Player")) {
-					mc.entityRenderer.enableLightmap();
-					mc.getRenderManager().doRenderEntity(
-							mc.thePlayer,
-							smoothX, smoothY, smoothZ,
-							mc.thePlayer.rotationYawHead,
-							mc.timer.renderPartialTicks,
-							true
-					);
-					mc.entityRenderer.disableLightmap();
-				}
-			}
-		}
-
-		if (mc.thePlayer.isUsingItem() && flushes.get("UsingItem")) {
-			nextDelay = usingItemFlush.getValue();
-		}
-
-		if (event instanceof AttackEvent && flushes.get("Attack")) {
-			nextDelay = attackFlush.getValue();
-		}
-
-		if (event instanceof ChangeSprintEvent && flushes.get("SprintChange")) {
-			nextDelay = sprintFlush.getValue();
-		}
-	}
-
-	void resetPackets() {
-		ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> {
-			sendPacket(new Doubles<>(p.getFirst(), PacketDirection.OUTGOING));
-			if (p.getFirst() instanceof C03PacketPlayer c03 && c03.isMoving()) {
-				lServerPos = new Vec3(serverPos);
-				serverPos = c03.getPosVec();
-				renderStopWatch.reset();
-			}
-		});
-		ClientHandler.PacketHandler.clientPacketBuffer.clear();
-
-		outDelay = RandomUtils.nextInt(minOutDelay.getValue(), maxOutDelay.getValue());
-	}
-
-	void sendPacket(Doubles<Packet, PacketDirection> packet) {
-		if (packet.getSecond() == PacketDirection.OUTGOING) {
-			mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet.getFirst());
-			if (packet.getFirst() instanceof C03PacketPlayer c03) {
-				if (c03.isMoving()) {
-					lServerPos = new Vec3(serverPos);
-					serverPos = c03.getPosVec();
-				}
-				renderStopWatch.reset();
-				if (c03.getRotating()) {
-					serverRotation = new Rotation(c03.getYaw(), c03.getPitch());
-				}
-			}
-		}
-		if (packet.getSecond() == PacketDirection.INCOMING) {
-			try {
-				packet.getFirst().processPacket(mc.getNetHandler());
-			} catch (RuntimeException e) {
-				System.out.println(e.getMessage());
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-
-	//				RenderUtils.renderHitBox(new AxisAlignedBB(
-//						smoothX - mc.thePlayer.width / 2,
-//						smoothY + 0,
-//						smoothZ - mc.thePlayer.width / 2,
-//						smoothX + mc.thePlayer.width / 2,
-//						smoothY + mc.thePlayer.height,
-//						smoothZ + mc.thePlayer.width / 2
-//				));
-
-	//	IntegerSetting delay = new IntegerSetting("Delay", this, 50, 1000, 500);
-//
-//	MultiBooleanSetting flushes = new MultiBooleanSetting("FlushConditions", this)
-//			.add("Attack", false)
-//			.add("SprintChange", true)
-//			.add("Flag", true)
-//			.add("Velocity", false)
-//			.add("OpenedInv", true)
-//			.add("UsingItem", true)
-//			.add("BlockPlace", true)
-//			.add("WorldChange", false);
-//
-//	IntegerSetting attackFlush = new IntegerSetting("AttackTime", this, () -> flushes.get("Attack"), 10, 1000, 20);
-//	IntegerSetting sprintFlush = new IntegerSetting("SprintChangeTime", this, () -> flushes.get("SprintChange"), 10, 1000, 100);
-//	IntegerSetting flagFlush = new IntegerSetting("FlagTime", this, () -> flushes.get("Flag"), 10, 1000, 200);
-//	IntegerSetting velocityFlush = new IntegerSetting("VelocityTime", this, () -> flushes.get("Velocity"), 10, 1000, 500);
-//	IntegerSetting openInvFlush = new IntegerSetting("OpenedInvTime", this, () -> flushes.get("OpenedInv"), 10, 1000, 50);
-//	IntegerSetting usingItemFlush = new IntegerSetting("UsingItemTime", this, () -> flushes.get("UsingItem"), 10, 1000, 50);
-//	IntegerSetting blockPlaceFlush = new IntegerSetting("BlockPlaceTime", this, () -> flushes.get("BlockPlace"), 10, 1000, 50);
-//	IntegerSetting worldChangeFlush = new IntegerSetting("WorldChangeTime", this, () -> flushes.get("WorldChange"), 10, 1000, 50);
-//
-//	BooleanSetting onlyThirdPerson = new BooleanSetting("OnlyThirdPerson", this, true);
-//
-//	int nextDelay;
-//	final StopWatch timer;
-//	final Animation3D animation3D;
-//	final public List<Doubles<Packet, Long>> packetBuffer;
-//	ClientShader clientShader;
-//	final List<Doubles<Vec3, Long>> posBuffer;
-//	EntityOtherPlayerMP player;
-//
-//	static final long checkPerSecond = 200;
-//	final StopWatch timer2;
-//
-//	public Ping() {
-//		animation3D = new Animation3D();
-//		packetBuffer = new CopyOnWriteArrayList<>();
-//		posBuffer = new CopyOnWriteArrayList<>();
-//		timer = new StopWatch();
-//		timer2 = new StopWatch();
-//	}
-//
-//	Thread thread;
-//
-//	@Override
-//	public void onEnable() {
-//		super.onEnable();
-//	}
-//
-//	@Override
-//	public void onDisable() {
-//		resetPackets();
-//		thread.stop();
-//	}
-//
-//	@Override
-//	public void onEvent(Event event) {
-//		super.onEvent(event);
-//		if (clientShader == null) {
-//			clientShader = Client.INSTANCE.getModuleManager().getModule(ClientShader.class);
-//			return;
-//		}
-//		if (event instanceof WorldChangeEvent) {
-//			mc.theWorld.removeEntity(player);
-//			player = null;
-//			if (flushes.get("WorldChange")) {
-//				resetPackets();
-//				nextDelay = worldChangeFlush.getValue();
-//			}
-//		}
-//		if (event instanceof AttackEvent && flushes.get("Attack")) {
-//			resetPackets();
-//			nextDelay = attackFlush.getValue();
-//		}
-//		if (event instanceof ChangeSprintEvent && flushes.get("SprintChange")) {
-//			resetPackets();
-//			nextDelay = sprintFlush.getValue();
-//		}
-//		if (event instanceof PacketEvent packetEvent) {
-//			Packet<?> packet = packetEvent.getPacket();
-//			PackerDirection direction = packetEvent.getDirection();
-//
-//			if (mc.isSingleplayer())
-//				return;
-//
-//			if (packet instanceof C01PacketChatMessage
-//					|| packet instanceof C00PacketServerQuery
-//					|| packet instanceof C00PacketLoginStart) {
-//				return;
-//			}
-//
-//			if (packet instanceof C08PacketPlayerBlockPlacement && flushes.get("BlockPlace")) {
-//				nextDelay = blockPlaceFlush.getValue();
-//			}
-//
-//			// Ресет при получении урона
-//			if (packet instanceof S12PacketEntityVelocity s12 && s12.getEntityID() == mc.thePlayer.getEntityId() && flushes.get("Velocity")) {
-//				resetPackets();
-//				nextDelay = velocityFlush.getValue();
-//			}
-//
-//			if (mc.currentScreen != null && flushes.get("OpenedInv")) {
-//				resetPackets();
-//				nextDelay = openInvFlush.getValue();
-//			}
-//
-//			if (mc.thePlayer.isUsingItem() && flushes.get("UsingItem")) {
-//				resetPackets();
-//				nextDelay = usingItemFlush.getValue();
-//			}
-//
-//			if (packet instanceof S08PacketPlayerPosLook && flushes.get("Flag")) {
-//				resetPackets();
-//				nextDelay = flagFlush.getValue();
-//			}
-//
-//			if (nextDelay > 0) {
-//				resetPackets();
-//				return;
-//			}
-//
-//			if (direction == PackerDirection.OUTGOING) {
-//				packetEvent.setCanceled(true);
-//				packetBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
-//				if (packet instanceof C03PacketPlayer c03 && c03.isMoving()) {
-//					posBuffer.add(new Doubles<>(c03.getPosVec(), System.currentTimeMillis()));
-//				}
-//			}
-//		}
-//
-//		if (event instanceof RunGameLoopEvent) {
-//			nextDelay -= (int) timer.reachedMS();
-//			timer.reset();
-//
-//			if (nextDelay < 0) {
-//				nextDelay = 0;
-//			}
-//
-//			handleStandAlone();
-//
-//			if (posBuffer.isEmpty()) {
-//				return;
-//			}
-//
-//			Vec3 vec = posBuffer.get(0).getFirst();
-//
-//			if (mc.gameSettings.thirdPersonView == 0 && onlyThirdPerson.isToggled() && player != null) {
-//				mc.theWorld.removeEntityFromWorld(player.getEntityId());
-//				return;
-//			}
-//
-//			if (player == null) {
-//				player = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
-//				mc.theWorld.addEntityToWorld(player.getEntityId(), player);
-//			} else {
-//				player.setPositionAndRotation(
-//						vec.xCoord,
-//						vec.yCoord,
-//						vec.zCoord,
-//						MathHelper.wrapDegree(mc.thePlayer.rotationYaw),
-//						mc.thePlayer.rotationPitch
-//				);
-//				player.rotationYawHead = mc.thePlayer.rotationYawHead;
-//				player.limbSwing = mc.thePlayer.limbSwing;
-//				player.prevLimbSwingAmount = mc.thePlayer.prevLimbSwingAmount;
-//				player.limbSwingAmount = mc.thePlayer.limbSwingAmount;
-//				player.swingProgressInt = mc.thePlayer.swingProgressInt;
-//				player.swingProgress = mc.thePlayer.swingProgress;
-//				player.renderYawOffset = mc.thePlayer.renderYawOffset;
-//			}
-//		}
-//	}
-//
-//	void handleStandAlone() {
-//		packetBuffer.forEach(packetLongDoubles -> {
-//			if (System.currentTimeMillis() - packetLongDoubles.getSecond() >= delay.getValue()) {
-//				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetLongDoubles.getFirst());
-//				packetBuffer.remove(packetLongDoubles);
-//			}
-//		});
-//
-//		posBuffer.removeIf(doubles -> System.currentTimeMillis() >= doubles.getSecond() + delay.getValue());
-//	}
-//
-//	public void resetPackets() {
-//		packetBuffer.forEach(packetLongDoubles -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetLongDoubles.getFirst()));
-//		packetBuffer.clear();
-//	}
+    private record PacketWithTime(Packet packet, long time) {}
+    private record VecWithTime(Vec3 pos, long time) {}
 }

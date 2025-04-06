@@ -6,20 +6,16 @@ import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 
-import java.util.Random;
-
 public class IntaveNewRotation extends KillAuraRotation {
 
-    private Random random = new Random();
-
-    private Rotation lastDelta = new Rotation();
+    private final Rotation lastDelta = new Rotation();
 
     @Override
     public Rotation compute(Rotation startsFrom, EntityLivingBase target, float simpleYawSpeed, float simplePitchSpeed) {
-        Rotation rots = RotationUtils.getRotationNearest(startsFrom, target.getEntityBoundingBox().contract(0.2, 0.3, 0.2));
+        Rotation rots = RotationUtils.getRotationNearest(startsFrom, target.getEntityBoundingBox().contract(0.1, 0.2, 0.1));
         Rotation delta = new Rotation(MathHelper.wrapDegree(rots.getYaw() - startsFrom.getYaw()), rots.getPitch() - startsFrom.getPitch());
 
-        float accelSlowDown = 0.8f;
+        float accelSlowDown = 0.3f;
 
         float yawAccelSpeed = 15;
         float pitchAccelSpeed = 5;

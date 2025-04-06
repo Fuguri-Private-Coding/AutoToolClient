@@ -31,7 +31,7 @@ public class CommandBind extends Command {
 				return;
 			}
 			
-			int key = Keyboard.getKeyIndex(args[2]);
+			int key = Keyboard.getKeyIndex(args[2].toUpperCase());
 			
 			if (key == Keyboard.KEY_ESCAPE || key == Keyboard.KEY_RETURN) {
 				console.log("You cannot bind a module to this key!");
@@ -39,7 +39,7 @@ public class CommandBind extends Command {
 			}
 			
 			module.setKey(key);
-			console.log("Module " + module.getName() + " successfully added to " + args[2]);
+			console.log("Module " + module.getName() + " successfully added to " + args[2].toUpperCase());
 		}
 	}
 
