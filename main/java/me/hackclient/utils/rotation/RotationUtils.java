@@ -56,7 +56,7 @@ public class RotationUtils implements InstanceAccess {
 	}
 
 	public static float getMouseGCD() {
-		return (float) (Math.pow(mc.gameSettings.mouseSensitivity * 0.6F + 0.2F, 3F) * 1.2F);
+		return (float) (Math.pow(mc.gameSettings.mouseSensitivity * 0.6 + 0.2, 3) * 1.2);
 	}
 
 	public static Delta fixDelta(Rotation delta) {

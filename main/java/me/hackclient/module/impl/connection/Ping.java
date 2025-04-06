@@ -11,10 +11,17 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C02PacketUseEntity;
+import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
+import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.util.Vec3;
 
 import java.util.List;
@@ -42,7 +49,7 @@ public class Ping extends Module {
     private long lastResetTime;
     private long delayBeforeNextLag;
     private final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
-    private final List<PacketWithTime> posBuffer = new CopyOnWriteArrayList<>();
+    private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
 
     @Override
     public void onDisable() {
@@ -71,16 +78,19 @@ public class Ping extends Module {
                     case C02PacketUseEntity handlingPacket -> {
                         if (actions.get("Attack") && handlingPacket.getAction() == C02PacketUseEntity.Action.ATTACK) {
                             reset();
+                            return;
                         }
                     }
                     case S12PacketEntityVelocity handlingPacket -> {
                         if (actions.get("Velocity") && handlingPacket.getEntityID() == mc.thePlayer.getEntityId()) {
                             reset();
+                            return;
                         }
                     }
                     case S08PacketPlayerPosLook _ -> {
                         if (actions.get("Flag")) {
                             reset();
+                            return;
                         }
                     }
                     default -> {}
@@ -89,6 +99,11 @@ public class Ping extends Module {
                 if (e.getDirection() == PacketDirection.OUTGOING) {
                     e.cancel();
                     buffer.add(new PacketWithTime(packet, currentTime));
+                    if (packet instanceof C03PacketPlayer c03) {
+                        if (c03.isMoving()) {
+                            posBuffer.add(new VecWithTime(c03.getPosVec(), currentTime));
+                        }
+                    }
                 }
             }
             case Render2DEvent _ -> {
@@ -107,12 +122,35 @@ public class Ping extends Module {
 
             }
             case Render3DEvent _ -> {
-                if (buffer.isEmpty()) {
+                if (posBuffer.isEmpty() || mc.gameSettings.thirdPersonView == 0) {
                     break;
                 }
 
-                //Vec3 lastPos = posBuffer.getFirst();
+                EntityPlayerSP player = mc.thePlayer;
+                RenderManager renderManager = mc.renderManager;
+                EntityRenderer entityRenderer = mc.entityRenderer;
 
+                Vec3 lastPos = posBuffer.getFirst().pos();
+
+                double x = lastPos.xCoord - renderManager.viewerPosX;
+                double y = lastPos.yCoord - renderManager.viewerPosY;
+                double z = lastPos.zCoord - renderManager.viewerPosZ;
+
+                entityRenderer.enableLightmap();
+
+                int i = player.getBrightnessForRender(mc.timer.renderPartialTicks);
+
+                if (player.isBurning()) {
+                    i = 15728880;
+                }
+
+                int j = i % 65536;
+                int k = i / 65536;
+
+                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j, (float) k);
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                entityRenderer.disableLightmap();
+                renderManager.doRenderEntity(player, x, y, z, player.rotationYaw, mc.timer.renderPartialTicks, true);
             }
             default -> {}
         }
@@ -126,11 +164,13 @@ public class Ping extends Module {
            }
            return false;
         });
+        posBuffer.removeIf(pos -> System.currentTimeMillis() - pos.time() >= maxDelay.getValue());
     }
 
     private void resetAllPackets() {
         buffer.forEach(packetWithTime -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetWithTime.packet()));
         buffer.clear();
+        posBuffer.clear();
     }
 
     private void reset() {
