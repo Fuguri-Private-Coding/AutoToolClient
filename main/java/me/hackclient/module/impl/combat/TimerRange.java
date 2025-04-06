@@ -29,7 +29,9 @@ public class TimerRange extends Module {
 
     @Override
     public void onEvent(Event event) {
-        super.onEvent(event);
+        if (mc.thePlayer == null) {
+            return;
+        }
         if (event instanceof LegitClickTimingEvent && click) {
             click = false;
             mc.clickMouse();
