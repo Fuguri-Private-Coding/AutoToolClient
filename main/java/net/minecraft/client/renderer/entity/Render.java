@@ -61,11 +61,8 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     }
 
     protected void renderOffsetLivingLabel(T entityIn, double x, double y, double z, String str, float p_177069_9_, double p_177069_10_) {
-        if (Client.INSTANCE.getModuleManager().getModule(NameTags.class).isToggled()) {
-            this.renderLivingLabel(entityIn, str, x, y, z, 256);
-        } else {
-            this.renderLivingLabel(entityIn, str, x, y, z, 64);
-        }
+        if (Client.INSTANCE.getModuleManager().getModule(NameTags.class).isToggled()) return;
+        this.renderLivingLabel(entityIn, str, x, y, z, 256);
     }
 
     protected abstract ResourceLocation getEntityTexture(T entity);
@@ -306,7 +303,7 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
         if (d0 <= (double) (maxDistance * maxDistance) || b) {
             if (friend) str = "§2[Friend]§9 " + str;
             FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
-            float f = Client.INSTANCE.getModuleManager().getModule(NameTags.class).scale.getValue();
+            float f = 1.6f;
             float f1 = (float) ((double) (0.016666668F * f) + Math.sqrt(d0) / 850.0);
             GlStateManager.pushMatrix();
             GlStateManager.translate((float) x + 0.0F, (float) y + entityIn.height + 0.5F, (float) z);

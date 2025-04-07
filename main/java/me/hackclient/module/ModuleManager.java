@@ -53,6 +53,7 @@ public class ModuleManager {
 				 new DiscordRPC(),
 				 new LongJump(),
 				 new Phase(),
+				 new NoGuiClose(),
 				 new VClip(),
 				 new NoSlow(),
 				 new NoWeb(),

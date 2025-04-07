@@ -1,6 +1,5 @@
 package net.minecraft.client.renderer;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
@@ -18,6 +17,7 @@ import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.guis.main.GuiClientMainMenu;
 import me.hackclient.module.impl.visual.CustomCamera;
 import me.hackclient.module.impl.visual.NoRender;
+import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -26,7 +26,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiDownloadTerrain;
-import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.MapItemRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.particle.EffectRenderer;
@@ -35,6 +34,7 @@ import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.culling.ClippingHelperImpl;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -1087,6 +1087,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.alphaFunc(516, 0.1F);
                     this.mc.ingameGUI.renderGameOverlay(partialTicks);
 
+                    Render2DEvent event = new Render2DEvent();
+                    Client.INSTANCE.getObjectsCaller().onEvent(event);
+
                     if (this.mc.gameSettings.ofShowFps && !this.mc.gameSettings.showDebugInfo) {
                         Config.drawFps();
                     }
@@ -1108,9 +1111,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 TileEntityRendererDispatcher.instance.renderEngine = this.mc.getTextureManager();
                 TileEntityRendererDispatcher.instance.fontRenderer = this.mc.fontRendererObj;
             }
-
-            Render2DEvent event = new Render2DEvent();
-            Client.INSTANCE.getObjectsCaller().onEvent(event);
 
             if (this.mc.currentScreen != null) {
                 GlStateManager.clear(256);
@@ -1143,6 +1143,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 }
             }
         }
+
+        InstanceAccess.render2DRunnable();
+        InstanceAccess.clearRunnable();
 
         this.frameFinish();
         this.waitForServerThread();
@@ -1550,8 +1553,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Reflector.callVoid(Reflector.ForgeHooksClient_dispatchRenderLast, renderglobal, partialTicks);
         }
 
-        Client.INSTANCE.getObjectsCaller().onEvent(new Render3DEvent());
-
         this.mc.mcProfiler.endStartSection("hand");
 
         if (this.renderHand && !Shaders.isShadowPass) {
@@ -1574,6 +1575,15 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         if (flag) {
             Shaders.endRender();
         }
+
+        setupCameraTransform(partialTicks, 0);
+        Client.INSTANCE.getObjectsCaller().onEvent(new Render3DEvent());
+
+        RendererLivingEntity.SHADER_RENDERING = true;
+        InstanceAccess.render3DRunnable();
+        InstanceAccess.clearRunnable();
+        RendererLivingEntity.SHADER_RENDERING = false;
+
     }
 
     private void renderCloudsCheck(RenderGlobal renderGlobalIn, float partialTicks, int pass) {

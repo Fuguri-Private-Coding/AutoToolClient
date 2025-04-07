@@ -2,6 +2,7 @@ package me.hackclient.guis.main;
 
 import me.hackclient.Client;
 import me.hackclient.module.impl.visual.Shadows;
+import me.hackclient.shader.ShaderRenderType;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.interfaces.InstanceAccess;
@@ -31,10 +32,7 @@ public class GuiClientButton extends GuiButton {
         final FontRenderer fonts = mc.fontRendererObj;
 
         if (shadows.isToggled() && shadows.mainMenu.isToggled()) {
-            InstanceAccess.NORMAL_BlOOM_RUNNABLES.add(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 3f, Color.BLACK));
-            BloomUtils.update();
-            BloomUtils.run(InstanceAccess.NORMAL_BlOOM_RUNNABLES);
-            InstanceAccess.clearRunnables();
+            InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 3f, Color.BLACK));
         }
 
         RoundedUtils.drawRect(xPosition, yPosition, width, height, 2f, new Color(15, 15, 15, 150));

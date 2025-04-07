@@ -5,6 +5,7 @@ import me.hackclient.event.Event;
 import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.impl.visual.Shadows;
+import me.hackclient.shader.ShaderRenderType;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
@@ -123,10 +124,7 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         sizeBackground.update(15f);
 
         if (shadows.isToggled() && shadows.console.isToggled()) {
-            InstanceAccess.NORMAL_BlOOM_RUNNABLES.add(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, 7f, shadows.color.getColor()));
-            BloomUtils.update();
-            BloomUtils.run(InstanceAccess.NORMAL_BlOOM_RUNNABLES);
-            InstanceAccess.clearRunnables();
+            InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, 7f, shadows.color.getColor()));
         }
 
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, 7f, new Color(15,15,15,150));

@@ -171,7 +171,6 @@ public class Scaffold extends Module {
             } else if (MoveUtils.canSprint()) {
                 mc.thePlayer.setSprinting(true);
             }
-            Client.INSTANCE.getConsole().log("Sprint:" + mc.thePlayer.isSprinting());
         }
         if (event instanceof JumpEvent jumpEvent) {
             jumpEvent.setYaw(Rotation.getServerRotation().getYaw());

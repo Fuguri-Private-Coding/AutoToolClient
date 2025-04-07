@@ -37,6 +37,26 @@ public class RenderUtils implements InstanceAccess {
         glDisable(GL_BLEND);
     }
 
+    public static void start3DNameTag() {
+        glPushAttrib(GL_ENABLE_BIT);
+        glPushMatrix();
+        glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    public static void stop3DNameTag() {
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+
+        glPopMatrix();
+        glPopAttrib();
+
+        glColor4f(1F, 1F, 1F, 1F);
+    }
+
     public static void drawBlockESP(BlockPos blockPos, float red, float green, float blue, float alpha, float lineAlpha, float lineWidth) {
         GlStateManager.color(red, green, blue, alpha);
         double x = blockPos.getX() - mc.getRenderManager().viewerPosX;

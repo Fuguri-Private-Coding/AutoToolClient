@@ -5,6 +5,7 @@ import me.hackclient.guis.altmanager.AltManagerGuiScreen;
 import me.hackclient.shader.impl.BackgroundUtils;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.gui.*;
+import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 import java.io.IOException;
@@ -15,13 +16,16 @@ public class GuiClientMainMenu extends GuiScreen {
         this.mc = InstanceAccess.mc;
     }
 
+    ResourceLocation exitLogo = new ResourceLocation("minecraft", "hackclient/mainmenu/exit.png");
+
     @Override
     public void initGui() {
         final ScaledResolution sc = new ScaledResolution(mc);
-        buttonList.add(new GuiClientButton(0, sc.getScaledWidth() / 3 - 15, sc.getScaledHeight() / 2 + 25,"SinglePlayer"));
-        buttonList.add(new GuiClientButton(1, sc.getScaledWidth() / 3 - 15, sc.getScaledHeight() / 2 + 25 + 25, "MultiPlayer"));
-        buttonList.add(new GuiClientButton(2, sc.getScaledWidth() / 3 - 15, sc.getScaledHeight() / 2 + 25 + 25 + 25, "Minecraft Setting"));
-        buttonList.add(new GuiClientButton(3, sc.getScaledWidth() / 3 - 15, sc.getScaledHeight() / 2 + 25 + 25 + 25 + 25, "AltManager"));
+        buttonList.add(new GuiClientButton(0, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25,"SinglePlayer"));
+        buttonList.add(new GuiClientButton(1, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25, "MultiPlayer"));
+        buttonList.add(new GuiClientButton(2, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25 + 25, "Minecraft Setting"));
+        buttonList.add(new GuiClientButton(3, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25 + 25 + 25, "AltManager"));
+        buttonList.add(new GuiClientImageButtom(4, sc.getScaledWidth() - 15 - 5, 5, 15,15, exitLogo));
     }
 
     @Override
