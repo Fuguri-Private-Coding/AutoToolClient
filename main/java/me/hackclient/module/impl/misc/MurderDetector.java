@@ -2,6 +2,7 @@ package me.hackclient.module.impl.misc;
 
 import me.hackclient.event.Event;
 import me.hackclient.event.events.TickEvent;
+import me.hackclient.event.events.WorldChangeEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -18,18 +19,27 @@ import java.util.List;
 )
 public class MurderDetector extends Module {
 
-    List<EntityPlayer> murders;
+    public List<String> murders;
 
     public MurderDetector() {
         murders = new ArrayList<>();
     }
 
     @Override
+    public void onDisable() {
+        super.onDisable();
+        if (!murders.isEmpty()) murders.clear();
+    }
+
+    @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (event instanceof WorldChangeEvent) {
+            if (!murders.isEmpty()) murders.clear();
+        }
         if (event instanceof TickEvent) {
             for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
-                if (murders.contains(playerEntity))
+                if (murders.contains(playerEntity.getName()))
                     continue;
 
                 if (playerEntity.getHeldItem() == null)
@@ -38,7 +48,7 @@ public class MurderDetector extends Module {
                 if (playerEntity.getHeldItem().getItem() != Items.iron_sword)
                     continue;
 
-                murders.add(playerEntity);
+                murders.add(playerEntity.getName());
                 ClientUtils.chatLog("Murder is " + playerEntity.getName());
             }
         }

@@ -9,6 +9,7 @@ import java.util.List;
 import me.hackclient.Client;
 import me.hackclient.managers.FriendManager;
 import me.hackclient.module.impl.misc.MidClick;
+import me.hackclient.module.impl.misc.MurderDetector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -43,11 +44,14 @@ public class GuiPlayerTabOverlay extends Gui
     public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
     {
         final MidClick midClick = Client.INSTANCE.getModuleManager().getModule(MidClick.class);
+        final MurderDetector murderDetector = Client.INSTANCE.getModuleManager().getModule(MurderDetector.class);
         final FriendManager friendManager = Client.INSTANCE.getFriendManager();
 
-        String prefix = friendManager.isFriend(networkPlayerInfoIn.getGameProfile().getName(), midClick.reverseFriends.isToggled()) ? "§2[Friend]§9 " : "";
+        String friend = friendManager.isFriend(networkPlayerInfoIn.getGameProfile().getName(), midClick.reverseFriends.isToggled()) ? "§2[Friend]§9 " : "";
+        String murder = murderDetector.isToggled() && murderDetector.murders.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§4[Murder]§4 " : "";
         String name = networkPlayerInfoIn.getDisplayName() != null ? networkPlayerInfoIn.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(networkPlayerInfoIn.getPlayerTeam(), networkPlayerInfoIn.getGameProfile().getName());
-        return prefix + name;
+
+        return friend + murder + name;
     }
 
     public void updatePlayerList(boolean willBeRendered)

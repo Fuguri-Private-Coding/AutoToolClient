@@ -7,6 +7,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.misc.MidClick;
+import me.hackclient.module.impl.misc.MurderDetector;
 import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.render.RenderUtils;
@@ -22,10 +23,14 @@ public class NameTags extends Module {
 
     ColorSetting color = new ColorSetting("Color", this, 1,1,1,1);
 
+    MurderDetector murderDetector;
+    MidClick midClick;
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (murderDetector == null) murderDetector = Client.INSTANCE.getModuleManager().getModule(MurderDetector.class);
+        if (midClick == null) midClick = Client.INSTANCE.getModuleManager().getModule(MidClick.class);
         if (event instanceof Render3DEvent) {
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
                 RenderUtils.start3DNameTag();
@@ -55,11 +60,14 @@ public class NameTags extends Module {
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        boolean friend = entity instanceof EntityPlayer ent && Client.INSTANCE.getModuleManager().getModule(MidClick.class).showInName.isToggled() && ent.isFriend();
-        String text = friend ? "§2[Friend]§9 " + entity.getName() : entity.getName();
+        boolean friend = entity instanceof EntityPlayer ent && midClick.showInName.isToggled() && ent.isFriend();
+        boolean murder = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.murders.contains(ent.getName());
+        String murderText = murder ? "§4[Murder]§4 " : "";
+        String friendText = friend ? "§2[Friend]§9 " : "";
+        String text = friendText + murderText + entity.getName();
         float offset = fontRenderer.FONT_HEIGHT - 8f;
         float stringWidth = fontRenderer.getStringWidth(text) / 2f;
-        RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2, fontRenderer.FONT_HEIGHT + 4, 2f, color.getColor());
+        RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, color.getColor());
         fontRenderer.drawString(
                 text,
                 -stringWidth,
