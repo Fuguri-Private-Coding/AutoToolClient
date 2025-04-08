@@ -19,6 +19,7 @@ import me.hackclient.managers.ClickManager;
 import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
 import me.hackclient.utils.discord.Discord;
+import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.resource.ResourceUtils;
 import me.hackclient.utils.sound.SoundsManager;
 import org.lwjgl.opengl.Display;
@@ -121,6 +122,8 @@ public enum Client implements CallableObject {
 
 		soundsManager = new SoundsManager();
 
+		if (InstanceAccess.mc.gameSettings.ofFastRender) InstanceAccess.mc.gameSettings.ofFastRender = false;
+
 		Display.setIcon(ResourceUtils.getClientLogo());
 
 		Display.setTitle(getFullName());
@@ -169,7 +172,7 @@ public enum Client implements CallableObject {
 	}
 
 	public String getVersion() {
-		return "1.1";
+		return "1.2";
 	}
 
 	public String getFullName() {

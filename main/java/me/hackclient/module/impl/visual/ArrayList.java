@@ -8,9 +8,11 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.ColorSetting;
+import me.hackclient.settings.impl.FloatSetting;
+import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -22,9 +24,18 @@ public class ArrayList extends Module {
 
 	final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
 
+	final BooleanSetting textShadow = new BooleanSetting("TextShadow", this, false);
+
+	final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, 1f,1f,1f,1f);
+
+	final FloatSetting backgroundRadius = new FloatSetting("BackgroundRadius", this, 0.5f,5f,1f,0.5f);
+
+	Shadows shadows;
+
 	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
+		if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
 		if (event instanceof Render2DEvent) {
 			final FontRenderer font = mc.fontRendererObj;
 			List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INSTANCE.getModuleManager().getEnabledModules());
@@ -37,7 +48,14 @@ public class ArrayList extends Module {
 					continue;
 				}
 
-				font.drawString(module.getName(), 5, (float) (5 + offset), color.getColor().getRGB(), true);
+				if (shadows.isToggled() && shadows.arrayList.isToggled()) {
+					double finalOffset = offset;
+					InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> RoundedUtils.drawRect(5,(float) finalOffset + 5f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 3.05f, backgroundRadius.getValue(), shadows.color.getColor()));
+				}
+
+				RoundedUtils.drawRect(5,(float) offset + 5f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 3.05f, backgroundRadius.getValue(), backgroundColor.getColor());
+
+				font.drawString(module.getName(), 7, (float) (7 + offset), color.getColor().getRGB(), textShadow.isToggled());
 				offset += 12;
 			}
 

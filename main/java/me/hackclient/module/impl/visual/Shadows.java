@@ -18,6 +18,7 @@ public class Shadows extends Module {
     public BooleanSetting console = new BooleanSetting("Console", this, true);
     public BooleanSetting mainMenu = new BooleanSetting("MainMenuButtons", this, true);
     public BooleanSetting chat = new BooleanSetting("Chat", this, true);
+    public BooleanSetting arrayList = new BooleanSetting("ArrayList", this, true);
     //public BooleanSetting nameTags = new BooleanSetting("NameTags", this, true);
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 15, 6);

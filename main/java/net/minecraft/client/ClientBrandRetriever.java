@@ -9,7 +9,7 @@ public class ClientBrandRetriever
     {
         final ClientSpoofer clientSpoofer = Client.INSTANCE.getModuleManager().getModule(ClientSpoofer.class);
         if (clientSpoofer.isToggled()) {
-            return clientSpoofer.brand.getMode();
+            return clientSpoofer.getBrand();
         } else {
             return "vanilla";
         }

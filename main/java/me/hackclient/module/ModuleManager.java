@@ -54,6 +54,7 @@ public class ModuleManager {
 				 new LongJump(),
 				 new Phase(),
 				 new NoGuiClose(),
+				 new AirStuck(),
 				 new VClip(),
 				 new NoSlow(),
 				 new NoWeb(),

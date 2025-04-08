@@ -17,9 +17,8 @@ public class BackgroundUtils implements InstanceAccess {
 
     public static void run() {
         if (program == null) program = Client.INSTANCE.getShaderManager().getBackground();
-        if (!Display.isVisible()) {
-            return;
-        }
+        if (!Display.isVisible() || !Display.isActive()) return;
+
         update();
 
         final int programID = program.getProgramId();

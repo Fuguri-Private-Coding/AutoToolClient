@@ -4,8 +4,6 @@ import com.google.common.base.Predicates;
 import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.nio.FloatBuffer;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
@@ -14,7 +12,6 @@ import me.hackclient.Client;
 import me.hackclient.event.events.DrawBlockHighlightEvent;
 import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.event.events.Render3DEvent;
-import me.hackclient.guis.main.GuiClientMainMenu;
 import me.hackclient.module.impl.visual.CustomCamera;
 import me.hackclient.module.impl.visual.NoRender;
 import me.hackclient.utils.interfaces.InstanceAccess;
@@ -1144,8 +1141,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             }
         }
 
+
         InstanceAccess.render2DRunnable();
         InstanceAccess.clearRunnable();
+
 
         this.frameFinish();
         this.waitForServerThread();
@@ -2193,10 +2192,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             }
         }
 
-        if (this.mc.currentScreen instanceof GuiClientMainMenu) {
-            this.updateMainMenu((GuiClientMainMenu) this.mc.currentScreen);
-        }
-
         if (this.updatedWorld != world) {
             RandomEntities.worldChanged(this.updatedWorld, world);
             Config.updateThreadPriorities();
@@ -2223,32 +2218,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 ChatComponentText chatcomponenttext = new ChatComponentText(I18n.format("of.message.openglError", new Object[]{Integer.valueOf(i), s}));
                 this.mc.ingameGUI.getChatGUI().printChatMessage(chatcomponenttext);
             }
-        }
-    }
-
-    private void updateMainMenu(GuiClientMainMenu p_updateMainMenu_1_) {
-        try {
-            String s = null;
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
-            int i = calendar.get(5);
-            int j = calendar.get(2) + 1;
-
-            if (i == 8 && j == 4) {
-                s = "Happy birthday, OptiFine!";
-            }
-
-            if (i == 14 && j == 8) {
-                s = "Happy birthday, sp614x!";
-            }
-
-            if (s == null) {
-                return;
-            }
-
-            Reflector.setFieldValue(p_updateMainMenu_1_, Reflector.GuiMainMenu_splashText, s);
-        } catch (Throwable var6) {
-            ;
         }
     }
 

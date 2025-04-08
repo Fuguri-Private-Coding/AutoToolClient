@@ -22,20 +22,20 @@ public class NameTags extends Module {
 
     ColorSetting color = new ColorSetting("Color", this, 1,1,1,1);
 
+
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (mc.theWorld == null || mc.thePlayer == null) return;
         if (event instanceof Render3DEvent) {
-            RenderUtils.start3DNameTag();
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
+                RenderUtils.start3DNameTag();
                 renderNameTag(entity);
+                RenderUtils.stop3DNameTag();
             }
-            RenderUtils.stop3DNameTag();
         }
     }
 
-    private void renderNameTag(Entity entity) {
+    public void renderNameTag(Entity entity) {
         FontRenderer fontRenderer = mc.fontRendererObj;
         float distance = mc.thePlayer.getDistanceToEntity(entity);
         float scale = Math.max(distance / 2.5f, 5.0f);
@@ -59,7 +59,7 @@ public class NameTags extends Module {
         String text = friend ? "§2[Friend]§9 " + entity.getName() : entity.getName();
         float offset = fontRenderer.FONT_HEIGHT - 8f;
         float stringWidth = fontRenderer.getStringWidth(text) / 2f;
-        RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, color.getColor());
+        RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2, fontRenderer.FONT_HEIGHT + 4, 2f, color.getColor());
         fontRenderer.drawString(
                 text,
                 -stringWidth,

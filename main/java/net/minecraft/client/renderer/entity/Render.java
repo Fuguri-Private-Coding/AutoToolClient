@@ -3,6 +3,7 @@ package net.minecraft.client.renderer.entity;
 import me.hackclient.Client;
 import me.hackclient.module.impl.misc.MidClick;
 import me.hackclient.module.impl.visual.NameTags;
+import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

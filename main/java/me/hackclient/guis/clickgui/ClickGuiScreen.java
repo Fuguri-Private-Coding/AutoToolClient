@@ -10,8 +10,6 @@ import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.*;
-import me.hackclient.shader.ShaderRenderType;
-import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.doubles.Doubles;
@@ -75,6 +73,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		int currentScroll = Mouse.getDWheel();
 		if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
 		MAIN_COLOR = clickGui.color.getColor();
+		BACKGROUND_COLOR = new Color(15,15,15,clickGui.backgroundAlpha.getValue());
         if (closing) {
             if (Math.hypot(sizeBackground.x, sizeBackground.y) < 1) {
                 closing = false;

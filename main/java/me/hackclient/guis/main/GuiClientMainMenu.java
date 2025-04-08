@@ -16,6 +16,8 @@ public class GuiClientMainMenu extends GuiScreen {
         this.mc = InstanceAccess.mc;
     }
 
+    final String name = Client.INSTANCE.getName();
+
     ResourceLocation exitLogo = new ResourceLocation("minecraft", "hackclient/mainmenu/exit.png");
 
     @Override
@@ -34,15 +36,9 @@ public class GuiClientMainMenu extends GuiScreen {
         BackgroundUtils.run();
 
         final FontRenderer font = mc.fontRendererObj;
-        final String name = Client.INSTANCE.getName();
 
         font.drawString(name, sc.getScaledWidth() / 2f - font.getStringWidth(name) / 2f, sc.getScaledHeight() / 2f, Color.WHITE.getRGB(), true);
         super.drawScreen(mouseX, mouseY, partialTicks);
-    }
-
-    @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override

@@ -26,5 +26,4 @@ public interface InstanceAccess {
 	static void clearRunnable() {
 		NORMAL_BlOOM_RUNNABLE.clear();
 	}
-
 }

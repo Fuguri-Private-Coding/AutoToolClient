@@ -5,7 +5,6 @@ import me.hackclient.Client;
 import me.hackclient.module.Module;
 import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.*;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.interfaces.InstanceAccess;
 

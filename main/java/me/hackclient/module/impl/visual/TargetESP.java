@@ -139,16 +139,16 @@ public class TargetESP extends Module {
                         RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hitColor.getColor() : color.getColor(), 0f);
                         glVertex3d(x1, y + poses.getFirst().value, z1);
                         RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hitColor.getColor() : color.getColor());
-                        glVertex3d(x1, y + poses.getLast().value + 0.2, z1);
+                        glVertex3d(x1, y + poses.getLast().value, z1);
                     }
 
                     for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
                         double x1 = x + sin(i * Math.PI / 180) * 0.7;
                         double z1 = z + cos(i * Math.PI / 180) * 0.7;
                         RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hitColor.getColor() : color.getColor(), 1f);
-                        glVertex3d(x1, y + poses.getLast().value + 0.2, z1);
+                        glVertex3d(x1, y + poses.getLast().value, z1);
                         RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hitColor.getColor() : color.getColor(), 1f);
-                        glVertex3d(x1, y + poses.getLast().value + 0.22, z1);
+                        glVertex3d(x1, y + poses.getLast().value + 0.02, z1);
                     }
 
                     glEnd();
