@@ -9,12 +9,15 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.misc.MidClick;
 import me.hackclient.module.impl.misc.MurderDetector;
 import me.hackclient.settings.impl.ColorSetting;
+import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+
+import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -25,10 +28,12 @@ public class NameTags extends Module {
 
     MurderDetector murderDetector;
     MidClick midClick;
+    Shadows shadows;
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         if (murderDetector == null) murderDetector = Client.INSTANCE.getModuleManager().getModule(MurderDetector.class);
         if (midClick == null) midClick = Client.INSTANCE.getModuleManager().getModule(MidClick.class);
         if (event instanceof Render3DEvent) {
@@ -67,6 +72,9 @@ public class NameTags extends Module {
         String text = friendText + murderText + entity.getName();
         float offset = fontRenderer.FONT_HEIGHT - 8f;
         float stringWidth = fontRenderer.getStringWidth(text) / 2f;
+        if (shadows.isToggled() && shadows.nameTags.isToggled()) {
+            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, Color.WHITE));
+        }
         RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, color.getColor());
         fontRenderer.drawString(
                 text,

@@ -5,8 +5,9 @@ import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.Render;
@@ -15,8 +16,6 @@ import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
 
 @ModuleInfo(
         name = "ESP",
@@ -30,6 +29,8 @@ public class ESP extends Module {
             .add("Chams")
             //.add("")
             ;
+
+    final ColorSetting color = new ColorSetting("Color", this,() -> modes.get("Chams") ,1,1,1,1);
 
     @Override
     public void onEvent(Event event) {
@@ -61,33 +62,14 @@ public class ESP extends Module {
             RenderUtils.stop3D();
 
             if (modes.get("Glow")) {
-                InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> {
-                    for (final EntityPlayer player : mc.theWorld.playerEntities) {
-                        final Render<EntityPlayer> render = mc.getRenderManager().getEntityRenderObject(player);
-
-                        if (mc.getRenderManager() == null || render == null || (player == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || player.isDead) {
-                            continue;
-                        }
-
-                        final Color color = Color.white;
-
-                        if (color.getAlpha() <= 0) {
-                            continue;
-                        }
-
-                        final double x = player.prevPosX + (player.posX - player.prevPosX) * mc.timer.renderPartialTicks;
-                        final double y = player.prevPosY + (player.posY - player.prevPosY) * mc.timer.renderPartialTicks;
-                        final double z = player.prevPosZ + (player.posZ - player.prevPosZ) * mc.timer.renderPartialTicks;
-                        final float yaw = player.prevRotationYaw + (player.rotationYaw - player.prevRotationYaw) * mc.timer.renderPartialTicks;
-
-                        RendererLivingEntity.setShaderBrightness(Color.green);
-                        render.doRender(player, x - RenderManager.renderPosX, y - RenderManager.renderPosY, z - RenderManager.renderPosZ, yaw, mc.timer.renderPartialTicks);
-                        RendererLivingEntity.unsetShaderBrightness();
+                for (final EntityPlayer player : mc.theWorld.playerEntities) {
+                    if (mc.getRenderManager() == null || player == mc.thePlayer || player.isDead) {
+                        continue;
                     }
-
-                    RenderHelper.disableStandardItemLighting();
-                    mc.entityRenderer.disableLightmap();
-                });
+                    BloomUtils.addToDraw(() -> mc.renderManager.renderEntitySimple(player, mc.timer.renderPartialTicks));
+                }
+                RenderHelper.disableStandardItemLighting();
+                mc.entityRenderer.disableLightmap();
             }
 
             if (modes.get("Chams")) {
@@ -98,18 +80,12 @@ public class ESP extends Module {
                         continue;
                     }
 
-                    final Color color = Color.white;
-
-                    if (color.getAlpha() <= 0) {
-                        continue;
-                    }
-
                     final double x = player.prevPosX + (player.posX - player.prevPosX) * mc.timer.renderPartialTicks;
                     final double y = player.prevPosY + (player.posY - player.prevPosY) * mc.timer.renderPartialTicks;
                     final double z = player.prevPosZ + (player.posZ - player.prevPosZ) * mc.timer.renderPartialTicks;
                     final float yaw = player.prevRotationYaw + (player.rotationYaw - player.prevRotationYaw) * mc.timer.renderPartialTicks;
 
-                    RendererLivingEntity.setShaderBrightness(Color.green);
+                    RendererLivingEntity.setShaderBrightness(color.getColor());
                     render.doRender(player, x - RenderManager.renderPosX, y - RenderManager.renderPosY, z - RenderManager.renderPosZ, yaw, mc.timer.renderPartialTicks);
                     RendererLivingEntity.unsetShaderBrightness();
                 }

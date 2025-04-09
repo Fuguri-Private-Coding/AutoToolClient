@@ -10,6 +10,7 @@ import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.*;
+import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.doubles.Doubles;
@@ -134,7 +135,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		sizeBackground.update(15f);
 
 		if (shadows.isToggled() && shadows.clickGui.isToggled()) {
-			InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), shadows.color.getColor()));
+			BloomUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), shadows.color.getColor()));
 		}
 
 		ScissorUtils.enableScissor();

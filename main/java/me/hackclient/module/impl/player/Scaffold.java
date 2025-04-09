@@ -7,7 +7,9 @@ import me.hackclient.guis.console.ConsoleGuiScreen;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.settings.impl.*;
+import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.MathUtils;
 import me.hackclient.utils.math.RandomUtils;
@@ -113,6 +115,7 @@ public class Scaffold extends Module {
     BlockPos standingOn = null;
     BlockPos renderPos = null;
     long lastTime = 0L;
+    Shadows shadows;
 
     @Override
     public void onDisable() {
@@ -127,6 +130,7 @@ public class Scaffold extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         switch (clickMode.getMode()) {
             case "AutoPlace" -> {
                 if (event instanceof DrawBlockHighlightEvent && mc.currentScreen == null) {
@@ -148,6 +152,9 @@ public class Scaffold extends Module {
         }
         if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {
             RenderUtils.start3D();
+            if (shadows.isToggled() && shadows.scaffold.isToggled()) {
+                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), 1f, 1.0F, 0));
+            }
             RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 1.0F, 0);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderUtils.stop3D();

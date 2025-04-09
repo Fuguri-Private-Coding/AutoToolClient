@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Random;
 
 import me.hackclient.Client;
+import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.module.impl.visual.CustomScoreboard;
+import me.hackclient.shader.impl.BloomUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -332,6 +334,7 @@ public class GuiIngame extends Gui
         }
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
         GlStateManager.disableLighting();
         GlStateManager.enableAlpha();
     }

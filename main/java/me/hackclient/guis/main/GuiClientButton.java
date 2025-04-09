@@ -32,7 +32,7 @@ public class GuiClientButton extends GuiButton {
         final FontRenderer fonts = mc.fontRendererObj;
 
         if (shadows.isToggled() && shadows.mainMenu.isToggled()) {
-            InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 3f, Color.BLACK));
+            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 3f, Color.BLACK));
         }
 
         RoundedUtils.drawRect(xPosition, yPosition, width, height, 2f, new Color(15, 15, 15, 150));

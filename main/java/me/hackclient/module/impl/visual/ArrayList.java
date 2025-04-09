@@ -9,6 +9,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.FloatSetting;
+import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.gui.FontRenderer;
@@ -50,7 +51,7 @@ public class ArrayList extends Module {
 
 				if (shadows.isToggled() && shadows.arrayList.isToggled()) {
 					double finalOffset = offset;
-					InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> {
+					BloomUtils.addToDraw(() -> {
 						RoundedUtils.drawRect(6,(float) finalOffset + 6f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 3.05f, backgroundRadius.getValue(), shadows.color.getColor());
 						if (showLine.isToggled()) RoundedUtils.drawRect(4, 6, 2, (float) finalOffset + 12, 2f, shadows.color.getColor());
 					});

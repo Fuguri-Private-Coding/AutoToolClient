@@ -1,12 +1,13 @@
 package me.hackclient.module.impl.visual;
 
+import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.Render3DEvent;
-import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
+import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.util.Vec3;
@@ -16,10 +17,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(
-        name = "Line",
+        name = "Trails",
         category = Category.VISUAL
 )
-public class Line extends Module {
+public class Trails extends Module {
 
     final ModeSetting mode = new ModeSetting(
             "Mode",
@@ -27,7 +28,7 @@ public class Line extends Module {
             "SingleLine",
             new String[] {
                     "SingleLine",
-                    "1.16.5 govno"
+                    "PlayerLine"
             }
     );
 
@@ -39,7 +40,9 @@ public class Line extends Module {
 
     final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
 
-    public Line() {
+    Shadows shadows;
+
+    public Trails() {
         topList = new CopyOnWriteArrayList<>();
         bottomList = new CopyOnWriteArrayList<>();
     }
@@ -47,6 +50,7 @@ public class Line extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         if (onlyThirdPerson.isToggled() && mc.gameSettings.thirdPersonView == 0) return;
         if (event instanceof Render3DEvent) {
             Vec3 smoothVec = new Vec3(
@@ -65,43 +69,18 @@ public class Line extends Module {
             GL11.glEnable(GL11.GL_DEPTH_TEST);
              switch (mode.getMode()) {
                  case "SingleLine" -> {
-                     GL11.glBegin(GL11.GL_LINE_STRIP);
-                     bottomList.forEach(p -> {
-                         Vec3 pos = p.getFirst();
-                         RenderUtils.glColor(color.getColor(), 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
-                         GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
-                     });
-                     GL11.glEnd();
-                 }
-                 case "1.16.5 govno" -> {
-                     GL11.glBegin(GL11.GL_LINE_STRIP);
-                     bottomList.forEach(p -> {
-                         Vec3 pos = p.getFirst();
-                         RenderUtils.glColor(color.getColor(), 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
-                         GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
-                     });
-                     GL11.glEnd();
-
-                     GL11.glBegin(GL11.GL_LINE_STRIP);
-                     topList.forEach(p -> {
-                         Vec3 pos = p.getFirst();
-                         RenderUtils.glColor(color.getColor(), 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
-                         GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
-                     });
-                     GL11.glEnd();
-
-
-                     GL11.glShadeModel(GL11.GL_SMOOTH);
-                     GL11.glBegin(GL11.GL_QUAD_STRIP);
-
-                     for (Doubles<Vec3, Long> bottomVec : bottomList) {
-                         RenderUtils.glColor(color.getColor(), 0.6f * (1 - (float) (System.currentTimeMillis() - bottomVec.getSecond()) / (lifeTime.getValue() * 1000)));
-                         GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord, bottomVec.getFirst().zCoord);
-                         GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord + mc.thePlayer.height, bottomVec.getFirst().zCoord);
+                     if (shadows.isToggled() && shadows.trails.isToggled()) {
+                         GL11.glColor4f(1,1,1,1);
+                         BloomUtils.addToDraw(this::renderSingleLine);
                      }
-
-                     GL11.glEnd();
-                     GL11.glShadeModel(GL11.GL_FLAT);
+                     renderSingleLine();
+                 }
+                 case "PlayerLine" -> {
+                     if (shadows.isToggled() && shadows.trails.isToggled()) {
+                         GL11.glColor4f(1,1,1,1);
+                         BloomUtils.addToDraw(this::renderPlayerLine);
+                     }
+                     renderPlayerLine();
                  }
              }
             GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -109,5 +88,46 @@ public class Line extends Module {
             GL11.glTranslated(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);
             RenderUtils.stop3D();
         }
+    }
+
+    private void renderSingleLine() {
+        GL11.glBegin(GL11.GL_LINE_STRIP);
+        bottomList.forEach(p -> {
+            Vec3 pos = p.getFirst();
+            RenderUtils.glColor(color.getColor(), 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+            GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
+        });
+        GL11.glEnd();
+    }
+
+    private void renderPlayerLine() {
+        GL11.glBegin(GL11.GL_LINE_STRIP);
+        bottomList.forEach(p -> {
+            Vec3 pos = p.getFirst();
+            RenderUtils.glColor(color.getColor(), 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+            GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
+        });
+        GL11.glEnd();
+
+        GL11.glBegin(GL11.GL_LINE_STRIP);
+        topList.forEach(p -> {
+            Vec3 pos = p.getFirst();
+            RenderUtils.glColor(color.getColor(), 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+            GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
+        });
+        GL11.glEnd();
+
+
+        GL11.glShadeModel(GL11.GL_SMOOTH);
+        GL11.glBegin(GL11.GL_QUAD_STRIP);
+
+        for (Doubles<Vec3, Long> bottomVec : bottomList) {
+            RenderUtils.glColor(color.getColor(), 0.6f * (1 - (float) (System.currentTimeMillis() - bottomVec.getSecond()) / (lifeTime.getValue() * 1000)));
+            GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord, bottomVec.getFirst().zCoord);
+            GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord + mc.thePlayer.height, bottomVec.getFirst().zCoord);
+        }
+
+        GL11.glEnd();
+        GL11.glShadeModel(GL11.GL_FLAT);
     }
 }

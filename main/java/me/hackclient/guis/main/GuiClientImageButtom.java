@@ -37,7 +37,7 @@ public class GuiClientImageButtom extends GuiButton {
         hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 
         if (shadows.isToggled() && shadows.mainMenu.isToggled()) {
-            InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 2f, Color.BLACK));
+            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 2f, Color.BLACK));
         }
 
         RoundedUtils.drawRect(xPosition, yPosition, width, height, 2f, new Color(15,15,15,150));

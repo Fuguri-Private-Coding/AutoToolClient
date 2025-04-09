@@ -14,7 +14,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
 import java.nio.FloatBuffer;
-import java.util.List;
 
 public class BloomUtils implements InstanceAccess {
 
@@ -23,22 +22,22 @@ public class BloomUtils implements InstanceAccess {
     private static Framebuffer outputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static GaussianKernel gaussianKernel = new GaussianKernel(0);
 
-    private static Shadows shadows;
+    public static Shadows shadows;
 
-    public static void run(List<Runnable> runnable) {
+    public static void addToDraw(Runnable run) {
+        inputFramebuffer.bindFramebuffer(true);
+        run.run();
+        mc.getFramebuffer().bindFramebuffer(true);
+    }
+
+    public static void draw() {
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         if (program == null) program = Client.INSTANCE.getShaderManager().getBloom();
-        if (!Display.isActive() || !Display.isVisible()) return;
-
-        update();
+        if (!Display.isActive() || !Display.isVisible() || !shadows.isToggled()) return;
 
         inputFramebuffer.bindFramebuffer(true);
-        try {
-            runnable.forEach(Runnable::run);
-        } catch (Exception ignored) {}
 
         final int radius = shadows.radius.getValue();
-        final float compression = shadows.compression.getValue();
         final int programId = program.getProgramId();
 
         outputFramebuffer.bindFramebuffer(true);
@@ -52,14 +51,16 @@ public class BloomUtils implements InstanceAccess {
             buffer.put(gaussianKernel.getKernel());
             buffer.flip();
 
-            Uniform.uniform1f(programId, "u_radius", radius);
-            Uniform.uniformFB(programId, "u_kernel", buffer);
-            Uniform.uniform1i(programId, "u_diffuse_sampler", 0);
-            Uniform.uniform1i(programId, "u_other_sampler", 20);
+            Uniform.uniform1f(programId, "radius", radius);
+            Uniform.uniformFB(programId, "kernel", buffer);
+            Uniform.uniform1i(programId, "image", 0);
+            Uniform.uniform1i(programId, "image2", 20);
         }
 
-        Uniform.uniform2f(programId, "u_texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
-        Uniform.uniform2f(programId, "u_direction", compression, 0.0F);
+        Uniform.uniform4f(programId, "color", shadows.color.getRed(), shadows.color.getGreen(), shadows.color.getBlue(), shadows.color.getAlpha());
+        Uniform.uniform1f(programId,"brightness", shadows.brightness.getValue());
+        Uniform.uniform2f(programId, "texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
+        Uniform.uniform2f(programId, "direction", shadows.horizontal1Compress.getValue(), shadows.vertical1Compress.getValue());
 
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_SRC_ALPHA);
@@ -69,7 +70,7 @@ public class BloomUtils implements InstanceAccess {
 
         mc.getFramebuffer().bindFramebuffer(true);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        Uniform.uniform2f(programId, "u_direction", 0.0F, compression);
+        Uniform.uniform2f(programId, "direction", shadows.horizontal2Compress.getValue(), shadows.vertical2Compress.getValue());
         outputFramebuffer.bindFramebufferTexture();
         GL13.glActiveTexture(GL13.GL_TEXTURE20);
         inputFramebuffer.bindFramebufferTexture();
@@ -78,6 +79,8 @@ public class BloomUtils implements InstanceAccess {
         GlStateManager.disableBlend();
 
         Shader.stop();
+
+        update();
     }
 
     public static void update() {
@@ -95,4 +98,5 @@ public class BloomUtils implements InstanceAccess {
         inputFramebuffer.setFramebufferColor(0.0F, 0.0F, 0.0F, 0.0F);
         outputFramebuffer.setFramebufferColor(0.0F, 0.0F, 0.0F, 0.0F);
     }
+
 }

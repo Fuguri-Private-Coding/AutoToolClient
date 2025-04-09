@@ -124,7 +124,7 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         sizeBackground.update(15f);
 
         if (shadows.isToggled() && shadows.console.isToggled()) {
-            InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, 7f, shadows.color.getColor()));
+            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, 7f, shadows.color.getColor()));
         }
 
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, 7f, new Color(15,15,15,150));

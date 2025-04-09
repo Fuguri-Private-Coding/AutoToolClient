@@ -24,7 +24,7 @@ public class AltManagerGuiText extends GuiTextField {
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
 
         if (shadows.mainMenu.isToggled() && shadows.isToggled()) {
-            InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 6f, Color.BLACK));
+            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 6f, Color.BLACK));
         }
 
         RoundedUtils.drawRect(xPosition, yPosition, width, height, 5f, new Color(15,15,15,150));

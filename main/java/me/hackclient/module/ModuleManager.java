@@ -38,7 +38,7 @@ public class ModuleManager {
 				 new ClientHandler(),
 				 new InvManager(),
 				 new AutoLeave(),
-				 new Line(),
+				 new Trails(),
 				 new ESP(),
 				 new RotationHandler(),
 				 new Shadows(),
