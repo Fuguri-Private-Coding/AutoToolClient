@@ -190,7 +190,6 @@ public class RenderItem implements IResourceManagerReloadListener {
     }
 
     private void renderEffect(IBakedModel model) {
-        if (RendererLivingEntity.SHADER_RENDERING) return;
 
         if (!Config.isCustomItems() || CustomItems.isUseGlint()) {
             if (!Config.isShaders() || !Shaders.isShadowPass) {

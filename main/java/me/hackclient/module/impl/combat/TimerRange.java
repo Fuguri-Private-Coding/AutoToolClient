@@ -3,6 +3,7 @@ package me.hackclient.module.impl.combat;
 import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.LegitClickTimingEvent;
+import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
@@ -56,7 +57,7 @@ public class TimerRange extends Module {
                 MovingObjectPosition mouse = RayTraceUtils.rayTrace(
                         simulatedPlayer.getPosEyes(),
                         3,
-                        8,
+                        15,
                         new Rotation(Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch()));
 
                 if (mouse == null || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
@@ -73,13 +74,37 @@ public class TimerRange extends Module {
                 try {
                     mc.runTick();
                     balance++;
-                    if (RayCastUtils.raycastEntity(3, entity -> true) == target) {
+                    if (RayCastUtils.raycastEntity(3, ignored -> true) == target) {
                         click = true;
                         break;
                     }
                 } catch (Exception ignored) { }
             }
             teleporting = false;
+        }
+        if (event instanceof Render3DEvent) {
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput);
+
+            for (int i = 0; i < limitTicks.getValue(); i++) {
+                MovingObjectPosition mouse = RayTraceUtils.rayTrace(
+                        simulatedPlayer.getPosEyes(),
+                        3,
+                        12,
+                        new Rotation(Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch()));
+
+                if (mouse == null || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
+                    simulatedPlayer.tick();
+                    continue;
+                }
+
+                break;
+            }
+            double x = mc.thePlayer.lastTickPosX + (simulatedPlayer.getPos().xCoord - mc.thePlayer.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
+            double y = mc.thePlayer.lastTickPosY + (simulatedPlayer.getPos().yCoord - mc.thePlayer.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
+            double z = mc.thePlayer.lastTickPosZ + (simulatedPlayer.getPos().zCoord - mc.thePlayer.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
+
+            //mc.renderManager.doRenderEntity(mc.thePlayer, x,y,z,mc.thePlayer.rotationYawHead, mc.timer.renderPartialTicks, true);
+
         }
         if (event instanceof RunGameLoopEvent && balance > 0) mc.timer.renderPartialTicks = partialTicks.getValue();
     }

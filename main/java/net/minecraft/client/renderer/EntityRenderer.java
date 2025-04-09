@@ -1145,7 +1145,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         InstanceAccess.render2DRunnable();
         InstanceAccess.clearRunnable();
 
-
         this.frameFinish();
         this.waitForServerThread();
         MemoryMonitor.update();
@@ -1577,12 +1576,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
         setupCameraTransform(partialTicks, 0);
         Client.INSTANCE.getObjectsCaller().onEvent(new Render3DEvent());
-
-        RendererLivingEntity.SHADER_RENDERING = true;
-        InstanceAccess.render3DRunnable();
-        InstanceAccess.clearRunnable();
-        RendererLivingEntity.SHADER_RENDERING = false;
-
     }
 
     private void renderCloudsCheck(RenderGlobal renderGlobalIn, float partialTicks, int pass) {

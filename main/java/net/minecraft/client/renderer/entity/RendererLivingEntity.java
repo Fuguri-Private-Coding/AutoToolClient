@@ -60,7 +60,6 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
     private boolean renderModelPushMatrix;
     private boolean renderLayersPushMatrix;
     public static final boolean animateModelLiving = Boolean.getBoolean("animate.model.living");
-    public static boolean SHADER_RENDERING = false;
 
     public RendererLivingEntity(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn) {
         super(renderManagerIn);
@@ -433,7 +432,6 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
     }
 
     protected boolean setBrightness(T entitylivingbaseIn, float partialTicks, boolean combineTextures) {
-        if (SHADER_RENDERING) return false;
 
         float f = entitylivingbaseIn.getBrightness(partialTicks);
         int i = this.getColorMultiplier(entitylivingbaseIn, f, partialTicks);
@@ -515,7 +513,6 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
     }
 
     protected void unsetBrightness() {
-        if (SHADER_RENDERING) return;
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
         GlStateManager.enableTexture2D();
         GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, OpenGlHelper.GL_COMBINE);

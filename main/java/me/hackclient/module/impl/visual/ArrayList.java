@@ -50,17 +50,20 @@ public class ArrayList extends Module {
 
 				if (shadows.isToggled() && shadows.arrayList.isToggled()) {
 					double finalOffset = offset;
-					InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> RoundedUtils.drawRect(5,(float) finalOffset + 5f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 3.05f, backgroundRadius.getValue(), shadows.color.getColor()));
+					InstanceAccess.NORMAL_BlOOM_RUNNABLE.add(() -> {
+						RoundedUtils.drawRect(6,(float) finalOffset + 6f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 3.05f, backgroundRadius.getValue(), shadows.color.getColor());
+						if (showLine.isToggled()) RoundedUtils.drawRect(4, 6, 2, (float) finalOffset + 12, 2f, shadows.color.getColor());
+					});
 				}
 
-				RoundedUtils.drawRect(5,(float) offset + 5f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 3.05f, backgroundRadius.getValue(), backgroundColor.getColor());
+				RoundedUtils.drawRect(6,(float) offset + 6f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 3.05f, backgroundRadius.getValue(), backgroundColor.getColor());
 
-				font.drawString(module.getName(), 7, (float) (7 + offset), color.getColor().getRGB(), textShadow.isToggled());
+				font.drawString(module.getName(), 8, (float) (8 + offset), color.getColor().getRGB(), textShadow.isToggled());
 				offset += 12;
 			}
 
 			if (showLine.isToggled()) {
-				Gui.drawRect(1, 0, 2, (int) offset, color.getColor().getRGB());
+				RoundedUtils.drawRect(4, 6, 2, (float) offset, 2f, color.getColor());
 			}
 		}
 	}

@@ -63,7 +63,7 @@ public class NameTags extends Module {
         boolean friend = entity instanceof EntityPlayer ent && midClick.showInName.isToggled() && ent.isFriend();
         boolean murder = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.murders.contains(ent.getName());
         String murderText = murder ? "§4[Murder]§4 " : "";
-        String friendText = friend ? "§2[Friend]§9 " : "";
+        String friendText = friend ? "§2[Friend]§a " : "";
         String text = friendText + murderText + entity.getName();
         float offset = fontRenderer.FONT_HEIGHT - 8f;
         float stringWidth = fontRenderer.getStringWidth(text) / 2f;

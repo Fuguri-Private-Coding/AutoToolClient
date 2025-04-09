@@ -4,12 +4,9 @@ import me.hackclient.Client;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.shader.GaussianKernel;
 import me.hackclient.shader.Shader;
-import me.hackclient.shader.ShaderRenderType;
 import me.hackclient.shader.Uniform;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
@@ -28,81 +25,59 @@ public class BloomUtils implements InstanceAccess {
 
     private static Shadows shadows;
 
-    public static void run(final ShaderRenderType type, List<Runnable> runnable) {
+    public static void run(List<Runnable> runnable) {
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         if (program == null) program = Client.INSTANCE.getShaderManager().getBloom();
         if (!Display.isActive() || !Display.isVisible()) return;
 
         update();
 
-        switch (type) {
-            case CAMERA -> {
-                RendererLivingEntity.NAME_TAG_RANGE = 0;
-                RendererLivingEntity.NAME_TAG_RANGE_SNEAK = 0;
+        inputFramebuffer.bindFramebuffer(true);
+        try {
+            runnable.forEach(Runnable::run);
+        } catch (Exception ignored) {}
 
-                inputFramebuffer.bindFramebuffer(true);
-                for (Runnable runnable1 : runnable) {
-                    runnable1.run();
-                }
+        final int radius = shadows.radius.getValue();
+        final float compression = shadows.compression.getValue();
+        final int programId = program.getProgramId();
 
-                mc.getFramebuffer().bindFramebuffer(true);
+        outputFramebuffer.bindFramebuffer(true);
+        program.start();
 
-                RendererLivingEntity.NAME_TAG_RANGE = 64;
-                RendererLivingEntity.NAME_TAG_RANGE_SNEAK = 32;
+        if (gaussianKernel.getSize() != radius) {
+            gaussianKernel = new GaussianKernel(radius);
+            gaussianKernel.compute();
 
-                RenderHelper.disableStandardItemLighting();
-                mc.entityRenderer.disableLightmap();
-            }
-            case OVERLAY -> {
-                inputFramebuffer.bindFramebuffer(true);
-                try {
-                    runnable.forEach(Runnable::run);
-                } catch (Exception ignored) {}
+            final FloatBuffer buffer = BufferUtils.createFloatBuffer(radius);
+            buffer.put(gaussianKernel.getKernel());
+            buffer.flip();
 
-                final int radius = shadows.radius.getValue();
-                final float compression = shadows.compression.getValue();
-                final int programId = program.getProgramId();
-
-                outputFramebuffer.bindFramebuffer(true);
-                program.start();
-
-                if (gaussianKernel.getSize() != radius) {
-                    gaussianKernel = new GaussianKernel(radius);
-                    gaussianKernel.compute();
-
-                    final FloatBuffer buffer = BufferUtils.createFloatBuffer(radius);
-                    buffer.put(gaussianKernel.getKernel());
-                    buffer.flip();
-
-                    Uniform.uniform1f(programId, "u_radius", radius);
-                    Uniform.uniformFB(programId, "u_kernel", buffer);
-                    Uniform.uniform1i(programId, "u_diffuse_sampler", 0);
-                    Uniform.uniform1i(programId, "u_other_sampler", 20);
-                }
-
-                Uniform.uniform2f(programId, "u_texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
-                Uniform.uniform2f(programId, "u_direction", compression, 0.0F);
-
-                GlStateManager.enableBlend();
-                GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_SRC_ALPHA);
-                GlStateManager.alphaFunc(GL11.GL_GREATER, 0.0F);
-                inputFramebuffer.bindFramebufferTexture();
-                Shader.drawQuad();
-
-                mc.getFramebuffer().bindFramebuffer(true);
-                GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                Uniform.uniform2f(programId, "u_direction", 0.0F, compression);
-                outputFramebuffer.bindFramebufferTexture();
-                GL13.glActiveTexture(GL13.GL_TEXTURE20);
-                inputFramebuffer.bindFramebufferTexture();
-                GL13.glActiveTexture(GL13.GL_TEXTURE0);
-                Shader.drawQuad();
-                GlStateManager.disableBlend();
-
-                Shader.stop();
-            }
+            Uniform.uniform1f(programId, "u_radius", radius);
+            Uniform.uniformFB(programId, "u_kernel", buffer);
+            Uniform.uniform1i(programId, "u_diffuse_sampler", 0);
+            Uniform.uniform1i(programId, "u_other_sampler", 20);
         }
 
+        Uniform.uniform2f(programId, "u_texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
+        Uniform.uniform2f(programId, "u_direction", compression, 0.0F);
+
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_SRC_ALPHA);
+        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.0F);
+        inputFramebuffer.bindFramebufferTexture();
+        Shader.drawQuad();
+
+        mc.getFramebuffer().bindFramebuffer(true);
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        Uniform.uniform2f(programId, "u_direction", 0.0F, compression);
+        outputFramebuffer.bindFramebufferTexture();
+        GL13.glActiveTexture(GL13.GL_TEXTURE20);
+        inputFramebuffer.bindFramebufferTexture();
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        Shader.drawQuad();
+        GlStateManager.disableBlend();
+
+        Shader.stop();
     }
 
     public static void update() {

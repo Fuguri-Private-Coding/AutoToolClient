@@ -34,7 +34,8 @@ public class KillAura extends Module {
     private final VanillaRotation vanillaRotation = new VanillaRotation();
 
     // Настройки поиска противника
-    final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3.0f, 6.0f, 6.0f, 0.1f);
+    final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3.0f, 12.0f, 6.0f, 0.1f);
+
     final BooleanSetting players = new BooleanSetting("Players", this, true);
     final BooleanSetting animals = new BooleanSetting("Animals", this, false);
     final BooleanSetting mobs = new BooleanSetting("Mobs", this, false);

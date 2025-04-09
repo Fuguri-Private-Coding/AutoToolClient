@@ -1,7 +1,6 @@
 package me.hackclient.utils.interfaces;
 
 import me.hackclient.module.ModuleManager;
-import me.hackclient.shader.ShaderRenderType;
 import me.hackclient.shader.impl.BloomUtils;
 import net.minecraft.client.Minecraft;
 
@@ -16,11 +15,7 @@ public interface InstanceAccess {
 	List<Runnable> NORMAL_BlOOM_RUNNABLE = new ArrayList<>();
 
 	static void	render2DRunnable() {
-		BloomUtils.run(ShaderRenderType.OVERLAY, InstanceAccess.NORMAL_BlOOM_RUNNABLE);
-	}
-
-	static void render3DRunnable() {
-		BloomUtils.run(ShaderRenderType.CAMERA, InstanceAccess.NORMAL_BlOOM_RUNNABLE);
+		BloomUtils.run(InstanceAccess.NORMAL_BlOOM_RUNNABLE);
 	}
 
 	static void clearRunnable() {
