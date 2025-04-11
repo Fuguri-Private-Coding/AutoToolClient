@@ -1,13 +1,13 @@
 package me.hackclient.module.impl.visual;
 
+import lombok.Getter;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.AttackEvent;
 import me.hackclient.event.events.RenderItemEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.*;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL11;
 @ModuleInfo(name = "Animations", category = Category.VISUAL, toggled = true)
 public class Animations extends Module {
 
+    @Getter
     static boolean animate;
 
     ModeSetting mode = new ModeSetting("Mode", this, "Sigma", new String[]{
@@ -37,10 +38,11 @@ public class Animations extends Module {
     FloatSetting Y = new FloatSetting("Y", this, -1f, 1f, 0.2f, 0.1f) {};
     FloatSetting Z = new FloatSetting("Z", this, -1f, 1f, -0.1f, 0.1f) {};
 
+    public BooleanSetting alwaysBlocking = new BooleanSetting("AlwaysBlocking", this, true);
+
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-
         if (event instanceof RenderItemEvent renderItemEvent) {
             GlStateManager.translate(X.getValue(), Y.getValue(), Z.getValue());
             ItemRenderer itemRenderer = mc.getItemRenderer();
@@ -125,10 +127,6 @@ public class Animations extends Module {
     @Override
     public boolean handleEvents() {
         return true;
-    }
-
-    public static boolean isAnimate() {
-        return animate;
     }
 
     public static void setAnimate(boolean animate) {

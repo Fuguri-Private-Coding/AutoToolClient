@@ -14,6 +14,7 @@ import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.impl.visual.CustomCamera;
 import me.hackclient.module.impl.visual.NoRender;
+import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.block.Block;

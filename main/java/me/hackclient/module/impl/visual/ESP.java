@@ -17,6 +17,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
+
 @ModuleInfo(
         name = "ESP",
         category = Category.VISUAL
@@ -41,7 +43,7 @@ public class ESP extends Module {
 
             if (modes.get("Box")) {
                 for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
-                    if (playerEntity.equals(mc.thePlayer)) { continue; }
+                    if (playerEntity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) { continue; }
 
                     Vec3 smoothPos = new Vec3(
                             playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * mc.timer.renderPartialTicks,
@@ -63,7 +65,7 @@ public class ESP extends Module {
 
             if (modes.get("Glow")) {
                 for (final EntityPlayer player : mc.theWorld.playerEntities) {
-                    if (mc.getRenderManager() == null || player == mc.thePlayer || player.isDead) {
+                    if (mc.getRenderManager() == null || (player == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || player.isDead) {
                         continue;
                     }
                     BloomUtils.addToDraw(() -> mc.renderManager.renderEntitySimple(player, mc.timer.renderPartialTicks));

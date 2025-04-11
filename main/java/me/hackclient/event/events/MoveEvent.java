@@ -10,4 +10,6 @@ import me.hackclient.event.Event;
 @AllArgsConstructor
 public class MoveEvent extends Event {
 	float forward, strafe;
+	boolean jump, sneak;
+	float sneakSlowDown;
 }

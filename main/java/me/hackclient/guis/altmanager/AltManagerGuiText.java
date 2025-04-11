@@ -2,10 +2,8 @@ package me.hackclient.guis.altmanager;
 
 import me.hackclient.Client;
 import me.hackclient.module.impl.visual.Shadows;
-import me.hackclient.shader.ShaderRenderType;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
-import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
 

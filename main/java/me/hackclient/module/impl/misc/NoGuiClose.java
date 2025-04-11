@@ -2,9 +2,14 @@ package me.hackclient.module.impl.misc;
 
 import me.hackclient.event.Event;
 import me.hackclient.event.events.PacketEvent;
+import me.hackclient.guis.browser.BrowserGuiScreen;
+import me.hackclient.guis.clickgui.ClickGuiScreen;
+import me.hackclient.guis.config.ConfigEditorGui;
+import me.hackclient.guis.console.ConsoleGuiScreen;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.BooleanSetting;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
 
 @ModuleInfo(
@@ -13,10 +18,18 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow;
 )
 public class NoGuiClose extends Module {
 
+    BooleanSetting onlyClientGui = new BooleanSetting("ClientGui", this, true);
+
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof PacketEvent packetEvent && packetEvent.getPacket() instanceof S2EPacketCloseWindow) {
+        if (event instanceof PacketEvent packetEvent && packetEvent.getPacket() instanceof S2EPacketCloseWindow
+                && (onlyClientGui.isToggled()
+                ? mc.currentScreen instanceof ClickGuiScreen
+                || mc.currentScreen instanceof ConsoleGuiScreen
+                || mc.currentScreen instanceof ConfigEditorGui
+                || mc.currentScreen instanceof BrowserGuiScreen
+                : mc.currentScreen != null)) {
             packetEvent.setCanceled(true);
         }
     }

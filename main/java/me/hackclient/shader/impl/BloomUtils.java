@@ -7,6 +7,7 @@ import me.hackclient.shader.Shader;
 import me.hackclient.shader.Uniform;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
@@ -25,9 +26,13 @@ public class BloomUtils implements InstanceAccess {
     public static Shadows shadows;
 
     public static void addToDraw(Runnable run) {
+        RendererLivingEntity.NAME_TAG_RANGE = 0;
+        RendererLivingEntity.NAME_TAG_RANGE_SNEAK = 0;
         inputFramebuffer.bindFramebuffer(true);
         run.run();
         mc.getFramebuffer().bindFramebuffer(true);
+        RendererLivingEntity.NAME_TAG_RANGE = 256;
+        RendererLivingEntity.NAME_TAG_RANGE_SNEAK = 256;
     }
 
     public static void draw() {

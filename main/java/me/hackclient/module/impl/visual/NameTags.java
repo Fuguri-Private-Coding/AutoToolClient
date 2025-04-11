@@ -9,11 +9,13 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.misc.MidClick;
 import me.hackclient.module.impl.misc.MurderDetector;
 import me.hackclient.settings.impl.ColorSetting;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -25,6 +27,8 @@ import static org.lwjgl.opengl.GL11.*;
 public class NameTags extends Module {
 
     ColorSetting color = new ColorSetting("Color", this, 1,1,1,1);
+
+    FloatSetting height = new FloatSetting("Height", this, 0,2,0.6F, 0.1F);
 
     MurderDetector murderDetector;
     MidClick midClick;
@@ -38,9 +42,12 @@ public class NameTags extends Module {
         if (midClick == null) midClick = Client.INSTANCE.getModuleManager().getModule(MidClick.class);
         if (event instanceof Render3DEvent) {
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
+                if (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) continue;
+                entity.setAlwaysRenderNameTag(false);
                 RenderUtils.start3DNameTag();
                 renderNameTag(entity);
                 RenderUtils.stop3DNameTag();
+                entity.setAlwaysRenderNameTag(true);
             }
         }
     }
@@ -53,7 +60,7 @@ public class NameTags extends Module {
         glPushMatrix();
         glTranslated(
                 (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks - RenderManager.renderPosX),
-                (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks - RenderManager.renderPosY + entity.getEyeHeight() + 0.6),
+                (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks - RenderManager.renderPosY + entity.getEyeHeight() + height.getValue()),
                 (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks - RenderManager.renderPosZ)
         );
 

@@ -52,14 +52,16 @@ public class MovementInputFromOptions extends MovementInput
         jump = event.isJump();
         sneak = event.isSneak();
 
-        if (sneak) {
-            moveStrafe *= 0.3F;
-            moveForward *= 0.3F;
-        }
-        
-        MoveEvent moveEvent = new MoveEvent(moveForward, moveStrafe);
+        MoveEvent moveEvent = new MoveEvent(moveForward, moveStrafe, jump, sneak,0.3f);
         Client.INSTANCE.getObjectsCaller().onEvent(moveEvent);
         moveStrafe = moveEvent.getStrafe();
         moveForward = moveEvent.getForward();
+        jump = moveEvent.isJump();
+        sneak = moveEvent.isSneak();
+
+        if (sneak) {
+            moveStrafe *= moveEvent.getSneakSlowDown();
+            moveForward *= moveEvent.getSneakSlowDown();
+        }
     }
 }

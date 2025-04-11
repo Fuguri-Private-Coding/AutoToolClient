@@ -159,9 +159,14 @@ public class Scaffold extends Module {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderUtils.stop3D();
         }
+        if (event instanceof MoveEvent moveEvent) {
+            MoveUtils.moveFix(moveEvent, Rotation.getServerRotation().getYaw());
+        }
         if (event instanceof MoveFlyingEvent moveFlyingEvent) {
-            moveFlyingEvent.setCanceled(true);
-            MoveUtils.silentMoveFix(moveFlyingEvent);
+            moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
+        }
+        if (event instanceof JumpEvent jumpEvent) {
+            jumpEvent.setYaw(Rotation.getServerRotation().getYaw());
         }
         if (event instanceof LegitClickTimingEvent) {
             int slot = findBlock();

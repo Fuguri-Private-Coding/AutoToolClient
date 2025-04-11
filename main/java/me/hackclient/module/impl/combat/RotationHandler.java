@@ -82,13 +82,17 @@ public class RotationHandler extends Module {
                     lookEvent.setYaw(Rotation.getServerRotation().getYaw());
                     lookEvent.setPitch(Rotation.getServerRotation().getPitch());
                 }
+                if (event instanceof MoveEvent moveEvent) {
+                    MoveUtils.moveFix(moveEvent, Rotation.getServerRotation().getYaw());
+                }
                 if (event instanceof MoveFlyingEvent moveFlyingEvent) {
-                    moveFlyingEvent.setCanceled(true);
-                    MoveUtils.silentMoveFix(moveFlyingEvent);
+                    moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
                 }
                 if (event instanceof SprintEvent) {
-                    if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
+                    if (Math.abs(MoveUtils.getDirection() - MoveUtils.getDirection(Rotation.getServerRotation().getYaw())) > 45) {
                         mc.thePlayer.setSprinting(false);
+                    } else if (MoveUtils.canSprint()) {
+                        mc.thePlayer.setSprinting(true);
                     }
                 }
                 if (event instanceof JumpEvent jumpEvent) {

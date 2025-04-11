@@ -11,9 +11,7 @@ import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
-import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -22,13 +20,9 @@ public class ArrayList extends Module {
 
 	final BooleanSetting showRenderModules = new BooleanSetting("ShowRenderModules", this, false);
 	final BooleanSetting showLine = new BooleanSetting("Line", this, false);
-
 	final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
-
 	final BooleanSetting textShadow = new BooleanSetting("TextShadow", this, false);
-
 	final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, 1f,1f,1f,1f);
-
 	final FloatSetting backgroundRadius = new FloatSetting("BackgroundRadius", this, 0.5f,5f,1f,0.5f);
 
 	Shadows shadows;
@@ -52,15 +46,15 @@ public class ArrayList extends Module {
 				if (shadows.isToggled() && shadows.arrayList.isToggled()) {
 					double finalOffset = offset;
 					BloomUtils.addToDraw(() -> {
-						RoundedUtils.drawRect(6,(float) finalOffset + 6f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 3.05f, backgroundRadius.getValue(), shadows.color.getColor());
+						RoundedUtils.drawRect(6,(float) finalOffset + 6f, font.getStringWidth(module.getName() + (module.getSuffix().isEmpty() ? "" : ": " + module.getSuffix())) + 4, font.FONT_HEIGHT + 4f, backgroundRadius.getValue(), shadows.color.getColor());
 						if (showLine.isToggled()) RoundedUtils.drawRect(4, 6, 2, (float) finalOffset + 12, 2f, shadows.color.getColor());
 					});
 				}
 
-				RoundedUtils.drawRect(6,(float) offset + 6f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 3.05f, backgroundRadius.getValue(), backgroundColor.getColor());
+				RoundedUtils.drawRect(6,(float) offset + 6f, font.getStringWidth(module.getName() + (module.getSuffix().isEmpty() ? "" : " " + module.getSuffix())) + 4, font.FONT_HEIGHT + 4f, backgroundRadius.getValue(), backgroundColor.getColor());
 
-				font.drawString(module.getName(), 8, (float) (8 + offset), color.getColor().getRGB(), textShadow.isToggled());
-				offset += 12;
+				font.drawString(module.getName() + (module.getSuffix().isEmpty() ? "" : ": " + module.getSuffix()), 8, (float) (8 + offset), color.getColor().getRGB(), textShadow.isToggled());
+				offset += 13;
 			}
 
 			if (showLine.isToggled()) {
@@ -71,8 +65,8 @@ public class ArrayList extends Module {
 
 	void sort(final List<Module> toSort, final FontRenderer fontToCalcWidth) {
 		toSort.sort( (m1, m2) -> {
-			final double width1 = fontToCalcWidth.getStringWidth(m1.getName());
-			final double width2 = fontToCalcWidth.getStringWidth(m2.getName());
+			final double width1 = fontToCalcWidth.getStringWidth(m1.getName() + (m1.getSuffix().isEmpty() ? "" : ": " + m1.getSuffix()));
+			final double width2 = fontToCalcWidth.getStringWidth(m2.getName() + (m2.getSuffix().isEmpty() ? "" : ": " + m2.getSuffix()));
 
 			return Double.compare(width2, width1);
 		});

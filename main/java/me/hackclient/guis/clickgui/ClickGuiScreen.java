@@ -14,7 +14,6 @@ import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.doubles.Doubles;
-import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

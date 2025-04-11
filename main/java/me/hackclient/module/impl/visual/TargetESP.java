@@ -63,7 +63,6 @@ public class TargetESP extends Module {
                     renderSigma2(color.getColor(), hitColor.getColor());
                 }
             }
-
         }
     }
 

@@ -2,9 +2,7 @@ package me.hackclient.module.impl.connection;
 
 import me.hackclient.event.Event;
 import me.hackclient.event.PacketDirection;
-import me.hackclient.event.events.PacketEvent;
-import me.hackclient.event.events.Render2DEvent;
-import me.hackclient.event.events.Render3DEvent;
+import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -13,15 +11,14 @@ import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
-import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.util.Vec3;
 
 import java.util.List;
@@ -34,9 +31,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 )
 public class Ping extends Module {
 
-    // Debug
-    private final BooleanSetting debug = new BooleanSetting("Debug", this, false);
-
     private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 50, 1000, 400);
 
     private final IntegerSetting delayBeforeNextLagAfterReset = new IntegerSetting("DelayBeforeNextLagAfterReset", this, 0, 1000, 500);
@@ -44,7 +38,10 @@ public class Ping extends Module {
             .add("Attack", true)
             .add("Damage")
             .add("Velocity")
-            .add("Flag");
+            .add("Flag")
+            .add("ItemHeld")
+            .add("PlaceBlock")
+            .add("ChangeSprint");
 
     private long lastResetTime;
     private long delayBeforeNextLag;
@@ -58,9 +55,15 @@ public class Ping extends Module {
 
     @Override
     public void onEvent(Event event) {
+        if (mc.thePlayer == null || mc.theWorld == null) return;
         long currentTime = System.currentTimeMillis();
 
         switch (event) {
+            case ChangeSprintEvent _ -> {
+                if (actions.get("ChangeSprint")) {
+                    reset();
+                }
+            }
             case PacketEvent e -> {
                 if (currentTime - lastResetTime < delayBeforeNextLag) {
                     resetAllPackets();
@@ -68,6 +71,11 @@ public class Ping extends Module {
                 }
 
                 if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) {
+                    reset();
+                    break;
+                }
+
+                if (actions.get("ItemHeld") && mc.thePlayer.isUsingItem()) {
                     reset();
                     break;
                 }
@@ -81,18 +89,28 @@ public class Ping extends Module {
                             return;
                         }
                     }
+
                     case S12PacketEntityVelocity handlingPacket -> {
                         if (actions.get("Velocity") && handlingPacket.getEntityID() == mc.thePlayer.getEntityId()) {
                             reset();
                             return;
                         }
                     }
+
                     case S08PacketPlayerPosLook _ -> {
                         if (actions.get("Flag")) {
                             reset();
                             return;
                         }
                     }
+
+                    case C08PacketPlayerBlockPlacement _ -> {
+                        if (actions.get("PlaceBlock")) {
+                            reset();
+                            return;
+                        }
+                    }
+
                     default -> {}
                 }
 
@@ -106,21 +124,7 @@ public class Ping extends Module {
                     }
                 }
             }
-            case Render2DEvent _ -> {
-                int prevSize = buffer.size();
-                handlePackets();
-                int postSize = buffer.size();
-
-                if (debug.isToggled()) {
-                    mc.fontRendererObj.drawString(
-                            "Prev packets size: " + prevSize + "\n"
-                            + "Post packets size: " + postSize + "\n"
-                            + "Send: " + (prevSize - postSize) + "\n",
-                            200, 200, -1, true
-                    );
-                }
-
-            }
+            case RunGameLoopEvent _ -> handlePackets();
             case Render3DEvent _ -> {
                 if (posBuffer.isEmpty() || mc.gameSettings.thirdPersonView == 0) {
                     break;
@@ -128,7 +132,6 @@ public class Ping extends Module {
 
                 EntityPlayerSP player = mc.thePlayer;
                 RenderManager renderManager = mc.renderManager;
-                EntityRenderer entityRenderer = mc.entityRenderer;
 
                 Vec3 lastPos = posBuffer.getFirst().pos();
 
@@ -136,21 +139,10 @@ public class Ping extends Module {
                 double y = lastPos.yCoord - renderManager.viewerPosY;
                 double z = lastPos.zCoord - renderManager.viewerPosZ;
 
-                entityRenderer.enableLightmap();
-
-                int i = player.getBrightnessForRender(mc.timer.renderPartialTicks);
-
-                if (player.isBurning()) {
-                    i = 15728880;
-                }
-
-                int j = i % 65536;
-                int k = i / 65536;
-
-                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j, (float) k);
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                entityRenderer.disableLightmap();
-                renderManager.doRenderEntity(player, x, y, z, player.rotationYaw, mc.timer.renderPartialTicks, true);
+                mc.entityRenderer.enableLightmap();
+                mc.renderManager.doRenderEntity(player, x, y, z, player.rotationYaw, mc.timer.renderPartialTicks, true);
+                RenderHelper.disableStandardItemLighting();
+                mc.entityRenderer.disableLightmap();
             }
             default -> {}
         }

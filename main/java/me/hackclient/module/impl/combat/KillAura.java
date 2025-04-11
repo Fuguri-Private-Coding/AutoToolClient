@@ -17,7 +17,6 @@ import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.timer.StopWatch;
-import net.minecraft.util.MathHelper;
 
 @ModuleInfo(
         name = "KillAura",
@@ -106,6 +105,8 @@ public class KillAura extends Module {
         }
     };
 
+    final BooleanSetting fakeBlock = new BooleanSetting("FakeBlock", this, true);
+
     // Мувмент
     final BooleanSetting moveFix = new BooleanSetting("MoveFix", this, true);
     final BooleanSetting silent = new BooleanSetting("Silent", this, moveFix::isToggled, true);
@@ -140,7 +141,7 @@ public class KillAura extends Module {
             double distanceToTarget = haveTarget ? DistanceUtils.getDistanceToEntity(combatManager.getTarget()) : swingDistance.getValue();
             boolean needSwing = haveTarget && distanceToTarget < swingDistance.getValue();
 
-            Animations.setAnimate(haveTarget && needSwing);
+            Animations.setAnimate(haveTarget && needSwing && fakeBlock.isToggled());
             if (stopWatch.reachedMS() >= 1000 / randomizedCps && mc.currentScreen == null && haveTarget && needSwing) {
                 Client.INSTANCE.getClickManager().addClick();
                 stopWatch.reset();
@@ -170,7 +171,6 @@ public class KillAura extends Module {
                     ));
                 }
             }
-
             if (event instanceof LookEvent lookEvent) {
                 lookEvent.setYaw(Rotation.getServerRotation().getYaw());
                 lookEvent.setPitch(Rotation.getServerRotation().getPitch());
@@ -187,17 +187,17 @@ public class KillAura extends Module {
 
             if (moveFix.isToggled()) {
                 if (event instanceof MoveFlyingEvent moveFlyingEvent) {
-                    if (silent.isToggled()) {
-                        moveFlyingEvent.setCanceled(true);
-                        MoveUtils.silentMoveFix(moveFlyingEvent);
-                    } else {
-                        moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
-                    }
+                    moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
+                }
+                if (event instanceof MoveEvent moveEvent && silent.isToggled()) {
+                    MoveUtils.moveFix(moveEvent, Rotation.getServerRotation().getYaw());
                 }
 
-                if (event instanceof SprintEvent && silent.isToggled()) {
-                    if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
+                if (event instanceof SprintEvent) {
+                    if (Math.abs(MoveUtils.getDirection() - MoveUtils.getDirection(Rotation.getServerRotation().getYaw())) > 45) {
                         mc.thePlayer.setSprinting(false);
+                    } else if (MoveUtils.canSprint()) {
+                        mc.thePlayer.setSprinting(true);
                     }
                 }
 

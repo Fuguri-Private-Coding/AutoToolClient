@@ -1,4 +1,5 @@
 #version 120
+
 uniform sampler2D image;
 uniform sampler2D image2;
 uniform vec2 texel_size;
@@ -20,7 +21,7 @@ void main() {
     pixelColor.rgb *= pixelColor.a;
     pixelColor *= kernel[0];
 
-    for (float f = 1; f <= radius; f++) {
+    for (float f = 0; f <= radius; f++) {
         vec2 offset = f * texel_size * direction;
         vec4 left = texture2D(image, uv - offset);
         vec4 right = texture2D(image, uv + offset);

@@ -17,13 +17,14 @@ public class Shadows extends Module {
     public BooleanSetting clickGui = new BooleanSetting("ClickGui", this, true);
     public BooleanSetting console = new BooleanSetting("Console", this, true);
     public BooleanSetting mainMenu = new BooleanSetting("MainMenu", this, true);
-    //public BooleanSetting chat = new BooleanSetting("Chat", this, true);
+    public BooleanSetting item = new BooleanSetting("ItemsFirstPerson", this, true);
     public BooleanSetting arrayList = new BooleanSetting("ArrayList", this, true);
     public BooleanSetting scaffold = new BooleanSetting("Scaffold", this, true);
     public BooleanSetting targetEsp = new BooleanSetting("TargetESP", this, true);
     public BooleanSetting dot = new BooleanSetting("Dot", this, true);
     public BooleanSetting nameTags = new BooleanSetting("NameTags", this, true);
     public BooleanSetting trails = new BooleanSetting("Trails", this, true);
+    public BooleanSetting breakIndicator = new BooleanSetting("BreakIndicator", this, true);
     //public BooleanSetting nameTags = new BooleanSetting("NameTags", this, true);
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 15, 6);

@@ -605,11 +605,11 @@ public class EntityPlayerSP extends AbstractClientPlayer {
 
         if (this.capabilities.isFlying && this.isCurrentViewEntity()) {
             if (this.movementInput.sneak) {
-                this.motionY -= (double) (this.capabilities.getFlySpeed() * 3.0F);
+                this.motionY -= (this.capabilities.getFlySpeed() * 3.0F);
             }
 
             if (this.movementInput.jump) {
-                this.motionY += (double) (this.capabilities.getFlySpeed() * 3.0F);
+                this.motionY += (this.capabilities.getFlySpeed() * 3.0F);
             }
         }
 
