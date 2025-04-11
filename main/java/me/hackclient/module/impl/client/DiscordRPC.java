@@ -8,7 +8,6 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.utils.discord.Discord;
 
-
 @ModuleInfo(
         name = "DiscordRPC",
         category = Category.CLIENT,
