@@ -22,8 +22,8 @@ import java.awt.*;
 )
 public class BreakIndicator extends Module {
 
-    FloatSetting posHorizontal = new FloatSetting("PosX", this, 0,0,0,0.1f);
-    FloatSetting posVertical = new FloatSetting("PosY", this, 0,0,0,0.1f);
+    FloatSetting posHorizontal = new FloatSetting("PosX", this, 0,10000,0,0.1f);
+    FloatSetting posVertical = new FloatSetting("PosY", this, 0,10000,0,0.1f);
     FloatSetting radius = new FloatSetting("Radius", this, 0.5f,5,1f,0.1f);
 
     ColorSetting color = new ColorSetting("Color", this, 1,1,1,1);
