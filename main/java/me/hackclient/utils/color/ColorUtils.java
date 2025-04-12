@@ -20,6 +20,10 @@ public class ColorUtils {
         GL11.glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
     }
 
+    public void glColor(Color color, float alpha) {
+        GL11.glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha);
+    }
+
     public void resetColor() {
         glColor(Color.white);
     }
