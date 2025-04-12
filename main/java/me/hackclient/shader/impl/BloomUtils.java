@@ -5,6 +5,7 @@ import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.shader.GaussianKernel;
 import me.hackclient.shader.Shader;
 import me.hackclient.shader.Uniform;
+import me.hackclient.utils.color.ColorUtils;
 import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
@@ -14,6 +15,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
+import java.awt.*;
 import java.nio.FloatBuffer;
 
 public class BloomUtils implements InstanceAccess {
@@ -26,13 +28,9 @@ public class BloomUtils implements InstanceAccess {
     public static Shadows shadows;
 
     public static void addToDraw(Runnable run) {
-        RendererLivingEntity.NAME_TAG_RANGE = 0;
-        RendererLivingEntity.NAME_TAG_RANGE_SNEAK = 0;
         inputFramebuffer.bindFramebuffer(true);
         run.run();
         mc.getFramebuffer().bindFramebuffer(true);
-        RendererLivingEntity.NAME_TAG_RANGE = 256;
-        RendererLivingEntity.NAME_TAG_RANGE_SNEAK = 256;
     }
 
     public static void draw() {
@@ -62,7 +60,10 @@ public class BloomUtils implements InstanceAccess {
             Uniform.uniform1i(programId, "image2", 20);
         }
 
-        Uniform.uniform4f(programId, "color", shadows.color.getRed(), shadows.color.getGreen(), shadows.color.getBlue(), shadows.color.getAlpha());
+        Color color = shadows.color.getColor();
+        if (shadows.fade.isToggled()) color = ColorUtils.mixColors(shadows.color.getColor(), shadows.twoColor.getColor(), (Math.sin(System.currentTimeMillis() / 1000D * (double) shadows.speed.getValue()) + 1) / 2);
+
+        Uniform.uniform4f(programId, "color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
         Uniform.uniform1f(programId,"brightness", shadows.brightness.getValue());
         Uniform.uniform2f(programId, "texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
         Uniform.uniform2f(programId, "direction", shadows.horizontal1Compress.getValue(), shadows.vertical1Compress.getValue());

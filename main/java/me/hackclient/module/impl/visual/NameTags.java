@@ -14,6 +14,7 @@ import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.RenderList;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.Entity;
@@ -26,9 +27,10 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "NameTags", category = Category.VISUAL, toggled = true)
 public class NameTags extends Module {
 
-    ColorSetting color = new ColorSetting("Color", this, 1,1,1,1);
-
     FloatSetting height = new FloatSetting("Height", this, 0,2,0.6F, 0.1F);
+
+    ColorSetting color = new ColorSetting("Color", this, 1,1,1,1);
+    ColorSetting textColor = new ColorSetting("TextColor", this, 1,1,1,1);
 
     MurderDetector murderDetector;
     MidClick midClick;
@@ -43,11 +45,9 @@ public class NameTags extends Module {
         if (event instanceof Render3DEvent) {
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
                 if (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) continue;
-                entity.setAlwaysRenderNameTag(false);
                 RenderUtils.start3DNameTag();
                 renderNameTag(entity);
                 RenderUtils.stop3DNameTag();
-                entity.setAlwaysRenderNameTag(true);
             }
         }
     }
@@ -83,13 +83,7 @@ public class NameTags extends Module {
             BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, Color.WHITE));
         }
         RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, color.getColor());
-        fontRenderer.drawString(
-                text,
-                -stringWidth,
-                offset,
-                -1,
-                true
-        );
+        fontRenderer.drawString(text, -stringWidth, offset, textColor.getColor().getRGB(), true);
         glColor4f(1f, 1f, 1f, 1f);
         glPopMatrix();
     }

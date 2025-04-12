@@ -84,7 +84,6 @@ public class ModuleManager {
 				 new AutoPlace(),
 				 new NoJumpDelay(),
 				 new BackTrack(),
-				 new FlyTimer(),
 				 new MLG(),
 				 new TimeChanger(),
 				 new ClickSettings(),

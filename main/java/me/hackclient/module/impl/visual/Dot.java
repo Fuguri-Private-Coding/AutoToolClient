@@ -41,7 +41,7 @@ public class Dot extends Module {
         super.onEvent(event);
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         if (event instanceof TickEvent) {
-            MovingObjectPosition mouse = RayCastUtils.rayCast(6, 3, Rotation.getServerRotation());
+            MovingObjectPosition mouse = mc.objectMouseOver;
 
             if (currentVec != null) {
                 lastVec = new Vec3(currentVec);

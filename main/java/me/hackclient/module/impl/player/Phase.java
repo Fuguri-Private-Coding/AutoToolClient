@@ -67,40 +67,29 @@ public class Phase extends Module {
         }
 
         if (event instanceof MoveButtonEvent moveButtonEvent) {
-            if (mc.thePlayer.noClip) {
-                moveButtonEvent.setJump(false);
-            }
-            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox()).isEmpty() && sneak.isToggled()) {
-                moveButtonEvent.setSneak(true);
-            }
+            if (mc.thePlayer.noClip) moveButtonEvent.setJump(false);
+            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox()).isEmpty() && sneak.isToggled()) moveButtonEvent.setSneak(true);
         }
 
-        if (event instanceof TickEvent) {
+        if (event instanceof TickEvent && mc.objectMouseOver != null) {
             EntityPlayerSP player = mc.thePlayer;
             PlayerControllerMP controller = mc.playerController;
             BlockPos newBreakingBlock = mc.objectMouseOver.getBlockPos();
+
             if (newBreakingBlock == null) return;
-
             if (currentBreakingBlock != null && System.currentTimeMillis() - lastBreakTime > 500L) resetBreaking();
-
-            if (!mc.thePlayer.isSwingInProgress) return;
-
+            if (!newBreakingBlock.equals(player.getPosition().down()) && controller.curBlockDamageMP == 0) return;
             if (!clipDown.isToggled()) return;
-
             if (newBreakingBlock.getY() >= player.posY) return;
-
             if (!newBreakingBlock.equals(currentBreakingBlock)) resetBreaking();
 
             currentBreakingBlock = newBreakingBlock;
             lastBreakTime = System.currentTimeMillis();
             EnumFacing sideHit = mc.objectMouseOver.sideHit;
+
             player.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, currentBreakingBlock, sideHit));
-            for (int i = 0; i < packetCount.getValue(); i++) {
-                player.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(player.posX, player.posY, player.posZ, true));
-            }
-            if (controller.curBlockDamageMP > 0.77F) {
-                controller.curBlockDamageMP = 1.0f;
-            }
+            for (int i = 0; i < packetCount.getValue(); i++) player.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(player.posX, player.posY, player.posZ, true));
+            if (controller.curBlockDamageMP > 0.77F) controller.curBlockDamageMP = 1.0f;
         }
     }
 }

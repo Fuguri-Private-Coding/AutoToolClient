@@ -25,15 +25,19 @@ public class Shadows extends Module {
     public BooleanSetting nameTags = new BooleanSetting("NameTags", this, true);
     public BooleanSetting trails = new BooleanSetting("Trails", this, true);
     public BooleanSetting breakIndicator = new BooleanSetting("BreakIndicator", this, true);
+    public BooleanSetting cpsCounter = new BooleanSetting("CPSCounter", this, true);
+    public BooleanSetting bpsCounter = new BooleanSetting("BPSCounter", this, true);
     //public BooleanSetting nameTags = new BooleanSetting("NameTags", this, true);
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 15, 6);
-
     public FloatSetting brightness = new FloatSetting("Brightness", this, 0,2,1,0.1f);
     public FloatSetting horizontal1Compress = new FloatSetting("Horizontal1Compress", this, 0, 10, 1, 0.1f);
     public FloatSetting vertical1Compress = new FloatSetting("Vertical1Compress", this, 0, 10, 0, 0.1f);
     public FloatSetting horizontal2Compress = new FloatSetting("Horizontal2Compress", this, 0, 10, 0, 0.1f);
     public FloatSetting vertical2Compress = new FloatSetting("Vertical2Compress", this, 0, 10, 1, 0.1f);
 
+    public BooleanSetting fade = new BooleanSetting("Fade", this, false);
     public ColorSetting color = new ColorSetting("ShadowColor", this, 0,0,0,1);
+    public ColorSetting twoColor = new ColorSetting("TwoShadowColor", this, fade::isToggled, 0,0,0,1);
+    public FloatSetting speed = new FloatSetting("Speed", this, fade::isToggled,0.1f, 10, 1, 0.1f);
 }

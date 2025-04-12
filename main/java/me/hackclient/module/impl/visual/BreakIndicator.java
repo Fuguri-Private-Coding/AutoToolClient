@@ -35,6 +35,7 @@ public class BreakIndicator extends Module {
     @Override
     public void onEvent(Event event) {
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+
         ScaledResolution sc = new ScaledResolution(mc);
 
         posHorizontal.setMax(sc.getScaledWidth());
@@ -46,6 +47,7 @@ public class BreakIndicator extends Module {
 
         if (event instanceof Render2DEvent && mc.playerController.curBlockDamageMP > 0) {
             if (shadows.isToggled() && shadows.breakIndicator.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(posHorizontal.getValue(), posVertical.getValue(), width + 4, font.FONT_HEIGHT + 4, radius.getValue(), Color.WHITE));
+
             RoundedUtils.drawRect(posHorizontal.getValue(), posVertical.getValue(), width + 4, font.FONT_HEIGHT + 4, radius.getValue(), color.getColor());
             font.drawString(text, posHorizontal.getValue() + 2, posVertical.getValue() + 2, textColor.getColor().getRGB(), textShadow.isToggled());
         }

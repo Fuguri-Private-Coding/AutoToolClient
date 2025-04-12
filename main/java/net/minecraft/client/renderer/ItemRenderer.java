@@ -306,12 +306,10 @@ public class ItemRenderer {
             GlStateManager.pushMatrix();
 
             if (this.itemToRender != null) {
-                Animations animations = Client.INSTANCE.getModuleManager().getModule(Animations.class);
-                boolean animate = (f1 > 0 && Animations.isAnimate());
-                boolean animateAlways = (f1 > 0 && animations.alwaysBlocking.isToggled());
+                boolean animate = (f1 > 0 && Animations.isAnimate() || abstractclientplayer.getItemInUseCount() > 0);
                 if (this.itemToRender.getItem() instanceof ItemMap) {
                     this.renderItemMap(abstractclientplayer, f2, f, f1);
-                } else if (animate || animateAlways) {
+                } else if (animate) {
                     Client.INSTANCE.getObjectsCaller().onEvent(new RenderItemEvent(f1, f));
                 } else if (abstractclientplayer.getItemInUseCount() > 0) {
                     EnumAction enumaction = this.itemToRender.getItemUseAction();
