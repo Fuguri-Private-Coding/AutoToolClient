@@ -36,6 +36,7 @@ public class CPSCounter extends Module {
 
     Shadows shadows;
 
+
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);

@@ -3,14 +3,12 @@ package me.hackclient.module.impl.player;
 import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.*;
-import me.hackclient.guis.console.ConsoleGuiScreen;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.settings.impl.*;
 import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.MathUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
@@ -28,8 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
 import org.lwjgl.opengl.GL11;
-
-import java.util.logging.ConsoleHandler;
 
 @ModuleInfo(
         name = "Scaffold",
@@ -70,6 +66,8 @@ public class Scaffold extends Module {
     };
 
     FloatSetting smooth = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f) {};
+
+    final BooleanSetting sneakIfRotate = new BooleanSetting("SneakIfRotate", this, true);
 
     final ModeSetting clickMode = new ModeSetting(
             "ClickMode",
@@ -117,6 +115,7 @@ public class Scaffold extends Module {
     long lastTime = 0L;
     Shadows shadows;
 
+
     @Override
     public void onDisable() {
         super.onDisable();
@@ -155,12 +154,14 @@ public class Scaffold extends Module {
             if (shadows.isToggled() && shadows.scaffold.isToggled()) {
                 BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), 1f, 1.0F, 0));
             }
+
             RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 1.0F, 0);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderUtils.stop3D();
         }
         if (event instanceof MoveEvent moveEvent) {
             MoveUtils.moveFix(moveEvent, Rotation.getServerRotation().getYaw());
+            if (sneakIfRotate.isToggled() && lastDelta > 0) moveEvent.setSneak(true);
         }
         if (event instanceof MoveFlyingEvent moveFlyingEvent) {
             moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
@@ -262,6 +263,8 @@ public class Scaffold extends Module {
         }
     }
 
+    double lastDelta = 0;
+
     void rotate() {
         boolean moveDiagonally = false;
         float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), 45);
@@ -309,6 +312,8 @@ public class Scaffold extends Module {
         );
 
         delta = RotationUtils.fixDelta(delta);
+
+        lastDelta = delta.hypot();
 
         Rotation.setServerRotation(new Rotation(
                 Rotation.getServerRotation().getYaw() + delta.getYaw(),

@@ -14,9 +14,7 @@ import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.RenderList;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 

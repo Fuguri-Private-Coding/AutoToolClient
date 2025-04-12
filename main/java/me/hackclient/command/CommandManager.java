@@ -15,6 +15,7 @@ public class CommandManager {
 	public CommandManager() {
 		commands.add(new CommandToggle());
 		commands.add(new CommandBind());
+		commands.add(new CommandSkin());
 	}
 	
 	public boolean handle(String msg) {

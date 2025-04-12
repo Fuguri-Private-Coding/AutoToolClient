@@ -16,7 +16,6 @@ import me.hackclient.module.impl.visual.CustomCamera;
 import me.hackclient.module.impl.visual.NoRender;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -33,7 +32,6 @@ import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.culling.ClippingHelperImpl;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
-import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -174,6 +172,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private float avgServerTickDiff = 0.0F;
     private ShaderGroup[] fxaaShaders = new ShaderGroup[10];
     private boolean loadVisibleChunks = false;
+
+    Shadows shadows;
 
     public EntityRenderer(Minecraft mcIn, IResourceManager resourceManagerIn) {
         this.shaderIndex = shaderCount;
@@ -999,6 +999,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     }
 
     public void updateCameraAndRender(float partialTicks, long nanoTime) {
+        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         Config.renderPartialTicks = partialTicks;
         this.frameInit();
         boolean flag = Display.isActive();
@@ -1143,7 +1144,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             }
         }
 
-        BloomUtils.draw();
+        if (shadows.isToggled()) BloomUtils.draw();
 
         this.frameFinish();
         this.waitForServerThread();

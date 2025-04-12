@@ -17,6 +17,7 @@ public class ShaderManager {
 
 		bloom = new Shader(getShaderSource("bloom.glsl"), getShaderSource("vertex.txt"));
 
+
 		background = new Shader(getShaderSource("background.glsl"), getShaderSource("vertex.txt"));
 	}
 

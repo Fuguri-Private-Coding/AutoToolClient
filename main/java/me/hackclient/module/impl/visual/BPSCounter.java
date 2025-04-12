@@ -8,7 +8,6 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
 import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.ScaledResolution;
@@ -29,6 +28,7 @@ public class BPSCounter extends Module {
     BooleanSetting includeY = new BooleanSetting("includeY", this, false);
 
     Shadows shadows;
+
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);

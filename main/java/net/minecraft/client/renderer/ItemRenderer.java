@@ -9,6 +9,7 @@ import me.hackclient.module.impl.visual.Animations;
 import me.hackclient.module.impl.visual.NoRender;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.shader.impl.BlurUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -55,6 +56,8 @@ public class ItemRenderer {
     private int equippedItemSlot = -1;
 
     Shadows shadows;
+
+    Blur blur;
 
     public ItemRenderer(Minecraft mcIn) {
         this.mc = mcIn;
@@ -293,6 +296,7 @@ public class ItemRenderer {
 
     public void renderItemInFirstPerson(float partialTicks) {
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (blur == null) blur = Client.INSTANCE.getModuleManager().getModule(Blur.class);
         if (!Config.isShaders() || !Shaders.isSkipRenderHand()) {
             float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
             AbstractClientPlayer abstractclientplayer = this.mc.thePlayer;
@@ -343,7 +347,7 @@ public class ItemRenderer {
                     BloomUtils.addToDraw(() -> this.renderItem(abstractclientplayer, this.itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON));
                 }
 
-                this.renderItem(abstractclientplayer, this.itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);
+                //this.renderItem(abstractclientplayer, this.itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);
             } else if (!abstractclientplayer.isInvisible()) {
                 this.renderPlayerArm(abstractclientplayer, f, f1);
             }

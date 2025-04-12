@@ -76,7 +76,7 @@ public class BloomUtils implements InstanceAccess {
 
         mc.getFramebuffer().bindFramebuffer(true);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        Uniform.uniform2f(programId, "direction", shadows.horizontal2Compress.getValue(), shadows.vertical2Compress.getValue());
+        Uniform.uniform2f(programId, "direction", 0.0f, shadows.vertical2Compress.getValue());
         outputFramebuffer.bindFramebufferTexture();
         GL13.glActiveTexture(GL13.GL_TEXTURE20);
         inputFramebuffer.bindFramebufferTexture();

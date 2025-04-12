@@ -28,9 +28,9 @@ public class SkinManager
 {
     private static final ExecutorService THREAD_POOL = new ThreadPoolExecutor(0, 2, 1L, TimeUnit.MINUTES, new LinkedBlockingQueue());
     private final TextureManager textureManager;
-    private final File skinCacheDir;
+    public final File skinCacheDir;
     private final MinecraftSessionService sessionService;
-    private final LoadingCache<GameProfile, Map<Type, MinecraftProfileTexture>> skinCacheLoader;
+    public final LoadingCache<GameProfile, Map<Type, MinecraftProfileTexture>> skinCacheLoader;
 
     public SkinManager(TextureManager textureManagerInstance, File skinCacheDirectory, MinecraftSessionService sessionService)
     {

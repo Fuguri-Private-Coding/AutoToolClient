@@ -11,7 +11,7 @@ import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.*;
 import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.RoundedUtils;
+ import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.scissor.ScissorUtils;
@@ -483,8 +483,6 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 			}
 		}
 		ScissorUtils.disableScissor();
-
-		ScaledResolution sc = new ScaledResolution(Minecraft.getMinecraft());
 
 		moduleLine.update(clickGui.animationSpeed.getValue());
 		settingLine.update(clickGui.animationSpeed.getValue());

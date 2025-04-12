@@ -33,7 +33,6 @@ public class Shadows extends Module {
     public FloatSetting brightness = new FloatSetting("Brightness", this, 0,2,1,0.1f);
     public FloatSetting horizontal1Compress = new FloatSetting("Horizontal1Compress", this, -10, 10, 2, 0.1f);
     public FloatSetting vertical1Compress = new FloatSetting("Vertical1Compress", this, -10, 10, 0, 0.1f);
-    public FloatSetting horizontal2Compress = new FloatSetting("Horizontal2Compress", this, -10, 10, 0, 0.1f);
     public FloatSetting vertical2Compress = new FloatSetting("Vertical2Compress", this, -10, 10, 2, 0.1f);
 
     public BooleanSetting fade = new BooleanSetting("Fade", this, false);
