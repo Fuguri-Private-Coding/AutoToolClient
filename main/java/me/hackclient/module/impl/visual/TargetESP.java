@@ -8,6 +8,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
 import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.color.ColorUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
@@ -99,9 +100,9 @@ public class TargetESP extends Module {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
-            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color);
+            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color);
             glVertex3d(x1, y1, z1);
-            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 0f);
+            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 0f);
             glVertex3d(x1, y1 + animationTranslate * length.getValue(), z1);
         }
 
@@ -109,9 +110,9 @@ public class TargetESP extends Module {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
-            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 1.0f);
+            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 1.0f);
             glVertex3d(x1, y1, z1);
-            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 1.0f);
+            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 1.0f);
             glVertex3d(x1, y1 + 0.02f, z1);
         }
 

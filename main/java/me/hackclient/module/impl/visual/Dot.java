@@ -11,6 +11,7 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.color.ColorUtils;
 import me.hackclient.utils.render.RenderUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
@@ -61,7 +62,7 @@ public class Dot extends Module {
             RenderUtils.start3D();
             if (shadows.isToggled() && shadows.dot.isToggled()) {
                 BloomUtils.addToDraw(() -> {
-                    RenderUtils.glColor(Color.WHITE);
+                    ColorUtils.resetColor();
 
                     GL11.glPointSize(size.getValue());
                     GL11.glEnable(GL11.GL_POINT_SMOOTH);
@@ -75,7 +76,7 @@ public class Dot extends Module {
                     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
                 });
             }
-            RenderUtils.glColor(color.getColor());
+            ColorUtils.glColor(color.getColor());
 
             GL11.glPointSize(size.getValue());
             GL11.glEnable(GL11.GL_POINT_SMOOTH);
