@@ -24,14 +24,13 @@ public class TimerRange extends Module {
     FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0,1,1,0.1f);
 
     boolean teleporting = false;
+    int teleportTicks = 0;
     boolean click;
     int balance;
 
     @Override
     public void onEvent(Event event) {
-        if (mc.thePlayer == null) {
-            return;
-        }
+        if (mc.thePlayer == null) return;
         if (event instanceof LegitClickTimingEvent && click) {
             click = false;
             mc.clickMouse();
@@ -45,18 +44,17 @@ public class TimerRange extends Module {
 
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
 
-            if (target == null || target.hurtTime > maxTargetHurtTime.getValue()) {
-                return;
-            }
+            if (target == null || target.hurtTime > maxTargetHurtTime.getValue()) return;
 
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput);
-            int teleportTicks = 0;
+
+            teleportTicks = 0;
 
             for (int i = 0; i < limitTicks.getValue(); i++) {
                 MovingObjectPosition mouse = RayTraceUtils.rayTrace(
                         simulatedPlayer.getPosEyes(),
                         3,
-                        15,
+                        0,
                         new Rotation(Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch()));
 
                 if (mouse == null || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {

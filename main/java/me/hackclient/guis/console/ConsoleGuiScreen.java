@@ -6,7 +6,6 @@ import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.BlurUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.render.scissor.ScissorUtils;
@@ -56,8 +55,6 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
 
     Shadows shadows;
 
-    Blur blur;
-
     int delay = 30;
 
     private final GuiTextField textField = new GuiTextField(0, null, 0,0,0,0);
@@ -67,7 +64,6 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
-        if (blur == null) blur = Client.INSTANCE.getModuleManager().getModule(Blur.class);
         scroll -= Mouse.getDWheel() / 120 * 10;
 
         if (scroll > 0) {

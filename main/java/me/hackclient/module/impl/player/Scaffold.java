@@ -9,6 +9,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.settings.impl.*;
 import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.MathUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
@@ -67,8 +68,6 @@ public class Scaffold extends Module {
 
     FloatSetting smooth = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f) {};
 
-    final BooleanSetting sneakIfRotate = new BooleanSetting("SneakIfRotate", this, true);
-
     final ModeSetting clickMode = new ModeSetting(
             "ClickMode",
             this,
@@ -78,7 +77,7 @@ public class Scaffold extends Module {
                     "Legit"
             });
 
-    final BooleanSetting swingItem = new BooleanSetting("SwingItem", this,() -> clickMode.getMode().equals("AutoPlace"), true);
+    final BooleanSetting swingItem = new BooleanSetting("ServerSwingItem", this,() -> clickMode.getMode().equals("AutoPlace"), true);
 
     IntegerSetting minCps = new IntegerSetting("MinCps", this, () -> clickMode.getMode().equals("Legit"), 1, 40, 7) {
         @Override
@@ -96,12 +95,16 @@ public class Scaffold extends Module {
         }
     };
 
-    FloatSetting bestPitchNoDiagonal = new FloatSetting("FrontPitch", this, 70, 85, 77,0.1f);
+    final BooleanSetting bypassServerPitch = new BooleanSetting("BypassServerPitch", this, true);
 
+    FloatSetting serverPitch = new FloatSetting("ServerPitch", this, bypassServerPitch::isToggled , 70, 85, 77,0.1f);
+    FloatSetting bestPitchNoDiagonal = new FloatSetting("FrontPitch", this, 70, 85, 77,0.1f);
     FloatSetting diagonalPitch = new FloatSetting("DiagonalPitch", this, 70, 85, 77,0.1f);
 
-    final BooleanSetting render = new BooleanSetting("Render", this, true);
+    final BooleanSetting sneakIfRotate = new BooleanSetting("SneakIfRotate", this, true);
+    final BooleanSetting sneakIfNoBlocks = new BooleanSetting("SneakIfNoBlocks", this, true);
 
+    final BooleanSetting render = new BooleanSetting("Render", this, true);
     final ColorSetting color = new ColorSetting("Color", this, render::isToggled, 1,1,1,1);
 
     final StopWatch stopWatch;
@@ -142,13 +145,15 @@ public class Scaffold extends Module {
                 }
             }
         }
+
         if (event instanceof TickEvent && mc.currentScreen == null) {
-            BlockPos analyzingBlock = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.5, mc.thePlayer.posZ);
+            BlockPos analyzingBlock = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ);
             if (!mc.theWorld.isAirBlock(analyzingBlock)) {
                 renderPos = analyzingBlock;
             }
             rotate();
         }
+
         if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {
             RenderUtils.start3D();
             if (shadows.isToggled() && shadows.scaffold.isToggled()) {
@@ -159,16 +164,21 @@ public class Scaffold extends Module {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderUtils.stop3D();
         }
+
         if (event instanceof MoveEvent moveEvent) {
             MoveUtils.moveFix(moveEvent, Rotation.getServerRotation().getYaw());
             if (sneakIfRotate.isToggled() && lastDelta > 0) moveEvent.setSneak(true);
+            if (sneakIfNoBlocks.isToggled() && findBlock() == -1) moveEvent.setSneak(true);
         }
+
         if (event instanceof MoveFlyingEvent moveFlyingEvent) {
             moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
         }
+
         if (event instanceof JumpEvent jumpEvent) {
             jumpEvent.setYaw(Rotation.getServerRotation().getYaw());
         }
+
         if (event instanceof LegitClickTimingEvent) {
             int slot = findBlock();
 
@@ -190,7 +200,7 @@ public class Scaffold extends Module {
         }
         if (event instanceof MotionEvent motionEvent) {
             motionEvent.setYaw(Rotation.getServerRotation().getYaw());
-            motionEvent.setPitch(Rotation.getServerRotation().getPitch());
+            if (bypassServerPitch.isToggled()) motionEvent.setPitch(serverPitch.getValue()); else motionEvent.setPitch(Rotation.getServerRotation().getPitch());
         }
         if (event instanceof LookEvent lookEvent) {
             lookEvent.setYaw(Rotation.getServerRotation().getYaw());
@@ -211,7 +221,7 @@ public class Scaffold extends Module {
             standingOn = analyzingBlock;
         }
 
-        MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, 6.0, Rotation.getServerRotation());
+        MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, 4.5, Rotation.getServerRotation());
 
         if (mouseOver == null || mouseOver.getBlockPos() == null || mc.theWorld.getBlockState(mouseOver.getBlockPos()).getBlock().getMaterial() == Material.air) {
             return;
@@ -276,8 +286,8 @@ public class Scaffold extends Module {
         Rotation rotation = null;
 
         if (!moveDiagonally) {
-            MovingObjectPosition leftRayCast = RayCastUtils.rayCast(4.5, 6.0, new Rotation(roundedYaw + 45, bestPitch));
-            MovingObjectPosition rightRayCast = RayCastUtils.rayCast(4.5, 6.0, new Rotation(roundedYaw - 45, bestPitch));
+            MovingObjectPosition leftRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rotation(roundedYaw + 45, bestPitch));
+            MovingObjectPosition rightRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rotation(roundedYaw - 45, bestPitch));
 
             bestPitch = bestPitchNoDiagonal.getValue();
 
@@ -321,7 +331,7 @@ public class Scaffold extends Module {
         ));
     }
 
-    int findBlock() {
+    public int findBlock() {
         int bestSlot = -1;
 
         for (int i = 0; i < 9; i++) {
