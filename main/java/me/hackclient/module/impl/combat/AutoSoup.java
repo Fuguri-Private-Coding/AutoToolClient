@@ -8,7 +8,6 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.RandomUtils;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.init.Items;
@@ -172,7 +171,7 @@ public class AutoSoup extends Module {
         if (randomSlot.isToggled()) {
             return possibleSlots.get(RandomUtils.nextInt(0, possibleSlots.size() - 1));
         } else {
-            return possibleSlots.get(0);
+            return possibleSlots.getFirst();
         }
     }
 

@@ -6,21 +6,13 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.client.ClientUtils;
-import me.hackclient.utils.inventory.InventoryUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 import org.lwjgl.util.vector.Vector2f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @ModuleInfo(
         name = "ChestStealer",

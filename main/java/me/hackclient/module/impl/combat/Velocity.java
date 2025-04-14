@@ -8,8 +8,6 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
-import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 
 @ModuleInfo(
@@ -30,7 +28,6 @@ public class Velocity extends Module {
                     "AttackReduce"
             }
     );
-
 
     final BooleanSetting forceHoldForwardWhenDamaged = new BooleanSetting("ForceHoldForwardWhenDamaged", this, () -> mode.getMode().equals("Legit") || mode.getMode().equals("AttackReduce"), true);
 

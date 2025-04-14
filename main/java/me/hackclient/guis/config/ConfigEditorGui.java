@@ -105,7 +105,7 @@ public class ConfigEditorGui extends GuiScreen {
 //                    5f,
 //                    new Color(0, 0, 0, 255)
 //            ));
-            //mc.fontRendererObj.drawString(file.getName(), centerX - 150 + 3 + 3 + x, centerY - 100 + 3 + 3 + y, -1);
+//            mc.fontRendererObj.drawString(file.getName(), centerX - 150 + 3 + 3 + x, centerY - 100 + 3 + 3 + y, -1);
             x += 50 + 1;
             if (counter++ == 6) {
                 counter = 0;

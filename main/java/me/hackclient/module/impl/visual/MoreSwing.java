@@ -14,8 +14,6 @@ public class MoreSwing extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof TickEvent) {
-            if (mc.thePlayer == null || mc.theWorld == null) return;
-
             if (Client.INSTANCE.getCombatManager().getTarget() != null) {
                 if (mc.thePlayer.swingProgressInt >= 3 || mc.thePlayer.swingProgressInt < 0) {
                     mc.thePlayer.swingProgressInt = -1;
@@ -23,5 +21,10 @@ public class MoreSwing extends Module {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean handleEvents() {
+        return (mc.thePlayer == null || mc.theWorld == null) && isToggled();
     }
 }

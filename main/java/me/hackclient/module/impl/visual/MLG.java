@@ -10,7 +10,6 @@ import net.minecraft.util.ResourceLocation;
 @ModuleInfo(name = "MLG", category = Category.VISUAL)
 public class MLG extends Module {
 
-
     boolean a;
 
     @Override
@@ -36,11 +35,8 @@ public class MLG extends Module {
 
                 float uniform = 1f - (a ? -2 : 2.6f);
 
-                mc.entityRenderer.getShaderGroup().listShaders.get(0).getShaderManager().getShaderUniform("Phosphor").set(uniform, 0f, 0f);
-            } catch (Exception ignored) {
-
-            }
+                mc.entityRenderer.getShaderGroup().listShaders.getFirst().getShaderManager().getShaderUniform("Phosphor").set(uniform, 0f, 0f);
+            } catch (Exception ignored) {}
         }
     }
-
 }

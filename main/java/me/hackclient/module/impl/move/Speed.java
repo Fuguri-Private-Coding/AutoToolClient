@@ -7,7 +7,6 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
 import me.hackclient.utils.client.ClientUtils;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
 import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "Speed", category = Category.MOVE, key = Keyboard.KEY_V)
@@ -33,9 +32,7 @@ public class Speed extends Module {
 	@Override
 	public void onDisable() {
 		super.onDisable();
-		if (resetMotion.isToggled()) {
-			mc.thePlayer.stopMotion();
-		}
+		if (resetMotion.isToggled()) mc.thePlayer.stopMotion();
 		mc.timer.timerSpeed = 1f;
 		mc.thePlayer.speedInAir = 0.02f;
 		ticks = 0;
@@ -55,11 +52,8 @@ public class Speed extends Module {
 					}
 				}
 				if (event instanceof MoveButtonEvent moveButtonEvent) {
-					if (ticks == 10) {
-						moveButtonEvent.setSneak(true);
-					}
+					if (ticks == 10) moveButtonEvent.setSneak(true);
 					if (ticks == 11) {
-
 						if (Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ) < 0.25) {
 							ClientUtils.chatLog(Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ));
 							mc.thePlayer.motionX *= 1.1;
@@ -70,16 +64,12 @@ public class Speed extends Module {
 				}
 			}
 			case "45Degree" -> {
-				if (event instanceof MoveFlyingEvent moveFlyingEvent) {
-					if (moveFlyingEvent.getForward() > 0f) {
-						moveFlyingEvent.setYaw(mc.thePlayer.rotationYaw - 45f);
-					}
+				if (event instanceof MoveFlyingEvent moveFlyingEvent && moveFlyingEvent.getForward() > 0f) {
+					moveFlyingEvent.setYaw(mc.thePlayer.rotationYaw - 45f);
 				}
 
-				if (event instanceof MoveEvent moveEvent) {
-					if (moveEvent.getForward() > 0f) {
-						moveEvent.setStrafe(moveEvent.getStrafe() - 1f);
-					}
+				if (event instanceof MoveEvent moveEvent && moveEvent.getForward() > 0f) {
+					moveEvent.setStrafe(moveEvent.getStrafe() - 1f);
 				}
 			}
 			case "Vanilla" -> {
@@ -99,9 +89,7 @@ public class Speed extends Module {
 							double motion = motions[ticks++];
 							mc.thePlayer.motionY -= motion;
 						}
-						if (mc.thePlayer.isBurning()) {
-							mc.thePlayer.motionY = -1;
-						}
+						if (mc.thePlayer.isBurning()) mc.thePlayer.motionY = -1;
 					}
 				}
 			}

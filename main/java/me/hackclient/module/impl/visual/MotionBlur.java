@@ -33,10 +33,8 @@ public class MotionBlur extends Module {
 
                 float uniform = 1f - blurAmount.getValue() / 10f;
 
-                mc.entityRenderer.getShaderGroup().listShaders.get(0).getShaderManager().getShaderUniform("Phosphor").set(uniform, 0f, 0f);
-            } catch (Exception ignored) {
-
-            }
+                mc.entityRenderer.getShaderGroup().listShaders.getFirst().getShaderManager().getShaderUniform("Phosphor").set(uniform, 0f, 0f);
+            } catch (Exception ignored) {}
         }
     }
 }

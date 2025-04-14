@@ -72,9 +72,7 @@ public class TargetESP extends Module {
 
         final EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
 
-        if (target == null) {
-            return;
-        }
+        if (target == null) return;
 
         final RenderManager renderManager = mc.getRenderManager();
         final double viewerPosX = renderManager.viewerPosX;
@@ -130,9 +128,7 @@ public class TargetESP extends Module {
     private void renderSigma2(Color color, Color hcolor) {
         final EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
 
-        if (target == null) {
-            return;
-        }
+        if (target == null) return;
 
         double x = target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
         double y = target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
@@ -185,6 +181,5 @@ public class TargetESP extends Module {
         glPopMatrix();
     }
 
-    private record Test(float value, long time) {
-    }
+    private record Test(float value, long time) { }
 }

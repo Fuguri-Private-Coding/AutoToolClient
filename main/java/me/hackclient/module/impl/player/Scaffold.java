@@ -9,7 +9,6 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.settings.impl.*;
 import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.math.MathUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
@@ -147,8 +146,9 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof TickEvent && mc.currentScreen == null) {
-            BlockPos analyzingBlock = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ);
-            if (!mc.theWorld.isAirBlock(analyzingBlock)) {
+            MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rotation(Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch()));
+            BlockPos analyzingBlock = renderRayCast.getBlockPos();
+            if (!mc.theWorld.isAirBlock(analyzingBlock) && analyzingBlock != null) {
                 renderPos = analyzingBlock;
             }
             rotate();
@@ -188,6 +188,7 @@ public class Scaffold extends Module {
                 mc.thePlayer.inventory.currentItem = slot;
             }
         }
+
         if (event instanceof SprintEvent) {
             if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
                 mc.thePlayer.setSprinting(false);
@@ -195,32 +196,32 @@ public class Scaffold extends Module {
                 mc.thePlayer.setSprinting(true);
             }
         }
+
         if (event instanceof JumpEvent jumpEvent) {
             jumpEvent.setYaw(Rotation.getServerRotation().getYaw());
         }
+
         if (event instanceof MotionEvent motionEvent) {
             motionEvent.setYaw(Rotation.getServerRotation().getYaw());
             if (bypassServerPitch.isToggled()) motionEvent.setPitch(serverPitch.getValue()); else motionEvent.setPitch(Rotation.getServerRotation().getPitch());
         }
+
         if (event instanceof LookEvent lookEvent) {
             lookEvent.setYaw(Rotation.getServerRotation().getYaw());
             lookEvent.setPitch(Rotation.getServerRotation().getPitch());
         }
+
         if (event instanceof ChangeHeadRotationEvent changeHeadRotationEvent) {
             changeHeadRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
             changeHeadRotationEvent.setPitch(Rotation.getServerRotation().getPitch());
         }
+
         if (event instanceof UpdateBodyRotationEvent UpdateBodyRotationEvent) {
             UpdateBodyRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
         }
     }
 
     void legitPlace() {
-        BlockPos analyzingBlock = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.5, mc.thePlayer.posZ);
-        if (!mc.theWorld.isAirBlock(analyzingBlock)) {
-            standingOn = analyzingBlock;
-        }
-
         MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, 4.5, Rotation.getServerRotation());
 
         if (mouseOver == null || mouseOver.getBlockPos() == null || mc.theWorld.getBlockState(mouseOver.getBlockPos()).getBlock().getMaterial() == Material.air) {

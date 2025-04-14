@@ -20,8 +20,10 @@ public class ArrayList extends Module {
 
 	final BooleanSetting showRenderModules = new BooleanSetting("ShowRenderModules", this, false);
 	final BooleanSetting showLine = new BooleanSetting("Line", this, false);
+
 	final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
 	final BooleanSetting textShadow = new BooleanSetting("TextShadow", this, false);
+
 	final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, 1f,1f,1f,1f);
 	final FloatSetting backgroundRadius = new FloatSetting("BackgroundRadius", this, 0.5f,5f,1f,0.5f);
 
@@ -41,9 +43,7 @@ public class ArrayList extends Module {
 
 			double offset = 0;
 			for (Module module : moduleList) {
-				if (module.isHide() || !showRenderModules.isToggled() && module.getCategory() == Category.VISUAL) {
-					continue;
-				}
+				if (module.isHide() || !showRenderModules.isToggled() && module.getCategory() == Category.VISUAL) continue;
 
 				if (shadows.isToggled() && shadows.arrayList.isToggled()) {
 					double finalOffset = offset;

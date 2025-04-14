@@ -13,7 +13,6 @@ import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityFireball;
-import net.minecraft.network.play.client.C0APacketAnimation;
 
 @ModuleInfo(
         name = "AntiFireball",
@@ -36,8 +35,7 @@ public class AntiFireball extends Module {
         super.onEvent(event);
         if (event instanceof TickEvent) {
             for (Entity entity : mc.theWorld.loadedEntityList) {
-                if (!(entity instanceof EntityFireball entityFireball) || entityFireball.shootingEntity == mc.thePlayer || DistanceUtils.getDistanceToEntity(entity) > distance.getValue() || !stopWatch.reachedMS(delay.getValue()))
-                    continue;
+                if (!(entity instanceof EntityFireball entityFireball) || entityFireball.shootingEntity == mc.thePlayer || DistanceUtils.getDistanceToEntity(entity) > distance.getValue() || !stopWatch.reachedMS(delay.getValue())) continue;
 
                 mc.thePlayer.swingItem();
                 mc.playerController.attackEntity(mc.thePlayer, entity);

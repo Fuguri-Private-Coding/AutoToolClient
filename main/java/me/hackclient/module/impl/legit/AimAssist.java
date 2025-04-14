@@ -43,21 +43,10 @@ public class AimAssist extends Module {
 
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
 
-            if (target == null || mc.currentScreen != null) {
-                return;
-            }
-
-            if (RotationUtils.getFovToEntity(target) > fov.getValue()) {
-                return;
-            }
-
-            if (onlyMoveForward.isToggled() && mc.thePlayer.moveForward <= 0) {
-                return;
-            }
-
-            if (onlyWhenSprinting.isToggled() && !mc.thePlayer.isSprinting()) {
-                return;
-            }
+            if (target == null || mc.currentScreen != null) return;
+            if (RotationUtils.getFovToEntity(target) > fov.getValue()) return;
+            if (onlyMoveForward.isToggled() && mc.thePlayer.moveForward <= 0) return;
+            if (onlyWhenSprinting.isToggled() && !mc.thePlayer.isSprinting()) return;
 
             Vec3 targetPoint = target.getPositionEyes(1.0f);
             Rotation playerRotation = new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
@@ -69,9 +58,7 @@ public class AimAssist extends Module {
             delta = RotationUtils.fixDelta(delta);
 
             mc.thePlayer.rotationYaw += delta.getYaw();
-            if (moveVertical.isToggled()) {
-                mc.thePlayer.rotationPitch += delta.getPitch();
-            }
+            if (moveVertical.isToggled()) mc.thePlayer.rotationPitch += delta.getPitch();
         }
     }
 }

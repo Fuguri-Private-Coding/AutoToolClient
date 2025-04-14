@@ -6,12 +6,10 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.utils.rotation.Delta;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.util.MathHelper;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

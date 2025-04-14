@@ -67,22 +67,22 @@ public class Trails extends Module {
             GL11.glTranslated(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
             GL11.glLineWidth(lineWidth.getValue());
             GL11.glEnable(GL11.GL_DEPTH_TEST);
-             switch (mode.getMode()) {
-                 case "SingleLine" -> {
-                     if (shadows.isToggled() && shadows.trails.isToggled()) {
-                         GL11.glColor4f(1,1,1,1);
-                         BloomUtils.addToDraw(this::renderSingleLine);
-                     }
-                     renderSingleLine();
-                 }
-                 case "PlayerLine" -> {
-                     if (shadows.isToggled() && shadows.trails.isToggled()) {
-                         GL11.glColor4f(1,1,1,1);
-                         BloomUtils.addToDraw(this::renderPlayerLine);
-                     }
-                     renderPlayerLine();
-                 }
-             }
+            switch (mode.getMode()) {
+                case "SingleLine" -> {
+                    if (shadows.isToggled() && shadows.trails.isToggled()) {
+                        GL11.glColor4f(1,1,1,1);
+                        BloomUtils.addToDraw(this::renderSingleLine);
+                    }
+                    renderSingleLine();
+                }
+                case "PlayerLine" -> {
+                    if (shadows.isToggled() && shadows.trails.isToggled()) {
+                        GL11.glColor4f(1,1,1,1);
+                        BloomUtils.addToDraw(this::renderPlayerLine);
+                    }
+                    renderPlayerLine();
+                }
+            }
             GL11.glEnable(GL11.GL_DEPTH_TEST);
             GL11.glLineWidth(1f);
             GL11.glTranslated(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);

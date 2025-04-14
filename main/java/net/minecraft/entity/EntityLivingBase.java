@@ -123,6 +123,10 @@ public abstract class EntityLivingBase extends Entity implements InstanceAccess
     private float absorptionAmount;
     public double lRealX, lRealY, lRealZ, realX, realY, realZ;
 
+    public Vec3 getRealPos() {
+        return new Vec3(realX, realY, realZ);
+    }
+
     public void onKillCommand()
     {
         this.attackEntityFrom(DamageSource.outOfWorld, Float.MAX_VALUE);

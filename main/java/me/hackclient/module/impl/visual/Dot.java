@@ -44,13 +44,8 @@ public class Dot extends Module {
         if (event instanceof TickEvent) {
             MovingObjectPosition mouse = mc.objectMouseOver;
 
-            if (currentVec != null) {
-                lastVec = new Vec3(currentVec);
-            }
-
-            if (mouse != null) {
-                currentVec = mouse.hitVec;
-            }
+            if (currentVec != null) lastVec = new Vec3(currentVec);
+            if (mouse != null) currentVec = mouse.hitVec;
         }
         if (event instanceof Render3DEvent) {
             if (Client.INSTANCE.getCombatManager().getTarget() == null && onlyKillAura.isToggled() || lastVec == null || currentVec == null) { return; }

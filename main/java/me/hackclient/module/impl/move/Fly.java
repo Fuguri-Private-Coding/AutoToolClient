@@ -1,18 +1,12 @@
 package me.hackclient.module.impl.move;
 
 import me.hackclient.event.Event;
-import me.hackclient.event.events.MotionEvent;
-import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.ModeSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.ModeSetting;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "Fly", category = Category.MOVE, key = Keyboard.KEY_Z)

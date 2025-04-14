@@ -14,7 +14,6 @@ import me.hackclient.utils.discord.Discord;
         toggled = true
 )
 public class DiscordRPC extends Module {
-
     Discord discord;
 
     @Override

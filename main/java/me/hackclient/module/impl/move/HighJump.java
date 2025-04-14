@@ -6,8 +6,6 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.ModeSetting;
-import me.hackclient.settings.impl.ModeSetting;
-import net.minecraft.network.play.client.C03PacketPlayer;
 
 @ModuleInfo(name = "HighJump", category = Category.MOVE)
 public class HighJump extends Module {

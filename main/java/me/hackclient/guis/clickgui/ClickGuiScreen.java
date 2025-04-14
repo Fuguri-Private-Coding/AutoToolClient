@@ -11,7 +11,7 @@ import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.*;
 import me.hackclient.shader.impl.BloomUtils;
- import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.scissor.ScissorUtils;
@@ -138,7 +138,6 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		}
 
 		ScissorUtils.enableScissor();
-
 		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
 
 		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
@@ -152,14 +151,14 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		);
 
 		RoundedUtils.drawRect(background.x + 4.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
-		RoundedUtils.drawRect(background.x + 14.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
-		RoundedUtils.drawRect(background.x + 24.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
-		RoundedUtils.drawRect(background.x + 34.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
+		RoundedUtils.drawRect(background.x + 4.5f + 10f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
+		RoundedUtils.drawRect(background.x + 4.5f + 10f + 10f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
+		RoundedUtils.drawRect(background.x + 4.5f + 10f + 10f + 10f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
 
 		RoundedUtils.drawRect(background.x + 5, background.y + 4, 6.5f, 6.5f, 3f, Color.red);
-		RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
-		RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
-		RoundedUtils.drawRect(background.x + 35, background.y + 4, 6.5f, 6.5f, 3f, Color.blue);
+		RoundedUtils.drawRect(background.x + 5 + 10, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
+		RoundedUtils.drawRect(background.x + 5 + 10 + 10, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
+		RoundedUtils.drawRect(background.x + 5 + 10 + 10 + 10, background.y + 4, 6.5f, 6.5f, 3f, Color.blue);
 
 		float widthsModule = 0;
 		for (Module module : Client.INSTANCE.getModuleManager().modules) {
@@ -532,10 +531,10 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		final float clientNameWidth = fontRenderer.getStringWidth(Client.INSTANCE.getName());
 		float offset = 0;
 
-		if (mouseX > background.x + sizeBackground.x - 5
-			&& mouseX < background.x + sizeBackground.x
-			&& mouseY > background.y + sizeBackground.y - 5
-			&& mouseY < background.y + sizeBackground.y) {
+		boolean resize = mouseX > background.x + sizeBackground.x - 5 && mouseX < background.x + sizeBackground.x && mouseY > background.y + sizeBackground.y - 5 && mouseY < background.y + sizeBackground.y;
+
+
+		if (resize) {
 			resizing = true;
 			lastMouse.set(mouseX, mouseY);
 		}
@@ -550,10 +549,9 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		}
 		float verticalLineXOffset = max(clientNameWidth, widthsModule) + 5;
 
-		if (mouseX > background.x
-				&& mouseX < background.x + verticalLineXOffset
-				&& mouseY > background.y
-				&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT) {
+		boolean move = mouseX > background.x && mouseX < background.x + verticalLineXOffset && mouseY > background.y && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT;
+
+		if (move) {
 			if (quit || fullscreen || collapse || console) return;
 			moving = true;
 			lastMouse.set(mouseX, mouseY);
@@ -561,10 +559,8 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 		for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selectedCategory))	{
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
-			if (mouseX > background.x + 3
-			&& mouseX < background.x + 3 + moduleWidth
-			&& mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset
-			&& mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 9) {
+			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 9;
+			if (moduleCondition) {
 				switch (mouseButton) {
 					case 0 -> module.toggle();
 					case 1 -> selectedModule = module;
@@ -579,10 +575,8 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 		offset = 0;
 		for (Category category : Category.values()) {
-			if (mouseX > background.x + verticalLineXOffset + 5 + 5 + offset
-			&& mouseX < background.x + verticalLineXOffset + 5 + 5 + offset + fontRenderer.getStringWidth(category.name)
-			&& mouseY > background.y + 2
-			&& mouseY < background.y + 2 + fontRenderer.FONT_HEIGHT) {
+			boolean selectCategory = mouseX > background.x + verticalLineXOffset + 5 + 5 + offset && mouseX < background.x + verticalLineXOffset + 5 + 5 + offset + fontRenderer.getStringWidth(category.name) && mouseY > background.y + 2 && mouseY < background.y + 2 + fontRenderer.FONT_HEIGHT;
+			if (selectCategory) {
 				selectedCategory = category;
 				selectedModule = null;
 				moduleLine.x = 0;
@@ -593,12 +587,8 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 		offset = 0;
 		if (selectedModule != null) {
-            if (mouseX > background.x + verticalLineXOffset + 5
-			&& mouseX < background.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())))
-			&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6
-			&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9) {
-				binding = true;
-			}
+			boolean bind = mouseX > background.x + verticalLineXOffset + 5 && mouseX < background.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey()))) && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9;
+            if (bind) binding = true;
 
 			for (Setting setting : selectedModule.getSettings()) {
 				if (!setting.isVisible())
@@ -722,9 +712,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 				delay--;
 				return;
 			}
-			if (delay == 0) {
-				delay = 30;
-			}
+			if (delay == 0) delay = 30;
 		}
 	}
 

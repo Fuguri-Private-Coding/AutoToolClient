@@ -51,6 +51,8 @@ public class NameTags extends Module {
     }
 
     public void renderNameTag(Entity entity) {
+        boolean friend = entity instanceof EntityPlayer ent && midClick.showInName.isToggled() && ent.isFriend();
+        boolean murder = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.murders.contains(ent.getName());
         FontRenderer fontRenderer = mc.fontRendererObj;
         float distance = mc.thePlayer.getDistanceToEntity(entity);
         float scale = Math.max(distance / 2.5f, 5.0f);
@@ -70,16 +72,12 @@ public class NameTags extends Module {
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        boolean friend = entity instanceof EntityPlayer ent && midClick.showInName.isToggled() && ent.isFriend();
-        boolean murder = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.murders.contains(ent.getName());
         String murderText = murder ? "§4[Murder]§4 " : "";
         String friendText = friend ? "§2[Friend]§a " : "";
         String text = friendText + murderText + entity.getName();
         float offset = fontRenderer.FONT_HEIGHT - 8f;
         float stringWidth = fontRenderer.getStringWidth(text) / 2f;
-        if (shadows.isToggled() && shadows.nameTags.isToggled()) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, Color.WHITE));
-        }
+        if (shadows.isToggled() && shadows.nameTags.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, Color.WHITE));
         RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, color.getColor());
         fontRenderer.drawString(text, -stringWidth, offset, textColor.getColor().getRGB(), true);
         glColor4f(1f, 1f, 1f, 1f);

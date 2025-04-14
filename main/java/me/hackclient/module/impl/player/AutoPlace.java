@@ -7,8 +7,6 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Blocks;
@@ -34,25 +32,20 @@ public class AutoPlace extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof DrawBlockHighlightEvent) {
-            if (mc.currentScreen != null)
-                return;
+            if (mc.currentScreen != null) return;
 
             ItemStack stack = mc.thePlayer.getHeldItem();
 
-            if (stack == null)
-                return;
+            if (stack == null) return;
 
-            if (!(stack.getItem() instanceof ItemBlock))
-                return;
+            if (!(stack.getItem() instanceof ItemBlock)) return;
 
             MovingObjectPosition mouse = mc.objectMouseOver;
 
             if (mouse == null
             || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
             || mouse.sideHit == EnumFacing.UP
-            || mouse.sideHit == EnumFacing.DOWN) {
-                return;
-            }
+            || mouse.sideHit == EnumFacing.DOWN) return;
 
             if (delay < frameDelay.getValue()) {
                 ++delay;

@@ -4,7 +4,6 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.ModeSetting;
-import me.hackclient.settings.impl.ModeSetting;
 
 @ModuleInfo(name = "ClientSpoofer", category = Category.MISC, toggled = true)
 public class ClientSpoofer extends Module {
@@ -17,15 +16,19 @@ public class ClientSpoofer extends Module {
             case "LunarClient" -> {
                 return "lunarclient:v2.15.6-2422";
             }
+
             case "LabyMod" -> {
                 return "labymod";
             }
+
             case "Optifine" -> {
                 return "optifine";
             }
+
             case "FML" -> {
                 return "fml,forge";
             }
+
             case "Forge" -> {
                 return "forge";
             }

@@ -18,9 +18,7 @@ public class TimeChanger extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof PacketEvent packetEvent && packetEvent.getPacket() instanceof S03PacketTimeUpdate) {
-            packetEvent.setCanceled(true);
-        }
+        if (event instanceof PacketEvent packetEvent && packetEvent.getPacket() instanceof S03PacketTimeUpdate) packetEvent.setCanceled(true);
         if (event instanceof Render3DEvent) {
             mc.theWorld.setWorldTime(time.getValue() * 1000L);
         }

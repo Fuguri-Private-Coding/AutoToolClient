@@ -1,14 +1,10 @@
 package me.hackclient.module.impl.move;
 
-import com.ibm.icu.text.UFormat;
 import me.hackclient.event.Event;
-import me.hackclient.event.events.MotionEvent;
 import me.hackclient.event.events.TickEvent;
-import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.move.MoveUtils;
 

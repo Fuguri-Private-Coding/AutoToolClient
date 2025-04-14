@@ -28,20 +28,16 @@ public class ESP extends Module {
     final MultiBooleanSetting modes = new MultiBooleanSetting("Modes", this)
             .add("Box")
             .add("Glow")
-            .add("Chams")
             //.add("")
             ;
-
-    final ColorSetting color = new ColorSetting("Color", this,() -> modes.get("Chams") ,1,1,1,1);
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof Render3DEvent) {
-            RenderUtils.start3D();
-            GL11.glTranslated(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
-
             if (modes.get("Box")) {
+                RenderUtils.start3D();
+                GL11.glTranslated(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
                 for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
                     if (playerEntity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) { continue; }
 
@@ -58,40 +54,15 @@ public class ESP extends Module {
                         RenderUtils.renderHitBox(playerEntity.getEntityBoundingBox().offset(diff));
                     }
                 }
+                GL11.glTranslated(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);
+                RenderUtils.stop3D();
             }
-
-            GL11.glTranslated(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);
-            RenderUtils.stop3D();
 
             if (modes.get("Glow")) {
                 for (final EntityPlayer player : mc.theWorld.playerEntities) {
-                    if (mc.getRenderManager() == null || (player == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || player.isDead) {
-                        continue;
-                    }
+                    if (mc.getRenderManager() == null || (player == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || player.isDead) continue;
                     BloomUtils.addToDraw(() -> mc.renderManager.renderEntitySimple(player, mc.timer.renderPartialTicks));
                 }
-                RenderHelper.disableStandardItemLighting();
-                mc.entityRenderer.disableLightmap();
-            }
-
-            if (modes.get("Chams")) {
-                for (final EntityPlayer player : mc.theWorld.playerEntities) {
-                    final Render<EntityPlayer> render = mc.getRenderManager().getEntityRenderObject(player);
-
-                    if (mc.getRenderManager() == null || render == null || (player == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || player.isDead) {
-                        continue;
-                    }
-
-                    final double x = player.prevPosX + (player.posX - player.prevPosX) * mc.timer.renderPartialTicks;
-                    final double y = player.prevPosY + (player.posY - player.prevPosY) * mc.timer.renderPartialTicks;
-                    final double z = player.prevPosZ + (player.posZ - player.prevPosZ) * mc.timer.renderPartialTicks;
-                    final float yaw = player.prevRotationYaw + (player.rotationYaw - player.prevRotationYaw) * mc.timer.renderPartialTicks;
-
-                    RendererLivingEntity.setShaderBrightness(color.getColor());
-                    render.doRender(player, x - RenderManager.renderPosX, y - RenderManager.renderPosY, z - RenderManager.renderPosZ, yaw, mc.timer.renderPartialTicks);
-                    RendererLivingEntity.unsetShaderBrightness();
-                }
-
                 RenderHelper.disableStandardItemLighting();
                 mc.entityRenderer.disableLightmap();
             }

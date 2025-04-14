@@ -4,7 +4,6 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.FloatSetting;
 
 @ModuleInfo(name = "Timer", category = Category.MOVE)
 public class Timer extends Module {

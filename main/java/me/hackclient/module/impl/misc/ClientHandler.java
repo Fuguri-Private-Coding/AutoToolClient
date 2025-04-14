@@ -6,6 +6,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.utils.Utils;
 import me.hackclient.utils.doubles.Doubles;
+import net.minecraft.network.Packet;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -36,7 +37,7 @@ public class ClientHandler extends Module {
 
     public static class PacketHandler {
         public static final
-        List<Doubles<net.minecraft.network.Packet, Long>>
+        List<Doubles<Packet, Long>>
                 serverPacketBuffer = new CopyOnWriteArrayList<>(),
                 clientPacketBuffer = new CopyOnWriteArrayList<>();
 
