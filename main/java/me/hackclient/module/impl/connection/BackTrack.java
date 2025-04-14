@@ -75,7 +75,6 @@ public class BackTrack extends Module {
     };
 
     final BooleanSetting showOnlyWorking = new BooleanSetting("ShowOnlyWhenWorking", this, true);
-    final BooleanSetting showOnlyOnTarget = new BooleanSetting("ShowOnlyOnTarget", this, true);
     final BooleanSetting realTimeDamage = new BooleanSetting("RealTimeDamage", this,() -> mode.getMode().equals("Ping") , true);
 
     MultiBooleanSetting render = new MultiBooleanSetting("Render", this)
@@ -226,23 +225,19 @@ public class BackTrack extends Module {
     }
 
     boolean isValidPacket(Packet packet) {
-        if (packet instanceof S03PacketTimeUpdate)
-            return true;
-        if (packet instanceof S00PacketKeepAlive)
-            return true;
-        if (packet instanceof S12PacketEntityVelocity)
-            return true;
-        if (packet instanceof S27PacketExplosion)
-            return true;
-        if (packet instanceof S32PacketConfirmTransaction) {
+        if (packet instanceof S03PacketTimeUpdate
+            || packet instanceof S00PacketKeepAlive
+            || packet instanceof S12PacketEntityVelocity
+            || packet instanceof S27PacketExplosion
+            || packet instanceof S32PacketConfirmTransaction) {
             return true;
         }
 
         return packet instanceof S14PacketEntity
-                || packet instanceof S18PacketEntityTeleport
-                || packet instanceof S19PacketEntityHeadLook
-                || packet instanceof S0FPacketSpawnMob
-                || packet instanceof S08PacketPlayerPosLook;
+        || packet instanceof S18PacketEntityTeleport
+        || packet instanceof S19PacketEntityHeadLook
+        || packet instanceof S0FPacketSpawnMob
+        || packet instanceof S08PacketPlayerPosLook;
     }
 
     static class PositionResolver implements InstanceAccess, ConditionCallableObject {
