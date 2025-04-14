@@ -52,9 +52,7 @@ public class InvClicker extends Module {
                     mouseClickedMethod.setAccessible(true);
 
                     mouseClickedMethod.invoke(guiScreen, mouseInGUIPosX, mouseInGUIPosY, 0);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                } catch (Exception ignored) {}
                 mouseDown = 0;
             }
         } catch (Exception e) {
