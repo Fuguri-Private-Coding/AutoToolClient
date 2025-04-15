@@ -28,8 +28,6 @@ public class KillAura extends Module {
 
     private final IntaveNewRotation intaveNewRotation = new IntaveNewRotation();
     private final IntaveRotation intaveRotation = new IntaveRotation();
-    private final NoiseRotation noiseRotation = new NoiseRotation();
-    private final TestRotation testRotation = new TestRotation();
     private final VanillaRotation vanillaRotation = new VanillaRotation();
 
     // Настройки поиска противника
@@ -46,10 +44,8 @@ public class KillAura extends Module {
             "Intave",
             new String[] {
                     "Vanilla",
-                    "Test",
                     "Intave",
                     "IntaveNew",
-                    "Noise"
             }
     );
 
@@ -105,6 +101,10 @@ public class KillAura extends Module {
         }
     };
 
+    final FloatSetting accelSlowDown = new FloatSetting("AccelSlowDown", this,() -> rotationMode.getMode().equals("IntaveNew"), 0f,2f,0.3f,0.1f);
+    final IntegerSetting yawAccelSpeed = new IntegerSetting("YawAccelSpeed", this,() -> rotationMode.getMode().equals("IntaveNew"), 0,180,15);
+    final IntegerSetting pitchAccelSpeed = new IntegerSetting("PitchAccelSpeed", this,() -> rotationMode.getMode().equals("IntaveNew"), 0,180,20);
+
     final BooleanSetting fakeBlock = new BooleanSetting("FakeBlock", this, true);
 
     // Мувмент
@@ -155,8 +155,6 @@ public class KillAura extends Module {
                 motionEvent.setPitch(Rotation.getServerRotation().getPitch());
 
                 KillAuraRotation rotation = switch (rotationMode.getMode()) {
-                    case "Noise" -> noiseRotation;
-                    case "Test" -> testRotation;
                     case "Vanilla" -> vanillaRotation;
                     case "Intave" -> intaveRotation;
                     case "IntaveNew" -> intaveNewRotation;
@@ -167,7 +165,8 @@ public class KillAura extends Module {
                     Rotation.setServerRotation(rotation.compute(
                             Rotation.getServerRotation(),
                             combatManager.getTarget(),
-                            randomizeYawSpeed, randomizePitchSpeed
+                            randomizeYawSpeed, randomizePitchSpeed,
+                            accelSlowDown.getValue(), yawAccelSpeed.getValue(), pitchAccelSpeed.getValue()
                     ));
                 }
             }

@@ -11,7 +11,7 @@ import net.minecraft.util.Vec3;
 public class VanillaRotation extends KillAuraRotation {
 
     @Override
-    public Rotation compute(Rotation startsFrom, EntityLivingBase target, float simpleYawSpeed, float simplePitchSpeed) {
+    public Rotation compute(Rotation startsFrom, EntityLivingBase target, float simpleYawSpeed, float simplePitchSpeed, float accelSlowDown, int yawAccelSpeed, int pitchAccelSpeed) {
         Vec3 needVec = RotationUtils.getBestHitVec(target).add(getOffset());
         Delta delta = RotationUtils.getDeltaToPoint(startsFrom, needVec);
 
