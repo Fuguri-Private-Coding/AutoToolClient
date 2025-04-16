@@ -12,7 +12,7 @@ import java.util.function.BooleanSupplier;
 public class ModeSetting extends Setting {
 
     @Setter String mode;
-    final List<String> modes;
+    @Setter List<String> modes;
 
     public ModeSetting(String name, Module parent, String mode, String[] modes) {
         super(name, parent);

@@ -11,6 +11,7 @@ import me.hackclient.utils.math.RandomUtils;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemSword;
+import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 @ModuleInfo(
         name = "MoreKB",
@@ -23,6 +24,7 @@ public class MoreKB extends Module {
             this,
             "LegitFast",
             new String[] {
+                    "One",
                     "WTap",
                     "STap",
                     "LegitFast",
@@ -109,6 +111,13 @@ public class MoreKB extends Module {
             case "LegitFast" -> {
                 if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
                     mc.thePlayer.setSprinting(false);
+                    reset--;
+                }
+            }
+
+            case "One" -> {
+                if (event instanceof SprintEvent && !mc.thePlayer.isServerSprintState()) {
+                    mc.getNetHandler().addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
                     reset--;
                 }
             }

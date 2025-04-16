@@ -96,8 +96,7 @@ public class ModuleManager {
 				 new CustomCape(),
 				 new InvClicker(),
 				 new CustomCamera(),
-				 new KillEvents(),
-				 new CustomScoreboard()
+				 new KillEffects()
 		);
 	}
 
@@ -110,15 +109,18 @@ public class ModuleManager {
 	}
 
 	public <T extends Module> T getModule(Class<T> moduleClass) {
-		return (T) modules.stream()
-				.filter(module -> module.getClass() == moduleClass)
-				.findFirst().orElse(null);
+		return modules.stream()
+				.filter(moduleClass::isInstance)
+				.map(moduleClass::cast)
+				.findFirst()
+				.orElse(null);
 	}
 
-	public <T extends Module> T getModule(String name) {
-		return (T) modules.stream()
+	public Module getModule(String name) {
+		return modules.stream()
 				.filter(module -> module.getName().equalsIgnoreCase(name))
-				.findFirst().orElse(null);
+				.findFirst()
+				.orElse(null);
 	}
 
 	public List<Module> getEnabledModules() {

@@ -27,7 +27,7 @@ public class NameTags extends Module {
 
     FloatSetting height = new FloatSetting("Height", this, 0,2,0.6F, 0.1F);
 
-    ColorSetting color = new ColorSetting("Color", this, 1,1,1,1);
+    ColorSetting color = new ColorSetting("Color", this, 0,0,0,0.4f);
     ColorSetting textColor = new ColorSetting("TextColor", this, 1,1,1,1);
 
     MurderDetector murderDetector;

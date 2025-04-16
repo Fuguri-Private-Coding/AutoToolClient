@@ -2,7 +2,7 @@ package me.hackclient.module.impl.misc;
 
 import me.hackclient.event.Event;
 import me.hackclient.event.events.PacketEvent;
-import me.hackclient.event.events.TickEvent;
+import me.hackclient.event.events.WorldChangeEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -28,11 +28,8 @@ public class FlagDetector extends Module {
                 }
             }
         }
-
-        if (event instanceof TickEvent) {
-            if (mc.thePlayer.ticksExisted < 5 && resetFlagsOnWorld.isToggled()) {
-                flagCount = 0;
-            }
+        if (event instanceof WorldChangeEvent && resetFlagsOnWorld.isToggled()) {
+            flagCount = 0;
         }
     }
 }

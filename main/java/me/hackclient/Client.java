@@ -37,6 +37,7 @@ public enum Client implements CallableObject {
 	final File configsDirectory = new File(clientDirectory, "configs");
 	final File bindsDirectory = new File(clientDirectory, "binds");
 	final File soundsDirectory = new File(clientDirectory, "sounds");
+	final File capeDirectory = new File(clientDirectory, "capes");
 	@Setter File defaultConfig = new File(configsDirectory, "default.json");
 	@Setter File defaultBinds = new File(bindsDirectory, "binds.json");
 

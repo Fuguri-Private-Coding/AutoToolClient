@@ -148,8 +148,10 @@ public class Scaffold extends Module {
         if (event instanceof TickEvent && mc.currentScreen == null) {
             MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rotation(Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch()));
             BlockPos analyzingBlock = renderRayCast.getBlockPos();
-            if (!mc.theWorld.isAirBlock(analyzingBlock) && analyzingBlock != null) {
-                renderPos = analyzingBlock;
+            if (analyzingBlock != null) {
+                if (!mc.theWorld.isAirBlock(analyzingBlock)) {
+                    renderPos = analyzingBlock;
+                }
             }
             rotate();
         }

@@ -34,9 +34,9 @@ public class Trails extends Module {
 
     final List<Doubles<Vec3, Long>> bottomList, topList;
 
-    final IntegerSetting lifeTime = new IntegerSetting("LifeTime", this, 1, 30, 5);
-    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 1f, 10f, 5f, 0.1f) {};
-    final BooleanSetting onlyThirdPerson = new BooleanSetting("OnlyThirdPerson", this, true);
+    final IntegerSetting lifeTime = new IntegerSetting("LifeTime", this, 1, 30, 1);
+    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 1f, 10f, 1f, 0.1f) {};
+    final BooleanSetting onlyThirdPerson = new BooleanSetting("OnlyThirdPerson", this, false);
 
     final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
 

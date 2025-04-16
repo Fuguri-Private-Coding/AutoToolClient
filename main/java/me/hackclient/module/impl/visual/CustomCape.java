@@ -1,10 +1,15 @@
 package me.hackclient.module.impl.visual;
 
+import me.hackclient.Client;
+import me.hackclient.event.Event;
+import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.ModeSetting;
 import net.minecraft.util.ResourceLocation;
+
+import java.io.File;
 
 @ModuleInfo(
         name = "CustomCape",

@@ -30,7 +30,7 @@ public class CPSCounter extends Module {
     FloatSetting posVertical = new FloatSetting("PosY", this, 0,10000,0,0.1f);
     FloatSetting radius = new FloatSetting("Radius", this, 0.5f,5,1f,0.1f);
 
-    ColorSetting color = new ColorSetting("Color", this, 1,1,1,1);
+    ColorSetting color = new ColorSetting("Color", this, 0,0,0,0.4f);
     BooleanSetting textShadow = new BooleanSetting("TextShadow",this, true);
     ColorSetting textColor = new ColorSetting("TextColor", this, 1,1,1,1);
 
