@@ -10,6 +10,8 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
 
 @ModuleInfo(
@@ -29,6 +31,7 @@ public class NoGuiClose extends Module {
                 || mc.currentScreen instanceof ConsoleGuiScreen
                 || mc.currentScreen instanceof ConfigEditorGui
                 || mc.currentScreen instanceof BrowserGuiScreen
+                || mc.currentScreen instanceof GuiChat
                 : mc.currentScreen != null)) {
             packetEvent.setCanceled(true);
         }

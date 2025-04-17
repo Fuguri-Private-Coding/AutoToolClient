@@ -4,6 +4,7 @@ import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.events.TickEvent;
+import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
@@ -29,12 +30,9 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
     Vector2f lastSize = new Vector2f(200, 200);
     Vector2f lastPos = new Vector2f(200, 200);
 
-    boolean moving, closing;
-
-    int scroll = 0;
-
+    boolean moving, closing, openBrowser;
+    int scroll, totalHeight = 0;
     boolean fullScreen = false;
-
     final Animation2D background, sizeBackground;
 
     public ConsoleGuiScreen() {
@@ -49,37 +47,28 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         sizeBackground = new Animation2D();
     }
 
-    private int totalHeight = 0;
-
-    boolean openBrowser = false;
-
     Shadows shadows;
+    ClickGui clickGui;
 
     int delay = 30;
 
     private final GuiTextField textField = new GuiTextField(0, null, 0,0,0,0);
-
     private final List<String> history = new ArrayList<>();
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (clickGui == null) clickGui = Client.INSTANCE.getModuleManager().getModule(ClickGui.class);
         scroll -= Mouse.getDWheel() / 120 * 10;
 
-        if (scroll > 0) {
-            scroll = 0;
-        }
+        if (scroll > 0) scroll = 0;
 
         float consoleVisibleHeight = sizeBackground.y - (fullScreen ? 20 : 2) - 15;
         float maxScroll = Math.max(0, totalHeight - consoleVisibleHeight);
 
-        if (scroll < -maxScroll) {
-            scroll = (int) -maxScroll;
-        }
+        if (scroll < -maxScroll) scroll = (int) -maxScroll;
 
-        if (history.isEmpty()) {
-            scroll = 0;
-        }
+        if (history.isEmpty()) scroll = 0;
 
         if (closing) {
             if (Math.hypot(sizeBackground.x, sizeBackground.y) < 1) {
@@ -122,26 +111,18 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         sizeBackground.update(15f);
 
         if (shadows.isToggled() && shadows.console.isToggled()) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, 7f, shadows.color.getColor()));
+            BloomUtils.addToDraw(() -> {
+                RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
+                RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), shadows.color.getColor());
+            });
         }
-
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, 7f, new Color(15,15,15,150));
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 7f, new Color(0,0,0,200));
-        RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, 7f, new Color(0,0,0,200));
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 35 : 18));
+        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y + (fullScreen ? 0 : 20));
 
-        float offset = scroll;
-        totalHeight = 0;
-
-        for (String s : history.reversed()) {
-            mc.fontRendererObj.drawString(s, background.x + 4, background.y + sizeBackground.y - 12 - offset + (fullScreen ? -10 - 5 - 1 : 0), -1);
-            totalHeight += 10;
-            offset += 10;
-        }
-
-        ScissorUtils.disableScissor();
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), new Color(15,15,15,150));
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
+        RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
 
         mc.fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 4,  -1);
         mc.fontRendererObj.drawString("C:\\Users\\" + username + ">" + textField.getText() + (delay > 15 ? "" : "_"), background.x + 2 + 2, background.y + sizeBackground.y + (fullScreen ? -10 - 3 : 7), -1);
@@ -156,6 +137,20 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
         RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
         RoundedUtils.drawRect(background.x + 35, background.y + 4, 6.5f, 6.5f, 3f, Color.blue);
+
+        ScissorUtils.enableScissor();
+        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 35 : 18));
+
+        float offset = scroll;
+        totalHeight = 0;
+
+        for (String s : history.reversed()) {
+            mc.fontRendererObj.drawString(s, background.x + 4, background.y + sizeBackground.y - 12 - offset + (fullScreen ? -10 - 5 - 1 : 0), -1);
+            totalHeight += 10;
+            offset += 10;
+        }
+
+        ScissorUtils.disableScissor();
 
         if (moving) {
             pos.translate(mouseX - lastMouse.x, mouseY - lastMouse.y);
@@ -188,7 +183,6 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         }
 
         textField.textboxKeyTyped(typedChar, keyCode);
-
     }
 
     @Override
@@ -253,9 +247,7 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
                 delay--;
                 return;
             }
-            if (delay == 0) {
-                delay = 30;
-            }
+            if (delay == 0) delay = 30;
         }
     }
 

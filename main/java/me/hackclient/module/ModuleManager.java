@@ -1,6 +1,6 @@
 package me.hackclient.module;
 
-import me.hackclient.module.impl.client.DiscordRPC;
+import me.hackclient.module.impl.client.DiscordRPCModule;
 import me.hackclient.module.impl.combat.*;
 import me.hackclient.module.impl.connection.*;
 import me.hackclient.module.impl.exploit.*;
@@ -52,7 +52,7 @@ public class ModuleManager {
 				 new Scaffold(),
 				 new AntiFireball(),
 				 new Test(),
-				 new DiscordRPC(),
+				 new DiscordRPCModule(),
 				 new LongJump(),
 				 new Phase(),
 				 new NoGuiClose(),
@@ -107,21 +107,18 @@ public class ModuleManager {
 	public List<Module> getModulesByCategory(Category category) {
 		return modules.stream().filter(module -> module.getCategory() == category).collect(Collectors.toList());
 	}
+    
+    public <T extends Module> T getModule(Class<T> moduleClass) {
+        return (T) modules.stream()
+                .filter(module -> module.getClass() == moduleClass)
+                .findFirst().orElse(null);
+    }
 
-	public <T extends Module> T getModule(Class<T> moduleClass) {
-		return modules.stream()
-				.filter(moduleClass::isInstance)
-				.map(moduleClass::cast)
-				.findFirst()
-				.orElse(null);
-	}
-
-	public Module getModule(String name) {
-		return modules.stream()
-				.filter(module -> module.getName().equalsIgnoreCase(name))
-				.findFirst()
-				.orElse(null);
-	}
+    public <T extends Module> T getModule(String name) {
+        return (T) modules.stream()
+                .filter(module -> module.getName().equalsIgnoreCase(name))
+                .findFirst().orElse(null);
+    }
 
 	public List<Module> getEnabledModules() {
 		return modules.stream().filter(Module::isToggled).collect(Collectors.toList());

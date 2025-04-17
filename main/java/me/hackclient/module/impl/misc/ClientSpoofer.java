@@ -14,7 +14,7 @@ public class ClientSpoofer extends Module {
     public String getBrand() {
         switch (brand.getMode()) {
             case "LunarClient" -> {
-                return "lunarclient:v2.15.6-2422";
+                return "Lunar-Client";
             }
 
             case "LabyMod" -> {

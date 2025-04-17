@@ -13,7 +13,7 @@ import me.hackclient.utils.discord.Discord;
         category = Category.CLIENT,
         toggled = true
 )
-public class DiscordRPC extends Module {
+public class DiscordRPCModule extends Module {
     Discord discord;
 
     @Override
@@ -31,6 +31,6 @@ public class DiscordRPC extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof TickEvent) if (discord == null) discord = Client.INSTANCE.getDiscord();
+        if (discord == null) discord = Client.INSTANCE.getDiscord();
     }
 }

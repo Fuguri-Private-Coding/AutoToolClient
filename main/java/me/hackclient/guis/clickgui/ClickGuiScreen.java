@@ -146,7 +146,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		RoundedUtils.drawRect(background.x + sizeBackground.x - 5, background.y + sizeBackground.y - 5, 5, 5, 1, BACKGROUND_COLOR);
 		fontRenderer.drawString(
 				name,
-				background.x + 50, background.y + 4,
+				background.x - fontRenderer.getStringWidth(name) / 2f + 70, background.y + 4,
 				CATEGORY_COLOR.getRGB()
 		);
 
