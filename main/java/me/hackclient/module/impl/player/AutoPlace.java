@@ -6,10 +6,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
@@ -20,13 +17,10 @@ import org.lwjgl.input.Mouse;
 @ModuleInfo(name = "AutoPlace", category = Category.PLAYER, toggled = true)
 public class AutoPlace extends Module {
 
-    long lastTime = 0L;
-    int delay = 0;
-    BlockPos blockPos = null;
-
-    FloatSetting frameDelay = new FloatSetting("FrameDelay", this, 0f, 10f, 0f, 1f) {};
     BooleanSetting needHoldRight = new BooleanSetting("HoldRight", this, true);
     BooleanSetting swingItem = new BooleanSetting("PlayerSwingItem", this, true);
+
+    long lastTime = 0L;
 
     @Override
     public void onEvent(Event event) {
@@ -43,30 +37,19 @@ public class AutoPlace extends Module {
             MovingObjectPosition mouse = mc.objectMouseOver;
 
             if (mouse == null
-            || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-            || mouse.sideHit == EnumFacing.UP
-            || mouse.sideHit == EnumFacing.DOWN) return;
+                    || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+                    || mouse.sideHit == EnumFacing.UP
+                    || mouse.sideHit == EnumFacing.DOWN) return;
 
-            if (delay < frameDelay.getValue()) {
-                ++delay;
-                return;
-            }
-
+            
             BlockPos pos = mouse.getBlockPos();
-            if (blockPos == null || pos.getX() != blockPos.getX() || pos.getY() != blockPos.getY() || pos.getZ() != blockPos.getZ()) {
-                Block block = mc.theWorld.getBlockState(pos).getBlock();
-                if (block != null && block != Blocks.air && !(block instanceof BlockLiquid)) {
-                    if (!needHoldRight.isToggled() || Mouse.isButtonDown(1)) {
-                        if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25)  {
-                            mc.rightClickMouse();
-                            if (swingItem.isToggled()) {
-                                mc.thePlayer.swingItem();
-                                mc.getItemRenderer().resetEquippedProgress();
-                                mc.rightClickMouse();
-                            }
-                            blockPos = pos;
-                            lastTime = System.currentTimeMillis();
-                            delay = 0;
+            if (!needHoldRight.isToggled() || Mouse.isButtonDown(1)) {
+                if (mc.theWorld.getBlockState(pos).getBlock().getMaterial() != Material.air) {
+                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25) {
+                        mc.rightClickMouse();
+                        if (swingItem.isToggled()) {
+                            mc.thePlayer.swingItem();
+
                         }
                     }
                 }

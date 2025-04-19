@@ -53,7 +53,7 @@ public class ArrayList extends Module {
 
 				RoundedUtils.drawRect(6,(float) offset + 6f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 4f, backgroundRadius.getValue(), backgroundColor.getColor());
 
-				font.drawString(module.getName(), 8, (float) (8 + offset), color.getColor().getRGB(), textShadow.isToggled());
+				font.drawString(module.getName(), 8.5f, (float) (8.5f + offset), color.getColor().getRGB(), textShadow.isToggled());
 				offset += 13;
 			}
 

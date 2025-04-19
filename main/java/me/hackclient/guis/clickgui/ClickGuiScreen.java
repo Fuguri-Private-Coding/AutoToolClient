@@ -75,7 +75,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		MAIN_COLOR = clickGui.color.getColor();
 		BACKGROUND_COLOR = new Color(15,15,15,clickGui.backgroundAlpha.getValue());
         if (closing) {
-            if (Math.hypot(sizeBackground.x, sizeBackground.y) < 1) {
+            if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
                 closing = false;
                 mc.currentScreen.onGuiClosed();
 				mc.displayGuiScreen(null);

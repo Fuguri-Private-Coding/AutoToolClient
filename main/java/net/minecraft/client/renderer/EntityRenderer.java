@@ -12,6 +12,7 @@ import me.hackclient.Client;
 import me.hackclient.event.events.DrawBlockHighlightEvent;
 import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.event.events.Render3DEvent;
+import me.hackclient.module.impl.visual.BlockOverlay;
 import me.hackclient.module.impl.visual.CustomCamera;
 import me.hackclient.module.impl.visual.NoRender;
 import me.hackclient.module.impl.visual.Shadows;
@@ -1434,7 +1435,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, new Object[]{renderglobal, entityplayer1, this.mc.objectMouseOver, Integer.valueOf(0), entityplayer1.getHeldItem(), Float.valueOf(partialTicks)})) && !this.mc.gameSettings.hideGUI) {
                 Client.INSTANCE.getObjectsCaller().onEvent(new DrawBlockHighlightEvent());
-                renderglobal.drawSelectionBox(entityplayer1, this.mc.objectMouseOver, 0, partialTicks);
+                BlockOverlay blockOverlay = Client.INSTANCE.getModuleManager().getModule(BlockOverlay.class);
+                if (!blockOverlay.isToggled()) renderglobal.drawSelectionBox(entityplayer1, this.mc.objectMouseOver, 0, partialTicks);
             }
             GlStateManager.enableAlpha();
         }

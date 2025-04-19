@@ -306,7 +306,7 @@ public class ItemRenderer {
             GlStateManager.pushMatrix();
 
             if (this.itemToRender != null) {
-                boolean animate = (f1 > 0 && Animations.isAnimate() || abstractclientplayer.getItemInUseCount() > 0);
+                boolean animate = f1 > 0 && Animations.isAnimate() || abstractclientplayer.getItemInUseCount() > 0;
                 if (this.itemToRender.getItem() instanceof ItemMap) {
                     this.renderItemMap(abstractclientplayer, f2, f, f1);
                 } else if (animate) {

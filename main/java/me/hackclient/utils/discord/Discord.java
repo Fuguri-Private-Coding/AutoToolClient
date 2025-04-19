@@ -51,15 +51,15 @@ public class Discord implements InstanceAccess, ConditionCallableObject {
             if (run) {
                 if (mc.thePlayer != null) {
                     if (mc.isSingleplayer()) {
-                        update("Playing lonely in Singleplayer", "In game.");
+                        update("Playing Singleplayer Odini4ka ebani", "In game.");
                     } else if (mc.getCurrentServerData() != null) {
-                        update("Maybe cheating on " + mc.getCurrentServerData().serverIP, "Cheating.");
+                        update("AutoTool fucks " + mc.getCurrentServerData().serverIP, "In game.");
                     }
                 } else {
                     if (mc.currentScreen instanceof GuiMultiplayer) {
-                        update("Multiplayer menu", "Idle.");
+                        update("Vibiraet server", "Idle.");
                     } else if (mc.currentScreen instanceof GuiClientMainMenu) {
-                        update("Main menu", "Idle.");
+                        update("Zakontril main menu", "Idle.");
                     }
                 }
 

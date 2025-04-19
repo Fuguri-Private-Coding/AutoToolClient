@@ -123,6 +123,11 @@ public class Ping extends Module {
                 }
             }
             case RunGameLoopEvent _ -> handlePackets();
+            case MotionEvent _ -> {
+                while (posBuffer.size() > (maxDelay.getValue() / 50)) {
+                    posBuffer.removeFirst();
+                }
+            }
             case Render3DEvent _ -> {
                 if (posBuffer.isEmpty() || mc.gameSettings.thirdPersonView == 0) {
                     break;

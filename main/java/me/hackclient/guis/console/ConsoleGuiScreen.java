@@ -33,7 +33,7 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
     boolean moving, closing, openBrowser;
     int scroll, totalHeight = 0;
     boolean fullScreen = false;
-    final Animation2D background, sizeBackground;
+    final Animation2D background, sizeBackground, scrolls;
 
     public ConsoleGuiScreen() {
         callables.add(this);
@@ -43,6 +43,7 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         pos = new Vector2f(0, 0);
         size = new Vector2f(350, 150);
 
+        scrolls = new Animation2D();
         background = new Animation2D();
         sizeBackground = new Animation2D();
     }
@@ -61,17 +62,15 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         if (clickGui == null) clickGui = Client.INSTANCE.getModuleManager().getModule(ClickGui.class);
         scroll -= Mouse.getDWheel() / 120 * 10;
 
-        if (scroll > 0) scroll = 0;
-
         float consoleVisibleHeight = sizeBackground.y - (fullScreen ? 20 : 2) - 15;
         float maxScroll = Math.max(0, totalHeight - consoleVisibleHeight);
 
+        if (scroll > 0) scroll = 0;
         if (scroll < -maxScroll) scroll = (int) -maxScroll;
-
         if (history.isEmpty()) scroll = 0;
 
         if (closing) {
-            if (Math.hypot(sizeBackground.x, sizeBackground.y) < 1) {
+            if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
                 closing = false;
                 mc.displayGuiScreen(null);
                 mc.currentScreen = null;
@@ -84,7 +83,6 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         textField.setFocused(true);
 
         String username = System.getProperty("user.name");
-
         String name = switch (delay) {
             case 0, 1, 2 -> "Console_";
             case 3, 4 -> "Console";
@@ -99,14 +97,15 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         };
 
         float widthName = mc.fontRendererObj.getStringWidth(name);
-
         float width = mc.fontRendererObj.getStringWidth("Clear History");
 
+        scrolls.endY = scroll;
         background.endX = pos.x;
         background.endY = pos.y;
         sizeBackground.endX = size.x;
         sizeBackground.endY = size.y;
 
+        scrolls.update(15f);
         background.update(15f);
         sizeBackground.update(15f);
 
@@ -139,13 +138,13 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         RoundedUtils.drawRect(background.x + 35, background.y + 4, 6.5f, 6.5f, 3f, Color.blue);
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 35 : 18));
+        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 33 : 15));
 
-        float offset = scroll;
+        float offset = scrolls.y;
         totalHeight = 0;
 
         for (String s : history.reversed()) {
-            mc.fontRendererObj.drawString(s, background.x + 4, background.y + sizeBackground.y - 12 - offset + (fullScreen ? -10 - 5 - 1 : 0), -1);
+            mc.fontRendererObj.drawString(s, background.x + 4, background.y + sizeBackground.y - 12 - offset + (fullScreen ? -10 - 5 : 1), -1);
             totalHeight += 10;
             offset += 10;
         }
@@ -202,8 +201,8 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
             if (quit) {
                 lastPos.set(pos);
                 lastSize.set(size);
-                size.set(0, 0);
                 closing = true;
+                size.set(0, 0);
                 pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
             }
 

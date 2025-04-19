@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -54,6 +55,15 @@ public class RenderUtils implements InstanceAccess {
         glPopAttrib();
 
         ColorUtils.resetColor();
+    }
+
+    public static void renderWithAbsolutePosition(Runnable runnable) {
+        final RenderManager renderManager = mc.getRenderManager();
+        double x = renderManager.viewerPosX, y = renderManager.viewerPosY, z = renderManager.viewerPosZ;
+
+        GlStateManager.translate(-x, -y, -z);
+        runnable.run();
+        GlStateManager.translate(x, y, z);
     }
 
     public static void drawBlockESP(BlockPos blockPos, float red, float green, float blue, float alpha, float lineAlpha, float lineWidth) {

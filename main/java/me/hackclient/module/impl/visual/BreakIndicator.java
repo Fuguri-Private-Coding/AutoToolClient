@@ -49,7 +49,7 @@ public class BreakIndicator extends Module {
             if (shadows.isToggled() && shadows.breakIndicator.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(posHorizontal.getValue(), posVertical.getValue(), width + 4, font.FONT_HEIGHT + 4, radius.getValue(), Color.WHITE));
 
             RoundedUtils.drawRect(posHorizontal.getValue(), posVertical.getValue(), width + 4, font.FONT_HEIGHT + 4, radius.getValue(), color.getColor());
-            font.drawString(text, posHorizontal.getValue() + 2, posVertical.getValue() + 2, textColor.getColor().getRGB(), textShadow.isToggled());
+            font.drawString(text, posHorizontal.getValue() + 2.5f, posVertical.getValue() + 2.5f, textColor.getColor().getRGB(), textShadow.isToggled());
         }
     }
 }

@@ -1,9 +1,28 @@
 package me.hackclient.utils.inventory;
 
+import com.google.common.collect.Multimap;
+import com.google.common.util.concurrent.AtomicDouble;
 import me.hackclient.utils.interfaces.InstanceAccess;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockFalling;
+import net.minecraft.block.BlockTNT;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.*;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class InventoryUtils implements InstanceAccess {
 

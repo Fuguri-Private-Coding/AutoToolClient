@@ -20,10 +20,8 @@ import me.hackclient.utils.rotation.RotationUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
 import org.lwjgl.opengl.GL11;
 
@@ -76,7 +74,7 @@ public class Scaffold extends Module {
                     "Legit"
             });
 
-    final BooleanSetting swingItem = new BooleanSetting("ServerSwingItem", this,() -> clickMode.getMode().equals("AutoPlace"), true);
+    final BooleanSetting swingItem = new BooleanSetting("ServerSwingItem", this, true);
 
     IntegerSetting minCps = new IntegerSetting("MinCps", this, () -> clickMode.getMode().equals("Legit"), 1, 40, 7) {
         @Override
@@ -103,6 +101,8 @@ public class Scaffold extends Module {
     final BooleanSetting sneakIfRotate = new BooleanSetting("SneakIfRotate", this, true);
     final BooleanSetting sneakIfNoBlocks = new BooleanSetting("SneakIfNoBlocks", this, true);
 
+    final BooleanSetting autoThirdPerson = new BooleanSetting("ThirdPerson", this, true);
+
     final BooleanSetting render = new BooleanSetting("Render", this, true);
     final ColorSetting color = new ColorSetting("Color", this, render::isToggled, 1,1,1,1);
 
@@ -117,11 +117,24 @@ public class Scaffold extends Module {
     long lastTime = 0L;
     Shadows shadows;
 
+    int personFirst;
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
+        if (autoThirdPerson.isToggled()) {
+            personFirst = mc.gameSettings.thirdPersonView;
+            mc.gameSettings.thirdPersonView = 1;
+        }
+    }
 
     @Override
     public void onDisable() {
         super.onDisable();
-        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+        if (autoThirdPerson.isToggled()) {
+            mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+            mc.gameSettings.thirdPersonView = personFirst;
+        }
     }
 
     public Scaffold() {
@@ -146,13 +159,9 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof TickEvent && mc.currentScreen == null) {
-            MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rotation(Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch()));
+            MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, Rotation.getServerRotation());
             BlockPos analyzingBlock = renderRayCast.getBlockPos();
-            if (analyzingBlock != null) {
-                if (!mc.theWorld.isAirBlock(analyzingBlock)) {
-                    renderPos = analyzingBlock;
-                }
-            }
+            if (analyzingBlock != null && renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) renderPos = analyzingBlock;
             rotate();
         }
 
@@ -161,7 +170,6 @@ public class Scaffold extends Module {
             if (shadows.isToggled() && shadows.scaffold.isToggled()) {
                 BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), 1f, 1.0F, 0));
             }
-
             RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 1.0F, 0);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderUtils.stop3D();
@@ -232,9 +240,10 @@ public class Scaffold extends Module {
 
         if (stopWatch.reachedMS(delay)) {
             if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
-                mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
-                Client.INSTANCE.getObjectsCaller().onEvent(new ClickEvent(ClickEvent.Button.RIGHT));
-
+                mc.rightClickMouse();
+                if (swingItem.isToggled()) {
+                    mc.thePlayer.swingItem();
+                }
                 stopWatch.reset();
                 delay = 1000 / RandomUtils.nextInt(minCps.getValue(), maxCps.getValue());
             }
@@ -243,11 +252,9 @@ public class Scaffold extends Module {
 
     void ragePlace() {
         if (mc.currentScreen != null) return;
-
         ItemStack stack = mc.thePlayer.getHeldItem();
-
         if (stack == null) return;
-
+        if (sneakIfRotate.isToggled() && lastDelta > 0) return;
         if (!(stack.getItem() instanceof ItemBlock)) return;
 
         MovingObjectPosition mouse = mc.objectMouseOver;
@@ -259,18 +266,13 @@ public class Scaffold extends Module {
         ) return;
 
         BlockPos pos = mouse.getBlockPos();
-        if (standingOn == null || pos.getX() != standingOn.getX() || pos.getY() != standingOn.getY() || pos.getZ() != standingOn.getZ()) {
-            Block block = mc.theWorld.getBlockState(pos).getBlock();
-            if (block != null && block != Blocks.air && !(block instanceof BlockLiquid)) {
-                if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25) {
-                    mc.rightClickMouse();
-                    if (swingItem.isToggled()) {
-                        mc.thePlayer.swingItem();
-                        mc.getItemRenderer().resetEquippedProgress();
-                        mc.rightClickMouse();
-                    }
-                    standingOn = pos;
-                    lastTime = System.currentTimeMillis();
+        if (mc.theWorld.getBlockState(pos).getBlock().getMaterial() != Material.air) {
+            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25) {
+                mc.rightClickMouse();
+                if (swingItem.isToggled()) {
+                    mc.thePlayer.swingItem();
+                    mc.getItemRenderer().resetEquippedProgress();
+                    mc.clickMouse();
                 }
             }
         }

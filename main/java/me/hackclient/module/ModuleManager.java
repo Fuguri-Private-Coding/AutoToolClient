@@ -96,7 +96,9 @@ public class ModuleManager {
 				 new CustomCape(),
 				 new InvClicker(),
 				 new CustomCamera(),
-				 new KillEffects()
+				 new KillEffects(),
+				 new BlockOverlay(),
+				 new BedESP()
 		);
 	}
 
@@ -107,7 +109,7 @@ public class ModuleManager {
 	public List<Module> getModulesByCategory(Category category) {
 		return modules.stream().filter(module -> module.getCategory() == category).collect(Collectors.toList());
 	}
-    
+
     public <T extends Module> T getModule(Class<T> moduleClass) {
         return (T) modules.stream()
                 .filter(module -> module.getClass() == moduleClass)

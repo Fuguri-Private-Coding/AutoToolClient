@@ -8,9 +8,8 @@ import me.hackclient.event.events.*;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.packet.TimeUtils;
 import me.hackclient.utils.packet.TimedVar;
-import net.minecraft.client.renderer.GlStateManager;
+import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
@@ -160,7 +159,7 @@ public class FakeLag extends Module {
                     RendererLivingEntity.NAME_TAG_RANGE = 0;
                     RendererLivingEntity.NAME_TAG_RANGE_SNEAK = 0;
 
-                    renderWithAbsolutePosition(() -> mc.getRenderManager().renderEntityWithPosYaw(mc.thePlayer, x, y, z, mc.thePlayer.rotationYaw, partialTicks));
+                    RenderUtils.renderWithAbsolutePosition(() -> mc.getRenderManager().renderEntityWithPosYaw(mc.thePlayer, x, y, z, mc.thePlayer.rotationYaw, partialTicks));
 
                     RendererLivingEntity.NAME_TAG_RANGE = 64;
                     RendererLivingEntity.NAME_TAG_RANGE_SNEAK = 32;
@@ -177,7 +176,7 @@ public class FakeLag extends Module {
                     RendererLivingEntity.NAME_TAG_RANGE = 0;
                     RendererLivingEntity.NAME_TAG_RANGE_SNEAK = 0;
 
-                    renderWithAbsolutePosition(() -> mc.getRenderManager().renderEntityWithPosYaw(advancedTarget, x, y, z, advancedTarget.rotationYawHead, partialTicks));
+                    RenderUtils.renderWithAbsolutePosition(() -> mc.getRenderManager().renderEntityWithPosYaw(advancedTarget, x, y, z, advancedTarget.rotationYawHead, partialTicks));
 
                     RendererLivingEntity.NAME_TAG_RANGE = 64;
                     RendererLivingEntity.NAME_TAG_RANGE_SNEAK = 32;
@@ -215,15 +214,6 @@ public class FakeLag extends Module {
             }
             return false;
         });
-    }
-
-    public static void renderWithAbsolutePosition(Runnable runnable) {
-        final RenderManager renderManager = mc.getRenderManager();
-        double x = renderManager.viewerPosX, y = renderManager.viewerPosY, z = renderManager.viewerPosZ;
-
-        GlStateManager.translate(-x, -y, -z);
-        runnable.run();
-        GlStateManager.translate(x, y, z);
     }
 
     void clearOutBound() {

@@ -27,6 +27,8 @@ public class Shadows extends Module {
     public BooleanSetting breakIndicator = new BooleanSetting("BreakIndicator", this, true);
     public BooleanSetting cpsCounter = new BooleanSetting("CPSCounter", this, true);
     public BooleanSetting bpsCounter = new BooleanSetting("BPSCounter", this, true);
+    public BooleanSetting blockOverlay = new BooleanSetting("BlockOverlay", this, true);
+    public BooleanSetting bedEsp = new BooleanSetting("BedESP", this, true);
     //public BooleanSetting nameTags = new BooleanSetting("NameTags", this, true);
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 15, 6);

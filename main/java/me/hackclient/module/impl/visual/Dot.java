@@ -13,13 +13,9 @@ import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.utils.color.ColorUtils;
 import me.hackclient.utils.render.RenderUtils;
-import me.hackclient.utils.rotation.RayCastUtils;
-import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
 
 @ModuleInfo(
         name = "Dot",
