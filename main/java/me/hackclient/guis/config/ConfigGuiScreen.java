@@ -124,7 +124,7 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
         float offset = 0;
         float yOffset = scrolls.y;
         for (File file : Client.INSTANCE.getConfigsDirectory().listFiles()) {
-            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clickGui.backgroundRadius.getValue(), selectedConfig != null ? selectedConfig.getName().equals(file.getName()) ? new Color(80,80,80,150) : new Color(0,0,0,150) : new Color(0,0,0,150));
+            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clickGui.backgroundRadius.getValue(), selectedConfig != null ? selectedConfig.getName().equals(file.getName()) ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150));
             fontRendererObj.drawString(file.getName().replaceAll(".json", ""), background.x + 10 + offset, background.y + 30 + yOffset, -1);
             offset += 105;
 

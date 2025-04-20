@@ -97,7 +97,6 @@ public class Scaffold extends Module {
     final IntegerSetting pitchAccelSpeed = new IntegerSetting("PitchAccelSpeed", this, 0,180,20);
 
     final BooleanSetting bypassServerPitch = new BooleanSetting("BypassServerPitch", this, true);
-
     FloatSetting serverPitch = new FloatSetting("ServerPitch", this, bypassServerPitch::isToggled , 70, 85, 77,0.1f);
     FloatSetting bestPitchNoDiagonal = new FloatSetting("FrontPitch", this, 70, 85, 77,0.1f);
     FloatSetting diagonalPitch = new FloatSetting("DiagonalPitch", this, 70, 85, 77,0.1f);
@@ -120,6 +119,7 @@ public class Scaffold extends Module {
     long lastTime = 0L;
     Shadows shadows;
 
+
     int personFirst;
 
     @Override
@@ -134,8 +134,8 @@ public class Scaffold extends Module {
     @Override
     public void onDisable() {
         super.onDisable();
+        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
         if (autoThirdPerson.isToggled()) {
-            mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
             mc.gameSettings.thirdPersonView = personFirst;
         }
     }
@@ -205,8 +205,6 @@ public class Scaffold extends Module {
         if (event instanceof SprintEvent) {
             if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
                 mc.thePlayer.setSprinting(false);
-            } else if (MoveUtils.canSprint()) {
-                mc.thePlayer.setSprinting(true);
             }
         }
 
@@ -254,7 +252,6 @@ public class Scaffold extends Module {
     }
 
     void ragePlace() {
-        if (true) return;
         if (mc.currentScreen != null) return;
         ItemStack stack = mc.thePlayer.getHeldItem();
         if (stack == null) return;
@@ -323,6 +320,9 @@ public class Scaffold extends Module {
         lastDeltas.setYaw(Math.clamp(lastDeltas.getYaw() * (1 - accelSlowDown.getValue()), -yawAccelSpeed.getValue(), yawAccelSpeed.getValue()));
         lastDeltas.setPitch(Math.clamp(lastDeltas.getPitch() * (1 - accelSlowDown.getValue()), -pitchAccelSpeed.getValue(), pitchAccelSpeed.getValue()));
 
+        delta.setYaw(delta.getYaw() + lastDeltas.getYaw());
+        delta.setPitch(delta.getPitch() + lastDeltas.getPitch());
+
         delta = delta.limit(
                 RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
                 RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
@@ -333,13 +333,10 @@ public class Scaffold extends Module {
                 smooth.getValue()
         );
 
-        delta.setYaw(delta.getYaw() + lastDeltas.getYaw());
-        delta.setPitch(delta.getPitch() + lastDeltas.getPitch());
+        delta = RotationUtils.fixDelta(delta);
 
         lastDeltas.setYaw(delta.getYaw());
         lastDeltas.setPitch(delta.getPitch());
-
-        delta = RotationUtils.fixDelta(delta);
 
         lastDelta = delta.hypot();
 
