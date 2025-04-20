@@ -92,6 +92,10 @@ public class Scaffold extends Module {
         }
     };
 
+    final FloatSetting accelSlowDown = new FloatSetting("AccelSlowDown", this, 0f,2f,0.3f,0.1f);
+    final IntegerSetting yawAccelSpeed = new IntegerSetting("YawAccelSpeed", this, 0,180,15);
+    final IntegerSetting pitchAccelSpeed = new IntegerSetting("PitchAccelSpeed", this, 0,180,20);
+
     final BooleanSetting bypassServerPitch = new BooleanSetting("BypassServerPitch", this, true);
 
     FloatSetting serverPitch = new FloatSetting("ServerPitch", this, bypassServerPitch::isToggled , 70, 85, 77,0.1f);
@@ -112,7 +116,6 @@ public class Scaffold extends Module {
 
     int delay = 0;
 
-    BlockPos standingOn = null;
     BlockPos renderPos = null;
     long lastTime = 0L;
     Shadows shadows;
@@ -251,6 +254,7 @@ public class Scaffold extends Module {
     }
 
     void ragePlace() {
+        if (true) return;
         if (mc.currentScreen != null) return;
         ItemStack stack = mc.thePlayer.getHeldItem();
         if (stack == null) return;
@@ -271,14 +275,14 @@ public class Scaffold extends Module {
                 mc.rightClickMouse();
                 if (swingItem.isToggled()) {
                     mc.thePlayer.swingItem();
-                    mc.getItemRenderer().resetEquippedProgress();
-                    mc.clickMouse();
                 }
             }
         }
     }
 
     double lastDelta = 0;
+
+    private final Rotation lastDeltas = new Rotation();
 
     void rotate() {
         boolean moveDiagonally = false;
@@ -316,6 +320,9 @@ public class Scaffold extends Module {
 
         Delta delta = RotationUtils.getDelta(Rotation.getServerRotation(), rotation);
 
+        lastDeltas.setYaw(Math.clamp(lastDeltas.getYaw() * (1 - accelSlowDown.getValue()), -yawAccelSpeed.getValue(), yawAccelSpeed.getValue()));
+        lastDeltas.setPitch(Math.clamp(lastDeltas.getPitch() * (1 - accelSlowDown.getValue()), -pitchAccelSpeed.getValue(), pitchAccelSpeed.getValue()));
+
         delta = delta.limit(
                 RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
                 RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
@@ -325,6 +332,12 @@ public class Scaffold extends Module {
                 smooth.getValue(),
                 smooth.getValue()
         );
+
+        delta.setYaw(delta.getYaw() + lastDeltas.getYaw());
+        delta.setPitch(delta.getPitch() + lastDeltas.getPitch());
+
+        lastDeltas.setYaw(delta.getYaw());
+        lastDeltas.setPitch(delta.getPitch());
 
         delta = RotationUtils.fixDelta(delta);
 

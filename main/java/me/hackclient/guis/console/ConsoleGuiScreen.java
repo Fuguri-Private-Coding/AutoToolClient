@@ -4,6 +4,7 @@ import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.events.TickEvent;
+import me.hackclient.guis.config.ConfigGuiScreen;
 import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.shader.impl.BloomUtils;
@@ -30,7 +31,7 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
     Vector2f lastSize = new Vector2f(200, 200);
     Vector2f lastPos = new Vector2f(200, 200);
 
-    boolean moving, closing, openBrowser;
+    boolean moving, closing;
     int scroll, totalHeight = 0;
     boolean fullScreen = false;
     final Animation2D background, sizeBackground, scrolls;
@@ -74,9 +75,6 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
                 closing = false;
                 mc.displayGuiScreen(null);
                 mc.currentScreen = null;
-//                if (openBrowser) {
-//                    mc.displayGuiScreen(new BrowserGuiScreen());
-//                }
             }
         }
 
@@ -130,12 +128,10 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         RoundedUtils.drawRect(background.x + 4.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
         RoundedUtils.drawRect(background.x + 14.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
         RoundedUtils.drawRect(background.x + 24.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
-        RoundedUtils.drawRect(background.x + 34.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
 
         RoundedUtils.drawRect(background.x + 5, background.y + 4, 6.5f, 6.5f, 3f, Color.red);
         RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
         RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
-        RoundedUtils.drawRect(background.x + 35, background.y + 4, 6.5f, 6.5f, 3f, Color.blue);
 
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 33 : 15));
@@ -193,7 +189,6 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean collapse = mouseX > background.x + 25 && mouseX < background.x + 25 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
-        boolean browser = mouseX > background.x + 35 && mouseX < background.x + 35 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean clearHistory = mouseX > background.x + sizeBackground.x - 5 - width && mouseX < background.x + sizeBackground.x - 5 + width && mouseY > background.y && mouseY < background.y + 3.5 + 9;
         boolean move = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y && mouseY < background.y + 15;
 
@@ -217,14 +212,6 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
                 size.set(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
                 pos.set(50f, 50f);
             }
-//            if (browser) {
-//                lastPos.set(pos);
-//                lastSize.set(size);
-//                size.set(0, 0);
-//                closing = true;
-//                openBrowser = true;
-//                pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
-//            }
 
             if (clearHistory) {
                 history.clear();
@@ -232,7 +219,7 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
             }
 
             if (move) {
-                if (quit || fullscreen || collapse || browser) return;
+                if (quit || fullscreen || collapse) return;
                 moving = true;
                 lastMouse.set(mouseX, mouseY);
             }

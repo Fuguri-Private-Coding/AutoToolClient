@@ -52,7 +52,7 @@ public class Speed extends Module {
 					}
 				}
 				if (event instanceof MoveButtonEvent moveButtonEvent) {
-					if (ticks == 10) moveButtonEvent.setSneak(true);
+					if (ticks == 11) moveButtonEvent.setSneak(true);
 					if (ticks == 11) {
 						if (Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ) < 0.25) {
 							ClientUtils.chatLog(Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ));

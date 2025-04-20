@@ -41,7 +41,6 @@ public class AutoPlace extends Module {
                     || mouse.sideHit == EnumFacing.UP
                     || mouse.sideHit == EnumFacing.DOWN) return;
 
-            
             BlockPos pos = mouse.getBlockPos();
             if (!needHoldRight.isToggled() || Mouse.isButtonDown(1)) {
                 if (mc.theWorld.getBlockState(pos).getBlock().getMaterial() != Material.air) {
@@ -49,7 +48,6 @@ public class AutoPlace extends Module {
                         mc.rightClickMouse();
                         if (swingItem.isToggled()) {
                             mc.thePlayer.swingItem();
-
                         }
                     }
                 }

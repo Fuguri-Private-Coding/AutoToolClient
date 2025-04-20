@@ -15,7 +15,7 @@ import me.hackclient.settings.impl.IntegerSetting;
 public class Shadows extends Module {
 
     public BooleanSetting clickGui = new BooleanSetting("ClickGui", this, true);
-    public BooleanSetting console = new BooleanSetting("Console", this, true);
+    public BooleanSetting console = new BooleanSetting("ConsoleGui", this, true);
     public BooleanSetting mainMenu = new BooleanSetting("MainMenu", this, true);
     public BooleanSetting item = new BooleanSetting("ItemsFirstPerson", this, true);
     public BooleanSetting arrayList = new BooleanSetting("ArrayList", this, true);
@@ -29,6 +29,7 @@ public class Shadows extends Module {
     public BooleanSetting bpsCounter = new BooleanSetting("BPSCounter", this, true);
     public BooleanSetting blockOverlay = new BooleanSetting("BlockOverlay", this, true);
     public BooleanSetting bedEsp = new BooleanSetting("BedESP", this, true);
+    public BooleanSetting config = new BooleanSetting("ConfigGui", this, true);
     //public BooleanSetting nameTags = new BooleanSetting("NameTags", this, true);
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 15, 6);

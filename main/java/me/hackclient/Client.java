@@ -100,6 +100,11 @@ public enum Client implements CallableObject {
 		objectsCaller = new ObjectsCaller();
 		configManager = new ConfigManager();
 
+		if (!defaultConfig.exists()) {
+			defaultConfig.createNewFile();
+			console.log("Create config file");
+		}
+
 		try {
 			configManager.load(defaultConfig);
 		} catch (IOException e) {

@@ -74,10 +74,6 @@ public class ConfigManager implements InstanceAccess {
     }
 
     public void save(File file) throws IOException {
-        if (!Client.INSTANCE.getDefaultConfig().exists()) {
-            Client.INSTANCE.getDefaultConfig().createNewFile();
-        }
-
         try {
             JsonObject json = new JsonObject();
             Client.INSTANCE.setDefaultConfig(file);
@@ -96,12 +92,11 @@ public class ConfigManager implements InstanceAccess {
         }
     }
 
-    public void load(File file) throws IOException {
-        if (!file.exists()) {
-            save(file);
-            return;
-        }
+    public void delete(File file) {
+        if (file != null) file.delete();
+    }
 
+    public void load(File file) throws IOException {
         BufferedReader load = new BufferedReader(new FileReader(file));
         JsonParser jsonParser = new JsonParser();
         JsonObject json = (JsonObject) jsonParser.parse(load);
@@ -189,5 +184,15 @@ public class ConfigManager implements InstanceAccess {
             }
         }
         return jsonModule;
+    }
+
+    public void loadAsync(File file) {
+        new Thread(() -> {
+            try {
+                load(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 }

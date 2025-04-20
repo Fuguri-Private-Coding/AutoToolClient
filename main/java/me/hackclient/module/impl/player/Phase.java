@@ -49,7 +49,7 @@ public class Phase extends Module {
     }
 
     private void setGameMode(WorldSettings.GameType gameType) {
-        if (mc.thePlayer != null && mc.playerController != null) {
+        if (mc.thePlayer != null && mc.playerController != null && gameType != null) {
             mc.playerController.setGameType(gameType);
         }
     }
