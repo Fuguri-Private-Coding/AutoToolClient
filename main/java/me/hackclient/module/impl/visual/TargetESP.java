@@ -23,7 +23,6 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "TargetESP", category = Category.VISUAL, toggled = true)
 public class TargetESP extends Module {
 
-
     final ModeSetting mode = new ModeSetting(
             "Mode",
             this,

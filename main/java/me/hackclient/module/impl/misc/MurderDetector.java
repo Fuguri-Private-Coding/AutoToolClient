@@ -13,10 +13,7 @@ import net.minecraft.init.Items;
 import java.util.ArrayList;
 import java.util.List;
 
-@ModuleInfo(
-        name = "MurderDetector",
-        category = Category.MISC
-)
+@ModuleInfo(name = "MurderDetector", category = Category.MISC)
 public class MurderDetector extends Module {
 
     public List<String> murders;

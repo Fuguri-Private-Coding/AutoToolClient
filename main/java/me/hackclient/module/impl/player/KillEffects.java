@@ -13,10 +13,7 @@ import me.hackclient.settings.impl.MultiBooleanSetting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 
-@ModuleInfo(
-        name = "KillEffects",
-        category = Category.PLAYER
-)
+@ModuleInfo(name = "KillEffects", category = Category.PLAYER)
 public class KillEffects extends Module {
     BooleanSetting effect = new BooleanSetting("Effect", this, true);
     MultiBooleanSetting effects = new MultiBooleanSetting("Effects",this, effect::isToggled)

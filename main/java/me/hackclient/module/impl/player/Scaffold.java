@@ -25,10 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import org.lwjgl.opengl.GL11;
 
-@ModuleInfo(
-        name = "Scaffold",
-        category = Category.PLAYER
-)
+@ModuleInfo(name = "Scaffold", category = Category.PLAYER)
 public class Scaffold extends Module {
 
     IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 1, 180, 30) {
@@ -92,10 +89,6 @@ public class Scaffold extends Module {
         }
     };
 
-    final FloatSetting accelSlowDown = new FloatSetting("AccelSlowDown", this, 0f,2f,0.3f,0.1f);
-    final IntegerSetting yawAccelSpeed = new IntegerSetting("YawAccelSpeed", this, 0,180,15);
-    final IntegerSetting pitchAccelSpeed = new IntegerSetting("PitchAccelSpeed", this, 0,180,20);
-
     final BooleanSetting bypassServerPitch = new BooleanSetting("BypassServerPitch", this, true);
     FloatSetting serverPitch = new FloatSetting("ServerPitch", this, bypassServerPitch::isToggled , 70, 85, 77,0.1f);
     FloatSetting bestPitchNoDiagonal = new FloatSetting("FrontPitch", this, 70, 85, 77,0.1f);
@@ -118,7 +111,6 @@ public class Scaffold extends Module {
     BlockPos renderPos = null;
     long lastTime = 0L;
     Shadows shadows;
-
 
     int personFirst;
 
@@ -279,8 +271,6 @@ public class Scaffold extends Module {
 
     double lastDelta = 0;
 
-    private final Rotation lastDeltas = new Rotation();
-
     void rotate() {
         boolean moveDiagonally = false;
         float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), 45);
@@ -307,21 +297,11 @@ public class Scaffold extends Module {
             rotation = new Rotation(roundedYaw, bestPitch);
         }
 
-        //if (mc.thePlayer.hurtResistantTime > 0) {
-        //    for (float i = 0; i < 180; i += 0.1f) {}
-        //}
-
         if (rotation == null) {
             return;
         }
 
         Delta delta = RotationUtils.getDelta(Rotation.getServerRotation(), rotation);
-
-        lastDeltas.setYaw(Math.clamp(lastDeltas.getYaw() * (1 - accelSlowDown.getValue()), -yawAccelSpeed.getValue(), yawAccelSpeed.getValue()));
-        lastDeltas.setPitch(Math.clamp(lastDeltas.getPitch() * (1 - accelSlowDown.getValue()), -pitchAccelSpeed.getValue(), pitchAccelSpeed.getValue()));
-
-        delta.setYaw(delta.getYaw() + lastDeltas.getYaw());
-        delta.setPitch(delta.getPitch() + lastDeltas.getPitch());
 
         delta = delta.limit(
                 RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
@@ -335,14 +315,11 @@ public class Scaffold extends Module {
 
         delta = RotationUtils.fixDelta(delta);
 
-        lastDeltas.setYaw(delta.getYaw());
-        lastDeltas.setPitch(delta.getPitch());
-
         lastDelta = delta.hypot();
 
         Rotation.setServerRotation(new Rotation(
                 Rotation.getServerRotation().getYaw() + delta.getYaw(),
-                Rotation.getServerRotation().getPitch() + delta.getPitch()
+                Math.clamp(Rotation.getServerRotation().getPitch() + delta.getPitch(), -90, 90)
         ));
     }
 

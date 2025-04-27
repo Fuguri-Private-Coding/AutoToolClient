@@ -7,10 +7,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.ModeSetting;
 
-@ModuleInfo(
-        name = "Jesus",
-        category = Category.MOVE
-)
+@ModuleInfo(name = "Jesus", category = Category.MOVE)
 public class Jesus extends Module {
 
     ModeSetting mode = new ModeSetting(

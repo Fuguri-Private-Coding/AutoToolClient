@@ -11,6 +11,7 @@ import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.utils.animation.Animation2D;
 import net.minecraft.client.gui.FontRenderer;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

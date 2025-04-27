@@ -306,14 +306,16 @@ public class ItemRenderer {
             GlStateManager.pushMatrix();
 
             if (this.itemToRender != null) {
-                boolean animate = f1 > 0 && Animations.isAnimate() || abstractclientplayer.getItemInUseCount() > 0;
+                EnumAction enumaction = this.itemToRender.getItemUseAction();
+                Animations animations = Client.INSTANCE.getModuleManager().getModule(Animations.class);
+                boolean animate = ((f1 > 0 && Animations.isAnimate()) || (abstractclientplayer.getItemInUseCount() > 0 && enumaction.equals(EnumAction.BLOCK))) || (animations.isToggled() && animations.always.isToggled() && f1 > 0);
+                boolean animat = (f1 > 0 && Animations.isAnimate() && animations.isToggled() && enumaction.equals(EnumAction.BLOCK)) || (animations.isToggled() && animations.always.isToggled() && f1 > 0 && enumaction.equals(EnumAction.BLOCK)) || (animations.isToggled() && abstractclientplayer.getItemInUseCount() > 0 && enumaction.equals(EnumAction.BLOCK));
+
                 if (this.itemToRender.getItem() instanceof ItemMap) {
                     this.renderItemMap(abstractclientplayer, f2, f, f1);
-                } else if (animate) {
+                } else if (animat) {
                     Client.INSTANCE.getObjectsCaller().onEvent(new RenderItemEvent(f1, f));
                 } else if (abstractclientplayer.getItemInUseCount() > 0) {
-                    EnumAction enumaction = this.itemToRender.getItemUseAction();
-
                     switch (enumaction) {
                         case NONE:
                             this.transformFirstPersonItem(f, 0.0F);

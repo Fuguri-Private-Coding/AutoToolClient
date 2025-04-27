@@ -19,10 +19,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-@ModuleInfo(
-        name = "ESP",
-        category = Category.VISUAL
-)
+@ModuleInfo(name = "ESP", category = Category.VISUAL)
 public class ESP extends Module {
 
     final MultiBooleanSetting modes = new MultiBooleanSetting("Modes", this)

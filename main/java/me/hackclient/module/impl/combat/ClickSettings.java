@@ -5,12 +5,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 
-@ModuleInfo(
-        name = "ClickSettings",
-        category = Category.COMBAT,
-        hide = true,
-        toggled = true
-)
+@ModuleInfo(name = "ClickSettings", category = Category.COMBAT, hide = true, toggled = true)
 public class ClickSettings extends Module {
 
     public final IntegerSetting minStartHurtTime = new IntegerSetting("MinStartHurtTime", this, 0, 10, 3) {

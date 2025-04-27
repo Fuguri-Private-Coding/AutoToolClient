@@ -10,7 +10,7 @@ import net.minecraft.util.AxisAlignedBB;
 public class IntaveRotation extends KillAuraRotation {
 
     @Override
-    public Rotation compute(Rotation startsFrom, EntityLivingBase target, float simpleYawSpeed, float simplePitchSpeed, float accelSlowDown, int yawAccelSpeed, int pitchAccelSpeed) {
+    public Rotation compute(Rotation startsFrom, EntityLivingBase target, float simpleYawSpeed, float simplePitchSpeed, float accelSlowDown, int yawAccelSpeed, int pitchAccelSpeed, float smooth) {
         AxisAlignedBB box = target.getEntityBoundingBox();
 
         box = new AxisAlignedBB(
@@ -25,9 +25,8 @@ public class IntaveRotation extends KillAuraRotation {
         Rotation nearest = RotationUtils.getNearestRotation(startsFrom, box);
         if (nearest == null) { return startsFrom.copy(); }
 
-        Delta delta = RotationUtils.getDelta(startsFrom, nearest).limit(simpleYawSpeed, simplePitchSpeed).divine(2f, 2f);
+        Delta delta = RotationUtils.getDelta(startsFrom, nearest).limit(simpleYawSpeed, simplePitchSpeed).divine(smooth, smooth);
 
         return startsFrom.add(delta).fix();
     }
-
 }

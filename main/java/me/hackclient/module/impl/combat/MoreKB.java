@@ -13,10 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
-@ModuleInfo(
-        name = "MoreKB",
-        category = Category.COMBAT
-)
+@ModuleInfo(name = "MoreKB", category = Category.COMBAT)
 public class MoreKB extends Module {
 
     final ModeSetting mode = new ModeSetting(

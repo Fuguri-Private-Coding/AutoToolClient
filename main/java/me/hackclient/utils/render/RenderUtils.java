@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
 
 import java.awt.*;
 
@@ -96,6 +97,96 @@ public class RenderUtils implements InstanceAccess {
         }
 
         ColorUtils.resetColor();
+    }
+
+    public static void drawDot(double x, double y, double z, double size, int color) {
+        double d = size / 2;
+        GlStateManager.pushMatrix();
+        AxisAlignedBB box = new AxisAlignedBB(x - d, y - d, z - d, x + d, y + d, z + d);
+
+        AxisAlignedBB axis = new AxisAlignedBB(box.minX - mc.thePlayer.posX, box.minY - mc.thePlayer.posY, box.minZ - mc.thePlayer.posZ, box.maxX - mc.thePlayer.posX, box.maxY - mc.thePlayer.posY, box.maxZ - mc.thePlayer.posZ);
+        float a = (float) (color >> 24 & 255) / 255.0F;
+        float r = (float) (color >> 16 & 255) / 255.0F;
+        float g = (float) (color >> 8 & 255) / 255.0F;
+        float b = (float) (color & 255) / 255.0F;
+        glBlendFunc(770, 771);
+        glEnable(3042);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(2929);
+        glDepthMask(false);
+        glLineWidth(2.0F);
+        glColor4f(r, g, b, a);
+        drawBoundingBox(axis, r, g, b, a);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(2929);
+        glDepthMask(true);
+        glDisable(GL_BLEND);
+        GlStateManager.popMatrix();
+    }
+
+    public static void drawBoundingBox(AxisAlignedBB abb, float r, float g, float b, float a) {
+        Tessellator ts = Tessellator.getInstance();
+        WorldRenderer vb = ts.getWorldRenderer();
+        vb.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        vb.pos(abb.minX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        ts.draw();
+        vb.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        vb.pos(abb.maxX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        ts.draw();
+        vb.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        vb.pos(abb.minX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        ts.draw();
+        vb.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        vb.pos(abb.minX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        ts.draw();
+        vb.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        vb.pos(abb.minX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        ts.draw();
+        vb.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        vb.pos(abb.minX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.minX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
+        vb.pos(abb.maxX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
+        ts.draw();
     }
 
     public static void drawBoundingBox(AxisAlignedBB var0) {

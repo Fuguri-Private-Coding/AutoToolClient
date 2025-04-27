@@ -3,6 +3,7 @@ package me.hackclient.module.impl.combat;
 import me.hackclient.Client;
 import me.hackclient.managers.CombatManager;
 import me.hackclient.module.impl.combat.killaura.rotation.impl.*;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.target.TargetFinder;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.*;
@@ -18,10 +19,7 @@ import me.hackclient.utils.move.MoveUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.timer.StopWatch;
 
-@ModuleInfo(
-        name = "KillAura",
-        category = Category.COMBAT
-)
+@ModuleInfo(name = "KillAura", category = Category.COMBAT)
 public class KillAura extends Module {
 
     final StopWatch stopWatch;
@@ -30,14 +28,12 @@ public class KillAura extends Module {
     private final IntaveRotation intaveRotation = new IntaveRotation();
     private final VanillaRotation vanillaRotation = new VanillaRotation();
 
-    // Настройки поиска противника
     final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3.0f, 8.0f, 6.0f, 0.1f);
 
     final BooleanSetting players = new BooleanSetting("Players", this, true);
     final BooleanSetting animals = new BooleanSetting("Animals", this, false);
     final BooleanSetting mobs = new BooleanSetting("Mobs", this, false);
 
-    // Настройки ротации
     final ModeSetting rotationMode = new ModeSetting(
             "RotationMode",
             this,
@@ -49,7 +45,6 @@ public class KillAura extends Module {
             }
     );
 
-    // Клики
     final FloatSetting swingDistance = new FloatSetting("SwingDistance", this, 3.0f, 6.0f, 6.0f, 0.1f);
 
     final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 0, 20, 17) {
@@ -68,7 +63,6 @@ public class KillAura extends Module {
         }
     };
 
-    // Ротация
     final IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 0, 180, 90) {
         @Override
         public int getValue() {
@@ -101,13 +95,14 @@ public class KillAura extends Module {
         }
     };
 
-    final FloatSetting accelSlowDown = new FloatSetting("AccelSlowDown", this,() -> rotationMode.getMode().equals("IntaveNew"), 0f,2f,0.3f,0.1f);
+    final FloatSetting smooth = new FloatSetting("Smooth", this, 1f,10f,2f,0.1f);
+
+    final FloatSetting accelSlowDown = new FloatSetting("AccelSlowDown", this,() -> rotationMode.getMode().equals("IntaveNew"), 0f,1f,0.3f,0.1f);
     final IntegerSetting yawAccelSpeed = new IntegerSetting("YawAccelSpeed", this,() -> rotationMode.getMode().equals("IntaveNew"), 0,180,15);
     final IntegerSetting pitchAccelSpeed = new IntegerSetting("PitchAccelSpeed", this,() -> rotationMode.getMode().equals("IntaveNew"), 0,180,20);
 
     final BooleanSetting fakeBlock = new BooleanSetting("FakeBlock", this, true);
 
-    // Мувмент
     final BooleanSetting moveFix = new BooleanSetting("MoveFix", this, true);
     final BooleanSetting silent = new BooleanSetting("Silent", this, moveFix::isToggled, true);
     final BooleanSetting jumpFix = new BooleanSetting("JumpFix", this, true);
@@ -132,9 +127,7 @@ public class KillAura extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        if (event instanceof UpdateEvent) {
-            combatManager.setTarget(TargetFinder.findTarget(findDistance.getValue(), players.isToggled(), mobs.isToggled(), animals.isToggled()));
-        }
+        if (event instanceof UpdateEvent) combatManager.setTarget(TargetFinder.findTarget(findDistance.getValue(), players.isToggled(), mobs.isToggled(), animals.isToggled()));
 
         if (event instanceof RunGameLoopEvent) {
             boolean haveTarget = combatManager.getTarget() != null;
@@ -166,7 +159,8 @@ public class KillAura extends Module {
                             Rotation.getServerRotation(),
                             combatManager.getTarget(),
                             randomizeYawSpeed, randomizePitchSpeed,
-                            accelSlowDown.getValue(), yawAccelSpeed.getValue(), pitchAccelSpeed.getValue()
+                            accelSlowDown.getValue(), yawAccelSpeed.getValue(), pitchAccelSpeed.getValue(),
+                            smooth.getValue()
                     ));
                 }
             }

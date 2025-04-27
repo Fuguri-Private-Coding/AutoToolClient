@@ -14,10 +14,7 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import org.lwjgl.util.vector.Vector2f;
 
-@ModuleInfo(
-        name = "ChestStealer",
-        category = Category.PLAYER
-)
+@ModuleInfo(name = "ChestStealer", category = Category.PLAYER)
 public class ChestStealer extends Module {
 
     final IntegerSetting baseDelay = new IntegerSetting("BaseDelay", this, 0, 1000, 50);

@@ -15,10 +15,7 @@ import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.util.MathHelper;
 
-@ModuleInfo(
-        name = "RotationHandler",
-        category = Category.COMBAT
-)
+@ModuleInfo(name = "RotationHandler", category = Category.COMBAT)
 public class RotationHandler extends Module {
 
     final IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 0, 180, 30);

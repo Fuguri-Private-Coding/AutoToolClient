@@ -15,10 +15,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
-@ModuleInfo(
-    name = "AimAssist",
-    category = Category.LEGIT
-)
+@ModuleInfo(name = "AimAssist", category = Category.LEGIT)
 public class AimAssist extends Module {
 
     final BooleanSetting moveVertical = new BooleanSetting("MoveVertical", this, false);

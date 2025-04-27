@@ -11,10 +11,7 @@ import me.hackclient.settings.impl.ModeSetting;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 
-@ModuleInfo(
-        name = "AirStuck",
-        category = Category.PLAYER
-)
+@ModuleInfo(name = "AirStuck", category = Category.PLAYER)
 public class AirStuck extends Module {
 
     ModeSetting mode = new ModeSetting(

@@ -16,10 +16,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(
-        name = "Trails",
-        category = Category.VISUAL
-)
+@ModuleInfo(name = "Trails", category = Category.VISUAL)
 public class Trails extends Module {
 
     final ModeSetting mode = new ModeSetting(

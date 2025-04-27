@@ -21,6 +21,57 @@ public class MoveUtils implements InstanceAccess {
                 && !mc.thePlayer.isSneaking();
     }
 
+    public static boolean isMoving() {
+        return mc.thePlayer.moveForward != 0.0F || mc.thePlayer.moveStrafing != 0.0F && !mc.thePlayer.isCollidedHorizontally;
+    }
+
+    public static void setSpeed(float f2) {
+        mc.thePlayer.motionX = -(Math.sin(direction()) * (double)f2);
+        mc.thePlayer.motionZ = Math.cos(direction()) * (double)f2;
+    }
+
+    public static void setSpeed(float f2, boolean strafe) {
+        double d = Math.toRadians(getYaw(strafe));
+        mc.thePlayer.motionX = -(Math.sin(d) * (double)f2);
+        mc.thePlayer.motionZ = Math.cos(d) * (double)f2;
+    }
+
+    public static void strafe(double d) {
+        if (isMoving()) {
+            double direction = direction();
+            mc.thePlayer.motionX = -Math.sin(direction) * d;
+            mc.thePlayer.motionZ = Math.cos(direction) * d;
+        }
+    }
+
+    public static float getYaw(boolean strafe) {
+        return strafe ? (float) Math.toDegrees(direction()) : mc.thePlayer.rotationYaw;
+    }
+
+    public static double direction() {
+        float f = mc.thePlayer.rotationYaw;
+        if (mc.thePlayer.moveForward < 0.0F) {
+            f += 180.0F;
+        }
+
+        float f2 = 1.0F;
+        if (mc.thePlayer.moveForward < 0.0F) {
+            f2 = -0.5F;
+        } else if (mc.thePlayer.moveForward > 0.0F) {
+            f2 = 0.5F;
+        }
+
+        if (mc.thePlayer.moveStrafing > 0.0F) {
+            f -= 90.0F * f2;
+        }
+
+        if (mc.thePlayer.moveStrafing < 0.0F) {
+            f += 90.0F * f2;
+        }
+
+        return Math.toRadians(f);
+    }
+
     public static float getDirection(float yaw, float forward, float strafe) {
         if (forward < 0) {
             yaw += 180;

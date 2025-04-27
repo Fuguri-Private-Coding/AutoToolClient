@@ -13,10 +13,7 @@ import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.util.MovingObjectPosition;
 
-@ModuleInfo(
-        name = "BlockOverlay",
-        category = Category.VISUAL
-)
+@ModuleInfo(name = "BlockOverlay", category = Category.VISUAL)
 public class BlockOverlay extends Module {
 
     ColorSetting color = new ColorSetting("Color", this, 0,0.5f,1f,0.3f);

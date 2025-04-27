@@ -10,10 +10,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 
-@ModuleInfo(
-        name = "Velocity",
-        category = Category.COMBAT
-)
+@ModuleInfo(name = "Velocity", category = Category.COMBAT)
 public class Velocity extends Module {
 
     final ModeSetting mode = new ModeSetting(

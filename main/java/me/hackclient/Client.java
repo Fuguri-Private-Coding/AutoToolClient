@@ -182,7 +182,7 @@ public enum Client implements CallableObject {
 	@Override
 	public void onEvent(Event event) {
 		if (event instanceof KeyEvent keyEvent) {
-			for (Module module : moduleManager.modules) {
+			for (Module module : ModuleManager.INSTANCE.modules) {
 				if (module.getKey() == keyEvent.getKey()) {
 					module.toggle();
 				}

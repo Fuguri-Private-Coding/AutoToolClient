@@ -15,10 +15,7 @@ import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.input.Mouse;
 
-@ModuleInfo(
-    name = "AutoClicker",
-    category = Category.LEGIT
-)
+@ModuleInfo(name = "AutoClicker", category = Category.LEGIT)
 public class AutoClicker extends Module {
 
     final StopWatch stopWatch;

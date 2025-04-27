@@ -27,10 +27,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 
-@ModuleInfo(
-        name = "FakeLag",
-        category = Category.CONNECTION
-)
+@ModuleInfo(name = "FakeLag", category = Category.CONNECTION)
 public class FakeLag extends Module {
 
     final IntegerSetting delay = new IntegerSetting("Delay",this,50, 1000, 400);

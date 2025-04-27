@@ -23,10 +23,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(
-        name = "Ping",
-        category = Category.CONNECTION
-)
+@ModuleInfo(name = "Ping", category = Category.CONNECTION)
 public class Ping extends Module {
 
     private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 50, 1000, 400);

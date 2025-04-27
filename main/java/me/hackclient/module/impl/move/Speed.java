@@ -7,9 +7,10 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
 import me.hackclient.utils.client.ClientUtils;
+import me.hackclient.utils.move.MoveUtils;
 import org.lwjgl.input.Keyboard;
 
-@ModuleInfo(name = "Speed", category = Category.MOVE, key = Keyboard.KEY_V)
+@ModuleInfo(name = "Speed", category = Category.MOVE)
 public class Speed extends Module {
 
 	int ticks;
@@ -27,7 +28,7 @@ public class Speed extends Module {
 	);
 
 	BooleanSetting resetMotion = new BooleanSetting("ResetMotionOnDisable", this, false);
-	FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 0.1f, 2f, 1.7f, 0.1f) {};
+	FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 1f, 10f, 5f, 0.1f) {};
 
 	@Override
 	public void onDisable() {
@@ -41,6 +42,7 @@ public class Speed extends Module {
 	@Override
 	public void onEvent(Event event) {
 		super.onEvent(event);
+		if (mc.thePlayer == null || mc.theWorld == null) return;
 		switch (mode.getMode()) {
 			case "IntaveSneak" -> {
 				if (event instanceof MotionEvent) {
@@ -73,10 +75,11 @@ public class Speed extends Module {
 				}
 			}
 			case "Vanilla" -> {
-				double yaw = Math.toRadians(mc.thePlayer.rotationYaw);
-				mc.thePlayer.motionX = -Math.sin(yaw) * speed.getValue();
-				mc.thePlayer.motionZ = Math.cos(yaw) * speed.getValue();
+				if (MoveUtils.isMoving()) {
+					MoveUtils.setSpeed(0.1f * speed.getValue(), true);
+				}
 			}
+
 			case "FunnyMcSkyPvp" -> {
 				if (event instanceof UpdateEvent) {
 					if (mc.thePlayer.onGround) {

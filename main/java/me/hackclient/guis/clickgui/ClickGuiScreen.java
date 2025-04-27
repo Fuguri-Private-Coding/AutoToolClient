@@ -34,6 +34,10 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 	int delay = 10;
 
 	Vector2f pos, size, lastMouse;
+
+	Vector2f lastSize = new Vector2f(200, 200);
+	Vector2f lastPos = new Vector2f(200, 200);
+
 	ClickGui clickGui = Client.INSTANCE.getModuleManager().getModule(ClickGui.class);
 
 	Color BACKGROUND_COLOR = new Color(15, 15, 15, clickGui.backgroundAlpha.getValue());
@@ -108,7 +112,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		};
 
 		MAIN_COLOR_INT = MAIN_COLOR.getRGB();
-				Client.INSTANCE.getModuleManager().modules.sort(
+				Client.INSTANCE.getModuleManager().modules.stream().sorted(
 				(o1, o2) -> {
 					int width1 = mc.fontRendererObj.getStringWidth(o1.getName());
 					int width2 = mc.fontRendererObj.getStringWidth(o2.getName());
@@ -716,9 +720,6 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 		super.keyTyped(typedChar, keyCode);
 	}
-
-	Vector2f lastSize = new Vector2f(200, 200);
-	Vector2f lastPos = new Vector2f(200, 200);
 
 	@Override
 	public void onGuiClosed() {

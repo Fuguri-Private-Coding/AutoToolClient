@@ -24,26 +24,21 @@ import static java.lang.Math.min;
 
 public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObject {
 
-    {
-        callables.add(this);
-    }
-
     Vector2f pos, size, lastMouse;
+
+    Vector2f lastSize = new Vector2f(200, 200);
+    Vector2f lastPos = new Vector2f(200, 200);
 
     boolean moving, closing;
     final Animation2D background, sizeBackground, scrolls;
-
     ClickGui clickGui;
-
     int delay = 10;
-
     Shadows shadows;
-
-    int scroll,totalHeight;
-
+    int scroll, totalHeight;
     File selectedConfig;
 
     public ConfigGuiScreen() {
+        callables.add(this);
         pos = new Vector2f(0, 0);
         size = new Vector2f(200, 200);
         lastMouse = new Vector2f(0, 0);
@@ -233,17 +228,9 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
             }
 
             if (selectedConfig != null) {
-                if (load) {
-                    Client.INSTANCE.getConfigManager().loadAsync(selectedConfig);
-                }
-
-                if (delete) {
-                    Client.INSTANCE.getConfigManager().delete(selectedConfig);
-                }
-
-                if (save) {
-                    Client.INSTANCE.getConfigManager().save(selectedConfig);
-                }
+                if (load) Client.INSTANCE.getConfigManager().loadAsync(selectedConfig);
+                if (delete) Client.INSTANCE.getConfigManager().delete(selectedConfig);
+                if (save) Client.INSTANCE.getConfigManager().save(selectedConfig);
             }
         }
     }
@@ -253,20 +240,12 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
         moving = false;
     }
 
-    Vector2f lastSize = new Vector2f(200, 200);
-    Vector2f lastPos = new Vector2f(200, 200);
-
     @Override
     public void initGui() {
         sizeBackground.reset();
         background.reset();
         pos.set(lastPos);
         size.set(lastSize);
-    }
-
-    @Override
-    public boolean handleEvents() {
-        return mc.theWorld != null & mc.thePlayer != null && mc.currentScreen instanceof ConfigGuiScreen;
     }
 
     @Override
@@ -278,5 +257,10 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
             }
             if (delay == 0) delay = 30;
         }
+    }
+
+    @Override
+    public boolean handleEvents() {
+        return mc.theWorld != null & mc.thePlayer != null && mc.currentScreen instanceof ConfigGuiScreen;
     }
 }

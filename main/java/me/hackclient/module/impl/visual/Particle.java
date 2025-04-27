@@ -11,10 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 
-@ModuleInfo(
-        name = "Particle",
-        category = Category.VISUAL
-)
+@ModuleInfo(name = "Particle", category = Category.VISUAL)
 public class Particle extends Module {
 
     IntegerSetting multiple = new IntegerSetting("Multiple", this, 1, 5, 2);

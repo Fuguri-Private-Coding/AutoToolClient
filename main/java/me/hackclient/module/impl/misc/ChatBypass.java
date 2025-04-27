@@ -8,10 +8,7 @@ import me.hackclient.module.ModuleInfo;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 
-@ModuleInfo(
-        name = "ChatBypass",
-        category = Category.MISC
-)
+@ModuleInfo(name = "ChatBypass", category = Category.MISC)
 public class ChatBypass extends Module {
 
     @Override

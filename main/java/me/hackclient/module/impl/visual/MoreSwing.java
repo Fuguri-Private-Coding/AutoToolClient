@@ -25,6 +25,6 @@ public class MoreSwing extends Module {
 
     @Override
     public boolean handleEvents() {
-        return (mc.thePlayer == null || mc.theWorld == null) && isToggled();
+        return isToggled();
     }
 }

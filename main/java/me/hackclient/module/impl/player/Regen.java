@@ -11,10 +11,7 @@ import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.client.ClientUtils;
 import net.minecraft.network.play.client.C03PacketPlayer;
 
-@ModuleInfo(
-        name = "Regen",
-        category = Category.PLAYER
-)
+@ModuleInfo(name = "Regen", category = Category.PLAYER)
 public class Regen extends Module {
 
     final IntegerSetting packets = new IntegerSetting("Packets", this, 0, 100, 10);

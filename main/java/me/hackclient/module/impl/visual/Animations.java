@@ -37,6 +37,10 @@ public class Animations extends Module {
     FloatSetting Y = new FloatSetting("Y", this, -1f, 1f, 0f, 0.1f) {};
     FloatSetting Z = new FloatSetting("Z", this, -1f, 1f, 0f, 0.1f) {};
 
+    public FloatSetting speed = new FloatSetting("Speed", this, 0.1f, 4f,1f,0.1f);
+
+    public BooleanSetting always = new BooleanSetting("AlwaysBlocking", this, true);
+
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);

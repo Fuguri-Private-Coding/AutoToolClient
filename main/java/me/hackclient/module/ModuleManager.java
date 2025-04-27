@@ -34,7 +34,6 @@ public class ModuleManager {
 				 new Jesus(),
 				 new FakeLag(),
 				 new MoreKB(),
-				 new BreakIndicator(),
 				 new Velocity(),
 				 new MurderDetector(),
 				 new ClientHandler(),
@@ -72,11 +71,9 @@ public class ModuleManager {
 				 new ClientSpoofer(),
 				 new TimerRange(),
 				 new ClickGui(),
-				 new CPSCounter(),
 				 new Fixes(),
 				 new FlagDetector(),
 				 new AimAssist(),
-				 new BPSCounter(),
 				 new GodMode(),
 				 new Blink(),
 				 new Animations(),
@@ -98,7 +95,7 @@ public class ModuleManager {
 				 new CustomCamera(),
 				 new KillEffects(),
 				 new BlockOverlay(),
-				 new BedESP()
+				 new HUD()
 		);
 	}
 

@@ -8,10 +8,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.ModeSetting;
 import net.minecraft.network.play.client.C03PacketPlayer;
 
-@ModuleInfo(
-        name = "Criticals",
-        category = Category.COMBAT
-)
+@ModuleInfo(name = "Criticals", category = Category.COMBAT)
 public class Criticals extends Module {
 
     final ModeSetting mode = new ModeSetting(

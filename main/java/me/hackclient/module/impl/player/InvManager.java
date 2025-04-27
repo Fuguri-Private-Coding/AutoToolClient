@@ -9,10 +9,7 @@ import me.hackclient.utils.inventory.InventoryUtils;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.item.ItemStack;
 
-@ModuleInfo(
-        name = "InvManager",
-        category = Category.PLAYER
-)
+@ModuleInfo(name = "InvManager", category = Category.PLAYER)
 public class InvManager extends Module {
 
     @Override

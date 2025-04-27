@@ -14,10 +14,7 @@ import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityFireball;
 
-@ModuleInfo(
-        name = "AntiFireball",
-        category = Category.PLAYER
-)
+@ModuleInfo(name = "AntiFireball", category = Category.PLAYER)
 public class AntiFireball extends Module {
 
     final StopWatch stopWatch;

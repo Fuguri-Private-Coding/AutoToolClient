@@ -17,7 +17,6 @@ public class ConfigManager implements InstanceAccess {
      * Сохрянает текущие бинды в {@code file}
      *
      * @param file файл в который надо сохранить бинды
-     * @throws IOException
      */
     public void saveBinds(File file) throws IOException {
         if (!Client.INSTANCE.getBindsDirectory().exists()) {

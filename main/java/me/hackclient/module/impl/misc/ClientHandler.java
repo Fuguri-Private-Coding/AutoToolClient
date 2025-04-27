@@ -11,10 +11,7 @@ import net.minecraft.network.Packet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(
-        name = "ClientHandler",
-        category = Category.MISC
-)
+@ModuleInfo(name = "ClientHandler", category = Category.MISC)
 public class ClientHandler extends Module {
 
     @Override

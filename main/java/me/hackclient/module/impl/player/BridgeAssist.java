@@ -14,10 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(
-        name = "BridgeAssist",
-        category = Category.PLAYER
-)
+@ModuleInfo(name = "BridgeAssist", category = Category.PLAYER)
 public class BridgeAssist extends Module {
 
     final List<Rotation> rotations;

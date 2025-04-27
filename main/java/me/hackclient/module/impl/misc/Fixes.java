@@ -1,28 +1,19 @@
 package me.hackclient.module.impl.misc;
 
 import me.hackclient.event.Event;
-import me.hackclient.event.events.KeyEvent;
 import me.hackclient.event.events.MotionEvent;
-import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.utils.move.MoveUtils;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
-@ModuleInfo(
-        name = "Fixes",
-        category = Category.MISC,
-        toggled = true
-)
+@ModuleInfo(name = "Fixes", category = Category.MISC, toggled = true)
 public class Fixes extends Module {
 
     MultiBooleanSetting fixes = new MultiBooleanSetting("Fixes", this)
             .add("ClickDelay", true)
             .add("SaveMoveKeys", true)
-            .add("TogglePerspective", true)
             ;
 
 

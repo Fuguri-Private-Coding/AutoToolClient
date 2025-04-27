@@ -12,7 +12,7 @@ public class IntaveNewRotation extends KillAuraRotation {
     private final Rotation lastDelta = new Rotation();
 
     @Override
-    public Rotation compute(Rotation startsFrom, EntityLivingBase target, float simpleYawSpeed, float simplePitchSpeed, float accelSlowDown, int yawAccelSpeed, int pitchAccelSpeed) {
+    public Rotation compute(Rotation startsFrom, EntityLivingBase target, float simpleYawSpeed, float simplePitchSpeed, float accelSlowDown, int yawAccelSpeed, int pitchAccelSpeed, float smooth) {
         AxisAlignedBB box = target.getEntityBoundingBox();
 
         box = new AxisAlignedBB(
@@ -33,8 +33,8 @@ public class IntaveNewRotation extends KillAuraRotation {
         delta.setYaw(Math.clamp(delta.getYaw(), -simpleYawSpeed, simpleYawSpeed));
         delta.setPitch(Math.clamp(delta.getPitch(), -simplePitchSpeed, simplePitchSpeed));
 
-        delta.setYaw(delta.getYaw() / 2f);
-        delta.setPitch(delta.getPitch() / 2f);
+        delta.setYaw(delta.getYaw() / smooth);
+        delta.setPitch(delta.getPitch() / smooth);
 
         delta.setYaw(delta.getYaw() + lastDelta.getYaw());
         delta.setPitch(delta.getPitch() + lastDelta.getPitch());
@@ -47,6 +47,6 @@ public class IntaveNewRotation extends KillAuraRotation {
         lastDelta.setYaw(delta.getYaw());
         lastDelta.setPitch(delta.getPitch());
 
-        return new Rotation(startsFrom.getYaw() + delta.getYaw(), startsFrom.getPitch() + delta.getPitch());
+        return new Rotation(startsFrom.getYaw() + delta.getYaw(), Math.clamp(startsFrom.getPitch() + delta.getPitch(), -90, 90));
     }
 }

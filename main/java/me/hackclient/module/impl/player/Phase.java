@@ -15,10 +15,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.WorldSettings;
 
-@ModuleInfo(
-        name = "Phase",
-        category = Category.PLAYER
-)
+@ModuleInfo(name = "Phase", category = Category.PLAYER)
 public class Phase extends Module {
 
     BooleanSetting sneak = new BooleanSetting("Sneak", this, true);

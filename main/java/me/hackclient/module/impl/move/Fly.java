@@ -9,7 +9,7 @@ import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import org.lwjgl.input.Keyboard;
 
-@ModuleInfo(name = "Fly", category = Category.MOVE, key = Keyboard.KEY_Z)
+@ModuleInfo(name = "Fly", category = Category.MOVE)
 public class Fly extends Module {
 
     ModeSetting mode = new ModeSetting(

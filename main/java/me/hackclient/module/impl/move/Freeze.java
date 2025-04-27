@@ -8,10 +8,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import net.minecraft.util.Vec3;
 
-@ModuleInfo(
-        name = "Freeze",
-        category = Category.MOVE
-)
+@ModuleInfo(name = "Freeze", category = Category.MOVE)
 public class Freeze extends Module {
 
     Vec3 motion, pos;

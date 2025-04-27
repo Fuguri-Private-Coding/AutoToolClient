@@ -13,6 +13,7 @@ import me.hackclient.utils.predict.SimulatedPlayer;
 import me.hackclient.utils.raytrace.RayTraceUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -26,7 +27,7 @@ public class TimerRange extends Module {
     boolean teleporting = false;
     int teleportTicks = 0;
     boolean click;
-    int balance;
+    public int balance;
 
     @Override
     public void onEvent(Event event) {
@@ -36,20 +37,21 @@ public class TimerRange extends Module {
             mc.clickMouse();
         }
         if (event instanceof TickEvent tickEvent) {
+            if (teleporting) return;
+
+            EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
+
             if (balance > 0) {
                 tickEvent.setCanceled(true);
                 balance--;
                 return;
             }
 
-            EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
-
             if (target == null || target.hurtTime > maxTargetHurtTime.getValue()) return;
 
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput);
 
             teleportTicks = 0;
-
             for (int i = 0; i < limitTicks.getValue(); i++) {
                 MovingObjectPosition mouse = RayTraceUtils.rayTrace(
                         simulatedPlayer.getPosEyes(),
@@ -59,11 +61,10 @@ public class TimerRange extends Module {
 
                 if (mouse == null || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
                     simulatedPlayer.tick();
-                    continue;
+                } else {
+                    teleportTicks = i;
+                    break;
                 }
-
-                teleportTicks = i;
-                break;
             }
 
             teleporting = true;
@@ -79,11 +80,13 @@ public class TimerRange extends Module {
             }
             teleporting = false;
         }
-        if (event instanceof RunGameLoopEvent && balance > 0) mc.timer.renderPartialTicks = partialTicks.getValue();
+        if (event instanceof RunGameLoopEvent && balance > 0) {
+            mc.timer.renderPartialTicks = partialTicks.getValue();
+        }
     }
 
     @Override
     public boolean handleEvents() {
-        return !teleporting && isToggled();
+        return isToggled();
     }
 }

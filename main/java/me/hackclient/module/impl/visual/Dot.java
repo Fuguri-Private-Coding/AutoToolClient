@@ -11,76 +11,36 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.utils.color.ColorUtils;
+import me.hackclient.utils.animation.Animation3D;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
-import org.lwjgl.opengl.GL11;
 
-@ModuleInfo(
-        name = "Dot",
-        category = Category.VISUAL,
-        toggled = true
-)
+@ModuleInfo(name = "Dot", category = Category.VISUAL, toggled = true)
 public class Dot extends Module {
 
-    final FloatSetting size = new FloatSetting("Size", this, 1.0f, 20.0f, 10.0f, 0.1f) {};
+    final FloatSetting size = new FloatSetting("Size", this, 0f, 1f, 0.5f, 0.05f) {};
     final BooleanSetting onlyKillAura = new BooleanSetting("OnlyKillAura", this, true);
-
+    final FloatSetting smooth = new FloatSetting("Smooth", this, 0f, 20.0f, 5.0f, 0.1f) {};
     final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
 
-    Vec3 lastVec, currentVec;
-
     Shadows shadows;
+    Animation3D pos = new Animation3D();
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
-        if (event instanceof TickEvent) {
+        if (event instanceof Render3DEvent) {
+            if (Client.INSTANCE.getCombatManager().getTarget() == null && onlyKillAura.isToggled()) { return; }
             MovingObjectPosition mouse = mc.objectMouseOver;
 
-            if (currentVec != null) lastVec = new Vec3(currentVec);
-            if (mouse != null) currentVec = mouse.hitVec;
-        }
-        if (event instanceof Render3DEvent) {
-            if (Client.INSTANCE.getCombatManager().getTarget() == null && onlyKillAura.isToggled() || lastVec == null || currentVec == null) { return; }
+            pos.endX = mouse.hitVec.xCoord;
+            pos.endY = mouse.hitVec.yCoord;
+            pos.endZ = mouse.hitVec.zCoord;
+            pos.update(smooth.getValue());
 
-            double x = lastVec.xCoord + (currentVec.xCoord - lastVec.xCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
-            double y = lastVec.yCoord + (currentVec.yCoord - lastVec.yCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
-            double z = lastVec.zCoord + (currentVec.zCoord - lastVec.zCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
-
-            RenderUtils.start3D();
-            if (shadows.isToggled() && shadows.dot.isToggled()) {
-                BloomUtils.addToDraw(() -> {
-                    ColorUtils.resetColor();
-
-                    GL11.glPointSize(size.getValue());
-                    GL11.glEnable(GL11.GL_POINT_SMOOTH);
-
-                    GL11.glBegin(GL11.GL_POINTS);
-                    GL11.glVertex3d(x, y, z);
-                    GL11.glEnd();
-
-                    GL11.glDisable(GL11.GL_POINT_SMOOTH);
-                    GL11.glPointSize(1);
-                    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-                });
-            }
-            ColorUtils.glColor(color.getColor());
-
-            GL11.glPointSize(size.getValue());
-            GL11.glEnable(GL11.GL_POINT_SMOOTH);
-
-            GL11.glBegin(GL11.GL_POINTS);
-            GL11.glVertex3d(x, y, z);
-            GL11.glEnd();
-
-            GL11.glDisable(GL11.GL_POINT_SMOOTH);
-            GL11.glPointSize(1);
-            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-
-            RenderUtils.stop3D();
+            if (shadows.isToggled() && shadows.dot.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawDot(pos.x, pos.y, pos.z, size.getValue(), -1));
+            RenderUtils.drawDot(pos.x, pos.y, pos.z, size.getValue(), color.getColor().getRGB());
         }
     }
 }

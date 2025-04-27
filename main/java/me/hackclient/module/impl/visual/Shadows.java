@@ -8,10 +8,7 @@ import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 
-@ModuleInfo(
-        name = "Shadows",
-        category = Category.VISUAL
-)
+@ModuleInfo(name = "Shadows", category = Category.VISUAL)
 public class Shadows extends Module {
 
     public BooleanSetting clickGui = new BooleanSetting("ClickGui", this, true);
@@ -28,15 +25,14 @@ public class Shadows extends Module {
     public BooleanSetting cpsCounter = new BooleanSetting("CPSCounter", this, true);
     public BooleanSetting bpsCounter = new BooleanSetting("BPSCounter", this, true);
     public BooleanSetting blockOverlay = new BooleanSetting("BlockOverlay", this, true);
-    public BooleanSetting bedEsp = new BooleanSetting("BedESP", this, true);
     public BooleanSetting config = new BooleanSetting("ConfigGui", this, true);
     //public BooleanSetting nameTags = new BooleanSetting("NameTags", this, true);
 
-    public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 15, 6);
-    public FloatSetting brightness = new FloatSetting("Brightness", this, 0,2,1,0.1f);
-    public FloatSetting horizontal1Compress = new FloatSetting("Horizontal1Compress", this, -10, 10, 2, 0.1f);
-    public FloatSetting vertical1Compress = new FloatSetting("Vertical1Compress", this, -10, 10, 0, 0.1f);
-    public FloatSetting vertical2Compress = new FloatSetting("Vertical2Compress", this, -10, 10, 2, 0.1f);
+    public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);
+    public FloatSetting brightness = new FloatSetting("Brightness", this, 0,3,1,0.1f);
+    public FloatSetting horizontal1Compress = new FloatSetting("Horizontal1Compress", this, 0, 10, 2, 0.1f);
+    public FloatSetting vertical1Compress = new FloatSetting("Vertical1Compress", this, 0, 10, 0, 0.1f);
+    public FloatSetting vertical2Compress = new FloatSetting("Vertical2Compress", this, 0, 10, 2, 0.1f);
 
     public BooleanSetting fade = new BooleanSetting("Fade", this, false);
     public ColorSetting color = new ColorSetting("ShadowColor", this, 0,0,0,1);
