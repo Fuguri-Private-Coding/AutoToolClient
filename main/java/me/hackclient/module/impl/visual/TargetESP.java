@@ -39,7 +39,7 @@ public class TargetESP extends Module {
     final BooleanSetting changeColorHit = new BooleanSetting("ChangeHitColor", this, false);
     final ColorSetting hitColor = new ColorSetting("HitColor", this, changeColorHit::isToggled, 1f,1f,1f,1f);
 
-    private final List<Test> poses = new ArrayList<>();
+    private final List<Sigma2> poses = new ArrayList<>();
 
     Shadows shadows;
 
@@ -137,7 +137,7 @@ public class TargetESP extends Module {
         f++;
         f /= 2;
         f *= target.height;
-        poses.add(new Test((float) f, System.currentTimeMillis()));
+        poses.add(new Sigma2((float) f, System.currentTimeMillis()));
         poses.removeIf(pose -> System.currentTimeMillis() - pose.time() >= 500);
 
         glPushMatrix();
@@ -180,5 +180,5 @@ public class TargetESP extends Module {
         glPopMatrix();
     }
 
-    private record Test(float value, long time) { }
+    private record Sigma2(float value, long time) { }
 }

@@ -125,7 +125,6 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
 
             if (offset > background.x + sizeBackground.x - 200) {
                 yOffset += 35;
-                totalHeight += 35;
                 offset = 0;
             }
         }
@@ -228,7 +227,7 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
             }
 
             if (selectedConfig != null) {
-                if (load) Client.INSTANCE.getConfigManager().loadAsync(selectedConfig);
+                if (load) Client.INSTANCE.getConfigManager().load(selectedConfig);
                 if (delete) Client.INSTANCE.getConfigManager().delete(selectedConfig);
                 if (save) Client.INSTANCE.getConfigManager().save(selectedConfig);
             }

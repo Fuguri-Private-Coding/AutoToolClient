@@ -26,6 +26,7 @@ public class Shadows extends Module {
     public BooleanSetting bpsCounter = new BooleanSetting("BPSCounter", this, true);
     public BooleanSetting blockOverlay = new BooleanSetting("BlockOverlay", this, true);
     public BooleanSetting config = new BooleanSetting("ConfigGui", this, true);
+    public BooleanSetting chat = new BooleanSetting("Chat", this, true);
     //public BooleanSetting nameTags = new BooleanSetting("NameTags", this, true);
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);

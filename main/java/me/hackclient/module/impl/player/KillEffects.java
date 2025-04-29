@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityLivingBase;
 
 @ModuleInfo(name = "KillEffects", category = Category.PLAYER)
 public class KillEffects extends Module {
+
     BooleanSetting effect = new BooleanSetting("Effect", this, true);
     MultiBooleanSetting effects = new MultiBooleanSetting("Effects",this, effect::isToggled)
             .add("Lightning Bolt");
@@ -37,7 +38,7 @@ public class KillEffects extends Module {
         super.onEvent(event);
         if (event instanceof TickEvent) {
             for (Entity ent : mc.theWorld.loadedEntityList) {
-                EntityLivingBase entity = Client.INSTANCE.getCombatManager().getTarget();
+                EntityLivingBase entity = Client.INSTANCE.getCombatManager().getTargetOrSelectedEntity();
                 if (ent.equals(entity) && ent.isDead) {
                     if (sound.isToggled()) {
                         switch (sounds.getMode()) {

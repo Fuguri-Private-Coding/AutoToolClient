@@ -7,7 +7,9 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
+import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -37,6 +39,16 @@ public class Ping extends Module {
             .add("ItemHeld")
             .add("PlaceBlock")
             .add("ChangeSprint");
+
+    ModeSetting renderModes = new ModeSetting(
+            "RenderType",
+            this,
+            "Player",
+            new String[] {
+                    "Player",
+                    "HitBox"
+            }
+    );
 
     private long lastResetTime;
     private long delayBeforeNextLag;
@@ -139,10 +151,27 @@ public class Ping extends Module {
                 double y = lastPos.yCoord - renderManager.viewerPosY;
                 double z = lastPos.zCoord - renderManager.viewerPosZ;
 
-                mc.entityRenderer.enableLightmap();
-                mc.renderManager.doRenderEntity(player, x, y, z, player.rotationYaw, mc.timer.renderPartialTicks, true);
-                RenderHelper.disableStandardItemLighting();
-                mc.entityRenderer.disableLightmap();
+                switch (renderModes.getMode()) {
+                    case "HitBox" -> {
+                        RenderUtils.start3D();
+
+                        Vec3 smoothPos = new Vec3(
+                                lastPos.xCoord - renderManager.viewerPosX,
+                                lastPos.yCoord - renderManager.viewerPosY,
+                                lastPos.zCoord - renderManager.viewerPosZ
+                        );
+
+                        Vec3 diff = smoothPos.subtract(player.getPositionVector());
+                        RenderUtils.renderHitBox(player.getEntityBoundingBox().offset(diff));
+                        RenderUtils.stop3D();
+                    }
+                    case "Player" -> {
+                        mc.entityRenderer.enableLightmap();
+                        mc.renderManager.doRenderEntity(player, x, y, z, player.rotationYaw, mc.timer.renderPartialTicks, true);
+                        RenderHelper.disableStandardItemLighting();
+                        mc.entityRenderer.disableLightmap();
+                    }
+                }
             }
             default -> {}
         }

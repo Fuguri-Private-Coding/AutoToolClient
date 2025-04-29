@@ -184,14 +184,4 @@ public class ConfigManager implements InstanceAccess {
         }
         return jsonModule;
     }
-
-    public void loadAsync(File file) {
-        new Thread(() -> {
-            try {
-                load(file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
-    }
 }

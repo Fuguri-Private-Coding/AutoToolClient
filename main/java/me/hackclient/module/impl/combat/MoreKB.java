@@ -68,7 +68,7 @@ public class MoreKB extends Module {
     public void onEvent(Event event) {
         super.onEvent(event);
         if (event instanceof TickEvent) {
-            EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
+            EntityLivingBase target = Client.INSTANCE.getCombatManager().getTargetOrSelectedEntity();
             if (target != null && target.hurtTime == 10) {
                 delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
                 reset = RandomUtils.nextInt(minReset.getValue(), maxReset.getValue());

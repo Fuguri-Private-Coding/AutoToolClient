@@ -5,6 +5,9 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 
+import me.hackclient.Client;
+import me.hackclient.module.impl.visual.Shadows;
+import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.utils.animation.Animation2D;
 import net.minecraft.network.play.client.C14PacketTabComplete;
 import net.minecraft.util.BlockPos;
@@ -29,6 +32,8 @@ public class GuiChat extends GuiScreen {
     protected GuiTextField inputField;
     private String defaultInputFieldText = "";
 
+
+    Shadows shadows;
     Animation2D animation2D;
 
     {
@@ -212,8 +217,12 @@ public class GuiChat extends GuiScreen {
     }
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         animation2D.endX = fontRendererObj.getStringWidth(inputField.getText());
         animation2D.update(50f);
+        if (shadows.isToggled() && shadows.chat.isToggled()) {
+            BloomUtils.addToDraw(() -> drawRect(2f, this.height - 14f, 2f + (float) animation2D.x, this.height - 2f, Integer.MIN_VALUE));
+        }
         drawRect(2f, this.height - 14f, 2f + (float) animation2D.x, this.height - 2f, Integer.MIN_VALUE);
 
         this.inputField.drawTextBox();

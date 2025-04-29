@@ -112,7 +112,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		};
 
 		MAIN_COLOR_INT = MAIN_COLOR.getRGB();
-				Client.INSTANCE.getModuleManager().modules.stream().sorted(
+				Client.INSTANCE.getModuleManager().modules.sort(
 				(o1, o2) -> {
 					int width1 = mc.fontRendererObj.getStringWidth(o1.getName());
 					int width2 = mc.fontRendererObj.getStringWidth(o2.getName());
@@ -226,8 +226,9 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 						CATEGORY_COLOR.getRGB()
 					);
 			for (Setting setting : selectedModule.getSettings()) {
-				if (!setting.isVisible())
+				if (!setting.isVisible()) {
 					continue;
+				}
 
 				float settingWidth = fontRenderer.getStringWidth(setting.getName() + ": ");
 				fontRenderer.drawString(
@@ -510,8 +511,6 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		ScaledResolution sc = new ScaledResolution(Minecraft.getMinecraft());
-
-
 		RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
 		RoundedUtils.drawRect(5 + 55, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
 

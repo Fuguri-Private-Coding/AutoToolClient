@@ -9,6 +9,8 @@ import java.util.Random;
 
 import me.hackclient.Client;
 import me.hackclient.module.impl.visual.NoRender;
+import me.hackclient.module.impl.visual.Shadows;
+import me.hackclient.shader.impl.BloomUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -77,6 +79,8 @@ public class GuiIngame extends Gui {
     private long lastSystemTime = 0L;
     private long healthUpdateCounter = 0L;
 
+    Shadows shadows;
+
     public GuiIngame(Minecraft mcIn) {
         this.mc = mcIn;
         this.itemRenderer = mcIn.getRenderItem();
@@ -95,6 +99,7 @@ public class GuiIngame extends Gui {
     }
 
     public void renderGameOverlay(float partialTicks) {
+        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         ScaledResolution scaledresolution = new ScaledResolution(this.mc);
         int i = scaledresolution.getScaledWidth();
         int j = scaledresolution.getScaledHeight();
@@ -279,6 +284,8 @@ public class GuiIngame extends Gui {
         GlStateManager.pushMatrix();
         GlStateManager.translate(0.0F, (float) (j - 48), 0.0F);
         this.mc.mcProfiler.startSection("chat");
+
+        if (shadows.isToggled() && shadows.chat.isToggled()) BloomUtils.addToDraw(() -> this.persistantChatGUI.drawChat(this.updateCounter));
 
         this.persistantChatGUI.drawChat(this.updateCounter);
         this.mc.mcProfiler.endSection();
