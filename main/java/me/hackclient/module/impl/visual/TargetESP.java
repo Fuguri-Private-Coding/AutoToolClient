@@ -50,14 +50,14 @@ public class TargetESP extends Module {
         if (event instanceof Render3DEvent) {
             switch (mode.getMode()) {
                 case "Sigma" -> {
-                    if (shadows.isToggled() && shadows.targetEsp.isToggled()) {
+                    if (shadows.isToggled() && shadows.module.get("TargetESP")) {
                         BloomUtils.addToDraw(() -> renderSigma(Color.WHITE, Color.WHITE));
                     }
                     renderSigma(color.getColor(), hitColor.getColor());
                 }
 
                 case "Sigma2" -> {
-                    if (shadows.isToggled() && shadows.targetEsp.isToggled()) {
+                    if (shadows.isToggled() && shadows.module.get("TargetESP")) {
                         BloomUtils.addToDraw(() -> renderSigma2(Color.WHITE, Color.WHITE));
                     }
                     renderSigma2(color.getColor(), hitColor.getColor());
@@ -87,12 +87,11 @@ public class TargetESP extends Module {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
-        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
         glShadeModel(7425);
         mc.entityRenderer.disableLightmap();
         glBegin(GL_QUAD_STRIP);
-
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
@@ -112,12 +111,11 @@ public class TargetESP extends Module {
             ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 1.0f);
             glVertex3d(x1, y1 + 0.02f, z1);
         }
-
         glEnd();
         glEnable(GL_CULL_FACE);
         glShadeModel(7424);
         glColor4f(1f, 1f, 1f, 1f);
-        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);
@@ -145,12 +143,11 @@ public class TargetESP extends Module {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
-        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
         glShadeModel(7425);
         mc.entityRenderer.disableLightmap();
         glBegin(GL_QUAD_STRIP);
-
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
@@ -168,12 +165,11 @@ public class TargetESP extends Module {
             RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 1f);
             glVertex3d(x1, y + poses.getLast().value + 0.02, z1);
         }
-
         glEnd();
         glEnable(GL_CULL_FACE);
         glShadeModel(7424);
         glColor4f(1f, 1f, 1f, 1f);
-        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);

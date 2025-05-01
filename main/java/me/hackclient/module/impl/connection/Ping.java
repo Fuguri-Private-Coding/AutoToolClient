@@ -11,6 +11,8 @@ import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.network.Packet;
@@ -38,7 +40,8 @@ public class Ping extends Module {
             .add("Flag")
             .add("ItemHeld")
             .add("PlaceBlock")
-            .add("ChangeSprint");
+            .add("ChangeSprint")
+            .add("OpenedGui");
 
     ModeSetting renderModes = new ModeSetting(
             "RenderType",
@@ -46,7 +49,7 @@ public class Ping extends Module {
             "Player",
             new String[] {
                     "Player",
-                    "HitBox"
+                    "Box"
             }
     );
 
@@ -64,7 +67,7 @@ public class Ping extends Module {
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
         long currentTime = System.currentTimeMillis();
-
+        if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChest) && actions.get("OpenedGui")) reset();
         switch (event) {
             case ChangeSprintEvent _ -> {
                 if (actions.get("ChangeSprint")) {
@@ -143,33 +146,29 @@ public class Ping extends Module {
                 }
 
                 EntityPlayerSP player = mc.thePlayer;
-                RenderManager renderManager = mc.renderManager;
 
-                Vec3 lastPos = posBuffer.getFirst().pos();
-
-                double x = lastPos.xCoord - renderManager.viewerPosX;
-                double y = lastPos.yCoord - renderManager.viewerPosY;
-                double z = lastPos.zCoord - renderManager.viewerPosZ;
+                //Vec3 lastPos = posBuffer.get(1).pos;
+                Vec3 pos = posBuffer.getFirst().pos();
+                //+ (pos.xCoord - lastPos.xCoord) * mc.timer.renderPartialTicks
+                //        + (pos.yCoord - lastPos.yCoord) * mc.timer.renderPartialTicks
+                //        + (pos.zCoord - lastPos.zCoord) * mc.timer.renderPartialTicks
+                double x = pos.xCoord - mc.getRenderManager().viewerPosX;
+                double y = pos.yCoord - mc.getRenderManager().viewerPosY;
+                double z = pos.zCoord - mc.getRenderManager().viewerPosZ;
 
                 switch (renderModes.getMode()) {
-                    case "HitBox" -> {
+                    case "Box" -> {
                         RenderUtils.start3D();
-
-                        Vec3 smoothPos = new Vec3(
-                                lastPos.xCoord - renderManager.viewerPosX,
-                                lastPos.yCoord - renderManager.viewerPosY,
-                                lastPos.zCoord - renderManager.viewerPosZ
-                        );
-
+                        Vec3 smoothPos = new Vec3(x, y, z);
                         Vec3 diff = smoothPos.subtract(player.getPositionVector());
                         RenderUtils.renderHitBox(player.getEntityBoundingBox().offset(diff));
                         RenderUtils.stop3D();
-                    }
+                    } 
                     case "Player" -> {
-                        mc.entityRenderer.enableLightmap();
+                        //mc.entityRenderer.enableLightmap();
                         mc.renderManager.doRenderEntity(player, x, y, z, player.rotationYaw, mc.timer.renderPartialTicks, true);
-                        RenderHelper.disableStandardItemLighting();
-                        mc.entityRenderer.disableLightmap();
+                        //RenderHelper.disableStandardItemLighting();
+                        //mc.entityRenderer.disableLightmap();
                     }
                 }
             }

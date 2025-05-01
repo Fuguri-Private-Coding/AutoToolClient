@@ -28,7 +28,7 @@ public class BlockOverlay extends Module {
             MovingObjectPosition renderRayCast = mc.objectMouseOver;
             if (renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 RenderUtils.start3D();
-                if (shadows.isToggled() && shadows.blockOverlay.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), 1,1,1,1, 0f, lineWidth.getValue()));
+                if (shadows.isToggled() && shadows.module.get("BlockOverlay")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), 1,1,1,1, 0f, lineWidth.getValue()));
                 RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 0f, lineWidth.getValue());
                 RenderUtils.stop3D();
             }

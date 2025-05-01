@@ -32,7 +32,7 @@ public class AntiFireball extends Module {
         super.onEvent(event);
         if (event instanceof TickEvent) {
             for (Entity entity : mc.theWorld.loadedEntityList) {
-                if (!(entity instanceof EntityFireball entityFireball) || entityFireball.shootingEntity == mc.thePlayer || DistanceUtils.getDistanceToEntity(entity) > distance.getValue() || !stopWatch.reachedMS(delay.getValue())) continue;
+                if (!(entity instanceof EntityFireball entityFireball) || entityFireball.shootingEntity == mc.thePlayer || DistanceUtils.getDistance(entity) > distance.getValue() || !stopWatch.reachedMS(delay.getValue())) continue;
 
                 mc.thePlayer.swingItem();
                 mc.playerController.attackEntity(mc.thePlayer, entity);

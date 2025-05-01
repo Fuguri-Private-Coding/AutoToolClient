@@ -89,7 +89,7 @@ public class HUD extends Module {
                 String text = String.format("%.3f", mc.thePlayer.getBps(includeY.isToggled()));
                 float width = mc.fontRendererObj.getStringWidth(text);
 
-                if (shadows.isToggled() && shadows.bpsCounter.isToggled())
+                if (shadows.isToggled() && shadows.module.get("BPSCounter"))
                     BloomUtils.addToDraw(() -> RoundedUtils.drawRect(bpsPosH.getValue(), bpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, bpsRadius.getValue(), Color.WHITE));
 
                 RoundedUtils.drawRect(bpsPosH.getValue(), bpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, bpsRadius.getValue(), bpsColor.getColor());
@@ -106,7 +106,7 @@ public class HUD extends Module {
                 String text = leftCps + " / " + rightCps;
                 float width = mc.fontRendererObj.getStringWidth(text);
 
-                if (shadows.isToggled() && shadows.cpsCounter.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(cpsPosH.getValue(), cpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, cpsRadius.getValue(), Color.WHITE));
+                if (shadows.isToggled() && shadows.module.get("CPSCounter")) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(cpsPosH.getValue(), cpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, cpsRadius.getValue(), Color.WHITE));
 
                 RoundedUtils.drawRect(cpsPosH.getValue(), cpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, cpsRadius.getValue(), cpsColor.getColor());
                 mc.fontRendererObj.drawString(text,cpsPosH.getValue() + 2.5f ,cpsPosV.getValue() + 2.5f, cpsTextColor.getColor().getRGB(), cpsTextShadow.isToggled());
@@ -116,7 +116,7 @@ public class HUD extends Module {
                 String text = "Progress: " + String.format("%.0f", mc.playerController.curBlockDamageMP * 100) + "%";
                 float width = mc.fontRendererObj.getStringWidth(text);
 
-                if (shadows.isToggled() && shadows.breakIndicator.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(breakIndicatorPosH.getValue(), breakIndicatorPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, breakIndicatorRadius.getValue(), Color.WHITE));
+                if (shadows.isToggled() && shadows.module.get("BreakIndicator")) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(breakIndicatorPosH.getValue(), breakIndicatorPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, breakIndicatorRadius.getValue(), Color.WHITE));
 
                 RoundedUtils.drawRect(breakIndicatorPosH.getValue(), breakIndicatorPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, breakIndicatorRadius.getValue(), breakIndicatorColor.getColor());
                 mc.fontRendererObj.drawString(text, breakIndicatorPosH.getValue() + 2.5f, breakIndicatorPosV.getValue() + 2.5f, breakIndicatorTextColor.getColor().getRGB(), breakIndicatorTextShadow.isToggled());

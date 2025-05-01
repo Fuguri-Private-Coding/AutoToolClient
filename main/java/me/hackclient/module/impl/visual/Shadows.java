@@ -3,31 +3,29 @@ package me.hackclient.module.impl.visual;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.ColorSetting;
-import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.settings.impl.*;
 
 @ModuleInfo(name = "Shadows", category = Category.VISUAL)
 public class Shadows extends Module {
 
-    public BooleanSetting clickGui = new BooleanSetting("ClickGui", this, true);
-    public BooleanSetting console = new BooleanSetting("ConsoleGui", this, true);
-    public BooleanSetting mainMenu = new BooleanSetting("MainMenu", this, true);
-    public BooleanSetting item = new BooleanSetting("ItemsFirstPerson", this, true);
-    public BooleanSetting arrayList = new BooleanSetting("ArrayList", this, true);
-    public BooleanSetting scaffold = new BooleanSetting("Scaffold", this, true);
-    public BooleanSetting targetEsp = new BooleanSetting("TargetESP", this, true);
-    public BooleanSetting dot = new BooleanSetting("Dot", this, true);
-    public BooleanSetting nameTags = new BooleanSetting("NameTags", this, true);
-    public BooleanSetting trails = new BooleanSetting("Trails", this, true);
-    public BooleanSetting breakIndicator = new BooleanSetting("BreakIndicator", this, true);
-    public BooleanSetting cpsCounter = new BooleanSetting("CPSCounter", this, true);
-    public BooleanSetting bpsCounter = new BooleanSetting("BPSCounter", this, true);
-    public BooleanSetting blockOverlay = new BooleanSetting("BlockOverlay", this, true);
-    public BooleanSetting config = new BooleanSetting("ConfigGui", this, true);
-    public BooleanSetting chat = new BooleanSetting("Chat", this, true);
-    //public BooleanSetting nameTags = new BooleanSetting("NameTags", this, true);
+    public MultiBooleanSetting module = new MultiBooleanSetting("Modules", this)
+            .add("ClickGui")
+            .add("ConsoleGui")
+            .add("MainMenuGui")
+            .add("ItemsFirstPerson")
+            .add("ArrayList")
+            .add("TargetESP")
+            .add("Dot")
+            .add("BreakIndicator")
+            .add("CPSCounter")
+            .add("BPSCounter")
+            .add("BlockOverlay")
+            .add("ConfigGui")
+            .add("Chat")
+            .add("Trails")
+            .add("NameTags")
+            .add("Scaffold")
+            ;
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);
     public FloatSetting brightness = new FloatSetting("Brightness", this, 0,3,1,0.1f);

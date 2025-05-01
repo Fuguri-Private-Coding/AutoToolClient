@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.cfg.ConfigManager;
 import me.hackclient.command.CommandManager;
+import me.hackclient.deeplearn.DeepLearningEngine;
 import me.hackclient.guis.console.ConsoleGuiScreen;
 import me.hackclient.managers.CombatManager;
 import me.hackclient.event.callable.CallableObject;
@@ -20,6 +21,7 @@ import me.hackclient.scheduler.time.TimeScheduler;
 import me.hackclient.shader.ShaderManager;
 import me.hackclient.utils.discord.Discord;
 import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.packet.PositionResolverComponent;
 import me.hackclient.utils.resource.ResourceUtils;
 import me.hackclient.utils.sound.SoundsManager;
 import org.lwjgl.opengl.Display;
@@ -34,6 +36,7 @@ public enum Client implements CallableObject {
 	INSTANCE;
 
 	final File clientDirectory = new File("AutoTool");
+	final File modelsDirectory = new File(clientDirectory, "models");
 	final File configsDirectory = new File(clientDirectory, "configs");
 	final File bindsDirectory = new File(clientDirectory, "binds");
 	final File soundsDirectory = new File(clientDirectory, "sounds");
@@ -52,6 +55,7 @@ public enum Client implements CallableObject {
 	ObjectsCaller objectsCaller;
 	ConfigManager configManager;
 	SoundsManager soundsManager;
+	DeepLearningEngine deepLearningEngine;
 
 	ClickGuiScreen clickGui;
 
@@ -99,6 +103,11 @@ public enum Client implements CallableObject {
 		shaderManager = new ShaderManager();
 		objectsCaller = new ObjectsCaller();
 		configManager = new ConfigManager();
+		deepLearningEngine = new DeepLearningEngine();
+
+		deepLearningEngine.init();
+
+		new PositionResolverComponent();
 
 		if (!defaultConfig.exists()) {
 			defaultConfig.createNewFile();

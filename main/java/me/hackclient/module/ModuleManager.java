@@ -22,6 +22,7 @@ public class ModuleManager {
 
 	public ModuleManager() {
 		INSTANCE = this;
+		long currentNano = System.nanoTime();
 		 register(
 				 new AutoSoup(),
 				 new Reach(),
@@ -32,7 +33,6 @@ public class ModuleManager {
 				 new Regen(),
 				 new ChestStealer(),
 				 new Jesus(),
-				 new FakeLag(),
 				 new MoreKB(),
 				 new Velocity(),
 				 new MurderDetector(),
@@ -41,6 +41,7 @@ public class ModuleManager {
 				 new AutoLeave(),
 				 new Trails(),
 				 new ESP(),
+				 new BackTrack(),
 				 new RotationHandler(),
 				 new Shadows(),
 				 new Fly(),
@@ -80,7 +81,6 @@ public class ModuleManager {
 				 new MotionBlur(),
 				 new AutoPlace(),
 				 new NoJumpDelay(),
-				 new BackTrack(),
 				 new MLG(),
 				 new TimeChanger(),
 				 new ClickSettings(),
@@ -97,6 +97,7 @@ public class ModuleManager {
 				 new BlockOverlay(),
 				 new HUD()
 		);
+		System.out.println("Init ModuleManager: " + (System.nanoTime() - currentNano) / 1000000D + " ms.");
 	}
 
 	private void register(Module... modulesToRegister) {

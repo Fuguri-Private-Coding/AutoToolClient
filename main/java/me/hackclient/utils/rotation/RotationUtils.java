@@ -107,7 +107,7 @@ public class RotationUtils implements InstanceAccess {
 	public static Vec3 getTestNearestRotation(Rotation rotation, AxisAlignedBB to) {
 		Rotation r = rotation.copy();
 
-		 double distance = DistanceUtils.getDistanceToVec(new Vec3(
+		 double distance = DistanceUtils.getDistance(new Vec3(
 				 to.minX + to.getLengthX() * 0.5,
 				 to.minY + to.getLengthY() * 0.5,
 				 to.minZ + to.getLengthZ() * 0.5

@@ -2,17 +2,10 @@ package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
 
-import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 
 import lombok.Getter;
-import me.hackclient.Client;
-import me.hackclient.module.impl.combat.killaura.rotation.impl.IntaveRotation;
-import me.hackclient.module.impl.visual.Shadows;
-import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.RoundedUtils;
-import me.hackclient.utils.interfaces.InstanceAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;

@@ -1554,6 +1554,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Reflector.callVoid(Reflector.ForgeHooksClient_dispatchRenderLast, renderglobal, partialTicks);
         }
 
+        Client.INSTANCE.getObjectsCaller().onEvent(new Render3DEvent());
+
         this.mc.mcProfiler.endStartSection("hand");
 
         if (this.renderHand && !Shaders.isShadowPass) {
@@ -1568,6 +1570,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 ShadersRender.renderFPOverlay(this, partialTicks, pass);
             } else {
                 this.renderHand(partialTicks, pass);
+                //setupCameraTransform(partialTicks, 0);
             }
 
             this.renderWorldDirections(partialTicks);
@@ -1577,8 +1580,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Shaders.endRender();
         }
 
-        setupCameraTransform(partialTicks, 0);
-        Client.INSTANCE.getObjectsCaller().onEvent(new Render3DEvent());
     }
 
     private void renderCloudsCheck(RenderGlobal renderGlobalIn, float partialTicks, int pass) {

@@ -9,15 +9,26 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.misc.ClientHandler;
 import me.hackclient.utils.Utils;
 import me.hackclient.utils.doubles.Doubles;
+import net.minecraft.client.entity.EntityPlayerSP;
 
 @ModuleInfo(name = "Blink", category = Category.CONNECTION)
 public class Blink extends Module {
 
+    EntityPlayerSP fakePlayer;
+
     @Override
     public void onDisable() {
         super.onDisable();
+        mc.theWorld.removeEntityFromWorld(fakePlayer.getEntityId());
         ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(p.getFirst()));
         ClientHandler.PacketHandler.clientPacketBuffer.clear();
+    }
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
+        fakePlayer.setEntityId(-1000);
+        mc.theWorld.addEntityToWorld(fakePlayer.getEntityId(), mc.thePlayer);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class AltManagerGuiText extends GuiTextField {
     public void drawTextBox() {
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
 
-        if (shadows.mainMenu.isToggled() && shadows.isToggled()) {
+        if (shadows.module.get("MainMenuGui") && shadows.isToggled()) {
             BloomUtils.addToDraw(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 6f, Color.BLACK));
         }
 

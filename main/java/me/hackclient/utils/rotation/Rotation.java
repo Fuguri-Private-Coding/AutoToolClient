@@ -3,8 +3,10 @@ package me.hackclient.utils.rotation;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 
 public class Rotation {
+	public static final Rotation ZERO = new Rotation(0,0);
 	@Getter @Setter static boolean changed;
 	@Getter static Rotation serverRotation = new Rotation();
 	@Getter @Setter float yaw, pitch;
@@ -12,6 +14,13 @@ public class Rotation {
 	public static void setServerRotation(Rotation serverRotation) {
 		Rotation.serverRotation = serverRotation.copy();
 		changed = true;
+	}
+
+	public static Rotation fromRotationVec(Vec3 lookVec) {
+		return new Rotation(
+				MathHelper.wrapDegree((float) (Math.toDegrees(Math.atan2(lookVec.zCoord, lookVec.xCoord)) - 90)),
+				MathHelper.wrapDegree((float) (-Math.toDegrees(Math.atan2(lookVec.yCoord, Math.sqrt(lookVec.xCoord * lookVec.xCoord + lookVec.zCoord * lookVec.zCoord)))))
+		);
 	}
 
 	public Rotation() {

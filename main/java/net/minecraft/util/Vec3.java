@@ -2,6 +2,7 @@ package net.minecraft.util;
 
 public class Vec3
 {
+    public static final Vec3 ZERO = new Vec3(0,0,0);
     public final double xCoord;
     public final double yCoord;
     public final double zCoord;
@@ -26,6 +27,11 @@ public class Vec3
         this.xCoord = x;
         this.yCoord = y;
         this.zCoord = z;
+    }
+
+    public double horizontalLength()
+    {
+        return Math.sqrt(this.xCoord * this.xCoord + this.zCoord * this.zCoord);
     }
 
     public Vec3(Vec3 src) {

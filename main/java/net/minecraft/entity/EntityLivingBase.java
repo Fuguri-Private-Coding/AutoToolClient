@@ -122,6 +122,8 @@ public abstract class EntityLivingBase extends Entity implements InstanceAccess 
     public int jumpTicks;
     private float absorptionAmount;
     public double lRealX, lRealY, lRealZ, realX, realY, realZ;
+    public double nx, ny, nz, rx, ry, rz, lrx, lry, lrz;
+    public int posRotIncrements;
 
     public Vec3 getRealPos() {
         return new Vec3(realX, realY, realZ);
@@ -142,6 +144,10 @@ public abstract class EntityLivingBase extends Entity implements InstanceAccess 
         this.rotationYaw = (float) (Math.random() * Math.PI * 2.0D);
         this.rotationYawHead = this.rotationYaw;
         this.stepHeight = 0.6F;
+    }
+
+    public Vec3 getPrevPositionVector() {
+        return new Vec3(lastTickPosX, lastTickPosY, lastTickPosZ);
     }
 
     protected void entityInit() {

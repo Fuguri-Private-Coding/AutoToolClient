@@ -149,7 +149,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 		ScaledResolution sc = new ScaledResolution(mc);
 
-		if (shadows.isToggled() && shadows.clickGui.isToggled()) {
+		if (shadows.isToggled() && shadows.module.get("ClickGui")) {
 			BloomUtils.addToDraw(() -> {
 				RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.black);
 				RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.black);

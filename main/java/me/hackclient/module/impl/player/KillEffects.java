@@ -10,8 +10,10 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.settings.impl.MultiBooleanSetting;
+import net.minecraft.client.renderer.entity.RenderLightningBolt;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.effect.EntityLightningBolt;
 
 @ModuleInfo(name = "KillEffects", category = Category.PLAYER)
 public class KillEffects extends Module {
@@ -33,6 +35,8 @@ public class KillEffects extends Module {
 
     FloatSetting volume = new FloatSetting("Volume", this, sound::isToggled, 0,1,1,0.1f);
 
+    RenderLightningBolt renderLightningBolt;
+
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
@@ -45,6 +49,10 @@ public class KillEffects extends Module {
                             case "Half-Life-Death" -> Client.INSTANCE.getSoundsManager().getKilledSound().asyncPlay(volume.getValue());
                             case "Skeet" -> Client.INSTANCE.getSoundsManager().getSkeetSound().asyncPlay(volume.getValue());
                             case "NeverLose" -> Client.INSTANCE.getSoundsManager().getNeverLoseSound().asyncPlay(volume.getValue());
+                        }
+
+                        if (effects.get("Lightning Bolt")) {
+                            //renderLightningBolt.doRender(new EntityLightningBolt(mc.theWorld, ent.posX, ent.posY, ent.posZ), ent.posX, ent.posY, ent.posZ, ent.getRotationYawHead(), mc.timer.renderPartialTicks);
                         }
                     }
                 }

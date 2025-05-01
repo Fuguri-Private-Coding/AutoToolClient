@@ -162,7 +162,7 @@ public class Scaffold extends Module {
 
         if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {
             RenderUtils.start3D();
-            if (shadows.isToggled() && shadows.scaffold.isToggled()) {
+            if (shadows.isToggled() && shadows.module.get("Scaffold")) {
                 BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), 1f, 1.0F, 0));
             }
             RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 1.0F, 0);

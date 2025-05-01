@@ -3,7 +3,6 @@ package me.hackclient.module.impl.combat;
 import me.hackclient.Client;
 import me.hackclient.managers.CombatManager;
 import me.hackclient.module.impl.combat.killaura.rotation.impl.*;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.target.TargetFinder;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.*;
@@ -24,9 +23,9 @@ public class KillAura extends Module {
 
     final StopWatch stopWatch;
 
-    private final IntaveNewRotation intaveNewRotation = new IntaveNewRotation();
     private final IntaveRotation intaveRotation = new IntaveRotation();
     private final VanillaRotation vanillaRotation = new VanillaRotation();
+    private final ChaGPTRotation chaGPTRotation = new ChaGPTRotation();
 
     final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3.0f, 8.0f, 6.0f, 0.1f);
 
@@ -40,10 +39,51 @@ public class KillAura extends Module {
             "Intave",
             new String[] {
                     "Vanilla",
-                    "Intave",
-                    "IntaveNew",
+                    "Intave"
             }
     );
+
+    final IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 0, 180, 90) {
+        @Override
+        public int getValue() {
+            if (maxYawSpeed.value < value) { value = maxYawSpeed.value; }
+            return value;
+        }
+    };
+    final IntegerSetting maxYawSpeed = new IntegerSetting("MaxYawSpeed", this, 0, 180, 30) {
+        @Override
+        public int getValue() {
+            if (minYawSpeed.value > value) { value = minYawSpeed.value; }
+            return value;
+        }
+    };
+    final IntegerSetting minPitchSpeed = new IntegerSetting("MinPitchSpeed", this, 0, 180, 90) {
+        @Override
+        public int getValue() {
+            if (maxPitchSpeed.value < value) { value = maxPitchSpeed.value; }
+            return value;
+        }
+    };
+    final IntegerSetting maxPitchSpeed = new IntegerSetting("MaxPitchSpeed", this, 0, 180, 30) {
+        @Override
+        public int getValue() {
+            if (minPitchSpeed.value > value) { value = minPitchSpeed.value; }
+            return value;
+        }
+    };
+
+    final FloatSetting smooth = new FloatSetting("Smooth", this, 1f,10f,2f,0.1f);
+
+    BooleanSetting randomizeWithAIModel = new BooleanSetting("RandomizeWithAIModel", this, true);
+    BooleanSetting additionalCorrection = new BooleanSetting("AdditionalCorrection", this, randomizeWithAIModel::isToggled, true);
+
+    ModeSetting aiModel = new ModeSetting("AIModel", this,randomizeWithAIModel::isToggled, "louf", new String[] {"louf","test1", "test2"});
+
+    final FloatSetting yawMultiplier = new FloatSetting("YawMultiplier", this,randomizeWithAIModel::isToggled, 0.1f,2f,1f,0.05f);
+    final FloatSetting pitchMultiplier = new FloatSetting("PitchMultiplier", this,randomizeWithAIModel::isToggled, 0.1f,2f,1f,0.05f);
+
+    final FloatSetting yawCorrectionSpeed = new FloatSetting("YawCorrectionSpeed", this,additionalCorrection::isToggled, 0f,10f,3f,0.1f);
+    final FloatSetting pitchCorrectionSpeed = new FloatSetting("PitchCorrectionSpeed", this,additionalCorrection::isToggled, 0f,10f,1.5f,0.1f);
 
     final FloatSetting swingDistance = new FloatSetting("SwingDistance", this, 3.0f, 6.0f, 6.0f, 0.1f);
 
@@ -62,44 +102,6 @@ public class KillAura extends Module {
             return value;
         }
     };
-
-    final IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 0, 180, 90) {
-        @Override
-        public int getValue() {
-            if (maxYawSpeed.value < value) { value = maxYawSpeed.value; }
-            return value;
-        }
-    };
-
-    final IntegerSetting maxYawSpeed = new IntegerSetting("MaxYawSpeed", this, 0, 180, 30) {
-        @Override
-        public int getValue() {
-            if (minYawSpeed.value > value) { value = minYawSpeed.value; }
-            return value;
-        }
-    };
-
-    final IntegerSetting minPitchSpeed = new IntegerSetting("MinPitchSpeed", this, 0, 180, 90) {
-        @Override
-        public int getValue() {
-            if (maxPitchSpeed.value < value) { value = maxPitchSpeed.value; }
-            return value;
-        }
-    };
-
-    final IntegerSetting maxPitchSpeed = new IntegerSetting("MaxPitchSpeed", this, 0, 180, 30) {
-        @Override
-        public int getValue() {
-            if (minPitchSpeed.value > value) { value = minPitchSpeed.value; }
-            return value;
-        }
-    };
-
-    final FloatSetting smooth = new FloatSetting("Smooth", this, 1f,10f,2f,0.1f);
-
-    final FloatSetting accelSlowDown = new FloatSetting("AccelSlowDown", this,() -> rotationMode.getMode().equals("IntaveNew"), 0f,1f,0.3f,0.1f);
-    final IntegerSetting yawAccelSpeed = new IntegerSetting("YawAccelSpeed", this,() -> rotationMode.getMode().equals("IntaveNew"), 0,180,15);
-    final IntegerSetting pitchAccelSpeed = new IntegerSetting("PitchAccelSpeed", this,() -> rotationMode.getMode().equals("IntaveNew"), 0,180,20);
 
     final BooleanSetting fakeBlock = new BooleanSetting("FakeBlock", this, true);
 
@@ -131,7 +133,7 @@ public class KillAura extends Module {
 
         if (event instanceof RunGameLoopEvent) {
             boolean haveTarget = combatManager.getTarget() != null;
-            double distanceToTarget = haveTarget ? DistanceUtils.getDistanceToEntity(combatManager.getTarget()) : swingDistance.getValue();
+            double distanceToTarget = haveTarget ? DistanceUtils.getDistance(combatManager.getTarget()) : swingDistance.getValue();
             boolean needSwing = haveTarget && distanceToTarget < swingDistance.getValue();
 
             Animations.setAnimate(haveTarget && needSwing && fakeBlock.isToggled());
@@ -147,21 +149,33 @@ public class KillAura extends Module {
                 motionEvent.setYaw(Rotation.getServerRotation().getYaw());
                 motionEvent.setPitch(Rotation.getServerRotation().getPitch());
 
-                KillAuraRotation rotation = switch (rotationMode.getMode()) {
-                    case "Vanilla" -> vanillaRotation;
-                    case "Intave" -> intaveRotation;
-                    case "IntaveNew" -> intaveNewRotation;
-                    default -> throw new IllegalStateException("Unexpected value: " + rotationMode.getMode());
-                };
-
                 if (mc.currentScreen == null) {
-                    Rotation.setServerRotation(rotation.compute(
+                    KillAuraRotation rotation = switch (rotationMode.getMode()) {
+                        case "Vanilla" -> vanillaRotation;
+                        case "Intave" -> intaveRotation;
+                        default -> throw new IllegalStateException("Unexpected value: " + rotationMode.getMode());
+                    };
+
+                    Rotation targetRot = rotation.compute(
                             Rotation.getServerRotation(),
                             combatManager.getTarget(),
                             randomizeYawSpeed, randomizePitchSpeed,
-                            accelSlowDown.getValue(), yawAccelSpeed.getValue(), pitchAccelSpeed.getValue(),
-                            smooth.getValue()
-                    ));
+                            smooth.getValue(),
+                            yawMultiplier.getValue(), pitchMultiplier.getValue()
+                    );
+
+                    if (randomizeWithAIModel.isToggled()) {
+                        if (!chaGPTRotation.currentModelName.equalsIgnoreCase(aiModel.getMode())) chaGPTRotation.changeModel(aiModel.getMode());
+                        targetRot = chaGPTRotation.compute(
+                                Rotation.getServerRotation(),
+                                targetRot,
+                                combatManager.getTarget(),
+                                yawMultiplier.getValue(), pitchMultiplier.getValue(),
+                                additionalCorrection.isToggled(),
+                                yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
+                        );
+                    }
+                    Rotation.setServerRotation(targetRot);
                 }
             }
             if (event instanceof LookEvent lookEvent) {

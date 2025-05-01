@@ -4,7 +4,6 @@ import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.callable.ConditionCallableObject;
 import me.hackclient.event.events.TickEvent;
-import me.hackclient.guis.config.ConfigGuiScreen;
 import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.shader.impl.BloomUtils;
@@ -107,7 +106,7 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         background.update(15f);
         sizeBackground.update(15f);
 
-        if (shadows.isToggled() && shadows.console.isToggled()) {
+        if (shadows.isToggled() && shadows.module.get("ConsoleGui")) {
             BloomUtils.addToDraw(() -> {
                 RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
                 RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), shadows.color.getColor());

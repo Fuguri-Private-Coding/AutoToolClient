@@ -13,6 +13,6 @@ import net.minecraft.util.Vec3;
 public abstract class KillAuraRotation implements InstanceAccess {
     Vec3 offset = new Vec3(0,0,0);
 
-    public abstract Rotation compute(final Rotation startsFrom, final EntityLivingBase target, final float simpleYawSpeed, final float simplePitchSpeed, final float accelSlowDown, final int yawAccelSpeed, final int pitchAccelSpeed, final float smooth);
+    public abstract Rotation compute(final Rotation startsFrom, final EntityLivingBase target, final float simpleYawSpeed, final float simplePitchSpeed, final float smooth, final float yawMultiplier, final float pitchMultiplier);
 
 }

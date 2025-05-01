@@ -10,7 +10,7 @@ import net.minecraft.util.AxisAlignedBB;
 public class IntaveRotation extends KillAuraRotation {
 
     @Override
-    public Rotation compute(Rotation startsFrom, EntityLivingBase target, float simpleYawSpeed, float simplePitchSpeed, float accelSlowDown, int yawAccelSpeed, int pitchAccelSpeed, float smooth) {
+    public Rotation compute(Rotation startsFrom, EntityLivingBase target, float simpleYawSpeed, float simplePitchSpeed, float smooth, float yawMultiplier, float pitchMultiplier) {
         AxisAlignedBB box = target.getEntityBoundingBox();
 
         box = new AxisAlignedBB(

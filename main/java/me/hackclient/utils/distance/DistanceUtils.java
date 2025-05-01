@@ -6,14 +6,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 
-import java.io.IOException;
-
 public class DistanceUtils implements InstanceAccess {
 
 	/**
 	 * @param entity Ентити до хитбокса которого будет вычеслятся растояние.
 	 */
-	public static double getDistanceToEntity(Entity entity) {
+	public static double getDistance(Entity entity) {
 		Vec3 nearestPoint = RotationUtils.getBestHitVec(entity);
 		Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
 		return eyes.distanceTo(nearestPoint);
@@ -22,13 +20,13 @@ public class DistanceUtils implements InstanceAccess {
 	/**
 	 * @param pos трех-мерный вектор до которого будет вычеслятся растояние.
 	 */
-	public static double getDistanceToVec(Vec3 pos) {
+	public static double getDistance(Vec3 pos) {
 		Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
 		return eyes.distanceTo(pos);
 	}
 
 
-	public static double getDistanceToHitBox(AxisAlignedBB bb) {
+	public static double getDistance(AxisAlignedBB bb) {
 		return mc.thePlayer.getPositionEyes(1.0f).distanceTo(RotationUtils.getBestHitVec(bb));
 	}
 }

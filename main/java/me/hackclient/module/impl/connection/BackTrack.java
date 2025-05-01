@@ -3,44 +3,32 @@ package me.hackclient.module.impl.connection;
 import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.PacketDirection;
-import me.hackclient.event.callable.ConditionCallableObject;
-import me.hackclient.event.events.*;
+import me.hackclient.event.events.AttackEvent;
+import me.hackclient.event.events.PacketEvent;
+import me.hackclient.event.events.Render3DEvent;
+import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.misc.ClientHandler;
 import me.hackclient.settings.impl.*;
-import me.hackclient.utils.Utils;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.distance.DistanceUtils;
-import me.hackclient.utils.doubles.Doubles;
-import me.hackclient.utils.interfaces.InstanceAccess;
 import me.hackclient.utils.math.RandomUtils;
-import me.hackclient.utils.packet.PacketUtils;
+import me.hackclient.utils.packet.TimedVar;
 import me.hackclient.utils.render.RenderUtils;
-import me.hackclient.utils.timer.StopWatch;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.Vec3;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "BackTrack", category = Category.CONNECTION)
 public class BackTrack extends Module {
-
-    final ModeSetting mode = new ModeSetting(
-            "Mode",
-            this,
-            "Ping",
-            new String[] {
-                    "Classic",
-                    "Ping",
-                    "LagBased"
-            }
-    );
-
-    final StopWatch renderStopWatch;
-    int delay;
 
     final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 500, 200) {
         @Override
@@ -74,202 +62,136 @@ public class BackTrack extends Module {
         }
     };
 
-    final BooleanSetting showOnlyWorking = new BooleanSetting("ShowOnlyWhenWorking", this, true);
-    final BooleanSetting realTimeDamage = new BooleanSetting("RealTimeDamage", this,() -> mode.getMode().equals("Ping") , true);
+    final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenBackTracks", this, 0, 20, 0) ;
+    ModeSetting espMode = new ModeSetting("Render", this, "Player", new String[] { "Player", "Box" });
+    ColorSetting color = new ColorSetting("Color", this, () -> espMode.getMode().equals("Box"), 1,1,1,1);
 
-    MultiBooleanSetting render = new MultiBooleanSetting("Render", this)
-            .add("HitBox")
-            .add("Player")
-            ;
+    BooleanSetting realTimeDamage = new BooleanSetting("RealTimeDamage", this, true);
 
-    public BackTrack() {
-        new PositionResolver();
-        renderStopWatch = new StopWatch();
-    }
+    BooleanSetting debugDistance = new BooleanSetting("DebugDistance", this, true);
+
+    private final List<TimedVar<Packet>> packetBuffer = new CopyOnWriteArrayList<>();
+
+    private EntityLivingBase target;
+    private long delay = 90;
+
+    private int delayBetweenBackTracks;
 
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
-        EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
+        if (event instanceof PacketEvent e) {
+            Packet packet = e.getPacket();
+            if (target == null || e.isCanceled() || e.getDirection() != PacketDirection.INCOMING) return;
 
-        if (event instanceof TickEvent && target != null) {
-            delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
-        }
-        if (event instanceof AttackEvent && mode.getMode().equals("LagBased")) {
-            resetPackets();
-        }
-        if (event instanceof PacketEvent packetEvent) {
-            if (target == null || !Utils.isWorldLoaded()) { return; }
+            if ((packet instanceof S06PacketUpdateHealth
+                    || packet instanceof S02PacketChat
+                    || packet instanceof S19PacketEntityStatus
+                    || packet instanceof S29PacketSoundEffect)
+                    && realTimeDamage.isToggled()) return;
 
-            Packet packet = packetEvent.getPacket();
-
-            if (packet instanceof S06PacketUpdateHealth s06 && s06.getHealth() <= 0.0f) {
-                resetPackets();
-                return;
-            }
-
-            switch (mode.getMode()) {
-                case "Classic" -> {
-                    if (isValidPacket(packet) && packetEvent.getDirection() == PacketDirection.INCOMING) {
-                        ClientHandler.PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
-                    }
-                    packetEvent.setCanceled(true);
-                }
-                case "Ping" -> {
-                    if (packetEvent.getDirection() != PacketDirection.INCOMING)
+            if (packet instanceof S13PacketDestroyEntities s13) {
+                for (int entityID : s13.getEntityIDs()) {
+                    if (entityID == target.getEntityId()) {
+                        handle(true);
+                        target = null;
                         return;
-
-                    if ((packet instanceof S0BPacketAnimation s0b && s0b.getAnimationType() == 1 || packet instanceof S29PacketSoundEffect || packet instanceof S06PacketUpdateHealth) && realTimeDamage.isToggled()) return;
-
-                    // Отменяет все принимаемые пакеты, более легитно с сервер сайда
-                    ClientHandler.PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
-                    packetEvent.setCanceled(true);
-                }
-                case "LagBased" -> {
-                    // Отменяет вообще все пакеты, самый легитный вариант
-                    if (packetEvent.getDirection() == PacketDirection.OUTGOING) {
-                        ClientHandler.PacketHandler.clientPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
-                    } else if (packetEvent.getDirection() == PacketDirection.INCOMING) {
-                        if (packet instanceof S14PacketEntity
-                                || packet instanceof S18PacketEntityTeleport
-                                || packet instanceof S19PacketEntityHeadLook
-                                || packet instanceof S0FPacketSpawnMob
-                                || packet instanceof S08PacketPlayerPosLook) {
-                            ClientHandler.PacketHandler.serverPacketBuffer.add(new Doubles<>(packet, System.currentTimeMillis()));
-                        }
                     }
-                    packetEvent.setCanceled(true);
                 }
-            }
-        }
-        if (event instanceof RunGameLoopEvent) {
-            if (target == null) {
-                resetPackets();
-                return;
             }
 
-            double distance = DistanceUtils.getDistanceToVec(new Vec3(target.realX, target.realY + target.getEyeHeight(), target.realZ));
-            if (distance < minDistance.getValue() || distance > maxDistance.getValue() || distance < DistanceUtils.getDistanceToVec(target.getPositionEyes(1.0f))) {
-                resetPackets();
-                return;
-            }
-
-            ClientHandler.PacketHandler.serverPacketBuffer.forEach(p -> {
-                if (System.currentTimeMillis() - p.getSecond() >= delay) {
-                    PacketUtils.recievePacket(p.getFirst());
-                    ClientHandler.PacketHandler.serverPacketBuffer.remove(p);
-                }
-            });
-            ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> {
-                if (System.currentTimeMillis() - p.getSecond() >= delay) {
-                    PacketUtils.sendPacket(p.getFirst());
-                    ClientHandler.PacketHandler.clientPacketBuffer.remove(p);
-                }
-            });
+            e.setCanceled(true);
+            packetBuffer.add(new TimedVar<>(packet));
         }
+
+        if (event instanceof TickEvent) {
+            if (delayBetweenBackTracks > 0) {
+                delayBetweenBackTracks--;
+            }
+        }
+
         if (event instanceof Render3DEvent) {
-            if (showOnlyWorking.isToggled() && (ClientHandler.PacketHandler.serverPacketBuffer.isEmpty() || target == null))
+            if (target != Client.INSTANCE.getCombatManager().getTarget()) {
+                handle(true);
+                target = Client.INSTANCE.getCombatManager().getTarget();
+            }
+
+            if (delayBetweenBackTracks > 0) {
+                handle(true);
                 return;
+            }
+
+            handle(false);
 
             if (target != null) {
+                double x = target.nx;
+                double y = target.ny;
+                double z = target.nz;
 
-                double d1 = Math.min(renderStopWatch.reachedMS(), 50);
-                d1 /= 50D;
+                AxisAlignedBB realBox = target.getEntityBoundingBox().offset(x - target.posX, y - target.posY, z - target.posZ).expand(
+                        target.getCollisionBorderSize(),
+                        target.getCollisionBorderSize(),
+                        target.getCollisionBorderSize()
+                );
 
-                double smoothX = target.lRealX + (target.realX - target.lRealX) * d1 - mc.getRenderManager().viewerPosX;
-                double smoothY = target.lRealY + (target.realY - target.lRealY) * d1 - mc.getRenderManager().viewerPosY;
-                double smoothZ = target.lRealZ + (target.realZ - target.lRealZ) * d1 - mc.getRenderManager().viewerPosZ;
+                double distanceToReal = DistanceUtils.getDistance(realBox);
+                double distanceToFake = DistanceUtils.getDistance(target);
 
-                if (render.get("HitBox")) {
-                    RenderUtils.start3D();
-                    RenderUtils.renderHitBox(new AxisAlignedBB(
-                            smoothX - target.width / 2,
-                            smoothY + 0,
-                            smoothZ - target.width / 2,
-                            smoothX + target.width / 2,
-                            smoothY + target.height,
-                            smoothZ + target.width / 2
-                    ));
-                    RenderUtils.stop3D();
+                double threshold = 0;
+
+                boolean improve = distanceToFake + threshold >= distanceToReal;
+                boolean distance = distanceToReal > maxDistance.getValue() || distanceToFake > 3 || distanceToReal < minDistance.getValue();
+
+                if (improve || distance) {
+                    handle(true);
+
+                    delayBetweenBackTracks = delayBetweenTicks.getValue();
+                    delay = RandomUtils.nextLong(minDelay.getValue(), maxDelay.getValue());
                 }
 
-                if (render.get("Player")) {
-                    mc.entityRenderer.enableLightmap();
-                    mc.getRenderManager().doRenderEntity(
-                            target,
-                            smoothX,
-                            smoothY,
-                            smoothZ,
-                            target.rotationYawHead,
-                            mc.timer.renderPartialTicks,
-                            true
-                    );
-                    mc.entityRenderer.disableLightmap();
+                x = target.lrx + (target.rx - target.lrx) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
+                y = target.lry + (target.ry - target.lry) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
+                z = target.lrz + (target.rz - target.lrz) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
+
+                switch (espMode.getMode()) {
+                    case "Player" -> {
+                        mc.entityRenderer.enableLightmap();
+                        mc.getRenderManager().doRenderEntity(
+                                target,
+                                x, y, z,
+                                target.getRotationYawHead(),
+                                mc.timer.renderPartialTicks,
+                                true
+                        );
+
+                        RenderHelper.disableStandardItemLighting();
+                        mc.entityRenderer.disableLightmap();
+                    }
+                    case "Box" -> {
+                        RenderUtils.start3D();
+                        RenderUtils.drawBoundingBox(target.getEntityBoundingBox().offset(x - target.posX, y - target.posY, z - target.posZ), color.getColor());
+                        GlStateManager.resetColor();
+                        RenderUtils.stop3D();
+                    }
                 }
             }
         }
     }
 
-    void resetPackets() {
-        switch (mode.getMode()) {
-            case "Classic", "Ping" -> {
-                ClientHandler.PacketHandler.resetServerPackets();
-                renderStopWatch.reset();
-            }
-            case "LagBased" -> {
-                ClientHandler.PacketHandler.resetClientPackets();
-                ClientHandler.PacketHandler.resetServerPackets();
-                renderStopWatch.reset();
-            }
-        }
-    }
-
-    boolean isValidPacket(Packet packet) {
-        if (packet instanceof S03PacketTimeUpdate
-            || packet instanceof S00PacketKeepAlive
-            || packet instanceof S12PacketEntityVelocity
-            || packet instanceof S27PacketExplosion
-            || packet instanceof S32PacketConfirmTransaction) {
-            return true;
+    private void handle(boolean clear) {
+        if (packetBuffer.isEmpty()) {
+            return;
         }
 
-        return packet instanceof S14PacketEntity
-        || packet instanceof S18PacketEntityTeleport
-        || packet instanceof S19PacketEntityHeadLook
-        || packet instanceof S0FPacketSpawnMob
-        || packet instanceof S08PacketPlayerPosLook;
-    }
-
-    static class PositionResolver implements InstanceAccess, ConditionCallableObject {
-
-        { callables.add(this); }
-
-        @Override
-        public boolean handleEvents() {
-            return Utils.isWorldLoaded();
-        }
-
-        @Override
-        public void onEvent(Event event) {
-            if (event instanceof PacketEvent packetEvent) {
-                Packet packet = packetEvent.getPacket();
-                if (packet instanceof S14PacketEntity s14 && s14.getEntity(mc.theWorld) instanceof EntityLivingBase entityLivingBase) {
-                    entityLivingBase.lRealX = entityLivingBase.realX;
-                    entityLivingBase.lRealY = entityLivingBase.realY;
-                    entityLivingBase.lRealZ = entityLivingBase.realZ;
-                    entityLivingBase.realX += (double) s14.getPositionX() / 32;
-                    entityLivingBase.realY += (double) s14.getPositionY() / 32;
-                    entityLivingBase.realZ += (double) s14.getPositionZ() / 32;
+        packetBuffer.removeIf(packet -> {
+            if (System.currentTimeMillis() - packet.getTime() >= delay || clear) {
+                try {
+                    packet.getVar().processPacket(mc.getNetHandler().getNetworkManager().getNetHandler());
+                } catch (Exception ignored) {
                 }
-                if (packet instanceof S18PacketEntityTeleport s18 && mc.theWorld.getEntityByID(s18.getEntityId()) instanceof EntityLivingBase entityLivingBase) {
-                    entityLivingBase.lRealX = entityLivingBase.realX;
-                    entityLivingBase.lRealY = entityLivingBase.realY;
-                    entityLivingBase.lRealZ = entityLivingBase.realZ;
-                    entityLivingBase.realX = (double) s18.getX() / 32;
-                    entityLivingBase.realY = (double) s18.getY() / 32;
-                    entityLivingBase.realZ = (double) s18.getZ() / 32;
-                }
+                return true;
             }
-        }
+            return false;
+        });
     }
 }

@@ -124,6 +124,10 @@ public class RenderUtils implements InstanceAccess {
         GlStateManager.popMatrix();
     }
 
+    public static void drawBoundingBox(AxisAlignedBB abb, Color color) {
+        drawBoundingBox(abb, color.getRed() / 255f,color.getGreen() / 255f,color.getBlue() / 255f,color.getAlpha() / 255f);
+    }
+
     public static void drawBoundingBox(AxisAlignedBB abb, float r, float g, float b, float a) {
         Tessellator ts = Tessellator.getInstance();
         WorldRenderer vb = ts.getWorldRenderer();

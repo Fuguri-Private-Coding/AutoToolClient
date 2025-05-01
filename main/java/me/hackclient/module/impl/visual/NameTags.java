@@ -77,7 +77,7 @@ public class NameTags extends Module {
         String text = friendText + murderText + entity.getName();
         float offset = fontRenderer.FONT_HEIGHT - 8f;
         float stringWidth = fontRenderer.getStringWidth(text) / 2f;
-        if (shadows.isToggled() && shadows.nameTags.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, Color.WHITE));
+        if (shadows.isToggled() && shadows.module.get("NameTags")) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, Color.WHITE));
         RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, color.getColor());
         fontRenderer.drawString(text, -stringWidth, offset, textColor.getColor().getRGB(), true);
         glColor4f(1f, 1f, 1f, 1f);

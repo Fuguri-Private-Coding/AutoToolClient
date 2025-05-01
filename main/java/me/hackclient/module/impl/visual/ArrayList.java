@@ -11,7 +11,6 @@ import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
-import me.hackclient.utils.animation.Animation2D;
 import net.minecraft.client.gui.FontRenderer;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -44,7 +43,7 @@ public class ArrayList extends Module {
 			for (Module module : moduleList) {
 				if (module.isHide() || !showRenderModules.isToggled() && module.getCategory() == Category.VISUAL) continue;
 
-				if (shadows.isToggled() && shadows.arrayList.isToggled()) {
+				if (shadows.isToggled() && shadows.module.get("ArrayList")) {
 					double finalOffset = offset;
 					BloomUtils.addToDraw(() -> {
 						RoundedUtils.drawRect(6,(float) finalOffset + 6f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 4f, backgroundRadius.getValue(), shadows.color.getColor());

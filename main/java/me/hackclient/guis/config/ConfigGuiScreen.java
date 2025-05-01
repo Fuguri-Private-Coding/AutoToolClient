@@ -93,7 +93,7 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
         sizeBackground.update(15f);
         scrolls.update(15f);
 
-        if (shadows.isToggled() && shadows.config.isToggled()) {
+        if (shadows.isToggled() && shadows.module.get("ConfigGui")) {
             BloomUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), Color.black));
         }
 

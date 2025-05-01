@@ -66,14 +66,14 @@ public class Trails extends Module {
             GL11.glEnable(GL11.GL_DEPTH_TEST);
             switch (mode.getMode()) {
                 case "SingleLine" -> {
-                    if (shadows.isToggled() && shadows.trails.isToggled()) {
+                    if (shadows.isToggled() && shadows.module.get("Trails")) {
                         GL11.glColor4f(1,1,1,1);
                         BloomUtils.addToDraw(this::renderSingleLine);
                     }
                     renderSingleLine();
                 }
                 case "PlayerLine" -> {
-                    if (shadows.isToggled() && shadows.trails.isToggled()) {
+                    if (shadows.isToggled() && shadows.module.get("Trails")) {
                         GL11.glColor4f(1,1,1,1);
                         BloomUtils.addToDraw(this::renderPlayerLine);
                     }
