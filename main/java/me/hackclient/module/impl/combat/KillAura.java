@@ -77,7 +77,7 @@ public class KillAura extends Module {
     BooleanSetting randomizeWithAIModel = new BooleanSetting("RandomizeWithAIModel", this, true);
     BooleanSetting additionalCorrection = new BooleanSetting("AdditionalCorrection", this, randomizeWithAIModel::isToggled, true);
 
-    ModeSetting aiModel = new ModeSetting("AIModel", this,randomizeWithAIModel::isToggled, "louf", new String[] {"louf","test1", "test2"});
+    public ModeSetting aiModel = new ModeSetting("AIModel", this,randomizeWithAIModel::isToggled, "louf", new String[] {"louf","test1", "test2"});
 
     final FloatSetting yawMultiplier = new FloatSetting("YawMultiplier", this,randomizeWithAIModel::isToggled, 0.1f,2f,1f,0.05f);
     final FloatSetting pitchMultiplier = new FloatSetting("PitchMultiplier", this,randomizeWithAIModel::isToggled, 0.1f,2f,1f,0.05f);

@@ -244,6 +244,10 @@ public abstract class Entity implements ICommandSender
         this.setEntityBoundingBox(new AxisAlignedBB(x - (double)f, y, z - (double)f, x + (double)f, y + (double)f1, z + (double)f));
     }
 
+    public void setPosition(Vec3 pos) {
+        setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
+    }
+
     public void setAngles(float yaw, float pitch)
     {
         float f = this.rotationPitch;
@@ -1233,6 +1237,15 @@ public abstract class Entity implements ICommandSender
     }
 
     public final Vec3 getVectorForRotation(float pitch, float yaw)
+    {
+        float f = MathHelper.cos(-yaw * 0.017453292F - (float)Math.PI);
+        float f1 = MathHelper.sin(-yaw * 0.017453292F - (float)Math.PI);
+        float f2 = -MathHelper.cos(-pitch * 0.017453292F);
+        float f3 = MathHelper.sin(-pitch * 0.017453292F);
+        return new Vec3((double)(f1 * f2), (double)f3, (double)(f * f2));
+    }
+
+    public static final Vec3 getVecForRotation(float pitch, float yaw)
     {
         float f = MathHelper.cos(-yaw * 0.017453292F - (float)Math.PI);
         float f1 = MathHelper.sin(-yaw * 0.017453292F - (float)Math.PI);

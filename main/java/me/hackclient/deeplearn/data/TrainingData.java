@@ -136,7 +136,7 @@ public class TrainingData {
                 );
                 data.addAll(parsed);
             } catch (IOException e) {
-                e.printStackTrace();
+                e.printStackTrace(System.out);
             }
         }
         return data;

@@ -2,8 +2,10 @@ package me.hackclient.utils.rotation;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import org.lwjgl.util.vector.Vector2f;
 
 public class Rotation {
 	public static final Rotation ZERO = new Rotation(0,0);
@@ -21,6 +23,14 @@ public class Rotation {
 				MathHelper.wrapDegree((float) (Math.toDegrees(Math.atan2(lookVec.zCoord, lookVec.xCoord)) - 90)),
 				MathHelper.wrapDegree((float) (-Math.toDegrees(Math.atan2(lookVec.yCoord, Math.sqrt(lookVec.xCoord * lookVec.xCoord + lookVec.zCoord * lookVec.zCoord)))))
 		);
+	}
+
+	public Vec3 getVec3d() {
+		return Entity.getVecForRotation(pitch, yaw);
+	}
+
+	public Vector2f getVec2f() {
+		return new Vector2f(yaw, pitch);
 	}
 
 	public Rotation() {

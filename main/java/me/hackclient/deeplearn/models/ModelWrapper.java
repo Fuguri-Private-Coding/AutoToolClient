@@ -22,6 +22,7 @@ import ai.djl.training.optimizer.Adam;
 import ai.djl.training.tracker.Tracker;
 import ai.djl.translate.TranslateException;
 import ai.djl.translate.Translator;
+import lombok.Getter;
 import me.hackclient.deeplearn.listener.OverlayTrainingListener;
 import org.apache.commons.lang3.Validate;
 import java.io.Closeable;
@@ -31,10 +32,12 @@ import java.nio.file.Path;
 
 public class ModelWrapper<I, O> implements Closeable {
 
+    @Getter private String name;
     private Model model;
     private Predictor<I, O> predictor;
 
     public ModelWrapper(String name, Translator<I, O> translator, long outputs) {
+        this.name = name;
         model = Model.newInstance(name);
         model.setBlock(createMlpBlock(outputs));
         predictor = model.newPredictor(translator);
@@ -48,7 +51,7 @@ public class ModelWrapper<I, O> implements Closeable {
         Validate.isTrue(features.length == labels.length, "Features and labels must have the same size");
         Validate.isTrue(features.length != 0, "Features and labels must not be empty");
 
-        long inputs = (long) features[0].length;
+        long inputs = features[0].length;
 
         DefaultTrainingConfig config = new DefaultTrainingConfig(Loss.l2Loss())
                 .optInitializer(new XavierInitializer(), "weight")
@@ -66,7 +69,7 @@ public class ModelWrapper<I, O> implements Closeable {
                 .optLabels(manager.create(labels))
                 .setSampling(32, true)
                 .build();
-        trainer.initialize(new Shape(32L, inputs));
+        trainer.initialize(new Shape(32, inputs));
         try {
             EasyTrain.fit(trainer, 100, trainingSet, null);
         } catch (IOException | TranslateException e) {

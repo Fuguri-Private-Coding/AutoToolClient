@@ -1,5 +1,6 @@
 package me.hackclient.module;
 
+import me.hackclient.deeplearn.data.TrainingData;
 import me.hackclient.module.impl.client.DiscordRPCModule;
 import me.hackclient.module.impl.combat.*;
 import me.hackclient.module.impl.connection.*;
@@ -95,7 +96,8 @@ public class ModuleManager {
 				 new CustomCamera(),
 				 new KillEffects(),
 				 new BlockOverlay(),
-				 new HUD()
+				 new HUD(),
+				 new ModelTrainer()
 		);
 		System.out.println("Init ModuleManager: " + (System.nanoTime() - currentNano) / 1000000D + " ms.");
 	}
