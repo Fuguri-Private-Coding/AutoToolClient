@@ -60,7 +60,6 @@ public class ModelTrainer extends Module {
     @Override
     public void onDisable() {
         mc.theWorld.removeEntity(target);
-        ClientUtils.chatLog("Test");
         target = null;
 
         if (packets.isEmpty()) {
@@ -85,6 +84,8 @@ public class ModelTrainer extends Module {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        ClientUtils.chatLog("Recorded: " + packets.size() + "samples");
     }
 
     @Override
@@ -133,7 +134,7 @@ public class ModelTrainer extends Module {
 
         var direction = new Rotation(
                 mc.thePlayer.rotationYaw + RandomUtils.nextFloat(-60, 60),
-                    RandomUtils.nextFloat(-20, 10)
+                    RandomUtils.nextFloat(-35, 35)
         ).getVec3d().multiple(distance);
 
         var pos = mc.thePlayer.getPositionEyes(1f).add(direction);

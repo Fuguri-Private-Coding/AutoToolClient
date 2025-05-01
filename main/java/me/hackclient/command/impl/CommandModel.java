@@ -30,7 +30,7 @@ public class CommandModel extends Command {
         var samples = TrainingData.parse(Client.INSTANCE.getModuleManager().getModule(ModelTrainer.class).getFolder());
 
         if (samples.isEmpty()) {
-            ClientUtils.chatLog("НЕТУ СЕМПЛОВ НАХУЙ ЧЕ ТЫ ЖМЕШЬ");
+            console.log("НЕТУ СЕМПЛОВ НАХУЙ ЧЕ ТЫ ЖМЕШЬ");
             return;
         }
 
@@ -45,9 +45,11 @@ public class CommandModel extends Command {
         var model = new MinaraiModel(args[2]);
 
         new Thread(() -> {
+            long currentMS = System.currentTimeMillis();
             model.train(featuresArray, labelsArray);
             model.save(new File(Client.INSTANCE.getModelsDirectory(), model.getName()).toPath());
             Client.INSTANCE.getModuleManager().getModule(KillAura.class).aiModel.getModes().add(model.getName());
+            console.log("Created model " + args[2] + " in " + (System.currentTimeMillis() - currentMS) / 1000D + " s.");
         }).start();
     }
 }

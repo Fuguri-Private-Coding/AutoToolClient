@@ -17,16 +17,15 @@ public class CommandSkin extends Command implements InstanceAccess {
             return;
         }
 
-        if (args.length == 3) {
-            if (args[1].equalsIgnoreCase("set")) {
+        if (args.length == 3 && args[1].equalsIgnoreCase("set")) {
+            String name = args[2];
 
-                console.log("Successfully installed custom skin");
-            }
-        } else if (args.length == 2) {
-            if (args[1].equalsIgnoreCase("clear")) {
+            console.log("Successfully installed custom skin");
+        }
 
-                console.log("Successfully cleared custom skin");
-            }
+        if (args.length == 2 && args[1].equalsIgnoreCase("clear")) {
+
+            console.log("Successfully cleared custom skin");
         }
     }
 }

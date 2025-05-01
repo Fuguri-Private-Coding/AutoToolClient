@@ -80,6 +80,14 @@ public class BackTrack extends Module {
     @Override
     public void onEvent(Event event) {
         super.onEvent(event);
+        if (target != null && event instanceof TickEvent && debugDistance.isToggled()) {
+            AxisAlignedBB realBox = target.getEntityBoundingBox().offset(target.nx - target.posX, target.ny - target.posY, target.nz - target.posZ).expand(
+                    target.getCollisionBorderSize(),
+                    target.getCollisionBorderSize(),
+                    target.getCollisionBorderSize()
+            );
+            if (target.hurtTime == 10 && !packetBuffer.isEmpty() && DistanceUtils.getDistance(realBox) > 3) ClientUtils.chatLog("Distance: " + String.format("%.4f", DistanceUtils.getDistance(realBox)));
+        }
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();
             if (target == null || e.isCanceled() || e.getDirection() != PacketDirection.INCOMING) return;

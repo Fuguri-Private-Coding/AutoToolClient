@@ -634,7 +634,6 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         }
 
         entityplayer.setPositionAndRotation(d0, d1, d2, f, f1);
-        this.netManager.sendPacket(new C03PacketPlayer(entityplayer.onGround));
         this.netManager.sendPacket(new C03PacketPlayer.C06PacketPlayerPosLook(entityplayer.posX, entityplayer.getEntityBoundingBox().minY, entityplayer.posZ, entityplayer.rotationYaw, entityplayer.rotationPitch, false));
 
         if (!this.doneLoadingTerrain)

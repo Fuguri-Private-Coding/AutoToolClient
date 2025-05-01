@@ -77,8 +77,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
         return networkplayerinfo != null && networkplayerinfo.hasLocationSkin();
     }
 
-    public ResourceLocation getLocationSkin()
-    {
+    public ResourceLocation getLocationSkin() {
         NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
         return networkplayerinfo == null ? DefaultPlayerSkin.getDefaultSkin(this.getUniqueID()) : networkplayerinfo.getLocationSkin();
     }
