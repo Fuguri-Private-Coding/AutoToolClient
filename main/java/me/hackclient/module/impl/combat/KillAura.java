@@ -85,6 +85,8 @@ public class KillAura extends Module {
     final FloatSetting yawCorrectionSpeed = new FloatSetting("YawCorrectionSpeed", this,additionalCorrection::isToggled, 0f,10f,3f,0.1f);
     final FloatSetting pitchCorrectionSpeed = new FloatSetting("PitchCorrectionSpeed", this,additionalCorrection::isToggled, 0f,10f,1.5f,0.1f);
 
+    final BooleanSetting silentRot = new BooleanSetting("SilentRotation", this, true);
+
     final FloatSetting swingDistance = new FloatSetting("SwingDistance", this, 3.0f, 6.0f, 6.0f, 0.1f);
 
     final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 0, 20, 17) {
@@ -104,7 +106,6 @@ public class KillAura extends Module {
     };
 
     final BooleanSetting fakeBlock = new BooleanSetting("FakeBlock", this, true);
-
     final BooleanSetting moveFix = new BooleanSetting("MoveFix", this, true);
     final BooleanSetting silent = new BooleanSetting("Silent", this, moveFix::isToggled, true);
     final BooleanSetting jumpFix = new BooleanSetting("JumpFix", this, true);
@@ -175,7 +176,15 @@ public class KillAura extends Module {
                                 yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
                         );
                     }
-                    Rotation.setServerRotation(targetRot);
+
+                    targetRot.setPitch(Math.clamp(targetRot.getPitch(), -90, 90));
+
+                    if (silentRot.isToggled()) {
+                        Rotation.setServerRotation(targetRot);
+                    } else {
+                        mc.thePlayer.rotationYaw = targetRot.getYaw();
+                        mc.thePlayer.rotationPitch = targetRot.getPitch();
+                    }
                 }
             }
             if (event instanceof LookEvent lookEvent) {

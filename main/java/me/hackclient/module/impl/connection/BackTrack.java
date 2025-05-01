@@ -63,11 +63,13 @@ public class BackTrack extends Module {
     };
 
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenBackTracks", this, 0, 20, 0) ;
+
+    BooleanSetting renderIfWorking = new BooleanSetting("RenderIfWorking", this, true);
+
     ModeSetting espMode = new ModeSetting("Render", this, "Player", new String[] { "Player", "Box" });
     ColorSetting color = new ColorSetting("Color", this, () -> espMode.getMode().equals("Box"), 1,1,1,1);
 
     BooleanSetting realTimeDamage = new BooleanSetting("RealTimeDamage", this, true);
-
     BooleanSetting debugDistance = new BooleanSetting("DebugDistance", this, true);
 
     private final List<TimedVar<Packet>> packetBuffer = new CopyOnWriteArrayList<>();
@@ -155,6 +157,8 @@ public class BackTrack extends Module {
 
                     delayBetweenBackTracks = delayBetweenTicks.getValue();
                     delay = RandomUtils.nextLong(minDelay.getValue(), maxDelay.getValue());
+
+                    if (renderIfWorking.isToggled()) return;
                 }
 
                 x = target.lrx + (target.rx - target.lrx) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;

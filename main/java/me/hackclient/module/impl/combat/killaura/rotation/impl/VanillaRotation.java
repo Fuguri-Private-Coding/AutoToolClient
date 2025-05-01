@@ -22,7 +22,7 @@ public class VanillaRotation extends KillAuraRotation {
 
         return new Rotation(
                 startsFrom.getYaw() + delta.getYaw(),
-                MathHelper.clamp(startsFrom.getPitch() + delta.getPitch(), -90, 90)
+                startsFrom.getPitch() + delta.getPitch()
         );
     }
 }
