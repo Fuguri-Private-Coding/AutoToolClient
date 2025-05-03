@@ -239,8 +239,8 @@ public class KillAura extends Module {
     private AxisAlignedBB getHitBox(EntityLivingBase target) {
         AxisAlignedBB box = target.getEntityBoundingBox();
 
-        double horizontalPercent = horizontalHitBoxSize.getValue() / 100d;
-        double verticalPercent = verticalHitBoxSize.getValue() / 100d;
+        double horizontalPercent = 0.5 + horizontalHitBoxSize.getValue() / 200d;
+        double verticalPercent = 0.5 + verticalHitBoxSize.getValue() / 200d;
 
         double invertHorizontalPercent = 1 - horizontalPercent;
         double invertVerticalPercent = 1 - verticalPercent;
