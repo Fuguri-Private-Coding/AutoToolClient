@@ -1,11 +1,11 @@
 package me.hackclient.utils.packet;
 
 import lombok.experimental.UtilityClass;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.network.Packet;
 
 @UtilityClass
-public class PacketUtils implements InstanceAccess {
+public class PacketUtils implements Imports {
 
     /**
      * отправлает {@code packet} без вызова {@code PacketEvent}

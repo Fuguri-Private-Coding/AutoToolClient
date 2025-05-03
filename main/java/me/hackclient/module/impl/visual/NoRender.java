@@ -5,7 +5,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 
-@ModuleInfo(name = "NoRender", category = Category.VISUAL, toggled = true)
+@ModuleInfo(name = "NoRender", category = Category.VISUAL)
 public class NoRender extends Module {
 
     public BooleanSetting scoreBoard = new BooleanSetting("ScoreBoard", this, true);

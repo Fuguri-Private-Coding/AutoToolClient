@@ -3,67 +3,57 @@ package me.hackclient.module;
 import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.Client;
-import me.hackclient.event.callable.ConditionCallableObject;
-import me.hackclient.event.Event;
 import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.settings.Setting;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Module implements InstanceAccess, ConditionCallableObject {
+public class Module implements Imports {
 
 	final ModuleInfo annotation = getClass().getAnnotation(ModuleInfo.class);
 
 	@Getter final String name = annotation.name();
 	@Getter final Category category = annotation.category();
 	@Setter @Getter int key = annotation.key();
-	@Getter boolean toggled = annotation.toggled();
+	@Getter boolean toggled;
 	@Getter final List<Setting> settings;
 	@Getter @Setter boolean hide = annotation.hide();
 
-	{ callables.add(this); }
-
 	public Module() {
-		checkToggled();
 		settings = new ArrayList<>();
+		setToggled(annotation.toggled());
 	}
 
 	public void toggle() {
-		setToggled(!toggled);
-	}
-	public void onEnable() {}
-	public void onDisable() {}
+		toggled = !toggled;
+		float volume = 1;
+		if (Client.INSTANCE.getModuleManager() != null && Client.INSTANCE.getModuleManager().getModule(ClickGui.class) != null) {
+			volume = Client.INSTANCE.getModuleManager().getModule(ClickGui.class).toggleModuleVolume.getValue();
+		}
 
-	void checkToggled() {
 		if (toggled) {
-			try {
-				onEnable();
-				Client.INSTANCE.getSoundsManager().getEnableSound().asyncPlay(Client.INSTANCE.getModuleManager().getModule(ClickGui.class).toggleModuleVolume.getValue());
-			} catch (Exception ignored) {}
+			Client.INSTANCE.getSoundsManager().getEnableSound().asyncPlay(volume);
+			Client.INSTANCE.getEventManager().register(this);
+			onEnable();
 		} else {
-			try {
-				onDisable();
-				Client.INSTANCE.getSoundsManager().getDisableSound().asyncPlay(Client.INSTANCE.getModuleManager().getModule(ClickGui.class).toggleModuleVolume.getValue());
-			} catch (Exception ignored) {}
+			Client.INSTANCE.getSoundsManager().getDisableSound().asyncPlay(volume);
+			Client.INSTANCE.getEventManager().unregister(this);
+			onDisable();
 		}
 	}
 
+	public void onEnable() {}
+	public void onDisable() {}
+
     public void setToggled(boolean toggled) {
-		this.toggled = toggled;
-		checkToggled();
+		if (this.toggled != toggled) {
+			toggle();
+		}
 	}
 
 	public String getSuffix() {
 		return "";
-	}
-
-	@Override
-	public void onEvent(Event event) { }
-
-	@Override
-	public boolean handleEvents() {
-		return isToggled() && mc.thePlayer != null && mc.theWorld != null;
 	}
 }

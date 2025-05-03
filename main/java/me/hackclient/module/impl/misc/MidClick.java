@@ -2,6 +2,7 @@ package me.hackclient.module.impl.misc;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -13,7 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.input.Mouse;
 
-@ModuleInfo(name = "MidClick", category = Category.MISC, toggled = true)
+@ModuleInfo(name = "MidClick", category = Category.MISC)
 public class MidClick extends Module {
     FloatSetting range = new FloatSetting("Range", this, 3f, 1000f, 1000f, 1f) {};
     public BooleanSetting reverseFriends = new BooleanSetting("Reverse", this, true);
@@ -21,9 +22,8 @@ public class MidClick extends Module {
 
     boolean down;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof TickEvent) {
             if (Mouse.isButtonDown(2)) {
                 if (!down) {

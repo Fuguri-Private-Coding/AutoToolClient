@@ -1,13 +1,13 @@
 package me.hackclient.utils.resource;
 
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-public class ResourceUtils implements InstanceAccess {
+public class ResourceUtils implements Imports {
 
     public static ByteBuffer[] getClientLogo() {
         try {

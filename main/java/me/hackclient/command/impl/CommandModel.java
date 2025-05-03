@@ -6,11 +6,8 @@ import me.hackclient.deeplearn.data.TrainingData;
 import me.hackclient.deeplearn.models.MinaraiModel;
 import me.hackclient.module.impl.combat.KillAura;
 import me.hackclient.module.impl.combat.ModelTrainer;
-import me.hackclient.utils.client.ClientUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CommandModel extends Command {
     public CommandModel() {
@@ -48,7 +45,7 @@ public class CommandModel extends Command {
             long currentMS = System.currentTimeMillis();
             model.train(featuresArray, labelsArray);
             model.save(new File(Client.INSTANCE.getModelsDirectory(), model.getName()).toPath());
-            Client.INSTANCE.getModuleManager().getModule(KillAura.class).aiModel.getModes().add(model.getName());
+            Client.INSTANCE.getModuleManager().getModule(KillAura.class).model.addMode(model.getName());
             console.log("Created model " + args[2] + " in " + (System.currentTimeMillis() - currentMS) / 1000D + " s.");
         }).start();
     }

@@ -2,6 +2,7 @@ package me.hackclient.module.impl.visual;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.DrawBlockHighlightEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -16,13 +17,15 @@ import net.minecraft.util.MovingObjectPosition;
 @ModuleInfo(name = "BlockOverlay", category = Category.VISUAL)
 public class BlockOverlay extends Module {
 
-    ColorSetting color = new ColorSetting("Color", this, 0,0.5f,1f,0.3f);
-    FloatSetting lineWidth = new FloatSetting("LineWidth",this, 0, 5,1,0.1f);
+    ColorSetting color = new ColorSetting("Color", this, 0, 0.5f, 1f, 0.3f);
+    FloatSetting lineWidth = new FloatSetting("LineWidth",this, 0, 5, 1, 0.1f);
     Shadows shadows;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
+        if (Client.INSTANCE.getModuleManager().getModule(Scaffold.class).isToggled()) {
+            return;
+        }
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         if (event instanceof DrawBlockHighlightEvent) {
             MovingObjectPosition renderRayCast = mc.objectMouseOver;
@@ -33,10 +36,5 @@ public class BlockOverlay extends Module {
                 RenderUtils.stop3D();
             }
         }
-    }
-
-    @Override
-    public boolean handleEvents() {
-        return (mc.thePlayer != null || mc.theWorld != null) && isToggled() && !Client.INSTANCE.getModuleManager().getModule(Scaffold.class).isToggled();
     }
 }

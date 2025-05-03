@@ -1,47 +1,57 @@
 package me.hackclient.module.impl.combat;
 
 import me.hackclient.Client;
-import me.hackclient.managers.CombatManager;
-import me.hackclient.module.impl.combat.killaura.rotation.impl.*;
-import me.hackclient.utils.target.TargetFinder;
+import me.hackclient.deeplearn.rotation.AIRotationSmooth;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.*;
+import me.hackclient.managers.CombatManager;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.combat.killaura.rotation.KillAuraRotation;
-import me.hackclient.module.impl.visual.Animations;
 import me.hackclient.settings.impl.*;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
+import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
+import me.hackclient.utils.rotation.RotationUtils;
 import me.hackclient.utils.timer.StopWatch;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
+
+import java.io.File;
+import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "KillAura", category = Category.COMBAT)
 public class KillAura extends Module {
 
-    final StopWatch stopWatch;
+    final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 8, 6, 0.1f);
+    final MultiBooleanSetting targets = new MultiBooleanSetting("Targets", this)
+            .add("Players", true)
+            .add("Mobs")
+            .add("Animals")
+            .add("Villagers");
+    final ModeSetting sortType = new ModeSetting("SortType", this)
+            .addModes("Distance", "FOV")
+            .setMode("FOV");
 
-    private final IntaveRotation intaveRotation = new IntaveRotation();
-    private final VanillaRotation vanillaRotation = new VanillaRotation();
-    private final ChaGPTRotation chaGPTRotation = new ChaGPTRotation();
+    final FloatSetting rotationDistance = new FloatSetting("RotationDistance", this, 3, 8, 4.5f, 0.1f);
 
-    final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3.0f, 8.0f, 6.0f, 0.1f);
+    final ModeSetting hitVec = new ModeSetting("HitVec", this)
+            .addModes("Best", "Nearest", "Head", "Body")
+            .setMode("Best");
 
-    final BooleanSetting players = new BooleanSetting("Players", this, true);
-    final BooleanSetting animals = new BooleanSetting("Animals", this, false);
-    final BooleanSetting mobs = new BooleanSetting("Mobs", this, false);
-
-    final ModeSetting rotationMode = new ModeSetting(
-            "RotationMode",
-            this,
-            "Intave",
-            new String[] {
-                    "Vanilla",
-                    "Intave"
-            }
-    );
+    final BooleanSupplier hitBoxSizeVisible = () -> hitVec.getMode().equalsIgnoreCase("Best") || hitVec.getMode().equalsIgnoreCase("Nearest");
+    final IntegerSetting horizontalHitBoxSize = new IntegerSetting("HorizontalHitBoxSize", this, hitBoxSizeVisible, 0, 100, 100);
+    final IntegerSetting verticalHitBoxSize = new IntegerSetting("VerticalHitBoxSize", this, hitBoxSizeVisible, 0, 100, 100);
 
     final IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 0, 180, 90) {
         @Override
@@ -72,23 +82,27 @@ public class KillAura extends Module {
         }
     };
 
-    final FloatSetting smooth = new FloatSetting("Smooth", this, 1f,10f,2f,0.1f);
+    final ModeSetting smoothMode = new ModeSetting("SmoothMode", this)
+            .addModes("Linear", "AIModel")
+            .setMode("Linear");
 
-    BooleanSetting randomizeWithAIModel = new BooleanSetting("RandomizeWithAIModel", this, true);
-    BooleanSetting additionalCorrection = new BooleanSetting("AdditionalCorrection", this, randomizeWithAIModel::isToggled, true);
+    final FloatSetting linearSmoothStrength = new FloatSetting(
+            "LinearSmoothStrength", this,
+            () -> smoothMode.getMode().equalsIgnoreCase("Linear"),
+            1, 5, 1.5f, 0.1f
+    );
 
-    public ModeSetting aiModel = new ModeSetting("AIModel", this,randomizeWithAIModel::isToggled, "louf", new String[] {"louf","test1", "test2"});
+    final BooleanSupplier modelVisible = () -> smoothMode.getMode().equalsIgnoreCase("AIModel");
+    public final ModeSetting model = new ModeSetting("AIModel", this, modelVisible);
+    final FloatSetting yawMultiplier = new FloatSetting("YawMultiplier", this, modelVisible, 0.5f, 2, 1, 0.1f);
+    final FloatSetting pitchMultiplier = new FloatSetting("PitchMultiplier", this, modelVisible, 0.5f, 2, 1, 0.1f);
 
-    final FloatSetting yawMultiplier = new FloatSetting("YawMultiplier", this,randomizeWithAIModel::isToggled, 0.1f,2f,1f,0.05f);
-    final FloatSetting pitchMultiplier = new FloatSetting("PitchMultiplier", this,randomizeWithAIModel::isToggled, 0.1f,2f,1f,0.05f);
+    final BooleanSetting correction = new BooleanSetting("Correction", this, modelVisible);
+    final BooleanSupplier correctionVisible = () -> modelVisible.getAsBoolean() && correction.isToggled();
+    final IntegerSetting yawCorrectionSpeed = new IntegerSetting("YawCorrectionSpeed", this, correctionVisible, 0, 180, 90);
+    final IntegerSetting pitchCorrectionSpeed = new IntegerSetting("PitchCorrectionSpeed", this, correctionVisible, 0, 180, 30);
 
-    final FloatSetting yawCorrectionSpeed = new FloatSetting("YawCorrectionSpeed", this,additionalCorrection::isToggled, 0f,10f,3f,0.1f);
-    final FloatSetting pitchCorrectionSpeed = new FloatSetting("PitchCorrectionSpeed", this,additionalCorrection::isToggled, 0f,10f,1.5f,0.1f);
-
-    final BooleanSetting silentRot = new BooleanSetting("SilentRotation", this, true);
-
-    final FloatSetting swingDistance = new FloatSetting("SwingDistance", this, 3.0f, 6.0f, 6.0f, 0.1f);
-
+    final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
     final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 0, 20, 17) {
         @Override
         public int getValue() {
@@ -96,7 +110,6 @@ public class KillAura extends Module {
             return value;
         }
     };
-
     final IntegerSetting maxCPS = new IntegerSetting("MaxCPS", this, 0, 20, 17) {
         @Override
         public int getValue() {
@@ -105,127 +118,191 @@ public class KillAura extends Module {
         }
     };
 
-    final BooleanSetting fakeBlock = new BooleanSetting("FakeBlock", this, true);
-    final BooleanSetting moveFix = new BooleanSetting("MoveFix", this, true);
-    final BooleanSetting silent = new BooleanSetting("Silent", this, moveFix::isToggled, true);
-    final BooleanSetting jumpFix = new BooleanSetting("JumpFix", this, true);
+    final ModeSetting moveFix = new ModeSetting("MoveFix", this)
+            .addModes("OFF", "Legit", "Silent", "Target")
+            .setMode("Silent");
+
+    final StopWatch clickTimer = new StopWatch();
+    private long delay;
 
     public KillAura() {
-        stopWatch = new StopWatch();
+        updateModels();
     }
 
-    CombatManager combatManager = Client.INSTANCE.getCombatManager();
-
-    float randomizedCps = RandomUtils.nextFloat(minCPS.getValue(), maxCPS.getValue());
-    float randomizeYawSpeed = RandomUtils.nextFloat(minYawSpeed.getValue(), maxYawSpeed.getValue());
-    float randomizePitchSpeed = RandomUtils.nextFloat(minPitchSpeed.getValue(), maxPitchSpeed.getValue());
+    @Override
+    public void onEnable() {
+        updateModels();
+    }
 
     @Override
     public void onDisable() {
-        super.onDisable();
-        Animations.setAnimate(false);
-        combatManager.setTarget(null);
+        Client.INSTANCE.getCombatManager().setTarget(null);
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
-        if (event instanceof UpdateEvent) combatManager.setTarget(TargetFinder.findTarget(findDistance.getValue(), players.isToggled(), mobs.isToggled(), animals.isToggled()));
+        CombatManager combatManager = Client.INSTANCE.getCombatManager();
+        if (event instanceof TickEvent) combatManager.setTarget(findNewTarget());
+        if (combatManager.getTarget() == null) return;
+        EntityLivingBase target = combatManager.getTarget();
+        Rotation lr = Rotation.getServerRotation().copy();
+        if (DistanceUtils.getDistance(target) < rotationDistance.getValue()) {
+            if (event instanceof MotionEvent e) {
+                e.setYaw(lr.getYaw());
+                e.setPitch(lr.getPitch());
 
-        if (event instanceof RunGameLoopEvent) {
-            boolean haveTarget = combatManager.getTarget() != null;
-            double distanceToTarget = haveTarget ? DistanceUtils.getDistance(combatManager.getTarget()) : swingDistance.getValue();
-            boolean needSwing = haveTarget && distanceToTarget < swingDistance.getValue();
+                AxisAlignedBB box = getHitBox(target);
+                Rotation needRotation = switch (hitVec.getMode()) {
+                    case "Best" -> RotationUtils.getBestRotation(box);
+                    case "Nearest" -> RotationUtils.getNearestRotation(lr, box);
+                    case "Head" -> RotationUtils.getRotationToPoint(target.getPositionEyes(1f));
+                    case "Body" -> RotationUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
+                    default -> throw new IllegalStateException("Unexpected value: " + hitVec.getMode());
+                };
 
-            Animations.setAnimate(haveTarget && needSwing && fakeBlock.isToggled());
-            if (stopWatch.reachedMS() >= 1000 / randomizedCps && mc.currentScreen == null && haveTarget && needSwing) {
-                Client.INSTANCE.getClickManager().addClick();
-                stopWatch.reset();
-                randomizedCps = RandomUtils.nextFloat(minCPS.getValue(), maxCPS.getValue());
+                Rotation delta = RotationUtils.getDelta(lr, needRotation);
+                Rotation speed = new Rotation(
+                        RandomUtils.nextFloat(minYawSpeed.getValue(), maxYawSpeed.getValue()),
+                        RandomUtils.nextFloat(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
+                );
+
+                RotationUtils.limitDelta(delta, speed);
+
+                switch (smoothMode.getMode()) {
+                    case "Linear" -> {
+                        delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
+                        delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
+                    }
+                    case "AIModel" -> {
+                        if (!AIRotationSmooth.currentModelName.equalsIgnoreCase(model.getMode())) {
+                            AIRotationSmooth.changeModel(model.getMode());
+                        }
+
+                        Rotation targetRot = lr.add(delta);
+
+                        Rotation aiRotation = AIRotationSmooth.compute(
+                                lr, targetRot, target,
+                                yawMultiplier.getValue(), pitchMultiplier.getValue(),
+                                correction.isToggled(), yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
+                        );
+
+                        delta = RotationUtils.getDelta(lr, aiRotation);
+                    }
+                }
+
+                RotationUtils.limitDelta(delta, speed);
+                RotationUtils.fixDelta(delta);
+
+                lr = lr.add(delta);
+                lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
+                Rotation.setServerRotation(lr);
             }
         }
-
-        if (combatManager.getTarget() != null) {
-            if (event instanceof MotionEvent motionEvent) {
-                motionEvent.setYaw(Rotation.getServerRotation().getYaw());
-                motionEvent.setPitch(Rotation.getServerRotation().getPitch());
-
-                if (mc.currentScreen == null) {
-                    KillAuraRotation rotation = switch (rotationMode.getMode()) {
-                        case "Vanilla" -> vanillaRotation;
-                        case "Intave" -> intaveRotation;
-                        default -> throw new IllegalStateException("Unexpected value: " + rotationMode.getMode());
-                    };
-
-                    Rotation targetRot = rotation.compute(
-                            Rotation.getServerRotation(),
-                            combatManager.getTarget(),
-                            randomizeYawSpeed, randomizePitchSpeed,
-                            smooth.getValue(),
-                            yawMultiplier.getValue(), pitchMultiplier.getValue()
-                    );
-
-                    if (randomizeWithAIModel.isToggled()) {
-                        if (!chaGPTRotation.currentModelName.equalsIgnoreCase(aiModel.getMode())) chaGPTRotation.changeModel(aiModel.getMode());
-                        targetRot = chaGPTRotation.compute(
-                                Rotation.getServerRotation(),
-                                targetRot,
-                                combatManager.getTarget(),
-                                yawMultiplier.getValue(), pitchMultiplier.getValue(),
-                                additionalCorrection.isToggled(),
-                                yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
-                        );
-                    }
-
-                    targetRot.setPitch(Math.clamp(targetRot.getPitch(), -90, 90));
-
-                    if (silentRot.isToggled()) {
-                        Rotation.setServerRotation(targetRot);
-                    } else {
-                        mc.thePlayer.rotationYaw = targetRot.getYaw();
-                        mc.thePlayer.rotationPitch = targetRot.getPitch();
-                    }
+        if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
+            if (clickTimer.reachedMS(delay)) {
+                clickTimer.reset();
+                double cps = RandomUtils.nextDouble(minCPS.getValue(), maxCPS.getValue());
+                if (cps == 0) {
+                    return;
                 }
+                delay = (long) (1000d / cps);
+                Client.INSTANCE.getClickManager().addClick();
             }
-            if (event instanceof LookEvent lookEvent) {
-                lookEvent.setYaw(Rotation.getServerRotation().getYaw());
-                lookEvent.setPitch(Rotation.getServerRotation().getPitch());
+        }
+        if (event instanceof LookEvent e) {
+            e.setYaw(lr.getYaw());
+            e.setPitch(lr.getPitch());
+        }
+        if (event instanceof ChangeHeadRotationEvent e) {
+            e.setYaw(lr.getYaw());
+            e.setPitch(lr.getPitch());
+        }
+        if (event instanceof UpdateBodyRotationEvent e) {
+            e.setYaw(lr.getYaw());
+        }
+        if (!moveFix.getMode().equalsIgnoreCase("OFF")) {
+            if (event instanceof MoveFlyingEvent e) {
+                e.setYaw(lr.getYaw());
             }
-
-            if (event instanceof ChangeHeadRotationEvent changeHeadRotationEvent) {
-                changeHeadRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
-                changeHeadRotationEvent.setPitch(Rotation.getServerRotation().getPitch());
+            if (event instanceof JumpEvent e) {
+                e.setYaw(lr.getYaw());
             }
-
-            if (event instanceof UpdateBodyRotationEvent UpdateBodyRotationEvent) {
-                UpdateBodyRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
-            }
-
-            if (moveFix.isToggled()) {
-                if (event instanceof MoveFlyingEvent moveFlyingEvent) {
-                    moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
-                }
-                if (event instanceof MoveEvent moveEvent && silent.isToggled()) {
-                    MoveUtils.moveFix(moveEvent, Rotation.getServerRotation().getYaw());
-                }
-
-                if (event instanceof SprintEvent) {
-                    if (Math.abs(MoveUtils.getDirection() - MoveUtils.getDirection(Rotation.getServerRotation().getYaw())) > 45) {
-                        mc.thePlayer.setSprinting(false);
-                    } else if (MoveUtils.canSprint()) {
-                        mc.thePlayer.setSprinting(true);
-                    }
-                }
-
-                if (event instanceof JumpEvent jumpEvent && jumpFix.isToggled()) {
-                    jumpEvent.setYaw(Rotation.getServerRotation().getYaw());
-                }
+        }
+        if (event instanceof MoveEvent e) {
+            switch (moveFix.getMode()) {
+                case "Silent" -> MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
+                case "Target" -> MoveUtils.moveFix(e, RotationUtils.getRotationToPoint(target.getPositionVector()).getYaw());
             }
         }
     }
 
-    @Override
-    public String getSuffix() {
-        return String.valueOf(combatManager.getTarget() == null ? "" : combatManager.getTarget().getName());
+    private AxisAlignedBB getHitBox(EntityLivingBase target) {
+        AxisAlignedBB box = target.getEntityBoundingBox();
+
+        double horizontalPercent = horizontalHitBoxSize.getValue() / 100d;
+        double verticalPercent = verticalHitBoxSize.getValue() / 100d;
+
+        double invertHorizontalPercent = 1 - horizontalPercent;
+        double invertVerticalPercent = 1 - verticalPercent;
+
+        box = new AxisAlignedBB(
+                box.minX + box.getLengthX() * invertHorizontalPercent,
+                box.minY + box.getLengthY() * invertVerticalPercent,
+                box.minZ + box.getLengthZ() * invertHorizontalPercent,
+                box.minX + box.getLengthX() * horizontalPercent,
+                box.minY + box.getLengthY() * verticalPercent,
+                box.minZ + box.getLengthZ() * horizontalPercent
+        );
+        return box;
+    }
+
+    private EntityLivingBase findNewTarget() {
+        EntityLivingBase target = null;
+
+        double bestValue = Double.MAX_VALUE;
+
+        for (Entity entity : mc.theWorld.loadedEntityList) {
+            if (entity == mc.thePlayer) continue;
+            if (DistanceUtils.getDistance(entity) > findDistance.getValue()) continue;
+            if (!(entity instanceof EntityLivingBase ent)) continue;
+            if (entity instanceof EntityPlayer player && player.isFriend()) continue;
+            switch (ent) {
+                case EntityPlayer _ when !targets.get("Players") -> {
+                    continue;
+                }
+                case EntityMob _ when !targets.get("Mobs") -> {
+                    continue;
+                }
+                case EntityAnimal _ when !targets.get("Animals") -> {
+                    continue;
+                }
+                case EntityVillager _ when !targets.get("Villagers") -> {
+                    continue;
+                }
+                default -> {
+                }
+            }
+
+            double value = Double.MAX_VALUE;
+
+            switch (sortType.getMode()) {
+                case "Distance" -> value = DistanceUtils.getDistance(entity);
+                case "FOV" -> value = RotationUtils.getFovToEntity(entity);
+            }
+
+            if (value < bestValue) {
+                bestValue = value;
+                target = ent;
+            }
+        }
+
+        return target;
+    }
+
+    private void updateModels() {
+        model.getModes().clear();
+        for (File modelFile : Client.INSTANCE.getModelsDirectory().listFiles()) {
+            model.getModes().add(modelFile.getName().replaceAll(".params", ""));
+        }
     }
 }

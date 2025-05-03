@@ -313,7 +313,7 @@ public class ItemRenderer {
                 if (this.itemToRender.getItem() instanceof ItemMap) {
                     this.renderItemMap(abstractclientplayer, f2, f, f1);
                 } else if (animate) {
-                    Client.INSTANCE.getObjectsCaller().onEvent(new RenderItemEvent(f1, f));
+                    new RenderItemEvent(f1, f).call();
                 } else if (abstractclientplayer.getItemInUseCount() > 0) {
                     switch (enumaction) {
                         case NONE:
@@ -506,7 +506,7 @@ public class ItemRenderer {
         boolean flag = false;
 
         UpdateRenderingItem updateRenderingItem = new UpdateRenderingItem(itemstack);
-        Client.INSTANCE.getObjectsCaller().onEvent(updateRenderingItem);
+        updateRenderingItem.call();
         itemstack = updateRenderingItem.getStack();
 
         if (updateRenderingItem.isCanceled()) {

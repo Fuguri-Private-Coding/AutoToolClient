@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.legit;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -20,9 +21,8 @@ public class InvClicker extends Module {
 
     int mouseDown;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof TickEvent && (mc.currentScreen instanceof GuiChest || mc.currentScreen instanceof GuiInventory)) {
             if (!Mouse.isButtonDown(0) || !Keyboard.isKeyDown(54) && !Keyboard.isKeyDown(42)) {
                 mouseDown = 0;

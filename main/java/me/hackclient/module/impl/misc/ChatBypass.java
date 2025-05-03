@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.misc;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -11,9 +12,8 @@ import net.minecraft.network.play.client.C01PacketChatMessage;
 @ModuleInfo(name = "ChatBypass", category = Category.MISC)
 public class ChatBypass extends Module {
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof PacketEvent packetEvent) {
             final Packet packet = packetEvent.getPacket();
 

@@ -1,47 +1,58 @@
 package me.hackclient.module.impl.connection;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.PacketDirection;
 import me.hackclient.event.events.PacketEvent;
+import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.module.impl.misc.ClientHandler;
 import me.hackclient.utils.Utils;
-import me.hackclient.utils.doubles.Doubles;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.network.Packet;
+import net.minecraft.util.Vec3;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ModuleInfo(name = "Blink", category = Category.CONNECTION)
 public class Blink extends Module {
 
-    EntityPlayerSP fakePlayer;
-
-    @Override
-    public void onDisable() {
-        super.onDisable();
-        mc.theWorld.removeEntityFromWorld(fakePlayer.getEntityId());
-        ClientHandler.PacketHandler.clientPacketBuffer.forEach(p -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(p.getFirst()));
-        ClientHandler.PacketHandler.clientPacketBuffer.clear();
-    }
+    private Vec3 posAtToggle;
+    private final List<Packet> buffer = new ArrayList<>();
 
     @Override
     public void onEnable() {
-        super.onEnable();
-        fakePlayer.setEntityId(-1000);
-        mc.theWorld.addEntityToWorld(fakePlayer.getEntityId(), mc.thePlayer);
+        posAtToggle = mc.thePlayer.getPositionVector();
     }
 
     @Override
+    public void onDisable() {
+        buffer.forEach(packet -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet));
+        buffer.clear();
+    }
+
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
-        if (event instanceof PacketEvent packetEvent && packetEvent.getDirection() == PacketDirection.OUTGOING && !packetEvent.isCanceled() && Utils.isWorldLoaded()) {
-            packetEvent.setCanceled(true);
-            ClientHandler.PacketHandler.clientPacketBuffer.add(new Doubles<>(packetEvent.getPacket(), packetEvent.getSendTime()));
+        if (event instanceof Render3DEvent) {
+            mc.getRenderManager().doRenderEntity(
+                    mc.thePlayer,
+                    posAtToggle.xCoord,
+                    posAtToggle.yCoord,
+                    posAtToggle.zCoord,
+                    mc.thePlayer.rotationYawHead,
+                    mc.timer.renderPartialTicks,
+                    true
+            );
+        }
+        if (event instanceof PacketEvent e && e.getDirection() == PacketDirection.OUTGOING && !e.isCanceled() && Utils.isWorldLoaded()) {
+            e.cancel();
+            buffer.add(e.getPacket());
         }
     }
 
     @Override
     public String getSuffix() {
-        return String.valueOf(ClientHandler.PacketHandler.clientPacketBuffer.size());
+        return String.valueOf(buffer.size());
     }
 }

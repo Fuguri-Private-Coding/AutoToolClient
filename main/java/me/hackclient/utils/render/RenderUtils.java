@@ -1,7 +1,7 @@
 package me.hackclient.utils.render;
 
 import me.hackclient.utils.color.ColorUtils;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,7 +18,7 @@ import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class RenderUtils implements InstanceAccess {
+public class RenderUtils implements Imports {
 
     public static void start3D() {
         GlStateManager.disableTexture2D();
@@ -99,6 +99,25 @@ public class RenderUtils implements InstanceAccess {
         ColorUtils.resetColor();
     }
 
+    public static void drawDot(Vec3 pos, double size, Color color) {
+        GlStateManager.pushMatrix();
+        AxisAlignedBB box = new AxisAlignedBB(pos, pos).expand(size, size, size);
+
+        glBlendFunc(770, 771);
+        glEnable(3042);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(2929);
+        glDepthMask(false);
+        glLineWidth(2.0F);
+        renderWithAbsolutePosition(() -> drawBoundingBox(box, color));
+        glEnable(GL_TEXTURE_2D);
+        glEnable(2929);
+        glDepthMask(true);
+        glDisable(GL_BLEND);
+        GlStateManager.popMatrix();
+    }
+
+
     public static void drawDot(double x, double y, double z, double size, int color) {
         double d = size / 2;
         GlStateManager.pushMatrix();
@@ -131,6 +150,7 @@ public class RenderUtils implements InstanceAccess {
     public static void drawBoundingBox(AxisAlignedBB abb, float r, float g, float b, float a) {
         Tessellator ts = Tessellator.getInstance();
         WorldRenderer vb = ts.getWorldRenderer();
+        GlStateManager.color(r, g, b, a);
         vb.begin(7, DefaultVertexFormats.POSITION_COLOR);
         vb.pos(abb.minX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
         vb.pos(abb.minX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
@@ -191,6 +211,7 @@ public class RenderUtils implements InstanceAccess {
         vb.pos(abb.maxX, abb.maxY, abb.maxZ).color(r, g, b, a).endVertex();
         vb.pos(abb.maxX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
         ts.draw();
+        GlStateManager.resetColor();
     }
 
     public static void drawBoundingBox(AxisAlignedBB var0) {

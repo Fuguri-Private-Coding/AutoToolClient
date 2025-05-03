@@ -2,8 +2,8 @@ package me.hackclient.module.impl.connection;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.PacketDirection;
-import me.hackclient.event.events.AttackEvent;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.event.events.TickEvent;
@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
 
@@ -66,7 +65,10 @@ public class BackTrack extends Module {
 
     BooleanSetting renderIfWorking = new BooleanSetting("RenderIfWorking", this, true);
 
-    ModeSetting espMode = new ModeSetting("Render", this, "Player", new String[] { "Player", "Box" });
+    ModeSetting espMode = new ModeSetting("Render", this)
+            .addModes("Player", "Box")
+            .setMode("Player");
+
     ColorSetting color = new ColorSetting("Color", this, () -> espMode.getMode().equals("Box"), 1,1,1,1);
 
     BooleanSetting realTimeDamage = new BooleanSetting("RealTimeDamage", this, true);
@@ -79,9 +81,8 @@ public class BackTrack extends Module {
 
     private int delayBetweenBackTracks;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (target != null && event instanceof TickEvent && debugDistance.isToggled()) {
             AxisAlignedBB realBox = target.getEntityBoundingBox().offset(target.nx - target.posX, target.ny - target.posY, target.nz - target.posZ).expand(
                     target.getCollisionBorderSize(),

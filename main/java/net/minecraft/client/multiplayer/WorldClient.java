@@ -57,7 +57,7 @@ public class WorldClient extends World
     public WorldClient(NetHandlerPlayClient netHandler, WorldSettings settings, int dimension, EnumDifficulty difficulty, Profiler profilerIn)
     {
         super(new SaveHandlerMP(), new WorldInfo(settings, "MpServer"), WorldProvider.getProviderForDimension(dimension), profilerIn, true);
-        Client.INSTANCE.getObjectsCaller().onEvent(new WorldChangeEvent());
+        new WorldChangeEvent().call();
         this.sendQueue = netHandler;
         this.getWorldInfo().setDifficulty(difficulty);
         this.provider.registerWorld(this);

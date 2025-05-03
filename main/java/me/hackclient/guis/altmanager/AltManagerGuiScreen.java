@@ -20,11 +20,6 @@ public class AltManagerGuiScreen extends GuiScreen {
     }
 
     @Override
-    public void initGui() {
-
-    }
-
-    @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         ScaledResolution sc = new ScaledResolution(mc);

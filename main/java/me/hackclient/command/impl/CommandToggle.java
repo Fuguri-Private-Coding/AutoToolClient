@@ -17,13 +17,11 @@ public class CommandToggle extends Command {
 			super.usage();
 			return;
 		}
-		
 		Module module = Client.INSTANCE.getModuleManager().getModule(args[1]);
 		if (module == null) {
 			console.log("There is no such module!");
 			return;
 		}
-		
 		module.toggle();
 	}
 }

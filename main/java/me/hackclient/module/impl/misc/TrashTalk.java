@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.misc;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -3306,7 +3307,7 @@ public class TrashTalk extends Module {
             ""
     });
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             if (timer.reachedMS(delay.getValue() * 1000L)) {

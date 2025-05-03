@@ -2,6 +2,7 @@ package me.hackclient.module.impl.visual;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -20,17 +21,12 @@ import java.util.List;
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 
-@ModuleInfo(name = "TargetESP", category = Category.VISUAL, toggled = true)
+@ModuleInfo(name = "TargetESP", category = Category.VISUAL)
 public class TargetESP extends Module {
 
-    final ModeSetting mode = new ModeSetting(
-            "Mode",
-            this,
-            "Sigma",
-            new String[] {
-                    "Sigma", "Sigma2"
-            }
-    );
+    final ModeSetting mode = new ModeSetting("Mode", this)
+            .addModes("Sigma", "Sigma2")
+            .setMode("Sigma");
 
     final FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f) {};
     final IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
@@ -43,9 +39,8 @@ public class TargetESP extends Module {
 
     Shadows shadows;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         if (event instanceof Render3DEvent) {
             switch (mode.getMode()) {

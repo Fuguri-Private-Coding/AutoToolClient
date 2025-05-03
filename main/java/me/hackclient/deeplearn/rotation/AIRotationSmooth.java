@@ -1,10 +1,11 @@
-package me.hackclient.module.impl.combat.killaura.rotation.impl;
+package me.hackclient.deeplearn.rotation;
 
 import ai.djl.translate.TranslateException;
+import lombok.experimental.UtilityClass;
 import me.hackclient.Client;
 import me.hackclient.deeplearn.data.TrainingData;
 import me.hackclient.deeplearn.models.MinaraiModel;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.entity.EntityLivingBase;
@@ -17,7 +18,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-public class ChaGPTRotation implements InstanceAccess {
+@UtilityClass
+public class AIRotationSmooth implements Imports {
 
     public String currentModelName = "";
 
@@ -63,7 +65,7 @@ public class ChaGPTRotation implements InstanceAccess {
 
             if (!correct) correctRot = Rotation.ZERO;
 
-            return startsFrom.add(new Rotation(yawOutputDelta, pitchOutputDelta)).add(correctRot).fix();
+            return startsFrom.add(new Rotation(yawOutputDelta, pitchOutputDelta)).add(correctRot);
         } catch (TranslateException e) {
             e.printStackTrace(System.out);
         }

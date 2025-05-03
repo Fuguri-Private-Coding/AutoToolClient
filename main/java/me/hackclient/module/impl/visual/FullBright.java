@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.visual;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.event.events.WorldChangeEvent;
@@ -11,18 +12,12 @@ import me.hackclient.settings.impl.ModeSetting;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
-@ModuleInfo(name = "FullBright", category = Category.VISUAL, toggled = true)
+@ModuleInfo(name = "FullBright", category = Category.VISUAL)
 public class FullBright extends Module {
 
-    ModeSetting mode = new ModeSetting(
-            "Mode",
-            this,
-            "NightVision",
-            new String[]{
-                    "NightVision",
-                    "Gamma"
-            }
-    );
+    ModeSetting mode = new ModeSetting("Mode", this)
+            .addModes("NightVision", "Gamma")
+            .setMode("NightVision");
 
     @Override
     public void onDisable() {
@@ -40,9 +35,8 @@ public class FullBright extends Module {
         }
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof TickEvent) {
             if (mode.getMode().equals("NightVision") && !mc.thePlayer.isPotionActive(Potion.nightVision)) {
                 mc.thePlayer.addPotionEffect(new PotionEffect(Potion.nightVision.id, Integer.MAX_VALUE, 255, false, false));

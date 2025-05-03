@@ -6,6 +6,7 @@ import lombok.Getter;
 import me.hackclient.Client;
 import me.hackclient.deeplearn.data.TrainingData;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.AttackEvent;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
@@ -88,7 +89,7 @@ public class ModelTrainer extends Module {
         ClientUtils.chatLog("Recorded: " + packets.size() + "samples");
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
         if (event instanceof AttackEvent e && e.getHittingEntity() == target) {
             e.cancel();

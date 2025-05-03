@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -27,9 +28,8 @@ public class AntiFireball extends Module {
         stopWatch = new StopWatch();
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof TickEvent) {
             for (Entity entity : mc.theWorld.loadedEntityList) {
                 if (!(entity instanceof EntityFireball entityFireball) || entityFireball.shootingEntity == mc.thePlayer || DistanceUtils.getDistance(entity) > distance.getValue() || !stopWatch.reachedMS(delay.getValue())) continue;

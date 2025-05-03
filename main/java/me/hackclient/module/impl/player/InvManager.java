@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -12,9 +13,8 @@ import net.minecraft.item.ItemStack;
 @ModuleInfo(name = "InvManager", category = Category.PLAYER)
 public class InvManager extends Module {
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof TickEvent && mc.currentScreen instanceof GuiInventory) {
             for (int i = 0; i < 45; i++) {
                 if (mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()) {

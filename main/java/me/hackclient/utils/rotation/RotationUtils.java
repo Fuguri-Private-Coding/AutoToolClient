@@ -1,21 +1,22 @@
 package me.hackclient.utils.rotation;
 
-import me.hackclient.utils.distance.DistanceUtils;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.math.MathUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
-public class RotationUtils implements InstanceAccess {
+public class RotationUtils implements Imports {
 	public static Vec3 getBestHitVec(Entity entity) {
 		return getBestHitVec(getEntityExpandedBB(entity));
+	}
+
+	public static Rotation getBestRotation(Entity entity) {
+		return getRotationToPoint(getBestHitVec(entity));
 	}
 
 	public static Vec3 getBestHitVec(AxisAlignedBB bb) {
@@ -23,8 +24,16 @@ public class RotationUtils implements InstanceAccess {
 		return bb.clampVecToInside(eyes);
 	}
 
+	public static Rotation getBestRotation(AxisAlignedBB bb) {
+		return getRotationToPoint(getBestHitVec(bb));
+	}
+
 	public static Vec3 getBestHitVec(Vec3 from, AxisAlignedBB bb) {
 		return bb.clampVecToInside(from);
+	}
+
+	public static Rotation getBestRotation(Vec3 from, AxisAlignedBB bb) {
+		return getRotationToPoint(getBestHitVec(from, bb));
 	}
 
 	public static Delta getDeltaToPoint(Rotation startRotation, Vec3 needPoint) {
@@ -67,7 +76,7 @@ public class RotationUtils implements InstanceAccess {
         );
 	}
 
-	public static Rotation getRotationNearest(Rotation current, AxisAlignedBB box) {
+	public static Rotation getNearestRotation(Rotation current, AxisAlignedBB box) {
 		Vec3[] points = {
 				new Vec3(box.minX, box.minY, box.minZ),
 				new Vec3(box.maxX, box.minY, box.minZ),
@@ -92,60 +101,16 @@ public class RotationUtils implements InstanceAccess {
 				Math.clamp(current.getPitch(), (float) minPitch, (float) maxPitch));
 	}
 
-	public static Rotation getNearestRotation(Rotation from, AxisAlignedBB to) {
-		List<Rotation> possibleRotations = getPossibleRotations(to, true);
-		possibleRotations.sort(Comparator.comparingDouble(
-				rotation -> {
-					Delta delta = getDelta(from, rotation);
-					return Math.hypot(Math.abs(delta.getYaw()), Math.abs(delta.getPitch()));
-				}
-		));
-		if (possibleRotations.isEmpty()) return null;
-		return possibleRotations.stream().findFirst().orElse(null);
-	}
-
-	public static Vec3 getTestNearestRotation(Rotation rotation, AxisAlignedBB to) {
-		Rotation r = rotation.copy();
-
-		 double distance = DistanceUtils.getDistance(new Vec3(
-				 to.minX + to.getLengthX() * 0.5,
-				 to.minY + to.getLengthY() * 0.5,
-				 to.minZ + to.getLengthZ() * 0.5
-		 ));
-
-		 Vec3 rotationVec = getVectorForRotation(rotation).multiple(distance);
-
-		return getBestHitVec(rotationVec, to);
-	}
-
-	public static List<Rotation> getPossibleRotations(AxisAlignedBB box, boolean removeInvisible) {
-		List<Rotation> rotations = new ArrayList<>();
-
-		double accuracy = 7;
-		double stepX = box.getLengthX() / accuracy;
-		double stepY = box.getLengthY() / accuracy;
-		double stepZ = box.getLengthZ() / accuracy;
-
-
-		for (double x = box.minX; x <= box.maxX; x += stepX) {
-			for (double y = box.minY; y <= box.maxY; y += stepY) {
-				for (double z = box.minZ; z <= box.maxZ; z += stepZ) {
-					Vec3 vec = new Vec3(x, y, z);
-					if (!removeInvisible || mc.thePlayer.canVecBeSeen(vec)) {
-						rotations.add(RotationUtils.getRotationToPoint(vec));
-					}
-				}
-			}
-		}
-
-		return rotations;
-	}
-
 	public static Delta getDelta(Rotation start, Rotation end) {
 		return new Delta(
 				MathHelper.wrapDegree(end.getYaw() - start.getYaw()),
 				end.getPitch() - start.getPitch()
 		);
+	}
+
+	public static void limitDelta(Rotation delta, Rotation speed) {
+		delta.setYaw(Math.clamp(delta.getYaw(), -speed.getYaw(), speed.getYaw()));
+		delta.setPitch(Math.clamp(delta.getPitch(), -speed.getPitch(), speed.getPitch()));
 	}
 
 	public static Vec3 getVectorForRotation(Rotation rotation) {

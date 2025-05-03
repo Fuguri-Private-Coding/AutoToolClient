@@ -1,7 +1,7 @@
 package me.hackclient.shader;
 
 import lombok.Getter;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 
 @Getter
-public class Shader implements InstanceAccess {
+public class Shader implements Imports {
 	final int programId;
 
 	public Shader(ResourceLocation fragmentShaderDir, ResourceLocation vertexShaderDir) {

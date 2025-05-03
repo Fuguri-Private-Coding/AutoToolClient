@@ -1,26 +1,20 @@
 package me.hackclient.module.impl.move;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.ModeSetting;
-import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "Fly", category = Category.MOVE)
 public class Fly extends Module {
 
-    ModeSetting mode = new ModeSetting(
-            "Mode",
-            this,
-            "Vanilla",
-            new String[] {
-                    "Vanilla",
-                    "Matrix test"
-            }
-    );
+    ModeSetting mode = new ModeSetting("Mode", this)
+            .addModes("Vanilla")
+            .setMode("Vanilla");
 
     final FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 0.1f, 0.6f, 0.6f, 0.1f) {};
 
@@ -34,10 +28,8 @@ public class Fly extends Module {
         jumps = 0;
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
-
         switch (mode.getMode()) {
             case "Vanilla" -> {
                 if (event instanceof UpdateEvent) {

@@ -2,6 +2,7 @@ package me.hackclient.module.impl.visual;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -19,15 +20,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleInfo(name = "Trails", category = Category.VISUAL)
 public class Trails extends Module {
 
-    final ModeSetting mode = new ModeSetting(
-            "Mode",
-            this,
-            "SingleLine",
-            new String[] {
-                    "SingleLine",
-                    "PlayerLine"
-            }
-    );
+    final ModeSetting mode = new ModeSetting("Mode", this)
+            .addModes("SingleLine", "PlayerLine")
+            .setMode("PlayerLine");
 
     final List<Doubles<Vec3, Long>> bottomList, topList;
 
@@ -44,9 +39,8 @@ public class Trails extends Module {
         bottomList = new CopyOnWriteArrayList<>();
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         if (onlyThirdPerson.isToggled() && mc.gameSettings.thirdPersonView == 0) return;
         if (event instanceof Render3DEvent) {

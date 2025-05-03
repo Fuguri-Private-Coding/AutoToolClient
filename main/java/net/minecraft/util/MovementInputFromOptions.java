@@ -24,7 +24,7 @@ public class MovementInputFromOptions extends MovementInput
                 gameSettings.keyBindJump.isKeyDown(),
                 gameSettings.keyBindSneak.isKeyDown()
         );
-        Client.INSTANCE.getObjectsCaller().onEvent(event);
+        event.call();
 
         moveStrafe = 0.0F;
         moveForward = 0.0F;
@@ -53,7 +53,7 @@ public class MovementInputFromOptions extends MovementInput
         sneak = event.isSneak();
 
         MoveEvent moveEvent = new MoveEvent(moveForward, moveStrafe, jump, sneak,0.3f);
-        Client.INSTANCE.getObjectsCaller().onEvent(moveEvent);
+        moveEvent.call();
         moveStrafe = moveEvent.getStrafe();
         moveForward = moveEvent.getForward();
         jump = moveEvent.isJump();

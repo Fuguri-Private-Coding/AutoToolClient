@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.visual;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.AttackEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -16,9 +17,8 @@ public class Particle extends Module {
 
     IntegerSetting multiple = new IntegerSetting("Multiple", this, 1, 5, 2);
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof AttackEvent attackEvent) {
             Entity target = attackEvent.getHittingEntity();
             if (target instanceof EntityPlayer) {

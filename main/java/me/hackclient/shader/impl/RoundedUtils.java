@@ -3,13 +3,13 @@ package me.hackclient.shader.impl;
 import me.hackclient.Client;
 import me.hackclient.shader.Shader;
 import me.hackclient.shader.Uniform;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-public class RoundedUtils implements InstanceAccess {
+public class RoundedUtils implements Imports {
 
     private static Shader program;
 

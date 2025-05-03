@@ -1,7 +1,7 @@
 package me.hackclient.utils.target;
 
 import me.hackclient.utils.distance.DistanceUtils;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -13,7 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class TargetFinder implements InstanceAccess {
+public class TargetFinder implements Imports {
 
     public static EntityLivingBase findTarget(double distance, boolean players, boolean mobs, boolean animal) {
         List<Entity> copiedList = new CopyOnWriteArrayList<>(mc.theWorld.loadedEntityList);

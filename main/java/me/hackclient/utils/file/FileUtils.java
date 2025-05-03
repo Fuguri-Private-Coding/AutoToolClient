@@ -26,4 +26,40 @@ public class FileUtils {
             IOUtils.copy(resourceStream, fos);
         }
     }
+
+    /**
+     * Создает {@code file} если он не существует
+     * @param file файл который надо создать если его нет
+     * @return если файл был создан - true иначе - false
+     */
+    public static boolean createIfNotExists(File file) {
+        if (file.exists()) return false;
+        try {
+            if (file.isDirectory()) {
+                return file.mkdirs();
+            } else if (file.isFile()) {
+                return file.createNewFile();
+            } else {
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+        }
+        return false;
+    }
+
+    /**
+     * Создает все несуществующие файлы из {@code files}
+     * @param files массив с файлами которые надо создать если они не существуют
+     * @return если был создан хотя-бы 1 файл - true иначе - false
+     */
+    public static boolean createIfNotExists(File... files) {
+        boolean created = false;
+        for (File file : files) {
+            if (createIfNotExists(file)) {
+                created = true;
+            }
+        }
+        return created;
+    }
 }

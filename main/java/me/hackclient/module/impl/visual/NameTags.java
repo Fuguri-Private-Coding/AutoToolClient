@@ -2,6 +2,7 @@ package me.hackclient.module.impl.visual;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -22,7 +23,7 @@ import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
-@ModuleInfo(name = "NameTags", category = Category.VISUAL, toggled = true)
+@ModuleInfo(name = "NameTags", category = Category.VISUAL)
 public class NameTags extends Module {
 
     FloatSetting height = new FloatSetting("Height", this, 0,2,0.6F, 0.1F);
@@ -34,9 +35,8 @@ public class NameTags extends Module {
     MidClick midClick;
     Shadows shadows;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         if (murderDetector == null) murderDetector = Client.INSTANCE.getModuleManager().getModule(MurderDetector.class);
         if (midClick == null) midClick = Client.INSTANCE.getModuleManager().getModule(MidClick.class);

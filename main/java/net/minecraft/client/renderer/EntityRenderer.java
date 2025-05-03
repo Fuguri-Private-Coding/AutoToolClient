@@ -1089,7 +1089,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     this.mc.ingameGUI.renderGameOverlay(partialTicks);
 
                     Render2DEvent event = new Render2DEvent();
-                    Client.INSTANCE.getObjectsCaller().onEvent(event);
+                    event.call();
 
                     if (this.mc.gameSettings.ofShowFps && !this.mc.gameSettings.showDebugInfo) {
                         Config.drawFps();
@@ -1434,7 +1434,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.mc.mcProfiler.endStartSection("outline");
 
             if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, new Object[]{renderglobal, entityplayer1, this.mc.objectMouseOver, Integer.valueOf(0), entityplayer1.getHeldItem(), Float.valueOf(partialTicks)})) && !this.mc.gameSettings.hideGUI) {
-                Client.INSTANCE.getObjectsCaller().onEvent(new DrawBlockHighlightEvent());
+                new DrawBlockHighlightEvent().call();
                 BlockOverlay blockOverlay = Client.INSTANCE.getModuleManager().getModule(BlockOverlay.class);
                 if (!blockOverlay.isToggled()) renderglobal.drawSelectionBox(entityplayer1, this.mc.objectMouseOver, 0, partialTicks);
             }
@@ -1554,7 +1554,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Reflector.callVoid(Reflector.ForgeHooksClient_dispatchRenderLast, renderglobal, partialTicks);
         }
 
-        Client.INSTANCE.getObjectsCaller().onEvent(new Render3DEvent());
+        new Render3DEvent().call();
 
         this.mc.mcProfiler.endStartSection("hand");
 

@@ -1,6 +1,6 @@
 package me.hackclient.utils.font;
 
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-public class ClientFontRenderer implements InstanceAccess {
+public class ClientFontRenderer implements Imports {
 
     CharData[] charData = new CharData[256], boldChars = new CharData[256], italicChars = new CharData[256], boldItalicChars = new CharData[256];
 

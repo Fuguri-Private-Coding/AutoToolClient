@@ -2,6 +2,7 @@ package me.hackclient.module.impl.combat;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.LegitClickTimingEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.TickEvent;
@@ -26,16 +27,10 @@ public class TimerRange extends Module {
 
     boolean teleporting = false;
     int teleportTicks = 0;
-    boolean click;
     public int balance;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        if (mc.thePlayer == null) return;
-        if (event instanceof LegitClickTimingEvent && click) {
-            click = false;
-            mc.clickMouse();
-        }
         if (event instanceof TickEvent tickEvent) {
             if (teleporting) return;
 
@@ -67,26 +62,22 @@ public class TimerRange extends Module {
                 }
             }
 
+            if (teleportTicks == 0) {
+                return;
+            }
+
             teleporting = true;
             for (int i = 0; i < teleportTicks; i++) {
                 try {
                     mc.runTick();
                     balance++;
-                    if (RayCastUtils.raycastEntity(3, ignored -> true) == target) {
-                        click = true;
-                        break;
-                    }
                 } catch (Exception ignored) { }
             }
+            mc.clickMouse();
             teleporting = false;
         }
         if (event instanceof RunGameLoopEvent && balance > 0) {
             mc.timer.renderPartialTicks = partialTicks.getValue();
         }
-    }
-
-    @Override
-    public boolean handleEvents() {
-        return isToggled();
     }
 }

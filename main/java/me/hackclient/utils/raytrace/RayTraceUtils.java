@@ -2,7 +2,7 @@ package me.hackclient.utils.raytrace;
 
 import com.google.common.base.Predicates;
 import lombok.experimental.UtilityClass;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.*;
@@ -10,7 +10,7 @@ import net.optifine.reflect.Reflector;
 import java.util.List;
 
 @UtilityClass
-public class RayTraceUtils implements InstanceAccess {
+public class RayTraceUtils implements Imports {
     public MovingObjectPosition rayTrace(final Vec3 eyesPos, final double entityRange, final double blockRange, Rotation rotation) {
         final Entity renderViewEntity = mc.getRenderViewEntity();
 

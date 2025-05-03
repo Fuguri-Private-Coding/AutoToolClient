@@ -1,12 +1,12 @@
 package me.hackclient.utils.distance;
 
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 
-public class DistanceUtils implements InstanceAccess {
+public class DistanceUtils implements Imports {
 
 	/**
 	 * @param entity Ентити до хитбокса которого будет вычеслятся растояние.

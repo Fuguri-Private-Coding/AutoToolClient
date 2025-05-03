@@ -3,20 +3,20 @@ package me.hackclient.utils.discord;
 import lombok.Getter;
 import me.hackclient.Client;
 import me.hackclient.event.Event;
-import me.hackclient.event.callable.ConditionCallableObject;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.guis.console.ConsoleGuiScreen;
 import me.hackclient.guis.main.GuiClientMainMenu;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.arikia.dev.drpc.DiscordEventHandlers;
 import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 import net.minecraft.client.gui.GuiMultiplayer;
 
-public class Discord implements InstanceAccess, ConditionCallableObject {
+public class Discord implements Imports {
 
-    {
-        callables.add(this);
+    public Discord() {
+        Client.INSTANCE.getEventManager().register(this);
     }
 
     long timestamp;
@@ -44,7 +44,7 @@ public class Discord implements InstanceAccess, ConditionCallableObject {
         DiscordRPC.discordInitialize("1356982126746140713", handlers, true);
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
         if (console == null) console = Client.INSTANCE.getConsole();
         if (event instanceof TickEvent) {
@@ -80,10 +80,5 @@ public class Discord implements InstanceAccess, ConditionCallableObject {
         rpc.setBigImage("logo", "AutoTool " + Client.INSTANCE.getVersion());
         rpc.setStartTimestamps(timestamp);
         DiscordRPC.discordUpdatePresence(rpc.build());
-    }
-
-    @Override
-    public boolean handleEvents() {
-        return run;
     }
 }

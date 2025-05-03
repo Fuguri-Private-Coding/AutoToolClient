@@ -223,7 +223,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     {
         LookEvent event = new LookEvent(rotationYaw, rotationPitch);
         if (this instanceof EntityPlayerSP) {
-            Client.INSTANCE.getObjectsCaller().onEvent(event);
+            event.call();
         }
         return this.getVectorForRotation(event.getPitch(), event.getYaw());
     }

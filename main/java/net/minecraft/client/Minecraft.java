@@ -599,17 +599,17 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     }
 
     public void displayCrashReport(CrashReport crashReportIn) {
-        try {
-            Client.INSTANCE.getConfigManager().save(Client.INSTANCE.getDefaultConfig());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            Client.INSTANCE.getConfigManager().saveBinds(Client.INSTANCE.getBindsDirectory());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Client.INSTANCE.getConfigManager().save(Client.INSTANCE.getDefaultConfig());
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        try {
+//            Client.INSTANCE.getConfigManager().saveBinds(Client.INSTANCE.getBindsDirectory());
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
 
         File file1 = new File(getMinecraft().mcDataDir, "crash-reports");
         File file2 = new File(file1, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
@@ -868,7 +868,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.timer.updateTimer();
         }
 
-        Client.INSTANCE.getObjectsCaller().onEvent(new RunGameLoopEvent());
+        new RunGameLoopEvent().call();
 
         this.mcProfiler.startSection("scheduledExecutables");
 
@@ -1211,7 +1211,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     public void clickMouseCustom(MovingObjectPosition mouseOver, boolean useDelay) {
 
-        Client.INSTANCE.getObjectsCaller().onEvent(new ClickEvent(ClickEvent.Button.LEFT));
+        new ClickEvent(ClickEvent.Button.LEFT);
 
         if (this.leftClickCounter <= 0 || !useDelay) {
             thePlayer.swingItem();
@@ -1248,7 +1248,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     public void clickMouse() {
 
-        Client.INSTANCE.getObjectsCaller().onEvent(new ClickEvent(ClickEvent.Button.LEFT));
+        new ClickEvent(ClickEvent.Button.LEFT).call();
 
         if (this.leftClickCounter <= 0) {
             this.thePlayer.swingItem();
@@ -1286,7 +1286,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     @SuppressWarnings("incomplete-switch")
     public void rightClickMouse() {
 
-        Client.INSTANCE.getObjectsCaller().onEvent(new ClickEvent(ClickEvent.Button.RIGHT));
+        new ClickEvent(ClickEvent.Button.RIGHT).call();
 
         if (!this.playerController.getIsHittingBlock()) {
             this.rightClickDelayTimer = 4;
@@ -1421,7 +1421,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     public void runTick() throws IOException {
         TickEvent tickEvent = new TickEvent();
-        Client.INSTANCE.getObjectsCaller().onEvent(tickEvent);
+        tickEvent.call();
 
         if (tickEvent.isCanceled()) {
             return;
@@ -1577,7 +1577,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                         this.currentScreen.handleKeyboardInput();
                     } else {
                         KeyEvent keyEvent = new KeyEvent(k);
-                        Client.INSTANCE.getObjectsCaller().onEvent(keyEvent);
+                        keyEvent.call();
                         k = keyEvent.getKey();
 
                         if (k == 1) {
@@ -1736,7 +1736,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                     ;
                 }
             } else {
-                Client.INSTANCE.getObjectsCaller().onEvent(new LegitClickTimingEvent());
+                new LegitClickTimingEvent().call();
 
                 while (this.gameSettings.keyBindAttack.isPressed()) {
                     this.clickMouse();

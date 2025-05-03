@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.misc;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.guis.config.ConfigGuiScreen;
 import me.hackclient.guis.clickgui.ClickGuiScreen;
@@ -17,9 +18,8 @@ public class NoGuiClose extends Module {
 
     BooleanSetting onlyClientGui = new BooleanSetting("ClientGui", this, true);
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof PacketEvent packetEvent && packetEvent.getPacket() instanceof S2EPacketCloseWindow
                 && (onlyClientGui.isToggled()
                 ? mc.currentScreen instanceof ClickGuiScreen

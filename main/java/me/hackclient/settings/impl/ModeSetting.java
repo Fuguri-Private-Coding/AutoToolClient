@@ -5,25 +5,41 @@ import lombok.Setter;
 import me.hackclient.module.Module;
 import me.hackclient.settings.Setting;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
 @Getter
 public class ModeSetting extends Setting {
 
-    @Setter String mode;
-    @Setter List<String> modes;
+    String mode;
+    @Setter List<String> modes = new ArrayList<>();
 
-    public ModeSetting(String name, Module parent, String mode, String[] modes) {
+    public ModeSetting(String name, Module parent) {
         super(name, parent);
-        this.mode = mode;
-        this.modes = List.of(modes);
     }
 
-    public ModeSetting(String name, Module parent, BooleanSupplier visible, String mode, String[] modes) {
+    public ModeSetting(String name, Module parent, BooleanSupplier visible) {
         super(name, parent);
-        this.mode = mode;
-        this.modes = List.of(modes);
         this.setVisible(visible);
+    }
+
+    public ModeSetting setMode(String mode) {
+        if (!modes.contains(mode)) {
+            System.out.println("Cant set mode " + mode);
+            return this;
+        }
+        this.mode = mode;
+        return this;
+    }
+
+    public ModeSetting addMode(String mode) {
+        modes.add(mode);
+        return this;
+    }
+
+    public ModeSetting addModes(String... modes) {
+        this.modes.addAll(List.of(modes));
+        return this;
     }
 }

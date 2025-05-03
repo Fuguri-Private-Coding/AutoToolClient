@@ -1,23 +1,24 @@
 package me.hackclient.utils.packet;
 
+import me.hackclient.Client;
 import me.hackclient.event.Event;
-import me.hackclient.event.callable.ConditionCallableObject;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.TickEvent;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S14PacketEntity;
 import net.minecraft.network.play.server.S18PacketEntityTeleport;
 
-public class PositionResolverComponent implements ConditionCallableObject, InstanceAccess {
+public class PositionResolverComponent implements Imports {
 
-    {
-        callables.add(this);
+    public PositionResolverComponent() {
+        Client.INSTANCE.getEventManager().register(this);
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();
@@ -58,10 +59,5 @@ public class PositionResolverComponent implements ConditionCallableObject, Insta
                 }
             }
         }
-    }
-
-    @Override
-    public boolean handleEvents() {
-        return mc.thePlayer != null && mc.theWorld != null;
     }
 }

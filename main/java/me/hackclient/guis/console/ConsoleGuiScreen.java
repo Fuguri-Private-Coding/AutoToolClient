@@ -2,7 +2,7 @@ package me.hackclient.guis.console;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
-import me.hackclient.event.callable.ConditionCallableObject;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.module.impl.visual.Shadows;
@@ -23,7 +23,7 @@ import java.util.List;
 
 import static java.lang.Math.min;
 
-public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObject {
+public class ConsoleGuiScreen extends GuiScreen {
 
     Vector2f pos, size, lastMouse;
 
@@ -36,7 +36,7 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
     final Animation2D background, sizeBackground, scrolls;
 
     public ConsoleGuiScreen() {
-        callables.add(this);
+        Client.INSTANCE.getEventManager().register(this);
         mc = Minecraft.getMinecraft();
         lastMouse = new Vector2f(0, 0);
 
@@ -225,7 +225,7 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
         }
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             if (delay > 0) {
@@ -247,10 +247,5 @@ public class ConsoleGuiScreen extends GuiScreen implements ConditionCallableObje
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
         moving = false;
-    }
-
-    @Override
-    public boolean handleEvents() {
-        return mc.thePlayer != null && mc.theWorld != null && mc.currentScreen instanceof ConsoleGuiScreen;
     }
 }

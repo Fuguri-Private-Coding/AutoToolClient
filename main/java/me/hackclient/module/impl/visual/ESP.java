@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.visual;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -28,9 +29,8 @@ public class ESP extends Module {
             //.add("")
             ;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof Render3DEvent) {
             if (modes.get("Box")) {
                 RenderUtils.start3D();

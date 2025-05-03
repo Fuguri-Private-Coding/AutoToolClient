@@ -1,17 +1,14 @@
 package me.hackclient.event;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class CancelableEvent extends Event {
 	boolean canceled;
 
-	public boolean isCanceled() {
-		return canceled;
-	}
-
-	public void setCanceled(boolean canceled) {
-		this.canceled = canceled;
-	}
-
-	public void cancel() {
+    public void cancel() {
 		setCanceled(true);
 	}
 }

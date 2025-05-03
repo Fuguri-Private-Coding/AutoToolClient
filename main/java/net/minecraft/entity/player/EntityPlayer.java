@@ -425,7 +425,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
         ChangeHeadRotationEvent event = new ChangeHeadRotationEvent(rotationYaw, rotationPitch);
 
         if (this instanceof EntityPlayerSP) {
-            Client.INSTANCE.getObjectsCaller().onEvent(event);
+            event.call();
         }
 
         this.rotationYawHead = event.getYaw();
@@ -950,7 +950,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
         if (targetEntity.canAttackWithItem()) {
             if (!targetEntity.hitByEntity(this)) {
                 AttackEvent event = new AttackEvent(targetEntity, true);
-                Client.INSTANCE.getObjectsCaller().onEvent(event);
+                event.call();
 
                 if (event.isCanceled()) {
                     return;

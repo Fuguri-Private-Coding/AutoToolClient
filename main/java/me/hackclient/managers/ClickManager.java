@@ -4,10 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.Client;
 import me.hackclient.event.Event;
-import me.hackclient.event.callable.ConditionCallableObject;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.impl.combat.ClickSettings;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
@@ -15,16 +15,18 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 
-public class ClickManager implements InstanceAccess, ConditionCallableObject {
+public class ClickManager implements Imports{
 
-    { callables.add(this); }
+    public ClickManager() {
+        Client.INSTANCE.getEventManager().register(this);
+    }
 
     @Getter @Setter boolean clicking;
 
     @Getter int clicks;
     ClickSettings clickSettings;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
         if (clickSettings == null) clickSettings = Client.INSTANCE.getModuleManager().getModule(ClickSettings.class);
 
@@ -58,11 +60,6 @@ public class ClickManager implements InstanceAccess, ConditionCallableObject {
         if (mc.thePlayer.hurtTime > 0) return true;
 
         return clicking;
-    }
-
-    @Override
-    public boolean handleEvents() {
-        return mc.thePlayer != null && mc.theWorld != null;
     }
 
     public void addClick() { clicks++; }

@@ -1,146 +1,51 @@
 package me.hackclient.module.impl.combat;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 
 @ModuleInfo(name = "Velocity", category = Category.COMBAT)
 public class Velocity extends Module {
 
-    final ModeSetting mode = new ModeSetting(
-            "Mode",
-            this,
-            "Legit",
-            new String[] {
-                    "Legit",
-                    "Intave",
-                    "Vanilla",
-                    "Push",
-                    "AttackReduce"
-            }
-    );
+    final ModeSetting mode = new ModeSetting("Mode", this)
+            .addModes("Vanilla")
+            .setMode("Vanilla");
 
-    final BooleanSetting forceHoldForwardWhenDamaged = new BooleanSetting("ForceHoldForwardWhenDamaged", this, () -> mode.getMode().equals("Legit") || mode.getMode().equals("AttackReduce"), true);
+    final FloatSetting XZ = new FloatSetting("XZ", this, -1, 1, 0, 0.1f);
+    final FloatSetting Y = new FloatSetting("Y", this, 0, 1, 1, 0.1f);
 
-    final BooleanSetting jump = new BooleanSetting("Jump", this, () -> mode.getMode().equals("Intave") || mode.getMode().equals("AttackReduce"), true);
-
-    final IntegerSetting minPlayerHurtTime = new IntegerSetting("MinPlayerHurtTime", this,() -> (mode.getMode().equals("Intave") && jump.isToggled()) || (mode.getMode().equals("AttackReduce") && jump.isToggled()) || mode.getMode().equals("Legit"), 0, 9, 7);
-
-    final BooleanSetting cancelSprint = new BooleanSetting("CancelSprintAtSprintHit", this, () -> mode.getMode().equals("Intave"), true);
-    final FloatSetting sprintReduce = new FloatSetting("SprintReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 0.6f, 0.1f) {};
-    final FloatSetting normalReduce = new FloatSetting("NormalReduce", this, () -> mode.getMode().equals("Intave"), 0.0f, 1.0f, 1.0f, 0.1f) {};
-
-    final FloatSetting xz = new FloatSetting("XZ", this, () -> mode.getMode().equals("Vanilla"), -1.0f, 1.0f, 0.0f, 0.1f) {};
-    final FloatSetting y = new FloatSetting("Y", this, () -> mode.getMode().equals("Vanilla"), 0, 1.0f, 0.0f, 0.1f) {};
-    final BooleanSetting saveMotion = new BooleanSetting("SaveMotion", this, () -> mode.getMode().equals("Vanilla"), true);
-
-    final FloatSetting pushMotion = new FloatSetting("Motion (Divide by 100)", this, () -> mode.getMode().equals("Push"), 1, 10, 2, 0.1f) {};
-    final IntegerSetting startHurtTimeToPush = new IntegerSetting("Start", this, () -> mode.getMode().equals("Push"), 0, 9, 0);
-    final IntegerSetting endHurtTimeToPush = new IntegerSetting("End", this, () -> mode.getMode().equals("Push"), 0, 9, 3);
-
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
-        switch (mode.getMode()) {
-            case "AttackReduce" -> {
-                if (event instanceof AttackEvent attackEvent && mc.thePlayer.hurtTime != 0) {
-                    attackEvent.setCancelSprint(false);
-                }
+        if (mode.getMode().equalsIgnoreCase("Vanilla")) {
+            if (event instanceof PacketEvent e
+                    && e.getPacket() instanceof S12PacketEntityVelocity s12
+                    && s12.getEntityID() == mc.thePlayer.getEntityId()) {
+                double needMotionX = s12.getMotionX() / 8000d;
+                double needMotionY = s12.getMotionY() / 8000d;
+                double needMotionZ = s12.getMotionZ() / 8000d;
 
-                boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTime.getValue() && jump.isToggled();
+                double deltaMotionX = needMotionX - mc.thePlayer.motionX;
+                double deltaMotionY = needMotionY - mc.thePlayer.motionY;
+                double deltaMotionZ = needMotionZ - mc.thePlayer.motionZ;
 
-                if (event instanceof MoveButtonEvent moveButtonEvent && mc.currentScreen == null && damaged) {
-                    if (forceHoldForwardWhenDamaged.isToggled()) {
-                        moveButtonEvent.setBack(false);
-                        moveButtonEvent.setForward(true);
-                    }
-                    if (mc.thePlayer.onGround && Math.random() < 0.5) {
-                        moveButtonEvent.setJump(true);
-                    }
-                }
-            }
+                deltaMotionX *= XZ.getValue();
+                deltaMotionY *= Y.getValue();
+                deltaMotionZ *= XZ.getValue();
 
-            case "Legit" -> {
-                boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTime.getValue();
-
-                if (event instanceof MoveButtonEvent moveButtonEvent && mc.currentScreen == null && damaged) {
-                    if (forceHoldForwardWhenDamaged.isToggled()) {
-                        moveButtonEvent.setBack(false);
-                        moveButtonEvent.setForward(true);
-                    }
-                    if (mc.thePlayer.onGround && Math.random() < 0.5) {
-                        moveButtonEvent.setJump(true);
-                    }
-                }
-            }
-
-            case "Intave" -> {
-                boolean attacking = event instanceof AttackEvent attackEvent && attackEvent.getHittingEntity() instanceof EntityLivingBase;
-                boolean damaged = mc.thePlayer.hurtTime >= minPlayerHurtTime.getValue();
-                if (event instanceof MoveButtonEvent moveButtonEvent && damaged && mc.thePlayer.onGround && jump.isToggled()) {
-                    moveButtonEvent.setJump(true);
-                    moveButtonEvent.setForward(true);
-                    moveButtonEvent.setBack(false);
-                }
-                if (attacking && damaged) {
-                    if (mc.thePlayer.isSprinting()) {
-                        mc.thePlayer.motionX *= sprintReduce.getValue();
-                        mc.thePlayer.motionZ *= sprintReduce.getValue();
-                        if (cancelSprint.isToggled()) {
-                            mc.thePlayer.setSprinting(false);
-                        }
-                    } else {
-                        mc.thePlayer.motionX *= normalReduce.getValue();
-                        mc.thePlayer.motionZ *= normalReduce.getValue();
-                    }
-                }
-            }
-
-            case "Vanilla" -> {
-                if (event instanceof PacketEvent packetEvent) {
-                    Packet packet = packetEvent.getPacket();
-
-                    if (!(packet instanceof S12PacketEntityVelocity s12) || s12.getEntityID() != mc.thePlayer.getEntityId())
-                        break;
-
-                    packetEvent.setCanceled(true);
-
-                    double serverMotionX = s12.getMotionX() / 8000f;
-                    double serverMotionY = s12.getMotionY() / 8000f;
-                    double serverMotionZ = s12.getMotionZ() / 8000f;
-
-                    if (saveMotion.isToggled()) {
-                        mc.thePlayer.motionX += (serverMotionX - mc.thePlayer.motionX) * xz.getValue();
-                        mc.thePlayer.motionY += (serverMotionY - mc.thePlayer.motionY) * y.getValue();
-                        mc.thePlayer.motionZ += (serverMotionZ - mc.thePlayer.motionZ) * xz.getValue();
-                    } else {
-                        mc.thePlayer.motionX = serverMotionX * xz.getValue();
-                        mc.thePlayer.motionY = serverMotionY * y.getValue();
-                        mc.thePlayer.motionZ = serverMotionZ * xz.getValue();
-                    }
-                }
-            }
-
-            case "Push" -> {
-                if (event instanceof UpdateEvent
-                && mc.thePlayer.hurtTime >= startHurtTimeToPush.getValue()
-                && mc.thePlayer.hurtTime <= endHurtTimeToPush.getValue()) {
-                    float yaw = (float) Math.toRadians(mc.thePlayer.rotationYaw);
-                    mc.thePlayer.motionX -= Math.sin(yaw) * pushMotion.getValue() / 100;
-                    mc.thePlayer.motionZ += Math.cos(yaw) * pushMotion.getValue() / 100;
-                }
+                mc.thePlayer.motionX += deltaMotionX;
+                mc.thePlayer.motionY += deltaMotionY;
+                mc.thePlayer.motionZ += deltaMotionZ;
             }
         }
     }
 
     @Override
     public String getSuffix() {
-        return String.valueOf(mode.getMode());
+        return mode.getMode();
     }
 }

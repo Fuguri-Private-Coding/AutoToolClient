@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -51,9 +52,8 @@ public class Phase extends Module {
         }
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof UpdateEvent && !clip) {
             if (mc.thePlayer.noClip) {
                 mc.thePlayer.motionY = 0.0;

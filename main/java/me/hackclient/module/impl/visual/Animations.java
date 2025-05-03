@@ -2,7 +2,7 @@ package me.hackclient.module.impl.visual;
 
 import lombok.Getter;
 import me.hackclient.event.Event;
-import me.hackclient.event.events.AttackEvent;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.RenderItemEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -15,23 +15,15 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
-@ModuleInfo(name = "Animations", category = Category.VISUAL, toggled = true)
+@ModuleInfo(name = "Animations", category = Category.VISUAL)
 public class Animations extends Module {
 
     @Getter
     static boolean animate;
 
-    ModeSetting mode = new ModeSetting("Mode", this, "Sigma", new String[]{
-            "1.7",
-            "Sigma",
-            "Sigma 2",
-            "Scale",
-            "Exhibition",
-            "Gothaj",
-            "Spin",
-            "Basic",
-            "Slide",
-    });
+    ModeSetting mode = new ModeSetting("Mode", this)
+            .addModes("1.7", "Sigma", "Sigma 2", "Scale", "Exhibition", "Gothaj", "Spin", "Basic", "Slide")
+            .setMode("Sigma");
 
     FloatSetting X = new FloatSetting("X", this, -1f, 1f, 0f, 0.1f) {};
     FloatSetting Y = new FloatSetting("Y", this, -1f, 1f, 0f, 0.1f) {};
@@ -41,9 +33,8 @@ public class Animations extends Module {
 
     public BooleanSetting always = new BooleanSetting("AlwaysBlocking", this, true);
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof RenderItemEvent renderItemEvent) {
             GlStateManager.translate(X.getValue(), Y.getValue(), Z.getValue());
             ItemRenderer itemRenderer = mc.getItemRenderer();
@@ -115,11 +106,6 @@ public class Animations extends Module {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean handleEvents() {
-        return isToggled();
     }
 
     public static void setAnimate(boolean animate) {

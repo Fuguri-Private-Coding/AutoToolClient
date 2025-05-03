@@ -3,13 +3,7 @@ package net.minecraft.client.entity;
 import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.Client;
-import me.hackclient.event.events.ChangeSprintEvent;
-import me.hackclient.event.events.MotionEvent;
-import me.hackclient.event.events.SprintEvent;
-import me.hackclient.event.events.UpdateEvent;
-import me.hackclient.utils.client.ClientUtils;
-import me.hackclient.utils.rotation.Rotation;
-import me.hackclient.utils.rotation.RotationUtils;
+import me.hackclient.event.events.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -68,8 +62,8 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     private double lastReportedPosX;
     private double lastReportedPosY;
     private double lastReportedPosZ;
-    private float lastReportedYaw;
-    private float lastReportedPitch;
+    public float lastReportedYaw;
+    public float lastReportedPitch;
     @Getter
     @Setter
     boolean serverSneakState;
@@ -125,7 +119,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
 
     public void onUpdate() {
         UpdateEvent event = new UpdateEvent();
-        Client.INSTANCE.getObjectsCaller().onEvent(event);
+        event.call();
 
         if (event.isCanceled()) {
             return;
@@ -166,7 +160,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
                     rotationYaw, rotationPitch,
                     onGround
             );
-            Client.INSTANCE.getObjectsCaller().onEvent(event);
+            event.call();
             double d0 = event.getX() - lastReportedPosX;
             double d1 = event.getY() - lastReportedPosY;
             double d2 = event.getZ() - lastReportedPosZ;
@@ -205,6 +199,8 @@ public class EntityPlayerSP extends AbstractClientPlayer {
                 this.lastReportedYaw = event.getYaw();
                 this.lastReportedPitch = event.getPitch();
             }
+
+            new MotionEventPost().call();
         }
     }
 
@@ -218,6 +214,9 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     }
 
     public void sendChatMessage(String message) {
+        if (Client.INSTANCE.getCommandManager().handle(message)) {
+            return;
+        }
         this.sendQueue.addToSendQueue(new C01PacketChatMessage(message));
     }
 
@@ -371,7 +370,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
 
     public void setSprinting(boolean sprinting) {
         ChangeSprintEvent event = new ChangeSprintEvent();
-        Client.INSTANCE.getObjectsCaller().onEvent(event);
+        event.call();
         super.setSprinting(sprinting);
         this.sprintingTicksLeft = sprinting ? 600 : 0;
     }
@@ -584,7 +583,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             this.setSprinting(false);
         }
 
-        Client.INSTANCE.getObjectsCaller().onEvent(new SprintEvent());
+        new SprintEvent().call();
 
         if (this.capabilities.allowFlying) {
             if (this.mc.playerController.isSpectatorMode()) {

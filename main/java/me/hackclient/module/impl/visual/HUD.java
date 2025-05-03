@@ -2,6 +2,7 @@ package me.hackclient.module.impl.visual;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.ClickEvent;
 import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.module.Category;
@@ -62,9 +63,8 @@ public class HUD extends Module {
     private final java.util.List<Long> leftClicks = new CopyOnWriteArrayList<>();
     private final List<Long> rightClicks = new CopyOnWriteArrayList<>();
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         ScaledResolution sc = new ScaledResolution(mc);
 

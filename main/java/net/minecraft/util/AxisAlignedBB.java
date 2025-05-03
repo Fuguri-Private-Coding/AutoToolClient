@@ -29,6 +29,15 @@ public class AxisAlignedBB
         this.maxZ = (double)pos2.getZ();
     }
 
+    public AxisAlignedBB(Vec3 pos1, Vec3 pos2) {
+        this.minX = pos1.xCoord;
+        this.minY = pos1.yCoord;
+        this.minZ = pos1.zCoord;
+        this.maxX = pos2.xCoord;
+        this.maxY = pos2.yCoord;
+        this.maxZ = pos2.zCoord;
+    }
+
     public AxisAlignedBB addCoord(double x, double y, double z)
     {
         double d0 = this.minX;

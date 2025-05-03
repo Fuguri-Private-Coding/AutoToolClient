@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.misc;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.WorldChangeEvent;
 import me.hackclient.module.Category;
@@ -10,16 +11,15 @@ import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.utils.client.ClientUtils;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
-@ModuleInfo(name = "FlagDetector", category = Category.MISC, toggled = true)
+@ModuleInfo(name = "FlagDetector", category = Category.MISC)
 public class FlagDetector extends Module {
 
     BooleanSetting resetFlagsOnWorld = new BooleanSetting("ResetFlagsOnWorld", this, false);
 
     int flagCount = 0;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof PacketEvent packetEvent) {
             if (packetEvent.getPacket() instanceof S08PacketPlayerPosLook) {
                 flagCount++;

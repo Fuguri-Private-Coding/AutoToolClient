@@ -1,15 +1,13 @@
 package me.hackclient.utils.rotation;
 
 import com.google.common.base.Predicates;
-import me.hackclient.Client;
-import me.hackclient.utils.client.ClientUtils;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.*;
 
 import java.util.List;
 
-public class RayCastUtils implements InstanceAccess {
+public class RayCastUtils implements Imports {
 
     public static Entity raycastEntity(final double range, final IEntityFilter entityFilter) {
         return raycastEntity(range, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(),

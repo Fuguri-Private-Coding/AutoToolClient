@@ -2,6 +2,7 @@ package me.hackclient.module.impl.player;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -62,14 +63,9 @@ public class Scaffold extends Module {
 
     FloatSetting smooth = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f) {};
 
-    final ModeSetting clickMode = new ModeSetting(
-            "ClickMode",
-            this,
-            "AutoPlace",
-            new String[] {
-                    "AutoPlace",
-                    "Legit"
-            });
+    final ModeSetting clickMode = new ModeSetting("ClickMode", this)
+            .addModes("AutoPlace", "Legit")
+            .setMode("AutoPlace");
 
     final BooleanSetting swingItem = new BooleanSetting("ServerSwingItem", this, true);
 
@@ -136,9 +132,8 @@ public class Scaffold extends Module {
         stopWatch = new StopWatch();
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
         switch (clickMode.getMode()) {
             case "AutoPlace" -> {

@@ -2,6 +2,7 @@ package me.hackclient.module.impl.combat;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -39,12 +40,15 @@ public class RotationHandler extends Module {
 
     final FloatSetting stopThreshold = new FloatSetting("StopThreshold", this, 0f, 10f, 0.1f, 0.1f) {};
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (!Client.INSTANCE.getModuleManager().getModule("Scaffold").isToggled() && (!Client.INSTANCE.getModuleManager().getModule("KillAura").isToggled() || Client.INSTANCE.getCombatManager().getTarget() == null)) {
             if (Rotation.isChanged()) {
-                if (event instanceof TickEvent) {
+                if (event instanceof MotionEvent motionEvent) {
+                    Rotation rot = Rotation.getServerRotation().copy();
+                    motionEvent.setYaw(rot.getYaw());
+                    motionEvent.setPitch(rot.getPitch());
+
                     Delta delta = RotationUtils.getDelta(Rotation.getServerRotation(), getPlayerRotation());
 
                     if (RotationUtils.fixDelta(delta).hypot() <= stopThreshold.getValue()) {
@@ -61,16 +65,11 @@ public class RotationHandler extends Module {
                     delta.setPitch(delta.getPitch() / randomizedSmooth);
 
                     delta = RotationUtils.fixDelta(delta);
-                    Rotation.setServerRotation(
-                            new Rotation(
-                                    Rotation.getServerRotation().getYaw() + delta.getYaw(),
-                                    Rotation.getServerRotation().getPitch() + delta.getPitch()
-                            )
-                    );
-                }
-                if (event instanceof MotionEvent motionEvent) {
-                    motionEvent.setYaw(Rotation.getServerRotation().getYaw());
-                    motionEvent.setPitch(Rotation.getServerRotation().getPitch());
+
+                    rot = rot.add(delta);
+                    rot.setPitch(Math.clamp(rot.getPitch(), -90, 90));
+
+                    Rotation.setServerRotation(rot);
                 }
                 if (event instanceof LookEvent lookEvent) {
                     lookEvent.setYaw(Rotation.getServerRotation().getYaw());
@@ -85,8 +84,6 @@ public class RotationHandler extends Module {
                 if (event instanceof SprintEvent) {
                     if (Math.abs(MoveUtils.getDirection() - MoveUtils.getDirection(Rotation.getServerRotation().getYaw())) > 45) {
                         mc.thePlayer.setSprinting(false);
-                    } else if (MoveUtils.canSprint()) {
-                        mc.thePlayer.setSprinting(true);
                     }
                 }
                 if (event instanceof JumpEvent jumpEvent) {
@@ -100,7 +97,7 @@ public class RotationHandler extends Module {
                     UpdateBodyRotationEvent.setYaw(Rotation.getServerRotation().getYaw());
                 }
             } else {
-                Rotation.setServerRotation(getPlayerRotation());
+                Rotation.setServerRotation(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch));
                 Rotation.setChanged(false);
             }
         }
@@ -108,11 +105,6 @@ public class RotationHandler extends Module {
 
     static Rotation getPlayerRotation() {
         return new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
-    }
-
-    @Override
-    public boolean handleEvents() {
-        return mc.thePlayer != null && mc.theWorld != null;
     }
 
     @Override

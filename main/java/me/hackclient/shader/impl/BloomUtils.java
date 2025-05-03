@@ -6,9 +6,8 @@ import me.hackclient.shader.GaussianKernel;
 import me.hackclient.shader.Shader;
 import me.hackclient.shader.Uniform;
 import me.hackclient.utils.color.ColorUtils;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
@@ -18,7 +17,7 @@ import org.lwjgl.opengl.GL13;
 import java.awt.*;
 import java.nio.FloatBuffer;
 
-public class BloomUtils implements InstanceAccess {
+public class BloomUtils implements Imports {
 
     private static Shader program;
     private static Framebuffer inputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);

@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.connection;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.PacketDirection;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
@@ -13,8 +14,6 @@ import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -43,15 +42,9 @@ public class Ping extends Module {
             .add("ChangeSprint")
             .add("OpenedGui");
 
-    ModeSetting renderModes = new ModeSetting(
-            "RenderType",
-            this,
-            "Player",
-            new String[] {
-                    "Player",
-                    "Box"
-            }
-    );
+    ModeSetting renderModes = new ModeSetting("RenderMode", this)
+            .addModes("Player", "Box")
+            .setMode("Player");
 
     private long lastResetTime;
     private long delayBeforeNextLag;
@@ -63,7 +56,7 @@ public class Ping extends Module {
         resetAllPackets();
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
         long currentTime = System.currentTimeMillis();

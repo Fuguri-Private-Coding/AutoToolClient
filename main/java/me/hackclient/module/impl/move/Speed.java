@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.move;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -15,17 +16,9 @@ public class Speed extends Module {
 
 	int ticks;
 
-	ModeSetting mode = new ModeSetting(
-			"Mode",
-			this,
-			"45Degree",
-			new String[] {
-					"45Degree",
-					"Vanilla",
-					"FunnyMcSkyPvp",
-					"IntaveSneak"
-			}
-	);
+	ModeSetting mode = new ModeSetting("Mode", this)
+			.addModes("45Degree", "Vanilla")
+			.setMode("45Degree");
 
 	BooleanSetting resetMotion = new BooleanSetting("ResetMotionOnDisable", this, false);
 	FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 1f, 10f, 5f, 0.1f) {};
@@ -39,9 +32,8 @@ public class Speed extends Module {
 		ticks = 0;
 	}
 
-	@Override
+	@EventTarget
 	public void onEvent(Event event) {
-		super.onEvent(event);
 		if (mc.thePlayer == null || mc.theWorld == null) return;
 		switch (mode.getMode()) {
 			case "IntaveSneak" -> {

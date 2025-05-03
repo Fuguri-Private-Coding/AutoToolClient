@@ -5,16 +5,17 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.ModeSetting;
 
-@ModuleInfo(name = "ClientSpoofer", category = Category.MISC, toggled = true)
+@ModuleInfo(name = "ClientSpoofer", category = Category.MISC)
 public class ClientSpoofer extends Module {
 
-    public ModeSetting brand = new ModeSetting("Brand", this, "LunarClient",
-            new String[]{"LunarClient", "LabyMod", "FML", "Optifine", "Forge"});
+    public ModeSetting brand = new ModeSetting("Brand", this)
+            .addModes("LunarClient", "LabyMod", "FML", "Optifine", "Forge")
+            .setMode("LunarClient");
 
     public String getBrand() {
         switch (brand.getMode()) {
             case "LunarClient" -> {
-                return "Lunar-Client";
+                return "LunarClient";
             }
 
             case "LabyMod" -> {

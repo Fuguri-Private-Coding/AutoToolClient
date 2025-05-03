@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -32,9 +33,8 @@ public class ChestStealer extends Module {
         delayStopWatch = new StopWatch();
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof TickEvent) {
             if (mc.currentScreen instanceof GuiChest guiChest) {
                 if (checkName.isToggled() && !guiChest.getLowerChestInventory().getName().contains("Chest")) {

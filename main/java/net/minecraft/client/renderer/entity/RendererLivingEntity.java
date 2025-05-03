@@ -204,7 +204,7 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
         if (!Reflector.RenderLivingEvent_Pre_Constructor.exists() || !Reflector.postForgeBusEvent(Reflector.RenderLivingEvent_Pre_Constructor, new Object[]{entity, this, Double.valueOf(x), Double.valueOf(y), Double.valueOf(z)})) {
             DrawEntityEvent event = new DrawEntityEvent(entity);
             if (entity != null) {
-                Client.INSTANCE.getObjectsCaller().onEvent(event);
+                event.call();
             }
 
             if (event.isCanceled())

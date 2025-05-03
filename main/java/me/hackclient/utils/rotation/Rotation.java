@@ -2,6 +2,7 @@ package me.hackclient.utils.rotation;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -16,6 +17,13 @@ public class Rotation {
 	public static void setServerRotation(Rotation serverRotation) {
 		Rotation.serverRotation = serverRotation.copy();
 		changed = true;
+	}
+
+	public static Rotation getLastReported() {
+		return new Rotation(
+				MathHelper.wrapDegree(Minecraft.getMinecraft().thePlayer.lastReportedYaw),
+				MathHelper.wrapDegree(Minecraft.getMinecraft().thePlayer.lastReportedPitch)
+		);
 	}
 
 	public static Rotation fromRotationVec(Vec3 lookVec) {

@@ -3,7 +3,7 @@ package me.hackclient.guis.main;
 import me.hackclient.Client;
 import me.hackclient.guis.altmanager.AltManagerGuiScreen;
 import me.hackclient.shader.impl.BackgroundUtils;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.client.gui.*;
 import net.minecraft.util.ResourceLocation;
 
@@ -13,10 +13,8 @@ import java.io.IOException;
 public class GuiClientMainMenu extends GuiScreen {
 
     public GuiClientMainMenu() {
-        this.mc = InstanceAccess.mc;
+        this.mc = Imports.mc;
     }
-
-    final String name = Client.INSTANCE.getName();
 
     ResourceLocation exitLogo = new ResourceLocation("minecraft", "hackclient/mainmenu/exit.png");
 
@@ -37,7 +35,8 @@ public class GuiClientMainMenu extends GuiScreen {
 
         final FontRenderer font = mc.fontRendererObj;
 
-        font.drawString(name, sc.getScaledWidth() / 2f - font.getStringWidth(name) / 2f, sc.getScaledHeight() / 2f, Color.WHITE.getRGB(), true);
+        font.drawString(Client.INSTANCE.getChangeLog(), 5, 5, -1, true);
+        font.drawString(Client.INSTANCE.getName(), sc.getScaledWidth() / 2f - font.getStringWidth(Client.INSTANCE.getName()) / 2f, sc.getScaledHeight() / 2f, Color.WHITE.getRGB(), true);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 

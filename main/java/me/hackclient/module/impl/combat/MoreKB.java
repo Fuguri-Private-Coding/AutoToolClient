@@ -2,6 +2,7 @@ package me.hackclient.module.impl.combat;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -16,19 +17,9 @@ import net.minecraft.network.play.client.C0BPacketEntityAction;
 @ModuleInfo(name = "MoreKB", category = Category.COMBAT)
 public class MoreKB extends Module {
 
-    final ModeSetting mode = new ModeSetting(
-            "Mode",
-            this,
-            "LegitFast",
-            new String[] {
-                    "One",
-                    "WTap",
-                    "STap",
-                    "LegitFast",
-                    "SneakTap",
-                    "BlockHit"
-            }
-    );
+    final ModeSetting mode = new ModeSetting("Mode", this)
+            .addModes("One", "WTap", "STap", "LegitFast")
+            .setMode("LegitFast");
 
     final IntegerSetting minDelay = new IntegerSetting("MinDelayAfterHit", this, 0, 10, 3) {
         @Override
@@ -64,9 +55,8 @@ public class MoreKB extends Module {
 
     int delay, reset;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof TickEvent) {
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTargetOrSelectedEntity();
             if (target != null && target.hurtTime == 10) {
@@ -98,13 +88,6 @@ public class MoreKB extends Module {
                 }
             }
 
-            case "SneakTap" -> {
-                if (event instanceof MoveButtonEvent moveButtonEvent) {
-                    moveButtonEvent.setSneak(true);
-                    reset--;
-                }
-            }
-
             case "LegitFast" -> {
                 if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
                     mc.thePlayer.setSprinting(false);
@@ -115,19 +98,6 @@ public class MoreKB extends Module {
             case "One" -> {
                 if (event instanceof SprintEvent && !mc.thePlayer.isServerSprintState()) {
                     mc.getNetHandler().addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
-                    reset--;
-                }
-            }
-
-            case "BlockHit" -> {
-                if (mc.thePlayer.getHeldItem() == null)
-                    break;
-
-                if (!(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword))
-                    break;
-
-                if (event instanceof RunGameLoopEvent) {
-                    KeyBinding.onTick(mc.gameSettings.keyBindUseItem.getKeyCode());
                     reset--;
                 }
             }

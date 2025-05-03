@@ -1,8 +1,9 @@
 package me.hackclient.guis.config;
 
 import me.hackclient.Client;
+import me.hackclient.config.Config;
 import me.hackclient.event.Event;
-import me.hackclient.event.callable.ConditionCallableObject;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.module.impl.visual.Shadows;
@@ -22,7 +23,7 @@ import java.io.IOException;
 
 import static java.lang.Math.min;
 
-public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObject {
+public class ConfigGuiScreen extends GuiScreen {
 
     Vector2f pos, size, lastMouse;
 
@@ -35,10 +36,10 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
     int delay = 10;
     Shadows shadows;
     int scroll, totalHeight;
-    File selectedConfig;
+    Config selectedConfig;
 
     public ConfigGuiScreen() {
-        callables.add(this);
+        Client.INSTANCE.getEventManager().register(this);
         pos = new Vector2f(0, 0);
         size = new Vector2f(200, 200);
         lastMouse = new Vector2f(0, 0);
@@ -82,6 +83,7 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
         float widthDelete = fontRendererObj.getStringWidth("Delete") / 2f;
         float widthSave = fontRendererObj.getStringWidth("Save") / 2f;
         float widthFolder = fontRendererObj.getStringWidth("Folder") / 2f;
+        float widthRefresh = fontRendererObj.getStringWidth("Refresh") / 2f;
 
         background.endX = pos.x;
         background.endY = pos.y;
@@ -118,9 +120,9 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
 
         float offset = 0;
         float yOffset = scrolls.y;
-        for (File file : Client.INSTANCE.getConfigsDirectory().listFiles()) {
-            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clickGui.backgroundRadius.getValue(), selectedConfig != null ? selectedConfig.getName().equals(file.getName()) ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150));
-            fontRendererObj.drawString(file.getName().replaceAll(".json", ""), background.x + 10 + offset, background.y + 30 + yOffset, -1);
+        for (Config config : Client.INSTANCE.getConfigManager().getConfigs()) {
+            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clickGui.backgroundRadius.getValue(), selectedConfig != null ? selectedConfig == config ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150));
+            fontRendererObj.drawString(config.getName(), background.x + 10 + offset, background.y + 30 + yOffset, -1);
             offset += 105;
 
             if (offset > background.x + sizeBackground.x - 200) {
@@ -133,10 +135,12 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
         RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.yellow);
         RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.RED);
         RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.blue);
+        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.gray);
         fontRendererObj.drawString("Load", background.x + sizeBackground.x - 55 + 25 - widthLoad, background.y + 20 + 3, -1, true);
         fontRendererObj.drawString("Save", background.x + sizeBackground.x - 55 + 25 - widthSave, background.y + 20 + 20 + 3, -1, true);
         fontRendererObj.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 20 + 3, -1, true);
         fontRendererObj.drawString("Folder", background.x + sizeBackground.x - 55 + 25 - widthFolder, background.y + 20 + 20 + 20 + 20 + 3, -1, true);
+        fontRendererObj.drawString("Refresh", background.x + sizeBackground.x - 55 + 25 - widthRefresh, background.y + 20 + 20 + 20 + 20 + 20 + 3, -1, true);
 
         if (moving) {
             pos.translate(mouseX - lastMouse.x, mouseY - lastMouse.y);
@@ -171,12 +175,13 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
         boolean save = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 && mouseY < background.y + 20 + 20 + 15;
         boolean delete = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 15;
         boolean folder = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 20 + 15;
+        boolean refresh = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 20 + 20 + 15;
 
         float offset = 0;
         float yOffset = scrolls.y;
-        for (File file : Client.INSTANCE.getConfigsDirectory().listFiles()) {
+        for (Config config : Client.INSTANCE.getConfigManager().getConfigs()) {
             boolean selectConfig = mouseX > background.x + 5 + offset && mouseX < background.x + 5 + offset + 100 && mouseY > background.y + 20 + yOffset && mouseY < background.y + 20 + yOffset + 30;
-            if (mouseButton == 0 && selectConfig) selectedConfig = file;
+            if (mouseButton == 0 && selectConfig) selectedConfig = config;
             offset += 105;
             if (offset > background.x + sizeBackground.x - 200) {
                 yOffset += 35;
@@ -211,7 +216,7 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
             }
 
             if (folder) {
-                String s = Client.INSTANCE.getConfigsDirectory().getAbsolutePath();
+                String s = Client.INSTANCE.getConfigManager().getConfigsDirectory().getAbsolutePath();
 
                 if (Util.getOSType() == Util.EnumOS.OSX) {
                     try {
@@ -226,10 +231,12 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
                 }
             }
 
+            if (refresh) Client.INSTANCE.getConfigManager().refreshConfigs();
+
             if (selectedConfig != null) {
-                if (load) Client.INSTANCE.getConfigManager().load(selectedConfig);
-                if (delete) Client.INSTANCE.getConfigManager().delete(selectedConfig);
-                if (save) Client.INSTANCE.getConfigManager().save(selectedConfig);
+                if (load) Client.INSTANCE.getConfigManager().loadConfig(selectedConfig);
+                if (delete) Client.INSTANCE.getConfigManager().deleteConfig(selectedConfig);
+                if (save) Client.INSTANCE.getConfigManager().saveConfig(selectedConfig);
             }
         }
     }
@@ -247,7 +254,7 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
         size.set(lastSize);
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             if (delay > 0) {
@@ -256,10 +263,5 @@ public class ConfigGuiScreen extends GuiScreen implements ConditionCallableObjec
             }
             if (delay == 0) delay = 30;
         }
-    }
-
-    @Override
-    public boolean handleEvents() {
-        return mc.theWorld != null & mc.thePlayer != null && mc.currentScreen instanceof ConfigGuiScreen;
     }
 }

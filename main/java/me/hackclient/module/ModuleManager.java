@@ -1,6 +1,6 @@
 package me.hackclient.module;
 
-import me.hackclient.deeplearn.data.TrainingData;
+import lombok.Getter;
 import me.hackclient.module.impl.client.DiscordRPCModule;
 import me.hackclient.module.impl.combat.*;
 import me.hackclient.module.impl.connection.*;
@@ -10,7 +10,6 @@ import me.hackclient.module.impl.misc.*;
 import me.hackclient.module.impl.move.*;
 import me.hackclient.module.impl.player.*;
 import me.hackclient.module.impl.visual.*;
-import me.hackclient.module.impl.visual.Test;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class ModuleManager {
 
-	public CopyOnWriteArrayList<Module> modules;
+	@Getter private CopyOnWriteArrayList<Module> modules;
 	public static ModuleManager INSTANCE;
 
 	public ModuleManager() {
@@ -30,16 +29,12 @@ public class ModuleManager {
 				 new ChatBypass(),
 				 new KillAura(),
 				 new Dot(),
-				 new Criticals(),
 				 new Regen(),
 				 new ChestStealer(),
-				 new Jesus(),
 				 new MoreKB(),
 				 new Velocity(),
 				 new MurderDetector(),
-				 new ClientHandler(),
 				 new InvManager(),
-				 new AutoLeave(),
 				 new Trails(),
 				 new ESP(),
 				 new BackTrack(),
@@ -48,13 +43,10 @@ public class ModuleManager {
 				 new Fly(),
 				 new AutoClicker(),
 				 new AutoTool(),
-				 new HighJump(),
 				 new BridgeAssist(),
 				 new Scaffold(),
 				 new AntiFireball(),
-				 new Test(),
 				 new DiscordRPCModule(),
-				 new LongJump(),
 				 new Phase(),
 				 new NoGuiClose(),
 				 new AirStuck(),
@@ -86,7 +78,7 @@ public class ModuleManager {
 				 new TimeChanger(),
 				 new ClickSettings(),
 				 new Particle(),
-				 new me.hackclient.module.impl.misc.Test(),
+				 new Test(),
 				 new TrashTalk(),
 				 new NameTags(),
 				 new NoRender(),
@@ -110,12 +102,14 @@ public class ModuleManager {
 		return modules.stream().filter(module -> module.getCategory() == category).collect(Collectors.toList());
 	}
 
+	@SuppressWarnings("unchecked")
     public <T extends Module> T getModule(Class<T> moduleClass) {
         return (T) modules.stream()
                 .filter(module -> module.getClass() == moduleClass)
                 .findFirst().orElse(null);
     }
 
+	@SuppressWarnings("unchecked")
     public <T extends Module> T getModule(String name) {
         return (T) modules.stream()
                 .filter(module -> module.getName().equalsIgnoreCase(name))

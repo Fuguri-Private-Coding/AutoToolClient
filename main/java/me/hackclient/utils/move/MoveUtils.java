@@ -2,15 +2,13 @@ package me.hackclient.utils.move;
 
 import lombok.experimental.UtilityClass;
 import me.hackclient.event.events.MoveEvent;
-import me.hackclient.event.events.MoveFlyingEvent;
-import me.hackclient.utils.interfaces.InstanceAccess;
-import me.hackclient.utils.rotation.Rotation;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.MathHelper;
 
 @UtilityClass
-public class MoveUtils implements InstanceAccess {
+public class MoveUtils implements Imports {
 
     public boolean canSprint() {
         return mc.thePlayer.moveForward > 0.8F
@@ -88,15 +86,12 @@ public class MoveUtils implements InstanceAccess {
         return MathHelper.wrapDegree(yaw);
     }
 
-    public static void moveFix(MoveEvent e, float serverYaw) {
+    public static void moveFix(MoveEvent e, float targetYaw) {
         if (e.getForward() == 0 && e.getStrafe() == 0) {
             return;
         }
 
-        float eventForward = e.getForward();
-        float eventStrafe = e.getStrafe();
-
-        float playerDirection = getDirection(mc.thePlayer.rotationYaw, eventForward, eventStrafe);
+        //getDirection(mc.thePlayer.rotationYaw, eventForward, eventStrafe);
         float closestDiff = Float.MAX_VALUE;
 
         for (float forward = -1f; forward <= 1f; forward++) {
@@ -105,8 +100,8 @@ public class MoveUtils implements InstanceAccess {
                     continue;
                 }
 
-                float direction = getDirection(serverYaw, forward, strafe);
-                float difference = Math.abs(MathHelper.wrapDegree(playerDirection - direction));
+                float direction = getDirection(mc.thePlayer.lastReportedYaw, forward, strafe);
+                float difference = Math.abs(MathHelper.wrapDegree(targetYaw - direction));
 
                 if (difference < closestDiff) {
                     closestDiff = difference;

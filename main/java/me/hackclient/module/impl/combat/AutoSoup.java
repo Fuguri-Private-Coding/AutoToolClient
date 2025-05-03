@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.combat;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.LegitClickTimingEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.module.Category;
@@ -68,9 +69,8 @@ public class AutoSoup extends Module {
         resetValues();
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof RunGameLoopEvent) {
             if (mc.currentScreen instanceof GuiInventory) {
                 int emptySoup = getEmptySoup();

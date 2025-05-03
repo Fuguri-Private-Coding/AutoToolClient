@@ -13,15 +13,13 @@ import java.util.UUID;
 import me.hackclient.Client;
 import me.hackclient.event.events.JumpEvent;
 import me.hackclient.event.events.UpdateBodyRotationEvent;
-import me.hackclient.module.impl.combat.TimerRange;
 import me.hackclient.module.impl.move.NoJumpDelay;
 import me.hackclient.module.impl.visual.Animations;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.BaseAttributeMap;
@@ -61,7 +59,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public abstract class EntityLivingBase extends Entity implements InstanceAccess {
+public abstract class EntityLivingBase extends Entity implements Imports {
     private static final UUID sprintingSpeedBoostModifierUUID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
     private static final AttributeModifier sprintingSpeedBoostModifier = (new AttributeModifier(sprintingSpeedBoostModifierUUID, "Sprinting speed boost", 0.30000001192092896D, 2)).setSaved(false);
     private BaseAttributeMap attributeMap;
@@ -1116,7 +1114,7 @@ public abstract class EntityLivingBase extends Entity implements InstanceAccess 
 
         if (this instanceof EntityPlayerSP) {
             JumpEvent event = new JumpEvent(yaw, height);
-            Client.INSTANCE.getObjectsCaller().onEvent(event);
+            event.call();
             yaw = event.getYaw();
             height = event.getHeight();
         }
@@ -1393,7 +1391,7 @@ public abstract class EntityLivingBase extends Entity implements InstanceAccess 
 
         if (this instanceof EntityPlayerSP) {
             UpdateBodyRotationEvent event = new UpdateBodyRotationEvent(yaw);
-            Client.INSTANCE.getObjectsCaller().onEvent(event);
+            event.call();
             yaw = event.getYaw();
         }
 

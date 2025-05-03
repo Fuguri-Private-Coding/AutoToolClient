@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.move;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
@@ -29,9 +30,8 @@ public class Freeze extends Module {
         mc.thePlayer.setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof PacketEvent packetEvent) {
             packetEvent.setCanceled(true);
         }

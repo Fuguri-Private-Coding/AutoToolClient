@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.MotionEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -28,9 +29,8 @@ public class BridgeAssist extends Module {
         rotations.add(new Rotation(45.0f, 77.0f));
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof MotionEvent) {
             Rotation playerRot = new Rotation(
                     MathHelper.wrapDegree(mc.thePlayer.rotationYaw),

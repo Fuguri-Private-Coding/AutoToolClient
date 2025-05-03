@@ -2,14 +2,14 @@ package me.hackclient.managers;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MovingObjectPosition;
 
 @Getter @Setter
-public class CombatManager implements InstanceAccess {
+public class CombatManager implements Imports {
     double entityReach = 3, blockReach = 4.5;
     EntityLivingBase target;
 

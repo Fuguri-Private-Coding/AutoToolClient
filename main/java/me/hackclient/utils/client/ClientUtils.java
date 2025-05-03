@@ -1,17 +1,21 @@
 package me.hackclient.utils.client;
 
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.Client;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.util.ChatComponentText;
-import org.apache.logging.log4j.core.config.AppenderRef;
 
-public class ClientUtils implements InstanceAccess {
+public class ClientUtils implements Imports {
 
     static String prefixLog = "§3AutoTool §8→§7 ";
 
     /**
-    @param message Объект (Желательно которые можно переверсти в строку) который будет выведен в чат игры.
+     * @param message Объект, который будет выведен в чат игры.
      */
     public static void chatLog(Object message) {
-        mc.thePlayer.addChatMessage(new ChatComponentText(prefixLog + message));
+        if (mc.thePlayer == null) {
+            System.out.println(Client.INSTANCE.getName() + " → " + message);
+        } else {
+            mc.thePlayer.addChatMessage(new ChatComponentText(prefixLog + message));
+        }
     }
 }

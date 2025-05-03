@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.DrawBlockHighlightEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -14,7 +15,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.input.Mouse;
 
-@ModuleInfo(name = "AutoPlace", category = Category.PLAYER, toggled = true)
+@ModuleInfo(name = "AutoPlace", category = Category.PLAYER)
 public class AutoPlace extends Module {
 
     BooleanSetting needHoldRight = new BooleanSetting("HoldRight", this, true);
@@ -22,9 +23,8 @@ public class AutoPlace extends Module {
 
     long lastTime = 0L;
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof DrawBlockHighlightEvent) {
             if (mc.currentScreen != null) return;
 

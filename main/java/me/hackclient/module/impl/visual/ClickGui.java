@@ -9,7 +9,7 @@ import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.IntegerSetting;
 import org.lwjgl.input.Keyboard;
 
-@ModuleInfo(name = "ClickGui", category = Category.VISUAL, key = Keyboard.KEY_RSHIFT, toggled = true)
+@ModuleInfo(name = "ClickGui", category = Category.VISUAL, key = Keyboard.KEY_RSHIFT)
 public class ClickGui extends Module {
 
 	public FloatSetting animationSpeed = new FloatSetting("AnimationSpeed", this, 1, 20, 10, 0.5f) {};
@@ -21,7 +21,7 @@ public class ClickGui extends Module {
 
 	@Override
 	public void onEnable() {
-		super.onEnable();
 		mc.displayGuiScreen(Client.INSTANCE.getClickGui());
+		toggle();
 	}
 }

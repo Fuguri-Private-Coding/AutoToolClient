@@ -1,7 +1,7 @@
 package me.hackclient.utils.entity;
 
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 
-public class EntityUtils implements InstanceAccess {
+public class EntityUtils implements Imports {
 
 }

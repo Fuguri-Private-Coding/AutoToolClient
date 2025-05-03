@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.LegitClickTimingEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -21,9 +22,8 @@ public class AutoTool extends Module {
         switchBack();
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (mc.objectMouseOver == null)
             return;
 

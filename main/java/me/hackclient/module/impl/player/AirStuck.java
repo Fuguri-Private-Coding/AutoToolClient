@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.MoveButtonEvent;
 import me.hackclient.event.events.PacketEvent;
 import me.hackclient.event.events.TickEvent;
@@ -14,18 +15,12 @@ import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 @ModuleInfo(name = "AirStuck", category = Category.PLAYER)
 public class AirStuck extends Module {
 
-    ModeSetting mode = new ModeSetting(
-            "Mode",
-            this,
-            "NoRotate",
-            new String[] {
-                    "NoRotate"
-            }
-    );
+    ModeSetting mode = new ModeSetting("Mode", this)
+            .addModes("NoRotate")
+            .setMode("NoRotate");
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         switch (mode.getMode()) {
             case "NoRotate" -> {
                 if (event instanceof PacketEvent packetEvent && (packetEvent.getPacket() instanceof S32PacketConfirmTransaction || packetEvent.getPacket() instanceof S08PacketPlayerPosLook)) packetEvent.setCanceled(true);

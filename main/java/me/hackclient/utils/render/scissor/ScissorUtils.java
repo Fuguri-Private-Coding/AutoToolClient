@@ -1,11 +1,11 @@
 package me.hackclient.utils.render.scissor;
 
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.client.gui.ScaledResolution;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class ScissorUtils implements InstanceAccess {
+public class ScissorUtils implements Imports {
 
     public static void enableScissor() {
         glEnable(GL_SCISSOR_TEST);

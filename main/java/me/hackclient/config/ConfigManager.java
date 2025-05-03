@@ -1,0 +1,176 @@
+package me.hackclient.config;
+
+import com.google.gson.*;
+import lombok.Getter;
+import me.hackclient.Client;
+import me.hackclient.module.Module;
+import me.hackclient.settings.Setting;
+import me.hackclient.settings.impl.*;
+import me.hackclient.utils.doubles.Doubles;
+import me.hackclient.utils.file.FileUtils;
+import me.hackclient.utils.interfaces.Imports;
+
+import java.io.*;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+@Getter
+public class ConfigManager implements Imports {
+
+    File configsDirectory;
+    private List<Config> configs;
+    Config defaultConfig;
+
+    public void init() {
+        configs = new ArrayList<>();
+        configsDirectory = new File(Client.INSTANCE.getName() + "/configs");
+        configsDirectory.mkdirs();
+        defaultConfig = new Config("default");
+        refreshConfigs();
+    }
+
+    private Config loadConfigFromFile(File configFile) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(configFile));
+            JsonParser parser = new JsonParser();
+            JsonObject json = (JsonObject) parser.parse(reader);
+            reader.close();
+            JsonObject elementObject = json.get("ConfigInformation").getAsJsonObject();
+            String name = elementObject.get("Name").getAsString();
+            Date lastUpdate = Config.DATE_FORMAT.parse(elementObject.get("LastUpdate").getAsString());
+            return new Config(name, lastUpdate);
+        } catch (IOException | ParseException e) {
+            e.printStackTrace(System.out);
+        }
+        return null;
+    }
+
+    public void loadConfig(Config config) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(config.getConfigFile()));
+            System.out.println(config.getConfigFile().getAbsolutePath());
+            JsonParser parser = new JsonParser();
+            JsonObject json = (JsonObject) parser.parse(reader);
+            reader.close();
+            for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                if (entry.getKey().equalsIgnoreCase("ConfigInformation")) { // В загрузке конфига нужно скипать значения с его названием и датой для избежания багов так как при загрузке нам нужны только модули
+                    continue;
+                }
+                Module module = Client.INSTANCE.getModuleManager().getModule(entry.getKey());
+                if (module == null) {
+                    continue;
+                }
+                JsonObject moduleObject = (JsonObject) entry.getValue();
+                module.setToggled(moduleObject.get("toggled").getAsBoolean());
+                for (Setting setting : module.getSettings()) {
+                    JsonElement settingElement = moduleObject.get(setting.getName());
+                    if (settingElement == null) {
+                        continue;
+                    }
+                    switch (setting) {
+                        case IntegerSetting set -> set.setValue(settingElement.getAsInt());
+                        case FloatSetting set -> set.setValue(settingElement.getAsFloat());
+                        case BooleanSetting set -> set.setToggled(settingElement.getAsBoolean());
+                        case ModeSetting set -> set.setMode(settingElement.getAsString());
+                        case MultiBooleanSetting set -> {
+                            JsonObject jsonObject = settingElement.getAsJsonObject();
+                            for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                                set.set(entry1.getKey(), entry1.getValue().getAsBoolean());
+                            }
+                        }
+                        case ColorSetting set -> {
+                            JsonObject jsonObject = settingElement.getAsJsonObject();
+                            for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                                switch (entry1.getKey()) {
+                                    case "Red" -> set.setRed(entry1.getValue().getAsFloat());
+                                    case "Green" -> set.setGreen(entry1.getValue().getAsFloat());
+                                    case "Blue" -> set.setBlue(entry1.getValue().getAsFloat());
+                                    case "Alpha" -> set.setAlpha(entry1.getValue().getAsFloat());
+                                }
+                            }
+                        }
+                        default -> throw new IllegalStateException("Unexpected value: " + setting);
+                    }
+                }
+            }
+        } catch (RuntimeException | IOException e) {
+            e.printStackTrace(System.out);
+        }
+        saveConfig(defaultConfig);
+    }
+
+    public void saveConfig(Config config) {
+        FileUtils.createIfNotExists(config.getConfigFile());
+        config.onUpdate();
+        JsonObject mainObject = new JsonObject();
+        JsonObject infoObject = new JsonObject();
+        infoObject.addProperty("Name", config.getName());
+        infoObject.addProperty("LastUpdate", config.getLastUpdateDate());
+        mainObject.add("ConfigInformation", infoObject);
+        for (Module module : Client.INSTANCE.getModuleManager().getModules()) {
+            JsonObject moduleObject = new JsonObject();
+            moduleObject.addProperty("toggled", module.isToggled());
+            for (Setting setting : module.getSettings()) {
+                switch (setting) {
+                    case IntegerSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());
+                    case FloatSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());
+                    case BooleanSetting set -> moduleObject.addProperty(setting.getName(), set.isToggled());
+                    case ModeSetting set -> moduleObject.addProperty(setting.getName(), set.getMode());
+                    case MultiBooleanSetting set -> {
+                        JsonObject multiBooleanObject = new JsonObject();
+                        for (Doubles<String, Boolean> value : set.getValues()) {
+                            multiBooleanObject.addProperty(value.getFirst(), value.getSecond());
+                        }
+                        moduleObject.add(set.getName(), multiBooleanObject);
+                    }
+                    case ColorSetting set -> {
+                        JsonObject colorSettingObject = new JsonObject();
+                        colorSettingObject.addProperty("Red", set.getRed());
+                        colorSettingObject.addProperty("Green", set.getGreen());
+                        colorSettingObject.addProperty("Blue", set.getBlue());
+                        colorSettingObject.addProperty("Alpha", set.getAlpha());
+                        moduleObject.add(set.getName(), colorSettingObject);
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + setting);
+                }
+            }
+            mainObject.add(module.getName(), moduleObject);
+        }
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(config.getConfigFile()));
+            Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+            writer.println(prettyGson.toJson(mainObject));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    public void deleteConfig(Config config) {
+        configs.remove(config);
+        config.getConfigFile().delete();
+    }
+
+    public void refreshConfigs() {
+        File[] files = configsDirectory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                Config config = loadConfigFromFile(file);
+                if (config != null) {
+                    configs.add(config);
+                }
+            }
+        }
+    }
+
+    public void loadAsync(Config config) {
+        new Thread(() -> loadConfig(config)).start();
+    }
+
+    public void saveAsync(Config config) {
+        new Thread(() -> saveConfig(config)).start();
+    }
+}

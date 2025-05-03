@@ -5,7 +5,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 
-@ModuleInfo(name = "ClickSettings", category = Category.COMBAT, hide = true, toggled = true)
+@ModuleInfo(name = "ClickSettings", category = Category.COMBAT, hide = true)
 public class ClickSettings extends Module {
 
     public final IntegerSetting minStartHurtTime = new IntegerSetting("MinStartHurtTime", this, 0, 10, 3) {
@@ -15,7 +15,6 @@ public class ClickSettings extends Module {
             return super.getValue();
         }
     };
-
     public final IntegerSetting maxStartHurtTime = new IntegerSetting("MaxStartHurtTime", this, 0, 10, 3) {
         @Override
         public int getValue() {
@@ -23,7 +22,6 @@ public class ClickSettings extends Module {
             return super.getValue();
         }
     };
-
     public final IntegerSetting minEndHurtTime = new IntegerSetting("MinEndHurtTime", this, 0, 10, 7) {
         @Override
         public int getValue() {
@@ -31,7 +29,6 @@ public class ClickSettings extends Module {
             return super.getValue();
         }
     };
-
     public final IntegerSetting maxEndHurtTime = new IntegerSetting("MaxEndHurtTime", this, 0, 10, 7) {
         @Override
         public int getValue() {

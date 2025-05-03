@@ -1,13 +1,13 @@
 package me.hackclient.utils.font;
 
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 import java.io.InputStream;
 import java.util.HashMap;
 
-public class FontsRepository implements InstanceAccess {
+public class FontsRepository implements Imports {
 
     public HashMap<String, ClientFontRenderer> fonts = new HashMap<>();
 

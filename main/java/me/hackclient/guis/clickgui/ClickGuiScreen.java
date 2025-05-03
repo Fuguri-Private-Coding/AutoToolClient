@@ -2,7 +2,7 @@ package me.hackclient.guis.clickgui;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
-import me.hackclient.event.callable.ConditionCallableObject;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.guis.config.ConfigGuiScreen;
 import me.hackclient.module.Category;
@@ -29,7 +29,7 @@ import java.io.IOException;
 
 import static java.lang.Math.*;
 
-public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject {
+public class ClickGuiScreen extends GuiScreen {
 
 	int delay = 10;
 
@@ -56,11 +56,9 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 	int scroll;
 
-	// Animations
 	final Animation2D moduleLine, settingLine, background, sizeBackground;
 
 	public ClickGuiScreen() {
-		callables.add(this);
 		lastMouse = new Vector2f(0, 0);
 		pos = new Vector2f(100, 100);
 		size = new Vector2f(350, 150);
@@ -112,7 +110,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		};
 
 		MAIN_COLOR_INT = MAIN_COLOR.getRGB();
-				Client.INSTANCE.getModuleManager().modules.sort(
+				Client.INSTANCE.getModuleManager().getModules().sort(
 				(o1, o2) -> {
 					int width1 = mc.fontRendererObj.getStringWidth(o1.getName());
 					int width2 = mc.fontRendererObj.getStringWidth(o2.getName());
@@ -181,7 +179,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
 
 		float widthsModule = 0;
-		for (Module module : Client.INSTANCE.getModuleManager().modules) {
+		for (Module module : Client.INSTANCE.getModuleManager().getModules()) {
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
 
 			if (moduleWidth > widthsModule) {
@@ -571,7 +569,7 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 		}
 
 		float widthsModule = 0;
-		for (Module module : Client.INSTANCE.getModuleManager().modules) {
+		for (Module module : Client.INSTANCE.getModuleManager().getModules()) {
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
 
 			if (moduleWidth > widthsModule) {
@@ -722,18 +720,20 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 
 	@Override
 	public void onGuiClosed() {
-		Client.INSTANCE.getModuleManager().getModule(ClickGui.class).setToggled(false);
+		Client.INSTANCE.getEventManager().unregister(this);
+		Client.INSTANCE.getConfigManager().saveAsync(Client.INSTANCE.getConfigManager().getDefaultConfig());
 	}
 
 	@Override
 	public void initGui() {
+		Client.INSTANCE.getEventManager().register(this);
 		sizeBackground.reset();
 		background.reset();
 		pos.set(lastPos);
 		size.set(lastSize);
 	}
 
-	@Override
+	@EventTarget
 	public void onEvent(Event event) {
 		if (event instanceof TickEvent) {
 			if (delay > 0) {
@@ -742,10 +742,5 @@ public class ClickGuiScreen extends GuiScreen implements ConditionCallableObject
 			}
 			if (delay == 0) delay = 30;
 		}
-	}
-
-	@Override
-	public boolean handleEvents() {
-		return mc.thePlayer != null && mc.theWorld != null && mc.currentScreen instanceof ClickGuiScreen;
 	}
 }

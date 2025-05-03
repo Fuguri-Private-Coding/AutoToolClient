@@ -23,6 +23,7 @@ public abstract class Command {
 	}
 
 	public abstract void execute(String[] args);
+
 	protected void usage() {
 		console.log(usage);
 	}

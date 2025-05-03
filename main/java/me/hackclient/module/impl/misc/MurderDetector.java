@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.misc;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.event.events.WorldChangeEvent;
 import me.hackclient.module.Category;
@@ -28,9 +29,8 @@ public class MurderDetector extends Module {
         if (!murders.isEmpty()) murders.clear();
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof WorldChangeEvent) {
             if (!murders.isEmpty()) murders.clear();
         }

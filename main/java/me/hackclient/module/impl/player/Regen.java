@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -19,9 +20,8 @@ public class Regen extends Module {
     final IntegerSetting health = new IntegerSetting("Heath", this, 0, 20, 18);
     final IntegerSetting food = new IntegerSetting("food", this, 0, 20, 18);
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof UpdateEvent) {
             if (mc.thePlayer.getHealth() > health.getValue() || mc.thePlayer.getFoodStats().getFoodLevel() < food.getValue())
                 return;

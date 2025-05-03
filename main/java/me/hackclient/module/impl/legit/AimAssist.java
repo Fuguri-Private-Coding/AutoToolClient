@@ -1,6 +1,7 @@
 package me.hackclient.module.impl.legit;
 
 import me.hackclient.Client;
+import me.hackclient.event.EventTarget;
 import me.hackclient.utils.target.TargetFinder;
 import me.hackclient.event.Event;
 import me.hackclient.event.events.MotionEvent;
@@ -32,9 +33,8 @@ public class AimAssist extends Module {
         Client.INSTANCE.getCombatManager().setTarget(null);
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof MotionEvent) {
             Client.INSTANCE.getCombatManager().setTarget(TargetFinder.findTarget(distance.getValue(), true, false, false));
 

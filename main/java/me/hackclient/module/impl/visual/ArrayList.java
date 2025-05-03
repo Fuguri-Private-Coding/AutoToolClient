@@ -2,6 +2,7 @@ package me.hackclient.module.impl.visual;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -12,10 +13,12 @@ import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(name = "ArrayList", category = Category.VISUAL, toggled = true)
+@ModuleInfo(name = "ArrayList", category = Category.VISUAL)
 public class ArrayList extends Module {
 
 	final BooleanSetting showRenderModules = new BooleanSetting("ShowRenderModules", this, false);
@@ -29,9 +32,8 @@ public class ArrayList extends Module {
 
 	Shadows shadows;
 
-	@Override
+	@EventTarget
 	public void onEvent(Event event) {
-		super.onEvent(event);
 		if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
 		if (event instanceof Render2DEvent) {
 			final FontRenderer font = mc.fontRendererObj;
@@ -51,7 +53,7 @@ public class ArrayList extends Module {
 					});
 				}
 
-				RoundedUtils.drawRect(6,(float) offset + 6f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 4f, backgroundRadius.getValue(), backgroundColor.getColor());
+				Gui.drawRect(6f,(float) offset + 19f, font.getStringWidth(module.getName()) + 10, (float) offset + 6f, backgroundColor.getColor().getRGB());
 
 				font.drawString(module.getName(), 8.5f, (float) (8.5f + offset), color.getColor().getRGB(), textShadow.isToggled());
 				offset += 13;

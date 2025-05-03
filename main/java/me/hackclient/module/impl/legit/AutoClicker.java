@@ -2,6 +2,7 @@ package me.hackclient.module.impl.legit;
 
 import me.hackclient.Client;
 import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -43,9 +44,8 @@ public class AutoClicker extends Module {
         stopWatch = new StopWatch();
     }
 
-    @Override
+    @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (event instanceof RunGameLoopEvent) {
             if (!Mouse.isButtonDown(0)) return;
 

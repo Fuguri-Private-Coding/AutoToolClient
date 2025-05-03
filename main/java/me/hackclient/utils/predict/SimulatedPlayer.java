@@ -2,7 +2,7 @@ package me.hackclient.utils.predict;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
-import me.hackclient.utils.interfaces.InstanceAccess;
+import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -32,7 +32,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
-public class SimulatedPlayer implements InstanceAccess {
+public class SimulatedPlayer implements Imports {
     private final EntityPlayerSP player;
     public AxisAlignedBB box;
     public final MovementInput movementInput;
