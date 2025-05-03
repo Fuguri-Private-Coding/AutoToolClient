@@ -62,18 +62,16 @@ public class TimerRange extends Module {
                 }
             }
 
-            if (teleportTicks == 0) {
-                return;
-            }
-
             teleporting = true;
             for (int i = 0; i < teleportTicks; i++) {
                 try {
                     mc.runTick();
                     balance++;
+                    if (RayCastUtils.rayCast(3.0, 0,Rotation.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
+                        mc.clickMouse();
+                    }
                 } catch (Exception ignored) { }
             }
-            mc.clickMouse();
             teleporting = false;
         }
         if (event instanceof RunGameLoopEvent && balance > 0) {
