@@ -227,6 +227,11 @@ public class KillAura extends Module {
             if (event instanceof JumpEvent e) {
                 e.setYaw(lr.getYaw());
             }
+            if (moveFix.getMode().equalsIgnoreCase("Silent") || moveFix.getMode().equalsIgnoreCase("Target")) {
+                if (event instanceof SprintEvent && Math.abs(Rotation.getServerRotation().getYaw() - MoveUtils.getDirection(Rotation.getLastReported().getYaw())) > 45) {
+                    mc.thePlayer.setSprinting(false);
+                }
+            }
         }
         if (event instanceof MoveEvent e) {
             switch (moveFix.getMode()) {
