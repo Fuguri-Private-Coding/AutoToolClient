@@ -93,9 +93,9 @@ public class ModelWrapper<I, O> implements Closeable {
         }
     }
 
-    public void save(Path path) {
+    public void save(Path path, String name) {
         try {
-            model.save(path, "tf");
+            model.save(path, name);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

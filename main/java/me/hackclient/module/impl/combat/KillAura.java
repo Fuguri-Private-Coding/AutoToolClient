@@ -43,8 +43,6 @@ public class KillAura extends Module {
             .addModes("Distance", "FOV")
             .setMode("FOV");
 
-    final FloatSetting rotationDistance = new FloatSetting("RotationDistance", this, 3, 8, 4.5f, 0.1f);
-
     final ModeSetting hitVec = new ModeSetting("HitVec", this)
             .addModes("Best", "Nearest", "Head", "Body")
             .setMode("Best");
@@ -102,6 +100,8 @@ public class KillAura extends Module {
     final IntegerSetting yawCorrectionSpeed = new IntegerSetting("YawCorrectionSpeed", this, correctionVisible, 0, 180, 90);
     final IntegerSetting pitchCorrectionSpeed = new IntegerSetting("PitchCorrectionSpeed", this, correctionVisible, 0, 180, 30);
 
+    final BooleanSetting silentRotation = new BooleanSetting("SilentRotation", this);
+
     final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
     final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 0, 20, 17) {
         @Override
@@ -146,58 +146,64 @@ public class KillAura extends Module {
         if (combatManager.getTarget() == null) return;
         EntityLivingBase target = combatManager.getTarget();
         Rotation lr = Rotation.getServerRotation().copy();
-        if (DistanceUtils.getDistance(target) < rotationDistance.getValue()) {
-            if (event instanceof MotionEvent e) {
-                e.setYaw(lr.getYaw());
-                e.setPitch(lr.getPitch());
 
-                AxisAlignedBB box = getHitBox(target);
-                Rotation needRotation = switch (hitVec.getMode()) {
-                    case "Best" -> RotationUtils.getBestRotation(box);
-                    case "Nearest" -> RotationUtils.getNearestRotation(lr, box);
-                    case "Head" -> RotationUtils.getRotationToPoint(target.getPositionEyes(1f));
-                    case "Body" -> RotationUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
-                    default -> throw new IllegalStateException("Unexpected value: " + hitVec.getMode());
-                };
+        if (event instanceof MotionEvent e) {
+            e.setYaw(lr.getYaw());
+            e.setPitch(lr.getPitch());
 
-                Rotation delta = RotationUtils.getDelta(lr, needRotation);
-                Rotation speed = new Rotation(
-                        RandomUtils.nextFloat(minYawSpeed.getValue(), maxYawSpeed.getValue()),
-                        RandomUtils.nextFloat(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
-                );
+            AxisAlignedBB box = getHitBox(target);
+            Rotation needRotation = switch (hitVec.getMode()) {
+                case "Best" -> RotationUtils.getBestRotation(box);
+                case "Nearest" -> RotationUtils.getNearestRotation(lr, box);
+                case "Head" -> RotationUtils.getRotationToPoint(target.getPositionEyes(1f));
+                case "Body" -> RotationUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
+                default -> throw new IllegalStateException("Unexpected value: " + hitVec.getMode());
+            };
 
-                RotationUtils.limitDelta(delta, speed);
+            Rotation delta = RotationUtils.getDelta(lr, needRotation);
+            Rotation speed = new Rotation(
+                    RandomUtils.nextFloat(minYawSpeed.getValue(), maxYawSpeed.getValue()),
+                    RandomUtils.nextFloat(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
+            );
 
-                switch (smoothMode.getMode()) {
-                    case "Linear" -> {
-                        delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
-                        delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
-                    }
-                    case "AIModel" -> {
-                        if (!AIRotationSmooth.currentModelName.equalsIgnoreCase(model.getMode())) {
-                            AIRotationSmooth.changeModel(model.getMode());
-                        }
+            RotationUtils.limitDelta(delta, speed);
 
-                        Rotation targetRot = lr.add(delta);
-
-                        Rotation aiRotation = AIRotationSmooth.compute(
-                                lr, targetRot, target,
-                                yawMultiplier.getValue(), pitchMultiplier.getValue(),
-                                correction.isToggled(), yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
-                        );
-
-                        delta = RotationUtils.getDelta(lr, aiRotation);
-                    }
+            switch (smoothMode.getMode()) {
+                case "Linear" -> {
+                    delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
+                    delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
                 }
+                case "AIModel" -> {
+                    if (!AIRotationSmooth.currentModelName.equalsIgnoreCase(model.getMode())) {
+                        AIRotationSmooth.changeModel(model.getMode());
+                    }
 
-                RotationUtils.limitDelta(delta, speed);
-                RotationUtils.fixDelta(delta);
+                    Rotation targetRot = lr.add(delta);
 
-                lr = lr.add(delta);
-                lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
+                    Rotation aiRotation = AIRotationSmooth.compute(
+                            lr, targetRot, target,
+                            yawMultiplier.getValue(), pitchMultiplier.getValue(),
+                            correction.isToggled(), yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
+                    );
+
+                    delta = RotationUtils.getDelta(lr, aiRotation);
+                }
+            }
+
+            RotationUtils.limitDelta(delta, speed);
+            RotationUtils.fixDelta(delta);
+
+            lr = lr.add(delta);
+            lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
+
+            if (silentRotation.isToggled()) {
                 Rotation.setServerRotation(lr);
+            } else {
+                mc.thePlayer.rotationYaw = lr.getYaw();
+                mc.thePlayer.rotationPitch = lr.getPitch();
             }
         }
+
         if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
             if (clickTimer.reachedMS(delay)) {
                 clickTimer.reset();
@@ -227,9 +233,11 @@ public class KillAura extends Module {
             if (event instanceof JumpEvent e) {
                 e.setYaw(lr.getYaw());
             }
-            if (moveFix.getMode().equalsIgnoreCase("Silent") || moveFix.getMode().equalsIgnoreCase("Target")) {
-                if (event instanceof SprintEvent && Math.abs(Rotation.getServerRotation().getYaw() - MoveUtils.getDirection(Rotation.getLastReported().getYaw())) > 45) {
-                    mc.thePlayer.setSprinting(false);
+            if (event instanceof SprintEvent) {
+                if (moveFix.getMode().equalsIgnoreCase("Silent") || moveFix.getMode().equalsIgnoreCase("Target")) {
+                    if (Math.abs(MoveUtils.getDirection() - MoveUtils.getDirection(Rotation.getServerRotation().getYaw())) > 45) {
+                        mc.thePlayer.setSprinting(false);
+                    }
                 }
             }
         }
@@ -304,10 +312,12 @@ public class KillAura extends Module {
         return target;
     }
 
-    private void updateModels() {
+    public void updateModels() {
         model.getModes().clear();
-        for (File modelFile : Client.INSTANCE.getModelsDirectory().listFiles()) {
-            model.getModes().add(modelFile.getName().replaceAll(".params", ""));
+        if (Client.INSTANCE.getModelsDirectory().listFiles() != null) {
+            for (File modelFile : Client.INSTANCE.getModelsDirectory().listFiles()) {
+                model.getModes().add(modelFile.getName().replaceAll("-0000.params", ""));
+            }
         }
     }
 }

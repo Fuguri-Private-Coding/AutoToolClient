@@ -8,7 +8,7 @@ import java.util.List;
 
 @Setter
 public class CommandManager {
-	private final List<Command> commands = new ArrayList<>();
+	public final List<Command> commands = new ArrayList<>();
 	
 	private String prefix = "/";
 

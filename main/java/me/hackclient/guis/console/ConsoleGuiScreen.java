@@ -31,6 +31,7 @@ public class ConsoleGuiScreen extends GuiScreen {
     Vector2f lastPos = new Vector2f(200, 200);
 
     boolean moving, closing;
+    public boolean changed = false;
     int scroll, totalHeight = 0;
     boolean fullScreen = false;
     final Animation2D background, sizeBackground, scrolls;
@@ -54,7 +55,7 @@ public class ConsoleGuiScreen extends GuiScreen {
     int delay = 30;
 
     private final GuiTextField textField = new GuiTextField(0, null, 0,0,0,0);
-    private final List<String> history = new ArrayList<>();
+    public final List<String> history = new ArrayList<>();
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -171,6 +172,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         }
 
         if (keyCode == Keyboard.KEY_RETURN && !textField.getText().isEmpty()) {
+            if (changed) return;
             history.add("C:\\Users\\" + username + ": "  + textField.getText());
             Client.INSTANCE.getCommandManager().handle(textField.getText());
             textField.setText("");

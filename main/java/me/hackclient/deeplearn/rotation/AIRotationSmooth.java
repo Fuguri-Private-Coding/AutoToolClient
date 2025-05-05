@@ -75,7 +75,7 @@ public class AIRotationSmooth implements Imports {
 
     public void changeModel(String modelName) {
         currentModelName = modelName;
-        model = new MinaraiModel(modelName + ".params");
+        model = new MinaraiModel(modelName + "-0000.params");
         try {
             InputStream inputStream = new FileInputStream(new File(Client.INSTANCE.getModelsDirectory(), modelName + ".params"));
             model.load(inputStream);

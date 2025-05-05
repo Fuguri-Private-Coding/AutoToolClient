@@ -30,7 +30,7 @@ public class TimerRange extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof LegitClickTimingEvent) {
+        if (event instanceof LegitClickTimingEvent && click) {
             mc.clickMouse();
             click = false;
         }
@@ -71,6 +71,7 @@ public class TimerRange extends Module {
                     balance++;
                     if (RayCastUtils.rayCast(3.0, 0,Rotation.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                         click = true;
+                        break;
                     }
                 } catch (Exception ignored) { }
             }

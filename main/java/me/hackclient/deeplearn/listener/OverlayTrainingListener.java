@@ -2,8 +2,10 @@ package me.hackclient.deeplearn.listener;
 
 import ai.djl.training.Trainer;
 import ai.djl.training.listener.TrainingListenerAdapter;
-import net.minecraft.client.Minecraft;
+import me.hackclient.Client;
 import net.minecraft.util.EnumChatFormatting;
+
+import java.util.List;
 
 public class OverlayTrainingListener extends TrainingListenerAdapter {
     private int epoch;
@@ -36,13 +38,60 @@ public class OverlayTrainingListener extends TrainingListenerAdapter {
         var progressCurrent = batch.getProgress();
         var progressTotal = batch.getProgressTotal();
         var progress = (int) ((float) progressCurrent / (float) progressTotal * 100);
+        updateProgress(epoch, maxEpoch, progress);
+    }
 
-        Minecraft.getMinecraft().ingameGUI.setRecordPlaying(
-                epoch + "/" + maxEpoch
-                + " - "
-                + EnumChatFormatting.GREEN + "█".repeat(progress / 4)
-                + EnumChatFormatting.DARK_GRAY + "░".repeat(25 - progress / 4),
-                false
-        );
+    private void updateProgress(int epoch, int maxEpoch, int progress) {
+        String newMessage = "§7[§2MinarAI§7] " + getAnimatedSpinner() + " " +
+                getFormattedEpoch(epoch, maxEpoch) + " - " +
+                buildProgressBar(progress) + " " +
+                getColoredPercentage(progress);
+
+        List<String> history = Client.INSTANCE.getConsole().history;
+
+        if (!history.isEmpty()) {
+            String last = history.getLast();
+            if (last.contains("/") && last.contains("%") && last.contains("░") && last.contains("█")) {
+                history.set(history.size() - 1, newMessage);
+                return;
+            }
+        }
+
+        history.add(newMessage);
+    }
+
+    private String getAnimatedSpinner() {
+        String[] spinnerFrames = {"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"};
+        int frame = (int)(System.currentTimeMillis() / 100) % spinnerFrames.length;
+        return EnumChatFormatting.AQUA + spinnerFrames[frame];
+    }
+
+    private String getFormattedEpoch(int epoch, int maxEpoch) {
+        return EnumChatFormatting.GOLD + String.valueOf(epoch) +
+                EnumChatFormatting.DARK_GRAY + "/" +
+                EnumChatFormatting.YELLOW + maxEpoch;
+    }
+
+    private static String buildProgressBar(int progress) {
+        int filled = progress * 25 / 100;
+        int remaining = 25 - filled;
+
+        EnumChatFormatting progressColor = progress < 30 ? EnumChatFormatting.RED :
+                progress < 70 ? EnumChatFormatting.YELLOW :
+                        EnumChatFormatting.GREEN;
+
+        String filledChar = "░";
+        String remainingChar = "░";
+
+        return progressColor + filledChar.repeat(filled) +
+                "█" +
+                EnumChatFormatting.DARK_GRAY + remainingChar.repeat(remaining);
+    }
+
+    private String getColoredPercentage(int progress) {
+        EnumChatFormatting color = progress < 30 ? EnumChatFormatting.RED :
+                progress < 70 ? EnumChatFormatting.YELLOW :
+                        EnumChatFormatting.GREEN;
+        return color.toString() + progress + "%";
     }
 }

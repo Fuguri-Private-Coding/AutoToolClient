@@ -75,9 +75,6 @@ public class RotationHandler extends Module {
                     lookEvent.setYaw(Rotation.getServerRotation().getYaw());
                     lookEvent.setPitch(Rotation.getServerRotation().getPitch());
                 }
-                if (event instanceof MoveEvent moveEvent) {
-                    MoveUtils.moveFix(moveEvent, Rotation.getServerRotation().getYaw());
-                }
                 if (event instanceof MoveFlyingEvent moveFlyingEvent) {
                     moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
                 }

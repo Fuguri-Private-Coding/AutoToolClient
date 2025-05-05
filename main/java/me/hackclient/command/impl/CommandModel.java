@@ -11,7 +11,7 @@ import java.io.File;
 
 public class CommandModel extends Command {
     public CommandModel() {
-        super("model", ".model create <name>" , "model");
+        super("model", "/model create <name>" , "model");
     }
 
     @Override
@@ -27,7 +27,7 @@ public class CommandModel extends Command {
         var samples = TrainingData.parse(Client.INSTANCE.getModuleManager().getModule(ModelTrainer.class).getFolder());
 
         if (samples.isEmpty()) {
-            console.log("НЕТУ СЕМПЛОВ НАХУЙ ЧЕ ТЫ ЖМЕШЬ");
+            console.log("Not enough samples!");
             return;
         }
 
@@ -43,9 +43,11 @@ public class CommandModel extends Command {
 
         new Thread(() -> {
             long currentMS = System.currentTimeMillis();
+            Client.INSTANCE.getConsole().changed = true;
             model.train(featuresArray, labelsArray);
-            model.save(new File(Client.INSTANCE.getModelsDirectory(), model.getName()).toPath());
-            Client.INSTANCE.getModuleManager().getModule(KillAura.class).model.addMode(model.getName());
+            model.save(Client.INSTANCE.getModelsDirectory().toPath(), model.getName());
+            Client.INSTANCE.getModuleManager().getModule(KillAura.class).updateModels();
+            Client.INSTANCE.getConsole().changed = false;
             console.log("Created model " + args[2] + " in " + (System.currentTimeMillis() - currentMS) / 1000D + " s.");
         }).start();
     }

@@ -18,6 +18,7 @@ import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
@@ -85,14 +86,13 @@ public class ModelTrainer extends Module {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        ClientUtils.chatLog("Recorded: " + packets.size() + "samples");
     }
 
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof AttackEvent e && e.getHittingEntity() == target) {
             e.cancel();
+            ClientUtils.chatLog("Recorded: " + packets.size() + " samples.");
             mc.theWorld.removeEntity(target);
             target = spawn();
         }
@@ -118,8 +118,6 @@ public class ModelTrainer extends Module {
                     target.getAge()
             ));
 
-            ClientUtils.chatLog("Recorded");
-
             prevPrevYaw = prevYaw;
             prevPrevPitch = prevPitch;
 
@@ -129,10 +127,8 @@ public class ModelTrainer extends Module {
     }
 
     private EntityLivingBase spawn() {
-        var slime = new EntitySlime(mc.theWorld);
-
+        var villager = new EntityVillager(mc.theWorld);
         var distance = 2 + RandomUtils.nextDouble(0, 0.9);
-
         var direction = new Rotation(
                 mc.thePlayer.rotationYaw + RandomUtils.nextFloat(-60, 60),
                     RandomUtils.nextFloat(-35, 35)
@@ -140,19 +136,19 @@ public class ModelTrainer extends Module {
 
         var pos = mc.thePlayer.getPositionEyes(1f).add(direction);
 
-        slime.setPosition(pos);
-        mc.theWorld.addEntityToWorld(slime.getEntityId(), slime);
+        villager.setPosition(pos);
+        mc.theWorld.addEntityToWorld(villager.getEntityId(), villager);
 
-//        mc.theWorld.playSound(
-//                pos.xCoord,
-//                pos.yCoord,
-//                pos.zCoord,
-//                "entity_experience",
-//                1f,
-//                1f,
-//                false
-//        );
+        mc.theWorld.playSound(
+                pos.xCoord,
+                pos.yCoord,
+                pos.zCoord,
+                "random.levelup",
+                1f,
+                1f,
+                false
+        );
 
-        return slime;
+        return villager;
     }
 }
