@@ -166,7 +166,7 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof MoveEvent moveEvent) {
-            MoveUtils.moveFix(moveEvent, Rotation.getServerRotation().getYaw());
+            MoveUtils.moveFix(moveEvent, MoveUtils.getDirection(mc.thePlayer.rotationYaw, moveEvent.getForward(), moveEvent.getStrafe()));
             if (sneakIfRotate.isToggled() && lastDelta > 0) moveEvent.setSneak(true);
             if (sneakIfNoBlocks.isToggled() && findBlock() == -1) moveEvent.setSneak(true);
         }

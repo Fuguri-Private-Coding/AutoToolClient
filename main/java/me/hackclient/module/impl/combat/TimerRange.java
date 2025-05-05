@@ -14,7 +14,6 @@ import me.hackclient.utils.predict.SimulatedPlayer;
 import me.hackclient.utils.raytrace.RayTraceUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
-import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -25,15 +24,18 @@ public class TimerRange extends Module {
     IntegerSetting maxTargetHurtTime = new IntegerSetting("TargetHurtTime", this, 0,10,0);
     FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0,1,1,0.1f);
 
-    boolean teleporting = false;
+    boolean teleporting, click = false;
     int teleportTicks = 0;
     public int balance;
 
     @EventTarget
     public void onEvent(Event event) {
+        if (event instanceof LegitClickTimingEvent) {
+            mc.clickMouse();
+            click = false;
+        }
         if (event instanceof TickEvent tickEvent) {
             if (teleporting) return;
-
             EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
 
             if (balance > 0) {
@@ -68,7 +70,7 @@ public class TimerRange extends Module {
                     mc.runTick();
                     balance++;
                     if (RayCastUtils.rayCast(3.0, 0,Rotation.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
-                        mc.clickMouse();
+                        click = true;
                     }
                 } catch (Exception ignored) { }
             }

@@ -82,7 +82,7 @@ public class RotationHandler extends Module {
                     moveFlyingEvent.setYaw(Rotation.getServerRotation().getYaw());
                 }
                 if (event instanceof MoveEvent e) {
-                    MoveUtils.moveFix(e, mc.thePlayer.rotationYaw);
+                    MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
                 }
                 if (event instanceof SprintEvent) {
                     if (Math.abs(MoveUtils.getDirection() - MoveUtils.getDirection(Rotation.getServerRotation().getYaw())) > 45) {
