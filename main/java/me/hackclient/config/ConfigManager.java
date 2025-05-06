@@ -21,14 +21,19 @@ import java.util.Map;
 public class ConfigManager implements Imports {
 
     File configsDirectory;
+    File bindsDirectory;
     private List<Config> configs;
     Config defaultConfig;
+    File bindFile;
 
     public void init() {
         configs = new ArrayList<>();
         configsDirectory = new File(Client.INSTANCE.getName() + "/configs");
+        bindsDirectory = new File(Client.INSTANCE.getName() + "/binds");
+        bindsDirectory.mkdirs();
         configsDirectory.mkdirs();
         defaultConfig = new Config("default");
+        bindFile = new File(bindsDirectory, "binds.json");
         refreshConfigs();
     }
 
@@ -46,6 +51,45 @@ public class ConfigManager implements Imports {
             e.printStackTrace(System.out);
         }
         return null;
+    }
+
+
+    public void loadBinds() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(bindFile));
+            JsonParser parser = new JsonParser();
+            JsonObject json = (JsonObject) parser.parse(reader);
+            reader.close();
+            for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                Module module = Client.INSTANCE.getModuleManager().getModule(entry.getKey());
+                if (module == null) {
+                    continue;
+                }
+                JsonObject moduleObject = (JsonObject) entry.getValue();
+                module.setKey(moduleObject.get("key").getAsInt());
+
+            }
+        } catch (RuntimeException | IOException e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    public void saveBinds() {
+        FileUtils.createIfNotExists(bindFile);
+        JsonObject mainObject = new JsonObject();
+        for (Module module : Client.INSTANCE.getModuleManager().getModules()) {
+            JsonObject moduleObject = new JsonObject();
+            moduleObject.addProperty("key", module.getKey());
+            mainObject.add(module.getName(), moduleObject);
+        }
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(bindFile));
+            Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+            writer.println(prettyGson.toJson(mainObject));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+        }
     }
 
     public void loadConfig(Config config) {
@@ -157,6 +201,7 @@ public class ConfigManager implements Imports {
     public void refreshConfigs() {
         File[] files = configsDirectory.listFiles();
         if (files != null) {
+            configs.clear();
             for (File file : files) {
                 Config config = loadConfigFromFile(file);
                 if (config != null) {

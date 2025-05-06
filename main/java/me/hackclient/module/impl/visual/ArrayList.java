@@ -9,7 +9,6 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.ColorSetting;
-import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.shader.impl.BloomUtils;
 import me.hackclient.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.FontRenderer;
@@ -28,7 +27,6 @@ public class ArrayList extends Module {
 	final BooleanSetting textShadow = new BooleanSetting("TextShadow", this, false);
 
 	final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, 0,0,0,0.5f);
-	final FloatSetting backgroundRadius = new FloatSetting("BackgroundRadius", this, 0.5f,5f,1f,0.5f);
 
 	Shadows shadows;
 
@@ -48,7 +46,7 @@ public class ArrayList extends Module {
 				if (shadows.isToggled() && shadows.module.get("ArrayList")) {
 					double finalOffset = offset;
 					BloomUtils.addToDraw(() -> {
-						RoundedUtils.drawRect(6,(float) finalOffset + 6f, font.getStringWidth(module.getName()) + 4, font.FONT_HEIGHT + 4f, backgroundRadius.getValue(), shadows.color.getColor());
+						Gui.drawRect(6f,(float) finalOffset + 19f, font.getStringWidth(module.getName()) + 10, (float) finalOffset + 6f, -1);
 						if (showLine.isToggled()) RoundedUtils.drawRect(4, 6, 2, (float) finalOffset + 12, 2f, shadows.color.getColor());
 					});
 				}

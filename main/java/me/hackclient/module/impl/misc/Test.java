@@ -2,7 +2,6 @@ package me.hackclient.module.impl.misc;
 
 import me.hackclient.event.Event;
 import me.hackclient.event.EventTarget;
-import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
@@ -22,6 +21,5 @@ public class Test extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-
     }
 }

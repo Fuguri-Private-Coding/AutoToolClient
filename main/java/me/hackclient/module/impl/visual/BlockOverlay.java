@@ -18,6 +18,7 @@ import net.minecraft.util.MovingObjectPosition;
 public class BlockOverlay extends Module {
 
     ColorSetting color = new ColorSetting("Color", this, 0, 0.5f, 1f, 0.3f);
+    FloatSetting lineAlpha = new FloatSetting("LineAlpha",this, 0, 1, 1, 0.1f);
     FloatSetting lineWidth = new FloatSetting("LineWidth",this, 0, 5, 1, 0.1f);
     Shadows shadows;
 
@@ -32,7 +33,7 @@ public class BlockOverlay extends Module {
             if (renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 RenderUtils.start3D();
                 if (shadows.isToggled() && shadows.module.get("BlockOverlay")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), 1,1,1,1, 0f, lineWidth.getValue()));
-                RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 0f, lineWidth.getValue());
+                RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), lineAlpha.getValue(), lineWidth.getValue());
                 RenderUtils.stop3D();
             }
         }

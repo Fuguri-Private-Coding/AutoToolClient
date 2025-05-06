@@ -5,7 +5,7 @@ import me.hackclient.command.Command;
 import me.hackclient.deeplearn.data.TrainingData;
 import me.hackclient.deeplearn.models.MinaraiModel;
 import me.hackclient.module.impl.combat.KillAura;
-import me.hackclient.module.impl.combat.ModelTrainer;
+import me.hackclient.module.impl.misc.ModelTrainer;
 
 import java.io.File;
 

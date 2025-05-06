@@ -24,10 +24,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class HUD extends Module {
 
     MultiBooleanSetting hudElements = new MultiBooleanSetting("HUDElements", this)
+            .add("PREMIUMFPSCOUNTER")
             .add("BPSCounter")
             .add("CPSCounter")
             .add("BreakIndicator")
             .add("WaterMark");
+
+    FloatSetting fpsPosH = new FloatSetting("FPSPosX", this,() -> hudElements.get("PREMIUMFPSCOUNTER"), 0,10000,0,0.1f);
+    FloatSetting fpsPosV = new FloatSetting("FPSPosY", this,() -> hudElements.get("PREMIUMFPSCOUNTER"), 0,10000,0,0.1f);
+    FloatSetting fpsRadius = new FloatSetting("FPSRadius", this,() -> hudElements.get("PREMIUMFPSCOUNTER"), 0.5f,5,1f,0.1f);
+    ColorSetting fpsColor = new ColorSetting("FPSColor", this,() -> hudElements.get("PREMIUMFPSCOUNTER"), 0,0,0,0.4f);
+    BooleanSetting fpsTextShadow = new BooleanSetting("FPSTextShadow",this,() -> hudElements.get("PREMIUMFPSCOUNTER"), true);
+    ColorSetting fpsTextColor = new ColorSetting("FPSTextColor", this,() -> hudElements.get("PREMIUMFPSCOUNTER"), 1,1,1,1);
 
     FloatSetting bpsPosH = new FloatSetting("BPSPosX", this,() -> hudElements.get("BPSCounter"), 0,10000,0,0.1f);
     FloatSetting bpsPosV = new FloatSetting("BPSPosY", this,() -> hudElements.get("BPSCounter"), 0,10000,0,0.1f);
@@ -62,6 +70,7 @@ public class HUD extends Module {
 
     private final java.util.List<Long> leftClicks = new CopyOnWriteArrayList<>();
     private final List<Long> rightClicks = new CopyOnWriteArrayList<>();
+    private final List<Long> frames = new CopyOnWriteArrayList<>();
 
     @EventTarget
     public void onEvent(Event event) {
@@ -76,6 +85,8 @@ public class HUD extends Module {
         breakIndicatorPosV.setMax(sc.getScaledHeight());
         waterMarkPosH.setMax(sc.getScaledWidth());
         waterMarkPosV.setMax(sc.getScaledHeight());
+        fpsPosH.setMax(sc.getScaledWidth());
+        fpsPosV.setMax(sc.getScaledHeight());
 
         if (event instanceof ClickEvent clickEvent && hudElements.get("CPSCounter")) {
             switch (clickEvent.getButton()) {
@@ -124,6 +135,19 @@ public class HUD extends Module {
 
             if (hudElements.get("WaterMark")) {
 
+            }
+
+            if (hudElements.get("PREMIUMFPSCOUNTER")) {
+                frames.add(System.currentTimeMillis());
+                frames.removeIf(aLong -> System.currentTimeMillis() - aLong >= 1000);
+
+                String text = "FPS: " + frames.size();
+                float width = mc.fontRendererObj.getStringWidth(text);
+
+                if (shadows.isToggled() && shadows.module.get("PREMIUMFPSCOUNTER")) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(fpsPosH.getValue(), fpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, fpsRadius.getValue(), Color.WHITE));
+
+                RoundedUtils.drawRect(fpsPosH.getValue(), fpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, fpsRadius.getValue(), fpsColor.getColor());
+                mc.fontRendererObj.drawString(text,fpsPosH.getValue() + 2.5f ,fpsPosV.getValue() + 2.5f, fpsTextColor.getColor().getRGB(), fpsTextShadow.isToggled());
             }
         }
     }

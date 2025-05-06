@@ -57,7 +57,7 @@ public class Trails extends Module {
             RenderUtils.start3D();
             GL11.glTranslated(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
             GL11.glLineWidth(lineWidth.getValue());
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            GL11.glDisable(GL11.GL_DEPTH_TEST);
             switch (mode.getMode()) {
                 case "SingleLine" -> {
                     if (shadows.isToggled() && shadows.module.get("Trails")) {
@@ -74,6 +74,7 @@ public class Trails extends Module {
                     renderPlayerLine();
                 }
             }
+            GL11.glColor4f(1,1,1,1);
             GL11.glEnable(GL11.GL_DEPTH_TEST);
             GL11.glLineWidth(1f);
             GL11.glTranslated(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);

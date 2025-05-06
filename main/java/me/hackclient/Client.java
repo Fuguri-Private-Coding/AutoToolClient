@@ -37,7 +37,6 @@ public enum Client implements Imports {
 	File clientDirectory;
 	File modelsDirectory;
 
-	File bindsDirectory;
 	File soundsDirectory;
 
 	ConsoleGuiScreen console;
@@ -63,10 +62,9 @@ public enum Client implements Imports {
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");
-		bindsDirectory = new File(name + "/binds");
 		soundsDirectory = new File(name + "/sounds");
 
-		FileUtils.createIfNotExists(clientDirectory, modelsDirectory, bindsDirectory, soundsDirectory);
+		FileUtils.createIfNotExists(clientDirectory, modelsDirectory, soundsDirectory);
 
 		eventManager = new EventManager();
 		eventManager.register(this);
@@ -88,6 +86,7 @@ public enum Client implements Imports {
 		configManager = new ConfigManager();
 		configManager.init();
 		configManager.loadConfig(configManager.getDefaultConfig());
+		configManager.loadBinds();
 
 		commandManager = new CommandManager();
 		clickManager = new ClickManager();
@@ -113,6 +112,7 @@ public enum Client implements Imports {
 
 	public void onClose() {
 		configManager.saveConfig(configManager.getDefaultConfig());
+		configManager.saveBinds();
 	}
 
 	public String getFullName() {
