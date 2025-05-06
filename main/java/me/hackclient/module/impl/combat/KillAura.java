@@ -316,7 +316,7 @@ public class KillAura extends Module {
         model.getModes().clear();
         if (Client.INSTANCE.getModelsDirectory().listFiles() != null) {
             for (File modelFile : Client.INSTANCE.getModelsDirectory().listFiles()) {
-                model.getModes().add(modelFile.getName().replaceAll("-0000.params", ""));
+                model.getModes().add(modelFile.getName().replaceAll(".params", ""));
             }
         }
     }

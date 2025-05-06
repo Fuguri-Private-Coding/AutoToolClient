@@ -42,7 +42,7 @@ public class OverlayTrainingListener extends TrainingListenerAdapter {
     }
 
     private void updateProgress(int epoch, int maxEpoch, int progress) {
-        String newMessage = "§7[§2MinarAI§7] " + getAnimatedSpinner() + " " +
+        String newMessage = "§7[§2DJL§7] " + getAnimatedSpinner() + " " +
                 getFormattedEpoch(epoch, maxEpoch) + " - " +
                 buildProgressBar(progress) + " " +
                 getColoredPercentage(progress);

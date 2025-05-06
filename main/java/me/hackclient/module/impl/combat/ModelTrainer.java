@@ -19,6 +19,7 @@ import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
@@ -35,7 +36,7 @@ import java.util.List;
 @ModuleInfo(name = "ModelTrainer", category = Category.COMBAT)
 public class ModelTrainer extends Module {
 
-    private final String name = "ChatGPTTrainer";
+    private final String name = "modelSamples";
     private final List<TrainingData> packets = new ArrayList<>();
 
     @Getter private final File folder = new File(Client.INSTANCE.getClientDirectory(), name);
@@ -127,7 +128,7 @@ public class ModelTrainer extends Module {
     }
 
     private EntityLivingBase spawn() {
-        var villager = new EntityVillager(mc.theWorld);
+        var slime = new EntitySlime(mc.theWorld);
         var distance = 2 + RandomUtils.nextDouble(0, 0.9);
         var direction = new Rotation(
                 mc.thePlayer.rotationYaw + RandomUtils.nextFloat(-60, 60),
@@ -136,8 +137,13 @@ public class ModelTrainer extends Module {
 
         var pos = mc.thePlayer.getPositionEyes(1f).add(direction);
 
-        villager.setPosition(pos);
-        mc.theWorld.addEntityToWorld(villager.getEntityId(), villager);
+        slime.setPosition(pos);
+
+        slime.setEntityBoundingBox(new AxisAlignedBB(
+                slime.getPositionVector(),
+                slime.getPositionVector()
+        ).expand(0.25, 0.25, 0.25).offset(0, 0.25, 0));
+        mc.theWorld.addEntityToWorld(slime.getEntityId(), slime);
 
         mc.theWorld.playSound(
                 pos.xCoord,
@@ -149,6 +155,6 @@ public class ModelTrainer extends Module {
                 false
         );
 
-        return villager;
+        return slime;
     }
 }

@@ -99,7 +99,6 @@ public enum Client implements Imports {
 		clickGui = new ClickGuiScreen();
 
 		mc.gameSettings.ofFastRender = false;
-		//Display.setIcon(ResourceUtils.getClientLogo());
 		Display.setTitle(getFullName());
 
 		double elapsedNanos = System.nanoTime() - start;

@@ -46,6 +46,7 @@ public class CommandModel extends Command {
             Client.INSTANCE.getConsole().changed = true;
             model.train(featuresArray, labelsArray);
             model.save(Client.INSTANCE.getModelsDirectory().toPath(), model.getName());
+            new File(Client.INSTANCE.getModelsDirectory(), model.getName() + "-0000").renameTo(new File(model.getName()));
             Client.INSTANCE.getModuleManager().getModule(KillAura.class).updateModels();
             Client.INSTANCE.getConsole().changed = false;
             console.log("Created model " + args[2] + " in " + (System.currentTimeMillis() - currentMS) / 1000D + " s.");
