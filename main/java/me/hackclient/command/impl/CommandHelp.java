@@ -7,7 +7,7 @@ import me.hackclient.command.CommandManager;
 public class CommandHelp extends Command {
 
     public CommandHelp() {
-        super("help", "/help" , "help");
+        super("Help", "/help" , "help");
     }
 
     @Override

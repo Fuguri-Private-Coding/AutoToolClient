@@ -12,13 +12,17 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.settings.impl.ModeSetting;
 import me.hackclient.utils.client.ClientUtils;
+import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.math.RandomUtils;
+import me.hackclient.utils.move.MoveUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -40,12 +44,17 @@ public class ModelTrainer extends Module {
             .addModes("Osu", "Combat")
             .setMode("Osu");
 
+    FloatSetting distanceToTarget = new FloatSetting("DistanceToTarget", this,() -> modeTrainer.getMode().equalsIgnoreCase("Combat"), 6, 12, 10, 1);
+
     private final String name = "modelSamples";
     private final List<TrainingData> packets = new ArrayList<>();
 
-    @Getter private final File folder = new File(Client.INSTANCE.getClientDirectory(), name);
+    @Getter
+    private final File folder = new File(Client.INSTANCE.getClientDirectory(), name);
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
+    private int fightTicks;
+    private EntityLivingBase slime;
     private EntityLivingBase target;
     private float prevYaw, prevPitch;
     private float prevPrevYaw, prevPrevPitch;
@@ -59,14 +68,14 @@ public class ModelTrainer extends Module {
     @Override
     public void onEnable() {
         packets.clear();
-        if (modeTrainer.getMode().equalsIgnoreCase("Osu")) target = spawn();
+        if (modeTrainer.getMode().equalsIgnoreCase("Osu")) slime = spawn();
     }
 
     @Override
     public void onDisable() {
-        if (modeTrainer.getMode().equalsIgnoreCase("Osu")){
-            mc.theWorld.removeEntity(target);
-            target = null;
+        if (modeTrainer.getMode().equalsIgnoreCase("Osu")) {
+            mc.theWorld.removeEntity(slime);
+            slime = null;
         }
 
         if (packets.isEmpty()) {
@@ -97,13 +106,62 @@ public class ModelTrainer extends Module {
     public void onEvent(Event event) {
         switch (modeTrainer.getMode()) {
             case "Osu" -> {
-                if (event instanceof AttackEvent e && e.getHittingEntity() == target) {
+                if (event instanceof AttackEvent e && e.getHittingEntity() == slime) {
                     e.cancel();
                     ClientUtils.chatLog("Recorded: " + packets.size() + " samples.");
-                    mc.theWorld.removeEntity(target);
-                    target = spawn();
+                    mc.theWorld.removeEntity(slime);
+                    slime = spawn();
                 }
-                if (event instanceof TickEvent && target != null) {
+                if (event instanceof TickEvent && slime != null) {
+                    var yaw = MathHelper.wrapDegree(mc.thePlayer.rotationYaw);
+                    var pitch = MathHelper.wrapDegree(mc.thePlayer.rotationPitch);
+
+                    var next = new Rotation(yaw, pitch);
+                    var current = new Rotation(prevYaw, prevPitch);
+                    var prev = new Rotation(prevPrevYaw, prevPrevPitch);
+
+                    var distance = (float) mc.thePlayer.getDistanceSqToEntity(slime);
+
+                    packets.add(new TrainingData(
+                            current.getVec3d(),
+                            prev.getVec3d(),
+                            RotationUtils.getRotationToPoint(new Vec3(slime.posX, slime.posY + slime.height / 2f, slime.posZ)).getVec3d(),
+                            RotationUtils.getDelta(current, next).getVec2f(),
+                            mc.thePlayer.getPositionVector().subtract(mc.thePlayer.getPrevPositionVector()),
+                            slime.getPositionVector().subtract(slime.getPrevPositionVector()),
+                            distance,
+                            slime.hurtTime,
+                            slime.getAge()
+                    ));
+
+                    prevPrevYaw = prevYaw;
+                    prevPrevPitch = prevPitch;
+
+                    prevYaw = yaw;
+                    prevPitch = pitch;
+                }
+            }
+
+            case "Combat" -> {
+                if (event instanceof TickEvent) {
+                    target = null;
+                    double bestDistance = Double.MAX_VALUE;
+
+                    for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
+                        double distance = DistanceUtils.getDistance(playerEntity);
+                        if (distance > distanceToTarget.getValue()) continue;
+                        if (distance < bestDistance) {
+                            target = playerEntity;
+                            bestDistance = distance;
+                        }
+                    }
+                }
+
+                if (target == null || target.hurtResistantTime == 0) {
+                    fightTicks = 0;
+                    return;
+                }
+                if (event instanceof TickEvent) {
                     var yaw = MathHelper.wrapDegree(mc.thePlayer.rotationYaw);
                     var pitch = MathHelper.wrapDegree(mc.thePlayer.rotationPitch);
 
@@ -116,13 +174,13 @@ public class ModelTrainer extends Module {
                     packets.add(new TrainingData(
                             current.getVec3d(),
                             prev.getVec3d(),
-                            RotationUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.height / 2f, target.posZ)).getVec3d(),
+                            RotationUtils.getRotationToPoint(RotationUtils.getBestHitVec(target)).getVec3d(),
                             RotationUtils.getDelta(current, next).getVec2f(),
                             mc.thePlayer.getPositionVector().subtract(mc.thePlayer.getPrevPositionVector()),
                             target.getPositionVector().subtract(target.getPrevPositionVector()),
                             distance,
                             target.hurtTime,
-                            target.getAge()
+                            ++fightTicks
                     ));
 
                     prevPrevYaw = prevYaw;
@@ -132,10 +190,6 @@ public class ModelTrainer extends Module {
                     prevPitch = pitch;
                 }
             }
-
-            case "Combat" -> {
-
-            }
         }
     }
 
@@ -144,7 +198,7 @@ public class ModelTrainer extends Module {
         var distance = 2 + RandomUtils.nextDouble(0, 0.9);
         var direction = new Rotation(
                 mc.thePlayer.rotationYaw + RandomUtils.nextFloat(-60, 60),
-                    RandomUtils.nextFloat(-35, 35)
+                RandomUtils.nextFloat(-35, 35)
         ).getVec3d().multiple(distance);
 
         var pos = mc.thePlayer.getPositionEyes(1f).add(direction);
@@ -170,7 +224,4 @@ public class ModelTrainer extends Module {
         return slime;
     }
 
-    class Fight {
-        int ticks = 0;
-    }
 }

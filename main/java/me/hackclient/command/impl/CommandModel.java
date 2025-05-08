@@ -11,7 +11,7 @@ import java.io.File;
 
 public class CommandModel extends Command {
     public CommandModel() {
-        super("model", "/model create <name>" , "model");
+        super("Model", "/model create <name>" , "model");
     }
 
     @Override

@@ -33,7 +33,7 @@ public class ModuleManager {
 				 new ChestStealer(),
 				 new MoreKB(),
 				 new Velocity(),
-				 new MurderDetector(),
+				 new MurderMysteryHelper(),
 				 new InvManager(),
 				 new Trails(),
 				 new ESP(),
