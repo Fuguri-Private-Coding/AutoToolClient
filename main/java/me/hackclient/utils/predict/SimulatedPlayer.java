@@ -122,7 +122,7 @@ public class SimulatedPlayer implements Imports {
     }
 
     public Vec3 getPosEyes() {
-        return new Vec3(posX, posY + height, posZ);
+        return new Vec3(posX, posY + getEyeHeight(), posZ);
     }
 
     private float moveForward = 0f;
