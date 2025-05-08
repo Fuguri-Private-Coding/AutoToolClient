@@ -79,6 +79,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         }
 
         textField.setFocused(true);
+        textField.setMaxStringLength(50);
 
         String username = System.getProperty("user.name");
         String name = switch (delay) {
@@ -194,6 +195,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         boolean move = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y && mouseY < background.y + 15;
 
         if (mouseButton == 0) {
+            if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y) return;
             if (quit) {
                 lastPos.set(pos);
                 lastSize.set(size);

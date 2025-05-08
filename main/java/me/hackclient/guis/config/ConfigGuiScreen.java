@@ -181,6 +181,7 @@ public class ConfigGuiScreen extends GuiScreen {
         float yOffset = scrolls.y;
         for (Config config : Client.INSTANCE.getConfigManager().getConfigs()) {
             boolean selectConfig = mouseX > background.x + 5 + offset && mouseX < background.x + 5 + offset + 100 && mouseY > background.y + 20 + yOffset && mouseY < background.y + 20 + yOffset + 30;
+            if (load || save || delete || folder || refresh) break;
             if (mouseButton == 0 && selectConfig) selectedConfig = config;
             offset += 105;
             if (offset > background.x + sizeBackground.x - 200) {
@@ -191,6 +192,8 @@ public class ConfigGuiScreen extends GuiScreen {
         }
 
         if (mouseButton == 0) {
+            if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y) return;
+
             if (quit) {
                 lastPos.set(pos);
                 lastSize.set(size);

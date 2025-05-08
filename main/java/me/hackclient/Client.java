@@ -36,6 +36,7 @@ public enum Client implements Imports {
 
 	File clientDirectory;
 	File modelsDirectory;
+	File capesDirectory;
 
 	File soundsDirectory;
 
@@ -63,8 +64,9 @@ public enum Client implements Imports {
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");
 		soundsDirectory = new File(name + "/sounds");
+		capesDirectory = new File(name + "/capes");
 
-		FileUtils.createIfNotExists(clientDirectory, modelsDirectory, soundsDirectory);
+		FileUtils.createIfNotExists(clientDirectory, modelsDirectory, soundsDirectory, capesDirectory);
 
 		eventManager = new EventManager();
 		eventManager.register(this);

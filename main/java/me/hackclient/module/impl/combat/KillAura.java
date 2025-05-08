@@ -100,7 +100,7 @@ public class KillAura extends Module {
     final IntegerSetting yawCorrectionSpeed = new IntegerSetting("YawCorrectionSpeed", this, correctionVisible, 0, 180, 90);
     final IntegerSetting pitchCorrectionSpeed = new IntegerSetting("PitchCorrectionSpeed", this, correctionVisible, 0, 180, 30);
 
-    final BooleanSetting silentRotation = new BooleanSetting("SilentRotation", this);
+    final BooleanSetting lockView = new BooleanSetting("LockView", this);
 
     final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
     final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 0, 20, 17) {
@@ -174,19 +174,21 @@ public class KillAura extends Module {
                     delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
                 }
                 case "AIModel" -> {
-                    if (!AIRotationSmooth.currentModelName.equalsIgnoreCase(model.getMode())) {
-                        AIRotationSmooth.changeModel(model.getMode());
+                    if (AIRotationSmooth.currentModelName != null) {
+                        if (!AIRotationSmooth.currentModelName.equalsIgnoreCase(model.getMode())) {
+                            AIRotationSmooth.changeModel(model.getMode());
+                        }
+
+                        Rotation targetRot = lr.add(delta);
+
+                        Rotation aiRotation = AIRotationSmooth.compute(
+                                lr, targetRot, target,
+                                yawMultiplier.getValue(), pitchMultiplier.getValue(),
+                                correction.isToggled(), yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
+                        );
+
+                        delta = RotationUtils.getDelta(lr, aiRotation);
                     }
-
-                    Rotation targetRot = lr.add(delta);
-
-                    Rotation aiRotation = AIRotationSmooth.compute(
-                            lr, targetRot, target,
-                            yawMultiplier.getValue(), pitchMultiplier.getValue(),
-                            correction.isToggled(), yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
-                    );
-
-                    delta = RotationUtils.getDelta(lr, aiRotation);
                 }
             }
 
@@ -195,12 +197,12 @@ public class KillAura extends Module {
 
             lr = lr.add(delta);
             lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
+            Rotation.setServerRotation(lr);
 
-            if (silentRotation.isToggled()) {
-                Rotation.setServerRotation(lr);
-            } else {
-                mc.thePlayer.rotationYaw = lr.getYaw();
-                mc.thePlayer.rotationPitch = lr.getPitch();
+
+            if (lockView.isToggled()) {
+                mc.thePlayer.rotationYaw = Rotation.getServerRotation().getYaw();
+                mc.thePlayer.rotationPitch = Rotation.getServerRotation().getPitch();
             }
         }
 

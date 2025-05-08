@@ -54,10 +54,9 @@ public class ClickManager implements Imports{
         if (target == null) { return true; }
 
         if (target.hurtTime <= startRandomizedHurtTime) { return true; }
+        if (target.hurtTime <= endRandomizedHurtTime) { return false; }
 
-        if (target.hurtTime >= endRandomizedHurtTime) { return false; }
-
-        if (mc.thePlayer.hurtTime > 0) return true;
+        //if (mc.thePlayer.hurtTime > 0) return true;
 
         return clicking;
     }

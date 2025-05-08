@@ -545,6 +545,7 @@ public class ClickGuiScreen extends GuiScreen {
 				size.set(0, 0);
 				pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
 			}
+
 			if (config) {
 				showConfigAfterClose = true;
 				lastPos.set(pos);

@@ -16,7 +16,7 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow;
 @ModuleInfo(name = "NoGuiClose", category = Category.MISC)
 public class NoGuiClose extends Module {
 
-    BooleanSetting onlyClientGui = new BooleanSetting("ClientGui", this, true);
+    BooleanSetting onlyClientGui = new BooleanSetting("ClientGuis", this, true);
 
     @EventTarget
     public void onEvent(Event event) {

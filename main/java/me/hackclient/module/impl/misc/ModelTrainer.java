@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@ModuleInfo(name = "ModelTrainer", category = Category.COMBAT)
+@ModuleInfo(name = "ModelTrainer", category = Category.MISC)
 public class ModelTrainer extends Module {
 
     ModeSetting modeTrainer = new ModeSetting("TrainerMode", this)
@@ -161,7 +161,7 @@ public class ModelTrainer extends Module {
                 pos.xCoord,
                 pos.yCoord,
                 pos.zCoord,
-                "random.levelup",
+                "random.orb",
                 1f,
                 1f,
                 false
