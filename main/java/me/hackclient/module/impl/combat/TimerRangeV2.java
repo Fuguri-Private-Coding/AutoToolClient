@@ -3,6 +3,7 @@ package me.hackclient.module.impl.combat;
 import me.hackclient.Client;
 import me.hackclient.event.Event;
 import me.hackclient.event.EventTarget;
+import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
@@ -27,6 +28,9 @@ public class TimerRangeV2 extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
+        if (event instanceof RunGameLoopEvent && balance > 0) {
+            mc.timer.renderPartialTicks = 0;
+        }
         if (event instanceof TickEvent e && !teleporting) {
             if (balance > 0) {
                 e.cancel();
@@ -46,6 +50,7 @@ public class TimerRangeV2 extends Module {
 
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput);
             int predictedTicks = 0;
+            boolean dynamic = false;
 
             for (int tick = 1; tick <= ticks.getValue(); tick++) {
                 simulatedPlayer.tick();
@@ -56,7 +61,13 @@ public class TimerRangeV2 extends Module {
                         Rotation.getServerRotation()
                 );
 
-                if (mouse != null && mouse.entityHit == target) {
+                boolean hitting = mouse != null && mouse.entityHit == target;
+
+                if (!dynamic && hitting && tick != ticks.getValue()) {
+                    break;
+                }
+
+                if (hitting) {
                     predictedTicks = tick;
                     break;
                 }
@@ -76,6 +87,7 @@ public class TimerRangeV2 extends Module {
             teleporting = false;
 
             balance = predictedTicks;
+            mc.clickMouse();
         }
     }
 }

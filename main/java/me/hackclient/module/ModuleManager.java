@@ -78,6 +78,7 @@ public class ModuleManager {
 				 new TimeChanger(),
 				 new ClickSettings(),
 				 new Particle(),
+				 new TimerRangeV2(),
 				 new Test(),
 				 new TrashTalk(),
 				 new NameTags(),
