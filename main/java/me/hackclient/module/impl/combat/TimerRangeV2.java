@@ -20,8 +20,9 @@ import java.io.IOException;
 @ModuleInfo(name = "TimerRangeV2", category = Category.COMBAT)
 public class TimerRangeV2 extends Module {
 
-    private final IntegerSetting ticks = new IntegerSetting("Ticks", this, 1, 10, 3);
-    private final IntegerSetting hurtTime = new IntegerSetting("HurtTime", this, 0, 10, 3);
+    private final IntegerSetting minTicks = new IntegerSetting("MinTicks", this, 1, 10, 3);
+    private final IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 1, 10, 3);
+    private final IntegerSetting hurtTime = new IntegerSetting("HurtTime", this, 0, 10, 0);
 
     private int balance;
     private boolean teleporting;
@@ -51,7 +52,7 @@ public class TimerRangeV2 extends Module {
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput);
             int predictedTicks = 0;
 
-            for (int tick = 1; tick <= ticks.getValue(); tick++) {
+            for (int tick = 1; tick <= maxTicks.getValue(); tick++) {
                 simulatedPlayer.tick();
                 MovingObjectPosition mouse = RayTraceUtils.rayTrace(
                         simulatedPlayer.getPosEyes(),
@@ -59,16 +60,14 @@ public class TimerRangeV2 extends Module {
                         4.5d,
                         Rotation.getServerRotation()
                 );
-
-                boolean hitting = mouse != null && mouse.entityHit == target;
-
-                if (hitting) {
+                
+                if (mouse != null && mouse.entityHit == target) {
                     predictedTicks = tick;
                     break;
                 }
             }
 
-            if (predictedTicks == 0) {
+            if (predictedTicks == 0 || predictedTicks < minTicks.getValue()) {
                 return;
             }
 
