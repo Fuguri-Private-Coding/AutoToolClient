@@ -1,6 +1,9 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
+import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -27,18 +30,24 @@ public class S32PacketConfirmTransaction implements Packet<INetHandlerPlayClient
         handler.handleConfirmTransaction(this);
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.windowId = buf.readUnsignedByte();
-        this.actionNumber = buf.readShort();
-        this.field_148893_c = buf.readBoolean();
+    public void readPacketData(PacketBuffer buf) throws IOException {
+        if (ViaLoadingBase.getInstance().getTargetVersion().newerThanOrEqualTo(ProtocolVersion.v1_17)) {
+            this.windowId = buf.readInt();
+        } else {
+            this.windowId = buf.readUnsignedByte();
+            this.actionNumber = buf.readShort();
+            this.field_148893_c = buf.readBoolean();
+        }
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeByte(this.windowId);
-        buf.writeShort(this.actionNumber);
-        buf.writeBoolean(this.field_148893_c);
+    public void writePacketData(PacketBuffer buf) throws IOException {
+        if (ViaLoadingBase.getInstance().getTargetVersion().newerThanOrEqualTo(ProtocolVersion.v1_17)) {
+            buf.writeInt(this.windowId);
+        } else {
+            buf.writeByte(this.windowId);
+            buf.writeShort(this.actionNumber);
+            buf.writeByte(this.field_148893_c ? 1 : 0);
+        }
     }
 
     public int getWindowId()

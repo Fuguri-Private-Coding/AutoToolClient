@@ -20,7 +20,21 @@ import net.minecraft.util.MovingObjectPosition;
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT)
 public class TimerRange extends Module {
 
-    IntegerSetting limitTicks = new IntegerSetting("Ticks", this, 1,20,2);
+    IntegerSetting minTicks = new IntegerSetting("MinTicks", this, 0,20,2) {
+        @Override
+        public int getValue() {
+            if (maxTicks.value < value) { value = maxTicks.value; }
+            return value;
+        }
+    };
+    IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 0,20,2){
+        @Override
+        public int getValue() {
+            if (minTicks.value > value) { value = minTicks.value; }
+            return value;
+        }
+    };
+
     IntegerSetting maxTargetHurtTime = new IntegerSetting("TargetHurtTime", this, 0,10,0);
     FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0,1,1,0.1f);
 
@@ -49,7 +63,7 @@ public class TimerRange extends Module {
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput);
 
             teleportTicks = 0;
-            for (int i = 0; i < limitTicks.getValue(); i++) {
+            for (int i = 1; i <= maxTicks.getValue(); i++) {
                 MovingObjectPosition mouse = RayTraceUtils.rayTrace(
                         simulatedPlayer.getPosEyes(),
                         3,
@@ -63,6 +77,8 @@ public class TimerRange extends Module {
                     break;
                 }
             }
+
+            if (teleportTicks < minTicks.getValue()) return;
 
             teleporting = true;
             for (int i = 0; i < teleportTicks; i++) {

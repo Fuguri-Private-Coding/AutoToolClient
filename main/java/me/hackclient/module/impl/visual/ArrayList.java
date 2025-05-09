@@ -21,7 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ArrayList extends Module {
 
 	final BooleanSetting showRenderModules = new BooleanSetting("ShowRenderModules", this, false);
-	final BooleanSetting showLine = new BooleanSetting("Line", this, false);
 
 	final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
 	final BooleanSetting textShadow = new BooleanSetting("TextShadow", this, false);
@@ -47,7 +46,6 @@ public class ArrayList extends Module {
 					double finalOffset = offset;
 					BloomUtils.addToDraw(() -> {
 						Gui.drawRect(6f,(float) finalOffset + 19f, font.getStringWidth(module.getName()) + 10, (float) finalOffset + 6f, -1);
-						if (showLine.isToggled()) RoundedUtils.drawRect(4, 6, 2, (float) finalOffset + 12, 2f, shadows.color.getColor());
 					});
 				}
 
@@ -55,10 +53,6 @@ public class ArrayList extends Module {
 
 				font.drawString(module.getName(), 8.5f, (float) (8.5f + offset), color.getColor().getRGB(), textShadow.isToggled());
 				offset += 13;
-			}
-
-			if (showLine.isToggled()) {
-				RoundedUtils.drawRect(4, 6, 2, (float) offset, 2f, color.getColor());
 			}
 		}
 	}

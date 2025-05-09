@@ -89,6 +89,7 @@ public class Scaffold extends Module {
     FloatSetting serverPitch = new FloatSetting("ServerPitch", this, bypassServerPitch::isToggled , 70, 85, 77,0.1f);
     FloatSetting bestPitchNoDiagonal = new FloatSetting("FrontPitch", this, 70, 85, 77,0.1f);
     FloatSetting diagonalPitch = new FloatSetting("DiagonalPitch", this, 70, 85, 77,0.1f);
+    final BooleanSetting alwaysSprint = new BooleanSetting("AlwaysSprint", this, true);
 
     final BooleanSetting sneakIfRotate = new BooleanSetting("SneakIfRotate", this, true);
     final BooleanSetting sneakIfNoBlocks = new BooleanSetting("SneakIfNoBlocks", this, true);
@@ -190,8 +191,12 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof SprintEvent) {
-            if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
-                mc.thePlayer.setSprinting(false);
+            if (alwaysSprint.isToggled()) {
+                if (MoveUtils.isMoving()) mc.thePlayer.setSprinting(true);
+            } else {
+                if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
+                    mc.thePlayer.setSprinting(false);
+                }
             }
         }
 

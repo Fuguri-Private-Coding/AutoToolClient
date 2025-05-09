@@ -70,22 +70,6 @@ public class MoveUtils implements Imports {
         return Math.toRadians(f);
     }
 
-    public static float getDirection(float yaw, float forward, float strafe) {
-        if (forward < 0) {
-            yaw += 180;
-        }
-
-        float forwardMult = 1f;
-
-        if (forward < 0) forwardMult = -0.5f;
-        else if (forward > 0) forwardMult = 0.5f;
-
-        if (strafe > 0) yaw -= 90 * forwardMult;
-        if (strafe < 0) yaw += 90 * forwardMult;
-
-        return MathHelper.wrapDegree(yaw);
-    }
-
     public static void moveFix(MoveEvent e, float targetYaw) {
         if (e.getForward() == 0 && e.getStrafe() == 0) {
             return;
@@ -110,6 +94,22 @@ public class MoveUtils implements Imports {
                 }
             }
         }
+    }
+
+    public static float getDirection(float yaw, float forward, float strafe) {
+        if (forward < 0) {
+            yaw += 180;
+        }
+
+        float forwardMult = 1f;
+
+        if (forward < 0) forwardMult = -0.5f;
+        else if (forward > 0) forwardMult = 0.5f;
+
+        if (strafe > 0) yaw -= 90 * forwardMult;
+        if (strafe < 0) yaw += 90 * forwardMult;
+
+        return MathHelper.wrapDegree(yaw);
     }
 
     public static float getDirection(float yaw) {

@@ -19,6 +19,7 @@ import me.hackclient.utils.rotation.RotationUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityVillager;
@@ -292,6 +293,9 @@ public class KillAura extends Module {
                     continue;
                 }
                 case EntityVillager _ when !targets.get("Villagers") -> {
+                    continue;
+                }
+                case EntityArmorStand _ -> {
                     continue;
                 }
                 default -> {

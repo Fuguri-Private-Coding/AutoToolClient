@@ -9,7 +9,7 @@ import java.util.List;
 import me.hackclient.Client;
 import me.hackclient.managers.FriendManager;
 import me.hackclient.module.impl.misc.MidClick;
-import me.hackclient.module.impl.misc.MurderMysteryHelper;
+import me.hackclient.module.impl.misc.MurderMystery;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -44,7 +44,7 @@ public class GuiPlayerTabOverlay extends Gui
     public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
     {
         final MidClick midClick = Client.INSTANCE.getModuleManager().getModule(MidClick.class);
-        final MurderMysteryHelper murderDetector = Client.INSTANCE.getModuleManager().getModule(MurderMysteryHelper.class);
+        final MurderMystery murderDetector = Client.INSTANCE.getModuleManager().getModule(MurderMystery.class);
         final FriendManager friendManager = Client.INSTANCE.getFriendManager();
 
         String friend = friendManager.isFriend(networkPlayerInfoIn.getGameProfile().getName(), midClick.reverseFriends.isToggled()) ? "§2[Friend]§9 " : "";

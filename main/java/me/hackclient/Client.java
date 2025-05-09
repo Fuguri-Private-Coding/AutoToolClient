@@ -1,5 +1,6 @@
 package me.hackclient;
 
+import de.florianmichael.viamcp.ViaMCP;
 import lombok.Getter;
 import me.hackclient.config.ConfigManager;
 import me.hackclient.command.CommandManager;
@@ -41,11 +42,10 @@ public enum Client implements Imports {
 	File soundsDirectory;
 
 	ConsoleGuiScreen console;
-
+	SoundsManager soundsManager;
 	EventManager eventManager;
 	CombatManager combatManager;
 	FriendManager friendManager;
-    SoundsManager soundsManager;
     ModuleManager moduleManager;
     ShaderManager shaderManager;
     ConfigManager configManager;
@@ -59,7 +59,7 @@ public enum Client implements Imports {
 		long start = System.nanoTime();
 
 		name = "AutoTool";
-		version = new ClientVersion(2, 0, 0);
+		version = new ClientVersion(2, 0, 1);
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");
@@ -96,6 +96,13 @@ public enum Client implements Imports {
 		deepLearningEngine.init();
 
 		new PositionResolverComponent();
+
+		try {
+			ViaMCP.create();
+			ViaMCP.INSTANCE.initAsyncSlider();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		clickGui = new ClickGuiScreen();
 

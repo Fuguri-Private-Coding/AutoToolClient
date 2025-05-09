@@ -140,11 +140,7 @@ public class Ping extends Module {
 
                 EntityPlayerSP player = mc.thePlayer;
 
-                //Vec3 lastPos = posBuffer.get(1).pos;
                 Vec3 pos = posBuffer.getFirst().pos();
-                //+ (pos.xCoord - lastPos.xCoord) * mc.timer.renderPartialTicks
-                //        + (pos.yCoord - lastPos.yCoord) * mc.timer.renderPartialTicks
-                //        + (pos.zCoord - lastPos.zCoord) * mc.timer.renderPartialTicks
                 double x = pos.xCoord - mc.getRenderManager().viewerPosX;
                 double y = pos.yCoord - mc.getRenderManager().viewerPosY;
                 double z = pos.zCoord - mc.getRenderManager().viewerPosZ;
@@ -157,12 +153,7 @@ public class Ping extends Module {
                         RenderUtils.renderHitBox(player.getEntityBoundingBox().offset(diff));
                         RenderUtils.stop3D();
                     } 
-                    case "Player" -> {
-                        //mc.entityRenderer.enableLightmap();
-                        mc.renderManager.doRenderEntity(player, x, y, z, player.rotationYaw, mc.timer.renderPartialTicks, true);
-                        //RenderHelper.disableStandardItemLighting();
-                        //mc.entityRenderer.disableLightmap();
-                    }
+                    case "Player" -> mc.renderManager.doRenderEntity(player, x, y, z, player.rotationYaw, mc.timer.renderPartialTicks, true);
                 }
             }
             default -> {}

@@ -36,6 +36,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import javax.imageio.ImageIO;
 
+import de.florianmichael.viamcp.fixes.AttackOrder;
 import lombok.Getter;
 import me.hackclient.Client;
 import me.hackclient.event.events.*;
@@ -1214,7 +1215,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         new ClickEvent(ClickEvent.Button.LEFT);
 
         if (this.leftClickCounter <= 0 || !useDelay) {
-            thePlayer.swingItem();
+            AttackOrder.sendConditionalSwing(this.objectMouseOver);
 
             if (mouseOver == null) {
                 logger.error("Null returned as \'hitResult\', this shouldn\'t happen!");
@@ -1225,7 +1226,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             } else {
                 switch (mouseOver.typeOfHit) {
                     case ENTITY:
-                        playerController.attackEntity(thePlayer, mouseOver.entityHit);
+                        AttackOrder.sendFixedAttack(this.thePlayer, this.objectMouseOver.entityHit);
                         break;
 
                     case BLOCK:
@@ -1251,7 +1252,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         new ClickEvent(ClickEvent.Button.LEFT).call();
 
         if (this.leftClickCounter <= 0) {
-            this.thePlayer.swingItem();
+            AttackOrder.sendConditionalSwing(this.objectMouseOver);
 
             if (this.objectMouseOver == null) {
                 logger.error("Null returned as \'hitResult\', this shouldn\'t happen!");
@@ -1262,7 +1263,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             } else {
                 switch (this.objectMouseOver.typeOfHit) {
                     case ENTITY:
-                        this.playerController.attackEntity(this.thePlayer, this.objectMouseOver.entityHit);
+                        AttackOrder.sendFixedAttack(this.thePlayer, this.objectMouseOver.entityHit);
                         break;
 
                     case BLOCK:

@@ -41,7 +41,6 @@ public class ClickManager implements Imports{
 
             for (int i = 0; i < iters; i++) {
                 MovingObjectPosition mouse = RayCastUtils.rayCast(Client.INSTANCE.getCombatManager().getEntityReach(), Client.INSTANCE.getCombatManager().getBlockReach(), Rotation.getServerRotation());
-
                 mc.clickMouseCustom(mouse, false);
             }
         }
@@ -56,7 +55,7 @@ public class ClickManager implements Imports{
         if (target.hurtTime <= startRandomizedHurtTime) { return true; }
         if (target.hurtTime <= endRandomizedHurtTime) { return false; }
 
-        //if (mc.thePlayer.hurtTime > 0) return true;
+        if (mc.thePlayer.hurtTime > 0) return true;
 
         return clicking;
     }

@@ -36,27 +36,6 @@ public class Speed extends Module {
 	public void onEvent(Event event) {
 		if (mc.thePlayer == null || mc.theWorld == null) return;
 		switch (mode.getMode()) {
-			case "IntaveSneak" -> {
-				if (event instanceof MotionEvent) {
-					if (mc.thePlayer.onGround) {
-						ticks = 0;
-						mc.thePlayer.jump();
-					} else {
-						ticks++;
-					}
-				}
-				if (event instanceof MoveButtonEvent moveButtonEvent) {
-					if (ticks == 11) moveButtonEvent.setSneak(true);
-					if (ticks == 11) {
-						if (Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ) < 0.25) {
-							ClientUtils.chatLog(Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ));
-							mc.thePlayer.motionX *= 1.1;
-							mc.thePlayer.motionZ *= 1.1;
-							ClientUtils.chatLog(Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ));
-						}
-					}
-				}
-			}
 			case "45Degree" -> {
 				if (event instanceof MoveFlyingEvent moveFlyingEvent && moveFlyingEvent.getForward() > 0f) {
 					moveFlyingEvent.setYaw(mc.thePlayer.rotationYaw - 45f);
