@@ -60,7 +60,7 @@ public class TimerRangeV2 extends Module {
                         4.5d,
                         Rotation.getServerRotation()
                 );
-                
+
                 if (mouse != null && mouse.entityHit == target) {
                     predictedTicks = tick;
                     break;

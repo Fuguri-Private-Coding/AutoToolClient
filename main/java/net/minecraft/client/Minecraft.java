@@ -223,7 +223,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     private Entity renderViewEntity;
     public Entity pointedEntity;
     public EffectRenderer effectRenderer;
-    private final Session session;
+    private Session session;
     private boolean isGamePaused;
     public FontRenderer fontRendererObj;
     public FontRenderer standardGalacticFontRenderer;
@@ -2431,6 +2431,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     public Session getSession() {
         return this.session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     public PropertyMap getTwitchDetails() {

@@ -15,7 +15,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 
-public class ClickManager implements Imports{
+public class ClickManager implements Imports {
 
     public ClickManager() {
         Client.INSTANCE.getEventManager().register(this);

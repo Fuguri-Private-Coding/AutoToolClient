@@ -85,7 +85,7 @@ public class TimerRange extends Module {
                 try {
                     mc.runTick();
                     balance++;
-                    if (RayCastUtils.rayCast(3.0, 0,Rotation.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
+                    if (RayCastUtils.rayCast(3.0, 0, Rotation.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                         click = true;
                         break;
                     }

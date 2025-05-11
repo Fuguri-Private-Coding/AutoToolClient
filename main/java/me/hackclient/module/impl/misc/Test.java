@@ -21,5 +21,6 @@ public class Test extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
+        super.onEvent(event);
     }
 }

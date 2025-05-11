@@ -8,6 +8,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.ResourceLocation;
 
 @ModuleInfo(name = "MotionBlur", category = Category.VISUAL)

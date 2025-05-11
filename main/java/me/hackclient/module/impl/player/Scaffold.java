@@ -192,7 +192,7 @@ public class Scaffold extends Module {
 
         if (event instanceof SprintEvent) {
             if (alwaysSprint.isToggled()) {
-                if (MoveUtils.isMoving()) mc.thePlayer.setSprinting(true);
+                if (MoveUtils.isMoving() && !mc.thePlayer.isSneaking() && mc.thePlayer.onGround) mc.thePlayer.setSprinting(true);
             } else {
                 if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rotation.getServerRotation().getYaw())) > 90 - 22.5) {
                     mc.thePlayer.setSprinting(false);

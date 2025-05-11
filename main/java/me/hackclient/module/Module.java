@@ -3,6 +3,7 @@ package me.hackclient.module;
 import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.Client;
+import me.hackclient.event.Event;
 import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.settings.Setting;
 import me.hackclient.utils.interfaces.Imports;
@@ -46,6 +47,8 @@ public class Module implements Imports {
 
 	public void onEnable() {}
 	public void onDisable() {}
+
+	public void onEvent(Event event) {}
 
     public void setToggled(boolean toggled) {
 		if (this.toggled != toggled) {

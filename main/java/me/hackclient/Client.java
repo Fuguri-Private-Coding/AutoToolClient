@@ -89,7 +89,6 @@ public enum Client implements Imports {
 		configManager.init();
 		configManager.loadConfig(configManager.getDefaultConfig());
 		configManager.loadBinds();
-
 		commandManager = new CommandManager();
 		clickManager = new ClickManager();
 		deepLearningEngine = new DeepLearningEngine();

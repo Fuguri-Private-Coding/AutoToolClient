@@ -60,7 +60,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     public boolean allowUserInput;
     protected FontRenderer fontRendererObj;
     private GuiButton selectedButton;
-    private int eventButton;
+    protected int eventButton;
     private long lastMouseEvent;
     public int touchValue;
     private URI clickedLinkURI;

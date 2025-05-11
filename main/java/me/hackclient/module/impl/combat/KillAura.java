@@ -104,14 +104,14 @@ public class KillAura extends Module {
     final BooleanSetting lockView = new BooleanSetting("LockView", this);
 
     final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
-    final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 0, 20, 17) {
+    final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 1, 20, 17) {
         @Override
         public int getValue() {
             if (maxCPS.value < value) { value = maxCPS.value; }
             return value;
         }
     };
-    final IntegerSetting maxCPS = new IntegerSetting("MaxCPS", this, 0, 20, 17) {
+    final IntegerSetting maxCPS = new IntegerSetting("MaxCPS", this, 1, 20, 17) {
         @Override
         public int getValue() {
             if (minCPS.value > value) { value = minCPS.value; }
@@ -195,11 +195,9 @@ public class KillAura extends Module {
 
             RotationUtils.limitDelta(delta, speed);
             RotationUtils.fixDelta(delta);
-
             lr = lr.add(delta);
             lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
             Rotation.setServerRotation(lr);
-
 
             if (lockView.isToggled()) {
                 mc.thePlayer.rotationYaw = Rotation.getServerRotation().getYaw();
@@ -210,12 +208,8 @@ public class KillAura extends Module {
         if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
             if (clickTimer.reachedMS(delay)) {
                 clickTimer.reset();
-                double cps = RandomUtils.nextDouble(minCPS.getValue(), maxCPS.getValue());
-                if (cps == 0) {
-                    return;
-                }
-                delay = (long) (1000d / cps);
                 Client.INSTANCE.getClickManager().addClick();
+                delay = Math.round(1000f / RandomUtils.nextFloat(minCPS.getValue(), maxCPS.getValue()));
             }
         }
         if (event instanceof LookEvent e) {

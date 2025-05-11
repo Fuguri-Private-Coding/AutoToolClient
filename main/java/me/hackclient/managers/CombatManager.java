@@ -2,6 +2,10 @@ package me.hackclient.managers;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.hackclient.Client;
+import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
+import me.hackclient.event.events.TickEvent;
 import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
@@ -10,6 +14,7 @@ import net.minecraft.util.MovingObjectPosition;
 
 @Getter @Setter
 public class CombatManager implements Imports {
+
     double entityReach = 3, blockReach = 4.5;
     EntityLivingBase target;
 
@@ -25,4 +30,6 @@ public class CombatManager implements Imports {
 
         return null;
     }
+
+
 }
