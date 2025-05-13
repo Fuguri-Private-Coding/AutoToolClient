@@ -14,9 +14,8 @@ public class HWIDUtils {
 
     public static void check() {
         String hwid = generateHWID();
-        System.out.println("current hwid " + hwid);
         if (IsWhiteList(hwid)) {
-            System.out.println("Logged as " + Client.INSTANCE.getProfile());
+            System.out.println("Logged as " + Client.INSTANCE.getProfile() + " (" + hwid + ")");
         } else {
             System.exit(0);
         }
