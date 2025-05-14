@@ -8,6 +8,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
+import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
@@ -52,16 +53,12 @@ public class ChestStealer extends Module {
                     return;
                 }
 
-                if (!delayStopWatch.reachedMS(delay)) {
-                    return;
-                }
+                if (!delayStopWatch.reachedMS(delay)) return;
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
                 final int nextSlot = updatePos(container);
 
-                if (nextSlot == -1) {
-                    return;
-                }
+                if (nextSlot == -1) return;
 
                 mc.playerController.windowClick(container.windowId, nextSlot, 0, 1, mc.thePlayer);
                 delayStopWatch.reset();
@@ -70,7 +67,7 @@ public class ChestStealer extends Module {
     }
 
     int updatePos(ContainerChest container) {
-        for (int i = 0; i < container.inventorySlots.size(); i++) {
+        for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
             final Slot slot = container.getSlot(i);
 
             if (!slot.getHasStack()) {

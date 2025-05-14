@@ -33,13 +33,11 @@ public class IRC extends ListenerAdapter {
                 for (MessageChannel channel : guild.getTextChannels()) {
                     if (channel.getName().equalsIgnoreCase("ircchat")) {
                         setDefaultChannel(channel);
-                        System.out.println("Установлен канал по умолчанию: #" + channel.getName());
                         return;
                     }
                 }
             }
 
-            System.err.println("Канал #ircchat не найден!");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -59,7 +57,6 @@ public class IRC extends ListenerAdapter {
 
     public void sendMessage(String text) {
         if (defaultChannel == null) {
-            System.err.println("Ошибка: канал по умолчанию не установлен!");
             return;
         }
         try {
@@ -81,7 +78,6 @@ public class IRC extends ListenerAdapter {
 
     public void sendEmbedMessage(String title, String description) {
         if (defaultChannel == null) {
-            System.err.println("Ошибка: канал по умолчанию не установлен!");
             return;
         }
         defaultChannel.sendMessageEmbeds(
