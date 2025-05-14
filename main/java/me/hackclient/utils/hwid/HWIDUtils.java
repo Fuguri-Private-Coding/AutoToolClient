@@ -10,14 +10,20 @@ import java.net.URL;
 import java.security.MessageDigest;
 
 public class HWIDUtils {
-    private static final String ID = "e6XXX8TA";
-    private static final String Database_URL = "https://pastebin.com/raw/" + ID;
+    private static final String ID = "c29262c9360e3680bc02b89831c6b359/raw/4f9d550d4362e0b508f2fa5b229671221dd5bacd/nkvaernsdlw";
+    private static final String Database_URL = "https://gist.githubusercontent.com/Deathlksr/" + ID;
 
     public static void check() {
         String hwid = generateHWID();
         if (isWhiteList(hwid)) {
             System.out.println("Logged as " + Client.INSTANCE.getProfile() + " (" + hwid + ")");
+            Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getHwidChannel(),
+                    "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " Successful connect. " + Client.INSTANCE.getProfile()
+            );
         } else {
+            Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getHwidChannel(),
+                    "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " This user does not have access to the client."
+            );
             System.out.println(hwid);
             System.exit(-1);
         }

@@ -8,6 +8,7 @@ import java.util.List;
 
 import me.hackclient.Client;
 import me.hackclient.managers.FriendManager;
+import me.hackclient.module.impl.client.IRCModule;
 import me.hackclient.module.impl.misc.MidClick;
 import me.hackclient.module.impl.misc.MurderMystery;
 import net.minecraft.client.Minecraft;
@@ -50,9 +51,10 @@ public class GuiPlayerTabOverlay extends Gui
         String friend = friendManager.isFriend(networkPlayerInfoIn.getGameProfile().getName(), midClick.reverseFriends.isToggled()) ? "§2[Friend]§9 " : "";
         String murder = murderDetector.isToggled() && murderDetector.murders.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§4[Murder]§4 " : "";
         String detective = murderDetector.isToggled() && murderDetector.detectives.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§6[Detective]§6 " : "";
+        String user = IRCModule.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()) != null ? IRCModule.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()).getColored() + " " : "";
         String name = networkPlayerInfoIn.getDisplayName() != null ? networkPlayerInfoIn.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(networkPlayerInfoIn.getPlayerTeam(), networkPlayerInfoIn.getGameProfile().getName());
 
-        return friend + murder + detective + name;
+        return user + friend + murder + detective + name;
     }
 
     public void updatePlayerList(boolean willBeRendered)

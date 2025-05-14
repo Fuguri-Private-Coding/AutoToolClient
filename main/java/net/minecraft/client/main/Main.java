@@ -29,9 +29,6 @@ public class Main {
                 "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " Trying to connect..."
         );
         HWIDUtils.check();
-        Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getHwidChannel(),
-                "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " Successful connect. " + Client.INSTANCE.getProfile()
-        );
         System.setProperty("java.net.preferIPv4Stack", "true");
         OptionParser optionparser = new OptionParser();
         optionparser.allowsUnrecognizedOptions();
