@@ -22,7 +22,7 @@ public class Profile {
         switch (role) {
             case "dev" -> coloredRole = "§4dev§f";
             case "test" -> coloredRole = "§atest§f";
-            case "user" -> coloredRole = "§auser§f";
+            case "user" -> coloredRole = "§buser§f";
         }
 
         return "§f[§6" + username + "§f] [" + coloredRole + "§f]";
