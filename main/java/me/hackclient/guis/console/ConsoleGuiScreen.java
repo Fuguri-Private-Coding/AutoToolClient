@@ -80,7 +80,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         }
 
         textField.setFocused(true);
-        textField.setMaxStringLength(50);
+        textField.setMaxStringLength(100);
 
         String username = System.getProperty("user.name");
         String name = switch (delay) {
