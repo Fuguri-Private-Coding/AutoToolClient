@@ -24,7 +24,7 @@ public class HWIDUtils {
 
     public static String generateHWID() {
         try{
-            String toEncrypt = /*System.getenv("COMPUTERNAME") + System.getProperty("user.name") + */ System.getenv("PROCESSOR_IDENTIFIER") + System.getenv("PROCESSOR_LEVEL");
+            String toEncrypt = System.getenv("COMPUTERNAME") + System.getProperty("user.name") +  System.getenv("PROCESSOR_IDENTIFIER") + System.getenv("PROCESSOR_LEVEL");
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(toEncrypt.getBytes());
             StringBuffer hexString = new StringBuffer();
