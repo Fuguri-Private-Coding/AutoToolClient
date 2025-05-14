@@ -25,7 +25,7 @@ public class CommandIRCChat extends Command {
                 if (arg.equalsIgnoreCase(args[0])) continue;
                 stringBuilder.append(arg).append(" ");
             }
-            irc.sendMessage(stringBuilder.toString());
+            irc.sendIRCMessage(stringBuilder.toString());
         }
     }
 }

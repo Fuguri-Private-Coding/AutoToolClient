@@ -1,5 +1,7 @@
 package me.hackclient.utils.discord;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.hackclient.Client;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -11,14 +13,16 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import java.awt.*;
 
+@Getter
+@Setter
 public class IRC extends ListenerAdapter {
-    private MessageChannel defaultChannel;
-    private JDA jda;
+    public MessageChannel chatChannel;
+    public MessageChannel hwidChannel;
 
     public void init() {
         String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GWZvER.shF_rSJG9yPypoRALEyRsmF-uEnUp5cPQxbyFw";
 
-        jda = JDABuilder.createDefault(token)
+        JDA jda = JDABuilder.createDefault(token)
                 .enableIntents(
                         GatewayIntent.MESSAGE_CONTENT,
                         GatewayIntent.GUILD_MESSAGES
@@ -31,9 +35,11 @@ public class IRC extends ListenerAdapter {
 
             for (Guild guild : jda.getGuilds()) {
                 for (MessageChannel channel : guild.getTextChannels()) {
-                    if (channel.getName().equalsIgnoreCase("ircchat")) {
-                        setDefaultChannel(channel);
-                        return;
+                    if (channel.getName().equalsIgnoreCase("irc-chat")) {
+                        setChatChannel(channel);
+                    }
+                    if (channel.getName().equalsIgnoreCase("login-log")) {
+                        setHwidChannel(channel);
                     }
                 }
             }
@@ -41,10 +47,6 @@ public class IRC extends ListenerAdapter {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    public void setDefaultChannel(MessageChannel channel) {
-        this.defaultChannel = channel;
     }
 
     @Override
@@ -55,12 +57,12 @@ public class IRC extends ListenerAdapter {
         Client.INSTANCE.getConsole().history.add("§f[§2IRC§f] " + message);
     }
 
-    public void sendMessage(String text) {
-        if (defaultChannel == null) {
+    public void sendIRCMessage(String text) {
+        if (chatChannel == null) {
             return;
         }
         try {
-            defaultChannel.sendMessage(text).queue();
+            chatChannel.sendMessage(text).queue();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -77,10 +79,10 @@ public class IRC extends ListenerAdapter {
     }
 
     public void sendEmbedMessage(String title, String description) {
-        if (defaultChannel == null) {
+        if (chatChannel == null) {
             return;
         }
-        defaultChannel.sendMessageEmbeds(
+        chatChannel.sendMessageEmbeds(
                 new EmbedBuilder()
                         .setTitle(title)
                         .setDescription(description)

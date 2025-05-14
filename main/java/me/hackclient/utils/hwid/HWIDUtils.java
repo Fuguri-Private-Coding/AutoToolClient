@@ -3,6 +3,7 @@ package me.hackclient.utils.hwid;
 import me.hackclient.Client;
 import me.hackclient.utils.profile.Profile;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -18,7 +19,7 @@ public class HWIDUtils {
             System.out.println("Logged as " + Client.INSTANCE.getProfile() + " (" + hwid + ")");
         } else {
             System.out.println(hwid);
-            System.exit(0);
+            System.exit(-1);
         }
     }
 

@@ -62,7 +62,7 @@ public enum Client implements Imports {
 	DeepLearningEngine deepLearningEngine;
 	ClickGuiScreen clickGui;
 	Discord discord;
-	IRC irc;
+	@Setter IRC irc;
 
 	public void init() throws IOException {
 		long start = System.nanoTime();
@@ -113,9 +113,6 @@ public enum Client implements Imports {
 		}
 
 		clickGui = new ClickGuiScreen();
-
-		irc = new IRC();
-		irc.init();
 
 		mc.gameSettings.ofFastRender = false;
 		Display.setTitle(getFullName());
