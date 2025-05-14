@@ -2,6 +2,7 @@ package me.hackclient.module.impl.player;
 
 import me.hackclient.event.Event;
 import me.hackclient.event.EventTarget;
+import me.hackclient.event.events.ClickEvent;
 import me.hackclient.event.events.DrawBlockHighlightEvent;
 import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.event.events.TickEvent;
@@ -72,6 +73,9 @@ public class AutoPlace extends Module {
                         }
                     }
                     clicks = 0;
+                }
+                if (event instanceof ClickEvent e) {
+                    if (Mouse.isButtonDown(1) && e.getButton() == ClickEvent.Button.RIGHT) e.cancel();
                 }
             }
 

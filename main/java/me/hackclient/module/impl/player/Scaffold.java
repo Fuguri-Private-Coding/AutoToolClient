@@ -231,7 +231,7 @@ public class Scaffold extends Module {
     void legitPlace() {
         MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, 4.5, Rotation.getServerRotation());
 
-        if (mouseOver == null || mouseOver.getBlockPos() == null || mc.theWorld.getBlockState(mouseOver.getBlockPos()).getBlock().getMaterial() == Material.air) {
+        if (findBlock() == -1 || mouseOver == null || mouseOver.getBlockPos() == null || mc.theWorld.getBlockState(mouseOver.getBlockPos()).getBlock().getMaterial() == Material.air) {
             return;
         }
 
@@ -252,6 +252,7 @@ public class Scaffold extends Module {
         if (stack == null) return;
         if (sneakIfRotate.isToggled() && lastDelta > 0) return;
         if (!(stack.getItem() instanceof ItemBlock)) return;
+        if (findBlock() == -1) return;
 
         MovingObjectPosition mouse = mc.objectMouseOver;
 
@@ -332,13 +333,10 @@ public class Scaffold extends Module {
             ItemStack item = mc.thePlayer.inventory.mainInventory[i];
             if (item == null || !(item.getItem() instanceof ItemBlock block)
                     || block.getBlock() instanceof BlockSand
+                    || block.getBlock() instanceof BlockGravel
                     || block.getBlock() instanceof BlockSoulSand
                     || block.getBlock() instanceof BlockTNT
                     || block.getBlock() instanceof BlockWeb
-                    || !block.getBlock().isFullBlock()
-                    || !block.getBlock().isOpaqueCube()
-                    || block.getBlock().getMaterial().isReplaceable()
-                    || block.getBlock().getMaterial().isLiquid()
                     || block.getBlock() instanceof BlockFence
                     || block.getBlock() instanceof BlockFenceGate
                     || block.getBlock() instanceof BlockWall
@@ -351,6 +349,10 @@ public class Scaffold extends Module {
                     || block.getBlock() instanceof BlockFire
                     || block.getBlock() instanceof BlockRedstoneWire
                     || block.getBlock() instanceof BlockTorch
+                    || !block.getBlock().isFullBlock()
+                    || !block.getBlock().isOpaqueCube()
+                    || block.getBlock().getMaterial().isReplaceable()
+                    || block.getBlock().getMaterial().isLiquid()
             ) continue;
             bestSlot = i;
         }
