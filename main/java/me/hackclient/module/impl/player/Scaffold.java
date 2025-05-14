@@ -330,7 +330,28 @@ public class Scaffold extends Module {
 
         for (int i = 0; i < 9; i++) {
             ItemStack item = mc.thePlayer.inventory.mainInventory[i];
-            if (item == null || !(item.getItem() instanceof ItemBlock block) || block.getBlock() instanceof BlockSand || block.getBlock() instanceof BlockSoulSand || block.getBlock() instanceof BlockTNT || block.getBlock() instanceof BlockWeb) continue;
+            if (item == null || !(item.getItem() instanceof ItemBlock block)
+                    || block.getBlock() instanceof BlockSand
+                    || block.getBlock() instanceof BlockSoulSand
+                    || block.getBlock() instanceof BlockTNT
+                    || block.getBlock() instanceof BlockWeb
+                    || !block.getBlock().isFullBlock()
+                    || !block.getBlock().isOpaqueCube()
+                    || block.getBlock().getMaterial().isReplaceable()
+                    || block.getBlock().getMaterial().isLiquid()
+                    || block.getBlock() instanceof BlockFence
+                    || block.getBlock() instanceof BlockFenceGate
+                    || block.getBlock() instanceof BlockWall
+                    || block.getBlock() instanceof BlockPane
+                    || block.getBlock() instanceof BlockStairs
+                    || block.getBlock() instanceof BlockSlab
+                    || block.getBlock() instanceof BlockCarpet
+                    || block.getBlock() instanceof BlockSnow
+                    || block.getBlock() instanceof BlockLilyPad
+                    || block.getBlock() instanceof BlockFire
+                    || block.getBlock() instanceof BlockRedstoneWire
+                    || block.getBlock() instanceof BlockTorch
+            ) continue;
             bestSlot = i;
         }
 
