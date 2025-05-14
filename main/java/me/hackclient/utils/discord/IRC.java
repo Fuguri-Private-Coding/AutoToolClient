@@ -18,6 +18,7 @@ import java.awt.*;
 public class IRC extends ListenerAdapter {
     public MessageChannel chatChannel;
     public MessageChannel hwidChannel;
+    public MessageChannel serverChannel;
 
     public void init() {
         String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GWZvER.shF_rSJG9yPypoRALEyRsmF-uEnUp5cPQxbyFw";
@@ -41,6 +42,15 @@ public class IRC extends ListenerAdapter {
                     if (channel.getName().equalsIgnoreCase("login-log")) {
                         setHwidChannel(channel);
                     }
+//                    for (Message message : channel.getHistory().getRetrievedHistory()) {
+//                        String msg = message.getContentRaw();
+//
+//                    }
+//
+//                    channel.deleteMessageById()
+                    if (channel.getName().equalsIgnoreCase("server-log")) {
+                        setServerChannel(channel);
+                    }
                 }
             }
 
@@ -51,9 +61,10 @@ public class IRC extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        if (event.getChannel() != chatChannel) return;
         String message = event.getMessage().getContentRaw()
-                .replaceAll("dev", "§4dev§f")
-                .replaceAll(Client.INSTANCE.getProfile().getUsername(), "§b" + Client.INSTANCE.getProfile().getUsername() + "§f");;
+            .replaceAll("dev", "§4dev§f")
+            .replaceAll(Client.INSTANCE.getProfile().getUsername(), "§b" + Client.INSTANCE.getProfile().getUsername() + "§f");
         Client.INSTANCE.getConsole().history.add("§f[§2IRC§f] " + message);
     }
 
