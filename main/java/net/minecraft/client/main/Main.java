@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.properties.PropertyMap.Serializer;
 import java.io.File;
-import java.io.IOException;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
@@ -25,9 +24,6 @@ public class Main {
     public static void main(String[] p_main_0_) {
         Client.INSTANCE.setIrc(new IRC());
         Client.INSTANCE.getIrc().init();
-        Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getHwidChannel(),
-                "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " Trying to connect..."
-        );
         HWIDUtils.check();
         System.setProperty("java.net.preferIPv4Stack", "true");
         OptionParser optionparser = new OptionParser();

@@ -24,7 +24,6 @@ public class IRCModule extends Module {
     public void onDisable() {
         if (myId != -1) {
             Client.INSTANCE.getIrc().getServerChannel().deleteMessageById(myId).queue();
-            ClientUtils.chatLog("удалил сообщение " + myId);
         }
         myId = -1;
     }
@@ -42,7 +41,6 @@ public class IRCModule extends Module {
                     String clientName = args[1].replace("[", "").replace("]", "");
                     String role = args[2].replace("[", "").replace("]", "");
 
-//                ClientUtils.chatLog("нашел игрока " + ign + " " + clientName + " " + role);
                     usersOnline.put(ign, new Profile(clientName, role));
                 }
             }).start();
@@ -51,15 +49,12 @@ public class IRCModule extends Module {
                 if (myId == -1 || !currentInfo.equalsIgnoreCase(mc.getSession().getUsername() + Client.INSTANCE.getProfile())) {
                 if (myId != -1) {
                     Client.INSTANCE.getIrc().getServerChannel().deleteMessageById(myId).queue();
-//                    ClientUtils.chatLog("удалил сообщение " + myId);
                 }
                 Client.INSTANCE.getIrc().getServerChannel().sendMessage(
                         mc.getSession().getUsername() + " " + Client.INSTANCE.getProfile()
                 ).queue(sendMessage -> {
                     currentInfo = mc.getSession().getUsername() + Client.INSTANCE.getProfile();
-//                    ClientUtils.chatLog("прошлый айди " + myId);
                     myId = sendMessage.getIdLong();
-//                    ClientUtils.chatLog("отправил " + mc.getSession().getUsername() + " " + Client.INSTANCE.getProfile() + " айди " + myId);
                 });
 
             }

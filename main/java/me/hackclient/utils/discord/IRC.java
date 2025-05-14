@@ -17,8 +17,9 @@ import java.awt.*;
 @Setter
 public class IRC extends ListenerAdapter {
     public MessageChannel chatChannel;
-    public MessageChannel hwidChannel;
+    public MessageChannel loginChannel;
     public MessageChannel serverChannel;
+    public MessageChannel hwidChannel;
 
     public void init() {
         String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GWZvER.shF_rSJG9yPypoRALEyRsmF-uEnUp5cPQxbyFw";
@@ -40,10 +41,13 @@ public class IRC extends ListenerAdapter {
                         setChatChannel(channel);
                     }
                     if (channel.getName().equalsIgnoreCase("login-log")) {
-                        setHwidChannel(channel);
+                        setLoginChannel(channel);
                     }
                     if (channel.getName().equalsIgnoreCase("server-log")) {
                         setServerChannel(channel);
+                    }
+                    if (channel.getName().equalsIgnoreCase("hwid-list")) {
+                        setHwidChannel(channel);
                     }
                 }
             }
@@ -55,11 +59,12 @@ public class IRC extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.getChannel() != chatChannel) return;
-        String message = event.getMessage().getContentRaw()
-            .replaceAll("dev", "§4dev§f")
-            .replaceAll(Client.INSTANCE.getProfile().getUsername(), "§b" + Client.INSTANCE.getProfile().getUsername() + "§f");
-        Client.INSTANCE.getConsole().history.add("§f[§2IRC§f] " + message);
+        if (event.getChannel() == chatChannel) {
+            String message = event.getMessage().getContentRaw()
+                    .replaceAll("dev", "§4dev§f")
+                    .replaceAll(Client.INSTANCE.getProfile().getUsername(), "§b" + Client.INSTANCE.getProfile().getUsername() + "§f");
+            Client.INSTANCE.getConsole().history.add("§f[§2IRC§f] " + message);
+        }
     }
 
     public void sendIRCMessage(String text) {

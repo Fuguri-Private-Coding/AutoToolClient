@@ -2,29 +2,20 @@ package me.hackclient.utils.hwid;
 
 import me.hackclient.Client;
 import me.hackclient.utils.profile.Profile;
+import net.dv8tion.jda.api.entities.Message;
 
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.MessageDigest;
 
 public class HWIDUtils {
-    private static final String ID = "e6XXX8TA";
-    private static final String Database_URL = "https://pastebin.com/raw/" + ID;
 
     public static void check() {
         String hwid = generateHWID();
         if (isWhiteList(hwid)) {
-            System.out.println("Logged as " + Client.INSTANCE.getProfile() + " (" + hwid + ")");
-            Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getHwidChannel(),
-                    "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " Successful connect. " + Client.INSTANCE.getProfile()
-            );
+            System.out.println("Hello, " + Client.INSTANCE.getProfile() + " welcome to AutoTool!");
         } else {
-            Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getHwidChannel(),
-                    "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " This user does not have access to the client."
-            );
-            System.out.println(hwid);
             System.exit(-1);
         }
     }
@@ -34,7 +25,7 @@ public class HWIDUtils {
             String toEncrypt = System.getenv("COMPUTERNAME") + System.getProperty("user.name") +  System.getenv("PROCESSOR_IDENTIFIER") + System.getenv("PROCESSOR_LEVEL");
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(toEncrypt.getBytes());
-            StringBuffer hexString = new StringBuffer();
+            StringBuilder hexString = new StringBuilder();
 
             byte[] byteData = md.digest();
 
@@ -46,25 +37,28 @@ public class HWIDUtils {
 
             return hexString.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
             return "Error";
         }
     }
 
     public static boolean isWhiteList(String hwid) {
-        try {
-            URL url = new URL(Database_URL);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            for (String s : reader.lines().toList()) {
-                String[] args = s.split(":");
-                if (hwid.equalsIgnoreCase(args[0])) {
-                    Client.INSTANCE.setProfile(new Profile(args[1], args[2]));
-                    return true;
-                }
+        Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getLoginChannel(),
+                "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " Trying to connect..."
+        );
+        for (Message message : Client.INSTANCE.getIrc().getHwidChannel().getIterableHistory().stream().toList()) {
+            String[] args = message.getContentRaw().split(":");
+            if (hwid.equalsIgnoreCase(args[0])) {
+                Client.INSTANCE.setProfile(new Profile(args[1], args[2]));
+                Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getLoginChannel(),
+                        "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " Successful connect. " + Client.INSTANCE.getProfile()
+                );
+                return true;
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
+        Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getLoginChannel(),
+                "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " This user does not have access to the client."
+        );
         return false;
     }
 }
