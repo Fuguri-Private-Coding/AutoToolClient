@@ -51,7 +51,7 @@ public class IRCModule extends Module {
                 if (myId == -1 || !currentInfo.equalsIgnoreCase(mc.getSession().getUsername() + Client.INSTANCE.getProfile())) {
                 if (myId != -1) {
                     Client.INSTANCE.getIrc().getServerChannel().deleteMessageById(myId).queue();
-                    ClientUtils.chatLog("удалил сообщение " + myId);
+//                    ClientUtils.chatLog("удалил сообщение " + myId);
                 }
                 Client.INSTANCE.getIrc().getServerChannel().sendMessage(
                         mc.getSession().getUsername() + " " + Client.INSTANCE.getProfile()
