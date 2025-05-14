@@ -13,6 +13,6 @@ public class Profile {
 
     @Override
     public String toString() {
-        return username + " [" + role + "]";
+        return "[" + username + "] [" + role + "]";
     }
 }

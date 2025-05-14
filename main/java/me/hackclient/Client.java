@@ -19,6 +19,7 @@ import me.hackclient.module.ModuleManager;
 import me.hackclient.managers.ClickManager;
 import me.hackclient.shader.ShaderManager;
 import me.hackclient.utils.discord.Discord;
+import me.hackclient.utils.discord.IRC;
 import me.hackclient.utils.file.FileUtils;
 import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.packet.PositionResolverComponent;
@@ -59,6 +60,7 @@ public enum Client implements Imports {
 	DeepLearningEngine deepLearningEngine;
 	ClickGuiScreen clickGui;
 	Discord discord;
+	IRC irc;
 
 	public void init() throws IOException {
 		long start = System.nanoTime();
@@ -109,6 +111,9 @@ public enum Client implements Imports {
 		}
 
 		clickGui = new ClickGuiScreen();
+
+		irc = new IRC();
+		irc.init();
 
 		mc.gameSettings.ofFastRender = false;
 		Display.setTitle(getFullName());
