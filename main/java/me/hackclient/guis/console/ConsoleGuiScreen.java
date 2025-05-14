@@ -39,10 +39,10 @@ public class ConsoleGuiScreen extends GuiScreen {
     public ConsoleGuiScreen() {
         Client.INSTANCE.getEventManager().register(this);
         mc = Minecraft.getMinecraft();
-        lastMouse = new Vector2f(0, 0);
 
         pos = new Vector2f(0, 0);
-        size = new Vector2f(350, 150);
+        size = new Vector2f(200, 200);
+        lastMouse = new Vector2f(0, 0);
 
         scrolls = new Animation2D();
         background = new Animation2D();
@@ -110,7 +110,7 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         if (shadows.isToggled() && shadows.module.get("ConsoleGui")) {
             BloomUtils.addToDraw(() -> {
-                RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
+                RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clickGui.backgroundRadius.getValue(), new Color(0,0,0,255));
                 RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), shadows.color.getColor());
             });
         }
@@ -118,7 +118,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y + (fullScreen ? 0 : 20));
 
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), new Color(15,15,15,150));
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), new Color(0,0,0, clickGui.backgroundAlpha.getValue()));
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
         RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
 
@@ -196,6 +196,7 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         if (mouseButton == 0) {
             if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y) return;
+
             if (quit) {
                 lastPos.set(pos);
                 lastSize.set(size);
@@ -229,6 +230,19 @@ public class ConsoleGuiScreen extends GuiScreen {
         }
     }
 
+    @Override
+    protected void mouseReleased(int mouseX, int mouseY, int state) {
+        moving = false;
+    }
+
+    @Override
+    public void initGui() {
+        sizeBackground.reset();
+        background.reset();
+        pos.set(lastPos);
+        size.set(lastSize);
+    }
+
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
@@ -240,16 +254,4 @@ public class ConsoleGuiScreen extends GuiScreen {
         }
     }
 
-    @Override
-    public void initGui() {
-        sizeBackground.reset();
-        background.reset();
-        pos.set(lastPos);
-        size.set(lastSize);
-    }
-
-    @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
-        moving = false;
-    }
 }

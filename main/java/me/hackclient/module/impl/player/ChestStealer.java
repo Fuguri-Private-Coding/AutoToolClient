@@ -8,29 +8,40 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
-import org.lwjgl.util.vector.Vector2f;
 
 @ModuleInfo(name = "ChestStealer", category = Category.PLAYER)
 public class ChestStealer extends Module {
 
-    final IntegerSetting baseDelay = new IntegerSetting("BaseDelay", this, 0, 1000, 50);
-    final IntegerSetting distanceFactor = new IntegerSetting    ("DistanceFactor", this, 0, 500, 150);
+    final IntegerSetting startDelay = new IntegerSetting("StartDelay", this, 0, 1000, 250);
+    final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 500, 50) {
+        @Override
+        public int getValue() {
+            if (maxDelay.value < value) { value = maxDelay.value; }
+            return value;
+        }
+    };
+    final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 0, 500, 50) {
+        @Override
+        public int getValue() {
+            if (minDelay.value > value) { value = minDelay.value; }
+            return value;
+        }
+    };
+
     final BooleanSetting checkName = new BooleanSetting("CheckName", this, true);
 
     final StopWatch delayStopWatch;
+    final StopWatch startDelayStopWatch;
 
     int delay;
 
-    Vector2f currentPos = new Vector2f();
-    Vector2f nextPos = null;
-
     public ChestStealer() {
         delayStopWatch = new StopWatch();
+        startDelayStopWatch = new StopWatch();
     }
 
     @EventTarget
@@ -52,26 +63,8 @@ public class ChestStealer extends Module {
                     return;
                 }
 
-                int nextSlotCalculateX = nextSlot;
-                int nextSlotCalculateY = 0;
-
-                while (nextSlotCalculateX > 8) {
-                    nextSlotCalculateY++;
-                    nextSlotCalculateX -= 8;
-                }
-
-
-                delayStopWatch.reset();
                 mc.playerController.windowClick(container.windowId, nextSlot, 0, 1, mc.thePlayer);
-                nextPos = new Vector2f(nextSlotCalculateX, nextSlotCalculateY);
-                double distance = new Vector2f(
-                        nextSlotCalculateX - currentPos.x,
-                        nextSlotCalculateY - currentPos.y
-                ).length();
-                delay = (int) (baseDelay.getValue() + distance * distanceFactor.getValue());
-
-                ClientUtils.chatLog(nextSlotCalculateX + " " + nextSlotCalculateY + " " + nextSlot + " " + delay);
-
+                delayStopWatch.reset();
             }
         }
     }

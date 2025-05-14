@@ -45,6 +45,10 @@ public class Module implements Imports {
 		}
 	}
 
+	public boolean toggled() {
+        return toggled;
+	}
+
 	public void onEnable() {}
 	public void onDisable() {}
 

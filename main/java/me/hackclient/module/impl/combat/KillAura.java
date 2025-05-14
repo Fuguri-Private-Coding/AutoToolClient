@@ -13,7 +13,6 @@ import me.hackclient.settings.impl.*;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
-import me.hackclient.utils.rotation.RayCastUtils;
 import me.hackclient.utils.rotation.Rotation;
 import me.hackclient.utils.rotation.RotationUtils;
 import me.hackclient.utils.timer.StopWatch;
@@ -292,8 +291,7 @@ public class KillAura extends Module {
                 case EntityArmorStand _ -> {
                     continue;
                 }
-                default -> {
-                }
+                default -> {}
             }
 
             double value = Double.MAX_VALUE;

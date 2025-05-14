@@ -136,20 +136,24 @@ public class Scaffold extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (mc.currentScreen != null) return;
         switch (clickMode.getMode()) {
             case "AutoPlace" -> {
-                if (event instanceof DrawBlockHighlightEvent && mc.currentScreen == null) {
+                if (event instanceof DrawBlockHighlightEvent) {
                     ragePlace();
+                }
+                if (event instanceof TickEvent && !mc.thePlayer.onGround) {
+                    legitPlace();
                 }
             }
             case "Legit" -> {
-                if (event instanceof TickEvent && mc.currentScreen == null) {
+                if (event instanceof TickEvent) {
                     legitPlace();
                 }
             }
         }
 
-        if (event instanceof TickEvent && mc.currentScreen == null) {
+        if (event instanceof TickEvent) {
             MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, Rotation.getServerRotation());
             BlockPos analyzingBlock = renderRayCast.getBlockPos();
             if (analyzingBlock != null && renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) renderPos = analyzingBlock;
@@ -233,7 +237,6 @@ public class Scaffold extends Module {
 
         if (stopWatch.reachedMS(delay)) {
             if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
-                mc.rightClickMouse();
                 if (swingItem.isToggled()) {
                     mc.thePlayer.swingItem();
                 }
@@ -261,7 +264,6 @@ public class Scaffold extends Module {
         BlockPos pos = mouse.getBlockPos();
         if (mc.theWorld.getBlockState(pos).getBlock().getMaterial() != Material.air) {
             if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25) {
-                mc.rightClickMouse();
                 if (swingItem.isToggled()) {
                     mc.thePlayer.swingItem();
                 }
@@ -328,7 +330,7 @@ public class Scaffold extends Module {
 
         for (int i = 0; i < 9; i++) {
             ItemStack item = mc.thePlayer.inventory.mainInventory[i];
-            if (item == null || !(item.getItem() instanceof ItemBlock block) || block.getBlock() instanceof BlockSand || block.getBlock() instanceof BlockSoulSand || block.getBlock() instanceof BlockTNT) continue;
+            if (item == null || !(item.getItem() instanceof ItemBlock block) || block.getBlock() instanceof BlockSand || block.getBlock() instanceof BlockSoulSand || block.getBlock() instanceof BlockTNT || block.getBlock() instanceof BlockWeb) continue;
             bestSlot = i;
         }
 

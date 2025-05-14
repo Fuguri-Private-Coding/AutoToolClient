@@ -1,22 +1,83 @@
 package me.hackclient.utils.inventory;
 
+import me.hackclient.Client;
+import me.hackclient.event.Event;
+import me.hackclient.event.EventTarget;
+import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.*;
+import net.minecraft.util.StatCollector;
 
 public class InventoryUtils implements Imports {
+
+    private static boolean selector;
+
+    public static boolean selector() {
+        return selector;
+    }
+
+    public InventoryUtils() {
+        Client.INSTANCE.getEventManager().register(this);
+    }
+
+    @EventTarget
+    public void onEvent(Event event) {
+        if (event instanceof UpdateEvent) {
+            if (getItemStack() != null) {
+                ItemStack itemStack = getItemStack();
+
+                selector = !trueName(itemStack).contains(itemStack.getDisplayName());
+            } else {
+                selector = false;
+            }
+        }
+    }
+
+    public static boolean selector(ItemStack itemStack) {
+        if (itemStack == null) {
+            return false;
+        } else if (itemStack == getItemStack()) {
+            return selector();
+        } else {
+            return !trueName(itemStack).contains(itemStack.getDisplayName());
+        }
+    }
+
+    public static ItemStack getItemStack() {
+        return (mc.thePlayer == null || mc.thePlayer.inventoryContainer == null ? null : mc.thePlayer.inventoryContainer.getSlot(getItemIndex() + 36).getStack());
+    }
+
+    public static int getItemIndex() {
+        final InventoryPlayer inventoryPlayer = mc.thePlayer.inventory;
+        return inventoryPlayer.currentItem;
+    }
+
+    public static String trueName(ItemStack itemStack) {
+        String name = (StatCollector.translateToLocal(itemStack.getUnlocalizedName() + ".name")).trim();
+        final String s1 = EntityList.getStringFromID(itemStack.getMetadata());
+
+        if (s1 != null) {
+            name = name + " " + StatCollector.translateToLocal("entity." + s1 + ".name");
+        }
+
+        return name;
+    }
+
+    public static boolean selector(int itemSlot) {
+        return selector(mc.thePlayer.inventory.getStackInSlot(itemSlot));
+    }
+
 
     public static boolean needDropGOVNO(ItemStack itemStack) {
         ItemStack bestSword = getBestWeapon();
 
         if (bestSword == null) return false;
 
-        if (itemStack.getItem() instanceof ItemSword && itemStack != bestSword) {
-            return true;
-        }
-
-        return false;
+        return itemStack.getItem() instanceof ItemSword && itemStack != bestSword;
     }
 
     public static ItemStack getBestWeapon() {
@@ -30,8 +91,7 @@ public class InventoryUtils implements Imports {
                 if (is.getItem() instanceof ItemSword) {
                     float swordDamage = getItemDamage(is);
 
-                    if (swordDamage > damage)
-                    {
+                    if (swordDamage > damage) {
                         damage = getItemDamage(is);
                         bestSword = is;
                     }
@@ -46,126 +106,56 @@ public class InventoryUtils implements Imports {
         mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 1, 4, mc.thePlayer);
     }
 
-    public static float getItemDamage(ItemStack itemStack)
-    {
+    public static float getItemDamage(ItemStack itemStack) {
         float damage = getToolMaterialRating(itemStack, true);
         damage += EnchantmentHelper.getEnchantmentLevel(Enchantment.sharpness.effectId, itemStack) * 1.25F;
         damage += EnchantmentHelper.getEnchantmentLevel(Enchantment.fireAspect.effectId, itemStack) * 0.50F;
         damage += EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, itemStack) * 0.01F;
         damage += (itemStack.getMaxDamage() - itemStack.getItemDamage()) * 0.000000000001F;
 
-        if (itemStack.getItem() instanceof ItemSword)
-        {
+        if (itemStack.getItem() instanceof ItemSword) {
             damage += 0.2f;
         }
 
         return damage;
     }
 
-    public static float getToolMaterialRating(ItemStack itemStack, boolean checkForDamage)
-    {
+    public static float getToolMaterialRating(ItemStack itemStack, boolean checkForDamage) {
         final Item is = itemStack.getItem();
         float rating = 0;
 
-        if (is instanceof ItemSword)
-        {
-            switch (((ItemSword) is).getToolMaterialName())
-            {
-                case "WOOD":
-                    rating = 4;
-                    break;
-
-                case "GOLD":
-                    rating = 4;
-                    break;
-
-                case "STONE":
-                    rating = 5;
-                    break;
-
-                case "IRON":
-                    rating = 6;
-                    break;
-
-                case "EMERALD":
-                    rating = 7;
-                    break;
-            }
-        }
-        else if (is instanceof ItemPickaxe)
-        {
-            switch (((ItemPickaxe) is).getToolMaterialName())
-            {
-                case "WOOD":
-                    rating = 2;
-                    break;
-
-                case "GOLD":
-                    rating = 2;
-                    break;
-
-                case "STONE":
-                    rating = 3;
-                    break;
-
-                case "IRON":
-                    rating = checkForDamage ? 4 : 40;
-                    break;
-
-                case "EMERALD":
-                    rating = checkForDamage ? 5 : 50;
-                    break;
+        if (is instanceof ItemSword) {
+            rating = switch (((ItemSword) is).getToolMaterialName()) {
+                case "WOOD", "GOLD" -> 4;
+                case "STONE" -> 5;
+                case "IRON" -> 6;
+                case "EMERALD" -> 7;
+                default -> rating;
             };
-        }
-        else if (is instanceof ItemAxe)
-        {
-            switch (((ItemAxe) is).getToolMaterialName())
-            {
-                case "WOOD":
-                    rating = 3;
-                    break;
-
-                case "GOLD":
-                    rating = 3;
-                    break;
-
-                case "STONE":
-                    rating = 4;
-                    break;
-
-                case "IRON":
-                    rating = 5;
-                    break;
-
-                case "EMERALD":
-                    rating = 6;
-                    break;
+        } else if (is instanceof ItemPickaxe) {
+            rating = switch (((ItemPickaxe) is).getToolMaterialName()) {
+                case "WOOD", "GOLD" -> 2;
+                case "STONE" -> 3;
+                case "IRON" -> checkForDamage ? 4 : 40;
+                case "EMERALD" -> checkForDamage ? 5 : 50;
+                default -> rating;
             };
-        }
-        else if (is instanceof ItemSpade)
-        {
-            switch (((ItemSpade) is).getToolMaterialName())
-            {
-                case "WOOD":
-                    rating = 1;
-                    break;
-
-                case "GOLD":
-                    rating = 1;
-                    break;
-
-                case "STONE":
-                    rating = 2;
-                    break;
-
-                case "IRON":
-                    rating = 3;
-                    break;
-
-                case "EMERALD":
-                    rating = 4;
-                    break;
-            }
+        } else if (is instanceof ItemAxe) {
+            rating = switch (((ItemAxe) is).getToolMaterialName()) {
+                case "WOOD", "GOLD" -> 3;
+                case "STONE" -> 4;
+                case "IRON" -> 5;
+                case "EMERALD" -> 6;
+                default -> rating;
+            };
+        } else if (is instanceof ItemSpade) {
+            rating = switch (((ItemSpade) is).getToolMaterialName()) {
+                case "WOOD", "GOLD" -> 1;
+                case "STONE" -> 2;
+                case "IRON" -> 3;
+                case "EMERALD" -> 4;
+                default -> rating;
+            };
         }
 
         return rating;

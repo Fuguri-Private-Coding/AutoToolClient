@@ -66,7 +66,7 @@ public class BackTrack extends Module {
     BooleanSetting renderIfWorking = new BooleanSetting("RenderIfWorking", this, true);
 
     ModeSetting espMode = new ModeSetting("Render", this)
-            .addModes("Player", "Box")
+            .addModes("Player", "Box", "OFF")
             .setMode("Player");
 
     ColorSetting color = new ColorSetting("Color", this, () -> espMode.getMode().equals("Box"), 1,1,1,1);

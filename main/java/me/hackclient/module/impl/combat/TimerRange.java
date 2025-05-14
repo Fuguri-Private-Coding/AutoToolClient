@@ -63,7 +63,7 @@ public class TimerRange extends Module {
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput);
 
             teleportTicks = 0;
-            for (int i = 1; i <= maxTicks.getValue(); i++) {
+            for (int i = 0; i < maxTicks.getValue(); i++) {
                 MovingObjectPosition mouse = RayTraceUtils.rayTrace(
                         simulatedPlayer.getPosEyes(),
                         3,

@@ -19,7 +19,7 @@ public class Shadows extends Module {
             .add("BreakIndicator")
             .add("CPSCounter")
             .add("BPSCounter")
-            .add("PREMIUMFPSCOUNTER")
+            .add("FPSCounter")
             .add("BlockOverlay")
             .add("ConfigGui")
             .add("Chat")

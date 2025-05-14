@@ -10,7 +10,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.utils.animation.Animation2D;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 
@@ -44,12 +44,10 @@ public class ArrayList extends Module {
 
 				if (shadows.isToggled() && shadows.module.get("ArrayList")) {
 					double finalOffset = offset;
-					BloomUtils.addToDraw(() -> {
-						Gui.drawRect(6f,(float) finalOffset + 19f, font.getStringWidth(module.getName()) + 10, (float) finalOffset + 6f, -1);
-					});
+					BloomUtils.addToDraw(() -> Gui.drawRect(6,(float) finalOffset + 19f, font.getStringWidth(module.getName()) + 10, (float) finalOffset + 6f, -1));
 				}
 
-				Gui.drawRect(6f,(float) offset + 19f, font.getStringWidth(module.getName()) + 10, (float) offset + 6f, backgroundColor.getColor().getRGB());
+				Gui.drawRect(6,(float) offset + 19f, font.getStringWidth(module.getName()) + 10, (float) offset + 6f, backgroundColor.getColor().getRGB());
 
 				font.drawString(module.getName(), 8.5f, (float) (8.5f + offset), color.getColor().getRGB(), textShadow.isToggled());
 				offset += 13;

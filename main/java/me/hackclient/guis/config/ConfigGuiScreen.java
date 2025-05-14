@@ -18,7 +18,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 
 import static java.lang.Math.min;
@@ -102,7 +101,7 @@ public class ConfigGuiScreen extends GuiScreen {
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
 
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), new Color(15,15,15,150));
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), new Color(0,0,0, clickGui.backgroundAlpha.getValue()));
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
 
         fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 4,-1);
@@ -159,7 +158,6 @@ public class ConfigGuiScreen extends GuiScreen {
             closing = true;
             size.set(0, 0);
             pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
-            return;
         }
     }
 

@@ -14,6 +14,7 @@ import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -37,19 +38,21 @@ public class Ping extends Module {
             .add("Damage")
             .add("Velocity")
             .add("Flag")
-            .add("ItemHeld")
+            .add("UsingItem")
             .add("PlaceBlock")
             .add("ChangeSprint")
             .add("OpenedGui");
 
     ModeSetting renderModes = new ModeSetting("RenderMode", this)
-            .addModes("Player", "Box")
+            .addModes("Player", "Box", "OFF")
             .setMode("Player");
 
     private long lastResetTime;
     private long delayBeforeNextLag;
     private final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
     private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
+
+    Vec3 lastPos;
 
     @Override
     public void onDisable() {
@@ -59,6 +62,7 @@ public class Ping extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
+        if (mc.isIntegratedServerRunning()) return;
         long currentTime = System.currentTimeMillis();
         if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChest) && actions.get("OpenedGui")) reset();
         switch (event) {
@@ -67,6 +71,7 @@ public class Ping extends Module {
                     reset();
                 }
             }
+
             case PacketEvent e -> {
                 if (currentTime - lastResetTime < delayBeforeNextLag) {
                     resetAllPackets();
@@ -78,7 +83,7 @@ public class Ping extends Module {
                     break;
                 }
 
-                if (actions.get("ItemHeld") && mc.thePlayer.isUsingItem()) {
+                if (actions.get("UsingItem") && mc.thePlayer.isUsingItem()) {
                     reset();
                     break;
                 }
@@ -124,6 +129,7 @@ public class Ping extends Module {
                         if (c03.isMoving()) {
                             posBuffer.add(new VecWithTime(c03.getPosVec(), currentTime));
                         }
+                        lastPos = posBuffer.getFirst().pos();
                     }
                 }
             }
@@ -141,9 +147,10 @@ public class Ping extends Module {
                 EntityPlayerSP player = mc.thePlayer;
 
                 Vec3 pos = posBuffer.getFirst().pos();
-                double x = pos.xCoord - mc.getRenderManager().viewerPosX;
-                double y = pos.yCoord - mc.getRenderManager().viewerPosY;
-                double z = pos.zCoord - mc.getRenderManager().viewerPosZ;
+
+                double x = lastPos.xCoord + (pos.xCoord - lastPos.xCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
+                double y = lastPos.yCoord + (pos.yCoord - lastPos.yCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
+                double z = lastPos.zCoord + (pos.zCoord - lastPos.zCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
 
                 switch (renderModes.getMode()) {
                     case "Box" -> {
@@ -152,8 +159,20 @@ public class Ping extends Module {
                         Vec3 diff = smoothPos.subtract(player.getPositionVector());
                         RenderUtils.renderHitBox(player.getEntityBoundingBox().offset(diff));
                         RenderUtils.stop3D();
-                    } 
-                    case "Player" -> mc.renderManager.doRenderEntity(player, x, y, z, player.rotationYaw, mc.timer.renderPartialTicks, true);
+                    }
+                    case "Player" -> {
+                        mc.entityRenderer.enableLightmap();
+                        mc.getRenderManager().doRenderEntity(
+                                player,
+                                x, y, z,
+                                player.getRotationYawHead(),
+                                mc.timer.renderPartialTicks,
+                                true
+                        );
+
+                        RenderHelper.disableStandardItemLighting();
+                        mc.entityRenderer.disableLightmap();
+                    }
                 }
             }
             default -> {}
