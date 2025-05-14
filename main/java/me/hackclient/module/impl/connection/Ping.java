@@ -52,7 +52,7 @@ public class Ping extends Module {
     private final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
     private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
 
-    Vec3 lastPos;
+    Vec3 lastPos, currentPos;
 
     @Override
     public void onDisable() {
@@ -129,7 +129,6 @@ public class Ping extends Module {
                         if (c03.isMoving()) {
                             posBuffer.add(new VecWithTime(c03.getPosVec(), currentTime));
                         }
-                        lastPos = posBuffer.getFirst().pos();
                     }
                 }
             }
@@ -139,18 +138,20 @@ public class Ping extends Module {
                     posBuffer.removeFirst();
                 }
             }
+            case TickEvent _ -> {
+                lastPos = currentPos;
+                currentPos = posBuffer.getFirst().pos;
+            }
             case Render3DEvent _ -> {
-                if (posBuffer.isEmpty() || mc.gameSettings.thirdPersonView == 0) {
+                if (posBuffer.isEmpty() || mc.gameSettings.thirdPersonView == 0 || lastPos == null || currentPos == null) {
                     break;
                 }
 
                 EntityPlayerSP player = mc.thePlayer;
 
-                Vec3 pos = posBuffer.getFirst().pos();
-
-                double x = lastPos.xCoord + (pos.xCoord - lastPos.xCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
-                double y = lastPos.yCoord + (pos.yCoord - lastPos.yCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
-                double z = lastPos.zCoord + (pos.zCoord - lastPos.zCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
+                double x = lastPos.xCoord + (currentPos.xCoord - lastPos.xCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
+                double y = lastPos.yCoord + (currentPos.yCoord - lastPos.yCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
+                double z = lastPos.zCoord + (currentPos.zCoord - lastPos.zCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
 
                 switch (renderModes.getMode()) {
                     case "Box" -> {

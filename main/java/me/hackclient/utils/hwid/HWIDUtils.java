@@ -10,7 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 public class HWIDUtils {
-    private static final String Database_URL = "https://pastebin.com/raw/32VeuV38";
+    private static final String PASTEBIN_ID = "32VeuV38";
+    private static final String Database_URL = "https://pastebin.com/raw/" + PASTEBIN_ID;
 
     public static void check() {
         String hwid = generateHWID();

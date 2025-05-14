@@ -36,7 +36,6 @@ public class BackTrack extends Module {
             return super.getValue();
         }
     };
-
     final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 0, 500, 200) {
         @Override
         public int getValue() {
@@ -45,25 +44,24 @@ public class BackTrack extends Module {
         }
     };
 
-    final FloatSetting minDistance = new FloatSetting("MinDistance", this, 0.0f, 3.0f, 3.0f, 0.1f) {
+    final FloatSetting startDistance = new FloatSetting("StartDistance", this, 0.0f, 3.0f, 3.0f, 0.1f) {
         @Override
         public float getValue() {
             if (maxDistance.value < value) { value = maxDistance.value; }
             return super.getValue();
         }
     };
-
     final FloatSetting maxDistance = new FloatSetting("MaxDistance", this, 3.0f, 12.0f, 6.0f, 0.1f) {
         @Override
         public float getValue() {
-            if (minDistance.value > value) { value = minDistance.value; }
+            if (startDistance.value > value) { value = startDistance.value; }
             return super.getValue();
         }
     };
 
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenBackTracks", this, 0, 20, 0) ;
 
-    BooleanSetting renderIfWorking = new BooleanSetting("RenderIfWorking", this, true);
+    BooleanSetting renderOnlyIfWorking = new BooleanSetting("RenderOnlyIfWorking", this, true);
 
     ModeSetting espMode = new ModeSetting("Render", this)
             .addModes("Player", "Box", "OFF")
@@ -151,7 +149,7 @@ public class BackTrack extends Module {
                 double threshold = 0;
 
                 boolean improve = distanceToFake + threshold >= distanceToReal;
-                boolean distance = distanceToReal > maxDistance.getValue() || distanceToFake > 3 || distanceToReal < minDistance.getValue();
+                boolean distance = distanceToReal > maxDistance.getValue() || distanceToFake > 3 || distanceToReal < startDistance.getValue();
 
                 if (improve || distance) {
                     handle(true);
@@ -159,7 +157,7 @@ public class BackTrack extends Module {
                     delayBetweenBackTracks = delayBetweenTicks.getValue();
                     delay = RandomUtils.nextLong(minDelay.getValue(), maxDelay.getValue());
 
-                    if (renderIfWorking.isToggled()) return;
+                    if (renderOnlyIfWorking.isToggled()) return;
                 }
 
                 x = target.lrx + (target.rx - target.lrx) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;

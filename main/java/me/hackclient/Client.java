@@ -2,6 +2,7 @@ package me.hackclient;
 
 import de.florianmichael.viamcp.ViaMCP;
 import lombok.Getter;
+import lombok.Setter;
 import me.hackclient.config.ConfigManager;
 import me.hackclient.command.CommandManager;
 import me.hackclient.deeplearn.DeepLearningEngine;
@@ -21,6 +22,7 @@ import me.hackclient.utils.discord.Discord;
 import me.hackclient.utils.file.FileUtils;
 import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.packet.PositionResolverComponent;
+import me.hackclient.utils.profile.Profile;
 import me.hackclient.utils.sound.SoundsManager;
 import me.hackclient.utils.version.ClientVersion;
 import org.lwjgl.opengl.Display;
@@ -34,6 +36,9 @@ public enum Client implements Imports {
 
 	String name;
 	ClientVersion version;
+
+	@Setter
+	Profile profile;
 
 	File clientDirectory;
 	File modelsDirectory;
@@ -59,7 +64,7 @@ public enum Client implements Imports {
 		long start = System.nanoTime();
 
 		name = "AutoTool";
-		version = new ClientVersion(2, 0, 1);
+		version = new ClientVersion(2, 1, 1);
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");
@@ -114,7 +119,7 @@ public enum Client implements Imports {
 
 	public String getChangeLog() {
 		return """
-				Full client-base recode
+				HWID System
 				""";
 	}
 
