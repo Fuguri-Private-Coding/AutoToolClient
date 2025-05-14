@@ -6,18 +6,18 @@ import me.hackclient.utils.profile.Profile;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 public class HWIDUtils {
-    private static final String PASTEBIN_ID = "32VeuV38";
-    private static final String Database_URL = "https://pastebin.com/raw/" + PASTEBIN_ID;
+    private static final String ID = "e6XXX8TA";
+    private static final String Database_URL = "https://pastebin.com/raw/" + ID;
 
     public static void check() {
         String hwid = generateHWID();
-        if (IsWhiteList(hwid)) {
+        if (isWhiteList(hwid)) {
             System.out.println("Logged as " + Client.INSTANCE.getProfile() + " (" + hwid + ")");
         } else {
+            System.out.println(hwid);
             System.exit(0);
         }
     }
@@ -44,25 +44,19 @@ public class HWIDUtils {
         }
     }
 
-    public static boolean IsWhiteList(String hwid) {
+    public static boolean isWhiteList(String hwid) {
         try {
             URL url = new URL(Database_URL);
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] args = line.trim().split(":");
-                String hwidLine = args[0];
-                String nameLine = args[1];
-                String roleLine = args[2];
-                if (hwidLine.equals(hwid)) {
-                    reader.close();
-                    Client.INSTANCE.setProfile(new Profile(nameLine, roleLine));
+            for (String s : reader.lines().toList()) {
+                String[] args = s.split(":");
+                if (hwid.equalsIgnoreCase(args[0])) {
+                    Client.INSTANCE.setProfile(new Profile(args[1], args[2]));
                     return true;
                 }
             }
-            reader.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return false;
     }
