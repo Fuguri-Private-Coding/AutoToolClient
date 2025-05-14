@@ -51,8 +51,10 @@ public class IRC extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        String message = event.getMessage().getContentRaw().replaceAll("dev", "§4dev§f").replaceAll(Client.INSTANCE.getProfile().getUsername(), "§b" + Client.INSTANCE.getProfile().getUsername() + "§f");;
-        Client.INSTANCE.getConsole().history.add("§7[§2IRC§7] " + message);
+        String message = event.getMessage().getContentRaw()
+                .replaceAll("dev", "§4dev§f")
+                .replaceAll(Client.INSTANCE.getProfile().getUsername(), "§b" + Client.INSTANCE.getProfile().getUsername() + "§f");;
+        Client.INSTANCE.getConsole().history.add("§f[§2IRC§f] " + message);
     }
 
     public void sendMessage(String text) {

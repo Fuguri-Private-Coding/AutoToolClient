@@ -175,8 +175,9 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         if (keyCode == Keyboard.KEY_RETURN && !textField.getText().isEmpty()) {
             if (changed) return;
-            history.add("C:\\Users\\" + username + ": "  + textField.getText());
-            Client.INSTANCE.getCommandManager().handle(textField.getText());
+            if (!Client.INSTANCE.getCommandManager().handle(textField.getText())) {
+                history.add("C:\\Users\\" + username + ": " + textField.getText());
+            }
             textField.setText("");
         }
 
