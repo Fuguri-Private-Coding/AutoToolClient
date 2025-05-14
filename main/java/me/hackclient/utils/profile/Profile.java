@@ -17,6 +17,14 @@ public class Profile {
     }
 
     public String getColored() {
-        return "§f[§6" + username + "§f] [§a" + role + "§f]";
+        String coloredRole = role;
+
+        switch (role) {
+            case "dev" -> coloredRole = "§4dev§f";
+            case "test" -> coloredRole = "§atest§f";
+            case "user" -> coloredRole = "§auser§f";
+        }
+
+        return "§f[§6" + username + "§f] [" + coloredRole + "§f]";
     }
 }
