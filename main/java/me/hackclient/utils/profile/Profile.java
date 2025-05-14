@@ -15,4 +15,8 @@ public class Profile {
     public String toString() {
         return "[" + username + "] [" + role + "]";
     }
+
+    public String getColored() {
+        return "§f[§6" + username + "§f] [§a" + role + "§f]";
+    }
 }

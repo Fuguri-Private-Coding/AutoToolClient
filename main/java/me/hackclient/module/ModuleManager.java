@@ -2,6 +2,7 @@ package me.hackclient.module;
 
 import lombok.Getter;
 import me.hackclient.module.impl.client.DiscordRPCModule;
+import me.hackclient.module.impl.client.IRCModule;
 import me.hackclient.module.impl.combat.*;
 import me.hackclient.module.impl.connection.*;
 import me.hackclient.module.impl.exploit.*;
@@ -35,6 +36,7 @@ public class ModuleManager {
 				 new Velocity(),
 				 new MurderMystery(),
 				 new InvManager(),
+				 new IRCModule(),
 				 new Trails(),
 				 new ESP(),
 				 new BackTrack(),

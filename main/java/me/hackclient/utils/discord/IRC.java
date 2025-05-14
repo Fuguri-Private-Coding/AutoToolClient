@@ -42,12 +42,6 @@ public class IRC extends ListenerAdapter {
                     if (channel.getName().equalsIgnoreCase("login-log")) {
                         setHwidChannel(channel);
                     }
-//                    for (Message message : channel.getHistory().getRetrievedHistory()) {
-//                        String msg = message.getContentRaw();
-//
-//                    }
-//
-//                    channel.deleteMessageById()
                     if (channel.getName().equalsIgnoreCase("server-log")) {
                         setServerChannel(channel);
                     }

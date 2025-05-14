@@ -7,6 +7,7 @@ import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
+import me.hackclient.module.impl.client.IRCModule;
 import me.hackclient.module.impl.misc.MidClick;
 import me.hackclient.module.impl.misc.MurderMystery;
 import me.hackclient.settings.impl.ColorSetting;
@@ -54,6 +55,7 @@ public class NameTags extends Module {
         boolean friend = entity instanceof EntityPlayer ent && midClick.showInName.isToggled() && ent.isFriend();
         boolean murder = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.murders.contains(ent.getName());
         boolean detective = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.detectives.contains(ent.getName());
+        boolean user = entity instanceof EntityPlayer ent && IRCModule.usersOnline.get(ent.getName()) != null;
         FontRenderer fontRenderer = mc.fontRendererObj;
         float distance = mc.thePlayer.getDistanceToEntity(entity);
         float scale = Math.max(distance / 2.5f, 5.0f);
@@ -76,7 +78,8 @@ public class NameTags extends Module {
         String detectiveText = detective ? "§6[Detective]§6 " : "";
         String murderText = murder ? "§4[Murder]§4 " : "";
         String friendText = friend ? "§2[Friend]§a " : "";
-        String text = friendText + murderText + detectiveText + entity.getDisplayName().getFormattedText();
+        String userText = user ? IRCModule.usersOnline.get(entity.getName()).getColored() + " " : "";
+        String text = userText + friendText + murderText + detectiveText + entity.getDisplayName().getFormattedText();
         float offset = fontRenderer.FONT_HEIGHT - 8f;
         float stringWidth = fontRenderer.getStringWidth(text) / 2f;
         if (shadows.isToggled() && shadows.module.get("NameTags")) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, Color.WHITE));
