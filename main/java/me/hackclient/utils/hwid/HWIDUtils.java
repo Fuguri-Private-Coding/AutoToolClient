@@ -43,16 +43,10 @@ public class HWIDUtils {
     }
 
     public static boolean isWhiteList(String hwid) {
-        Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getLoginChannel(),
-                "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " Trying to connect..."
-        );
         for (Message message : Client.INSTANCE.getIrc().getHwidChannel().getIterableHistory().stream().toList()) {
             String[] args = message.getContentRaw().split(":");
             if (hwid.equalsIgnoreCase(args[0])) {
                 Client.INSTANCE.setProfile(new Profile(args[1], args[2]));
-                Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getLoginChannel(),
-                        "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " Successful connect. " + Client.INSTANCE.getProfile()
-                );
                 return true;
             }
         }

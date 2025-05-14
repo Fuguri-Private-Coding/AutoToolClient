@@ -68,9 +68,6 @@ public class IRC extends ListenerAdapter {
     }
 
     public void sendIRCMessage(String text) {
-        if (chatChannel == null) {
-            return;
-        }
         try {
             chatChannel.sendMessage(text).queue();
         } catch (Exception e) {
