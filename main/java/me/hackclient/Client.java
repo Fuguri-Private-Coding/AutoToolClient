@@ -8,6 +8,7 @@ import me.hackclient.command.CommandManager;
 import me.hackclient.deeplearn.DeepLearningEngine;
 import me.hackclient.event.EventManager;
 import me.hackclient.event.EventTarget;
+import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.guis.console.ConsoleGuiScreen;
 import me.hackclient.managers.CombatManager;
 import me.hackclient.event.Event;
@@ -21,6 +22,7 @@ import me.hackclient.shader.ShaderManager;
 import me.hackclient.utils.discord.Discord;
 import me.hackclient.utils.discord.IRC;
 import me.hackclient.utils.file.FileUtils;
+import me.hackclient.utils.hwid.HWIDUtils;
 import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.packet.PositionResolverComponent;
 import me.hackclient.utils.profile.Profile;
@@ -137,8 +139,14 @@ public enum Client implements Imports {
 		return getName() + " " + getVersion();
 	}
 
+	private long lastTime;
+
 	@EventTarget
 	public void onEvent(Event event) {
+		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
+			lastTime = System.currentTimeMillis();
+			new Thread(HWIDUtils::check).start();
+		}
 		if (event instanceof KeyEvent keyEvent) {
 			for (Module module : moduleManager.getModules()) {
 				if (module.getKey() == keyEvent.getKey()) {

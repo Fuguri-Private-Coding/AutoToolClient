@@ -53,7 +53,7 @@ public class ChestStealer extends Module {
                     return;
                 }
 
-                if (!delayStopWatch.reachedMS(delay)) return;
+                if (!delayStopWatch.reachedMS(delay) || !startDelayStopWatch.reachedMS(startDelay.getValue())) return;
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
                 final int nextSlot = updatePos(container);
@@ -62,6 +62,8 @@ public class ChestStealer extends Module {
 
                 mc.playerController.windowClick(container.windowId, nextSlot, 0, 1, mc.thePlayer);
                 delayStopWatch.reset();
+            } else {
+                startDelayStopWatch.reset();
             }
         }
     }
