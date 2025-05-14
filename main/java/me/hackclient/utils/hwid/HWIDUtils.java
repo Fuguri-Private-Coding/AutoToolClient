@@ -31,7 +31,6 @@ public class HWIDUtils {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().startsWith("SerialNumber")) {
-                    serialNumber = line.split(" ")[1];
                     break;
                 }
             }
