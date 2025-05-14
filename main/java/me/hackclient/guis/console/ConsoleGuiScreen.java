@@ -20,6 +20,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.Math.min;
 
@@ -55,7 +56,7 @@ public class ConsoleGuiScreen extends GuiScreen {
     int delay = 30;
 
     private final GuiTextField textField = new GuiTextField(0, null, 0,0,0,0);
-    public final List<String> history = new ArrayList<>();
+    public final List<String> history = new CopyOnWriteArrayList<>();
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
