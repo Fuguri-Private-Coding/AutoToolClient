@@ -22,40 +22,25 @@ public class HWIDUtils {
         }
     }
 
-    private static String getSerialNumber() {
-        String serialNumber = "";
-        try {
-            Process process = Runtime.getRuntime().exec(new String[] { "wmic", "diskdrive", "get", "serialnumber" });
-            process.getOutputStream().close();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.trim().startsWith("SerialNumber")) {
-                    break;
-                }
-            }
-            reader.close();
-            process.waitFor();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return serialNumber;
-    }
-
     public static String generateHWID() {
-        String input = "";
-        input += getSerialNumber();
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(input.getBytes(StandardCharsets.UTF_8));
-            StringBuilder sb = new StringBuilder();
-            for (byte b : hash) {
-                sb.append(String.format("%02x", b));
+        try{
+            String toEncrypt = /*System.getenv("COMPUTERNAME") + System.getProperty("user.name") + */ System.getenv("PROCESSOR_IDENTIFIER") + System.getenv("PROCESSOR_LEVEL");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(toEncrypt.getBytes());
+            StringBuffer hexString = new StringBuffer();
+
+            byte[] byteData = md.digest();
+
+            for (byte aByteData : byteData) {
+                String hex = Integer.toHexString(0xff & aByteData);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
             }
-            return sb.toString();
+
+            return hexString.toString();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return "Error";
         }
     }
 
