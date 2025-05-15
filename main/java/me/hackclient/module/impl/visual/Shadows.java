@@ -8,7 +8,7 @@ import me.hackclient.settings.impl.*;
 @ModuleInfo(name = "Shadows", category = Category.VISUAL)
 public class Shadows extends Module {
 
-    public MultiBooleanSetting module = new MultiBooleanSetting("Modules", this)
+    public MultiMode module = new MultiMode("Modules", this)
             .add("ClickGui")
             .add("ConsoleGui")
             .add("MainMenuGui")
@@ -34,7 +34,7 @@ public class Shadows extends Module {
     public FloatSetting vertical1Compress = new FloatSetting("Vertical1Compress", this, 0, 10, 0, 0.1f);
     public FloatSetting vertical2Compress = new FloatSetting("Vertical2Compress", this, 0, 10, 2, 0.1f);
 
-    public BooleanSetting fade = new BooleanSetting("Fade", this, false);
+    public CheckBox fade = new CheckBox("Fade", this, false);
     public ColorSetting color = new ColorSetting("ShadowColor", this, 0,0,0,1);
     public ColorSetting twoColor = new ColorSetting("TwoShadowColor", this, fade::isToggled, 0,0,0,1);
     public FloatSetting speed = new FloatSetting("Speed", this, fade::isToggled,0.1f, 20, 1, 0.1f);

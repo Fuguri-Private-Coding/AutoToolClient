@@ -20,11 +20,11 @@ public class CommandBind extends Command {
 		
 		if (args.length == 2) {
 			if (args[1].equalsIgnoreCase("clear")) {
-				Client.INSTANCE.getModuleManager().getModules().forEach(module -> module.setKey(Keyboard.KEY_NONE));
+				Client.INST.getModuleManager().getModules().forEach(module -> module.setKey(Keyboard.KEY_NONE));
 				console.log("All binds are cleared!");
 			}
 		} else if (args.length == 3) {
-			Module module = Client.INSTANCE.getModuleManager().getModule(args[1]);
+			Module module = Client.INST.getModuleManager().getModule(args[1]);
 		
 			if (module == null) {
 				console.log("There is no such module!");

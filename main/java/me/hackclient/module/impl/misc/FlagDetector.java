@@ -7,14 +7,14 @@ import me.hackclient.event.events.WorldChangeEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import me.hackclient.utils.client.ClientUtils;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
 @ModuleInfo(name = "FlagDetector", category = Category.MISC)
 public class FlagDetector extends Module {
 
-    BooleanSetting resetFlagsOnWorld = new BooleanSetting("ResetFlagsOnWorld", this, false);
+    CheckBox resetFlagsOnWorld = new CheckBox("ResetFlagsOnWorld", this, false);
 
     int flagCount = 0;
 

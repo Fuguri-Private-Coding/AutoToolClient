@@ -13,13 +13,12 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.Mode;
 import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.math.RandomUtils;
-import me.hackclient.utils.move.MoveUtils;
-import me.hackclient.utils.rotation.Rotation;
-import me.hackclient.utils.rotation.RotationUtils;
+import me.hackclient.utils.rotation.Rot;
+import me.hackclient.utils.rotation.RotUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
@@ -40,7 +39,7 @@ import java.util.List;
 @ModuleInfo(name = "ModelTrainer", category = Category.MISC)
 public class ModelTrainer extends Module {
 
-    ModeSetting modeTrainer = new ModeSetting("TrainerMode", this)
+    Mode modeTrainer = new Mode("TrainerMode", this)
             .addModes("Osu", "Combat")
             .setMode("Osu");
 
@@ -50,7 +49,7 @@ public class ModelTrainer extends Module {
     private final List<TrainingData> packets = new ArrayList<>();
 
     @Getter
-    private final File folder = new File(Client.INSTANCE.getClientDirectory(), name);
+    private final File folder = new File(Client.INST.getClientDirectory(), name);
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
     private int fightTicks;
@@ -116,17 +115,17 @@ public class ModelTrainer extends Module {
                     var yaw = MathHelper.wrapDegree(mc.thePlayer.rotationYaw);
                     var pitch = MathHelper.wrapDegree(mc.thePlayer.rotationPitch);
 
-                    var next = new Rotation(yaw, pitch);
-                    var current = new Rotation(prevYaw, prevPitch);
-                    var prev = new Rotation(prevPrevYaw, prevPrevPitch);
+                    var next = new Rot(yaw, pitch);
+                    var current = new Rot(prevYaw, prevPitch);
+                    var prev = new Rot(prevPrevYaw, prevPrevPitch);
 
                     var distance = (float) mc.thePlayer.getDistanceSqToEntity(slime);
 
                     packets.add(new TrainingData(
                             current.getVec3d(),
                             prev.getVec3d(),
-                            RotationUtils.getRotationToPoint(new Vec3(slime.posX, slime.posY + slime.height / 2f, slime.posZ)).getVec3d(),
-                            RotationUtils.getDelta(current, next).getVec2f(),
+                            RotUtils.getRotationToPoint(new Vec3(slime.posX, slime.posY + slime.height / 2f, slime.posZ)).getVec3d(),
+                            RotUtils.getDelta(current, next).getVec2f(),
                             mc.thePlayer.getPositionVector().subtract(mc.thePlayer.getPrevPositionVector()),
                             slime.getPositionVector().subtract(slime.getPrevPositionVector()),
                             distance,
@@ -165,17 +164,17 @@ public class ModelTrainer extends Module {
                     var yaw = MathHelper.wrapDegree(mc.thePlayer.rotationYaw);
                     var pitch = MathHelper.wrapDegree(mc.thePlayer.rotationPitch);
 
-                    var next = new Rotation(yaw, pitch);
-                    var current = new Rotation(prevYaw, prevPitch);
-                    var prev = new Rotation(prevPrevYaw, prevPrevPitch);
+                    var next = new Rot(yaw, pitch);
+                    var current = new Rot(prevYaw, prevPitch);
+                    var prev = new Rot(prevPrevYaw, prevPrevPitch);
 
                     var distance = (float) mc.thePlayer.getDistanceSqToEntity(target);
 
                     packets.add(new TrainingData(
                             current.getVec3d(),
                             prev.getVec3d(),
-                            RotationUtils.getRotationToPoint(RotationUtils.getBestHitVec(target)).getVec3d(),
-                            RotationUtils.getDelta(current, next).getVec2f(),
+                            RotUtils.getRotationToPoint(RotUtils.getBestHitVec(target)).getVec3d(),
+                            RotUtils.getDelta(current, next).getVec2f(),
                             mc.thePlayer.getPositionVector().subtract(mc.thePlayer.getPrevPositionVector()),
                             target.getPositionVector().subtract(target.getPrevPositionVector()),
                             distance,
@@ -196,7 +195,7 @@ public class ModelTrainer extends Module {
     private EntityLivingBase spawn() {
         var slime = new EntitySlime(mc.theWorld);
         var distance = 2 + RandomUtils.nextDouble(0, 0.9);
-        var direction = new Rotation(
+        var direction = new Rot(
                 mc.thePlayer.rotationYaw + RandomUtils.nextFloat(-60, 60),
                 RandomUtils.nextFloat(-35, 35)
         ).getVec3d().multiple(distance);

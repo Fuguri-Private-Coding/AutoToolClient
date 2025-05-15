@@ -19,7 +19,7 @@ public abstract class Command {
 		this.name = name;
 		this.usage = usage;
 		this.aliases = Arrays.asList(aliases);
-		console = Client.INSTANCE.getConsole();
+		console = Client.INST.getConsole();
 	}
 
 	public abstract void execute(String[] args);

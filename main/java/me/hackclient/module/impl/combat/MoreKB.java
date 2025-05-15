@@ -9,15 +9,13 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
 import me.hackclient.utils.math.RandomUtils;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 @ModuleInfo(name = "MoreKB", category = Category.COMBAT)
 public class MoreKB extends Module {
 
-    final ModeSetting mode = new ModeSetting("Mode", this)
+    final Mode mode = new Mode("Mode", this)
             .addModes("One", "WTap", "STap", "LegitFast")
             .setMode("LegitFast");
 
@@ -58,7 +56,7 @@ public class MoreKB extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            EntityLivingBase target = Client.INSTANCE.getCombatManager().getTargetOrSelectedEntity();
+            EntityLivingBase target = Client.INST.getCombatManager().getTargetOrSelectedEntity();
             if (target != null && target.hurtTime == 10) {
                 delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
                 reset = RandomUtils.nextInt(minReset.getValue(), maxReset.getValue());

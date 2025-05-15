@@ -3,7 +3,6 @@ package net.minecraft.client.renderer.entity;
 import me.hackclient.Client;
 import me.hackclient.module.impl.misc.MidClick;
 import me.hackclient.module.impl.visual.NameTags;
-import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -62,7 +61,7 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     }
 
     protected void renderOffsetLivingLabel(T entityIn, double x, double y, double z, String str, float p_177069_9_, double p_177069_10_) {
-        if (Client.INSTANCE.getModuleManager().getModule(NameTags.class).isToggled()) return;
+        if (Client.INST.getModuleManager().getModule(NameTags.class).isToggled()) return;
         this.renderLivingLabel(entityIn, str, x, y, z, 256);
     }
 
@@ -297,9 +296,9 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     protected void renderLivingLabel(T entityIn, String str, double x, double y, double z, int maxDistance) {
         double d0 = entityIn.getDistanceSqToEntity(this.renderManager.livingPlayer);
 
-        boolean b = entityIn instanceof EntityPlayer && Client.INSTANCE.getModuleManager().getModule(NameTags.class).isToggled();
+        boolean b = entityIn instanceof EntityPlayer && Client.INST.getModuleManager().getModule(NameTags.class).isToggled();
 
-        boolean friend = entityIn instanceof EntityPlayer ent && Client.INSTANCE.getModuleManager().getModule(MidClick.class).showInName.isToggled() && ent.isFriend();
+        boolean friend = entityIn instanceof EntityPlayer ent && Client.INST.getModuleManager().getModule(MidClick.class).showInName.isToggled() && ent.isFriend();
 
         if (d0 <= (double) (maxDistance * maxDistance) || b) {
             if (friend) str = "§2[Friend]§9 " + str;

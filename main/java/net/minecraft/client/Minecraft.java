@@ -10,7 +10,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableFutureTask;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import java.awt.image.BufferedImage;
@@ -41,7 +40,6 @@ import lombok.Getter;
 import me.hackclient.Client;
 import me.hackclient.event.events.*;
 import me.hackclient.guis.main.GuiClientMainMenu;
-import me.hackclient.utils.resource.ResourceUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;
@@ -146,7 +144,6 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.stats.AchievementList;
-import net.minecraft.stats.IStatStringFormat;
 import net.minecraft.stats.StatFileWriter;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
@@ -173,7 +170,6 @@ import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -479,7 +475,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
         this.renderGlobal.makeEntityOutlineShader();
 
-        Client.INSTANCE.init();
+        Client.INST.init();
     }
 
     private void registerMetadataSerializers() {
@@ -830,7 +826,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     public void shutdownMinecraftApplet() {
         try {
-            Client.INSTANCE.onClose();
+            Client.INST.onClose();
             this.stream.shutdownStream();
             logger.info("Stopping!");
 

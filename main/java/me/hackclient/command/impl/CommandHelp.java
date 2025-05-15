@@ -18,7 +18,7 @@ public class CommandHelp extends Command {
         }
 
         if (args[0].equalsIgnoreCase("help")) {
-            CommandManager commandManager = Client.INSTANCE.getCommandManager();
+            CommandManager commandManager = Client.INST.getCommandManager();
             if (commandManager.commands.isEmpty()) {
                 console.log("Command List is empty.");
                 return;

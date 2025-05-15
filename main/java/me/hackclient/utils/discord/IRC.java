@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.Client;
 import me.hackclient.event.events.UpdateIRCEvent;
-import me.hackclient.utils.client.ClientUtils;
+import me.hackclient.module.impl.client.IRCModule;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -25,7 +25,7 @@ public class IRC extends ListenerAdapter {
     public static long myID = -1;
 
     private Thread ircLogger = new Thread(() -> {
-        while (true) {
+        while (IRCModule.running) {
             if (myID != -1) {
                 serverChannel.deleteMessageById(myID).queue(_ -> {
                     myID = -1;
@@ -36,7 +36,7 @@ public class IRC extends ListenerAdapter {
             }
 
             try {
-                Thread.sleep(30000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }
@@ -87,13 +87,13 @@ public class IRC extends ListenerAdapter {
             String message = event.getMessage().getContentRaw();
             if (message.startsWith("PrivateMessage")) {
                 String[] args = message.split(" ");
-                if (!Client.INSTANCE.getProfile().getUsername().equalsIgnoreCase(args[1])) return;
+                if (!Client.INST.getProfile().getUsername().equalsIgnoreCase(args[1])) return;
                 message = message.substring("PrivateMessage ".length());
                 message = message.substring(args[1].length() + 1);
                 message += " §f[§4Private§f]";
             }
-            message = message.replaceAll("dev", "§4dev§f").replaceAll(Client.INSTANCE.getProfile().getUsername(), "§b" + Client.INSTANCE.getProfile().getUsername() + "§f");
-            Client.INSTANCE.getConsole().history.add("§f[§2IRC§f] " + message);
+            message = message.replaceAll("dev", "§4dev§f").replaceAll(Client.INST.getProfile().getUsername(), "§b" + Client.INST.getProfile().getUsername() + "§f");
+            Client.INST.getConsole().history.add("§f[§2IRC§f] " + message);
         }
     }
 

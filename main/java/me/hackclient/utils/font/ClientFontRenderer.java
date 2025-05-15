@@ -88,7 +88,7 @@ public class ClientFontRenderer implements Imports {
         }
     }
 
-    public double getWidth(String text) {
+    public double getStringWidth(String text) {
         char COLOR_INVOKER = '\247';
         int width = 0;
         char[] charArray = text.toCharArray();

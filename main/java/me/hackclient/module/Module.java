@@ -30,17 +30,17 @@ public class Module implements Imports {
 	public void toggle() {
 		toggled = !toggled;
 		float volume = 1;
-		if (Client.INSTANCE.getModuleManager() != null && Client.INSTANCE.getModuleManager().getModule(ClickGui.class) != null) {
-			volume = Client.INSTANCE.getModuleManager().getModule(ClickGui.class).toggleModuleVolume.getValue();
+		if (Client.INST.getModuleManager() != null && Client.INST.getModuleManager().getModule(ClickGui.class) != null) {
+			volume = Client.INST.getModuleManager().getModule(ClickGui.class).toggleModuleVolume.getValue();
 		}
 
 		if (toggled) {
-			Client.INSTANCE.getSoundsManager().getEnableSound().asyncPlay(volume);
-			Client.INSTANCE.getEventManager().register(this);
+			Client.INST.getSoundsManager().getEnableSound().asyncPlay(volume);
+			Client.INST.getEventManager().register(this);
 			onEnable();
 		} else {
-			Client.INSTANCE.getSoundsManager().getDisableSound().asyncPlay(volume);
-			Client.INSTANCE.getEventManager().unregister(this);
+			Client.INST.getSoundsManager().getDisableSound().asyncPlay(volume);
+			Client.INST.getEventManager().unregister(this);
 			onDisable();
 		}
 	}

@@ -6,13 +6,13 @@ import me.hackclient.event.events.MotionEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.MultiBooleanSetting;
+import me.hackclient.settings.impl.MultiMode;
 import me.hackclient.utils.move.MoveUtils;
 
 @ModuleInfo(name = "Fixes", category = Category.MISC)
 public class Fixes extends Module {
 
-    MultiBooleanSetting fixes = new MultiBooleanSetting("Fixes", this)
+    MultiMode fixes = new MultiMode("Fixes", this)
             .add("ClickDelay", true)
             .add("SaveMoveKeys", true);
 

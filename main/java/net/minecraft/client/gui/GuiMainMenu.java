@@ -253,7 +253,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         }
 
         if (button.id == 1488) {
-            Client.INSTANCE.getShaderManager().init();
+            Client.INST.getShaderManager().init();
             System.out.println("reloaded shaders");
         }
 

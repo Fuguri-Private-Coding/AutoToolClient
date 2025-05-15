@@ -47,7 +47,7 @@ public class OverlayTrainingListener extends TrainingListenerAdapter {
                 buildProgressBar(progress) + " " +
                 getColoredPercentage(progress);
 
-        List<String> history = Client.INSTANCE.getConsole().history;
+        List<String> history = Client.INST.getConsole().history;
 
         if (!history.isEmpty()) {
             String last = history.getLast();

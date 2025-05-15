@@ -2,7 +2,7 @@ package me.hackclient.utils.rotation;
 
 import net.minecraft.util.MathHelper;
 
-public class Delta extends Rotation {
+public class Delta extends Rot {
 
 	public Delta() {
 		setYaw(0);

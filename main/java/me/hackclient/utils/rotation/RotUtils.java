@@ -10,12 +10,12 @@ import net.minecraft.util.Vec3;
 import java.util.Arrays;
 import java.util.List;
 
-public class RotationUtils implements Imports {
+public class RotUtils implements Imports {
 	public static Vec3 getBestHitVec(Entity entity) {
 		return getBestHitVec(getEntityExpandedBB(entity));
 	}
 
-	public static Rotation getBestRotation(Entity entity) {
+	public static Rot getBestRotation(Entity entity) {
 		return getRotationToPoint(getBestHitVec(entity));
 	}
 
@@ -24,7 +24,7 @@ public class RotationUtils implements Imports {
 		return bb.clampVecToInside(eyes);
 	}
 
-	public static Rotation getBestRotation(AxisAlignedBB bb) {
+	public static Rot getBestRotation(AxisAlignedBB bb) {
 		return getRotationToPoint(getBestHitVec(bb));
 	}
 
@@ -32,19 +32,19 @@ public class RotationUtils implements Imports {
 		return bb.clampVecToInside(from);
 	}
 
-	public static Rotation getBestRotation(Vec3 from, AxisAlignedBB bb) {
+	public static Rot getBestRotation(Vec3 from, AxisAlignedBB bb) {
 		return getRotationToPoint(getBestHitVec(from, bb));
 	}
 
-	public static Delta getDeltaToPoint(Rotation startRotation, Vec3 needPoint) {
-		Rotation endRotation = getRotationToPoint(needPoint);
+	public static Delta getDeltaToPoint(Rot startRotation, Vec3 needPoint) {
+		Rot endRotation = getRotationToPoint(needPoint);
 		return getDelta(startRotation, endRotation);
 	}
 
-	public static Rotation getRotationToPoint(Vec3 needPoint) {
+	public static Rot getRotationToPoint(Vec3 needPoint) {
 		Vec3 delta = needPoint.subtract(mc.thePlayer.getPositionEyes(1.0F));
 		double distance = mc.thePlayer.getPositionEyes(1.0F).distanceTo(needPoint);
-		return new Rotation(
+		return new Rot(
 				(float) (Math.toDegrees(Math.atan2(delta.zCoord, delta.xCoord)) - 90),
 				(float) -Math.toDegrees(Math.atan2(delta.yCoord, distance))
 		);
@@ -68,7 +68,7 @@ public class RotationUtils implements Imports {
 		return (float) (Math.pow(mc.gameSettings.mouseSensitivity * 0.6 + 0.2, 3) * 1.2);
 	}
 
-	public static Delta fixDelta(Rotation delta) {
+	public static Delta fixDelta(Rot delta) {
 		final float gcd = getMouseGCD();
 		return new Delta(
                 (float) MathUtils.round(delta.getYaw(), gcd),
@@ -76,7 +76,7 @@ public class RotationUtils implements Imports {
         );
 	}
 
-	public static Rotation getNearestRotation(Rotation current, AxisAlignedBB box) {
+	public static Rot getNearestRotation(Rot current, AxisAlignedBB box) {
 		Vec3[] points = {
 				new Vec3(box.minX, box.minY, box.minZ),
 				new Vec3(box.maxX, box.minY, box.minZ),
@@ -88,32 +88,32 @@ public class RotationUtils implements Imports {
 				new Vec3(box.maxX, box.maxY, box.maxZ)
 		};
 
-		List<Rotation> rotations = Arrays.stream(points)
-				.map(RotationUtils::getRotationToPoint)
+		List<Rot> rotations = Arrays.stream(points)
+				.map(RotUtils::getRotationToPoint)
 				.toList();
 
-		double minYaw = rotations.stream().mapToDouble(Rotation::getYaw).min().orElse(0D);
-		double maxYaw = rotations.stream().mapToDouble(Rotation::getYaw).max().orElse(0D);
-		double minPitch = rotations.stream().mapToDouble(Rotation::getPitch).min().orElse(0D);
-		double maxPitch = rotations.stream().mapToDouble(Rotation::getPitch).max().orElse(0D);
+		double minYaw = rotations.stream().mapToDouble(Rot::getYaw).min().orElse(0D);
+		double maxYaw = rotations.stream().mapToDouble(Rot::getYaw).max().orElse(0D);
+		double minPitch = rotations.stream().mapToDouble(Rot::getPitch).min().orElse(0D);
+		double maxPitch = rotations.stream().mapToDouble(Rot::getPitch).max().orElse(0D);
 
-		return new Rotation(Math.clamp(current.getYaw(), (float) minYaw, (float) maxYaw),
+		return new Rot(Math.clamp(current.getYaw(), (float) minYaw, (float) maxYaw),
 				Math.clamp(current.getPitch(), (float) minPitch, (float) maxPitch));
 	}
 
-	public static Delta getDelta(Rotation start, Rotation end) {
+	public static Delta getDelta(Rot start, Rot end) {
 		return new Delta(
 				MathHelper.wrapDegree(end.getYaw() - start.getYaw()),
 				end.getPitch() - start.getPitch()
 		);
 	}
 
-	public static void limitDelta(Rotation delta, Rotation speed) {
+	public static void limitDelta(Rot delta, Rot speed) {
 		delta.setYaw(Math.clamp(delta.getYaw(), -speed.getYaw(), speed.getYaw()));
 		delta.setPitch(Math.clamp(delta.getPitch(), -speed.getPitch(), speed.getPitch()));
 	}
 
-	public static Vec3 getVectorForRotation(Rotation rotation) {
+	public static Vec3 getVectorForRotation(Rot rotation) {
 		float f = MathHelper.cos(-rotation.getYaw() * 0.017453292F - (float)Math.PI);
 		float f1 = MathHelper.sin(-rotation.getYaw() * 0.017453292F - (float)Math.PI);
 		float f2 = -MathHelper.cos(-rotation.getPitch() * 0.017453292F);

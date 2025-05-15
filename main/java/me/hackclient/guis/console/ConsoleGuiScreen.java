@@ -6,8 +6,8 @@ import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.module.impl.visual.Shadows;
-import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.Minecraft;
@@ -18,7 +18,6 @@ import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -38,7 +37,7 @@ public class ConsoleGuiScreen extends GuiScreen {
     final Animation2D background, sizeBackground, scrolls;
 
     public ConsoleGuiScreen() {
-        Client.INSTANCE.getEventManager().register(this);
+        Client.INST.getEventManager().register(this);
         mc = Minecraft.getMinecraft();
 
         pos = new Vector2f(0, 0);
@@ -60,8 +59,8 @@ public class ConsoleGuiScreen extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
-        if (clickGui == null) clickGui = Client.INSTANCE.getModuleManager().getModule(ClickGui.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
         scroll -= Mouse.getDWheel() / 120 * 10;
 
         float consoleVisibleHeight = sizeBackground.y - (fullScreen ? 20 : 2) - 15;
@@ -175,7 +174,7 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         if (keyCode == Keyboard.KEY_RETURN && !textField.getText().isEmpty()) {
             if (changed) return;
-            if (!Client.INSTANCE.getCommandManager().handle(textField.getText())) {
+            if (!Client.INST.getCommandManager().handle(textField.getText())) {
                 history.add("C:\\Users\\" + username + ": " + textField.getText());
             }
             textField.setText("");

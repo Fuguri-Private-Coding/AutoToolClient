@@ -6,24 +6,18 @@ import me.hackclient.event.events.Render3DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.ColorSetting;
-import me.hackclient.settings.impl.MultiBooleanSetting;
-import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.settings.impl.MultiMode;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-
 @ModuleInfo(name = "ESP", category = Category.VISUAL)
 public class ESP extends Module {
 
-    final MultiBooleanSetting modes = new MultiBooleanSetting("Modes", this)
+    final MultiMode modes = new MultiMode("Modes", this)
             .add("Box")
             .add("Glow")
             //.add("")

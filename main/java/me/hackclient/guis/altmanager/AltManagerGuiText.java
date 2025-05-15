@@ -2,8 +2,8 @@ package me.hackclient.guis.altmanager;
 
 import me.hackclient.Client;
 import me.hackclient.module.impl.visual.Shadows;
-import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
 
@@ -19,7 +19,7 @@ public class AltManagerGuiText extends GuiTextField {
 
     @Override
     public void drawTextBox() {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
 
         if (shadows.module.get("MainMenuGui") && shadows.isToggled()) {
             BloomUtils.addToDraw(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 6f, Color.BLACK));

@@ -16,7 +16,7 @@ import me.hackclient.module.impl.visual.BlockOverlay;
 import me.hackclient.module.impl.visual.CustomCamera;
 import me.hackclient.module.impl.visual.NoRender;
 import me.hackclient.module.impl.visual.Shadows;
-import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -517,7 +517,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     }
 
     private void hurtCameraEffect(float partialTicks) {
-        NoRender noRender = Client.INSTANCE.getModuleManager().getModule(NoRender.class);
+        NoRender noRender = Client.INST.getModuleManager().getModule(NoRender.class);
 
         if (noRender.isToggled() && noRender.HurtCam.isToggled()) return;
 
@@ -582,7 +582,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
             }
         } else if (this.mc.gameSettings.thirdPersonView > 0) {
-            CustomCamera customCamera = Client.INSTANCE.getModuleManager().getModule(CustomCamera.class);
+            CustomCamera customCamera = Client.INST.getModuleManager().getModule(CustomCamera.class);
 
             double d3 = customCamera.isToggled() ? customCamera.cameraDistance.getValue() : this.thirdPersonDistanceTemp + (this.thirdPersonDistance - this.thirdPersonDistanceTemp) * partialTicks;
 
@@ -1000,7 +1000,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     }
 
     public void updateCameraAndRender(float partialTicks, long nanoTime) {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         Config.renderPartialTicks = partialTicks;
         this.frameInit();
         boolean flag = Display.isActive();
@@ -1435,7 +1435,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, new Object[]{renderglobal, entityplayer1, this.mc.objectMouseOver, Integer.valueOf(0), entityplayer1.getHeldItem(), Float.valueOf(partialTicks)})) && !this.mc.gameSettings.hideGUI) {
                 new DrawBlockHighlightEvent().call();
-                BlockOverlay blockOverlay = Client.INSTANCE.getModuleManager().getModule(BlockOverlay.class);
+                BlockOverlay blockOverlay = Client.INST.getModuleManager().getModule(BlockOverlay.class);
                 if (!blockOverlay.isToggled()) renderglobal.drawSelectionBox(entityplayer1, this.mc.objectMouseOver, 0, partialTicks);
             }
             GlStateManager.enableAlpha();

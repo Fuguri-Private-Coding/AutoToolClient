@@ -44,9 +44,9 @@ public class GuiPlayerTabOverlay extends Gui
 
     public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
     {
-        final MidClick midClick = Client.INSTANCE.getModuleManager().getModule(MidClick.class);
-        final MurderMystery murderDetector = Client.INSTANCE.getModuleManager().getModule(MurderMystery.class);
-        final FriendManager friendManager = Client.INSTANCE.getFriendManager();
+        final MidClick midClick = Client.INST.getModuleManager().getModule(MidClick.class);
+        final MurderMystery murderDetector = Client.INST.getModuleManager().getModule(MurderMystery.class);
+        final FriendManager friendManager = Client.INST.getFriendManager();
 
         String friend = friendManager.isFriend(networkPlayerInfoIn.getGameProfile().getName(), midClick.reverseFriends.isToggled()) ? "§2[Friend]§9 " : "";
         String murder = murderDetector.isToggled() && murderDetector.murders.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§4[Murder]§4 " : "";

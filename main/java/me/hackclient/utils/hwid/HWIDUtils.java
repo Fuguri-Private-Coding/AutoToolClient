@@ -11,7 +11,7 @@ public class HWIDUtils {
     public static void check() {
         String hwid = generateHWID();
         if (isWhiteList(hwid)) {
-            System.out.println("Hello, " + Client.INSTANCE.getProfile() + " welcome to AutoTool!");
+            System.out.println("Hello, " + Client.INST.getProfile() + " welcome to AutoTool!");
         } else {
             System.exit(-1);
         }
@@ -40,14 +40,14 @@ public class HWIDUtils {
     }
 
     public static boolean isWhiteList(String hwid) {
-        for (Message message : Client.INSTANCE.getIrc().getHwidChannel().getIterableHistory().stream().toList()) {
+        for (Message message : Client.INST.getIrc().getHwidChannel().getIterableHistory().stream().toList()) {
             String[] args = message.getContentRaw().split(":");
             if (hwid.equalsIgnoreCase(args[0])) {
-                Client.INSTANCE.setProfile(new Profile(args[1], args[2]));
+                Client.INST.setProfile(new Profile(args[1], args[2]));
                 return true;
             }
         }
-        Client.INSTANCE.getIrc().sendMessage(Client.INSTANCE.getIrc().getLoginChannel(),
+        Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
                 "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " This user does not have access to the client."
         );
         return false;

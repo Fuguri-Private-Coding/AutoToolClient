@@ -10,7 +10,7 @@ import me.hackclient.module.impl.combat.ClickSettings;
 import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
-import me.hackclient.utils.rotation.Rotation;
+import me.hackclient.utils.rotation.Rot;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
@@ -18,7 +18,7 @@ import net.minecraft.util.MovingObjectPosition;
 public class ClickManager implements Imports {
 
     public ClickManager() {
-        Client.INSTANCE.getEventManager().register(this);
+        Client.INST.getEventManager().register(this);
     }
 
     @Getter @Setter boolean clicking;
@@ -28,19 +28,19 @@ public class ClickManager implements Imports {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (clickSettings == null) clickSettings = Client.INSTANCE.getModuleManager().getModule(ClickSettings.class);
+        if (clickSettings == null) clickSettings = Client.INST.getModuleManager().getModule(ClickSettings.class);
 
         if (event instanceof TickEvent tickEvent && !tickEvent.isCanceled()) {
             int iters = clicks;
             clicks = 0;
 
-            EntityLivingBase target = Client.INSTANCE.getCombatManager().getTargetOrSelectedEntity();
+            EntityLivingBase target = Client.INST.getCombatManager().getTargetOrSelectedEntity();
             clicking = needClick(target);
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
             if (rayCast != null && rayCast.isFriend() || !clicking) { return; }
 
             for (int i = 0; i < iters; i++) {
-                MovingObjectPosition mouse = RayCastUtils.rayCast(Client.INSTANCE.getCombatManager().getEntityReach(), Client.INSTANCE.getCombatManager().getBlockReach(), Rotation.getServerRotation());
+                MovingObjectPosition mouse = RayCastUtils.rayCast(Client.INST.getCombatManager().getEntityReach(), Client.INST.getCombatManager().getBlockReach(), Rot.getServerRotation());
                 mc.clickMouseCustom(mouse, false);
             }
         }

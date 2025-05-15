@@ -14,7 +14,7 @@ public class DiscordRPCModule extends Module {
     Discord discord;
 
     public DiscordRPCModule() {
-        discord = Client.INSTANCE.getDiscord();
+        discord = Client.INST.getDiscord();
     }
 
     @Override

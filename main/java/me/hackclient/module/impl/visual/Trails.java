@@ -8,7 +8,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
-import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.util.Vec3;
@@ -20,7 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleInfo(name = "Trails", category = Category.VISUAL)
 public class Trails extends Module {
 
-    final ModeSetting mode = new ModeSetting("Mode", this)
+    final Mode mode = new Mode("Mode", this)
             .addModes("SingleLine", "PlayerLine")
             .setMode("PlayerLine");
 
@@ -28,7 +28,7 @@ public class Trails extends Module {
 
     final IntegerSetting lifeTime = new IntegerSetting("LifeTime", this, 1, 30, 1);
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 1f, 10f, 1f, 0.1f) {};
-    final BooleanSetting onlyThirdPerson = new BooleanSetting("OnlyThirdPerson", this, false);
+    final CheckBox onlyThirdPerson = new CheckBox("OnlyThirdPerson", this, false);
 
     final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
 
@@ -41,7 +41,7 @@ public class Trails extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (onlyThirdPerson.isToggled() && mc.gameSettings.thirdPersonView == 0) return;
         if (event instanceof Render3DEvent) {
             Vec3 smoothVec = new Vec3(

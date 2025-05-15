@@ -10,7 +10,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.module.impl.player.Scaffold;
 import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -24,10 +24,10 @@ public class BlockOverlay extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (Client.INSTANCE.getModuleManager().getModule(Scaffold.class).isToggled()) {
+        if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) {
             return;
         }
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (event instanceof DrawBlockHighlightEvent) {
             MovingObjectPosition renderRayCast = mc.objectMouseOver;
             if (renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {

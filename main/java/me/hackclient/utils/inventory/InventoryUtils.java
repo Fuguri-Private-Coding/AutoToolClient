@@ -21,7 +21,7 @@ public class InventoryUtils implements Imports {
     }
 
     public InventoryUtils() {
-        Client.INSTANCE.getEventManager().register(this);
+        Client.INST.getEventManager().register(this);
     }
 
     @EventTarget

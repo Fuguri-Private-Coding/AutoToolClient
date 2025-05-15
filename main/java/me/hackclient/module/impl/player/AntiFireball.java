@@ -22,7 +22,7 @@ public class AntiFireball extends Module {
 
     final IntegerSetting delay = new IntegerSetting("Delay", this, 0, 500, 0);
     final FloatSetting distance = new FloatSetting("Distance", this, 3f, 12f, 6f, 0.5f) {};
-    final BooleanSetting debug = new BooleanSetting("Debug", this, false);
+    final CheckBox debug = new CheckBox("Debug", this, false);
 
     public AntiFireball() {
         stopWatch = new StopWatch();

@@ -8,7 +8,7 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
-import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
 import me.hackclient.utils.color.ColorUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -24,7 +24,7 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "TargetESP", category = Category.VISUAL)
 public class TargetESP extends Module {
 
-    final ModeSetting mode = new ModeSetting("Mode", this)
+    final Mode mode = new Mode("Mode", this)
             .addModes("Sigma", "Sigma2")
             .setMode("Sigma");
 
@@ -32,7 +32,7 @@ public class TargetESP extends Module {
     final IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
     final FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f) {};
     final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
-    final BooleanSetting changeColorHit = new BooleanSetting("ChangeHitColor", this, false);
+    final CheckBox changeColorHit = new CheckBox("ChangeHitColor", this, false);
     final ColorSetting hitColor = new ColorSetting("HitColor", this, changeColorHit::isToggled, 1f,1f,1f,1f);
 
     private final List<Sigma2> poses = new ArrayList<>();
@@ -41,7 +41,7 @@ public class TargetESP extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (event instanceof Render3DEvent) {
             switch (mode.getMode()) {
                 case "Sigma" -> {
@@ -64,7 +64,7 @@ public class TargetESP extends Module {
     private void renderSigma(Color color, Color hcolor) {
         double animationTranslate = sin(System.currentTimeMillis() / 1000.0 * speed.getValue());
 
-        final EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
+        final EntityLivingBase target = Client.INST.getCombatManager().getTarget();
 
         if (target == null) return;
 
@@ -118,7 +118,7 @@ public class TargetESP extends Module {
     }
 
     private void renderSigma2(Color color, Color hcolor) {
-        final EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
+        final EntityLivingBase target = Client.INST.getCombatManager().getTarget();
 
         if (target == null) return;
 

@@ -1,4 +1,4 @@
-package me.hackclient.shader;
+package me.hackclient.utils.render.shader;
 
 import org.lwjgl.opengl.GL20;
 

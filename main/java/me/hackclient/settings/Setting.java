@@ -1,7 +1,6 @@
 package me.hackclient.settings;
 
 import me.hackclient.module.Module;
-import me.hackclient.settings.impl.BooleanSetting;
 
 import java.util.function.BooleanSupplier;
 

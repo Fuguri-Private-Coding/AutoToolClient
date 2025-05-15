@@ -9,9 +9,9 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.Mode;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.block.material.Material;
@@ -23,12 +23,12 @@ import org.lwjgl.input.Mouse;
 @ModuleInfo(name = "AutoPlace", category = Category.PLAYER)
 public class AutoPlace extends Module {
 
-    ModeSetting mode = new ModeSetting("Mode", this)
+    Mode mode = new Mode("Mode", this)
             .addModes("Legit", "AutoPlace")
             .setMode("Legit")
             ;
 
-    BooleanSetting needHoldRight = new BooleanSetting("HoldRight", this, () -> mode.getMode().equalsIgnoreCase("AutoPlace"));
+    CheckBox needHoldRight = new CheckBox("HoldRight", this, () -> mode.getMode().equalsIgnoreCase("AutoPlace"));
 
     IntegerSetting minCps = new IntegerSetting("MinCps", this, () -> mode.getMode().equals("Legit"), 1, 40, 7) {
         @Override

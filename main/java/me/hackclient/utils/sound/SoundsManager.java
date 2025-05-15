@@ -13,7 +13,7 @@ public class SoundsManager {
     SoundPlayer enableSound, disableSound, killedSound, neverLoseSound, skeetSound;
 
     public SoundsManager() throws IOException {
-        File directory = Client.INSTANCE.getSoundsDirectory();
+        File directory = Client.INST.getSoundsDirectory();
         File enableSoundFile = new File(directory, "enable.wav");
         File disableSoundFile = new File(directory, "disable.wav");
         File killedSoundFile = new File(directory, "killed.wav");

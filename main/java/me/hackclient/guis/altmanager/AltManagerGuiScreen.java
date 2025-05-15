@@ -1,6 +1,6 @@
 package me.hackclient.guis.altmanager;
 
-import me.hackclient.shader.impl.BackgroundUtils;
+import me.hackclient.utils.render.shader.impl.BackgroundUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;

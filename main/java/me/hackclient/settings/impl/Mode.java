@@ -10,21 +10,21 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 @Getter
-public class ModeSetting extends Setting {
+public class Mode extends Setting {
 
     String mode;
     @Setter List<String> modes = new ArrayList<>();
 
-    public ModeSetting(String name, Module parent) {
+    public Mode(String name, Module parent) {
         super(name, parent);
     }
 
-    public ModeSetting(String name, Module parent, BooleanSupplier visible) {
+    public Mode(String name, Module parent, BooleanSupplier visible) {
         super(name, parent);
         this.setVisible(visible);
     }
 
-    public ModeSetting setMode(String mode) {
+    public Mode setMode(String mode) {
         if (!modes.contains(mode)) {
             System.out.println("Cant set mode " + mode);
             return this;
@@ -33,12 +33,12 @@ public class ModeSetting extends Setting {
         return this;
     }
 
-    public ModeSetting addMode(String mode) {
+    public Mode addMode(String mode) {
         modes.add(mode);
         return this;
     }
 
-    public ModeSetting addModes(String... modes) {
+    public Mode addModes(String... modes) {
         this.modes.addAll(List.of(modes));
         return this;
     }

@@ -8,28 +8,28 @@ import me.hackclient.utils.doubles.Doubles;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 
-public class MultiBooleanSetting extends Setting {
+public class MultiMode extends Setting {
 
     @Getter
     CopyOnWriteArrayList<Doubles<String, Boolean>> values;
 
-    public MultiBooleanSetting(String name, Module parent) {
+    public MultiMode(String name, Module parent) {
         super(name, parent);
         values = new CopyOnWriteArrayList<>();
     }
 
-    public MultiBooleanSetting(String name, Module parent, BooleanSupplier visible) {
+    public MultiMode(String name, Module parent, BooleanSupplier visible) {
         super(name, parent);
         setVisible(visible);
         values = new CopyOnWriteArrayList<>();
     }
 
-    public MultiBooleanSetting add(String name, boolean value) {
+    public MultiMode add(String name, boolean value) {
         values.add(new Doubles<>(name, value));
         return this;
     }
 
-    public MultiBooleanSetting add(String name) {
+    public MultiMode add(String name) {
         values.add(new Doubles<>(name, false));
         return this;
     }

@@ -6,7 +6,6 @@ import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.file.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,7 +20,7 @@ public class Config {
 
     public Config(String name) {
        this.name = name;
-       configFile = new File(Client.INSTANCE.getConfigManager().getConfigsDirectory(), name + CONFIG_FORMAT);
+       configFile = new File(Client.INST.getConfigManager().getConfigsDirectory(), name + CONFIG_FORMAT);
        lastUpdateDate = new Date();
        FileUtils.createIfNotExists(configFile);
     }

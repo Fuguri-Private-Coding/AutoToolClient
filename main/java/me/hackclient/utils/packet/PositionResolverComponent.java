@@ -15,7 +15,7 @@ import net.minecraft.network.play.server.S18PacketEntityTeleport;
 public class PositionResolverComponent implements Imports {
 
     public PositionResolverComponent() {
-        Client.INSTANCE.getEventManager().register(this);
+        Client.INST.getEventManager().register(this);
     }
 
     @EventTarget

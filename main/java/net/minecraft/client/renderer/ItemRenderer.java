@@ -8,7 +8,7 @@ import me.hackclient.event.events.UpdateRenderingItem;
 import me.hackclient.module.impl.visual.Animations;
 import me.hackclient.module.impl.visual.NoRender;
 import me.hackclient.module.impl.visual.Shadows;
-import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -292,7 +292,7 @@ public class ItemRenderer {
     }
 
     public void renderItemInFirstPerson(float partialTicks) {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (!Config.isShaders() || !Shaders.isSkipRenderHand()) {
             float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
             AbstractClientPlayer abstractclientplayer = this.mc.thePlayer;
@@ -307,7 +307,7 @@ public class ItemRenderer {
 
             if (this.itemToRender != null) {
                 EnumAction enumaction = this.itemToRender.getItemUseAction();
-                Animations animations = Client.INSTANCE.getModuleManager().getModule(Animations.class);
+                Animations animations = Client.INST.getModuleManager().getModule(Animations.class);
                 boolean animate = (f1 > 0 && Animations.isAnimate() && animations.isToggled() && enumaction.equals(EnumAction.BLOCK)) || (animations.isToggled() && animations.always.isToggled() && f1 > 0 && enumaction.equals(EnumAction.BLOCK)) || (animations.isToggled() && abstractclientplayer.getItemInUseCount() > 0 && enumaction.equals(EnumAction.BLOCK));
 
                 if (this.itemToRender.getItem() instanceof ItemMap) {
@@ -455,7 +455,7 @@ public class ItemRenderer {
     }
 
     private void renderFireInFirstPerson(float partialTicks) {
-        NoRender noRender = Client.INSTANCE.getModuleManager().getModule(NoRender.class);
+        NoRender noRender = Client.INST.getModuleManager().getModule(NoRender.class);
 
         if (noRender.isToggled() && noRender.Fire.isToggled()) return;
 

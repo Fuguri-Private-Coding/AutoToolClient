@@ -10,7 +10,7 @@ import java.util.List;
 public class RayCastUtils implements Imports {
 
     public static Entity raycastEntity(final double range, final IEntityFilter entityFilter) {
-        return raycastEntity(range, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(),
+        return raycastEntity(range, Rot.getServerRotation().getYaw(), Rot.getServerRotation().getPitch(),
                 entityFilter);
     }
 
@@ -119,10 +119,10 @@ public class RayCastUtils implements Imports {
     }
 
     public static Entity raycastEntityFromPos(final Vec3 pos, final double range, final IEntityFilter entityFilter) {
-        return raycastEntityFromPos(pos, range, Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch(), entityFilter);
+        return raycastEntityFromPos(pos, range, Rot.getServerRotation().getYaw(), Rot.getServerRotation().getPitch(), entityFilter);
     }
 
-    public static MovingObjectPosition rayCast(Vec3 eyesPosition, final double entityRange, final double blockRange, Rotation rotation) {
+    public static MovingObjectPosition rayCast(Vec3 eyesPosition, final double entityRange, final double blockRange, Rot rotation) {
         if (mc.theWorld == null || mc.getRenderViewEntity() == null) { return null; }
 
         double blockReachDistance = blockRange;
@@ -194,7 +194,7 @@ public class RayCastUtils implements Imports {
         return mouse;
     }
 
-    public static MovingObjectPosition rayCast(final double entityRange, final double blockRange, Rotation rotation) {
+    public static MovingObjectPosition rayCast(final double entityRange, final double blockRange, Rot rotation) {
         return rayCast(mc.thePlayer.getPositionEyes(1f), entityRange, blockRange, rotation);
     }
 

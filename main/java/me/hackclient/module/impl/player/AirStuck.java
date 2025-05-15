@@ -8,14 +8,14 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.Mode;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 
 @ModuleInfo(name = "AirStuck", category = Category.PLAYER)
 public class AirStuck extends Module {
 
-    ModeSetting mode = new ModeSetting("Mode", this)
+    Mode mode = new Mode("Mode", this)
             .addModes("NoRotate")
             .setMode("NoRotate");
 

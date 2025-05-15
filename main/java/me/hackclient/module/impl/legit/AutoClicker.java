@@ -7,11 +7,11 @@ import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import me.hackclient.settings.impl.FloatSetting;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
-import me.hackclient.utils.rotation.Rotation;
+import me.hackclient.utils.rotation.Rot;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.input.Mouse;
@@ -38,7 +38,7 @@ public class AutoClicker extends Module {
         }
     };
 
-    final BooleanSetting allowBreakBlock = new BooleanSetting("AllowBreakBlock", this, true);
+    final CheckBox allowBreakBlock = new CheckBox("AllowBreakBlock", this, true);
 
     public AutoClicker() {
         stopWatch = new StopWatch();
@@ -53,11 +53,11 @@ public class AutoClicker extends Module {
 
             if (mc.currentScreen != null) return;
 
-            if (allowBreakBlock.isToggled() && RayCastUtils.rayCast(Client.INSTANCE.getCombatManager().getEntityReach(), Client.INSTANCE.getCombatManager().getBlockReach(), Rotation.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) return;
+            if (allowBreakBlock.isToggled() && RayCastUtils.rayCast(Client.INST.getCombatManager().getEntityReach(), Client.INST.getCombatManager().getBlockReach(), Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) return;
 
             if (stopWatch.reachedMS(delay)) {
                 stopWatch.reset();
-                Client.INSTANCE.getClickManager().addClick();
+                Client.INST.getClickManager().addClick();
                 delay = Math.round(1000f / RandomUtils.nextFloat(minCps.getValue(), maxCps.getValue()));
             }
         }

@@ -18,9 +18,9 @@ public class CommandIRCChat extends Command {
         }
 
         if (args[0].equalsIgnoreCase("irc")) {
-            IRC irc = Client.INSTANCE.getIrc();
+            IRC irc = Client.INST.getIrc();
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(Client.INSTANCE.getProfile().toString()).append(" ");
+            stringBuilder.append(Client.INST.getProfile().toString()).append(" ");
             for (String arg : args) {
                 if (arg.equalsIgnoreCase(args[0])) continue;
                 stringBuilder.append(arg).append(" ");

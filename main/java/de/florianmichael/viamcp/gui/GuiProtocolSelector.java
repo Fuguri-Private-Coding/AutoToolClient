@@ -20,8 +20,6 @@ package de.florianmichael.viamcp.gui;
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import de.florianmichael.vialoadingbase.ViaLoadingBase;
-import de.florianmichael.viamcp.protocolinfo.ProtocolInfo;
-import me.hackclient.shader.impl.BackgroundUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;

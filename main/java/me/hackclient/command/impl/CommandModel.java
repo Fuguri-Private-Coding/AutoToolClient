@@ -24,7 +24,7 @@ public class CommandModel extends Command {
 
         if (args.length == 3) {
             if (args[1].equalsIgnoreCase("create")) {
-                var samples = TrainingData.parse(Client.INSTANCE.getModuleManager().getModule(ModelTrainer.class).getFolder());
+                var samples = TrainingData.parse(Client.INST.getModuleManager().getModule(ModelTrainer.class).getFolder());
 
                 if (samples.isEmpty()) {
                     console.log("Not enough samples!");
@@ -43,12 +43,12 @@ public class CommandModel extends Command {
 
                 new Thread(() -> {
                     long currentMS = System.currentTimeMillis();
-                    Client.INSTANCE.getConsole().changed = true;
+                    Client.INST.getConsole().changed = true;
                     model.train(featuresArray, labelsArray);
-                    model.save(Client.INSTANCE.getModelsDirectory().toPath(), model.getName());
-                    new File(Client.INSTANCE.getModelsDirectory(), model.getName() + "-0000").renameTo(new File(model.getName()));
-                    Client.INSTANCE.getModuleManager().getModule(KillAura.class).updateModels();
-                    Client.INSTANCE.getConsole().changed = false;
+                    model.save(Client.INST.getModelsDirectory().toPath(), model.getName());
+                    new File(Client.INST.getModelsDirectory(), model.getName() + "-0000").renameTo(new File(model.getName()));
+                    Client.INST.getModuleManager().getModule(KillAura.class).updateModels();
+                    Client.INST.getConsole().changed = false;
                     console.log("Created model " + args[2] + " in " + (System.currentTimeMillis() - currentMS) / 1000D + " s.");
                 }).start();
             }

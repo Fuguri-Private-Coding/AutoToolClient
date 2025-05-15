@@ -6,8 +6,8 @@ import me.hackclient.Client;
 import me.hackclient.deeplearn.data.TrainingData;
 import me.hackclient.deeplearn.models.MinaraiModel;
 import me.hackclient.utils.interfaces.Imports;
-import me.hackclient.utils.rotation.Rotation;
-import me.hackclient.utils.rotation.RotationUtils;
+import me.hackclient.utils.rotation.Rot;
+import me.hackclient.utils.rotation.RotUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -26,13 +26,13 @@ public class AIRotationSmooth implements Imports {
     MinaraiModel model;
 
     Vec3 prevVec = Vec3.ZERO;
-    Rotation prevRotation = Rotation.ZERO;
+    Rot prevRotation = Rot.ZERO;
 
-    public Rotation compute(Rotation startsFrom, Rotation targetRot, EntityLivingBase target, float yawMultiplier, float pitchMultiplier, boolean correct, float yawCorrectSpeed, float pitchCorrectSpeed) {
+    public Rot compute(Rot startsFrom, Rot targetRot, EntityLivingBase target, float yawMultiplier, float pitchMultiplier, boolean correct, float yawCorrectSpeed, float pitchCorrectSpeed) {
         Vec3 currentVec = mc.thePlayer.getLookVec();
         Vec3 targetVec = mc.thePlayer.getVectorForRotation(targetRot.getPitch(), targetRot.getYaw());
 
-        Rotation correctRot = RotationUtils.getDelta(startsFrom, targetRot);
+        Rot correctRot = RotUtils.getDelta(startsFrom, targetRot);
 
         TrainingData input = new TrainingData(
                 currentVec,
@@ -63,9 +63,9 @@ public class AIRotationSmooth implements Imports {
             correctRot.setYaw(MathHelper.clamp(correctRot.getYaw(), -yawCorrectSpeed, yawCorrectSpeed));
             correctRot.setPitch(MathHelper.clamp(correctRot.getPitch() , -pitchCorrectSpeed, pitchCorrectSpeed));
 
-            if (!correct) correctRot = Rotation.ZERO;
+            if (!correct) correctRot = Rot.ZERO;
 
-            return startsFrom.add(new Rotation(yawOutputDelta, pitchOutputDelta)).add(correctRot);
+            return startsFrom.add(new Rot(yawOutputDelta, pitchOutputDelta)).add(correctRot);
         } catch (TranslateException e) {
             e.printStackTrace(System.out);
         }
@@ -77,7 +77,7 @@ public class AIRotationSmooth implements Imports {
         currentModelName = modelName;
         model = new MinaraiModel(modelName + ".params");
         try {
-            InputStream inputStream = new FileInputStream(new File(Client.INSTANCE.getModelsDirectory(), modelName + ".params"));
+            InputStream inputStream = new FileInputStream(new File(Client.INST.getModelsDirectory(), modelName + ".params"));
             model.load(inputStream);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);

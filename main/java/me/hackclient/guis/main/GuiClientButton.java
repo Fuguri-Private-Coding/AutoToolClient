@@ -2,8 +2,8 @@ package me.hackclient.guis.main;
 
 import me.hackclient.Client;
 import me.hackclient.module.impl.visual.Shadows;
-import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -24,7 +24,7 @@ public class GuiClientButton extends GuiButton {
 
     @Override
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 
         final FontRenderer fonts = mc.fontRendererObj;

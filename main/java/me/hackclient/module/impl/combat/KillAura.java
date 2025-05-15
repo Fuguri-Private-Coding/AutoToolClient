@@ -13,8 +13,8 @@ import me.hackclient.settings.impl.*;
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.math.RandomUtils;
 import me.hackclient.utils.move.MoveUtils;
-import me.hackclient.utils.rotation.Rotation;
-import me.hackclient.utils.rotation.RotationUtils;
+import me.hackclient.utils.rotation.Rot;
+import me.hackclient.utils.rotation.RotUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -34,16 +34,16 @@ import java.util.function.BooleanSupplier;
 public class KillAura extends Module {
 
     final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 8, 6, 0.1f);
-    final MultiBooleanSetting targets = new MultiBooleanSetting("Targets", this)
+    final MultiMode targets = new MultiMode("Targets", this)
             .add("Players", true)
             .add("Mobs")
             .add("Animals")
             .add("Villagers");
-    final ModeSetting sortType = new ModeSetting("SortType", this)
+    final Mode sortType = new Mode("SortType", this)
             .addModes("Distance", "FOV")
             .setMode("FOV");
 
-    final ModeSetting hitVec = new ModeSetting("HitVec", this)
+    final Mode hitVec = new Mode("HitVec", this)
             .addModes("Best", "Nearest", "Head", "Body")
             .setMode("Best");
 
@@ -80,7 +80,7 @@ public class KillAura extends Module {
         }
     };
 
-    final ModeSetting smoothMode = new ModeSetting("SmoothMode", this)
+    final Mode smoothMode = new Mode("SmoothMode", this)
             .addModes("Linear", "AIModel")
             .setMode("Linear");
 
@@ -91,16 +91,16 @@ public class KillAura extends Module {
     );
 
     final BooleanSupplier modelVisible = () -> smoothMode.getMode().equalsIgnoreCase("AIModel");
-    public final ModeSetting model = new ModeSetting("AIModel", this, modelVisible);
+    public final Mode model = new Mode("AIModel", this, modelVisible);
     final FloatSetting yawMultiplier = new FloatSetting("YawMultiplier", this, modelVisible, 0.5f, 2, 1, 0.1f);
     final FloatSetting pitchMultiplier = new FloatSetting("PitchMultiplier", this, modelVisible, 0.5f, 2, 1, 0.1f);
 
-    final BooleanSetting correction = new BooleanSetting("Correction", this, modelVisible);
+    final CheckBox correction = new CheckBox("Correction", this, modelVisible);
     final BooleanSupplier correctionVisible = () -> modelVisible.getAsBoolean() && correction.isToggled();
     final IntegerSetting yawCorrectionSpeed = new IntegerSetting("YawCorrectionSpeed", this, correctionVisible, 0, 180, 90);
     final IntegerSetting pitchCorrectionSpeed = new IntegerSetting("PitchCorrectionSpeed", this, correctionVisible, 0, 180, 30);
 
-    final BooleanSetting lockView = new BooleanSetting("LockView", this);
+    final CheckBox lockView = new CheckBox("LockView", this);
 
     final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
     final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 1, 20, 17) {
@@ -118,7 +118,7 @@ public class KillAura extends Module {
         }
     };
 
-    final ModeSetting moveFix = new ModeSetting("MoveFix", this)
+    final Mode moveFix = new Mode("MoveFix", this)
             .addModes("OFF", "Legit", "Silent", "Target")
             .setMode("Silent");
 
@@ -136,37 +136,37 @@ public class KillAura extends Module {
 
     @Override
     public void onDisable() {
-        Client.INSTANCE.getCombatManager().setTarget(null);
+        Client.INST.getCombatManager().setTarget(null);
     }
 
     @EventTarget
     public void onEvent(Event event) {
-        CombatManager combatManager = Client.INSTANCE.getCombatManager();
+        CombatManager combatManager = Client.INST.getCombatManager();
         if (event instanceof TickEvent) combatManager.setTarget(findNewTarget());
         if (combatManager.getTarget() == null) return;
         EntityLivingBase target = combatManager.getTarget();
-        Rotation lr = Rotation.getServerRotation().copy();
+        Rot lr = Rot.getServerRotation().copy();
 
         if (event instanceof MotionEvent e) {
             e.setYaw(lr.getYaw());
             e.setPitch(lr.getPitch());
 
             AxisAlignedBB box = getHitBox(target);
-            Rotation needRotation = switch (hitVec.getMode()) {
-                case "Best" -> RotationUtils.getBestRotation(box);
-                case "Nearest" -> RotationUtils.getNearestRotation(lr, box);
-                case "Head" -> RotationUtils.getRotationToPoint(target.getPositionEyes(1f));
-                case "Body" -> RotationUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
+            Rot needRotation = switch (hitVec.getMode()) {
+                case "Best" -> RotUtils.getBestRotation(box);
+                case "Nearest" -> RotUtils.getNearestRotation(lr, box);
+                case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
+                case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
                 default -> throw new IllegalStateException("Unexpected value: " + hitVec.getMode());
             };
 
-            Rotation delta = RotationUtils.getDelta(lr, needRotation);
-            Rotation speed = new Rotation(
+            Rot delta = RotUtils.getDelta(lr, needRotation);
+            Rot speed = new Rot(
                     RandomUtils.nextFloat(minYawSpeed.getValue(), maxYawSpeed.getValue()),
                     RandomUtils.nextFloat(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
             );
 
-            RotationUtils.limitDelta(delta, speed);
+            RotUtils.limitDelta(delta, speed);
 
             switch (smoothMode.getMode()) {
                 case "Linear" -> {
@@ -179,35 +179,35 @@ public class KillAura extends Module {
                             AIRotationSmooth.changeModel(model.getMode());
                         }
 
-                        Rotation targetRot = lr.add(delta);
+                        Rot targetRot = lr.add(delta);
 
-                        Rotation aiRotation = AIRotationSmooth.compute(
+                        Rot aiRotation = AIRotationSmooth.compute(
                                 lr, targetRot, target,
                                 yawMultiplier.getValue(), pitchMultiplier.getValue(),
                                 correction.isToggled(), yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
                         );
 
-                        delta = RotationUtils.getDelta(lr, aiRotation);
+                        delta = RotUtils.getDelta(lr, aiRotation);
                     }
                 }
             }
 
-            RotationUtils.limitDelta(delta, speed);
-            RotationUtils.fixDelta(delta);
+            RotUtils.limitDelta(delta, speed);
+            RotUtils.fixDelta(delta);
             lr = lr.add(delta);
             lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
-            Rotation.setServerRotation(lr);
+            Rot.setServerRotation(lr);
 
             if (lockView.isToggled()) {
-                mc.thePlayer.rotationYaw = Rotation.getServerRotation().getYaw();
-                mc.thePlayer.rotationPitch = Rotation.getServerRotation().getPitch();
+                mc.thePlayer.rotationYaw = Rot.getServerRotation().getYaw();
+                mc.thePlayer.rotationPitch = Rot.getServerRotation().getPitch();
             }
         }
 
         if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
             if (clickTimer.reachedMS(delay)) {
                 clickTimer.reset();
-                Client.INSTANCE.getClickManager().addClick();
+                Client.INST.getClickManager().addClick();
                 delay = Math.round(1000f / RandomUtils.nextFloat(minCPS.getValue(), maxCPS.getValue()));
             }
         }
@@ -231,7 +231,7 @@ public class KillAura extends Module {
             }
             if (event instanceof SprintEvent) {
                 if (moveFix.getMode().equalsIgnoreCase("Silent") || moveFix.getMode().equalsIgnoreCase("Target")) {
-                    if (Math.abs(MoveUtils.getDirection() - MoveUtils.getDirection(Rotation.getServerRotation().getYaw())) > 45) {
+                    if (Math.abs(MoveUtils.getDirection() - MoveUtils.getDirection(Rot.getServerRotation().getYaw())) > 45) {
                         mc.thePlayer.setSprinting(false);
                     }
                 }
@@ -240,7 +240,7 @@ public class KillAura extends Module {
         if (event instanceof MoveEvent e) {
             switch (moveFix.getMode()) {
                 case "Silent" -> MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
-                case "Target" -> MoveUtils.moveFix(e, RotationUtils.getRotationToPoint(target.getPositionVector()).getYaw());
+                case "Target" -> MoveUtils.moveFix(e, RotUtils.getRotationToPoint(target.getPositionVector()).getYaw());
             }
         }
     }
@@ -298,7 +298,7 @@ public class KillAura extends Module {
 
             switch (sortType.getMode()) {
                 case "Distance" -> value = DistanceUtils.getDistance(entity);
-                case "FOV" -> value = RotationUtils.getFovToEntity(entity);
+                case "FOV" -> value = RotUtils.getFovToEntity(entity);
             }
 
             if (value < bestValue) {
@@ -312,8 +312,8 @@ public class KillAura extends Module {
 
     public void updateModels() {
         model.getModes().clear();
-        if (Client.INSTANCE.getModelsDirectory().listFiles() != null) {
-            for (File modelFile : Client.INSTANCE.getModelsDirectory().listFiles()) {
+        if (Client.INST.getModelsDirectory().listFiles() != null) {
+            for (File modelFile : Client.INST.getModelsDirectory().listFiles()) {
                 model.getModes().add(modelFile.getName().replaceAll(".params", ""));
             }
         }

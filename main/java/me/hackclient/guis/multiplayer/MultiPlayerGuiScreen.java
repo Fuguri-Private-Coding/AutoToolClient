@@ -1,6 +1,6 @@
 package me.hackclient.guis.multiplayer;
 
-import me.hackclient.shader.impl.BackgroundUtils;
+import me.hackclient.utils.render.shader.impl.BackgroundUtils;
 import net.minecraft.client.gui.GuiScreen;
 
 import java.io.IOException;

@@ -8,26 +8,26 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import org.lwjgl.util.vector.Vector2f;
 
-public class Rotation {
-	public static final Rotation ZERO = new Rotation(0,0);
+public class Rot {
+	public static final Rot ZERO = new Rot(0,0);
 	@Getter @Setter static boolean changed;
-	@Getter static Rotation serverRotation = new Rotation();
+	@Getter static Rot serverRotation = new Rot();
 	@Getter @Setter float yaw, pitch;
 
-	public static void setServerRotation(Rotation serverRotation) {
-		Rotation.serverRotation = serverRotation.copy();
+	public static void setServerRotation(Rot serverRotation) {
+		Rot.serverRotation = serverRotation.copy();
 		changed = true;
 	}
 
-	public static Rotation getLastReported() {
-		return new Rotation(
+	public static Rot getLastReported() {
+		return new Rot(
 				MathHelper.wrapDegree(Minecraft.getMinecraft().thePlayer.lastReportedYaw),
 				MathHelper.wrapDegree(Minecraft.getMinecraft().thePlayer.lastReportedPitch)
 		);
 	}
 
-	public static Rotation fromRotationVec(Vec3 lookVec) {
-		return new Rotation(
+	public static Rot fromRotationVec(Vec3 lookVec) {
+		return new Rot(
 				MathHelper.wrapDegree((float) (Math.toDegrees(Math.atan2(lookVec.zCoord, lookVec.xCoord)) - 90)),
 				MathHelper.wrapDegree((float) (-Math.toDegrees(Math.atan2(lookVec.yCoord, Math.sqrt(lookVec.xCoord * lookVec.xCoord + lookVec.zCoord * lookVec.zCoord)))))
 		);
@@ -41,37 +41,37 @@ public class Rotation {
 		return new Vector2f(yaw, pitch);
 	}
 
-	public Rotation() {
+	public Rot() {
 		yaw = 0;
 		pitch = 0;
 	}
 
-	public Rotation(float yaw, float pitch) {
+	public Rot(float yaw, float pitch) {
 		this.yaw = yaw;
 		this.pitch = pitch;
 	}
 
-	public Rotation add(float yaw, float pitch) {
-		return new Rotation(
+	public Rot add(float yaw, float pitch) {
+		return new Rot(
 				this.yaw + yaw,
 				MathHelper.clamp(this.pitch + pitch, -90, 90)
 		);
 	}
 
-	public Rotation add(Rotation add) {
+	public Rot add(Rot add) {
 		return add(add.yaw, add.pitch);
 	}
 
-	public Rotation subtract(float yaw, float pitch) {
+	public Rot subtract(float yaw, float pitch) {
 		return add(-yaw, -pitch);
 	}
 
-	public Rotation subtract(Rotation rotation) {
+	public Rot subtract(Rot rotation) {
 		return subtract(rotation.yaw, rotation.pitch);
 	}
 
-	public Rotation copy() {
-		return new Rotation(
+	public Rot copy() {
+		return new Rot(
 				yaw,
 				pitch
 		);
@@ -81,10 +81,10 @@ public class Rotation {
 		return Math.hypot(yaw, pitch);
 	}
 
-	public Rotation fix() {
-		Delta delta = RotationUtils.getDelta(serverRotation, this);
-		delta = RotationUtils.fixDelta(delta);
-		return new Rotation(
+	public Rot fix() {
+		Delta delta = RotUtils.getDelta(serverRotation, this);
+		delta = RotUtils.fixDelta(delta);
+		return new Rot(
 				serverRotation.getYaw() + delta.getYaw(),
 				serverRotation.getPitch() + delta.getPitch()
 		);

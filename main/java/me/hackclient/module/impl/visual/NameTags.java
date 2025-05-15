@@ -12,8 +12,8 @@ import me.hackclient.module.impl.misc.MidClick;
 import me.hackclient.module.impl.misc.MurderMystery;
 import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.RoundedUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -38,9 +38,9 @@ public class NameTags extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
-        if (murderDetector == null) murderDetector = Client.INSTANCE.getModuleManager().getModule(MurderMystery.class);
-        if (midClick == null) midClick = Client.INSTANCE.getModuleManager().getModule(MidClick.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (murderDetector == null) murderDetector = Client.INST.getModuleManager().getModule(MurderMystery.class);
+        if (midClick == null) midClick = Client.INST.getModuleManager().getModule(MidClick.class);
         if (event instanceof Render3DEvent) {
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
                 if (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) continue;

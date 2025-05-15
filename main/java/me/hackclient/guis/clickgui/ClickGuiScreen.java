@@ -11,8 +11,8 @@ import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.module.impl.visual.Shadows;
 import me.hackclient.settings.Setting;
 import me.hackclient.settings.impl.*;
-import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.doubles.Doubles;
 import me.hackclient.utils.render.scissor.ScissorUtils;
@@ -38,7 +38,7 @@ public class ClickGuiScreen extends GuiScreen {
 	Vector2f lastSize = new Vector2f(200, 200);
 	Vector2f lastPos = new Vector2f(200, 200);
 
-	ClickGui clickGui = Client.INSTANCE.getModuleManager().getModule(ClickGui.class);
+	ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
 
 	Color BACKGROUND_COLOR = new Color(15, 15, 15, clickGui.backgroundAlpha.getValue());
 	Color MAIN_COLOR = new Color(255, 255, 209, 255);
@@ -75,7 +75,7 @@ public class ClickGuiScreen extends GuiScreen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		int currentScroll = Mouse.getDWheel();
 		scroll -= Mouse.getDWheel() / 120 * 10;
-		if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+		if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
 		MAIN_COLOR = clickGui.color.getColor();
 		BACKGROUND_COLOR = new Color(15,15,15,clickGui.backgroundAlpha.getValue());
         if (closing) {
@@ -85,7 +85,7 @@ public class ClickGuiScreen extends GuiScreen {
 				mc.displayGuiScreen(null);
 				if (showConsoleAfterClose) {
 					mc.currentScreen = null;
-					mc.displayGuiScreen(Client.INSTANCE.getConsole());
+					mc.displayGuiScreen(Client.INST.getConsole());
 					showConsoleAfterClose = false;
 				}
 				if (showConfigAfterClose) {
@@ -110,7 +110,7 @@ public class ClickGuiScreen extends GuiScreen {
 		};
 
 		MAIN_COLOR_INT = MAIN_COLOR.getRGB();
-				Client.INSTANCE.getModuleManager().getModules().sort(
+				Client.INST.getModuleManager().getModules().sort(
 				(o1, o2) -> {
 					int width1 = mc.fontRendererObj.getStringWidth(o1.getName());
 					int width2 = mc.fontRendererObj.getStringWidth(o2.getName());
@@ -131,7 +131,7 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 
 		final FontRenderer fontRenderer = mc.fontRendererObj;
-		final float clientNameWidth = fontRenderer.getStringWidth(Client.INSTANCE.getName());
+		final float clientNameWidth = fontRenderer.getStringWidth(Client.INST.getName());
 		float offset = 0;
 
 		float widthConsole = fontRenderer.getStringWidth("Console") / 2f;
@@ -179,7 +179,7 @@ public class ClickGuiScreen extends GuiScreen {
 		RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
 
 		float widthsModule = 0;
-		for (Module module : Client.INSTANCE.getModuleManager().getModules()) {
+		for (Module module : Client.INST.getModuleManager().getModules()) {
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
 
 			if (moduleWidth > widthsModule) {
@@ -188,7 +188,7 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 		float verticalLineXOffset = max(clientNameWidth + 14, widthsModule) + 7;
 
-		for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selectedCategory))	{
+		for (Module module : Client.INST.getModuleManager().getModulesByCategory(selectedCategory))	{
 			fontRenderer.drawString(
 					module.getName(),
 					background.x + 4,
@@ -235,7 +235,7 @@ public class ClickGuiScreen extends GuiScreen {
 						background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
 						CATEGORY_COLOR.getRGB()
 				);
-				if (setting instanceof MultiBooleanSetting multiBooleanSetting) {
+				if (setting instanceof MultiMode multiBooleanSetting) {
 					float xOffset = 0;
 					float yOffset = 0;
 					int length = multiBooleanSetting.getValues().size();
@@ -265,7 +265,7 @@ public class ClickGuiScreen extends GuiScreen {
 					}
 					offset += yOffset;
 				}
-				if (setting instanceof ModeSetting modeSetting) {
+				if (setting instanceof Mode modeSetting) {
 					float xOffset = 0;
 					float yOffset = 0;
 					for (String mode : modeSetting.getModes()) {
@@ -294,7 +294,7 @@ public class ClickGuiScreen extends GuiScreen {
 					}
 					offset += yOffset;
 				}
-				if (setting instanceof BooleanSetting booleanSetting) {
+				if (setting instanceof CheckBox booleanSetting) {
 					fontRenderer.drawString(
 							String.valueOf(booleanSetting.isToggled()),
 							background.x + verticalLineXOffset + 5 + settingWidth + 1,
@@ -559,7 +559,7 @@ public class ClickGuiScreen extends GuiScreen {
 		if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y) return;
 
 		final FontRenderer fontRenderer = mc.fontRendererObj;
-		final float clientNameWidth = fontRenderer.getStringWidth(Client.INSTANCE.getName());
+		final float clientNameWidth = fontRenderer.getStringWidth(Client.INST.getName());
 		float offset = 0;
 
 		boolean resize = mouseX > background.x + sizeBackground.x - 5 && mouseX < background.x + sizeBackground.x && mouseY > background.y + sizeBackground.y - 5 && mouseY < background.y + sizeBackground.y;
@@ -570,7 +570,7 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 
 		float widthsModule = 0;
-		for (Module module : Client.INSTANCE.getModuleManager().getModules()) {
+		for (Module module : Client.INST.getModuleManager().getModules()) {
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
 
 			if (moduleWidth > widthsModule) {
@@ -587,7 +587,7 @@ public class ClickGuiScreen extends GuiScreen {
 			lastMouse.set(mouseX, mouseY);
 		}
 
-		for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selectedCategory))	{
+		for (Module module : Client.INST.getModuleManager().getModulesByCategory(selectedCategory))	{
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
 			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 9;
 			if (moduleCondition) {
@@ -631,7 +631,7 @@ public class ClickGuiScreen extends GuiScreen {
 						background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
 						-1
 				);
-				if (setting instanceof MultiBooleanSetting multiBooleanSetting) {
+				if (setting instanceof MultiMode multiBooleanSetting) {
 					float xOffset = 0;
 					float yOffset = 0;
 					for (Doubles<String, Boolean> value : multiBooleanSetting.getValues()) {
@@ -651,7 +651,7 @@ public class ClickGuiScreen extends GuiScreen {
 					}
 					offset += yOffset;
 				}
-				if (setting instanceof ModeSetting modeSetting) {
+				if (setting instanceof Mode modeSetting) {
 					float xOffset = 0;
 					float yOffset = 0;
 					for (String mode : modeSetting.getModes()) {
@@ -669,7 +669,7 @@ public class ClickGuiScreen extends GuiScreen {
 					}
 					offset += yOffset;
 				}
-				if (setting instanceof BooleanSetting booleanSetting) {
+				if (setting instanceof CheckBox booleanSetting) {
 					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
 					&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + fontRenderer.getStringWidth(String.valueOf(booleanSetting.isToggled()))
 					&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset
@@ -721,13 +721,13 @@ public class ClickGuiScreen extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		Client.INSTANCE.getEventManager().unregister(this);
-		Client.INSTANCE.getConfigManager().saveAsync(Client.INSTANCE.getConfigManager().getDefaultConfig());
+		Client.INST.getEventManager().unregister(this);
+		Client.INST.getConfigManager().saveAsync(Client.INST.getConfigManager().getDefaultConfig());
 	}
 
 	@Override
 	public void initGui() {
-		Client.INSTANCE.getEventManager().register(this);
+		Client.INST.getEventManager().register(this);
 		sizeBackground.reset();
 		background.reset();
 		pos.set(lastPos);

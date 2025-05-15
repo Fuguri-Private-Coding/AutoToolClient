@@ -1,4 +1,4 @@
-package me.hackclient.shader;
+package me.hackclient.utils.render.shader;
 
 import lombok.Getter;
 import me.hackclient.utils.interfaces.Imports;

@@ -9,7 +9,7 @@ import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
 import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.Mode;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.util.MathHelper;
@@ -21,7 +21,7 @@ public class Animations extends Module {
     @Getter
     static boolean animate;
 
-    ModeSetting mode = new ModeSetting("Mode", this)
+    Mode mode = new Mode("Mode", this)
             .addModes("1.7", "Sigma", "Sigma 2", "Scale", "Exhibition", "Gothaj", "Spin", "Basic", "Slide")
             .setMode("Sigma");
 
@@ -31,7 +31,7 @@ public class Animations extends Module {
 
     public FloatSetting speed = new FloatSetting("Speed", this, 0.1f, 4f,1f,0.1f);
 
-    public BooleanSetting always = new BooleanSetting("AlwaysBlocking", this, true);
+    public CheckBox always = new CheckBox("AlwaysBlocking", this, true);
 
     @EventTarget
     public void onEvent(Event event) {

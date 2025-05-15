@@ -7,10 +7,8 @@ import java.util.concurrent.Callable;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.hackclient.Client;
-import me.hackclient.event.events.ChangeSprintEvent;
 import me.hackclient.event.events.MoveFlyingEvent;
-import me.hackclient.utils.rotation.Rotation;
+import me.hackclient.utils.rotation.Rot;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -1232,7 +1230,7 @@ public abstract class Entity implements ICommandSender
         }
     }
 
-    public Vec3 getLook(Rotation rotation) {
+    public Vec3 getLook(Rot rotation) {
         return this.getVectorForRotation(rotation.getPitch(), rotation.getYaw());
     }
 
@@ -1283,7 +1281,7 @@ public abstract class Entity implements ICommandSender
         return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true);
     }
 
-    public MovingObjectPosition rayTrace(double blockReachDistance, float partialTicks, Rotation rotation)
+    public MovingObjectPosition rayTrace(double blockReachDistance, float partialTicks, Rot rotation)
     {
         Vec3 vec3 = this.getPositionEyes(partialTicks);
         Vec3 vec31 = getVectorForRotation(rotation.getPitch(), rotation.getYaw());

@@ -11,7 +11,7 @@ import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.predict.SimulatedPlayer;
 import me.hackclient.utils.raytrace.RayTraceUtils;
-import me.hackclient.utils.rotation.Rotation;
+import me.hackclient.utils.rotation.Rot;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -39,7 +39,7 @@ public class TimerRangeV2 extends Module {
                 return;
             }
 
-            EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
+            EntityLivingBase target = Client.INST.getCombatManager().getTarget();
 
             if (target == null || target.hurtTime > hurtTime.getValue()) {
                 return;
@@ -58,7 +58,7 @@ public class TimerRangeV2 extends Module {
                         simulatedPlayer.getPosEyes(),
                         3d,
                         4.5d,
-                        Rotation.getServerRotation()
+                        Rot.getServerRotation()
                 );
 
                 if (mouse != null && mouse.entityHit == target) {

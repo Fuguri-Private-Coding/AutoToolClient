@@ -9,14 +9,14 @@ import me.hackclient.guis.console.ConsoleGuiScreen;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
 
 @ModuleInfo(name = "NoGuiClose", category = Category.MISC)
 public class NoGuiClose extends Module {
 
-    BooleanSetting onlyClientGui = new BooleanSetting("ClientGuis", this, true);
+    CheckBox onlyClientGui = new CheckBox("ClientGuis", this, true);
 
     @EventTarget
     public void onEvent(Event event) {

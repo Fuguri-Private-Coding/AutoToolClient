@@ -28,8 +28,8 @@ public class ConfigManager implements Imports {
 
     public void init() {
         configs = new ArrayList<>();
-        configsDirectory = new File(Client.INSTANCE.getName() + "/configs");
-        bindsDirectory = new File(Client.INSTANCE.getName() + "/binds");
+        configsDirectory = new File(Client.INST.getName() + "/configs");
+        bindsDirectory = new File(Client.INST.getName() + "/binds");
         bindsDirectory.mkdirs();
         configsDirectory.mkdirs();
         defaultConfig = new Config("default");
@@ -61,7 +61,7 @@ public class ConfigManager implements Imports {
             JsonObject json = (JsonObject) parser.parse(reader);
             reader.close();
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-                Module module = Client.INSTANCE.getModuleManager().getModule(entry.getKey());
+                Module module = Client.INST.getModuleManager().getModule(entry.getKey());
                 if (module == null) {
                     continue;
                 }
@@ -77,7 +77,7 @@ public class ConfigManager implements Imports {
     public void saveBinds() {
         FileUtils.createIfNotExists(bindFile);
         JsonObject mainObject = new JsonObject();
-        for (Module module : Client.INSTANCE.getModuleManager().getModules()) {
+        for (Module module : Client.INST.getModuleManager().getModules()) {
             JsonObject moduleObject = new JsonObject();
             moduleObject.addProperty("key", module.getKey());
             mainObject.add(module.getName(), moduleObject);
@@ -103,7 +103,7 @@ public class ConfigManager implements Imports {
                 if (entry.getKey().equalsIgnoreCase("ConfigInformation")) { // В загрузке конфига нужно скипать значения с его названием и датой для избежания багов так как при загрузке нам нужны только модули
                     continue;
                 }
-                Module module = Client.INSTANCE.getModuleManager().getModule(entry.getKey());
+                Module module = Client.INST.getModuleManager().getModule(entry.getKey());
                 if (module == null) {
                     continue;
                 }
@@ -117,9 +117,9 @@ public class ConfigManager implements Imports {
                     switch (setting) {
                         case IntegerSetting set -> set.setValue(settingElement.getAsInt());
                         case FloatSetting set -> set.setValue(settingElement.getAsFloat());
-                        case BooleanSetting set -> set.setToggled(settingElement.getAsBoolean());
-                        case ModeSetting set -> set.setMode(settingElement.getAsString());
-                        case MultiBooleanSetting set -> {
+                        case CheckBox set -> set.setToggled(settingElement.getAsBoolean());
+                        case Mode set -> set.setMode(settingElement.getAsString());
+                        case MultiMode set -> {
                             JsonObject jsonObject = settingElement.getAsJsonObject();
                             for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
                                 set.set(entry1.getKey(), entry1.getValue().getAsBoolean());
@@ -154,16 +154,16 @@ public class ConfigManager implements Imports {
         infoObject.addProperty("Name", config.getName());
         infoObject.addProperty("LastUpdate", config.getLastUpdateDate());
         mainObject.add("ConfigInformation", infoObject);
-        for (Module module : Client.INSTANCE.getModuleManager().getModules()) {
+        for (Module module : Client.INST.getModuleManager().getModules()) {
             JsonObject moduleObject = new JsonObject();
             moduleObject.addProperty("toggled", module.isToggled());
             for (Setting setting : module.getSettings()) {
                 switch (setting) {
                     case IntegerSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());
                     case FloatSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());
-                    case BooleanSetting set -> moduleObject.addProperty(setting.getName(), set.isToggled());
-                    case ModeSetting set -> moduleObject.addProperty(setting.getName(), set.getMode());
-                    case MultiBooleanSetting set -> {
+                    case CheckBox set -> moduleObject.addProperty(setting.getName(), set.isToggled());
+                    case Mode set -> moduleObject.addProperty(setting.getName(), set.getMode());
+                    case MultiMode set -> {
                         JsonObject multiBooleanObject = new JsonObject();
                         for (Doubles<String, Boolean> value : set.getValues()) {
                             multiBooleanObject.addProperty(value.getFirst(), value.getSecond());

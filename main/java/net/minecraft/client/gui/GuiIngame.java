@@ -10,7 +10,7 @@ import java.util.Random;
 import me.hackclient.Client;
 import me.hackclient.module.impl.visual.NoRender;
 import me.hackclient.module.impl.visual.Shadows;
-import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -99,7 +99,7 @@ public class GuiIngame extends Gui {
     }
 
     public void renderGameOverlay(float partialTicks) {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         ScaledResolution scaledresolution = new ScaledResolution(this.mc);
         int i = scaledresolution.getScaledWidth();
         int j = scaledresolution.getScaledHeight();
@@ -473,7 +473,7 @@ public class GuiIngame extends Gui {
     }
 
     private void renderScoreboard(ScoreObjective objective, ScaledResolution scaledRes) {
-        NoRender noRender = Client.INSTANCE.getModuleManager().getModule(NoRender.class);
+        NoRender noRender = Client.INST.getModuleManager().getModule(NoRender.class);
         if (noRender.isToggled() && noRender.scoreBoard.isToggled()) return;
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<Score> collection = scoreboard.getSortedScores(objective);

@@ -1,8 +1,8 @@
-package me.hackclient.shader.impl;
+package me.hackclient.utils.render.shader.impl;
 
 import me.hackclient.Client;
-import me.hackclient.shader.Shader;
-import me.hackclient.shader.Uniform;
+import me.hackclient.utils.render.shader.Shader;
+import me.hackclient.utils.render.shader.Uniform;
 import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
@@ -16,7 +16,7 @@ public class BackgroundUtils implements Imports {
     private static Framebuffer tempFBO = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
 
     public static void run() {
-        if (program == null) program = Client.INSTANCE.getShaderManager().getBackground();
+        if (program == null) program = Client.INST.getShaderManager().getBackground();
         if (!Display.isVisible() || !Display.isActive()) return;
 
         update();

@@ -7,20 +7,18 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.*;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.move.MoveUtils;
-import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "Speed", category = Category.MOVE)
 public class Speed extends Module {
 
 	int ticks;
 
-	ModeSetting mode = new ModeSetting("Mode", this)
+	Mode mode = new Mode("Mode", this)
 			.addModes("45Degree", "Vanilla")
 			.setMode("45Degree");
 
-	BooleanSetting resetMotion = new BooleanSetting("ResetMotionOnDisable", this, false);
+	CheckBox resetMotion = new CheckBox("ResetMotionOnDisable", this, false);
 	FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 1f, 10f, 5f, 0.1f) {};
 
 	@Override

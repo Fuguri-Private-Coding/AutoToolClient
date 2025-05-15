@@ -7,8 +7,8 @@ import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.impl.visual.ClickGui;
 import me.hackclient.module.impl.visual.Shadows;
-import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.RoundedUtils;
 import me.hackclient.utils.animation.Animation2D;
 import me.hackclient.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.gui.GuiScreen;
@@ -38,7 +38,7 @@ public class ConfigGuiScreen extends GuiScreen {
     Config selectedConfig;
 
     public ConfigGuiScreen() {
-        Client.INSTANCE.getEventManager().register(this);
+        Client.INST.getEventManager().register(this);
         pos = new Vector2f(0, 0);
         size = new Vector2f(200, 200);
         lastMouse = new Vector2f(0, 0);
@@ -50,8 +50,8 @@ public class ConfigGuiScreen extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
-        if (clickGui == null) clickGui = Client.INSTANCE.getModuleManager().getModule(ClickGui.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
         scroll -= Mouse.getDWheel() / 120 * 10;
 
         if (scroll > 0) scroll = 0;
@@ -119,7 +119,7 @@ public class ConfigGuiScreen extends GuiScreen {
 
         float offset = 0;
         float yOffset = scrolls.y;
-        for (Config config : Client.INSTANCE.getConfigManager().getConfigs()) {
+        for (Config config : Client.INST.getConfigManager().getConfigs()) {
             RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clickGui.backgroundRadius.getValue(), selectedConfig != null ? selectedConfig == config ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150));
             fontRendererObj.drawString(config.getName(), background.x + 10 + offset, background.y + 30 + yOffset, -1);
             offset += 105;
@@ -177,7 +177,7 @@ public class ConfigGuiScreen extends GuiScreen {
 
         float offset = 0;
         float yOffset = scrolls.y;
-        for (Config config : Client.INSTANCE.getConfigManager().getConfigs()) {
+        for (Config config : Client.INST.getConfigManager().getConfigs()) {
             boolean selectConfig = mouseX > background.x + 5 + offset && mouseX < background.x + 5 + offset + 100 && mouseY > background.y + 20 + yOffset && mouseY < background.y + 20 + yOffset + 30;
             if (load || save || delete || folder || refresh) break;
             if (mouseButton == 0 && selectConfig) selectedConfig = config;
@@ -217,7 +217,7 @@ public class ConfigGuiScreen extends GuiScreen {
             }
 
             if (folder) {
-                String s = Client.INSTANCE.getConfigManager().getConfigsDirectory().getAbsolutePath();
+                String s = Client.INST.getConfigManager().getConfigsDirectory().getAbsolutePath();
 
                 if (Util.getOSType() == Util.EnumOS.OSX) {
                     try {
@@ -232,12 +232,12 @@ public class ConfigGuiScreen extends GuiScreen {
                 }
             }
 
-            if (refresh) Client.INSTANCE.getConfigManager().refreshConfigs();
+            if (refresh) Client.INST.getConfigManager().refreshConfigs();
 
             if (selectedConfig != null) {
-                if (load) Client.INSTANCE.getConfigManager().loadConfig(selectedConfig);
-                if (delete) Client.INSTANCE.getConfigManager().deleteConfig(selectedConfig);
-                if (save) Client.INSTANCE.getConfigManager().saveConfig(selectedConfig);
+                if (load) Client.INST.getConfigManager().loadConfig(selectedConfig);
+                if (delete) Client.INST.getConfigManager().deleteConfig(selectedConfig);
+                if (save) Client.INST.getConfigManager().saveConfig(selectedConfig);
             }
         }
     }

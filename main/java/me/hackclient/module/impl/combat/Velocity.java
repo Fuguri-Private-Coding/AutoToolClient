@@ -13,13 +13,13 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity;
 @ModuleInfo(name = "Velocity", category = Category.COMBAT)
 public class Velocity extends Module {
 
-    final ModeSetting mode = new ModeSetting("Mode", this)
+    final Mode mode = new Mode("Mode", this)
             .addModes("Vanilla", "Jump")
             .setMode("Vanilla");
 
     IntegerSetting hurtTime = new IntegerSetting("HurtTime", this,() -> mode.getMode().equalsIgnoreCase("Jump"), 1, 10, 9);
 
-    BooleanSetting forceForward = new BooleanSetting("ForceForward", this,() -> mode.getMode().equalsIgnoreCase("Jump"));
+    CheckBox forceForward = new CheckBox("ForceForward", this,() -> mode.getMode().equalsIgnoreCase("Jump"));
 
     final FloatSetting XZ = new FloatSetting("XZ", this,() -> mode.getMode().equalsIgnoreCase("Vanilla"), -1, 1, 0, 0.1f);
     final FloatSetting Y = new FloatSetting("Y", this,() -> mode.getMode().equalsIgnoreCase("Vanilla"), 0, 1, 1, 0.1f);

@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
-import me.hackclient.utils.rotation.Rotation;
-import me.hackclient.utils.rotation.RotationUtils;
+import me.hackclient.utils.rotation.Rot;
+import me.hackclient.utils.rotation.RotUtils;
 import net.minecraft.util.Vec3;
 import org.apache.commons.io.FilenameUtils;
 import org.lwjgl.util.vector.Vector2f;
@@ -61,24 +61,24 @@ public class TrainingData {
         this.age = age;
     }
 
-    public Rotation getCurrentRotation() {
-        return Rotation.fromRotationVec(currentVector);
+    public Rot getCurrentRotation() {
+        return Rot.fromRotationVec(currentVector);
     }
 
-    public Rotation getTargetRotation() {
-        return Rotation.fromRotationVec(targetVector);
+    public Rot getTargetRotation() {
+        return Rot.fromRotationVec(targetVector);
     }
 
-    public Rotation getPreviousRotation() {
-        return Rotation.fromRotationVec(previousVector);
+    public Rot getPreviousRotation() {
+        return Rot.fromRotationVec(previousVector);
     }
 
-    public Rotation getTotalDelta() {
-        return RotationUtils.getDelta(getCurrentRotation(), getTargetRotation());
+    public Rot getTotalDelta() {
+        return RotUtils.getDelta(getCurrentRotation(), getTargetRotation());
     }
 
-    public Rotation getPreviousVelocityDelta() {
-        return  RotationUtils.getDelta(getPreviousRotation(), getCurrentRotation());
+    public Rot getPreviousVelocityDelta() {
+        return  RotUtils.getDelta(getPreviousRotation(), getCurrentRotation());
     }
 
     public float[] getAsInput() {

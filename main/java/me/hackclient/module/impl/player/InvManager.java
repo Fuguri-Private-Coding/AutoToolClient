@@ -6,7 +6,7 @@ import me.hackclient.event.events.MotionEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.inventory.InventoryUtils;
 import me.hackclient.utils.inventory.ItemUtil;
@@ -38,7 +38,7 @@ public class InvManager extends Module {
         }
     };
 
-    private final BooleanSetting legit = new BooleanSetting("Legit", this);
+    private final CheckBox legit = new CheckBox("Legit", this);
 
     private final IntegerSetting swordSlot = new IntegerSetting("Sword Slot", this, 1, 9, 1);
     private final IntegerSetting pickaxeSlot = new IntegerSetting("Pickaxe Slot", this,1, 9, 1);

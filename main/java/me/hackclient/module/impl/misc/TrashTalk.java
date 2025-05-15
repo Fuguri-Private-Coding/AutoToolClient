@@ -6,9 +6,7 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.network.play.client.C01PacketChatMessage;
@@ -20,9 +18,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class TrashTalk extends Module {
 
     IntegerSetting delay = new IntegerSetting("Delay", this, 0, 6, 3);
-    BooleanSetting smile = new BooleanSetting("Smiles", this, false);
-    BooleanSetting bedWars = new BooleanSetting("BedWars", this, false);
-    BooleanSetting party = new BooleanSetting("Party", this, false);
+    CheckBox smile = new CheckBox("Smiles", this, false);
+    CheckBox bedWars = new CheckBox("BedWars", this, false);
+    CheckBox party = new CheckBox("Party", this, false);
 
     StopWatch timer = new StopWatch();
 

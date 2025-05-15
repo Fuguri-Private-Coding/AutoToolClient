@@ -1,10 +1,10 @@
-package me.hackclient.shader.impl;
+package me.hackclient.utils.render.shader.impl;
 
 import me.hackclient.Client;
 import me.hackclient.module.impl.visual.Shadows;
-import me.hackclient.shader.GaussianKernel;
-import me.hackclient.shader.Shader;
-import me.hackclient.shader.Uniform;
+import me.hackclient.utils.render.shader.GaussianKernel;
+import me.hackclient.utils.render.shader.Shader;
+import me.hackclient.utils.render.shader.Uniform;
 import me.hackclient.utils.color.ColorUtils;
 import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
@@ -33,8 +33,8 @@ public class BloomUtils implements Imports {
     }
 
     public static void draw() {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
-        if (program == null) program = Client.INSTANCE.getShaderManager().getBloom();
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (program == null) program = Client.INST.getShaderManager().getBloom();
         if (!Display.isActive() || !Display.isVisible() || !shadows.isToggled()) return;
 
         inputFramebuffer.bindFramebuffer(true);

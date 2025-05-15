@@ -8,8 +8,8 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.ModeSetting;
-import me.hackclient.settings.impl.MultiBooleanSetting;
+import me.hackclient.settings.impl.Mode;
+import me.hackclient.settings.impl.MultiMode;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -33,7 +33,7 @@ public class Ping extends Module {
     private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 50, 1000, 400);
 
     private final IntegerSetting delayBeforeNextLagAfterReset = new IntegerSetting("DelayBeforeNextLagAfterReset", this, 0, 1000, 500);
-    private final MultiBooleanSetting actions = new MultiBooleanSetting("ActionsToReset", this)
+    private final MultiMode actions = new MultiMode("ActionsToReset", this)
             .add("Attack", true)
             .add("Damage")
             .add("Velocity")
@@ -43,7 +43,7 @@ public class Ping extends Module {
             .add("ChangeSprint")
             .add("OpenedGui");
 
-    ModeSetting renderModes = new ModeSetting("RenderMode", this)
+    Mode renderModes = new Mode("RenderMode", this)
             .addModes("Player", "Box", "OFF")
             .setMode("Player");
 

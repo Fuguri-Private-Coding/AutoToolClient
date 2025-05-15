@@ -8,10 +8,10 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
 import me.hackclient.utils.render.RenderUtils;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -22,7 +22,7 @@ import java.awt.*;
 public class Dot extends Module {
 
     final FloatSetting size = new FloatSetting("Size", this, 0f, 1f, 0.5f, 0.05f) {};
-    final BooleanSetting onlyKillAura = new BooleanSetting("OnlyKillAura", this, true);
+    final CheckBox onlyKillAura = new CheckBox("OnlyKillAura", this, true);
     final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
 
     Shadows shadows;
@@ -31,8 +31,8 @@ public class Dot extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
-        if (Client.INSTANCE.getCombatManager().getTarget() == null && onlyKillAura.isToggled()) { return; }
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (Client.INST.getCombatManager().getTarget() == null && onlyKillAura.isToggled()) { return; }
         MovingObjectPosition mouse = mc.objectMouseOver;
         if (event instanceof Render3DEvent) {
             Vec3 smooth = prevPos.add(pos.subtract(prevPos).multiple(mc.timer.renderPartialTicks));

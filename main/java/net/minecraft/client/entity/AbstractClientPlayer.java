@@ -84,7 +84,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
 
     public ResourceLocation getLocationCape() {
         if (this instanceof EntityPlayerSP) {
-            CustomCape customCape = Client.INSTANCE.getModuleManager().getModule(CustomCape.class);
+            CustomCape customCape = Client.INST.getModuleManager().getModule(CustomCape.class);
             ResourceLocation capeLocation = customCape.getCape();
 
             if (customCape.isToggled() && capeLocation != null) {

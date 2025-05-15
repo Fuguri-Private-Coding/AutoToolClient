@@ -2,7 +2,7 @@ package me.hackclient.utils.target;
 
 import me.hackclient.utils.distance.DistanceUtils;
 import me.hackclient.utils.interfaces.Imports;
-import me.hackclient.utils.rotation.RotationUtils;
+import me.hackclient.utils.rotation.RotUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -24,7 +24,7 @@ public class TargetFinder implements Imports {
                 .filter(entity -> (entity instanceof EntityPlayer && players) || (entity instanceof EntityMob && mobs) || (entity instanceof EntityAnimal && animal))
                 .filter(entity -> !(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isFriend())
                 .filter(entity -> DistanceUtils.getDistance(entity) < distance)
-                .min(Comparator.comparing(RotationUtils::getFovToEntity)).orElse(null);
+                .min(Comparator.comparing(RotUtils::getFovToEntity)).orElse(null);
     }
 
 }

@@ -7,7 +7,7 @@ import me.hackclient.event.events.WorldChangeEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import me.hackclient.utils.client.ClientUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -18,7 +18,7 @@ import java.util.List;
 @ModuleInfo(name = "MurderMystery", category = Category.MISC)
 public class MurderMystery extends Module {
 
-    BooleanSetting debug = new BooleanSetting("Debug", this);
+    CheckBox debug = new CheckBox("Debug", this);
 
     public List<String> murders, detectives;
 

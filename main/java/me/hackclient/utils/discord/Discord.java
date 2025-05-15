@@ -16,7 +16,7 @@ import net.minecraft.client.gui.GuiMultiplayer;
 public class Discord implements Imports {
 
     public Discord() {
-        Client.INSTANCE.getEventManager().register(this);
+        Client.INST.getEventManager().register(this);
     }
 
     long timestamp;
@@ -46,7 +46,7 @@ public class Discord implements Imports {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (console == null) console = Client.INSTANCE.getConsole();
+        if (console == null) console = Client.INST.getConsole();
         if (event instanceof TickEvent) {
             if (run) {
                 if (mc.thePlayer != null) {
@@ -77,7 +77,7 @@ public class Discord implements Imports {
     public void update(String line1, String line2) {
         DiscordRichPresence.Builder rpc = new DiscordRichPresence.Builder(line2);
         rpc.setDetails(line1);
-        rpc.setBigImage("logo", "AutoTool " + Client.INSTANCE.getVersion());
+        rpc.setBigImage("logo", "AutoTool " + Client.INST.getVersion());
         rpc.setStartTimestamps(timestamp);
         DiscordRPC.discordUpdatePresence(rpc.build());
     }

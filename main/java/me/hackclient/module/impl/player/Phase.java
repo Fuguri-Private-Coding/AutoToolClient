@@ -6,7 +6,7 @@ import me.hackclient.event.events.*;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import me.hackclient.settings.impl.IntegerSetting;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
@@ -19,8 +19,8 @@ import net.minecraft.world.WorldSettings;
 @ModuleInfo(name = "Phase", category = Category.PLAYER)
 public class Phase extends Module {
 
-    BooleanSetting sneak = new BooleanSetting("Sneak", this, true);
-    BooleanSetting clipDown = new BooleanSetting("Clip", this, true);
+    CheckBox sneak = new CheckBox("Sneak", this, true);
+    CheckBox clipDown = new CheckBox("Clip", this, true);
     IntegerSetting packetCount = new IntegerSetting("Packet count", this, () -> clipDown.isToggled(), 1, 20, 1);
 
     private BlockPos currentBreakingBlock;

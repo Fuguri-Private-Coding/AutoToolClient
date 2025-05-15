@@ -18,8 +18,8 @@ public class Reach extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            Client.INSTANCE.getCombatManager().setEntityReach(entityReach.getValue());
-            Client.INSTANCE.getCombatManager().setBlockReach(blockReach.getValue());
+            Client.INST.getCombatManager().setEntityReach(entityReach.getValue());
+            Client.INST.getCombatManager().setBlockReach(blockReach.getValue());
         }
     }
 }

@@ -1,8 +1,8 @@
-package me.hackclient.shader.impl;
+package me.hackclient.utils.render.shader.impl;
 
 import me.hackclient.Client;
-import me.hackclient.shader.Shader;
-import me.hackclient.shader.Uniform;
+import me.hackclient.utils.render.shader.Shader;
+import me.hackclient.utils.render.shader.Uniform;
 import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
@@ -14,7 +14,7 @@ public class RoundedUtils implements Imports {
     private static Shader program;
 
     private static void draw(final float x, final float y, final float width, final float height, final float radius, final Color color) {
-        if (program == null) program = Client.INSTANCE.getShaderManager().getRounded();
+        if (program == null) program = Client.INST.getShaderManager().getRounded();
         int id = program.getProgramId();
         program.start();
         Uniform.uniform2f(id, "u_size", width, height);

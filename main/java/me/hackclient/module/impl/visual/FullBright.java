@@ -3,19 +3,17 @@ package me.hackclient.module.impl.visual;
 import me.hackclient.event.Event;
 import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.TickEvent;
-import me.hackclient.event.events.UpdateEvent;
-import me.hackclient.event.events.WorldChangeEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.Mode;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
 @ModuleInfo(name = "FullBright", category = Category.VISUAL)
 public class FullBright extends Module {
 
-    ModeSetting mode = new ModeSetting("Mode", this)
+    Mode mode = new Mode("Mode", this)
             .addModes("NightVision", "Gamma")
             .setMode("NightVision");
 

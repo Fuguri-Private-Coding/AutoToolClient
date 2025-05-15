@@ -7,7 +7,7 @@ import me.hackclient.event.events.RunGameLoopEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import me.hackclient.settings.impl.IntegerSetting;
 import me.hackclient.utils.math.RandomUtils;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -63,7 +63,7 @@ public class AutoSoup extends Module {
 
     int soupSlot;
 
-    final BooleanSetting randomSlot = new BooleanSetting("RandomSlot", this, false);
+    final CheckBox randomSlot = new CheckBox("RandomSlot", this, false);
 
     public AutoSoup() {
         resetValues();

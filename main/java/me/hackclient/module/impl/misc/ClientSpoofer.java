@@ -3,12 +3,12 @@ package me.hackclient.module.impl.misc;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.Mode;
 
 @ModuleInfo(name = "ClientSpoofer", category = Category.MISC)
 public class ClientSpoofer extends Module {
 
-    public ModeSetting brand = new ModeSetting("Brand", this)
+    public Mode brand = new Mode("Brand", this)
             .addModes("LunarClient", "LabyMod", "FML", "Optifine", "Forge")
             .setMode("LunarClient");
 

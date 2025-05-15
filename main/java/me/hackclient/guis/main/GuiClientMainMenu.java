@@ -2,7 +2,7 @@ package me.hackclient.guis.main;
 
 import me.hackclient.Client;
 import me.hackclient.guis.altmanager.AltManagerGuiScreen;
-import me.hackclient.shader.impl.BackgroundUtils;
+import me.hackclient.utils.render.shader.impl.BackgroundUtils;
 import me.hackclient.utils.interfaces.Imports;
 import net.minecraft.client.gui.*;
 import net.minecraft.util.ResourceLocation;
@@ -35,8 +35,8 @@ public class GuiClientMainMenu extends GuiScreen {
 
         final FontRenderer font = mc.fontRendererObj;
 
-        font.drawString(Client.INSTANCE.getChangeLog(), 5, 5, -1, true);
-        font.drawString(Client.INSTANCE.getName(), sc.getScaledWidth() / 2f - font.getStringWidth(Client.INSTANCE.getName()) / 2f, sc.getScaledHeight() / 2f, Color.WHITE.getRGB(), true);
+        font.drawString(Client.INST.getChangeLog(), 5, 5, -1, true);
+        font.drawString(Client.INST.getName(), sc.getScaledWidth() / 2f - font.getStringWidth(Client.INST.getName()) / 2f, sc.getScaledHeight() / 2f, Color.WHITE.getRGB(), true);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 

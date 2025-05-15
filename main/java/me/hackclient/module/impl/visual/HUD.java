@@ -8,12 +8,12 @@ import me.hackclient.event.events.Render2DEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import me.hackclient.settings.impl.ColorSetting;
 import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.MultiBooleanSetting;
-import me.hackclient.shader.impl.BloomUtils;
-import me.hackclient.shader.impl.RoundedUtils;
+import me.hackclient.settings.impl.MultiMode;
+import me.hackclient.utils.render.shader.impl.BloomUtils;
+import me.hackclient.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.ScaledResolution;
 
 import java.awt.*;
@@ -23,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleInfo(name = "HUD", category = Category.VISUAL)
 public class HUD extends Module {
 
-    MultiBooleanSetting hudElements = new MultiBooleanSetting("HUDElements", this)
+    MultiMode hudElements = new MultiMode("HUDElements", this)
             .add("FPSCounter")
             .add("BPSCounter")
             .add("CPSCounter")
@@ -34,36 +34,36 @@ public class HUD extends Module {
     FloatSetting fpsPosV = new FloatSetting("FPSPosY", this,() -> hudElements.get("FPSCounter"), 0,10000,0,0.1f);
     FloatSetting fpsRadius = new FloatSetting("FPSRadius", this,() -> hudElements.get("FPSCounter"), 0.5f,5,1f,0.1f);
     ColorSetting fpsColor = new ColorSetting("FPSColor", this,() -> hudElements.get("FPSCounter"), 0,0,0,0.4f);
-    BooleanSetting fpsTextShadow = new BooleanSetting("FPSTextShadow",this,() -> hudElements.get("FPSCounter"), true);
+    CheckBox fpsTextShadow = new CheckBox("FPSTextShadow",this,() -> hudElements.get("FPSCounter"), true);
     ColorSetting fpsTextColor = new ColorSetting("FPSTextColor", this,() -> hudElements.get("FPSCounter"), 1,1,1,1);
 
     FloatSetting bpsPosH = new FloatSetting("BPSPosX", this,() -> hudElements.get("BPSCounter"), 0,10000,0,0.1f);
     FloatSetting bpsPosV = new FloatSetting("BPSPosY", this,() -> hudElements.get("BPSCounter"), 0,10000,0,0.1f);
     FloatSetting bpsRadius = new FloatSetting("BPSRadius", this,() -> hudElements.get("BPSCounter"), 0.5f,5,1f,0.1f);
     ColorSetting bpsColor = new ColorSetting("BPSColor", this,() -> hudElements.get("BPSCounter"), 0,0,0,0.4f);
-    BooleanSetting bpsTextShadow = new BooleanSetting("BPSTextShadow",this,() -> hudElements.get("BPSCounter"), true);
+    CheckBox bpsTextShadow = new CheckBox("BPSTextShadow",this,() -> hudElements.get("BPSCounter"), true);
     ColorSetting bpsTextColor = new ColorSetting("BPSTextColor", this,() -> hudElements.get("BPSCounter"), 1,1,1,1);
-    BooleanSetting includeY = new BooleanSetting("BPSIncludeY", this,() -> hudElements.get("BPSCounter"), false);
+    CheckBox includeY = new CheckBox("BPSIncludeY", this,() -> hudElements.get("BPSCounter"), false);
 
     FloatSetting cpsPosH = new FloatSetting("CPSPosX", this,() -> hudElements.get("CPSCounter"), 0,10000,0,0.1f);
     FloatSetting cpsPosV = new FloatSetting("CPSPosY", this,() -> hudElements.get("CPSCounter"), 0,10000,0,0.1f);
     FloatSetting cpsRadius = new FloatSetting("CPSRadius", this,() -> hudElements.get("CPSCounter"), 0.5f,5,1f,0.1f);
     ColorSetting cpsColor = new ColorSetting("CPSColor", this,() -> hudElements.get("CPSCounter"), 0,0,0,0.4f);
-    BooleanSetting cpsTextShadow = new BooleanSetting("CPSTextShadow",this,() -> hudElements.get("CPSCounter"), true);
+    CheckBox cpsTextShadow = new CheckBox("CPSTextShadow",this,() -> hudElements.get("CPSCounter"), true);
     ColorSetting cpsTextColor = new ColorSetting("CPSTextColor", this,() -> hudElements.get("CPSCounter"), 1,1,1,1);
 
     FloatSetting breakIndicatorPosH = new FloatSetting("BreakIndicatorPosX", this,() -> hudElements.get("BreakIndicator"), 0,10000,0,0.1f);
     FloatSetting breakIndicatorPosV = new FloatSetting("BreakIndicatorPosY", this,() -> hudElements.get("BreakIndicator"), 0,10000,0,0.1f);
     FloatSetting breakIndicatorRadius = new FloatSetting("BreakIndicatorRadius", this,() -> hudElements.get("BreakIndicator"), 0.5f,5,1f,0.1f);
     ColorSetting breakIndicatorColor = new ColorSetting("BreakIndicatorColor", this,() -> hudElements.get("BreakIndicator"), 0,0,0,0.4f);
-    BooleanSetting breakIndicatorTextShadow = new BooleanSetting("BreakIndicatorTextShadow",this,() -> hudElements.get("BreakIndicator"), true);
+    CheckBox breakIndicatorTextShadow = new CheckBox("BreakIndicatorTextShadow",this,() -> hudElements.get("BreakIndicator"), true);
     ColorSetting breakIndicatorTextColor = new ColorSetting("BreakIndicatorTextColor", this,() -> hudElements.get("BreakIndicator"), 1,1,1,1);
 
     FloatSetting waterMarkPosH = new FloatSetting("WaterMarkPosX", this,() -> hudElements.get("WaterMark"), 0,10000,0,0.1f);
     FloatSetting waterMarkPosV = new FloatSetting("WaterMarkPosY", this,() -> hudElements.get("WaterMark"), 0,10000,0,0.1f);
     FloatSetting waterMarkRadius = new FloatSetting("WaterMarkRadius", this,() -> hudElements.get("WaterMark"), 0.5f,5,1f,0.1f);
     ColorSetting waterMarkColor = new ColorSetting("WaterMarkColor", this,() -> hudElements.get("WaterMark"), 0,0,0,0.4f);
-    BooleanSetting waterMarkTextShadow = new BooleanSetting("WaterMarkTextShadow",this,() -> hudElements.get("WaterMark"), true);
+    CheckBox waterMarkTextShadow = new CheckBox("WaterMarkTextShadow",this,() -> hudElements.get("WaterMark"), true);
     ColorSetting waterMarkTextColor = new ColorSetting("WaterMarkTextColor", this,() -> hudElements.get("WaterMark"), 1,1,1,1);
 
     Shadows shadows;
@@ -74,7 +74,7 @@ public class HUD extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INSTANCE.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         ScaledResolution sc = new ScaledResolution(mc);
 
         bpsPosH.setMax(sc.getScaledWidth());
@@ -123,7 +123,7 @@ public class HUD extends Module {
                 mc.fontRendererObj.drawString(text,cpsPosH.getValue() + 2.5f ,cpsPosV.getValue() + 2.5f, cpsTextColor.getColor().getRGB(), cpsTextShadow.isToggled());
             }
 
-            if (hudElements.get("BreakIndicator") && (mc.playerController.curBlockDamageMP > 0 || Client.INSTANCE.getModuleManager().getModule(ClickGui.class).isToggled())) {
+            if (hudElements.get("BreakIndicator") && (mc.playerController.curBlockDamageMP > 0 || Client.INST.getModuleManager().getModule(ClickGui.class).isToggled())) {
                 String text = "Progress: " + String.format("%.0f", mc.playerController.curBlockDamageMP * 100) + "%";
                 float width = mc.fontRendererObj.getStringWidth(text);
 

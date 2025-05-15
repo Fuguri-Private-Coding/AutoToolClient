@@ -61,16 +61,16 @@ public class BackTrack extends Module {
 
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenBackTracks", this, 0, 20, 0) ;
 
-    BooleanSetting renderOnlyIfWorking = new BooleanSetting("RenderOnlyIfWorking", this, true);
+    CheckBox renderOnlyIfWorking = new CheckBox("RenderOnlyIfWorking", this, true);
 
-    ModeSetting espMode = new ModeSetting("Render", this)
+    Mode espMode = new Mode("Render", this)
             .addModes("Player", "Box", "OFF")
             .setMode("Player");
 
     ColorSetting color = new ColorSetting("Color", this, () -> espMode.getMode().equals("Box"), 1,1,1,1);
 
-    BooleanSetting realTimeDamage = new BooleanSetting("RealTimeDamage", this, true);
-    BooleanSetting debugDistance = new BooleanSetting("DebugDistance", this, true);
+    CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
+    CheckBox debugDistance = new CheckBox("DebugDistance", this, true);
 
     private final List<TimedVar<Packet>> packetBuffer = new CopyOnWriteArrayList<>();
 
@@ -120,9 +120,9 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof Render3DEvent) {
-            if (target != Client.INSTANCE.getCombatManager().getTarget()) {
+            if (target != Client.INST.getCombatManager().getTarget()) {
                 handle(true);
-                target = Client.INSTANCE.getCombatManager().getTarget();
+                target = Client.INST.getCombatManager().getTarget();
             }
 
             if (delayBetweenBackTracks > 0) {

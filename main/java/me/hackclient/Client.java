@@ -9,6 +9,7 @@ import me.hackclient.deeplearn.DeepLearningEngine;
 import me.hackclient.event.EventManager;
 import me.hackclient.event.EventTarget;
 import me.hackclient.event.events.RunGameLoopEvent;
+import me.hackclient.guis.clickgui.NewClickGuiScreen;
 import me.hackclient.guis.console.ConsoleGuiScreen;
 import me.hackclient.managers.CombatManager;
 import me.hackclient.event.Event;
@@ -18,7 +19,9 @@ import me.hackclient.guis.clickgui.ClickGuiScreen;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleManager;
 import me.hackclient.managers.ClickManager;
-import me.hackclient.shader.ShaderManager;
+import me.hackclient.utils.font.FontsRepository;
+import me.hackclient.utils.render.font.Fonts;
+import me.hackclient.utils.render.shader.ShaderManager;
 import me.hackclient.utils.discord.Discord;
 import me.hackclient.utils.discord.IRC;
 import me.hackclient.utils.file.FileUtils;
@@ -35,7 +38,7 @@ import java.io.IOException;
 
 @Getter
 public enum Client implements Imports {
-	INSTANCE;
+	INST;
 
 	String name;
 	ClientVersion version;
@@ -61,8 +64,11 @@ public enum Client implements Imports {
     ClickManager clickManager;
 	DeepLearningEngine deepLearningEngine;
 	ClickGuiScreen clickGui;
+	NewClickGuiScreen newClickGuiScreen;
 	Discord discord;
 	@Setter IRC irc;
+
+	FontsRepository fonts;
 
 	public void init() throws IOException {
 		long start = System.nanoTime();
@@ -114,6 +120,9 @@ public enum Client implements Imports {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
+
+		fonts = new FontsRepository();
+		Fonts.init();
 
 		clickGui = new ClickGuiScreen();
 

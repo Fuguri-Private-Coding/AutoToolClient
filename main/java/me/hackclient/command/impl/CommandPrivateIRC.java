@@ -18,14 +18,14 @@ public class CommandPrivateIRC extends Command {
             return;
         }
 
-        IRC irc = Client.INSTANCE.getIrc();
+        IRC irc = Client.INST.getIrc();
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(Client.INSTANCE.getProfile().toString()).append(" ");
+        stringBuilder.append(Client.INST.getProfile().toString()).append(" ");
         for (String arg : args) {
             if (arg.equalsIgnoreCase(args[0]) || arg.equalsIgnoreCase(args[1])) continue;
             stringBuilder.append(arg).append(" ");
         }
         irc.sendPrivateMessage(args[1], stringBuilder.toString());
-        Client.INSTANCE.getConsole().history.add("§f[§2IRC§f] " + args[1] + " " + stringBuilder);
+        Client.INST.getConsole().history.add("§f[§2IRC§f] " + args[1] + " " + stringBuilder);
     }
 }

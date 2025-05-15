@@ -7,12 +7,12 @@ import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
 import me.hackclient.settings.impl.FloatSetting;
-import me.hackclient.settings.impl.ModeSetting;
+import me.hackclient.settings.impl.Mode;
 
 @ModuleInfo(name = "Fly", category = Category.MOVE)
 public class Fly extends Module {
 
-    ModeSetting mode = new ModeSetting("Mode", this)
+    Mode mode = new Mode("Mode", this)
             .addModes("Vanilla")
             .setMode("Vanilla");
 

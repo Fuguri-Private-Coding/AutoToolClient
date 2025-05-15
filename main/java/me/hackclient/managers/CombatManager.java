@@ -2,13 +2,9 @@ package me.hackclient.managers;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.hackclient.Client;
-import me.hackclient.event.Event;
-import me.hackclient.event.EventTarget;
-import me.hackclient.event.events.TickEvent;
 import me.hackclient.utils.interfaces.Imports;
 import me.hackclient.utils.rotation.RayCastUtils;
-import me.hackclient.utils.rotation.Rotation;
+import me.hackclient.utils.rotation.Rot;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -23,7 +19,7 @@ public class CombatManager implements Imports {
             return target;
         }
 
-        MovingObjectPosition movingObjectPosition = RayCastUtils.rayCast(entityReach, blockReach, Rotation.getServerRotation());
+        MovingObjectPosition movingObjectPosition = RayCastUtils.rayCast(entityReach, blockReach, Rot.getServerRotation());
         if (movingObjectPosition != null && movingObjectPosition.entityHit instanceof EntityLivingBase base) {
             return base;
         }

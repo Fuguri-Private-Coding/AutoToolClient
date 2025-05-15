@@ -946,7 +946,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     }
 
     public int getArmSwingAnimationEnd() {
-        Animations animations = Client.INSTANCE.getModuleManager().getModule(Animations.class);
+        Animations animations = Client.INST.getModuleManager().getModule(Animations.class);
 
         int i = this.isPotionActive(Potion.digSpeed)
                 ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier())
@@ -1422,7 +1422,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     }
 
     public void onLivingUpdate() {
-        if (Client.INSTANCE.getModuleManager().getModule(NoJumpDelay.class).isToggled()) {
+        if (Client.INST.getModuleManager().getModule(NoJumpDelay.class).isToggled()) {
             jumpTicks = 0;
         }
 

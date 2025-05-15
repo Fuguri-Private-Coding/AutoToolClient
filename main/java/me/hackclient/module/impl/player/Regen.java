@@ -6,10 +6,7 @@ import me.hackclient.event.events.UpdateEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
 import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.utils.client.ClientUtils;
 import net.minecraft.network.play.client.C03PacketPlayer;
 
 @ModuleInfo(name = "Regen", category = Category.PLAYER)

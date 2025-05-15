@@ -6,9 +6,8 @@ import me.hackclient.event.events.TickEvent;
 import me.hackclient.module.Category;
 import me.hackclient.module.Module;
 import me.hackclient.module.ModuleInfo;
-import me.hackclient.settings.impl.BooleanSetting;
+import me.hackclient.settings.impl.CheckBox;
 import me.hackclient.settings.impl.IntegerSetting;
-import me.hackclient.utils.client.ClientUtils;
 import me.hackclient.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
@@ -33,7 +32,7 @@ public class ChestStealer extends Module {
         }
     };
 
-    final BooleanSetting checkName = new BooleanSetting("CheckName", this, true);
+    final CheckBox checkName = new CheckBox("CheckName", this, true);
 
     final StopWatch delayStopWatch;
     final StopWatch startDelayStopWatch;

@@ -13,7 +13,7 @@ import me.hackclient.settings.impl.*;
 import me.hackclient.utils.predict.SimulatedPlayer;
 import me.hackclient.utils.raytrace.RayTraceUtils;
 import me.hackclient.utils.rotation.RayCastUtils;
-import me.hackclient.utils.rotation.Rotation;
+import me.hackclient.utils.rotation.Rot;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -50,7 +50,7 @@ public class TimerRange extends Module {
         }
         if (event instanceof TickEvent tickEvent) {
             if (teleporting) return;
-            EntityLivingBase target = Client.INSTANCE.getCombatManager().getTarget();
+            EntityLivingBase target = Client.INST.getCombatManager().getTarget();
 
             if (balance > 0) {
                 tickEvent.setCanceled(true);
@@ -68,7 +68,7 @@ public class TimerRange extends Module {
                         simulatedPlayer.getPosEyes(),
                         3,
                         0,
-                        new Rotation(Rotation.getServerRotation().getYaw(), Rotation.getServerRotation().getPitch()));
+                        new Rot(Rot.getServerRotation().getYaw(), Rot.getServerRotation().getPitch()));
 
                 if (mouse == null || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
                     simulatedPlayer.tick();
@@ -85,7 +85,7 @@ public class TimerRange extends Module {
                 try {
                     mc.runTick();
                     balance++;
-                    if (RayCastUtils.rayCast(3.0, 0, Rotation.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
+                    if (RayCastUtils.rayCast(3.0, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                         click = true;
                         break;
                     }
