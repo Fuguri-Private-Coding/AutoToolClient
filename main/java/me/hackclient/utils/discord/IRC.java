@@ -89,6 +89,9 @@ public class IRC extends ListenerAdapter {
             if (message.startsWith("PrivateMessage")) {
                 String[] args = message.split(" ");
                 if (!Client.INSTANCE.getProfile().getUsername().equalsIgnoreCase(args[1])) return;
+                message = message.substring("PrivateMessage ".length());
+                message = message.substring(args[1].length() + 1);
+                message += "§f[§4Private§f]";
             }
 
             Client.INSTANCE.getConsole().history.add("§f[§2IRC§f] " + message);
