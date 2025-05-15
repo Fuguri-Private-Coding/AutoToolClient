@@ -26,5 +26,6 @@ public class CommandPrivateIRC extends Command {
             stringBuilder.append(arg).append(" ");
         }
         irc.sendPrivateMessage(args[1], stringBuilder.toString());
+        Client.INSTANCE.getConsole().history.add("§f[§2IRC§f] " + args[1] + " " + stringBuilder);
     }
 }

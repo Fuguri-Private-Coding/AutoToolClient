@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.Client;
 import me.hackclient.event.events.UpdateIRCEvent;
+import me.hackclient.utils.client.ClientUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -83,17 +84,15 @@ public class IRC extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getChannel() == chatChannel) {
-            String message = event.getMessage().getContentRaw()
-                    .replaceAll("dev", "§4dev§f")
-                    .replaceAll(Client.INSTANCE.getProfile().getUsername(), "§b" + Client.INSTANCE.getProfile().getUsername() + "§f");
+            String message = event.getMessage().getContentRaw();
             if (message.startsWith("PrivateMessage")) {
                 String[] args = message.split(" ");
                 if (!Client.INSTANCE.getProfile().getUsername().equalsIgnoreCase(args[1])) return;
                 message = message.substring("PrivateMessage ".length());
                 message = message.substring(args[1].length() + 1);
-                message += "§f[§4Private§f]";
+                message += " §f[§4Private§f]";
             }
-
+            message = message.replaceAll("dev", "§4dev§f").replaceAll(Client.INSTANCE.getProfile().getUsername(), "§b" + Client.INSTANCE.getProfile().getUsername() + "§f");
             Client.INSTANCE.getConsole().history.add("§f[§2IRC§f] " + message);
         }
     }
