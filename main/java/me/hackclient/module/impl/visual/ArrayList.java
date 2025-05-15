@@ -49,7 +49,7 @@ public class ArrayList extends Module {
 					BloomUtils.addToDraw(() -> Gui.drawRect(6,(float) finalOffset + 19f, font.getStringWidth(module.getName()) + 10, (float) finalOffset + 6f, -1));
 				}
 
-				Gui.drawRect(6,(float) offset + 19f, (float) Client.INST.getFonts().fonts.get("Roboto").getStringWidth(module.getName()) + 10, (float) offset + 6f, backgroundColor.getColor().getRGB());
+				Gui.drawRect(6,(float) offset + 19f, (float) font.getStringWidth(module.getName()) + 10, (float) offset + 6f, backgroundColor.getColor().getRGB());
 
 				font.drawString(module.getName(), 8.5f, (float) (8.5f + offset), color.getColor().getRGB(), textShadow.isToggled());
 				offset += 13;
