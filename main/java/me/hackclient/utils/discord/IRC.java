@@ -86,32 +86,29 @@ public class IRC extends ListenerAdapter {
             String message = event.getMessage().getContentRaw()
                     .replaceAll("dev", "§4dev§f")
                     .replaceAll(Client.INSTANCE.getProfile().getUsername(), "§b" + Client.INSTANCE.getProfile().getUsername() + "§f");
+            if (message.startsWith("PrivateMessage")) {
+                String[] args = message.split(" ");
+                if (!Client.INSTANCE.getProfile().getUsername().equalsIgnoreCase(args[1])) return;
+            }
+
             Client.INSTANCE.getConsole().history.add("§f[§2IRC§f] " + message);
         }
     }
 
     public void sendIRCMessage(String text) {
-        try {
-            chatChannel.sendMessage(text).queue();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        chatChannel.sendMessage(text).queue();
     }
 
     public void sendMessage(MessageChannel channel, String text) {
         channel.sendMessage(text).queue();
     }
 
-    public void sendPrivateMessage(User user, String text) {
-        user.openPrivateChannel()
-                .flatMap(privateChannel -> privateChannel.sendMessage(text))
-                .queue();
+    public void sendPrivateMessage(String user, String text) {
+        chatChannel.sendMessage("PrivateMessage " + user + " " + text).queue();
     }
 
     public void sendEmbedMessage(String title, String description) {
-        if (chatChannel == null) {
-            return;
-        }
+        if (chatChannel == null) return;
         chatChannel.sendMessageEmbeds(
                 new EmbedBuilder()
                         .setTitle(title)

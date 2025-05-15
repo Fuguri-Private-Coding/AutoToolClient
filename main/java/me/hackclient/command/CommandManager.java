@@ -17,6 +17,7 @@ public class CommandManager {
 		commands.add(new CommandBind());
 		commands.add(new CommandModel());
 		commands.add(new CommandIRCChat());
+		commands.add(new CommandPrivateIRC());
 		commands.add(new CommandHelp());
 	}
 	

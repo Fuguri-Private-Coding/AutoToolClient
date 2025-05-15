@@ -133,6 +133,9 @@ public enum Client implements Imports {
 	public void onClose() {
 		configManager.saveConfig(configManager.getDefaultConfig());
 		configManager.saveBinds();
+		if (IRC.myID != -1) {
+			irc.getServerChannel().deleteMessageById(IRC.myID).queue();
+		}
 	}
 
 	public String getFullName() {
