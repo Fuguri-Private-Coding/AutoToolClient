@@ -20,20 +20,19 @@ public class IRCModule extends Module {
     CheckBox allVisibility = new CheckBox("AllVisibility", this, true);
 
     public static HashMap<String, Profile> usersOnline = new HashMap<>();
-    public static volatile boolean running;
 
     @Override
     public void onEnable() {
         super.onEnable();
-        running = true;
-        Client.INST.getIrc().getIrcLogger().start();
         IRC.myID = -1;
+        Client.INST.getIrc().getIrcLogger().start();
     }
 
     @Override
     public void onDisable() {
         super.onDisable();
-        running = false;
+        Client.INST.getIrc().getIrcLogger().interrupt();
+        IRC.myID = -1;
     }
 
     @EventTarget

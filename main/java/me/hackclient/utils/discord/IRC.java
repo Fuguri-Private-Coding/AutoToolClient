@@ -25,7 +25,7 @@ public class IRC extends ListenerAdapter {
     public static long myID = -1;
 
     private Thread ircLogger = new Thread(() -> {
-        while (IRCModule.running) {
+        while (true) {
             if (myID != -1) {
                 serverChannel.deleteMessageById(myID).queue(_ -> {
                     myID = -1;
