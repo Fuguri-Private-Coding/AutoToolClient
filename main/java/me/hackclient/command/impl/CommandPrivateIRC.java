@@ -22,9 +22,9 @@ public class CommandPrivateIRC extends Command {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(Client.INSTANCE.getProfile().toString()).append(" ");
         for (String arg : args) {
-            if (arg.equalsIgnoreCase(args[0])) continue;
+            if (arg.equalsIgnoreCase(args[0]) || arg.equalsIgnoreCase(args[1])) continue;
             stringBuilder.append(arg).append(" ");
         }
-        irc.sendIRCMessage(stringBuilder.toString());
+        irc.sendPrivateMessage(args[1], stringBuilder.toString());
     }
 }
