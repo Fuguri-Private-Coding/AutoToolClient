@@ -1,0 +1,129 @@
+package fuguriprivatecoding.autotool.module;
+
+import fuguriprivatecoding.autotool.module.impl.combat.*;
+import fuguriprivatecoding.autotool.module.impl.connection.BackTrack;
+import fuguriprivatecoding.autotool.module.impl.connection.Blink;
+import fuguriprivatecoding.autotool.module.impl.connection.Ping;
+import fuguriprivatecoding.autotool.module.impl.exploit.Disabler;
+import fuguriprivatecoding.autotool.module.impl.exploit.GodMode;
+import fuguriprivatecoding.autotool.module.impl.exploit.VClip;
+import fuguriprivatecoding.autotool.module.impl.legit.AimAssist;
+import fuguriprivatecoding.autotool.module.impl.legit.AutoClicker;
+import fuguriprivatecoding.autotool.module.impl.legit.InvClicker;
+import fuguriprivatecoding.autotool.module.impl.misc.*;
+import fuguriprivatecoding.autotool.module.impl.move.*;
+import fuguriprivatecoding.autotool.module.impl.player.*;
+import fuguriprivatecoding.autotool.module.impl.visual.*;
+import lombok.Getter;
+import fuguriprivatecoding.autotool.module.impl.client.DiscordRPCModule;
+import fuguriprivatecoding.autotool.module.impl.client.IRCModule;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
+
+public class ModuleManager {
+
+	@Getter private CopyOnWriteArrayList<Module> modules;
+	public static ModuleManager INSTANCE;
+
+	public ModuleManager() {
+		INSTANCE = this;
+		long currentNano = System.nanoTime();
+		 register(
+				 new AutoSoup(),
+				 new Reach(),
+				 new ChatBypass(),
+				 new KillAura(),
+				 new Dot(),
+				 new Regen(),
+				 new ChestStealer(),
+				 new MoreKB(),
+				 new Velocity(),
+				 new MurderMystery(),
+				 new InvManager(),
+				 new IRCModule(),
+				 new Trails(),
+				 new ESP(),
+				 new BackTrack(),
+				 new RotationHandler(),
+				 new Shadows(),
+				 new Fly(),
+				 new AutoClicker(),
+				 new AutoTool(),
+				 new Scaffold(),
+				 new AntiFireball(),
+				 new DiscordRPCModule(),
+				 new Phase(),
+				 new NoGuiClose(),
+				 new AirStuck(),
+				 new VClip(),
+				 new NoSlow(),
+				 new NoWeb(),
+				 new Speed(),
+				 new Sprint(),
+				 new Timer(),
+				 new Disabler(),
+				 new ArrayList(),
+				 new MoreSwing(),
+				 new Ping(),
+				 new TargetESP(),
+				 new FullBright(),
+				 new ClientSpoofer(),
+				 new TimerRange(),
+				 new ClickGui(),
+				 new Fixes(),
+				 new FlagDetector(),
+				 new AimAssist(),
+				 new GodMode(),
+				 new Blink(),
+				 new Animations(),
+				 new MotionBlur(),
+				 new AutoPlace(),
+				 new NoJumpDelay(),
+				 new MLG(),
+				 new TimeChanger(),
+				 new ClickSettings(),
+				 new Particle(),
+				 new TimerRangeV2(),
+				 new Test(),
+				 new TrashTalk(),
+				 new NameTags(),
+				 new NoRender(),
+				 new MidClick(),
+				 new CustomCape(),
+				 new InvClicker(),
+				 new CustomCamera(),
+				 new KillEffects(),
+				 new BlockOverlay(),
+				 new HUD(),
+				 new ModelTrainer()
+		);
+		System.out.println("Init ModuleManager: " + (System.nanoTime() - currentNano) / 1000000D + " ms.");
+	}
+
+	private void register(Module... modulesToRegister) {
+		modules = new CopyOnWriteArrayList<>(modulesToRegister);
+	}
+
+	public List<Module> getModulesByCategory(Category category) {
+		return modules.stream().filter(module -> module.getCategory() == category).collect(Collectors.toList());
+	}
+
+	@SuppressWarnings("unchecked")
+    public <T extends Module> T getModule(Class<T> moduleClass) {
+        return (T) modules.stream()
+                .filter(module -> module.getClass() == moduleClass)
+                .findFirst().orElse(null);
+    }
+
+	@SuppressWarnings("unchecked")
+    public <T extends Module> T getModule(String name) {
+        return (T) modules.stream()
+                .filter(module -> module.getName().equalsIgnoreCase(name))
+                .findFirst().orElse(null);
+    }
+
+	public List<Module> getEnabledModules() {
+		return modules.stream().filter(Module::isToggled).collect(Collectors.toList());
+	}
+}

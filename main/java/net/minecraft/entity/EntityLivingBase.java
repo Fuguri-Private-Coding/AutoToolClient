@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import me.hackclient.Client;
-import me.hackclient.event.events.JumpEvent;
-import me.hackclient.event.events.UpdateBodyRotationEvent;
-import me.hackclient.module.impl.move.NoJumpDelay;
-import me.hackclient.module.impl.visual.Animations;
-import me.hackclient.utils.interfaces.Imports;
+import fuguriprivatecoding.autotool.Client;
+import fuguriprivatecoding.autotool.event.events.JumpEvent;
+import fuguriprivatecoding.autotool.event.events.UpdateBodyRotationEvent;
+import fuguriprivatecoding.autotool.module.impl.move.NoJumpDelay;
+import fuguriprivatecoding.autotool.module.impl.visual.Animations;
+import fuguriprivatecoding.autotool.utils.interfaces.Imports;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

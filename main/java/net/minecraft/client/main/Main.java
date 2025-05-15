@@ -14,9 +14,9 @@ import java.util.List;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import me.hackclient.Client;
-import me.hackclient.utils.discord.IRC;
-import me.hackclient.utils.hwid.HWIDUtils;
+import fuguriprivatecoding.autotool.Client;
+import fuguriprivatecoding.autotool.utils.discord.IRC;
+import fuguriprivatecoding.autotool.utils.hwid.HWIDUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Session;
 

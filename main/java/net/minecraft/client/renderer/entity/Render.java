@@ -1,8 +1,8 @@
 package net.minecraft.client.renderer.entity;
 
-import me.hackclient.Client;
-import me.hackclient.module.impl.misc.MidClick;
-import me.hackclient.module.impl.visual.NameTags;
+import fuguriprivatecoding.autotool.Client;
+import fuguriprivatecoding.autotool.module.impl.misc.MidClick;
+import fuguriprivatecoding.autotool.module.impl.visual.NameTags;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

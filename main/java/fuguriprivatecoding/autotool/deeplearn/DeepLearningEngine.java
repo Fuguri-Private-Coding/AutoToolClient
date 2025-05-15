@@ -1,0 +1,19 @@
+package fuguriprivatecoding.autotool.deeplearn;
+
+import ai.djl.engine.Engine;
+import fuguriprivatecoding.autotool.Client;
+
+import java.io.File;
+
+public class DeepLearningEngine {
+
+    public void init() {
+        File cacheDir = new File(Client.INST.getClientDirectory().getName() + "/djlCache");
+        System.setProperty("DJL_CACHE_DIR", cacheDir.getAbsolutePath());
+        System.setProperty("ENGINE_CACHE_DIR", cacheDir.getAbsolutePath());
+
+        // Disable tracking of DJL
+        System.setProperty("OPT_OUT_TRACKING", "true");
+        Engine.getInstance();
+    }
+}

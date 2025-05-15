@@ -1,7 +1,6 @@
 package net.minecraft.client.multiplayer;
 
-import me.hackclient.event.Event;
-import me.hackclient.event.events.ClickEvent;
+import fuguriprivatecoding.autotool.event.events.ClickEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -30,8 +29,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings;
-
-import java.beans.EventHandler;
 
 public class PlayerControllerMP
 {

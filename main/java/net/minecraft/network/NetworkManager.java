@@ -40,9 +40,8 @@ import java.util.Queue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.SecretKey;
 
-import me.hackclient.Client;
-import me.hackclient.event.PacketDirection;
-import me.hackclient.event.events.PacketEvent;
+import fuguriprivatecoding.autotool.event.PacketDirection;
+import fuguriprivatecoding.autotool.event.events.PacketEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.CryptManager;

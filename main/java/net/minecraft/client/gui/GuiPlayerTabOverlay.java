@@ -6,11 +6,11 @@ import com.mojang.authlib.GameProfile;
 import java.util.Comparator;
 import java.util.List;
 
-import me.hackclient.Client;
-import me.hackclient.managers.FriendManager;
-import me.hackclient.module.impl.client.IRCModule;
-import me.hackclient.module.impl.misc.MidClick;
-import me.hackclient.module.impl.misc.MurderMystery;
+import fuguriprivatecoding.autotool.Client;
+import fuguriprivatecoding.autotool.managers.FriendManager;
+import fuguriprivatecoding.autotool.module.impl.client.IRCModule;
+import fuguriprivatecoding.autotool.module.impl.misc.MidClick;
+import fuguriprivatecoding.autotool.module.impl.misc.MurderMystery;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
