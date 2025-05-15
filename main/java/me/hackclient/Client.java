@@ -79,6 +79,9 @@ public enum Client implements Imports {
 
 		eventManager = new EventManager();
 		eventManager.register(this);
+
+		irc.getIrcLogger().start();
+
 		console = new ConsoleGuiScreen();
 
 		combatManager = new CombatManager();

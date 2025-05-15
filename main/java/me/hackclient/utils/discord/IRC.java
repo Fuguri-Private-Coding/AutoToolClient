@@ -3,6 +3,7 @@ package me.hackclient.utils.discord;
 import lombok.Getter;
 import lombok.Setter;
 import me.hackclient.Client;
+import me.hackclient.event.events.UpdateIRCEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -20,40 +21,62 @@ public class IRC extends ListenerAdapter {
     public MessageChannel loginChannel;
     public MessageChannel serverChannel;
     public MessageChannel hwidChannel;
+    public static long myID = -1;
 
-    public void init() {
-        String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GWZvER.shF_rSJG9yPypoRALEyRsmF-uEnUp5cPQxbyFw";
-
-        JDA jda = JDABuilder.createDefault(token)
-                .enableIntents(
-                        GatewayIntent.MESSAGE_CONTENT,
-                        GatewayIntent.GUILD_MESSAGES
-                )
-                .addEventListeners(this)
-                .build();
-
-        try {
-            jda.awaitReady();
-
-            for (Guild guild : jda.getGuilds()) {
-                for (MessageChannel channel : guild.getTextChannels()) {
-                    if (channel.getName().equalsIgnoreCase("irc-chat")) {
-                        setChatChannel(channel);
-                    }
-                    if (channel.getName().equalsIgnoreCase("login-log")) {
-                        setLoginChannel(channel);
-                    }
-                    if (channel.getName().equalsIgnoreCase("server-log")) {
-                        setServerChannel(channel);
-                    }
-                    if (channel.getName().equalsIgnoreCase("hwid-list")) {
-                        setHwidChannel(channel);
-                    }
-                }
+    private Thread ircLogger = new Thread(() -> {
+        while (true) {
+            if (myID != -1) {
+                serverChannel.deleteMessageById(myID).queue(_ -> {
+                    myID = -1;
+                    new UpdateIRCEvent().call();
+                });
+            } else {
+                new UpdateIRCEvent().call();
             }
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    });
+
+    public void init() {
+        {
+            String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GWZvER.shF_rSJG9yPypoRALEyRsmF-uEnUp5cPQxbyFw";
+
+            JDA jda = JDABuilder.createDefault(token)
+                    .enableIntents(
+                            GatewayIntent.MESSAGE_CONTENT,
+                            GatewayIntent.GUILD_MESSAGES
+                    )
+                    .addEventListeners(this)
+                    .build();
+
+            try {
+                jda.awaitReady();
+
+                for (Guild guild : jda.getGuilds()) {
+                    for (MessageChannel channel : guild.getTextChannels()) {
+                        if (channel.getName().equalsIgnoreCase("irc-chat")) {
+                            setChatChannel(channel);
+                        }
+                        if (channel.getName().equalsIgnoreCase("login-log")) {
+                            setLoginChannel(channel);
+                        }
+                        if (channel.getName().equalsIgnoreCase("server-log")) {
+                            setServerChannel(channel);
+                        }
+                        if (channel.getName().equalsIgnoreCase("hwid-list")) {
+                            setHwidChannel(channel);
+                        }
+                    }
+                }
+
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
