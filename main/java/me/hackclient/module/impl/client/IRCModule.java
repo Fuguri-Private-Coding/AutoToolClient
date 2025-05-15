@@ -24,8 +24,10 @@ public class IRCModule extends Module {
     public static HashMap<String, Profile> usersOnline = new HashMap<>();
 
     @EventTarget
-    public void onEvent(Event event) {
-        if (event instanceof TickEvent && mc.thePlayer.ticksExisted % 200 == 0) {
+    public void onEvent(Event event) {  
+
+        if (event instanceof UpdateIRCEvent && allVisibility.isToggled()) {
+            sendMyMessage();
             new Thread(() -> {
                 usersOnline.clear();
                 for (Message message : Client.INSTANCE.getIrc().getServerChannel().getIterableHistory().stream().toList()) {
@@ -39,10 +41,6 @@ public class IRCModule extends Module {
                     usersOnline.put(ign, new Profile(clientName, role));
                 }
             }).start();
-        }
-
-        if (event instanceof UpdateIRCEvent && allVisibility.isToggled()) {
-            sendMyMessage();
         }
     }
 
