@@ -36,7 +36,7 @@ public class IRC extends ListenerAdapter {
             }
 
             try {
-                Thread.sleep(10000);
+                Thread.sleep(30000);
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }

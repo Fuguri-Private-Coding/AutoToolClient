@@ -24,8 +24,7 @@ public class IRCModule extends Module {
     public static HashMap<String, Profile> usersOnline = new HashMap<>();
 
     @EventTarget
-    public void onEvent(Event event) {  
-
+    public void onEvent(Event event) {
         if (event instanceof UpdateIRCEvent && allVisibility.isToggled()) {
             sendMyMessage();
             new Thread(() -> {
