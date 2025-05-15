@@ -109,7 +109,7 @@ public enum Client implements Imports {
 			ViaMCP.create();
 			ViaMCP.INSTANCE.initAsyncSlider();
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 
 		clickGui = new ClickGuiScreen();
