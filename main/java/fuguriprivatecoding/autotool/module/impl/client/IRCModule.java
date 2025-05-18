@@ -25,14 +25,18 @@ public class IRCModule extends Module {
     public void onEnable() {
         super.onEnable();
         IRC.myID = -1;
-        Client.INST.getIrc().getIrcLogger().start();
+        if (!Client.INST.getIrc().getIrcLogger().isAlive()) {
+            Client.INST.getIrc().getIrcLogger().start();
+        }
     }
 
     @Override
     public void onDisable() {
         super.onDisable();
-        Client.INST.getIrc().getIrcLogger().interrupt();
-        IRC.myID = -1;
+        if (Client.INST.getIrc().getIrcLogger().isAlive()) {
+            Client.INST.getIrc().getIrcLogger().interrupt();
+            IRC.myID = -1;
+        }
     }
 
     @EventTarget

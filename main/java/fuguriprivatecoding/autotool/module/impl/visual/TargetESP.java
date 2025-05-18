@@ -8,7 +8,6 @@ import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
 import fuguriprivatecoding.autotool.settings.impl.*;
-import fuguriprivatecoding.autotool.settings.impl.*;
 import fuguriprivatecoding.autotool.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotool.utils.color.ColorUtils;
 import fuguriprivatecoding.autotool.utils.render.RenderUtils;
@@ -32,9 +31,18 @@ public class TargetESP extends Module {
     final FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f) {};
     final IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
     final FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f) {};
-    final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
+
+    final CheckBox fadeColor = new CheckBox("FadeColor", this);
+    final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
+    final ColorSetting color2 = new ColorSetting("Color2", this, fadeColor::isToggled, 1f,1f,1f,1f);
+    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeColor::isToggled,0.1f, 20, 1, 0.1f);
+
     final CheckBox changeColorHit = new CheckBox("ChangeHitColor", this, false);
-    final ColorSetting hitColor = new ColorSetting("HitColor", this, changeColorHit::isToggled, 1f,1f,1f,1f);
+
+    final CheckBox fadeHitColor = new CheckBox("FadeHitColor", this, changeColorHit::isToggled);
+    final ColorSetting hitColor1 = new ColorSetting("HitColor1", this, changeColorHit::isToggled, 1f,1f,1f,1f);
+    final ColorSetting hitColor2 = new ColorSetting("HitColor2", this, () -> changeColorHit.isToggled() && fadeHitColor.isToggled(), 1f,1f,1f,1f);
+    final FloatSetting fadeHitSpeed = new FloatSetting("FadeHitSpeed", this, fadeHitColor::isToggled,0.1f, 20, 1, 0.1f);
 
     private final List<Sigma2> poses = new ArrayList<>();
 
@@ -47,22 +55,22 @@ public class TargetESP extends Module {
             switch (mode.getMode()) {
                 case "Sigma" -> {
                     if (shadows.isToggled() && shadows.module.get("TargetESP")) {
-                        BloomUtils.addToDraw(() -> renderSigma(Color.WHITE, Color.WHITE));
+                        BloomUtils.addToDraw(() -> renderSigma(Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE));
                     }
-                    renderSigma(color.getColor(), hitColor.getColor());
+                    renderSigma(color1.getColor(), color2.getColor(), hitColor1.getColor(), hitColor2.getColor());
                 }
 
                 case "Sigma2" -> {
                     if (shadows.isToggled() && shadows.module.get("TargetESP")) {
-                        BloomUtils.addToDraw(() -> renderSigma2(Color.WHITE, Color.WHITE));
+                        BloomUtils.addToDraw(() -> renderSigma2(Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE));
                     }
-                    renderSigma2(color.getColor(), hitColor.getColor());
+                    renderSigma2(color1.getColor(), color2.getColor(), hitColor1.getColor(), hitColor2.getColor());
                 }
             }
         }
     }
 
-    private void renderSigma(Color color, Color hcolor) {
+    private void renderSigma(Color color1, Color color2, Color hcolor1, Color hcolor2) {
         double animationTranslate = sin(System.currentTimeMillis() / 1000.0 * speed.getValue());
 
         final EntityLivingBase target = Client.INST.getCombatManager().getTarget();
@@ -78,6 +86,21 @@ public class TargetESP extends Module {
         double y = target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - viewerPosY;
         double z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - viewerPosZ;
 
+        Color fadeColor;
+        Color fadeHitColor;
+
+        if (this.fadeColor.isToggled()) {
+            fadeColor = ColorUtils.mixColors(color1, color2, (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeSpeed.getValue()) + 1) / 2);
+        } else {
+            fadeColor = color1;
+        }
+
+        if (this.fadeHitColor.isToggled()) {
+            fadeHitColor = ColorUtils.mixColors(hcolor1, hcolor2, (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeHitSpeed.getValue()) + 1) / 2);
+        } else {
+            fadeHitColor = hcolor1;
+        }
+
         glPushMatrix();
         glDisable(GL_TEXTURE_2D);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -92,9 +115,9 @@ public class TargetESP extends Module {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
-            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color);
+            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? fadeHitColor : fadeColor);
             glVertex3d(x1, y1, z1);
-            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 0f);
+            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? fadeHitColor : fadeColor, 0f);
             glVertex3d(x1, y1 + animationTranslate * length.getValue(), z1);
         }
 
@@ -102,9 +125,9 @@ public class TargetESP extends Module {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
-            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 1.0f);
+            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? fadeHitColor : fadeColor, 1.0f);
             glVertex3d(x1, y1, z1);
-            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 1.0f);
+            ColorUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? fadeHitColor : fadeColor, 1.0f);
             glVertex3d(x1, y1 + 0.02f, z1);
         }
         glEnd();
@@ -118,7 +141,7 @@ public class TargetESP extends Module {
         glPopMatrix();
     }
 
-    private void renderSigma2(Color color, Color hcolor) {
+    private void renderSigma2(Color color1, Color color2, Color hcolor1, Color hcolor2) {
         final EntityLivingBase target = Client.INST.getCombatManager().getTarget();
 
         if (target == null) return;
@@ -134,6 +157,20 @@ public class TargetESP extends Module {
         poses.add(new Sigma2((float) f, System.currentTimeMillis()));
         poses.removeIf(pose -> System.currentTimeMillis() - pose.time() >= 500);
 
+        Color fadeColor;
+        Color fadeHitColor;
+
+        if (this.fadeColor.isToggled()) {
+            fadeColor = ColorUtils.mixColors(color1, color2, (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeSpeed.getValue()) + 1) / 2);
+        } else {
+            fadeColor = color1;
+        }
+
+        if (this.fadeHitColor.isToggled()) {
+            fadeHitColor = ColorUtils.mixColors(hcolor1, hcolor2, (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeHitSpeed.getValue()) + 1) / 2);
+        } else {
+            fadeHitColor = hcolor1;
+        }
         glPushMatrix();
         glDisable(GL_TEXTURE_2D);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -147,18 +184,18 @@ public class TargetESP extends Module {
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
-            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 0f);
+            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? fadeHitColor : fadeColor, 0f);
             glVertex3d(x1, y + poses.getFirst().value, z1);
-            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color);
+            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? fadeHitColor : fadeColor);
             glVertex3d(x1, y + poses.getLast().value, z1);
         }
 
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
-            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 1f);
+            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? fadeHitColor : fadeColor, 1f);
             glVertex3d(x1, y + poses.getLast().value, z1);
-            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? hcolor : color, 1f);
+            RenderUtils.glColor(changeColorHit.isToggled() && target.hurtTime > 0 ? fadeHitColor : fadeColor, 1f);
             glVertex3d(x1, y + poses.getLast().value + 0.02, z1);
         }
         glEnd();

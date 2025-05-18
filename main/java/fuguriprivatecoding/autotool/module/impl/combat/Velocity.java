@@ -12,7 +12,6 @@ import fuguriprivatecoding.autotool.event.events.*;
 import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
-import fuguriprivatecoding.autotool.settings.impl.*;
 import fuguriprivatecoding.autotool.utils.move.MoveUtils;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 
@@ -20,12 +19,13 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity;
 public class Velocity extends Module {
 
     final Mode mode = new Mode("Mode", this)
-            .addModes("Vanilla", "Jump")
+            .addModes("Vanilla", "Jump", "Intave")
             .setMode("Vanilla");
 
-    IntegerSetting hurtTime = new IntegerSetting("HurtTime", this,() -> mode.getMode().equalsIgnoreCase("Jump"), 1, 10, 9);
+    CheckBox jump = new CheckBox("Jump", this, () -> mode.getMode().equalsIgnoreCase("Intave"));
 
-    CheckBox forceForward = new CheckBox("ForceForward", this,() -> mode.getMode().equalsIgnoreCase("Jump"));
+    IntegerSetting hurtTime = new IntegerSetting("HurtTime", this,() -> mode.getMode().equalsIgnoreCase("Jump") || (mode.getMode().equalsIgnoreCase("Intave") && jump.isToggled()), 1, 10, 9);
+    CheckBox forceForward = new CheckBox("ForceForward", this,() -> mode.getMode().equalsIgnoreCase("Jump") || (mode.getMode().equalsIgnoreCase("Intave") && jump.isToggled()));
 
     final FloatSetting XZ = new FloatSetting("XZ", this,() -> mode.getMode().equalsIgnoreCase("Vanilla"), -1, 1, 0, 0.1f);
     final FloatSetting Y = new FloatSetting("Y", this,() -> mode.getMode().equalsIgnoreCase("Vanilla"), 0, 1, 1, 0.1f);
@@ -53,6 +53,23 @@ public class Velocity extends Module {
                     mc.thePlayer.motionX += deltaMotionX;
                     mc.thePlayer.motionY += deltaMotionY;
                     mc.thePlayer.motionZ += deltaMotionZ;
+                }
+            }
+
+            case "Intave" -> {
+                if (event instanceof AttackEvent) {
+                    if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.isSprinting()) {
+                        mc.thePlayer.motionX *= 0.6f;
+                        mc.thePlayer.motionZ *= 0.6f;
+                        mc.thePlayer.setSprinting(false);
+                    }
+                }
+                if (event instanceof MoveButtonEvent moveButtonEvent && jump.isToggled()) {
+                    boolean jump = mc.thePlayer.hurtTime == hurtTime.getValue() && mc.thePlayer.onGround && !moveButtonEvent.isJump() && MoveUtils.isMoving();
+                    if (jump) {
+                        if (forceForward.isToggled()) moveButtonEvent.setForward(true);
+                        moveButtonEvent.setJump(true);
+                    }
                 }
             }
 

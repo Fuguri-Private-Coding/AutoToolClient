@@ -17,6 +17,7 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -92,6 +93,11 @@ public class Ping extends Module {
                 Packet packet = e.getPacket();
 
                 switch (packet) {
+                    case C01PacketChatMessage _ -> {
+                        reset();
+                        return;
+                    }
+
                     case C02PacketUseEntity handlingPacket -> {
                         if (actions.get("Attack") && handlingPacket.getAction() == C02PacketUseEntity.Action.ATTACK) {
                             reset();

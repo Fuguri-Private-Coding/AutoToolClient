@@ -82,6 +82,7 @@ public class IRC extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        if (Client.INST.isStarting()) return;
         if (event.getChannel() == chatChannel) {
             String message = event.getMessage().getContentRaw();
             if (message.startsWith("PrivateMessage")) {

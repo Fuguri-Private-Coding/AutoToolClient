@@ -6,12 +6,10 @@ import fuguriprivatecoding.autotool.event.Event;
 import fuguriprivatecoding.autotool.event.EventTarget;
 import fuguriprivatecoding.autotool.event.events.*;
 import fuguriprivatecoding.autotool.settings.impl.*;
-import fuguriprivatecoding.autotool.event.events.*;
 import fuguriprivatecoding.autotool.managers.CombatManager;
 import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
-import fuguriprivatecoding.autotool.settings.impl.*;
 import fuguriprivatecoding.autotool.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotool.utils.math.RandomUtils;
 import fuguriprivatecoding.autotool.utils.move.MoveUtils;
@@ -152,7 +150,6 @@ public class KillAura extends Module {
         if (event instanceof MotionEvent e) {
             e.setYaw(lr.getYaw());
             e.setPitch(lr.getPitch());
-
             AxisAlignedBB box = getHitBox(target);
             Rot needRotation = switch (hitVec.getMode()) {
                 case "Best" -> RotUtils.getBestRotation(box);
@@ -176,6 +173,7 @@ public class KillAura extends Module {
                     delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
                 }
                 case "AIModel" -> {
+                    if (model.getModes() == null) smoothMode.setMode("Linear");
                     if (AIRotationSmooth.currentModelName != null) {
                         if (!AIRotationSmooth.currentModelName.equalsIgnoreCase(model.getMode())) {
                             AIRotationSmooth.changeModel(model.getMode());

@@ -60,7 +60,9 @@ public class BloomUtils implements Imports {
         }
 
         Color color = shadows.color.getColor();
-        if (shadows.fade.isToggled()) color = ColorUtils.mixColors(shadows.color.getColor(), shadows.twoColor.getColor(), (Math.sin(System.currentTimeMillis() / 1000D * (double) shadows.speed.getValue()) + 1) / 2);
+        if (shadows.fade.isToggled()) {
+            color = ColorUtils.mixColors(shadows.color.getColor(), shadows.twoColor.getColor(), (Math.sin(System.currentTimeMillis() / 1000D * (double) shadows.speed.getValue()) + 1) / 2);
+        }
 
         Uniform.uniform4f(programId, "color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
         Uniform.uniform1f(programId,"brightness", shadows.brightness.getValue());

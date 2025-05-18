@@ -48,16 +48,10 @@ public class ClickManager implements Imports {
 
     public boolean needClick(EntityLivingBase target) {
         int startRandomizedHurtTime = RandomUtils.nextInt(clickSettings.minStartHurtTime.getValue(), clickSettings.maxStartHurtTime.getValue());
-        int endRandomizedHurtTime = RandomUtils.nextInt(clickSettings.minEndHurtTime.getValue(), clickSettings.maxEndHurtTime.getValue());
-
         if (target == null) { return true; }
-
         if (target.hurtTime <= startRandomizedHurtTime) { return true; }
-        if (target.hurtTime <= endRandomizedHurtTime) { return false; }
-
-        if (mc.thePlayer.hurtTime > 0) return true;
-
-        return clicking;
+        if (!clickSettings.isToggled()) return true;
+        return mc.thePlayer.hurtTime > 0;
     }
 
     public void addClick() { clicks++; }

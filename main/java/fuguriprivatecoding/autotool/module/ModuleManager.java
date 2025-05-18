@@ -28,7 +28,6 @@ public class ModuleManager {
 
 	public ModuleManager() {
 		INSTANCE = this;
-		long currentNano = System.nanoTime();
 		 register(
 				 new AutoSoup(),
 				 new Reach(),
@@ -98,7 +97,6 @@ public class ModuleManager {
 				 new HUD(),
 				 new ModelTrainer()
 		);
-		System.out.println("Init ModuleManager: " + (System.nanoTime() - currentNano) / 1000000D + " ms.");
 	}
 
 	private void register(Module... modulesToRegister) {

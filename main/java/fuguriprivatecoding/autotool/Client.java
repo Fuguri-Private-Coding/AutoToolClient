@@ -20,7 +20,6 @@ import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleManager;
 import fuguriprivatecoding.autotool.managers.ClickManager;
 import fuguriprivatecoding.autotool.utils.font.FontsRepository;
-import fuguriprivatecoding.autotool.utils.render.font.Fonts;
 import fuguriprivatecoding.autotool.utils.render.shader.ShaderManager;
 import fuguriprivatecoding.autotool.utils.discord.Discord;
 import fuguriprivatecoding.autotool.utils.discord.IRC;
@@ -70,8 +69,11 @@ public enum Client implements Imports {
 
 	FontsRepository fonts;
 
+	boolean starting = false;
+
 	public void init() throws IOException {
 		long start = System.nanoTime();
+		starting = true;
 
 		name = "AutoTool";
 		version = new ClientVersion(2, 1, 1);
@@ -92,40 +94,39 @@ public enum Client implements Imports {
 		friendManager = new FriendManager();
         soundsManager = new SoundsManager();
 
-		try {
-			discord = new Discord();
-			discord.init();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		discord = new Discord();
+		discord.init();
 
 		moduleManager = new ModuleManager();
+
 		shaderManager = new ShaderManager();
+		shaderManager.init();
+
 		configManager = new ConfigManager();
 		configManager.init();
 		configManager.loadConfig(configManager.getDefaultConfig());
 		configManager.loadBinds();
+
 		commandManager = new CommandManager();
 		clickManager = new ClickManager();
+
 		deepLearningEngine = new DeepLearningEngine();
 		deepLearningEngine.init();
 
 		new PositionResolverComponent();
 
-		try {
-			ViaMCP.create();
-			ViaMCP.INSTANCE.initAsyncSlider();
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+		ViaMCP.create();
+		ViaMCP.INSTANCE.initAsyncSlider();
 
-		fonts = new FontsRepository();
-		Fonts.init();
+//		fonts = new FontsRepository();
+//		Fonts.init();
 
 		clickGui = new ClickGuiScreen();
 
 		mc.gameSettings.ofFastRender = false;
 		Display.setTitle(getFullName());
+
+		starting = false;
 
 		double elapsedNanos = System.nanoTime() - start;
 		console.log("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");

@@ -43,7 +43,7 @@ public class RotUtils implements Imports {
 
 	public static Rot getRotationToPoint(Vec3 needPoint) {
 		Vec3 delta = needPoint.subtract(mc.thePlayer.getPositionEyes(1.0F));
-		double distance = mc.thePlayer.getPositionEyes(1.0F).distanceTo(needPoint);
+		double distance = Math.sqrt(delta.xCoord * delta.xCoord + delta.zCoord * delta.zCoord);
 		return new Rot(
 				(float) (Math.toDegrees(Math.atan2(delta.zCoord, delta.xCoord)) - 90),
 				(float) -Math.toDegrees(Math.atan2(delta.yCoord, distance))
