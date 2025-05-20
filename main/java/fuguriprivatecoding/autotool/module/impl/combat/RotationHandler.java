@@ -23,22 +23,6 @@ public class RotationHandler extends Module {
     final IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 0, 180, 30);
     final IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 0, 180, 30);
 
-    final FloatSetting minSmoothes = new FloatSetting("MinSmooth", this, 1, 10, 2f, 0.1f) {
-        @Override
-        public float getValue() {
-            if (maxSmoothes.value < value) { value = maxSmoothes.value; }
-            return super.getValue();
-        }
-    };
-
-    final FloatSetting maxSmoothes = new FloatSetting("MaxSmooth", this, 1, 10, 2f, 0.1f) {
-        @Override
-        public float getValue() {
-            if (minSmoothes.value > value) { value = minSmoothes.value; }
-            return super.getValue();
-        }
-    };
-
     final FloatSetting stopThreshold = new FloatSetting("StopThreshold", this, 0f, 10f, 0.1f, 0.1f) {};
 
     @EventTarget
@@ -57,13 +41,8 @@ public class RotationHandler extends Module {
                         return;
                     }
 
-                    float randomizedSmooth = RandomUtils.nextFloat(minSmoothes.getValue(), maxSmoothes.getValue());
-
                     delta.setYaw(MathHelper.clamp(delta.getYaw(), -yawSpeed.getValue(), yawSpeed.getValue()));
                     delta.setPitch(MathHelper.clamp(delta.getPitch(), -pitchSpeed.getValue(), pitchSpeed.getValue()));
-
-                    delta.setYaw(delta.getYaw() / randomizedSmooth);
-                    delta.setPitch(delta.getPitch() / randomizedSmooth);
 
                     delta = RotUtils.fixDelta(delta);
 

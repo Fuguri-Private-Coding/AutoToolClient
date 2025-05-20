@@ -8,11 +8,12 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import org.lwjgl.util.vector.Vector2f;
 
+@Setter
 public class Rot {
 	public static final Rot ZERO = new Rot(0,0);
 	@Getter @Setter static boolean changed;
 	@Getter static Rot serverRotation = new Rot();
-	@Getter @Setter float yaw, pitch;
+	@Getter float yaw, pitch;
 
 	public static void setServerRotation(Rot serverRotation) {
 		Rot.serverRotation = serverRotation.copy();

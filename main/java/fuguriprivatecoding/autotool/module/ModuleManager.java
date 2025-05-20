@@ -1,15 +1,9 @@
 package fuguriprivatecoding.autotool.module;
 
 import fuguriprivatecoding.autotool.module.impl.combat.*;
-import fuguriprivatecoding.autotool.module.impl.connection.BackTrack;
-import fuguriprivatecoding.autotool.module.impl.connection.Blink;
-import fuguriprivatecoding.autotool.module.impl.connection.Ping;
-import fuguriprivatecoding.autotool.module.impl.exploit.Disabler;
-import fuguriprivatecoding.autotool.module.impl.exploit.GodMode;
-import fuguriprivatecoding.autotool.module.impl.exploit.VClip;
-import fuguriprivatecoding.autotool.module.impl.legit.AimAssist;
-import fuguriprivatecoding.autotool.module.impl.legit.AutoClicker;
-import fuguriprivatecoding.autotool.module.impl.legit.InvClicker;
+import fuguriprivatecoding.autotool.module.impl.connection.*;
+import fuguriprivatecoding.autotool.module.impl.exploit.*;
+import fuguriprivatecoding.autotool.module.impl.legit.*;
 import fuguriprivatecoding.autotool.module.impl.misc.*;
 import fuguriprivatecoding.autotool.module.impl.move.*;
 import fuguriprivatecoding.autotool.module.impl.player.*;
@@ -21,9 +15,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+@Getter
 public class ModuleManager {
 
-	@Getter private CopyOnWriteArrayList<Module> modules;
+	private CopyOnWriteArrayList<Module> modules;
 	public static ModuleManager INSTANCE;
 
 	public ModuleManager() {
@@ -31,7 +26,6 @@ public class ModuleManager {
 		 register(
 				 new AutoSoup(),
 				 new Reach(),
-				 new ChatBypass(),
 				 new KillAura(),
 				 new Dot(),
 				 new Regen(),
@@ -73,7 +67,6 @@ public class ModuleManager {
 				 new Fixes(),
 				 new FlagDetector(),
 				 new AimAssist(),
-				 new GodMode(),
 				 new Blink(),
 				 new Animations(),
 				 new MotionBlur(),

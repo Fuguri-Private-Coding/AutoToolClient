@@ -5,12 +5,11 @@ import fuguriprivatecoding.autotool.event.Event;
 import fuguriprivatecoding.autotool.event.EventTarget;
 import fuguriprivatecoding.autotool.event.events.*;
 import fuguriprivatecoding.autotool.settings.impl.*;
-import fuguriprivatecoding.autotool.event.events.*;
 import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
 import fuguriprivatecoding.autotool.module.impl.visual.Shadows;
-import fuguriprivatecoding.autotool.settings.impl.*;
+import fuguriprivatecoding.autotool.utils.color.ColorUtils;
 import fuguriprivatecoding.autotool.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotool.utils.math.MathUtils;
 import fuguriprivatecoding.autotool.utils.math.RandomUtils;
@@ -27,6 +26,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
 
 @ModuleInfo(name = "Scaffold", category = Category.PLAYER)
 public class Scaffold extends Module {
@@ -99,7 +100,10 @@ public class Scaffold extends Module {
     final CheckBox autoThirdPerson = new CheckBox("ThirdPerson", this, true);
 
     final CheckBox render = new CheckBox("Render", this, true);
-    final ColorSetting color = new ColorSetting("Color", this, render::isToggled, 1,1,1,1);
+    final CheckBox fadeColor = new CheckBox("FadeColor", this, render::isToggled);
+    final ColorSetting color1 = new ColorSetting("Color1", this, render::isToggled, 1f,1f,1f,1f);
+    final ColorSetting color2 = new ColorSetting("Color2", this, () -> render.isToggled() && fadeColor.isToggled(), 1f,1f,1f,1f);
+    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> render.isToggled() && fadeColor.isToggled(),0.1f, 20, 1, 0.1f);
 
     final StopWatch stopWatch;
 
@@ -138,7 +142,6 @@ public class Scaffold extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
-        if (mc.currentScreen != null) return;
         switch (clickMode.getMode()) {
             case "AutoPlace" -> {
                 if (event instanceof DrawBlockHighlightEvent) {
@@ -163,11 +166,18 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {
+            Color fadeColor;
+            if (this.fadeColor.isToggled()) {
+                fadeColor = ColorUtils.mixColors(color1.getColor(), color2.getColor(), (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeSpeed.getValue()) + 1) / 2);
+            } else {
+                fadeColor = color1.getColor();
+            }
+
             RenderUtils.start3D();
             if (shadows.isToggled() && shadows.module.get("Scaffold")) {
-                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), 1f, 1.0F, 0));
+                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f, 1.0F, 0));
             }
-            RenderUtils.drawBlockESP(renderPos, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 1.0F, 0);
+            RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f, 1.0F, 0);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderUtils.stop3D();
         }
@@ -231,6 +241,7 @@ public class Scaffold extends Module {
     }
 
     void legitPlace() {
+        if (mc.currentScreen != null) return;
         MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
 
         if (findBlock() == -1 || mouseOver == null || mouseOver.getBlockPos() == null || mc.theWorld.getBlockState(mouseOver.getBlockPos()).getBlock().getMaterial() == Material.air) {
@@ -277,6 +288,7 @@ public class Scaffold extends Module {
     double lastDelta = 0;
 
     void rotate() {
+        if (mc.currentScreen != null) return;
         boolean moveDiagonally = false;
         float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), 45);
 

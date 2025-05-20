@@ -8,12 +8,15 @@ import fuguriprivatecoding.autotool.event.events.TickEvent;
 import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
+import fuguriprivatecoding.autotool.module.impl.combat.KillAura;
 import fuguriprivatecoding.autotool.settings.impl.CheckBox;
 import fuguriprivatecoding.autotool.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotool.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotool.utils.color.ColorUtils;
 import fuguriprivatecoding.autotool.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotool.utils.render.RenderUtils;
+import fuguriprivatecoding.autotool.utils.rotation.Rot;
+import fuguriprivatecoding.autotool.utils.rotation.RotUtils;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 
@@ -23,7 +26,7 @@ import java.awt.*;
 public class Dot extends Module {
 
     final FloatSetting size = new FloatSetting("Size", this, 0f, 1f, 0.5f, 0.05f) {};
-    final CheckBox onlyKillAura = new CheckBox("OnlyKillAura", this, true);
+    final CheckBox onlyChangeRotationModules = new CheckBox("OnlyChangeRotationModules", this, true);
 
     final CheckBox fadeColor = new CheckBox("FadeColor", this);
     final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
@@ -37,7 +40,7 @@ public class Dot extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
-        if (Client.INST.getCombatManager().getTarget() == null && onlyKillAura.isToggled()) { return; }
+        if (!Rot.isChanged() && onlyChangeRotationModules.isToggled()) { return; }
         MovingObjectPosition mouse = mc.objectMouseOver;
         if (event instanceof Render3DEvent) {
             Vec3 smooth = prevPos.add(pos.subtract(prevPos).multiple(mc.timer.renderPartialTicks));

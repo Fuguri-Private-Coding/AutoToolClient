@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotool.module.impl.player;
 import fuguriprivatecoding.autotool.event.Event;
 import fuguriprivatecoding.autotool.event.EventTarget;
 import fuguriprivatecoding.autotool.event.events.MotionEvent;
+import fuguriprivatecoding.autotool.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
@@ -47,6 +48,7 @@ public class InvManager extends Module {
     private final IntegerSetting blockSlot = new IntegerSetting("Block Slot", this,1, 9, 1);
     private final IntegerSetting potionSlot = new IntegerSetting("Potion Slot", this,1, 9, 1);
     private final IntegerSetting foodSlot = new IntegerSetting("Food Slot", this,1, 9, 1);
+    private final IntegerSetting enderSlot = new IntegerSetting("Ender Slot", this,1, 9, 1);
 
     private final StopWatch stopwatch = new StopWatch();
     private boolean moved;
@@ -78,6 +80,7 @@ public class InvManager extends Module {
             int block = -1;
             int potion = -1;
             int food = -1;
+            int ender = -1;
 
             int INVENTORY_ROWS = 4;
             int INVENTORY_COLUMNS = 9;
@@ -235,6 +238,12 @@ public class InvManager extends Module {
                         }
                     }
                 }
+
+                if (item instanceof ItemEnderPearl) {
+                    if (ender == -1) {
+                        ender = i;
+                    }
+                }
             }
 
             for (int i = 0; i < INVENTORY_SLOTS; i++) {
@@ -318,7 +327,10 @@ public class InvManager extends Module {
             if (food != -1 && food != this.foodSlot.getValue() - 1) {
                 this.moveItem(food, this.foodSlot.getValue() - 37);
             }
-            
+
+            if (ender != -1 && ender != this.enderSlot.getValue() - 1) {
+                moveItem(ender, this.enderSlot.getValue() - 37);
+            }
         }
     }
     

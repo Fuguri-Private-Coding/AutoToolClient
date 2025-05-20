@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
 import fuguriprivatecoding.autotool.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotool.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotool.settings.impl.*;
 import fuguriprivatecoding.autotool.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotool.utils.raytrace.RayTraceUtils;
 import fuguriprivatecoding.autotool.utils.rotation.RayCastUtils;

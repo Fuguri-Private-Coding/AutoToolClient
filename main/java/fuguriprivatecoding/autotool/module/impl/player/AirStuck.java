@@ -16,14 +16,14 @@ import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 public class AirStuck extends Module {
 
     Mode mode = new Mode("Mode", this)
-            .addModes("NoRotate")
-            .setMode("NoRotate");
+            .addModes("Default")
+            .setMode("Default");
 
     @EventTarget
     public void onEvent(Event event) {
         switch (mode.getMode()) {
-            case "NoRotate" -> {
-                if (event instanceof PacketEvent packetEvent && (packetEvent.getPacket() instanceof S32PacketConfirmTransaction || packetEvent.getPacket() instanceof S08PacketPlayerPosLook)) packetEvent.setCanceled(true);
+            case "Default" -> {
+                if (event instanceof PacketEvent packetEvent && packetEvent.getPacket() instanceof S08PacketPlayerPosLook) packetEvent.setCanceled(true);
                 if (event instanceof MoveButtonEvent moveButtonEvent) {
                     moveButtonEvent.setJump(false);
                     moveButtonEvent.setForward(false);

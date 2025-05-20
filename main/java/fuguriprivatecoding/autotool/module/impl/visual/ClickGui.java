@@ -4,10 +4,7 @@ import fuguriprivatecoding.autotool.Client;
 import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
-import fuguriprivatecoding.autotool.settings.impl.ColorSetting;
-import fuguriprivatecoding.autotool.settings.impl.Mode;
-import fuguriprivatecoding.autotool.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotool.settings.impl.IntegerSetting;
+import fuguriprivatecoding.autotool.settings.impl.*;
 import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "ClickGui", category = Category.VISUAL, key = Keyboard.KEY_RSHIFT)
@@ -22,7 +19,10 @@ public class ClickGui extends Module {
 	public IntegerSetting backgroundAlpha = new IntegerSetting("BackgroundAlpha", this, 0, 240, 100);
 	public FloatSetting toggleModuleVolume = new FloatSetting("ToggleModuleVolume", this, 0.1f, 1, 1, 0.1f) {};
 
-	public final ColorSetting color = new ColorSetting("Color", this, 0f,0.5f,1f,1f);
+	public final CheckBox fadeColor = new CheckBox("FadeColor", this);
+	public final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
+	public final ColorSetting color2 = new ColorSetting("Color2", this, fadeColor::isToggled, 1f,1f,1f,1f);
+	public final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeColor::isToggled,0.1f, 20, 1, 0.1f);
 
 	@Override
 	public void onEnable() {

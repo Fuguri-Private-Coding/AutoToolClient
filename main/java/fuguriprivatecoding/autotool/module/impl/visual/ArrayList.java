@@ -23,7 +23,6 @@ public class ArrayList extends Module {
 	final CheckBox showRenderModules = new CheckBox("ShowRenderModules", this, false);
 
 	final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
-	final IntegerSetting fontSize = new IntegerSetting("FontSize", this, 1, 48, 24);
 	final CheckBox textShadow = new CheckBox("TextShadow", this, false);
 
 	final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, 0,0,0,0.5f);

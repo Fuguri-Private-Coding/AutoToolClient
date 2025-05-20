@@ -12,6 +12,7 @@ import fuguriprivatecoding.autotool.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotool.settings.Setting;
 import fuguriprivatecoding.autotool.settings.impl.*;
 import fuguriprivatecoding.autotool.settings.impl.*;
+import fuguriprivatecoding.autotool.utils.color.ColorUtils;
 import fuguriprivatecoding.autotool.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotool.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotool.utils.animation.Animation2D;
@@ -77,7 +78,13 @@ public class ClickGuiScreen extends GuiScreen {
 		int currentScroll = Mouse.getDWheel();
 		scroll -= Mouse.getDWheel() / 120 * 10;
 		if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
-		MAIN_COLOR = clickGui.color.getColor();
+
+		if (this.clickGui.fadeColor.isToggled()) {
+			MAIN_COLOR = ColorUtils.mixColors(clickGui.color1.getColor(), clickGui.color2.getColor(), (Math.sin(System.currentTimeMillis() / 1000D * (double) clickGui.fadeSpeed.getValue()) + 1) / 2);
+		} else {
+			MAIN_COLOR = clickGui.color1.getColor();
+		}
+
 		BACKGROUND_COLOR = new Color(15,15,15,clickGui.backgroundAlpha.getValue());
         if (closing) {
             if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {

@@ -13,7 +13,8 @@ public class ColorUtils {
         final int redPart = (int) (color1.getRed() * percent + color2.getRed() * inverse_percent);
         final int greenPart = (int) (color1.getGreen() * percent + color2.getGreen() * inverse_percent);
         final int bluePart = (int) (color1.getBlue() * percent + color2.getBlue() * inverse_percent);
-        return new Color(redPart, greenPart, bluePart);
+        final int alphaPart = (int) (color1.getAlpha() * percent + color2.getAlpha() * inverse_percent);
+        return new Color(redPart, greenPart, bluePart, alphaPart);
     }
 
     public void glColor(Color color) {
