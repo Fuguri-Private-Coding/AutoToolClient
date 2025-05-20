@@ -3,7 +3,6 @@ package fuguriprivatecoding.autotool.module.impl.player;
 import fuguriprivatecoding.autotool.event.Event;
 import fuguriprivatecoding.autotool.event.EventTarget;
 import fuguriprivatecoding.autotool.event.events.MotionEvent;
-import fuguriprivatecoding.autotool.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
@@ -48,7 +47,7 @@ public class InvManager extends Module {
     private final IntegerSetting blockSlot = new IntegerSetting("Block Slot", this,1, 9, 1);
     private final IntegerSetting potionSlot = new IntegerSetting("Potion Slot", this,1, 9, 1);
     private final IntegerSetting foodSlot = new IntegerSetting("Food Slot", this,1, 9, 1);
-    private final IntegerSetting enderSlot = new IntegerSetting("Ender Slot", this,1, 9, 1);
+    private final IntegerSetting pearlSlot = new IntegerSetting("Pearl Slot", this,1, 9, 1);
 
     private final StopWatch stopwatch = new StopWatch();
     private boolean moved;
@@ -80,7 +79,7 @@ public class InvManager extends Module {
             int block = -1;
             int potion = -1;
             int food = -1;
-            int ender = -1;
+            int pearl = -1;
 
             int INVENTORY_ROWS = 4;
             int INVENTORY_COLUMNS = 9;
@@ -240,8 +239,8 @@ public class InvManager extends Module {
                 }
 
                 if (item instanceof ItemEnderPearl) {
-                    if (ender == -1) {
-                        ender = i;
+                    if (pearl == -1) {
+                        pearl = i;
                     }
                 }
             }
@@ -328,8 +327,8 @@ public class InvManager extends Module {
                 this.moveItem(food, this.foodSlot.getValue() - 37);
             }
 
-            if (ender != -1 && ender != this.enderSlot.getValue() - 1) {
-                moveItem(ender, this.enderSlot.getValue() - 37);
+            if (pearl != -1 && pearl != this.pearlSlot.getValue() - 1) {
+                moveItem(pearl, this.pearlSlot.getValue() - 37);
             }
         }
     }

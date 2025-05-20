@@ -27,5 +27,4 @@ public class CombatManager implements Imports {
         return null;
     }
 
-
 }

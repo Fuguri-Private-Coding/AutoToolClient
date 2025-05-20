@@ -42,7 +42,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 	ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
 
-	Color BACKGROUND_COLOR = new Color(15, 15, 15, clickGui.backgroundAlpha.getValue());
+	Color BACKGROUND_COLOR = new Color(0,0,0, clickGui.backgroundAlpha.getValue());
 	Color MAIN_COLOR = new Color(255, 255, 209, 255);
 	Color HEADER_COLOR = new Color(15, 15, 15, 255);
 	Color CATEGORY_COLOR = new Color(255, 255, 255, 255);
@@ -85,7 +85,8 @@ public class ClickGuiScreen extends GuiScreen {
 			MAIN_COLOR = clickGui.color1.getColor();
 		}
 
-		BACKGROUND_COLOR = new Color(15,15,15,clickGui.backgroundAlpha.getValue());
+		BACKGROUND_COLOR = new Color(0,0,0,clickGui.backgroundAlpha.getValue());
+
         if (closing) {
             if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
                 closing = false;

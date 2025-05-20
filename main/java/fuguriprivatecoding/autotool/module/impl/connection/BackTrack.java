@@ -11,8 +11,8 @@ import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
 import fuguriprivatecoding.autotool.settings.impl.*;
-import fuguriprivatecoding.autotool.settings.impl.*;
 import fuguriprivatecoding.autotool.utils.client.ClientUtils;
+import fuguriprivatecoding.autotool.utils.color.ColorUtils;
 import fuguriprivatecoding.autotool.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotool.utils.math.RandomUtils;
 import fuguriprivatecoding.autotool.utils.packet.TimedVar;
@@ -24,8 +24,10 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
 
+import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "BackTrack", category = Category.CONNECTION)
 public class BackTrack extends Module {
@@ -64,11 +66,14 @@ public class BackTrack extends Module {
 
     CheckBox renderOnlyIfWorking = new CheckBox("RenderOnlyIfWorking", this, true);
 
-    Mode espMode = new Mode("Render", this)
+    Mode render = new Mode("Render", this)
             .addModes("Player", "Box", "OFF")
             .setMode("Player");
 
-    ColorSetting color = new ColorSetting("Color", this, () -> espMode.getMode().equals("Box"), 1,1,1,1);
+    final CheckBox fadeColor = new CheckBox("FadeColor", this, () -> render.getMode().equalsIgnoreCase("Box"));
+    final ColorSetting color1 = new ColorSetting("Color1", this, () -> render.getMode().equalsIgnoreCase("Box"), 1f,1f,1f,1f);
+    final ColorSetting color2 = new ColorSetting("Color2", this, () -> render.getMode().equalsIgnoreCase("Box") && fadeColor.isToggled(), 1f,1f,1f,1f);
+    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> render.getMode().equalsIgnoreCase("Box") && fadeColor.isToggled(),0.1f, 20, 1, 0.1f);
 
     CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
     CheckBox debugDistance = new CheckBox("DebugDistance", this, true);
@@ -165,7 +170,7 @@ public class BackTrack extends Module {
                 y = target.lry + (target.ry - target.lry) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
                 z = target.lrz + (target.rz - target.lrz) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
 
-                switch (espMode.getMode()) {
+                switch (render.getMode()) {
                     case "Player" -> {
                         mc.entityRenderer.enableLightmap();
                         mc.getRenderManager().doRenderEntity(
@@ -180,8 +185,15 @@ public class BackTrack extends Module {
                         mc.entityRenderer.disableLightmap();
                     }
                     case "Box" -> {
+                        Color fadeColor;
+                        if (this.fadeColor.isToggled()) {
+                            fadeColor = ColorUtils.mixColors(color1.getColor(), color2.getColor(), (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeSpeed.getValue()) + 1) / 2);
+                        } else {
+                            fadeColor = color1.getColor();
+                        }
+
                         RenderUtils.start3D();
-                        RenderUtils.drawBoundingBox(target.getEntityBoundingBox().offset(x - target.posX, y - target.posY, z - target.posZ), color.getColor());
+                        RenderUtils.drawBoundingBox(target.getEntityBoundingBox().offset(x - target.posX, y - target.posY, z - target.posZ), fadeColor);
                         GlStateManager.resetColor();
                         RenderUtils.stop3D();
                     }

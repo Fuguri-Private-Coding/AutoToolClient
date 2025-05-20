@@ -13,7 +13,6 @@ import java.util.UUID;
 import fuguriprivatecoding.autotool.Client;
 import fuguriprivatecoding.autotool.event.events.JumpEvent;
 import fuguriprivatecoding.autotool.event.events.UpdateBodyRotationEvent;
-import fuguriprivatecoding.autotool.module.impl.move.NoJumpDelay;
 import fuguriprivatecoding.autotool.module.impl.visual.Animations;
 import fuguriprivatecoding.autotool.utils.interfaces.Imports;
 import net.minecraft.block.Block;
@@ -1422,10 +1421,6 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     }
 
     public void onLivingUpdate() {
-        if (Client.INST.getModuleManager().getModule(NoJumpDelay.class).isToggled()) {
-            jumpTicks = 0;
-        }
-
         if (this.jumpTicks > 0) {
             --this.jumpTicks;
         }

@@ -14,7 +14,8 @@ public class Fixes extends Module {
 
     MultiMode fixes = new MultiMode("Fixes", this)
             .add("ClickDelay", true)
-            .add("SaveMoveKeys", true);
+            .add("SaveMoveKeys", true)
+            .add("JumpDelay", true);
 
     boolean wasInGui = false;
 
@@ -30,6 +31,7 @@ public class Fixes extends Module {
                     wasInGui = true;
                 }
             }
+            if (fixes.get("JumpDelay")) mc.thePlayer.jumpTicks = 0;
         }
     }
 }

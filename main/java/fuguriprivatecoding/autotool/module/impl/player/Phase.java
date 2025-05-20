@@ -5,7 +5,6 @@ import fuguriprivatecoding.autotool.event.EventTarget;
 import fuguriprivatecoding.autotool.event.events.MoveButtonEvent;
 import fuguriprivatecoding.autotool.event.events.TickEvent;
 import fuguriprivatecoding.autotool.event.events.UpdateEvent;
-import fuguriprivatecoding.autotool.event.events.*;
 import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
@@ -18,6 +17,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.WorldSettings;
+import org.lwjgl.input.Mouse;
 
 @ModuleInfo(name = "Phase", category = Category.PLAYER)
 public class Phase extends Module {
@@ -29,7 +29,7 @@ public class Phase extends Module {
     private BlockPos currentBreakingBlock;
     private long lastBreakTime;
     private WorldSettings.GameType lastGameType;
-    public boolean clip;
+    public boolean cliped;
 
     public void onEnable() {
         if (mc.thePlayer != null) {
@@ -42,7 +42,7 @@ public class Phase extends Module {
         resetBreaking();
         setGameMode(lastGameType);
         lastGameType = null;
-        clip = false;
+        cliped = false;
     }
 
     private void resetBreaking() {
@@ -57,7 +57,7 @@ public class Phase extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof UpdateEvent && !clip) {
+        if (event instanceof UpdateEvent && !cliped) {
             if (mc.thePlayer.noClip) {
                 mc.thePlayer.motionY = 0.0;
             } else {
@@ -68,7 +68,12 @@ public class Phase extends Module {
 
         if (event instanceof MoveButtonEvent moveButtonEvent) {
             if (mc.thePlayer.noClip) moveButtonEvent.setJump(false);
-            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox()).isEmpty() && sneak.isToggled()) moveButtonEvent.setSneak(true);
+            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox()).isEmpty() && sneak.isToggled()) {
+                cliped = true;
+                moveButtonEvent.setSneak(true);
+            } else {
+                cliped = false;
+            }
         }
 
         if (event instanceof TickEvent && mc.objectMouseOver != null) {
@@ -78,7 +83,7 @@ public class Phase extends Module {
 
             if (newBreakingBlock == null) return;
             if (currentBreakingBlock != null && System.currentTimeMillis() - lastBreakTime > 500L) resetBreaking();
-            if (!newBreakingBlock.equals(player.getPosition().down()) && controller.curBlockDamageMP == 0) return;
+            if (!newBreakingBlock.equals(player.getPosition().down()) && (!Mouse.isButtonDown(0) || controller.curBlockDamageMP == 0)) return;
             if (!clipDown.isToggled()) return;
             if (newBreakingBlock.getY() >= player.posY) return;
             if (!newBreakingBlock.equals(currentBreakingBlock)) resetBreaking();

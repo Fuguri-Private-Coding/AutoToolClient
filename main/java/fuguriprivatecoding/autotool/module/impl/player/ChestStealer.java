@@ -3,12 +3,12 @@ package fuguriprivatecoding.autotool.module.impl.player;
 import fuguriprivatecoding.autotool.event.Event;
 import fuguriprivatecoding.autotool.event.EventTarget;
 import fuguriprivatecoding.autotool.event.events.RunGameLoopEvent;
-import fuguriprivatecoding.autotool.event.events.TickEvent;
 import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
 import fuguriprivatecoding.autotool.settings.impl.CheckBox;
 import fuguriprivatecoding.autotool.settings.impl.IntegerSetting;
+import fuguriprivatecoding.autotool.utils.math.RandomUtils;
 import fuguriprivatecoding.autotool.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
@@ -52,6 +52,8 @@ public class ChestStealer extends Module {
                 if (checkName.isToggled() && !guiChest.getLowerChestInventory().getName().contains("Chest")) {
                     return;
                 }
+
+                delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
 
                 if (!delayStopWatch.reachedMS(delay) || !startDelayStopWatch.reachedMS(startDelay.getValue())) return;
 

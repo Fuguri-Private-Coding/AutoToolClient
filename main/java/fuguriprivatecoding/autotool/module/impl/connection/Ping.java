@@ -34,8 +34,15 @@ public class Ping extends Module {
 
     private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 50, 1000, 400);
 
-    private final IntegerSetting delayBeforeNextLagAfterReset = new IntegerSetting("DelayBeforeNextLagAfterReset", this, 0, 1000, 500);
-    private final MultiMode actions = new MultiMode("ActionsToReset", this)
+    private final Mode resetType = new Mode("ResetType", this)
+            .addModes("Default", "Improve")
+            .setMode("Default")
+            ;
+
+    private final IntegerSetting delayBeforeNextLagAfterReset = new IntegerSetting("DelayBeforeNextLagAfterReset", this,() -> resetType.getMode().equalsIgnoreCase("Default"), 0, 1000, 500);
+
+
+    private final MultiMode actions = new MultiMode("ActionsToReset", this, () -> resetType.getMode().equalsIgnoreCase("Default"))
             .add("Attack", true)
             .add("Damage")
             .add("Velocity")
@@ -140,17 +147,16 @@ public class Ping extends Module {
                 }
             }
             case RunGameLoopEvent _ -> handlePackets();
-            case MotionEvent _ -> {
-                while (posBuffer.size() > (maxDelay.getValue() / 50)) {
-                    posBuffer.removeFirst();
-                }
-            }
             case TickEvent _ -> {
                 lastPos = currentPos;
-                currentPos = posBuffer.getFirst().pos;
+                if (posBuffer.isEmpty()) {
+                    currentPos = mc.thePlayer.getPositionVector();
+                } else {
+                    currentPos = posBuffer.getFirst().pos;
+                }
             }
             case Render3DEvent _ -> {
-                if (posBuffer.isEmpty() || mc.gameSettings.thirdPersonView == 0 || lastPos == null || currentPos == null) {
+                if (mc.gameSettings.thirdPersonView == 0 || lastPos == null || currentPos == null) {
                     break;
                 }
 
