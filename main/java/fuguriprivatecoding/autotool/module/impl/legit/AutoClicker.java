@@ -10,7 +10,7 @@ import fuguriprivatecoding.autotool.module.ModuleInfo;
 import fuguriprivatecoding.autotool.settings.impl.CheckBox;
 import fuguriprivatecoding.autotool.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotool.utils.math.RandomUtils;
-import fuguriprivatecoding.autotool.utils.rotation.RayCastUtils;
+import fuguriprivatecoding.autotool.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotool.utils.rotation.Rot;
 import fuguriprivatecoding.autotool.utils.timer.StopWatch;
 import net.minecraft.util.MovingObjectPosition;

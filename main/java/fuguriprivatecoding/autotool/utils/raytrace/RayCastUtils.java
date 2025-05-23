@@ -1,7 +1,8 @@
-package fuguriprivatecoding.autotool.utils.rotation;
+package fuguriprivatecoding.autotool.utils.raytrace;
 
 import com.google.common.base.Predicates;
 import fuguriprivatecoding.autotool.utils.interfaces.Imports;
+import fuguriprivatecoding.autotool.utils.rotation.Rot;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.*;
 

@@ -44,7 +44,7 @@ public class ModuleManager {
 				 new AutoTool(),
 				 new Scaffold(),
 				 new AntiFireball(),
-				 new NewScaffold(),
+				 //new NewScaffold(),
 				 new DiscordRPCModule(),
 				 new Phase(),
 				 new NoGuiClose(),

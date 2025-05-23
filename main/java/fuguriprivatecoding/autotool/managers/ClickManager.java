@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotool.event.events.TickEvent;
 import fuguriprivatecoding.autotool.module.impl.combat.ClickSettings;
 import fuguriprivatecoding.autotool.utils.interfaces.Imports;
 import fuguriprivatecoding.autotool.utils.math.RandomUtils;
-import fuguriprivatecoding.autotool.utils.rotation.RayCastUtils;
+import fuguriprivatecoding.autotool.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotool.utils.rotation.Rot;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;

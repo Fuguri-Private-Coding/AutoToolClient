@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotool.Client;
 import fuguriprivatecoding.autotool.event.Event;
 import fuguriprivatecoding.autotool.event.EventTarget;
 import fuguriprivatecoding.autotool.event.PacketDirection;
+import fuguriprivatecoding.autotool.event.events.AttackEvent;
 import fuguriprivatecoding.autotool.event.events.PacketEvent;
 import fuguriprivatecoding.autotool.event.events.Render3DEvent;
 import fuguriprivatecoding.autotool.event.events.TickEvent;
@@ -27,7 +28,6 @@ import net.minecraft.util.AxisAlignedBB;
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "BackTrack", category = Category.CONNECTION)
 public class BackTrack extends Module {
@@ -47,7 +47,7 @@ public class BackTrack extends Module {
         }
     };
 
-    final FloatSetting startDistance = new FloatSetting("StartDistance", this, 0.0f, 3.0f, 3.0f, 0.1f) {
+    final FloatSetting minDistance = new FloatSetting("MinDistance", this, 0.0f, 3.0f, 3.0f, 0.1f) {
         @Override
         public float getValue() {
             if (maxDistance.value < value) { value = maxDistance.value; }
@@ -57,12 +57,16 @@ public class BackTrack extends Module {
     final FloatSetting maxDistance = new FloatSetting("MaxDistance", this, 3.0f, 12.0f, 6.0f, 0.1f) {
         @Override
         public float getValue() {
-            if (startDistance.value > value) { value = startDistance.value; }
+            if (minDistance.value > value) { value = minDistance.value; }
             return super.getValue();
         }
     };
 
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenBackTracks", this, 0, 20, 0) ;
+
+    final CheckBox onlyWhenNeed = new CheckBox("OnlyWhenNeed", this, true);
+
+    final IntegerSetting maxHurtTimeWhenWorking = new IntegerSetting("MaxHurtTimeWhenWorking",this, onlyWhenNeed::isToggled, 3, 8, 5);
 
     CheckBox renderOnlyIfWorking = new CheckBox("RenderOnlyIfWorking", this, true);
 
@@ -87,14 +91,15 @@ public class BackTrack extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (target != null && event instanceof TickEvent && debugDistance.isToggled()) {
+        if (target != null && event instanceof AttackEvent && debugDistance.isToggled()) {
             AxisAlignedBB realBox = target.getEntityBoundingBox().offset(target.nx - target.posX, target.ny - target.posY, target.nz - target.posZ).expand(
                     target.getCollisionBorderSize(),
                     target.getCollisionBorderSize(),
                     target.getCollisionBorderSize()
             );
-            if (target.hurtTime == 10 && !packetBuffer.isEmpty() && DistanceUtils.getDistance(realBox) > 3) ClientUtils.chatLog("Distance: " + String.format("%.4f", DistanceUtils.getDistance(realBox)));
+            if (!packetBuffer.isEmpty() && DistanceUtils.getDistance(realBox) > 3) ClientUtils.chatLog("Distance: " + String.format("%.4f", DistanceUtils.getDistance(realBox)));
         }
+
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();
             if (target == null || e.isCanceled() || e.getDirection() != PacketDirection.INCOMING) return;
@@ -120,9 +125,7 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof TickEvent) {
-            if (delayBetweenBackTracks > 0) {
-                delayBetweenBackTracks--;
-            }
+            if (delayBetweenBackTracks > 0) delayBetweenBackTracks--;
         }
 
         if (event instanceof Render3DEvent) {
@@ -155,9 +158,11 @@ public class BackTrack extends Module {
                 double threshold = 0;
 
                 boolean improve = distanceToFake + threshold >= distanceToReal;
-                boolean distance = distanceToReal > maxDistance.getValue() || distanceToFake > 3 || distanceToReal < startDistance.getValue();
+                boolean distance = distanceToReal > maxDistance.getValue() || distanceToFake > 3 || distanceToReal < minDistance.getValue();
 
-                if (improve || distance) {
+                boolean need = onlyWhenNeed.isToggled() && target.hurtTime > maxHurtTimeWhenWorking.getValue();
+
+                if (improve || distance || need) {
                     handle(true);
 
                     delayBetweenBackTracks = delayBetweenTicks.getValue();
@@ -203,16 +208,13 @@ public class BackTrack extends Module {
     }
 
     private void handle(boolean clear) {
-        if (packetBuffer.isEmpty()) {
-            return;
-        }
+        if (packetBuffer.isEmpty()) return;
 
         packetBuffer.removeIf(packet -> {
             if (System.currentTimeMillis() - packet.getTime() >= delay || clear) {
                 try {
                     packet.getVar().processPacket(mc.getNetHandler().getNetworkManager().getNetHandler());
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
                 return true;
             }
             return false;

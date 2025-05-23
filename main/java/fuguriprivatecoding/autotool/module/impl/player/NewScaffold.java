@@ -14,7 +14,7 @@ import fuguriprivatecoding.autotool.utils.math.RandomUtils;
 import fuguriprivatecoding.autotool.utils.move.MoveUtils;
 import fuguriprivatecoding.autotool.utils.render.RenderUtils;
 import fuguriprivatecoding.autotool.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotool.utils.rotation.RayCastUtils;
+import fuguriprivatecoding.autotool.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotool.utils.rotation.Rot;
 import fuguriprivatecoding.autotool.utils.timer.StopWatch;
 import net.minecraft.block.*;
@@ -182,7 +182,7 @@ public class NewScaffold extends Module {
 
             RenderUtils.start3D();
             if (shadows.isToggled() && shadows.module.get("Scaffold")) {
-                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f, 1.0F, 0));
+                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f,  1.0F, 0));
             }
             RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f, 1.0F, 0);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

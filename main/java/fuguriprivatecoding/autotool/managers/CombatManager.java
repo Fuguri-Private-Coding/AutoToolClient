@@ -3,7 +3,7 @@ package fuguriprivatecoding.autotool.managers;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotool.utils.interfaces.Imports;
-import fuguriprivatecoding.autotool.utils.rotation.RayCastUtils;
+import fuguriprivatecoding.autotool.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotool.utils.rotation.Rot;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MovingObjectPosition;

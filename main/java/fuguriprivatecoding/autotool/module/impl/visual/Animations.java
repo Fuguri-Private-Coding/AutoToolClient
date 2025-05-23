@@ -23,7 +23,7 @@ public class Animations extends Module {
     static boolean animate;
 
     Mode mode = new Mode("Mode", this)
-            .addModes("1.7", "Sigma", "Sigma 2", "Scale", "Exhibition", "Gothaj", "Spin", "Basic", "Slide")
+            .addModes("1.7", "Sigma", "Sigma 2", "Scale", "Exhibition", "Exhibition2", "Spin", "Basic", "Slide")
             .setMode("Sigma");
 
     FloatSetting X = new FloatSetting("X", this, -1f, 1f, 0f, 0.1f) {};
@@ -47,11 +47,13 @@ public class Animations extends Module {
                     itemRenderer.transformFirstPersonItem(animationProgression, renderItemEvent.getSwingProgress());
                     itemRenderer.doBlockTransformations();
                 }
+
                 case "Scale" -> {
                     GlStateManager.translate(0, 0, convertedProgress * -0.2);
                     itemRenderer.transformFirstPersonItem(animationProgression, 0.0f);
                     itemRenderer.doBlockTransformations();
                 }
+
                 case "Slide" -> {
                     itemRenderer.transformFirstPersonItem(animationProgression, 0.0f);
                     float var15 = MathHelper.sin(MathHelper.sqrt_float(renderItemEvent.getSwingProgress()) * 3.1415927F);
@@ -62,11 +64,13 @@ public class Animations extends Module {
                     GL11.glTranslatef(-1.0F, mc.thePlayer.isSneaking() ? -0.1F : -0.2F, 0.2F);
                     GlStateManager.scale(1.2F, 1.2F, 1.2F);
                 }
+
                 case "Basic" -> {
                     itemRenderer.transformFirstPersonItem(-0.25F, 1.0F + convertedProgress / 10.0F);
                     GL11.glRotated((-convertedProgress * 25.0F), 1.0, 0.0, 0.0);
                     itemRenderer.doBlockTransformations();
                 }
+
                 case "Spin" -> {
                     itemRenderer.transformFirstPersonItem(animationProgression, 0.0F);
                     GlStateManager.translate(0.0F, 0.2F, -1.0F);
@@ -74,13 +78,15 @@ public class Animations extends Module {
                     GlStateManager.rotate((float)(-(System.currentTimeMillis() / 2L % 360L)), 1.0F, 0.0F, 0.0F);
                     GlStateManager.rotate(60.0F, 0.0F, 1.0F, 0.0F);
                 }
-                case "Gothaj" -> {
+
+                case "Exhibition2" -> {
                     itemRenderer.transformFirstPersonItem(animationProgression / 2.0F, 0.0F);
                     GlStateManager.translate(0.0F, 0.3F, -0.0F);
                     GlStateManager.rotate(-convertedProgress * 30.0F, 1.0F, 0.0F, 2.0F);
                     GlStateManager.rotate(-convertedProgress * 44.0F, 1.5F, convertedProgress / 1.2F, 0.0F);
                     itemRenderer.doBlockTransformations();
                 }
+
                 case "Sigma" -> {
                     itemRenderer.transformFirstPersonItem(animationProgression, 0.0F);
                     y = -convertedProgress * 2.0F;
@@ -90,6 +96,7 @@ public class Animations extends Module {
                     GlStateManager.rotate(-10.0F, 1.0F, 0.5F, 1.0F);
                     GlStateManager.rotate(-y * 20.0F, 1.0F, 0.5F, 1.0F);
                 }
+
                 case "Exhibition" -> {
                     itemRenderer.transformFirstPersonItem(animationProgression / 2.0F, 0.0F);
                     GlStateManager.translate(0.0F, 0.3F, -0.0F);
@@ -97,6 +104,7 @@ public class Animations extends Module {
                     GlStateManager.rotate(-convertedProgress * 33.0F, 1.5F, convertedProgress / 1.1F, 0.0F);
                     itemRenderer.doBlockTransformations();
                 }
+
                 case "Sigma 2" -> {
                     itemRenderer.transformFirstPersonItem(animationProgression, 0.0F);
                     GlStateManager.scale(0.8F, 0.8F, 0.8F);

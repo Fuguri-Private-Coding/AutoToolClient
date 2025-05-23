@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
 import fuguriprivatecoding.autotool.settings.impl.CheckBox;
 import fuguriprivatecoding.autotool.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotool.utils.rotation.RayCastUtils;
+import fuguriprivatecoding.autotool.utils.raytrace.RayCastUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.input.Mouse;

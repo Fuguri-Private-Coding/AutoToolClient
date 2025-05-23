@@ -13,7 +13,7 @@ import fuguriprivatecoding.autotool.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotool.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotool.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotool.utils.raytrace.RayTraceUtils;
-import fuguriprivatecoding.autotool.utils.rotation.RayCastUtils;
+import fuguriprivatecoding.autotool.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotool.utils.rotation.Rot;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MovingObjectPosition;

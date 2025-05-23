@@ -35,12 +35,10 @@ public class Ping extends Module {
     private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 50, 1000, 400);
 
     private final Mode resetType = new Mode("ResetType", this)
-            .addModes("Default", "Improve")
-            .setMode("Default")
-            ;
+            .addModes("Default")
+            .setMode("Default");
 
     private final IntegerSetting delayBeforeNextLagAfterReset = new IntegerSetting("DelayBeforeNextLagAfterReset", this,() -> resetType.getMode().equalsIgnoreCase("Default"), 0, 1000, 500);
-
 
     private final MultiMode actions = new MultiMode("ActionsToReset", this, () -> resetType.getMode().equalsIgnoreCase("Default"))
             .add("Attack", true)
@@ -211,9 +209,13 @@ public class Ping extends Module {
     }
 
     private void reset() {
-        resetAllPackets();
-        lastResetTime = System.currentTimeMillis();
-        delayBeforeNextLag = delayBeforeNextLagAfterReset.getValue();
+        switch (resetType.getMode()) {
+            case "Default" -> {
+                resetAllPackets();
+                lastResetTime = System.currentTimeMillis();
+                delayBeforeNextLag = delayBeforeNextLagAfterReset.getValue();
+            }
+        }
     }
 
     private record PacketWithTime(Packet packet, long time) {}

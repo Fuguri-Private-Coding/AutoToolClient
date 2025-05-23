@@ -69,10 +69,7 @@ public class Phase extends Module {
         if (event instanceof MoveButtonEvent moveButtonEvent) {
             if (mc.thePlayer.noClip) moveButtonEvent.setJump(false);
             if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox()).isEmpty() && sneak.isToggled()) {
-                cliped = true;
                 moveButtonEvent.setSneak(true);
-            } else {
-                cliped = false;
             }
         }
 
