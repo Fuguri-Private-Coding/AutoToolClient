@@ -36,10 +36,10 @@ import java.util.concurrent.FutureTask;
 import javax.imageio.ImageIO;
 
 import de.florianmichael.viamcp.fixes.AttackOrder;
-import fuguriprivatecoding.autotool.event.events.*;
+import fuguriprivatecoding.autotoolrecode.event.events.*;
 import lombok.Getter;
-import fuguriprivatecoding.autotool.Client;
-import fuguriprivatecoding.autotool.guis.main.GuiClientMainMenu;
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;

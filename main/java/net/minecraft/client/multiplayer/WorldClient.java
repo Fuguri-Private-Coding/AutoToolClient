@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import fuguriprivatecoding.autotool.event.events.WorldChangeEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

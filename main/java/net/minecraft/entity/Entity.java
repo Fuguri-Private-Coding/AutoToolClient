@@ -7,8 +7,8 @@ import java.util.concurrent.Callable;
 
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotool.event.events.MoveFlyingEvent;
-import fuguriprivatecoding.autotool.utils.rotation.Rot;
+import fuguriprivatecoding.autotoolrecode.event.events.MoveFlyingEvent;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;

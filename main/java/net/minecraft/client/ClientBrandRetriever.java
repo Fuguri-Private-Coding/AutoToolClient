@@ -1,7 +1,7 @@
 package net.minecraft.client;
 
-import fuguriprivatecoding.autotool.Client;
-import fuguriprivatecoding.autotool.module.impl.misc.ClientSpoofer;
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.impl.misc.ClientSpoofer;
 
 public class ClientBrandRetriever
 {

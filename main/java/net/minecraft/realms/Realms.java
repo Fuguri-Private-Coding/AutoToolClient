@@ -5,7 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.util.UUIDTypeAdapter;
 import java.net.Proxy;
 
-import fuguriprivatecoding.autotool.guis.main.GuiClientMainMenu;
+import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.Session;

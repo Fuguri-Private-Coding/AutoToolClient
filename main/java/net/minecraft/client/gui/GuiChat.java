@@ -5,10 +5,10 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 
-import fuguriprivatecoding.autotool.Client;
-import fuguriprivatecoding.autotool.module.impl.visual.Shadows;
-import fuguriprivatecoding.autotool.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotool.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import net.minecraft.network.play.client.C14PacketTabComplete;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;

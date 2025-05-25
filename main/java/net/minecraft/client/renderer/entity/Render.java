@@ -1,8 +1,8 @@
 package net.minecraft.client.renderer.entity;
 
-import fuguriprivatecoding.autotool.Client;
-import fuguriprivatecoding.autotool.module.impl.misc.MidClick;
-import fuguriprivatecoding.autotool.module.impl.visual.NameTags;
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.NameTags;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

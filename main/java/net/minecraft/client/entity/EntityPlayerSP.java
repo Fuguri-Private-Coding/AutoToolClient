@@ -1,9 +1,9 @@
 package net.minecraft.client.entity;
 
-import fuguriprivatecoding.autotool.event.events.*;
+import fuguriprivatecoding.autotoolrecode.event.events.*;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotool.Client;
+import fuguriprivatecoding.autotoolrecode.Client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;

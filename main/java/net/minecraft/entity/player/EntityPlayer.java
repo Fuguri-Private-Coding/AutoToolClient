@@ -7,11 +7,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import fuguriprivatecoding.autotool.Client;
-import fuguriprivatecoding.autotool.event.events.AttackEvent;
-import fuguriprivatecoding.autotool.event.events.ChangeHeadRotationEvent;
-import fuguriprivatecoding.autotool.module.impl.misc.MidClick;
-import fuguriprivatecoding.autotool.module.impl.player.Phase;
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.event.events.AttackEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.ChangeHeadRotationEvent;
+import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Phase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockDirectional;

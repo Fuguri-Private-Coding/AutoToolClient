@@ -16,7 +16,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.Map.Entry;
 
-import fuguriprivatecoding.autotool.guis.main.GuiClientMainMenu;
+import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
 import net.minecraft.block.Block;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;

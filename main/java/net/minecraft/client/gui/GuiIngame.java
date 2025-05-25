@@ -7,10 +7,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
-import fuguriprivatecoding.autotool.Client;
-import fuguriprivatecoding.autotool.module.impl.visual.NoRender;
-import fuguriprivatecoding.autotool.module.impl.visual.Shadows;
-import fuguriprivatecoding.autotool.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.NoRender;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

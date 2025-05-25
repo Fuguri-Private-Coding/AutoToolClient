@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import fuguriprivatecoding.autotool.Client;
-import fuguriprivatecoding.autotool.event.events.JumpEvent;
-import fuguriprivatecoding.autotool.event.events.UpdateBodyRotationEvent;
-import fuguriprivatecoding.autotool.module.impl.visual.Animations;
-import fuguriprivatecoding.autotool.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.event.events.JumpEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.UpdateBodyRotationEvent;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Animations;
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

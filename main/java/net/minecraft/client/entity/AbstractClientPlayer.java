@@ -3,9 +3,9 @@ package net.minecraft.client.entity;
 import com.mojang.authlib.GameProfile;
 import java.io.File;
 
-import fuguriprivatecoding.autotool.Client;
-import fuguriprivatecoding.autotool.event.events.LookEvent;
-import fuguriprivatecoding.autotool.module.impl.visual.CustomCape;
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.event.events.LookEvent;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.ImageBufferDownload;

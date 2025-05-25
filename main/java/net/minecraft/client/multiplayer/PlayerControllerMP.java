@@ -1,6 +1,6 @@
 package net.minecraft.client.multiplayer;
 
-import fuguriprivatecoding.autotool.event.events.ClickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.ClickEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

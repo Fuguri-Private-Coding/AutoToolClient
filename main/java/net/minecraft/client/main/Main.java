@@ -12,8 +12,8 @@ import java.net.Proxy;
 import java.net.Proxy.Type;
 import java.util.List;
 
-import fuguriprivatecoding.autotool.Client;
-import fuguriprivatecoding.autotool.irc.packet.ClientSocket;
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.irc.packet.ClientSocket;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;

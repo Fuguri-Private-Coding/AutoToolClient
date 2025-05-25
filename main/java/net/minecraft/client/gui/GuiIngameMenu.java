@@ -2,7 +2,7 @@ package net.minecraft.client.gui;
 
 import java.io.IOException;
 
-import fuguriprivatecoding.autotool.guis.main.GuiClientMainMenu;
+import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
 import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraft.client.gui.achievement.GuiStats;
 import net.minecraft.client.multiplayer.WorldClient;
