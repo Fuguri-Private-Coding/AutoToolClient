@@ -11,10 +11,11 @@ import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.Proxy.Type;
 import java.util.List;
+
+import fuguriprivatecoding.autotool.Client;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import fuguriprivatecoding.autotool.Client;
 import fuguriprivatecoding.autotool.utils.discord.IRC;
 import fuguriprivatecoding.autotool.utils.hwid.HWIDUtils;
 import net.minecraft.client.Minecraft;

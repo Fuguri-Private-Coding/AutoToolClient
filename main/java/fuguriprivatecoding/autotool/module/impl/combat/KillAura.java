@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotool.managers.CombatManager;
 import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
+import fuguriprivatecoding.autotool.utils.client.ClientUtils;
 import fuguriprivatecoding.autotool.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotool.utils.math.RandomUtils;
 import fuguriprivatecoding.autotool.utils.move.MoveUtils;
@@ -193,7 +194,7 @@ public class KillAura extends Module {
             }
 
             RotUtils.limitDelta(delta, speed);
-            RotUtils.fixDelta(delta);
+            delta = RotUtils.fixDelta(delta);
             lr = lr.add(delta);
             lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
             Rot.setServerRotation(lr);
