@@ -13,25 +13,17 @@ import java.net.Proxy.Type;
 import java.util.List;
 
 import fuguriprivatecoding.autotool.Client;
+import fuguriprivatecoding.autotool.irc.packet.ClientSocket;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import fuguriprivatecoding.autotool.utils.discord.IRC;
-import fuguriprivatecoding.autotool.utils.hwid.HWIDUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Session;
 
 public class Main {
     public static void main(String[] p_main_0_) {
-        Client.INST.setIrc(new IRC());
-        Client.INST.getIrc().init();
-        Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
-                "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " Trying to connect..."
-        );
-        HWIDUtils.check();
-        Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
-                "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " Successful connect. " + Client.INST.getProfile()
-        );
+        Client.INST.setClientSocket(new ClientSocket());
+
         System.setProperty("java.net.preferIPv4Stack", "true");
         OptionParser optionparser = new OptionParser();
         optionparser.allowsUnrecognizedOptions();

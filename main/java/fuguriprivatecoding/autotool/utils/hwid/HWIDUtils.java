@@ -1,21 +1,8 @@
 package fuguriprivatecoding.autotool.utils.hwid;
 
-import fuguriprivatecoding.autotool.Client;
-import fuguriprivatecoding.autotool.utils.profile.Profile;
-import net.dv8tion.jda.api.entities.Message;
-
 import java.security.MessageDigest;
 
 public class HWIDUtils {
-
-    public static void check() {
-        String hwid = generateHWID();
-        if (isWhiteList(hwid)) {
-            System.out.println("Hello, " + Client.INST.getProfile() + " welcome to AutoTool!");
-        } else {
-            System.exit(-1);
-        }
-    }
 
     public static String generateHWID() {
         try{
@@ -37,19 +24,5 @@ public class HWIDUtils {
             System.out.println(e.getMessage());
             return "Error";
         }
-    }
-
-    public static boolean isWhiteList(String hwid) {
-        for (Message message : Client.INST.getIrc().getHwidChannel().getIterableHistory().stream().toList()) {
-            String[] args = message.getContentRaw().split(":");
-            if (hwid.equalsIgnoreCase(args[0])) {
-                Client.INST.setProfile(new Profile(args[1], args[2]));
-                return true;
-            }
-        }
-        Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
-                "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " This user does not have access to the client."
-        );
-        return false;
     }
 }

@@ -8,9 +8,8 @@ import fuguriprivatecoding.autotool.module.impl.misc.*;
 import fuguriprivatecoding.autotool.module.impl.move.*;
 import fuguriprivatecoding.autotool.module.impl.player.*;
 import fuguriprivatecoding.autotool.module.impl.visual.*;
+import fuguriprivatecoding.autotool.module.impl.client.*;
 import lombok.Getter;
-import fuguriprivatecoding.autotool.module.impl.client.DiscordRPCModule;
-import fuguriprivatecoding.autotool.module.impl.client.IRCModule;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -33,7 +32,6 @@ public class ModuleManager {
 				 new Velocity(),
 				 new MurderMystery(),
 				 new InvManager(),
-				 new IRCModule(),
 				 new Trails(),
 				 new ESP(),
 				 new BackTrack(),

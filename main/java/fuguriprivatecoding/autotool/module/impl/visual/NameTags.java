@@ -7,7 +7,6 @@ import fuguriprivatecoding.autotool.event.events.Render3DEvent;
 import fuguriprivatecoding.autotool.module.Category;
 import fuguriprivatecoding.autotool.module.Module;
 import fuguriprivatecoding.autotool.module.ModuleInfo;
-import fuguriprivatecoding.autotool.module.impl.client.IRCModule;
 import fuguriprivatecoding.autotool.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotool.module.impl.misc.MurderMystery;
 import fuguriprivatecoding.autotool.settings.impl.ColorSetting;
@@ -55,7 +54,7 @@ public class NameTags extends Module {
         boolean friend = entity instanceof EntityPlayer ent && midClick.showInName.isToggled() && ent.isFriend();
         boolean murder = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.murders.contains(ent.getName());
         boolean detective = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.detectives.contains(ent.getName());
-        boolean user = entity instanceof EntityPlayer ent && IRCModule.usersOnline.get(ent.getName()) != null;
+        //boolean user = entity instanceof EntityPlayer ent && IRCModule.usersOnline.get(ent.getName()) != null;
         FontRenderer fontRenderer = mc.fontRendererObj;
         float distance = mc.thePlayer.getDistanceToEntity(entity);
         float scale = Math.max(distance / 2.5f, 5.0f);
@@ -78,7 +77,7 @@ public class NameTags extends Module {
         String detectiveText = detective ? "§6[Detective]§6 " : "";
         String murderText = murder ? "§4[Murder]§4 " : "";
         String friendText = friend ? "§2[Friend]§a " : "";
-        String userText = user ? IRCModule.usersOnline.get(entity.getName()).getColored() + " " : "";
+        String userText = ""; //user ? IRCModule.usersOnline.get(entity.getName()).getColored() + " " : "";
         String text = userText + friendText + murderText + detectiveText + entity.getDisplayName().getFormattedText();
         float offset = fontRenderer.FONT_HEIGHT - 8f;
         float stringWidth = fontRenderer.getStringWidth(text) / 2f;

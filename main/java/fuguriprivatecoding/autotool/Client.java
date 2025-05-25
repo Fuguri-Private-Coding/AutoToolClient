@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotool;
 
 import de.florianmichael.viamcp.ViaMCP;
+import fuguriprivatecoding.autotool.irc.packet.ClientSocket;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotool.config.ConfigManager;
@@ -22,12 +23,11 @@ import fuguriprivatecoding.autotool.managers.ClickManager;
 import fuguriprivatecoding.autotool.utils.font.FontsRepository;
 import fuguriprivatecoding.autotool.utils.render.shader.ShaderManager;
 import fuguriprivatecoding.autotool.utils.discord.Discord;
-import fuguriprivatecoding.autotool.utils.discord.IRC;
 import fuguriprivatecoding.autotool.utils.file.FileUtils;
 import fuguriprivatecoding.autotool.utils.hwid.HWIDUtils;
 import fuguriprivatecoding.autotool.utils.interfaces.Imports;
 import fuguriprivatecoding.autotool.utils.packet.PositionResolverComponent;
-import fuguriprivatecoding.autotool.utils.profile.Profile;
+import fuguriprivatecoding.autotool.profile.Profile;
 import fuguriprivatecoding.autotool.utils.sound.SoundsManager;
 import fuguriprivatecoding.autotool.utils.version.ClientVersion;
 import org.lwjgl.opengl.Display;
@@ -65,7 +65,7 @@ public enum Client implements Imports {
 	ClickGuiScreen clickGui;
 	NewClickGuiScreen newClickGuiScreen;
 	Discord discord;
-	@Setter IRC irc;
+	@Setter ClientSocket clientSocket;
 
 	FontsRepository fonts;
 
@@ -141,9 +141,6 @@ public enum Client implements Imports {
 	public void onClose() {
 		configManager.saveConfig(configManager.getDefaultConfig());
 		configManager.saveBinds();
-		if (IRC.myID != -1) {
-			irc.getServerChannel().deleteMessageById(IRC.myID).queue();
-		}
 	}
 
 	public String getFullName() {
@@ -156,7 +153,7 @@ public enum Client implements Imports {
 	public void onEvent(Event event) {
 		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
 			lastTime = System.currentTimeMillis();
-			new Thread(HWIDUtils::check).start();
+			//new Thread(HWIDUtils::check).start();
 		}
 		if (event instanceof KeyEvent keyEvent) {
 			for (Module module : moduleManager.getModules()) {
