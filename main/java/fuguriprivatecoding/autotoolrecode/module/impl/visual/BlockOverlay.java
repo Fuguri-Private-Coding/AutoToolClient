@@ -8,18 +8,26 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
+import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.util.MovingObjectPosition;
+import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
 
 @ModuleInfo(name = "BlockOverlay", category = Category.VISUAL)
 public class BlockOverlay extends Module {
 
-    ColorSetting color = new ColorSetting("Color", this, 0, 0.5f, 1f, 0.3f);
-    FloatSetting lineAlpha = new FloatSetting("LineAlpha",this, 0, 1, 1, 0.1f);
-    FloatSetting lineWidth = new FloatSetting("LineWidth",this, 0, 5, 1, 0.1f);
+    final CheckBox fadeColor = new CheckBox("FadeColor", this);
+    final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
+    final ColorSetting color2 = new ColorSetting("Color2", this, fadeColor::isToggled, 1f,1f,1f,1f);
+    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeColor::isToggled,0.1f, 20, 1, 0.1f);
+
     Shadows shadows;
 
     @EventTarget
@@ -29,11 +37,20 @@ public class BlockOverlay extends Module {
         }
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (event instanceof DrawBlockHighlightEvent) {
+            Color fadeColor;
+
+            if (this.fadeColor.isToggled()) {
+                fadeColor = ColorUtils.mixColors(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
+            } else {
+                fadeColor = color1.getColor();
+            }
+
             MovingObjectPosition renderRayCast = mc.objectMouseOver;
             if (renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 RenderUtils.start3D();
-                if (shadows.isToggled() && shadows.module.get("BlockOverlay")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), 1,1,1,1, 0f, lineWidth.getValue()));
-                RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), lineAlpha.getValue(), lineWidth.getValue());
+                if (shadows.isToggled() && shadows.module.get("BlockOverlay")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), 1,1,1,1, 0, 1));
+                RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f, 0, 1);
+                ColorUtils.resetColor();
                 RenderUtils.stop3D();
             }
         }

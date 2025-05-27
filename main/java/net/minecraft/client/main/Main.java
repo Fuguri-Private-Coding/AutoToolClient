@@ -22,7 +22,7 @@ import net.minecraft.util.Session;
 
 public class Main {
     public static void main(String[] p_main_0_) {
-        Client.INST.setClientSocket(new ClientSocket());
+        //Client.INST.setClientSocket(new ClientSocket());
 
         System.setProperty("java.net.preferIPv4Stack", "true");
         OptionParser optionparser = new OptionParser();

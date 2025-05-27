@@ -29,7 +29,6 @@ public class MoreKB extends Module {
             return super.getValue();
         }
     };
-
     final IntegerSetting maxDelay = new IntegerSetting("MaxDelayAfterHit", this, 0, 10, 3) {
         @Override
         public int getValue() {
@@ -45,7 +44,6 @@ public class MoreKB extends Module {
             return super.getValue();
         }
     };
-
     final IntegerSetting maxReset = new IntegerSetting("MaxResetDuration", this, 1, 5, 1) {
         @Override
         public int getValue() {

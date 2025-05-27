@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode;
 
 import de.florianmichael.viamcp.ViaMCP;
+import fuguriprivatecoding.autotoolrecode.guis.config.ConfigGuiScreen;
 import fuguriprivatecoding.autotoolrecode.irc.packet.ClientSocket;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,6 +63,7 @@ public enum Client implements Imports {
     ClickManager clickManager;
 	DeepLearningEngine deepLearningEngine;
 	ClickGuiScreen clickGui;
+	ConfigGuiScreen configGuiScreen;
 	NewClickGuiScreen newClickGuiScreen;
 	Discord discord;
 	@Setter ClientSocket clientSocket;
@@ -121,6 +123,8 @@ public enum Client implements Imports {
 //		Fonts.init();
 
 		clickGui = new ClickGuiScreen();
+
+		configGuiScreen = new ConfigGuiScreen();
 
 		mc.gameSettings.ofFastRender = false;
 		Display.setTitle(getFullName());

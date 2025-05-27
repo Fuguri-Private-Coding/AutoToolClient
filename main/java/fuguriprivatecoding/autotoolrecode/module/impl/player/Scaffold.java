@@ -109,6 +109,7 @@ public class Scaffold extends Module {
     final StopWatch stopWatch;
 
     float bestPitch = 77f;
+    float bestYaw = 0f;
 
     int delay = 0;
 
@@ -163,23 +164,28 @@ public class Scaffold extends Module {
             MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
             BlockPos analyzingBlock = renderRayCast.getBlockPos();
             if (analyzingBlock != null && renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) renderPos = analyzingBlock;
+            //rotate();
+        }
+
+        if (event instanceof RunGameLoopEvent) {
+            calculateSaveRotation();
             rotate();
         }
 
         if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {
             Color fadeColor;
             if (this.fadeColor.isToggled()) {
-                fadeColor = ColorUtils.mixColors(color1.getColor(), color2.getColor(), (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeSpeed.getValue()) + 1) / 2);
+                fadeColor = ColorUtils.mixColors(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
             } else {
                 fadeColor = color1.getColor();
             }
 
             RenderUtils.start3D();
             if (shadows.isToggled() && shadows.module.get("Scaffold")) {
-                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f, 1.0F, 0));
+                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f, 0, 1));
             }
-            RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f, 1.0F, 0);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f, 0, 1);
+            ColorUtils.resetColor();
             RenderUtils.stop3D();
         }
 
@@ -312,8 +318,8 @@ public class Scaffold extends Module {
                 rotation = new Rot(MathHelper.wrapDegree(roundedYaw - 45), bestPitch);
             }
         } else {
-            bestPitch = diagonalPitch.getValue();
-            rotation = new Rot(roundedYaw, bestPitch);
+            //bestPitch = diagonalPitch.getValue();
+            rotation = new Rot(bestYaw, bestPitch);
         }
 
         if (rotation == null) {
@@ -340,6 +346,25 @@ public class Scaffold extends Module {
                 Rot.getServerRotation().getYaw() + delta.getYaw(),
                 Math.clamp(Rot.getServerRotation().getPitch() + delta.getPitch(), -90, 90)
         ));
+    }
+
+    void calculateSaveRotation() {
+        if (mc.currentScreen != null) return;
+        for (float i = 0; i < 90; i += 1f) {
+            MovingObjectPosition saveLeftRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(Rot.getServerRotation().getYaw(), i));
+            if (saveLeftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                bestPitch = i;
+                break;
+            }
+        }
+
+        for (float i = 90; i > 0; i -= 1f) {
+            MovingObjectPosition saveLeftRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(Rot.getServerRotation().getYaw(), i));
+            if (saveLeftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                bestPitch = i;
+                break;
+            }
+        }
     }
 
     public int findBlock() {

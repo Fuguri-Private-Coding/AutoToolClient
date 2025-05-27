@@ -79,7 +79,7 @@ public class ClickGuiScreen extends GuiScreen {
 		if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
 
 		if (this.clickGui.fadeColor.isToggled()) {
-			MAIN_COLOR = ColorUtils.mixColors(clickGui.color1.getColor(), clickGui.color2.getColor(), (Math.sin(System.currentTimeMillis() / 1000D * (double) clickGui.fadeSpeed.getValue()) + 1) / 2);
+			MAIN_COLOR = ColorUtils.mixColors(clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
 		} else {
 			MAIN_COLOR = clickGui.color1.getColor();
 		}
@@ -98,7 +98,7 @@ public class ClickGuiScreen extends GuiScreen {
 				}
 				if (showConfigAfterClose) {
 					mc.currentScreen = null;
-					mc.displayGuiScreen(new ConfigGuiScreen());
+					mc.displayGuiScreen(Client.INST.getConfigGuiScreen());
 					showConfigAfterClose = false;
 				}
             }

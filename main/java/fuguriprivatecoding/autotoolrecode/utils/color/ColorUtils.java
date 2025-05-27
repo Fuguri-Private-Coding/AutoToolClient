@@ -8,7 +8,8 @@ import java.awt.*;
 @UtilityClass
 public class ColorUtils {
 
-    public Color mixColors(final Color color1, final Color color2, final double percent) {
+    public Color mixColors(final Color color1, final Color color2, final double speed) {
+        final double percent = (Math.sin(System.currentTimeMillis() / 1000D * speed) + 1) / 2;
         final double inverse_percent = 1.0 - percent;
         final int redPart = (int) (color1.getRed() * percent + color2.getRed() * inverse_percent);
         final int greenPart = (int) (color1.getGreen() * percent + color2.getGreen() * inverse_percent);

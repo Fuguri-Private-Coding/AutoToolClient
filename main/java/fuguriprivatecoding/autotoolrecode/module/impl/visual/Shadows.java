@@ -26,6 +26,7 @@ public class Shadows extends Module {
             .add("Trails")
             .add("NameTags")
             .add("Scaffold")
+            .add("ChestESP")
             ;
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);

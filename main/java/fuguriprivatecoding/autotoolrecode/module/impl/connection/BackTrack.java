@@ -192,7 +192,7 @@ public class BackTrack extends Module {
                     case "Box" -> {
                         Color fadeColor;
                         if (this.fadeColor.isToggled()) {
-                            fadeColor = ColorUtils.mixColors(color1.getColor(), color2.getColor(), (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeSpeed.getValue()) + 1) / 2);
+                            fadeColor = ColorUtils.mixColors(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
                         } else {
                             fadeColor = color1.getColor();
                         }

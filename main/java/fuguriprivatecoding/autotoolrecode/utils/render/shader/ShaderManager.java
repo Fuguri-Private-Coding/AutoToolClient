@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation;
 @Getter
 public class ShaderManager {
 
-	Shader rounded, background, bloom;
+	Shader rounded, background, bloom, monkeyBlur;
 
 	public ShaderManager() {
 		init();
@@ -17,6 +17,7 @@ public class ShaderManager {
 
 		bloom = new Shader(getShaderSource("bloom.glsl"), getShaderSource("vertex.txt"));
 
+		monkeyBlur = new Shader(getShaderSource("monkeyBlur.glsl"), getShaderSource("vertex.txt"));
 
 		background = new Shader(getShaderSource("background.glsl"), getShaderSource("vertex.txt"));
 	}

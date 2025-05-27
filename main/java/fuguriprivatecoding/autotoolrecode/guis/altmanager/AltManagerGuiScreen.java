@@ -20,13 +20,10 @@ public class AltManagerGuiScreen extends GuiScreen {
 
     AltManagerGuiText altManagerGuiText;
 
-    GuiClientButton guiClientButton;
-
     public AltManagerGuiScreen() {
         mc = Minecraft.getMinecraft();
         ScaledResolution sc = new ScaledResolution(mc);
         altManagerGuiText = new AltManagerGuiText(1, mc.fontRendererObj, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
-        buttonList.add(new GuiClientButton(1, 100, 100, "USERNAME:ID:TOKEN from Clipboard"));
     }
 
     @Override
@@ -48,31 +45,8 @@ public class AltManagerGuiScreen extends GuiScreen {
         altManagerGuiText.textboxKeyTyped(typedChar, keyCode);
         if (keyCode == Keyboard.KEY_RETURN && !altManagerGuiText.getText().isEmpty()) {
             mc.getSession().setUsername(altManagerGuiText.getText());
-            Client.INST.getClientSocket().sendPacketToServer(new MyNickNamePacket(altManagerGuiText.getText()));
+            //Client.INST.getClientSocket().sendPacketToServer(new MyNickNamePacket(altManagerGuiText.getText()));
             altManagerGuiText.setText("");
-        }
-    }
-
-    @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
-        super.actionPerformed(button);
-        switch (button.id) {
-            case 1 -> {
-                String text = getClipBoard();
-
-                if (text.isEmpty()) return;
-
-                if (text.contains(":")) {
-                    String[] args = text.split(":");
-
-                    args[1] = args[1].replaceAll("-", "");
-
-                    if (args.length == 3) {
-                        mc.setSession(new Session(args[0], args[1], args[2], "mojang"));
-                        return;
-                    }
-                }
-            }
         }
     }
 

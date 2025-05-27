@@ -80,7 +80,7 @@ public class Phase extends Module {
 
             if (newBreakingBlock == null) return;
             if (currentBreakingBlock != null && System.currentTimeMillis() - lastBreakTime > 500L) resetBreaking();
-            if (!newBreakingBlock.equals(player.getPosition().down()) && (!Mouse.isButtonDown(0) || controller.curBlockDamageMP == 0)) return;
+            if (!newBreakingBlock.equals(player.getPosition().down()) && !Mouse.isButtonDown(0)) return;
             if (!clipDown.isToggled()) return;
             if (newBreakingBlock.getY() >= player.posY) return;
             if (!newBreakingBlock.equals(currentBreakingBlock)) resetBreaking();

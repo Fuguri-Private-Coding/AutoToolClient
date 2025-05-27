@@ -90,13 +90,13 @@ public class TargetESP extends Module {
         Color fadeHitColor;
 
         if (this.fadeColor.isToggled()) {
-            fadeColor = ColorUtils.mixColors(color1, color2, (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeSpeed.getValue()) + 1) / 2);
+            fadeColor = ColorUtils.mixColors(color1, color2, fadeSpeed.getValue());
         } else {
             fadeColor = color1;
         }
 
         if (this.fadeHitColor.isToggled()) {
-            fadeHitColor = ColorUtils.mixColors(hcolor1, hcolor2, (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeHitSpeed.getValue()) + 1) / 2);
+            fadeHitColor = ColorUtils.mixColors(hcolor1, hcolor2, fadeHitSpeed.getValue());
         } else {
             fadeHitColor = hcolor1;
         }
@@ -161,13 +161,13 @@ public class TargetESP extends Module {
         Color fadeHitColor;
 
         if (this.fadeColor.isToggled()) {
-            fadeColor = ColorUtils.mixColors(color1, color2, (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeSpeed.getValue()) + 1) / 2);
+            fadeColor = ColorUtils.mixColors(color1, color2, fadeSpeed.getValue());
         } else {
             fadeColor = color1;
         }
 
         if (this.fadeHitColor.isToggled()) {
-            fadeHitColor = ColorUtils.mixColors(hcolor1, hcolor2, (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeHitSpeed.getValue()) + 1) / 2);
+            fadeHitColor = ColorUtils.mixColors(hcolor1, hcolor2, fadeHitSpeed.getValue());
         } else {
             fadeHitColor = hcolor1;
         }

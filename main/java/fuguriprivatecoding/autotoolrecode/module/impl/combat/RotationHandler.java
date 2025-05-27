@@ -27,9 +27,6 @@ public class RotationHandler extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        //if (event instanceof TickEvent) {
-        //    System.out.println(ClientSocket.users);
-        //}
         if (!Client.INST.getModuleManager().getModule("Scaffold").isToggled() && (!Client.INST.getModuleManager().getModule("KillAura").isToggled() || Client.INST.getCombatManager().getTarget() == null)) {
 
             if (Rot.isChanged()) {

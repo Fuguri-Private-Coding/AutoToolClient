@@ -175,17 +175,17 @@ public class NewScaffold extends Module {
         if (event instanceof Render3DEvent) {
             Color fadeColor;
             if (this.fadeColor.isToggled()) {
-                fadeColor = ColorUtils.mixColors(color1.getColor(), color2.getColor(), (Math.sin(System.currentTimeMillis() / 1000D * (double) fadeSpeed.getValue()) + 1) / 2);
+                fadeColor = ColorUtils.mixColors(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
             } else {
                 fadeColor = color1.getColor();
             }
 
             RenderUtils.start3D();
             if (shadows.isToggled() && shadows.module.get("Scaffold")) {
-                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f,  1.0F, 0));
+                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f,  0, 1));
             }
-            RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f, 1.0F, 0);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f, 0, 1);
+            ColorUtils.resetColor();
             RenderUtils.stop3D();
         }
     }
