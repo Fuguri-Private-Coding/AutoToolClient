@@ -32,14 +32,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleInfo(name = "BackTrack", category = Category.CONNECTION)
 public class BackTrack extends Module {
 
-    final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 500, 200) {
+    final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 5000, 200) {
         @Override
         public int getValue() {
             if (maxDelay.value < value) { value = maxDelay.value; }
             return super.getValue();
         }
     };
-    final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 0, 500, 200) {
+    final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 0, 5000, 200) {
         @Override
         public int getValue() {
             if (minDelay.value > value) { value = minDelay.value; }

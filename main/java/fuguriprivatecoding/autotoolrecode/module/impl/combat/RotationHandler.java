@@ -28,7 +28,6 @@ public class RotationHandler extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (!Client.INST.getModuleManager().getModule("Scaffold").isToggled() && (!Client.INST.getModuleManager().getModule("KillAura").isToggled() || Client.INST.getCombatManager().getTarget() == null)) {
-
             if (Rot.isChanged()) {
                 if (event instanceof MotionEvent motionEvent) {
                     Rot rot = Rot.getServerRotation().copy();

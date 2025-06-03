@@ -23,6 +23,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.util.Vec3;
+import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -180,7 +181,6 @@ public class Ping extends Module {
                                 mc.timer.renderPartialTicks,
                                 true
                         );
-
                         RenderHelper.disableStandardItemLighting();
                         mc.entityRenderer.disableLightmap();
                     }

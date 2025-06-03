@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.distance;
 
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
@@ -28,5 +29,9 @@ public class DistanceUtils implements Imports {
 
 	public static double getDistance(AxisAlignedBB bb) {
 		return mc.thePlayer.getPositionEyes(1.0f).distanceTo(RotUtils.getBestHitVec(bb));
+	}
+
+	public static double getDistance(SimulatedPlayer simulatedPlayer, AxisAlignedBB bb) {
+		return simulatedPlayer.getPosEyes().distanceTo(RotUtils.getBestHitVec(bb));
 	}
 }

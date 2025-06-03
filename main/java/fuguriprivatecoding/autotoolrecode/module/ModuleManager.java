@@ -82,7 +82,8 @@ public class ModuleManager {
 				 new CustomCamera(),
 				 new BlockOverlay(),
 				 new HUD(),
-				 new ModelTrainer()
+				 new ModelTrainer(),
+				 new KeepSprint()
 		);
 	}
 

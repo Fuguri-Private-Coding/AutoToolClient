@@ -11,11 +11,14 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayTraceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT)
@@ -39,9 +42,13 @@ public class TimerRange extends Module {
     IntegerSetting maxTargetHurtTime = new IntegerSetting("TargetHurtTime", this, 0,10,0);
     FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0,1,1,0.1f);
 
+    Mode predictMode = new Mode("PredictType", this)
+            .addModes("RayCast", "Distance")
+            .setMode("RayCast")
+            ;
+
     boolean teleporting, click = false;
-    int teleportTicks = 0;
-    public int balance;
+    int teleportTicks, balance = 0;
 
     @EventTarget
     public void onEvent(Event event) {
@@ -49,12 +56,12 @@ public class TimerRange extends Module {
             mc.clickMouse();
             click = false;
         }
-        if (event instanceof TickEvent tickEvent) {
+        if (event instanceof TickEvent e) {
             if (teleporting) return;
             EntityLivingBase target = Client.INST.getCombatManager().getTarget();
 
             if (balance > 0) {
-                tickEvent.setCanceled(true);
+                e.setCanceled(true);
                 balance--;
                 return;
             }
@@ -62,6 +69,14 @@ public class TimerRange extends Module {
             if (target == null || target.hurtTime > maxTargetHurtTime.getValue()) return;
 
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput);
+
+            double posX = target.posX;
+            double posY = target.posY;
+            double posZ = target.posZ;
+            double targetX = target.newPosX;
+            double targetY = target.newPosY;
+            double targetZ = target.newPosZ;
+            int posRotIncrement = target.newPosRotationIncrements;
 
             teleportTicks = 0;
             for (int i = 0; i < maxTicks.getValue(); i++) {
@@ -71,7 +86,26 @@ public class TimerRange extends Module {
                         0,
                         new Rot(Rot.getServerRotation().getYaw(), Rot.getServerRotation().getPitch()));
 
-                if (mouse == null || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
+                if (posRotIncrement > 0) {
+                    posX += (targetX - posX) / posRotIncrement;
+                    posY += (targetY - posY) / posRotIncrement;
+                    posZ += (targetZ - posZ) / posRotIncrement;
+
+                    posRotIncrement--;
+                }
+
+                AxisAlignedBB targetBox = target.getEntityBoundingBox().offset(
+                        posX - target.posX, posY - target.posY, posZ - target.posZ
+                ).expand(
+                        target.getCollisionBorderSize(),
+                        target.getCollisionBorderSize(),
+                        target.getCollisionBorderSize()
+                );
+
+                boolean skipTickRayCast = predictMode.getMode().equalsIgnoreCase("RayCast") && (mouse == null || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY);
+                boolean skipTickDistance = predictMode.getMode().equalsIgnoreCase("Distance") && DistanceUtils.getDistance(simulatedPlayer, targetBox) > 2.8;
+
+                if (skipTickRayCast || skipTickDistance) {
                     simulatedPlayer.tick();
                 } else {
                     teleportTicks = i;

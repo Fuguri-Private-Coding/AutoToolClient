@@ -164,12 +164,12 @@ public class Scaffold extends Module {
             MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
             BlockPos analyzingBlock = renderRayCast.getBlockPos();
             if (analyzingBlock != null && renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) renderPos = analyzingBlock;
-            //rotate();
+            rotate();
         }
 
         if (event instanceof RunGameLoopEvent) {
-            calculateSaveRotation();
-            rotate();
+            //calculateSaveRotation();
+            //rotate();
         }
 
         if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {
@@ -306,25 +306,25 @@ public class Scaffold extends Module {
 
         Rot rotation = null;
 
-        if (!moveDiagonally) {
-            MovingObjectPosition leftRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(roundedYaw + 45, bestPitch));
-            MovingObjectPosition rightRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(roundedYaw - 45, bestPitch));
+       if (!moveDiagonally) {
+           MovingObjectPosition leftRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(roundedYaw + 45, bestPitch));
+           MovingObjectPosition rightRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(roundedYaw - 45, bestPitch));
 
-            bestPitch = bestPitchNoDiagonal.getValue();
+           bestPitch = bestPitchNoDiagonal.getValue();
 
-            if (leftRayCast != null && leftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                rotation = new Rot(MathHelper.wrapDegree(roundedYaw + 45), bestPitch);
-            } else if (rightRayCast != null && rightRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                rotation = new Rot(MathHelper.wrapDegree(roundedYaw - 45), bestPitch);
-            }
-        } else {
-            //bestPitch = diagonalPitch.getValue();
-            rotation = new Rot(bestYaw, bestPitch);
-        }
+           if (leftRayCast != null && leftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+               rotation = new Rot(MathHelper.wrapDegree(roundedYaw + 45), bestPitch);
+           } else if (rightRayCast != null && rightRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+               rotation = new Rot(MathHelper.wrapDegree(roundedYaw - 45), bestPitch);
+           }
+       } else {
+            bestPitch = diagonalPitch.getValue();
+            rotation = new Rot(roundedYaw, bestPitch);
+       }
 
-        if (rotation == null) {
-            return;
-        }
+       if (rotation == null) {
+           return;
+       }
 
         Delta delta = RotUtils.getDelta(Rot.getServerRotation(), rotation);
 
@@ -350,22 +350,25 @@ public class Scaffold extends Module {
 
     void calculateSaveRotation() {
         if (mc.currentScreen != null) return;
-        for (float i = 0; i < 90; i += 1f) {
-            MovingObjectPosition saveLeftRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(Rot.getServerRotation().getYaw(), i));
-            if (saveLeftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+        for (float i = 0; i < 81; i += 1f) {
+            MovingObjectPosition savePitchRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(Rot.getServerRotation().getYaw(), i));
+            //if (savePitchRayCast.sideHit == EnumFacing.DOWN || savePitchRayCast.sideHit == EnumFacing.UP) continue;
+            if (savePitchRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 bestPitch = i;
                 break;
             }
         }
 
-        for (float i = 90; i > 0; i -= 1f) {
-            MovingObjectPosition saveLeftRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(Rot.getServerRotation().getYaw(), i));
-            if (saveLeftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+        for (float i = 81; i > 0; i -= 1f) {
+            MovingObjectPosition savePitchRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(Rot.getServerRotation().getYaw(), i));
+            //if (savePitchRayCast.sideHit == EnumFacing.DOWN || savePitchRayCast.sideHit == EnumFacing.UP) continue;
+            if (savePitchRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 bestPitch = i;
                 break;
             }
         }
     }
+
 
     public int findBlock() {
         int bestSlot = -1;

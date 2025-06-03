@@ -10,6 +10,7 @@ import java.util.UUID;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.AttackEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.ChangeHeadRotationEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.HitSlowDownEvent;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Phase;
 import net.minecraft.block.Block;
@@ -996,8 +997,12 @@ public abstract class EntityPlayer extends EntityLivingBase {
                     if (flag2) {
                         if (i > 0) {
                             targetEntity.addVelocity((double) (-MathHelper.sin(this.rotationYaw * (float) Math.PI / 180.0F) * (float) i * 0.5F), 0.1D, (double) (MathHelper.cos(this.rotationYaw * (float) Math.PI / 180.0F) * (float) i * 0.5F));
-                            this.motionX *= slowDown;
-                            this.motionZ *= slowDown;
+
+                            HitSlowDownEvent hitSlowDownEvent = new HitSlowDownEvent(0.6, false);
+                            hitSlowDownEvent.call();
+
+                            this.motionX *= hitSlowDownEvent.getSlowDown();
+                            this.motionZ *= hitSlowDownEvent.getSlowDown();
                             if (event.isCancelSprint()) { setSprinting(false); }
                         }
 

@@ -202,7 +202,7 @@ public class TargetESP extends Module {
         glEnable(GL_CULL_FACE);
         glShadeModel(7424);
         glColor4f(1f, 1f, 1f, 1f);
-        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);

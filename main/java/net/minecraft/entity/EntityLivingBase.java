@@ -104,12 +104,12 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     public float moveStrafing;
     public float moveForward;
     protected float randomYawVelocity;
-    protected int newPosRotationIncrements;
-    protected double newPosX;
-    protected double newPosY;
-    protected double newPosZ;
-    protected double newRotationYaw;
-    protected double newRotationPitch;
+    public int newPosRotationIncrements;
+    public double newPosX;
+    public double newPosY;
+    public double newPosZ;
+    public double newRotationYaw;
+    public double newRotationPitch;
     private boolean potionsNeedUpdate = true;
     private EntityLivingBase entityLivingToAttack;
     private int revengeTimer;
