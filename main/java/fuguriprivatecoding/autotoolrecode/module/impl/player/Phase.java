@@ -29,7 +29,6 @@ public class Phase extends Module {
     private BlockPos currentBreakingBlock;
     private long lastBreakTime;
     private WorldSettings.GameType lastGameType;
-    public boolean cliped;
 
     public void onEnable() {
         if (mc.thePlayer != null) {
@@ -42,7 +41,6 @@ public class Phase extends Module {
         resetBreaking();
         setGameMode(lastGameType);
         lastGameType = null;
-        cliped = false;
     }
 
     private void resetBreaking() {
@@ -57,7 +55,7 @@ public class Phase extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof UpdateEvent && !cliped) {
+        if (event instanceof UpdateEvent) {
             if (mc.thePlayer.noClip) {
                 mc.thePlayer.motionY = 0.0;
             } else {

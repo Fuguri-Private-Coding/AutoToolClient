@@ -66,6 +66,8 @@ public class Scaffold extends Module {
 
     FloatSetting smooth = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f) {};
 
+    final CheckBox pitchCorrections = new CheckBox("PitchCorrections", this);
+
     final Mode clickMode = new Mode("ClickMode", this)
             .addModes("AutoPlace", "Legit")
             .setMode("AutoPlace");
@@ -109,7 +111,6 @@ public class Scaffold extends Module {
     final StopWatch stopWatch;
 
     float bestPitch = 77f;
-    float bestYaw = 0f;
 
     int delay = 0;
 
@@ -164,12 +165,12 @@ public class Scaffold extends Module {
             MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
             BlockPos analyzingBlock = renderRayCast.getBlockPos();
             if (analyzingBlock != null && renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) renderPos = analyzingBlock;
-            rotate();
+            if (!pitchCorrections.isToggled()) rotate();
         }
 
-        if (event instanceof RunGameLoopEvent) {
-            //calculateSaveRotation();
-            //rotate();
+        if (event instanceof RunGameLoopEvent && pitchCorrections.isToggled()) {
+            calculateSaveRotation();
+            rotate();
         }
 
         if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {

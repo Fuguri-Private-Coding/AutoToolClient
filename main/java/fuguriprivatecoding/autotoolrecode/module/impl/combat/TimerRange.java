@@ -103,7 +103,7 @@ public class TimerRange extends Module {
                 );
 
                 boolean skipTickRayCast = predictMode.getMode().equalsIgnoreCase("RayCast") && (mouse == null || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY);
-                boolean skipTickDistance = predictMode.getMode().equalsIgnoreCase("Distance") && DistanceUtils.getDistance(simulatedPlayer, targetBox) > 2.8;
+                boolean skipTickDistance = predictMode.getMode().equalsIgnoreCase("Distance") && DistanceUtils.getDistance(simulatedPlayer, targetBox) > 3;
 
                 if (skipTickRayCast || skipTickDistance) {
                     simulatedPlayer.tick();

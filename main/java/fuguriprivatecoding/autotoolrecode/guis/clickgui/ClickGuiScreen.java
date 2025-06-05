@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
@@ -47,6 +48,8 @@ public class ClickGuiScreen extends GuiScreen {
 	Color CATEGORY_COLOR = new Color(255, 255, 255, 255);
 
 	int MAIN_COLOR_INT = MAIN_COLOR.getRGB();
+
+	KeyBind activeKeyBind;
 
 	Category selectedCategory = Category.COMBAT;
 	Module selectedModule = null;
@@ -505,6 +508,14 @@ public class ClickGuiScreen extends GuiScreen {
 					);
 					offset += 15;
 				}
+				if (setting instanceof KeyBind keyBind) {
+					fontRenderer.drawString(
+							activeKeyBind == keyBind ? "▬" : Keyboard.getKeyName(keyBind.getKey()),
+							background.x + verticalLineXOffset + 5 + settingWidth + 1,
+							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset, MAIN_COLOR.getRGB()
+					);
+				}
+
 				offset += 11;
 			}
 		}
@@ -679,11 +690,20 @@ public class ClickGuiScreen extends GuiScreen {
 				}
 				if (setting instanceof CheckBox booleanSetting) {
 					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
-					&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + fontRenderer.getStringWidth(String.valueOf(booleanSetting.isToggled()))
-					&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset
-					&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10) {
+							&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + fontRenderer.getStringWidth(String.valueOf(booleanSetting.isToggled()))
+							&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset
+							&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10) {
 						booleanSetting.setToggled(!booleanSetting.isToggled());
 					}
+				}
+				if (setting instanceof KeyBind keyBind) {
+					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
+							&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + fontRenderer.getStringWidth(activeKeyBind == keyBind ? "▬" : Keyboard.getKeyName(keyBind.getKey()))
+							&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset
+							&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10) {
+						activeKeyBind = keyBind;
+					}
+
 				}
 				if (setting instanceof ColorSetting) {
 					offset += 14;
@@ -712,6 +732,10 @@ public class ClickGuiScreen extends GuiScreen {
 				return;
 			}
 			selectedModule.setKey(keyCode);
+		} else if (activeKeyBind != null) {
+			if (keyCode == Keyboard.KEY_ESCAPE) activeKeyBind.setKey(0);else activeKeyBind.setKey(keyCode);
+
+			activeKeyBind = null;
 		}
 
 		if (keyCode == Keyboard.KEY_ESCAPE && !closing) {

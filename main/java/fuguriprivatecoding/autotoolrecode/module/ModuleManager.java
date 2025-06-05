@@ -83,7 +83,8 @@ public class ModuleManager {
 				 new BlockOverlay(),
 				 new HUD(),
 				 new ModelTrainer(),
-				 new KeepSprint()
+				 new KeepSprint(),
+				 new AutoLeave()
 		);
 	}
 

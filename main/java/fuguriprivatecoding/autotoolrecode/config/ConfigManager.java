@@ -118,6 +118,7 @@ public class ConfigManager implements Imports {
                         case IntegerSetting set -> set.setValue(settingElement.getAsInt());
                         case FloatSetting set -> set.setValue(settingElement.getAsFloat());
                         case CheckBox set -> set.setToggled(settingElement.getAsBoolean());
+                        case KeyBind set -> set.setKey(settingElement.getAsInt());
                         case Mode set -> set.setMode(settingElement.getAsString());
                         case MultiMode set -> {
                             JsonObject jsonObject = settingElement.getAsJsonObject();
@@ -162,6 +163,7 @@ public class ConfigManager implements Imports {
                     case IntegerSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());
                     case FloatSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());
                     case CheckBox set -> moduleObject.addProperty(setting.getName(), set.isToggled());
+                    case KeyBind set -> moduleObject.addProperty(setting.getName(), set.getKey());
                     case Mode set -> moduleObject.addProperty(setting.getName(), set.getMode());
                     case MultiMode set -> {
                         JsonObject multiBooleanObject = new JsonObject();

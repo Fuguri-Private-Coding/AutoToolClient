@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
@@ -34,13 +35,11 @@ public class Ping extends Module {
 
     private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 50, 1000, 400);
 
-    private final Mode resetType = new Mode("ResetType", this)
-            .addModes("Default")
-            .setMode("Default");
+    private final CheckBox subtrackOwnDelay = new CheckBox("SubtrackOwnDelay",this,true);
 
-    private final IntegerSetting delayBeforeNextLagAfterReset = new IntegerSetting("DelayBeforeNextLagAfterReset", this,() -> resetType.getMode().equalsIgnoreCase("Default"), 0, 1000, 500);
+    private final IntegerSetting delayBeforeNextLagAfterReset = new IntegerSetting("DelayBeforeNextLagAfterReset", this, 0, 1000, 500);
 
-    private final MultiMode actions = new MultiMode("ActionsToReset", this, () -> resetType.getMode().equalsIgnoreCase("Default"))
+    private final MultiMode actions = new MultiMode("ActionsToReset", this)
             .add("Attack", true)
             .add("Damage")
             .add("Velocity")
@@ -208,13 +207,9 @@ public class Ping extends Module {
     }
 
     private void reset() {
-        switch (resetType.getMode()) {
-            case "Default" -> {
-                resetAllPackets();
-                lastResetTime = System.currentTimeMillis();
-                delayBeforeNextLag = delayBeforeNextLagAfterReset.getValue();
-            }
-        }
+        resetAllPackets();
+        lastResetTime = System.currentTimeMillis();
+        delayBeforeNextLag = delayBeforeNextLagAfterReset.getValue();
     }
 
     private record PacketWithTime(Packet packet, long time) {}

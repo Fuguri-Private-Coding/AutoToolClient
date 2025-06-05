@@ -84,6 +84,8 @@ public class KillAura extends Module {
             .addModes("Linear", "AIModel")
             .setMode("Linear");
 
+    final CheckBox greatestCommonDivisor = new CheckBox("GreatestCommonDivisorFix (GCDFix)", this);
+
     final FloatSetting linearSmoothStrength = new FloatSetting(
             "LinearSmoothStrength", this,
             () -> smoothMode.getMode().equalsIgnoreCase("Linear"),
@@ -193,7 +195,7 @@ public class KillAura extends Module {
             }
 
             RotUtils.limitDelta(delta, speed);
-            delta = RotUtils.fixDelta(delta);
+            if (greatestCommonDivisor.isToggled()) delta = RotUtils.fixDelta(delta);
             lr = lr.add(delta);
             lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
             Rot.setServerRotation(lr);
