@@ -209,6 +209,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     public int displayHeight;
     private boolean connectedToRealms = false;
     public Timer timer = new Timer(20.0F);
+    public Timer fakeTimer = new Timer(20.0F);
     private final PlayerUsageSnooper usageSnooper = new PlayerUsageSnooper("client", this, MinecraftServer.getCurrentTimeMillis());
     public WorldClient theWorld;
     public RenderGlobal renderGlobal;
@@ -865,6 +866,14 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.timer.updateTimer();
         }
 
+        if (this.isGamePaused && this.theWorld != null) {
+            float f = this.fakeTimer.renderPartialTicks;
+            this.fakeTimer.updateTimer();
+            this.fakeTimer.renderPartialTicks = f;
+        } else {
+            this.fakeTimer.updateTimer();
+        }
+
         new RunGameLoopEvent().call();
 
         this.mcProfiler.startSection("scheduledExecutables");
@@ -881,6 +890,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
         for (int j = 0; j < this.timer.elapsedTicks; ++j) {
             runTick();
+        }
+
+        for (int r = 0; r < this.fakeTimer.elapsedTicks; ++r) {
+            new FakeTickEvent().call();
         }
 
         this.mcProfiler.endStartSection("preRenderErrors");
@@ -1407,15 +1420,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     public MusicTicker getMusicTicker() {
         return this.mcMusicTicker;
-    }
-
-    public void runTickSave() {
-        try {
-            runTick();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
-        }
     }
 
     public void runTick() throws IOException {
