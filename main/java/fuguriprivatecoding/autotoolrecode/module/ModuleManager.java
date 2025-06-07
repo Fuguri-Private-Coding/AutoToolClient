@@ -84,7 +84,8 @@ public class ModuleManager {
 				 new HUD(),
 				 new ModelTrainer(),
 				 new KeepSprint(),
-				 new AutoLeave()
+				 new AutoLeave(),
+				 new TestTimerRange()
 		);
 	}
 
