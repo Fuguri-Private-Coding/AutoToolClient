@@ -39,6 +39,8 @@ public class TimerRange extends Module {
         }
     };
 
+    FloatSetting minDistanceToSkipTick = new FloatSetting("MinDistanceToSkipTick", this, 2.5f,6,3,0.1f);
+
     IntegerSetting maxTargetHurtTime = new IntegerSetting("TargetHurtTime", this, 0,10,0);
     FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0,1,1,0.1f);
 
@@ -103,7 +105,7 @@ public class TimerRange extends Module {
                 );
 
                 boolean skipTickRayCast = predictMode.getMode().equalsIgnoreCase("RayCast") && (mouse == null || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY);
-                boolean skipTickDistance = predictMode.getMode().equalsIgnoreCase("Distance") && DistanceUtils.getDistance(simulatedPlayer, targetBox) > 3;
+                boolean skipTickDistance = predictMode.getMode().equalsIgnoreCase("Distance") && DistanceUtils.getDistance(simulatedPlayer, targetBox) > minDistanceToSkipTick.getValue() && mouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY ;
 
                 if (skipTickRayCast || skipTickDistance) {
                     simulatedPlayer.tick();

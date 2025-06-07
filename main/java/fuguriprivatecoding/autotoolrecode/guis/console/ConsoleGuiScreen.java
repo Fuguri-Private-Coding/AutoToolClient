@@ -27,8 +27,8 @@ public class ConsoleGuiScreen extends GuiScreen {
 
     Vector2f pos, size, lastMouse;
 
-    Vector2f lastSize = new Vector2f(200, 200);
-    Vector2f lastPos = new Vector2f(200, 200);
+    Vector2f lastSize = new Vector2f(800, 1000);
+    Vector2f lastPos = new Vector2f(0,0);
 
     boolean moving, closing;
     public boolean changed = false;
@@ -41,7 +41,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         mc = Minecraft.getMinecraft();
 
         pos = new Vector2f(0, 0);
-        size = new Vector2f(200, 200);
+        size = new Vector2f(800, 1000);
         lastMouse = new Vector2f(0, 0);
 
         scrolls = new Animation2D();
@@ -134,7 +134,6 @@ public class ConsoleGuiScreen extends GuiScreen {
         RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
         RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
 
-        ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 33 : 15));
 
         float offset = scrolls.y;

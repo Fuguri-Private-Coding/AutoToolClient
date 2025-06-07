@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.config;
 
 import com.google.gson.*;
+import fuguriprivatecoding.autotoolrecode.alt.Account;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
@@ -22,18 +23,23 @@ public class ConfigManager implements Imports {
 
     File configsDirectory;
     File bindsDirectory;
+    File accountDirectory;
     private List<Config> configs;
     Config defaultConfig;
     File bindFile;
+    File accountFile;
 
     public void init() {
         configs = new ArrayList<>();
         configsDirectory = new File(Client.INST.getName() + "/configs");
         bindsDirectory = new File(Client.INST.getName() + "/binds");
+        accountDirectory = new File(Client.INST.getName() + "/account");
         bindsDirectory.mkdirs();
         configsDirectory.mkdirs();
+        accountDirectory.mkdirs();
         defaultConfig = new Config("default");
         bindFile = new File(bindsDirectory, "binds.json");
+        accountFile = new File(accountDirectory, "accounts.json");
         refreshConfigs();
     }
 
@@ -52,7 +58,6 @@ public class ConfigManager implements Imports {
         }
         return null;
     }
-
 
     public void loadBinds() {
         try {
@@ -84,6 +89,40 @@ public class ConfigManager implements Imports {
         }
         try {
             PrintWriter writer = new PrintWriter(new FileWriter(bindFile));
+            Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+            writer.println(prettyGson.toJson(mainObject));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    public void loadAccounts() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(accountFile));
+            JsonParser parser = new JsonParser();
+            JsonObject json = (JsonObject) parser.parse(reader);
+            reader.close();
+            Client.INST.getAltManagerGui().accounts.clear();
+            for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                JsonObject moduleObject = (JsonObject) entry.getValue();
+                Client.INST.getAltManagerGui().accounts.add(new Account(moduleObject.get("name").getAsString()));
+            }
+        } catch (RuntimeException | IOException e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    public void saveAccounts() {
+        FileUtils.createIfNotExists(accountFile);
+        JsonObject mainObject = new JsonObject();
+        for (Account account : Client.INST.getAltManagerGui().accounts) {
+            JsonObject moduleObject = new JsonObject();
+            moduleObject.addProperty("name", account.getName());
+            mainObject.add(account.getName(), moduleObject);
+        }
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(accountFile));
             Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
             writer.println(prettyGson.toJson(mainObject));
             writer.close();

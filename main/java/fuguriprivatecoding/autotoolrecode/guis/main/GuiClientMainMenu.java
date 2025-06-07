@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.guis.main;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiScreen;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.gui.*;
@@ -49,7 +48,7 @@ public class GuiClientMainMenu extends GuiScreen {
             case 0 -> mc.displayGuiScreen(new GuiSelectWorld(this));
             case 1 -> mc.displayGuiScreen(new GuiMultiplayer(this));
             case 2 -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
-            case 3 -> mc.displayGuiScreen(new AltManagerGuiScreen());
+            case 3 -> mc.displayGuiScreen(Client.INST.getAltManagerGui());
             case 4 -> mc.shutdownMinecraftApplet();
         }
     }

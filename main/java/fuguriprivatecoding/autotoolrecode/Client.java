@@ -1,6 +1,8 @@
 package fuguriprivatecoding.autotoolrecode;
 
 import de.florianmichael.viamcp.ViaMCP;
+import fuguriprivatecoding.autotoolrecode.alt.Account;
+import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiScreen;
 import fuguriprivatecoding.autotoolrecode.guis.config.ConfigGuiScreen;
 import fuguriprivatecoding.autotoolrecode.irc.packet.ClientSocket;
 import lombok.Getter;
@@ -64,6 +66,7 @@ public enum Client implements Imports {
 	DeepLearningEngine deepLearningEngine;
 	ClickGuiScreen clickGui;
 	ConfigGuiScreen configGuiScreen;
+	AltManagerGuiScreen altManagerGui;
 	NewClickGuiScreen newClickGuiScreen;
 	Discord discord;
 	@Setter ClientSocket clientSocket;
@@ -107,6 +110,8 @@ public enum Client implements Imports {
 		configManager.init();
 		configManager.loadConfig(configManager.getDefaultConfig());
 		configManager.loadBinds();
+
+		altManagerGui = new AltManagerGuiScreen();
 
 		commandManager = new CommandManager();
 		clickManager = new ClickManager();

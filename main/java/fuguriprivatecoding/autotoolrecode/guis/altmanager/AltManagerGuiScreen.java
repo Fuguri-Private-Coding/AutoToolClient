@@ -1,41 +1,166 @@
 package fuguriprivatecoding.autotoolrecode.guis.altmanager;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.alt.Account;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
-import fuguriprivatecoding.autotoolrecode.irc.packet.impl.MyNickNamePacket;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.util.Session;
 import org.lwjgl.input.Keyboard;
-
+import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class AltManagerGuiScreen extends GuiScreen {
 
     AltManagerGuiText altManagerGuiText;
 
+    private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+    private static final Random random = new Random();
+
+    public ArrayList<Account> accounts = new ArrayList<>();
+
+    Account selectedAccount;
+    int scroll, scrollTotalHeight;
+    Animation2D scrolls;
+
     public AltManagerGuiScreen() {
         mc = Minecraft.getMinecraft();
+        scrolls = new Animation2D();
+    }
+
+    @Override
+    public void initGui() {
+        super.initGui();
         ScaledResolution sc = new ScaledResolution(mc);
-        altManagerGuiText = new AltManagerGuiText(1, mc.fontRendererObj, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
+        Client.INST.getConfigManager().loadAccounts();
+        altManagerGuiText = new AltManagerGuiText(0, mc.fontRendererObj, sc.getScaledWidth() / 2 - 150, sc.getScaledHeight() / 2 - 80 - 20, 100, 20);
+        buttonList.add(new GuiClientButton(1, sc.getScaledWidth() / 2 - 150,  sc.getScaledHeight() / 2 - 50 - 20, 100, 20, "Login"));
+        buttonList.add(new GuiClientButton(2, sc.getScaledWidth() / 2 - 150, sc.getScaledHeight() / 2 - 25 - 20, 100, 20, "Delete"));
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
         ScaledResolution sc = new ScaledResolution(mc);
+        int currentScroll = Mouse.getDWheel();
+
+        scroll -= currentScroll / 120 * 10;
+
+        float settingsVisibleHeight = sc.getScaledHeight() - 25;
+        float maxScroll = Math.max(scrollTotalHeight - settingsVisibleHeight,0);
+
+        if (scroll > 0) scroll = 0;
+        if (scroll < -maxScroll) scroll = (int) -maxScroll;
+
+        scrolls.endY = scroll;
+        scrolls.update(15f);
+
         mc.getFramebuffer().framebufferClear();
         BackgroundUtils.run();
         mc.getFramebuffer().bindFramebuffer(true);
+        RoundedUtils.drawRect((sc.getScaledWidth() / 2f) - 10, 10, 250, sc.getScaledHeight() - 20, 5f, new Color(15, 15, 15, 150));
+
+        float offset = scrolls.y;
+
+        scrollTotalHeight = 0;
+
+        ScissorUtils.enableScissor();
+        ScissorUtils.scissor(new ScaledResolution(mc), (sc.getScaledWidth() / 2f) - 10, 10, 250, sc.getScaledHeight() - 20);
+
+        for (Account account : accounts) {
+            RoundedUtils.drawRect((sc.getScaledWidth() / 2f) - 5, 10 + 5 + offset, 250 - 10, 20, 4f, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? new Color(75,75,75,150) : new Color(15,15,15,150));
+            fontRendererObj.drawString(account.getName(), (sc.getScaledWidth() / 2f), 10 + 10 + offset, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? Color.green.getRGB() : -1);
+            offset += 25;
+            scrollTotalHeight += 25;
+        }
+
+        ScissorUtils.disableScissor();
+
         altManagerGuiText.drawTextBox();
         altManagerGuiText.setMaxStringLength(16);
-        mc.fontRendererObj.drawCenteredString("Current logged as " + mc.getSession().getUsername(), sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f - 20, new Color(255, 255, 255, 150).getRGB());
+        mc.fontRendererObj.drawCenteredString("Current logged as " + mc.getSession().getUsername(), sc.getScaledWidth() / 2f - 20 - fontRendererObj.getStringWidth("Current logged as " + mc.getSession().getUsername()) / 2f, 20, new Color(255, 255, 255, 150).getRGB());
+        super.drawScreen(mouseX,mouseY,partialTicks);
+    }
+
+    public static String generateRandomNick() {
+        int length = random.nextInt(16) + 1;
+        StringBuilder sb = new StringBuilder(length);
+        sb.append(CHARACTERS.charAt(random.nextInt(52)));
+        for (int i = 1; i < length; i++) {
+            sb.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
+        }
+
+        return sb.toString();
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException {
+        super.actionPerformed(button);
+        switch (button.id) {
+            case 1 -> {
+                if (!altManagerGuiText.getText().isEmpty()) {
+                    String accountName = altManagerGuiText.getText();
+                    boolean accountExists = accounts.stream().anyMatch(acc -> acc.getName().equalsIgnoreCase(accountName));
+
+                    if (!accountExists) {
+                        mc.getSession().setUsername(accountName);
+                        Account newAccount = new Account(accountName);
+                        accounts.add(newAccount);
+                        selectedAccount = newAccount;
+                    }
+                    altManagerGuiText.setText("");
+                } else if (selectedAccount != null) {
+                    mc.getSession().setUsername(selectedAccount.getName());
+                } else {
+                    mc.getSession().setUsername(generateRandomNick());
+                }
+            }
+
+            case 2 -> {
+                if (selectedAccount != null) {
+                    accounts.removeIf(acc -> acc == selectedAccount);
+                    selectedAccount = null;
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+        ScaledResolution sc = new ScaledResolution(mc);
+        float offset = scrolls.y;
+
+        for (Account account : accounts) {
+            if (mouseButton == 0) {
+                if (mouseX >= (sc.getScaledWidth() / 2f) - 5 &&
+                        mouseX <= (sc.getScaledWidth() / 2f) - 5 + 250 - 10 &&
+                        mouseY >= 10 + 5 + offset &&
+                        mouseY <= 10 + 5 + offset + 20) {
+                    toggleAccount(account);
+                    break;
+                }
+            }
+
+            offset += 25;
+        }
+    }
+
+    public void toggleAccount(Account account) {
+        if (selectedAccount == account) {
+            selectedAccount = null;
+        } else {
+            selectedAccount = account;
+        }
     }
 
     @Override
@@ -43,10 +168,10 @@ public class AltManagerGuiScreen extends GuiScreen {
         super.keyTyped(typedChar, keyCode);
         altManagerGuiText.setFocused(true);
         altManagerGuiText.textboxKeyTyped(typedChar, keyCode);
-        if (keyCode == Keyboard.KEY_RETURN && !altManagerGuiText.getText().isEmpty()) {
-            mc.getSession().setUsername(altManagerGuiText.getText());
-            //Client.INST.getClientSocket().sendPacketToServer(new MyNickNamePacket(altManagerGuiText.getText()));
-            altManagerGuiText.setText("");
+
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            Client.INST.getConfigManager().saveAccounts();
+            selectedAccount = null;
         }
     }
 
