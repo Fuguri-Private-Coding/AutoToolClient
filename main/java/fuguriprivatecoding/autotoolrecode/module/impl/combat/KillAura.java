@@ -231,13 +231,6 @@ public class KillAura extends Module {
             if (event instanceof JumpEvent e) {
                 e.setYaw(lr.getYaw());
             }
-            if (event instanceof SprintEvent) {
-                if (moveFix.getMode().equalsIgnoreCase("Silent") || moveFix.getMode().equalsIgnoreCase("Target")) {
-                    if (Math.abs(MoveUtils.getDirection() - MoveUtils.getDirection(Rot.getServerRotation().getYaw())) > 45) {
-                        mc.thePlayer.setSprinting(false);
-                    }
-                }
-            }
         }
         if (event instanceof MoveEvent e) {
             switch (moveFix.getMode()) {

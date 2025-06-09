@@ -21,8 +21,7 @@ import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.network.play.server.S08PacketPlayerPosLook;
-import net.minecraft.network.play.server.S12PacketEntityVelocity;
+import net.minecraft.network.play.server.*;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
 
@@ -171,18 +170,13 @@ public class Ping extends Module {
                         RenderUtils.renderHitBox(player.getEntityBoundingBox().offset(diff));
                         RenderUtils.stop3D();
                     }
-                    case "Player" -> {
-                        mc.entityRenderer.enableLightmap();
-                        mc.getRenderManager().doRenderEntity(
-                                player,
-                                x, y, z,
-                                player.getRotationYawHead(),
-                                mc.timer.renderPartialTicks,
-                                true
-                        );
-                        RenderHelper.disableStandardItemLighting();
-                        mc.entityRenderer.disableLightmap();
-                    }
+                    case "Player" -> mc.getRenderManager().doRenderEntity(
+                            player,
+                            x, y, z,
+                            player.getRotationYawHead(),
+                            mc.timer.renderPartialTicks,
+                            true
+                    );
                 }
             }
             default -> {}

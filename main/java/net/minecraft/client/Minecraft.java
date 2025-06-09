@@ -376,7 +376,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         }
 
         logger.info("LWJGL Version: {}", Sys.getVersion());
-        this.setWindowIcon();
+        //this.setWindowIcon();
         this.setInitialDisplayMode();
         this.createDisplay();
         OpenGlHelper.initializeTextures();
@@ -1571,6 +1571,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
                 this.dispatchKeypresses();
 
+
                 if (Keyboard.getEventKeyState()) {
                     if (k == 62 && this.entityRenderer != null) {
                         this.entityRenderer.switchUseShader();
@@ -1580,6 +1581,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                         this.currentScreen.handleKeyboardInput();
                     } else {
                         KeyEvent keyEvent = new KeyEvent(k);
+
                         keyEvent.call();
                         k = keyEvent.getKey();
 

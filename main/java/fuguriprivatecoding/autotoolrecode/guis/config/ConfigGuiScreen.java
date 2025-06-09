@@ -29,17 +29,20 @@ import static java.lang.Math.min;
 
 public class ConfigGuiScreen extends GuiScreen {
 
-    Vector2f pos, size, lastMouse;
-
-    Vector2f lastSize = new Vector2f(800, 1000);
-    Vector2f lastPos = new Vector2f(0,0);
+    Vector2f pos, size, lastMouse, lastSize, lastPos;
 
     boolean moving, closing, creatingConfig;
+
     final Animation2D background, sizeBackground, scrolls;
+
     ClickGui clickGui;
+
     int delay = 10;
+
     Shadows shadows;
+
     int scroll, totalHeight;
+
     Config selectedConfig;
 
     private final AltManagerGuiText textField;
@@ -48,8 +51,13 @@ public class ConfigGuiScreen extends GuiScreen {
         Client.INST.getEventManager().register(this);
         mc = Minecraft.getMinecraft();
         ScaledResolution sc = new ScaledResolution(mc);
-        pos = new Vector2f(0, 0);
-        size = new Vector2f(800, 1000);
+
+        lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+        lastPos = new Vector2f(50f, 50f);
+
+        size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+        pos = new Vector2f(50f, 50f);
+
         lastMouse = new Vector2f(0, 0);
         textField = new AltManagerGuiText(1, mc.fontRendererObj, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
 

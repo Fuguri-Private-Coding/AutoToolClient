@@ -3,9 +3,11 @@ package fuguriprivatecoding.autotoolrecode.guis.altmanager;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.alt.Account;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -24,14 +26,19 @@ public class AltManagerGuiScreen extends GuiScreen {
 
     AltManagerGuiText altManagerGuiText;
 
-    private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+    private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
     private static final Random random = new Random();
 
     public ArrayList<Account> accounts = new ArrayList<>();
 
+    private long lastClickTime = 0;
+    private Account lastClickedAccount = null;
+
     Account selectedAccount;
     int scroll, scrollTotalHeight;
     Animation2D scrolls;
+
+    Shadows shadows;
 
     public AltManagerGuiScreen() {
         mc = Minecraft.getMinecraft();
@@ -43,13 +50,14 @@ public class AltManagerGuiScreen extends GuiScreen {
         super.initGui();
         ScaledResolution sc = new ScaledResolution(mc);
         Client.INST.getConfigManager().loadAccounts();
-        altManagerGuiText = new AltManagerGuiText(0, mc.fontRendererObj, sc.getScaledWidth() / 2 - 150, sc.getScaledHeight() / 2 - 80 - 20, 100, 20);
-        buttonList.add(new GuiClientButton(1, sc.getScaledWidth() / 2 - 150,  sc.getScaledHeight() / 2 - 50 - 20, 100, 20, "Login"));
-        buttonList.add(new GuiClientButton(2, sc.getScaledWidth() / 2 - 150, sc.getScaledHeight() / 2 - 25 - 20, 100, 20, "Delete"));
+        altManagerGuiText = new AltManagerGuiText(0, mc.fontRendererObj, 100, sc.getScaledHeight() - 100, 100, 20);
+        buttonList.add(new GuiClientButton(1, 100,  sc.getScaledHeight() - 75, 100, 20, "Login"));
+        buttonList.add(new GuiClientButton(2, 100, sc.getScaledHeight() - 50, 100, 20, "Delete"));
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         ScaledResolution sc = new ScaledResolution(mc);
         int currentScroll = Mouse.getDWheel();
 
@@ -67,18 +75,23 @@ public class AltManagerGuiScreen extends GuiScreen {
         mc.getFramebuffer().framebufferClear();
         BackgroundUtils.run();
         mc.getFramebuffer().bindFramebuffer(true);
-        RoundedUtils.drawRect((sc.getScaledWidth() / 2f) - 10, 10, 250, sc.getScaledHeight() - 20, 5f, new Color(15, 15, 15, 150));
+
+        RoundedUtils.drawRect(sc.getScaledWidth() - 265, 10, 250, sc.getScaledHeight() - 20, 5f, new Color(15, 15, 15, 150));
+
+        if (shadows.isToggled() && shadows.module.get("MainMenuGui")) {
+            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(sc.getScaledWidth() - 265, 10, 250, sc.getScaledHeight() - 20, 5f, new Color(15, 15, 15, 255)));
+        }
 
         float offset = scrolls.y;
 
         scrollTotalHeight = 0;
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), (sc.getScaledWidth() / 2f) - 10, 10, 250, sc.getScaledHeight() - 20);
+        ScissorUtils.scissor(new ScaledResolution(mc), sc.getScaledWidth() - 260, 10, 250, sc.getScaledHeight() - 20);
 
         for (Account account : accounts) {
-            RoundedUtils.drawRect((sc.getScaledWidth() / 2f) - 5, 10 + 5 + offset, 250 - 10, 20, 4f, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? new Color(75,75,75,150) : new Color(15,15,15,150));
-            fontRendererObj.drawString(account.getName(), (sc.getScaledWidth() / 2f), 10 + 10 + offset, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? Color.green.getRGB() : -1);
+            RoundedUtils.drawRect(sc.getScaledWidth() - 260, 10 + 5 + offset, 250 - 10, 20, 4f, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? new Color(75,75,75,150) : new Color(15,15,15,150));
+            fontRendererObj.drawString(account.getName(), sc.getScaledWidth() - 250, 10 + 11f + offset, account.getName().equals(mc.getSession().getUsername()) ? Color.green.getRGB() : -1);
             offset += 25;
             scrollTotalHeight += 25;
         }
@@ -87,14 +100,14 @@ public class AltManagerGuiScreen extends GuiScreen {
 
         altManagerGuiText.drawTextBox();
         altManagerGuiText.setMaxStringLength(16);
-        mc.fontRendererObj.drawCenteredString("Current logged as " + mc.getSession().getUsername(), sc.getScaledWidth() / 2f - 20 - fontRendererObj.getStringWidth("Current logged as " + mc.getSession().getUsername()) / 2f, 20, new Color(255, 255, 255, 150).getRGB());
+        mc.fontRendererObj.drawCenteredString("Current logged as " + mc.getSession().getUsername(), (sc.getScaledWidth() / 2f) - 10 - (fontRendererObj.getStringWidth("Current logged as " + mc.getSession().getUsername()) / 2f), 2.5f, new Color(255, 255, 255, 150).getRGB());
         super.drawScreen(mouseX,mouseY,partialTicks);
     }
 
     public static String generateRandomNick() {
         int length = random.nextInt(16) + 1;
         StringBuilder sb = new StringBuilder(length);
-        sb.append(CHARACTERS.charAt(random.nextInt(52)));
+        sb.append(CHARACTERS.charAt(random.nextInt(26)));
         for (int i = 1; i < length; i++) {
             sb.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
         }
@@ -142,25 +155,30 @@ public class AltManagerGuiScreen extends GuiScreen {
 
         for (Account account : accounts) {
             if (mouseButton == 0) {
-                if (mouseX >= (sc.getScaledWidth() / 2f) - 5 &&
-                        mouseX <= (sc.getScaledWidth() / 2f) - 5 + 250 - 10 &&
-                        mouseY >= 10 + 5 + offset &&
-                        mouseY <= 10 + 5 + offset + 20) {
-                    toggleAccount(account);
+                if (mouseX > sc.getScaledWidth() - 260 &&
+                        mouseX < sc.getScaledWidth() - 260 + (250 - 10) &&
+                        mouseY > 10 + 5 + offset &&
+                        mouseY < 10 + 5 + offset + 20) {
+
+                    long currentTime = System.currentTimeMillis();
+
+                    if (lastClickedAccount == account && (currentTime - lastClickTime) < 250) {
+                        mc.getSession().setUsername(account.getName());
+                    } else {
+                        toggleAccount(account);
+                    }
+
+                    lastClickTime = currentTime;
+                    lastClickedAccount = account;
                     break;
                 }
             }
-
             offset += 25;
         }
     }
 
     public void toggleAccount(Account account) {
-        if (selectedAccount == account) {
-            selectedAccount = null;
-        } else {
-            selectedAccount = account;
-        }
+        if (selectedAccount == account) selectedAccount = null; else selectedAccount = account;
     }
 
     @Override

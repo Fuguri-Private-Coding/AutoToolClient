@@ -177,7 +177,6 @@ public class BackTrack extends Module {
 
                 switch (render.getMode()) {
                     case "Player" -> {
-                        mc.entityRenderer.enableLightmap();
                         mc.getRenderManager().doRenderEntity(
                                 target,
                                 x, y, z,
@@ -185,9 +184,6 @@ public class BackTrack extends Module {
                                 mc.timer.renderPartialTicks,
                                 true
                         );
-
-                        RenderHelper.disableStandardItemLighting();
-                        mc.entityRenderer.disableLightmap();
                     }
                     case "Box" -> {
                         Color fadeColor;

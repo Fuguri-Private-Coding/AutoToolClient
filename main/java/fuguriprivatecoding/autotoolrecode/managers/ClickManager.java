@@ -41,17 +41,19 @@ public class ClickManager implements Imports {
 
             for (int i = 0; i < iters; i++) {
                 MovingObjectPosition mouse = RayCastUtils.rayCast(Client.INST.getCombatManager().getEntityReach(), Client.INST.getCombatManager().getBlockReach(), Rot.getServerRotation());
-                mc.clickMouseCustom(mouse, false);
+                mc.clickMouse();
+                //mc.clickMouseCustom(mouse, false);
             }
         }
     }
 
     public boolean needClick(EntityLivingBase target) {
         int startRandomizedHurtTime = RandomUtils.nextInt(clickSettings.minStartHurtTime.getValue(), clickSettings.maxStartHurtTime.getValue());
+        int endRandomizeHurtTime = RandomUtils.nextInt(clickSettings.minEndHurtTime.getValue(), clickSettings.maxEndHurtTime.getValue());
         if (target == null) { return true; }
         if (target.hurtTime <= startRandomizedHurtTime) { return true; }
         if (!clickSettings.isToggled()) return true;
-        return mc.thePlayer.hurtTime > 0;
+        return mc.thePlayer.hurtTime >= endRandomizeHurtTime;
     }
 
     public void addClick() { clicks++; }

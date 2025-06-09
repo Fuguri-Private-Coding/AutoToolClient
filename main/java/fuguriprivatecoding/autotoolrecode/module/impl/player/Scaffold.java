@@ -25,7 +25,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -183,9 +182,9 @@ public class Scaffold extends Module {
 
             RenderUtils.start3D();
             if (shadows.isToggled() && shadows.module.get("Scaffold")) {
-                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f, 0, 1));
+                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f));
             }
-            RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f, 0, 1);
+            RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
             ColorUtils.resetColor();
             RenderUtils.stop3D();
         }
@@ -212,16 +211,6 @@ public class Scaffold extends Module {
 
             if (mc.thePlayer.inventory.currentItem != slot) {
                 mc.thePlayer.inventory.currentItem = slot;
-            }
-        }
-
-        if (event instanceof SprintEvent) {
-            if (alwaysSprint.isToggled()) {
-                if (MoveUtils.isMoving() && !mc.thePlayer.isSneaking() && mc.thePlayer.onGround) mc.thePlayer.setSprinting(true);
-            } else {
-                if (Math.abs(MathHelper.wrapDegree((float) Math.toDegrees(MoveUtils.getDirection(mc.thePlayer.rotationYaw))) - MathHelper.wrapDegree(Rot.getServerRotation().getYaw())) > 90 - 22.5) {
-                    mc.thePlayer.setSprinting(false);
-                }
             }
         }
 

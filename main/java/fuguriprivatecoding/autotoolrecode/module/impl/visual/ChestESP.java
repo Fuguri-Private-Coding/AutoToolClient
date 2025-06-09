@@ -47,12 +47,12 @@ public class ChestESP extends Module {
             RenderUtils.start3D();
             for (TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {
                 if (tileEntity instanceof TileEntityChest) {
-                    if (shadows.isToggled() && shadows.module.get("ChestESP")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), 1,1,1,1,0, 1));
-                    RenderUtils.drawBlockESP(tileEntity.getPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f, 0, 1);
+                    if (shadows.isToggled() && shadows.module.get("ChestESP")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), 1,1,1,1));
+                    RenderUtils.drawBlockESP(tileEntity.getPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
                     ColorUtils.resetColor();
                 } else if (tileEntity instanceof TileEntityEnderChest && enderChest.isToggled()) {
-                    if (shadows.isToggled() && shadows.module.get("ChestESP")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), 1,1,1,1,0, 1));
-                    RenderUtils.drawBlockESP(tileEntity.getPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f, 0, 1);
+                    if (shadows.isToggled() && shadows.module.get("ChestESP")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), 1,1,1,1));
+                    RenderUtils.drawBlockESP(tileEntity.getPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
                     ColorUtils.resetColor();
                 }
             }

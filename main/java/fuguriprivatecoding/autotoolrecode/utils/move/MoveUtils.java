@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.move;
 
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import lombok.experimental.UtilityClass;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
@@ -70,25 +71,20 @@ public class MoveUtils implements Imports {
         return Math.toRadians(f);
     }
 
-    public static void moveFix(MoveEvent e, float targetYaw) {
-        if (e.getForward() == 0 && e.getStrafe() == 0) {
+    public void moveFix(MoveEvent e, float targetYaw) {
+        if (e.getForward() == 0f && e.getStrafe() == 0f)
             return;
-        }
 
-        //getDirection(mc.thePlayer.rotationYaw, eventForward, eventStrafe);
         float closestDiff = Float.MAX_VALUE;
 
-        for (float forward = -1f; forward <= 1f; forward++) {
-            for (float strafe = -1f; strafe <= 1f; strafe++) {
-                if (forward == 0f && strafe == 0f) {
+        for (float forward = -1; forward <= 1f; forward++) {
+            for (float strafe = -1; strafe <= 1f; strafe++) {
+                if (forward == 0f && strafe == 0)
                     continue;
-                }
 
-                float direction = getDirection(mc.thePlayer.lastReportedYaw, forward, strafe);
-                float difference = Math.abs(MathHelper.wrapDegree(targetYaw - direction));
-
-                if (difference < closestDiff) {
-                    closestDiff = difference;
+                float diff = Math.abs(MathHelper.wrapDegree(targetYaw - getDirection(Rot.getServerRotation().getYaw(), forward, strafe)));
+                if (diff < closestDiff) {
+                    closestDiff = diff;
                     e.setForward(forward);
                     e.setStrafe(strafe);
                 }

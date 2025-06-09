@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiText;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
@@ -33,10 +34,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 	int delay = 10;
 
-	Vector2f pos, size, lastMouse;
-
-	Vector2f lastSize = new Vector2f(800, 1000);
-	Vector2f lastPos = new Vector2f(0,0);
+	Vector2f pos, size, lastMouse, lastSize,lastPos;
 
 	ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
 
@@ -62,10 +60,14 @@ public class ClickGuiScreen extends GuiScreen {
 
 	public ClickGuiScreen() {
 		lastMouse = new Vector2f(0, 0);
-		pos = new Vector2f(0, 0);
-		size = new Vector2f(800, 1000);
-
 		mc = Minecraft.getMinecraft();
+
+		ScaledResolution sc = new ScaledResolution(mc);
+		lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+		lastPos = new Vector2f(50f, 50f);
+
+		size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+		pos = new Vector2f(50f, 50f);
 
 		sizeBackground = new Animation2D();
 		background = new Animation2D();
@@ -662,6 +664,7 @@ public class ClickGuiScreen extends GuiScreen {
 						background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
 						-1
 				);
+
 				if (setting instanceof MultiMode multiBooleanSetting) {
 					float xOffset = 0;
 					float yOffset = 0;
@@ -732,6 +735,7 @@ public class ClickGuiScreen extends GuiScreen {
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		if (selectedModule == null) binding = false;
+
 		if (binding) {
 			binding = false;
 			if (keyCode == Keyboard.KEY_ESCAPE) {

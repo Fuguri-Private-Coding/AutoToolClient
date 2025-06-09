@@ -25,10 +25,7 @@ import static java.lang.Math.min;
 
 public class ConsoleGuiScreen extends GuiScreen {
 
-    Vector2f pos, size, lastMouse;
-
-    Vector2f lastSize = new Vector2f(800, 1000);
-    Vector2f lastPos = new Vector2f(0,0);
+    Vector2f pos, size, lastMouse, lastSize, lastPos;
 
     boolean moving, closing;
     public boolean changed = false;
@@ -40,9 +37,14 @@ public class ConsoleGuiScreen extends GuiScreen {
         Client.INST.getEventManager().register(this);
         mc = Minecraft.getMinecraft();
 
-        pos = new Vector2f(0, 0);
-        size = new Vector2f(800, 1000);
+        ScaledResolution sc = new ScaledResolution(mc);
+
+        lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+        lastPos = new Vector2f(50f, 50f);
         lastMouse = new Vector2f(0, 0);
+
+        size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+        pos = new Vector2f(50f, 50f);
 
         scrolls = new Animation2D();
         background = new Animation2D();

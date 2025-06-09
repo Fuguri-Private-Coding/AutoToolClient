@@ -45,13 +45,16 @@ public class MurderMystery extends Module {
         }
         if (event instanceof TickEvent) {
             for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
-                if (checkMurders.isToggled() && murders.contains(playerEntity.getName()) && playerEntity.getHeldItem() != null && playerEntity.getHeldItem().getItem() == Items.iron_sword) {
+                if (checkMurders.isToggled() && !murders.contains(playerEntity.getName()) && playerEntity.getHeldItem() != null && playerEntity.getHeldItem().getItem() == Items.iron_sword) {
                     murders.add(playerEntity.getName());
                     if (debug.isToggled()) ClientUtils.chatLog("Murder is " + playerEntity.getName());
                 }
-                if (checkDetectives.isToggled() && detectives.contains(playerEntity.getName()) && playerEntity.getHeldItem() != null && playerEntity.getHeldItem().getItem() == Items.bow) {
-                    detectives.add(playerEntity.getName());
-                    if (debug.isToggled()) ClientUtils.chatLog("Detective is " + playerEntity.getName());
+                if (checkDetectives.isToggled()) {
+                    if (!detectives.contains(playerEntity.getName()) && playerEntity.getHeldItem() != null && playerEntity.getHeldItem().getItem() == Items.bow) {
+                        detectives.add(playerEntity.getName());
+                        if (debug.isToggled()) ClientUtils.chatLog("Detective is " + playerEntity.getName());
+                    }
+                    if (detectives.contains(playerEntity.getName()) && playerEntity.isDead) detectives.remove(playerEntity.getName());
                 }
             }
         }

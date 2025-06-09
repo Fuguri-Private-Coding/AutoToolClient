@@ -13,6 +13,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -67,8 +68,8 @@ public class RenderUtils implements Imports {
         GlStateManager.translate(x, y, z);
     }
 
-    public static void drawBlockESP(BlockPos blockPos, float red, float green, float blue, float alpha, float lineAlpha, float lineWidth) {
-        GlStateManager.color(red, green, blue, alpha);
+    public static void drawBlockESP(BlockPos blockPos, float red, float green, float blue, float alpha) {
+        GL11.glColor4f(red, green, blue, alpha);
         double x = blockPos.getX() - mc.getRenderManager().viewerPosX;
         double y = blockPos.getY() - mc.getRenderManager().viewerPosY;
         double z = blockPos.getZ() - mc.getRenderManager().viewerPosZ;
@@ -81,20 +82,6 @@ public class RenderUtils implements Imports {
                         z + block.getBlockBoundsMaxZ()
                 )
         );
-        if (lineWidth > 0.0F) {
-            glLineWidth(lineWidth);
-            GlStateManager.color(red, green, blue, lineAlpha);
-            drawOutlinedBoundingBox(
-                    new AxisAlignedBB(
-                            x,
-                            y,
-                            z,
-                            x + block.getBlockBoundsMaxX(),
-                            y + block.getBlockBoundsMaxY(),
-                            z + block.getBlockBoundsMaxZ()
-                    )
-            );
-        }
 
         ColorUtils.resetColor();
     }
@@ -110,32 +97,6 @@ public class RenderUtils implements Imports {
         glDepthMask(false);
         glLineWidth(2.0F);
         renderWithAbsolutePosition(() -> drawBoundingBox(box, color));
-        glEnable(GL_TEXTURE_2D);
-        glEnable(2929);
-        glDepthMask(true);
-        glDisable(GL_BLEND);
-        GlStateManager.popMatrix();
-    }
-
-
-    public static void drawDot(double x, double y, double z, double size, int color) {
-        double d = size / 2;
-        GlStateManager.pushMatrix();
-        AxisAlignedBB box = new AxisAlignedBB(x - d, y - d, z - d, x + d, y + d, z + d);
-
-        AxisAlignedBB axis = new AxisAlignedBB(box.minX - mc.thePlayer.posX, box.minY - mc.thePlayer.posY, box.minZ - mc.thePlayer.posZ, box.maxX - mc.thePlayer.posX, box.maxY - mc.thePlayer.posY, box.maxZ - mc.thePlayer.posZ);
-        float a = (float) (color >> 24 & 255) / 255.0F;
-        float r = (float) (color >> 16 & 255) / 255.0F;
-        float g = (float) (color >> 8 & 255) / 255.0F;
-        float b = (float) (color & 255) / 255.0F;
-        glBlendFunc(770, 771);
-        glEnable(3042);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(2929);
-        glDepthMask(false);
-        glLineWidth(2.0F);
-        glColor4f(r, g, b, a);
-        drawBoundingBox(axis, r, g, b, a);
         glEnable(GL_TEXTURE_2D);
         glEnable(2929);
         glDepthMask(true);

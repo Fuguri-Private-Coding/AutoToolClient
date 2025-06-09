@@ -1088,8 +1088,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.alphaFunc(516, 0.1F);
                     this.mc.ingameGUI.renderGameOverlay(partialTicks);
 
-                    Render2DEvent event = new Render2DEvent();
-                    event.call();
+                    new Render2DEvent().call();
 
                     if (this.mc.gameSettings.ofShowFps && !this.mc.gameSettings.showDebugInfo) {
                         Config.drawFps();
@@ -1388,7 +1387,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             ShadersRender.endTerrain();
         }
 
-
         Lagometer.timerTerrain.end();
         GlStateManager.shadeModel(7424);
         GlStateManager.alphaFunc(516, 0.1F);
@@ -1522,7 +1520,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Shaders.beginWater();
         }
 
-        renderglobal.renderBlockLayer(EnumWorldBlockLayer.TRANSLUCENT, (double) partialTicks, pass, entity);
+        renderglobal.renderBlockLayer(EnumWorldBlockLayer.TRANSLUCENT, partialTicks, pass, entity);
 
         if (flag) {
             Shaders.endWater();
@@ -1531,10 +1529,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         if (Reflector.ForgeHooksClient_setRenderPass.exists() && !this.debugView) {
             RenderHelper.enableStandardItemLighting();
             this.mc.mcProfiler.endStartSection("entities");
-            Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, new Object[]{Integer.valueOf(1)});
+            Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, 1);
             this.mc.renderGlobal.renderEntities(entity, icamera, partialTicks);
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-            Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, new Object[]{Integer.valueOf(-1)});
+            Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, -1);
             RenderHelper.disableStandardItemLighting();
         }
 
@@ -1554,7 +1552,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Reflector.callVoid(Reflector.ForgeHooksClient_dispatchRenderLast, renderglobal, partialTicks);
         }
 
+        this.enableLightmap();
         new Render3DEvent().call();
+        this.disableLightmap();
 
         this.mc.mcProfiler.endStartSection("hand");
 
@@ -1570,7 +1570,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 ShadersRender.renderFPOverlay(this, partialTicks, pass);
             } else {
                 this.renderHand(partialTicks, pass);
-                //setupCameraTransform(partialTicks, 0);
             }
 
             this.renderWorldDirections(partialTicks);
@@ -1580,6 +1579,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Shaders.endRender();
         }
 
+        //setupCameraTransform(partialTicks, 0);
     }
 
     private void renderCloudsCheck(RenderGlobal renderGlobalIn, float partialTicks, int pass) {
@@ -1671,7 +1671,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Object object = Reflector.call(worldprovider, Reflector.ForgeWorldProvider_getWeatherRenderer, new Object[0]);
 
             if (object != null) {
-                Reflector.callVoid(object, Reflector.IRenderHandler_render, new Object[]{Float.valueOf(partialTicks), this.mc.theWorld, this.mc});
+                Reflector.callVoid(object, Reflector.IRenderHandler_render, Float.valueOf(partialTicks), this.mc.theWorld, this.mc);
                 return;
             }
         }
@@ -1740,7 +1740,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                         }
 
                         if (k2 != l2) {
-                            this.random.setSeed((long) (l1 * l1 * 3121 + l1 * 45238971 ^ k1 * k1 * 418711 + k1 * 13761));
+                            this.random.setSeed(l1 * l1 * 3121 + l1 * 45238971L ^ k1 * k1 * 418711 + k1 * 13761);
                             blockpos$mutableblockpos.set(l1, k2, k1);
                             float f1 = biomegenbase.getFloatTemperature(blockpos$mutableblockpos);
 

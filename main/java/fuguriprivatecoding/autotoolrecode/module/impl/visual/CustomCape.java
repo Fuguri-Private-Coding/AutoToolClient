@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 @ModuleInfo(name = "CustomCape", category = Category.VISUAL)
 public class CustomCape extends Module {
     public Mode capeMode = new Mode("Mode", this)
-            .addModes("Russian", "AutoTool", "LouFCat", "DollCat", "AutoToolCat", "AugustusRose", "AugustusMango", "AugustusMagma", "AugustusTitanium", "AugustusMagic", "AugustusClassic", "AugustusAmethyst", "AugustusCandy", "Augustus", "ESound")
+            .addModes("Russian", "AutoTool", "LouFCat", "DollCat", "AutoToolCat", "Felix", "AugustusRose", "AugustusMango", "AugustusMagma", "AugustusTitanium", "AugustusMagic", "AugustusClassic", "AugustusAmethyst", "AugustusCandy", "Augustus", "ESound")
             .setMode("Russian");
 
     public ResourceLocation getCape() {
