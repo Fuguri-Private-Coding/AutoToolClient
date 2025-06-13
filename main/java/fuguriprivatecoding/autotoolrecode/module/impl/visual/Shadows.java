@@ -27,6 +27,7 @@ public class Shadows extends Module {
             .add("NameTags")
             .add("Scaffold")
             .add("ChestESP")
+            .add("BedESP")
             .add("Particles")
             ;
 

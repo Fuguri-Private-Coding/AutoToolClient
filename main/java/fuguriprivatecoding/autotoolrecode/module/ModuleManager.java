@@ -27,6 +27,7 @@ public class ModuleManager {
 				 new Reach(),
 				 new KillAura(),
 				 new Dot(),
+				 new BedESP(),
 				 new ChestStealer(),
 				 new MoreKB(),
 				 new Velocity(),

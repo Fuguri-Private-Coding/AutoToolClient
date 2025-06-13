@@ -40,9 +40,7 @@ public class ClickManager implements Imports {
             if (rayCast != null && rayCast.isFriend() || !clicking) { return; }
 
             for (int i = 0; i < iters; i++) {
-                MovingObjectPosition mouse = RayCastUtils.rayCast(Client.INST.getCombatManager().getEntityReach(), Client.INST.getCombatManager().getBlockReach(), Rot.getServerRotation());
                 mc.clickMouse();
-                //mc.clickMouseCustom(mouse, false);
             }
         }
     }
