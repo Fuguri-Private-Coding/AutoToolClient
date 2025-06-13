@@ -17,10 +17,7 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.C01PacketChatMessage;
-import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
@@ -46,6 +43,7 @@ public class Ping extends Module {
             .add("UsingItem")
             .add("PlaceBlock")
             .add("ChangeSprint")
+            .add("ClickWindow")
             .add("OpenedGui");
 
     Mode renderModes = new Mode("RenderMode", this)
@@ -103,6 +101,13 @@ public class Ping extends Module {
 
                     case C02PacketUseEntity handlingPacket -> {
                         if (actions.get("Attack") && handlingPacket.getAction() == C02PacketUseEntity.Action.ATTACK) {
+                            reset();
+                            return;
+                        }
+                    }
+
+                    case C0EPacketClickWindow _ -> {
+                        if (actions.get("ClickWindow")) {
                             reset();
                             return;
                         }

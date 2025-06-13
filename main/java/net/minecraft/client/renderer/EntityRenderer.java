@@ -1469,6 +1469,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 Shaders.beginParticles();
             }
 
+            if (shadows.isToggled() && shadows.module.get("Particles")) {
+                BloomUtils.addToDraw(() -> effectrenderer.renderParticles(entity,partialTicks));
+            }
+
             effectrenderer.renderParticles(entity, partialTicks);
 
             if (flag) {

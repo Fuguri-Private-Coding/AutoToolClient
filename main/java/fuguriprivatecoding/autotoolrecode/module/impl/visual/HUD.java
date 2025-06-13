@@ -27,8 +27,7 @@ public class HUD extends Module {
             .add("FPSCounter")
             .add("BPSCounter")
             .add("CPSCounter")
-            .add("BreakIndicator")
-            .add("WaterMark");
+            .add("BreakIndicator");
 
     FloatSetting fpsPosH = new FloatSetting("FPSPosX", this,() -> hudElements.get("FPSCounter"), 0,10000,0,0.1f);
     FloatSetting fpsPosV = new FloatSetting("FPSPosY", this,() -> hudElements.get("FPSCounter"), 0,10000,0,0.1f);
@@ -59,13 +58,6 @@ public class HUD extends Module {
     CheckBox breakIndicatorTextShadow = new CheckBox("BreakIndicatorTextShadow",this,() -> hudElements.get("BreakIndicator"), true);
     ColorSetting breakIndicatorTextColor = new ColorSetting("BreakIndicatorTextColor", this,() -> hudElements.get("BreakIndicator"), 1,1,1,1);
 
-    FloatSetting waterMarkPosH = new FloatSetting("WaterMarkPosX", this,() -> hudElements.get("WaterMark"), 0,10000,0,0.1f);
-    FloatSetting waterMarkPosV = new FloatSetting("WaterMarkPosY", this,() -> hudElements.get("WaterMark"), 0,10000,0,0.1f);
-    FloatSetting waterMarkRadius = new FloatSetting("WaterMarkRadius", this,() -> hudElements.get("WaterMark"), 0.5f,5,1f,0.1f);
-    ColorSetting waterMarkColor = new ColorSetting("WaterMarkColor", this,() -> hudElements.get("WaterMark"), 0,0,0,0.4f);
-    CheckBox waterMarkTextShadow = new CheckBox("WaterMarkTextShadow",this,() -> hudElements.get("WaterMark"), true);
-    ColorSetting waterMarkTextColor = new ColorSetting("WaterMarkTextColor", this,() -> hudElements.get("WaterMark"), 1,1,1,1);
-
     Shadows shadows;
 
     private final java.util.List<Long> leftClicks = new CopyOnWriteArrayList<>();
@@ -83,8 +75,6 @@ public class HUD extends Module {
         cpsPosV.setMax(sc.getScaledHeight());
         breakIndicatorPosH.setMax(sc.getScaledWidth());
         breakIndicatorPosV.setMax(sc.getScaledHeight());
-        waterMarkPosH.setMax(sc.getScaledWidth());
-        waterMarkPosV.setMax(sc.getScaledHeight());
         fpsPosH.setMax(sc.getScaledWidth());
         fpsPosV.setMax(sc.getScaledHeight());
 
@@ -131,10 +121,6 @@ public class HUD extends Module {
 
                 RoundedUtils.drawRect(breakIndicatorPosH.getValue(), breakIndicatorPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, breakIndicatorRadius.getValue(), breakIndicatorColor.getColor());
                 mc.fontRendererObj.drawString(text, breakIndicatorPosH.getValue() + 2.5f, breakIndicatorPosV.getValue() + 2.5f, breakIndicatorTextColor.getColor().getRGB(), breakIndicatorTextShadow.isToggled());
-            }
-
-            if (hudElements.get("WaterMark")) {
-
             }
 
             if (hudElements.get("FPSCounter")) {

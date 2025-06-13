@@ -30,7 +30,7 @@ public class TargetESP extends Module {
 
     final FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f) {};
     final IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
-    final FloatSetting length = new FloatSetting("Length", this, 0.2f, 1.5f, 0.6f, 0.1f) {};
+    final FloatSetting length = new FloatSetting("Length", this, 0.2f, 2.5f, 0.6f, 0.1f) {};
 
     final CheckBox fadeColor = new CheckBox("FadeColor", this);
     final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
@@ -42,7 +42,7 @@ public class TargetESP extends Module {
     final CheckBox fadeHitColor = new CheckBox("FadeHitColor", this, changeColorHit::isToggled);
     final ColorSetting hitColor1 = new ColorSetting("HitColor1", this, changeColorHit::isToggled, 1f,1f,1f,1f);
     final ColorSetting hitColor2 = new ColorSetting("HitColor2", this, () -> changeColorHit.isToggled() && fadeHitColor.isToggled(), 1f,1f,1f,1f);
-    final FloatSetting fadeHitSpeed = new FloatSetting("FadeHitSpeed", this, fadeHitColor::isToggled,0.1f, 20, 1, 0.1f);
+    final FloatSetting fadeHitSpeed = new FloatSetting("FadeHitSpeed", this, () -> changeColorHit.isToggled() && fadeHitColor.isToggled(),0.1f, 20, 1, 0.1f);
 
     private final List<Sigma2> poses = new ArrayList<>();
 
@@ -153,9 +153,9 @@ public class TargetESP extends Module {
         double f = sin(System.currentTimeMillis() / 1000.0 * speed.getValue());
         f++;
         f /= 2;
-        f *= target.height;
+        f *= target.height + 0.1f;
         poses.add(new Sigma2((float) f, System.currentTimeMillis()));
-        poses.removeIf(pose -> System.currentTimeMillis() - pose.time() >= 500);
+        poses.removeIf(pose -> System.currentTimeMillis() - pose.time() >= 500 / speed.getValue() * length.getValue());
 
         Color fadeColor;
         Color fadeHitColor;
@@ -202,7 +202,7 @@ public class TargetESP extends Module {
         glEnable(GL_CULL_FACE);
         glShadeModel(7424);
         glColor4f(1f, 1f, 1f, 1f);
-        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);

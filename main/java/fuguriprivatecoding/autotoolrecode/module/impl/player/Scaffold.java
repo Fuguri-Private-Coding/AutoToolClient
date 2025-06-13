@@ -65,8 +65,6 @@ public class Scaffold extends Module {
 
     FloatSetting smooth = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f) {};
 
-    final CheckBox pitchCorrections = new CheckBox("PitchCorrections", this);
-
     final Mode clickMode = new Mode("ClickMode", this)
             .addModes("AutoPlace", "Legit")
             .setMode("AutoPlace");
@@ -164,11 +162,6 @@ public class Scaffold extends Module {
             MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
             BlockPos analyzingBlock = renderRayCast.getBlockPos();
             if (analyzingBlock != null && renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) renderPos = analyzingBlock;
-            if (!pitchCorrections.isToggled()) rotate();
-        }
-
-        if (event instanceof RunGameLoopEvent && pitchCorrections.isToggled()) {
-            calculateSaveRotation();
             rotate();
         }
 
@@ -194,6 +187,12 @@ public class Scaffold extends Module {
             if (sneakIfRotate.isToggled() && lastDelta > 0) moveEvent.setSneak(true);
             if (sneakIfNoBlocks.isToggled() && findBlock() == -1) moveEvent.setSneak(true);
             if (ninjaBridge.isToggled() && mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX,mc.thePlayer.posY - 0.01, mc.thePlayer.posZ))) moveEvent.setSneak(true);
+        }
+
+        if (event instanceof SprintEvent && alwaysSprint.isToggled()) {
+            if (MoveUtils.isMoving() && mc.thePlayer.onGround && !mc.thePlayer.movementInput.jump && lastDelta == 0 && !mc.thePlayer.movementInput.sneak) {
+                mc.thePlayer.setSprinting(true);
+            }
         }
 
         if (event instanceof MoveFlyingEvent moveFlyingEvent) {
@@ -338,28 +337,6 @@ public class Scaffold extends Module {
         ));
     }
 
-    void calculateSaveRotation() {
-        if (mc.currentScreen != null) return;
-        for (float i = 0; i < 81; i += 1f) {
-            MovingObjectPosition savePitchRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(Rot.getServerRotation().getYaw(), i));
-            //if (savePitchRayCast.sideHit == EnumFacing.DOWN || savePitchRayCast.sideHit == EnumFacing.UP) continue;
-            if (savePitchRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                bestPitch = i;
-                break;
-            }
-        }
-
-        for (float i = 81; i > 0; i -= 1f) {
-            MovingObjectPosition savePitchRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(Rot.getServerRotation().getYaw(), i));
-            //if (savePitchRayCast.sideHit == EnumFacing.DOWN || savePitchRayCast.sideHit == EnumFacing.UP) continue;
-            if (savePitchRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                bestPitch = i;
-                break;
-            }
-        }
-    }
-
-
     public int findBlock() {
         int bestSlot = -1;
 
@@ -383,10 +360,22 @@ public class Scaffold extends Module {
                     || block.getBlock() instanceof BlockFire
                     || block.getBlock() instanceof BlockRedstoneWire
                     || block.getBlock() instanceof BlockTorch
-                    || !block.getBlock().isFullBlock()
-                    || !block.getBlock().isOpaqueCube()
-                    || block.getBlock().getMaterial().isReplaceable()
-                    || block.getBlock().getMaterial().isLiquid()
+                    || block.getBlock() instanceof BlockLadder
+                    || block.getBlock() instanceof BlockFurnace
+                    || block.getBlock() instanceof BlockCactus
+                    || block.getBlock() instanceof BlockAnvil
+                    || block.getBlock() instanceof BlockDoor
+                    || block.getBlock() instanceof BlockEndPortal
+                    || block.getBlock() instanceof BlockEndPortalFrame
+                    || block.getBlock() instanceof BlockEnchantmentTable
+                    || block.getBlock() instanceof BlockChest
+                    || block.getBlock() instanceof BlockEnderChest
+                    || block.getBlock() instanceof BlockWorkbench
+                    || block.getBlock() instanceof BlockPressurePlate
+                    || block.getBlock() instanceof BlockTrapDoor
+                    || block.getBlock() instanceof BlockDropper
+                    || block.getBlock() instanceof BlockNote
+                    || item.stackSize == 0
             ) continue;
             bestSlot = i;
         }

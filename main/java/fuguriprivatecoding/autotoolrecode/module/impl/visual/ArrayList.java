@@ -26,6 +26,8 @@ public class ArrayList extends Module {
 
 	final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, 0,0,0,0.5f);
 
+	final CheckBox suffix = new CheckBox("Suffix", this);
+
 	Shadows shadows;
 
 	@EventTarget
@@ -43,12 +45,12 @@ public class ArrayList extends Module {
 
 				if (shadows.isToggled() && shadows.module.get("ArrayList")) {
 					double finalOffset = offset;
-					BloomUtils.addToDraw(() -> Gui.drawRect(6,(float) finalOffset + 19f, font.getStringWidth(module.getName()) + 10, (float) finalOffset + 6f, -1));
+					BloomUtils.addToDraw(() -> Gui.drawRect(6,(float) finalOffset + 19f, font.getStringWidth(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : "")) + 10, (float) finalOffset + 6f, -1));
 				}
 
-				Gui.drawRect(6,(float) offset + 19f, (float) font.getStringWidth(module.getName()) + 10, (float) offset + 6f, backgroundColor.getColor().getRGB());
+				Gui.drawRect(6,(float) offset + 19f, (float) font.getStringWidth(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : "")) + 10, (float) offset + 6f, backgroundColor.getColor().getRGB());
 
-				font.drawString(module.getName(), 8.5f, (float) (8.5f + offset), color.getColor().getRGB(), textShadow.isToggled());
+				font.drawString(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : ""), 8.5f, (float) (8.5f + offset), color.getColor().getRGB(), textShadow.isToggled());
 				offset += 13;
 			}
 		}
@@ -56,8 +58,8 @@ public class ArrayList extends Module {
 
 	void sort(final List<Module> toSort, final FontRenderer fontToCalcWidth) {
 		toSort.sort( (m1, m2) -> {
-			final double width1 = fontToCalcWidth.getStringWidth(m1.getName());
-			final double width2 = fontToCalcWidth.getStringWidth(m2.getName());
+			final double width1 = fontToCalcWidth.getStringWidth(m1.getName() + (suffix.isToggled() ? (!m1.getSuffix().equalsIgnoreCase("") ? " - " + m1.getSuffix() : "") : ""));
+			final double width2 = fontToCalcWidth.getStringWidth(m2.getName() + (suffix.isToggled() ? (!m2.getSuffix().equalsIgnoreCase("") ? " - " + m2.getSuffix() : "") : ""));
 
 			return Double.compare(width2, width1);
 		});

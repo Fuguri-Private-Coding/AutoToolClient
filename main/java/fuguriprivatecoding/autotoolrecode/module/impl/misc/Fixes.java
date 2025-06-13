@@ -21,8 +21,9 @@ public class Fixes extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
+        if (mc.thePlayer == null && mc.theWorld == null) return;
         if (event instanceof MotionEvent) {
-            if (mc.thePlayer != null && mc.theWorld != null && fixes.get("ClickDelay")) mc.leftClickCounter = -1;
+            if (fixes.get("ClickDelay")) mc.leftClickCounter = -1;
             if (fixes.get("SaveMoveKeys")) {
                 if (mc.currentScreen == null) {
                     if (wasInGui) MoveUtils.updateControls();

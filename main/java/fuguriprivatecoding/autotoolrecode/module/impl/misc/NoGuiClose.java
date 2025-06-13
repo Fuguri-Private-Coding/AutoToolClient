@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
 
@@ -17,6 +18,11 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow;
 public class NoGuiClose extends Module {
 
     CheckBox onlyClientGui = new CheckBox("ClientGuis", this, true);
+
+
+    MultiMode modes = new MultiMode("Modes", this)
+            .add("")
+            ;
 
     @EventTarget
     public void onEvent(Event event) {

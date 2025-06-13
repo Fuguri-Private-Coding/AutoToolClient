@@ -23,13 +23,11 @@ public class FlagDetector extends Module {
         if (event instanceof PacketEvent packetEvent) {
             if (packetEvent.getPacket() instanceof S08PacketPlayerPosLook) {
                 flagCount++;
-                if (mc.thePlayer.ticksExisted > 5) {
+                if (mc.thePlayer.ticksExisted > 40) {
                     ClientUtils.chatLog("§4Flag Detected: §7" + flagCount);
                 }
             }
         }
-        if (event instanceof WorldChangeEvent && resetFlagsOnWorld.isToggled()) {
-            flagCount = 0;
-        }
+        if (event instanceof WorldChangeEvent && resetFlagsOnWorld.isToggled()) flagCount = 0;
     }
 }

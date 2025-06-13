@@ -27,6 +27,7 @@ public class Shadows extends Module {
             .add("NameTags")
             .add("Scaffold")
             .add("ChestESP")
+            .add("Particles")
             ;
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);

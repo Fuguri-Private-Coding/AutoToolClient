@@ -76,7 +76,9 @@ public class RenderUtils implements Imports {
         Block block = mc.theWorld.getBlockState(blockPos).getBlock();
         drawBoundingBox(
                 new AxisAlignedBB(
-                        x, y, z,
+                        x + block.getBlockBoundsMinX(),
+                        y + block.getBlockBoundsMinY(),
+                        z + block.getBlockBoundsMinZ(),
                         x + block.getBlockBoundsMaxX(),
                         y + block.getBlockBoundsMaxY(),
                         z + block.getBlockBoundsMaxZ()

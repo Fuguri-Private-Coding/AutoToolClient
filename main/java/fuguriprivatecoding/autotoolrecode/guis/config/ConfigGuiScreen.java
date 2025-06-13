@@ -70,15 +70,17 @@ public class ConfigGuiScreen extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
-        scroll -= Mouse.getDWheel() / 120 * 10;
 
-        ScaledResolution sc = new ScaledResolution(mc);
+        boolean configScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
 
-        float consoleVisibleHeight = sizeBackground.y + 30;
-        float maxScroll = Math.max(totalHeight - consoleVisibleHeight,0);
+        if (configScroll) scroll -= Mouse.getDWheel() / 120 * 10;
+
+        float consoleVisibleHeight = sizeBackground.y - 55;
+        float maxScroll = Math.max(totalHeight - consoleVisibleHeight, 0);
 
         if (scroll > 0) scroll = 0;
         if (scroll < -maxScroll) scroll = (int) -maxScroll;
+
         if (closing) {
             if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
                 closing = false;
@@ -289,7 +291,7 @@ public class ConfigGuiScreen extends GuiScreen {
 
             if (refresh) {
                 Client.INST.getConfigManager().refreshConfigs();
-                ClientUtils.chatLog("Successful refreshed config: " + selectedConfig.getName() + ".");
+                ClientUtils.chatLog("Successful refreshed.");
             }
 
             if (create) {
@@ -302,10 +304,12 @@ public class ConfigGuiScreen extends GuiScreen {
                     Client.INST.getConfigManager().loadConfig(selectedConfig);
                     ClientUtils.chatLog("Successful loaded config: " + selectedConfig.getName() + ".");
                 }
+
                 if (delete) {
                     Client.INST.getConfigManager().deleteConfig(selectedConfig);
                     ClientUtils.chatLog("Successful deleted config: " + selectedConfig.getName() + ".");
                 }
+
                 if (save) {
                     Client.INST.getConfigManager().saveConfig(selectedConfig);
                     ClientUtils.chatLog("Successful saved config: " + selectedConfig.getName() + ".");

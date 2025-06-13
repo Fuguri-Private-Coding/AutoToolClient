@@ -63,7 +63,10 @@ public class ConsoleGuiScreen extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
-        scroll -= Mouse.getDWheel() / 120 * 10;
+
+        boolean consoleScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + (fullScreen ? 20 : 2) + 15 && mouseY < background.y + sizeBackground.y + (fullScreen ? 20 : 2);
+
+        if (consoleScroll) scroll -= Mouse.getDWheel() / 120 * 10;
 
         float consoleVisibleHeight = sizeBackground.y - (fullScreen ? 20 : 2) - 15;
         float maxScroll = Math.max(0, totalHeight - consoleVisibleHeight);

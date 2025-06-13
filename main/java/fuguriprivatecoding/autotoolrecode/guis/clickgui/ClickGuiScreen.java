@@ -4,7 +4,6 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
-import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiText;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
@@ -12,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
@@ -54,9 +55,9 @@ public class ClickGuiScreen extends GuiScreen {
 
 	boolean resizing, moving, binding, closing, showConsoleAfterClose, showConfigAfterClose;
 
-	int settingsScroll, settingsTotalHeight;
+	int settingsScroll, settingsTotalHeight, modulesScroll, modulesTotalHeight;
 
-	final Animation2D moduleLine, settingLine, background, sizeBackground, settingsScrolls;
+	final Animation2D moduleLine, settingLine, background, sizeBackground, settingsScrolls, modulesScrolls;
 
 	public ClickGuiScreen() {
 		lastMouse = new Vector2f(0, 0);
@@ -74,6 +75,7 @@ public class ClickGuiScreen extends GuiScreen {
 		moduleLine = new Animation2D();
 		settingLine = new Animation2D();
 		settingsScrolls = new Animation2D();
+		modulesScrolls = new Animation2D();
 	}
 
 	@Override
@@ -135,6 +137,7 @@ public class ClickGuiScreen extends GuiScreen {
 			size.translate(mouseX - lastMouse.x, mouseY - lastMouse.y);
 			lastMouse.set(mouseX, mouseY);
 		}
+
 		if (moving) {
 			pos.translate(mouseX - lastMouse.x, mouseY - lastMouse.y);
 			lastMouse.set(mouseX, mouseY);
@@ -146,6 +149,7 @@ public class ClickGuiScreen extends GuiScreen {
 		float widthConsole = fontRenderer.getStringWidth("Console") / 2f;
 		float widthConfig = fontRenderer.getStringWidth("Config") / 2f;
 
+		modulesScrolls.endY	= modulesScroll;
 		settingsScrolls.endY = settingsScroll;
 		background.endX = pos.x;
 		background.endY = pos.y;
@@ -154,11 +158,10 @@ public class ClickGuiScreen extends GuiScreen {
 
 		background.update(15f);
 		sizeBackground.update(15f);
+		modulesScrolls.update(15f);
 		settingsScrolls.update(15f);
 
 		ScaledResolution sc = new ScaledResolution(mc);
-
-		float offset = 0;
 
 		if (shadows.isToggled() && shadows.module.get("ClickGui")) {
 			BloomUtils.addToDraw(() -> {
@@ -170,6 +173,9 @@ public class ClickGuiScreen extends GuiScreen {
 
 		RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
 		RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
+
+//		RoundedUtils.drawRect(0,sc.getScaledHeight() - 20, sc.getScaledWidth(), 20, 1f, BACKGROUND_COLOR);
+//		RoundedUtils.drawRect(0, sc.getScaledHeight() - 20, 25, 20, 1f, BACKGROUND_COLOR);
 
 		fontRenderer.drawString("Console", 5 + 25 - widthConsole, sc.getScaledHeight() - 15 - 1, -1);
 		fontRenderer.drawString("Config", 5 + 60 + 25 - widthConfig, sc.getScaledHeight() - 15 - 1 , -1);
@@ -191,6 +197,8 @@ public class ClickGuiScreen extends GuiScreen {
 		RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
 		RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
 
+		ScissorUtils.disableScissor();
+
 		float widthsModule = 0;
 		for (Module module : Client.INST.getModuleManager().getModules()) {
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
@@ -200,6 +208,7 @@ public class ClickGuiScreen extends GuiScreen {
 		float verticalLineXOffset = max(clientNameWidth + 14, widthsModule) + 7;
 
 		boolean settingScroll = mouseX > background.x + verticalLineXOffset + 5 && mouseX < background.x + verticalLineXOffset + 5 + sizeBackground.x - verticalLineXOffset - 5 && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5 + sizeBackground.y - (2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5);
+		boolean moduleScroll = mouseX > background.x && mouseX < background.x + widthsModule && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
 
 		if (settingScroll) {
 			if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) settingsScroll -= currentScroll / 120 * 10;
@@ -211,6 +220,23 @@ public class ClickGuiScreen extends GuiScreen {
 			if (settingsScroll < -maxScroll) settingsScroll = (int) -maxScroll;
 		}
 
+		if (moduleScroll) {
+			if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) modulesScroll -= currentScroll / 120 * 10;
+
+			float moduleVisibleHeight = sizeBackground.y - 18;
+			float maxScroll = Math.max(modulesTotalHeight - moduleVisibleHeight, 0);
+
+			if (modulesScroll > 0) modulesScroll = 0;
+			if (modulesScroll < -maxScroll) modulesScroll = (int) -maxScroll;
+		}
+
+		float offset = modulesScrolls.y;
+
+		modulesTotalHeight = 0;
+
+		ScissorUtils.enableScissor();
+		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, widthsModule, sizeBackground.y - 15);
+
 		for (Module module : Client.INST.getModuleManager().getModulesByCategory(selectedCategory))	{
 			fontRenderer.drawString(
 					module.getName(),
@@ -219,8 +245,16 @@ public class ClickGuiScreen extends GuiScreen {
 					module.isToggled() ? MAIN_COLOR_INT : CATEGORY_COLOR.getRGB()
 					);
 			offset += fontRenderer.FONT_HEIGHT + 2;
+			modulesTotalHeight += fontRenderer.FONT_HEIGHT + 2;
 			if (module == selectedModule) moduleLine.endY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset;
 		}
+
+		if (selectedModule != null) RoundedUtils.drawRect(background.x + 2, moduleLine.y - 12, 1, 12, 3, MAIN_COLOR);
+
+		ScissorUtils.disableScissor();
+
+		ScissorUtils.enableScissor();
+		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
 
 		offset = 0;
 		for (Category category : Category.values()) {
@@ -239,18 +273,18 @@ public class ClickGuiScreen extends GuiScreen {
 
 		settingsTotalHeight = 0;
 		if (selectedModule != null) {
-			RoundedUtils.drawRect(background.x + 2, moduleLine.y - 12, 1, 12, 3, MAIN_COLOR);
 			fontRenderer.drawString(
 					"Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())),
 					background.x + verticalLineXOffset + 5,
 					background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6,
 						CATEGORY_COLOR.getRGB()
 					);
+			ScissorUtils.enableScissor();
 			ScissorUtils.scissor(new ScaledResolution(mc), background.x + verticalLineXOffset + 5, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5, sizeBackground.x - verticalLineXOffset - 5, sizeBackground.y - (2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5));
 			for (Setting setting : selectedModule.getSettings()) {
 				if (!setting.isVisible()) continue;
 
-				float settingWidth = fontRenderer.getStringWidth(setting.getName() + ": ");
+                float settingWidth = fontRenderer.getStringWidth(setting.getName() + ": ");
 				fontRenderer.drawString(
 						setting.getName() + ": ",
 						background.x + verticalLineXOffset + 5,
@@ -532,6 +566,10 @@ public class ClickGuiScreen extends GuiScreen {
 				offset += 11;
 				settingsTotalHeight += 11;
 			}
+			ScissorUtils.disableScissor();
+		} else {
+			ResourceLocation image = new ResourceLocation("minecraft", "hackclient/image/modulenull.png");
+			RenderUtils.drawImage(image, (int) (background.x + verticalLineXOffset + 5), (int) background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, 250, 250);
 		}
 		ScissorUtils.disableScissor();
 
@@ -591,7 +629,6 @@ public class ClickGuiScreen extends GuiScreen {
 
 		final FontRenderer fontRenderer = mc.fontRendererObj;
 		final float clientNameWidth = fontRenderer.getStringWidth(Client.INST.getName());
-		float offset = 0;
 
 		boolean resize = mouseX > background.x + sizeBackground.x - 5 && mouseX < background.x + sizeBackground.x && mouseY > background.y + sizeBackground.y - 5 && mouseY < background.y + sizeBackground.y;
 
@@ -615,6 +652,8 @@ public class ClickGuiScreen extends GuiScreen {
 			moving = true;
 			lastMouse.set(mouseX, mouseY);
 		}
+
+		float offset = modulesScrolls.y;
 
 		for (Module module : Client.INST.getModuleManager().getModulesByCategory(selectedCategory))	{
 			float moduleWidth = fontRenderer.getStringWidth(module.getName());
