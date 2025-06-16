@@ -11,7 +11,7 @@ public class Shadows extends Module {
     public MultiMode module = new MultiMode("Modules", this)
             .add("ClickGui")
             .add("ConsoleGui")
-            .add("MainMenuGui")
+            .add("MainMenu")
             .add("ItemsFirstPerson")
             .add("ArrayList")
             .add("TargetESP")
@@ -29,6 +29,7 @@ public class Shadows extends Module {
             .add("ChestESP")
             .add("BedESP")
             .add("Particles")
+            .add("Weather")
             ;
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);

@@ -15,6 +15,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
@@ -175,13 +176,19 @@ public class Ping extends Module {
                         RenderUtils.renderHitBox(player.getEntityBoundingBox().offset(diff));
                         RenderUtils.stop3D();
                     }
-                    case "Player" -> mc.getRenderManager().doRenderEntity(
+                    case "Player" -> {
+                        RenderHelper.enableStandardItemLighting();
+                        mc.entityRenderer.enableLightmap();
+                        mc.getRenderManager().doRenderEntity(
                             player,
                             x, y, z,
                             player.getRotationYawHead(),
                             mc.timer.renderPartialTicks,
                             true
-                    );
+                        );
+                        mc.entityRenderer.disableLightmap();
+                        RenderHelper.disableStandardItemLighting();
+                    }
                 }
             }
             default -> {}

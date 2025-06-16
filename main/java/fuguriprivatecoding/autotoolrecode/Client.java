@@ -29,7 +29,6 @@ import lombok.Getter;
 import lombok.Setter;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 @Getter
 public enum Client implements Imports {
@@ -74,7 +73,7 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(2, 3,0);
+		version = new ClientVersion(2, 4,0);
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");

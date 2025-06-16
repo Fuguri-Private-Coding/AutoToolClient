@@ -29,7 +29,7 @@ public class GuiClientButton extends GuiButton {
 
         final FontRenderer fonts = mc.fontRendererObj;
 
-        if (shadows.isToggled() && shadows.module.get("MainMenuGui")) {
+        if (shadows.isToggled() && shadows.module.get("MainMenu")) {
             BloomUtils.addToDraw(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 3f, Color.BLACK));
         }
 

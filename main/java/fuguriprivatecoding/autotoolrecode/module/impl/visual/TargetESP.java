@@ -106,10 +106,8 @@ public class TargetESP extends Module {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
-        glEnable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
         glShadeModel(7425);
-        mc.entityRenderer.disableLightmap();
         glBegin(GL_QUAD_STRIP);
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
@@ -134,7 +132,6 @@ public class TargetESP extends Module {
         glEnable(GL_CULL_FACE);
         glShadeModel(7424);
         glColor4f(1f, 1f, 1f, 1f);
-        glDisable(GL_DEPTH_TEST);
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);
@@ -176,10 +173,8 @@ public class TargetESP extends Module {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
-        glEnable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
         glShadeModel(7425);
-        mc.entityRenderer.disableLightmap();
         glBegin(GL_QUAD_STRIP);
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
@@ -202,7 +197,6 @@ public class TargetESP extends Module {
         glEnable(GL_CULL_FACE);
         glShadeModel(7424);
         glColor4f(1f, 1f, 1f, 1f);
-        glDisable(GL_DEPTH_TEST);
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);

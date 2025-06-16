@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 
-import de.florianmichael.viamcp.gui.GuiProtocolSelector;
+import fuguriprivatecoding.autotoolrecode.guis.multiplayer.GuiViaVersion;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
@@ -72,13 +72,21 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
 
     public void createButtons() {
         this.buttonList.add(this.btnEditServer = new GuiButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit", new Object[0])));
+
         this.buttonList.add(this.btnDeleteServer = new GuiButton(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete", new Object[0])));
+
         this.buttonList.add(this.btnSelectServer = new GuiButton(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select", new Object[0])));
+
         this.buttonList.add(new GuiButton(4, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("selectServer.direct", new Object[0])));
+
         this.buttonList.add(new GuiButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add", new Object[0])));
+
         this.buttonList.add(new GuiButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh", new Object[0])));
+
         this.buttonList.add(new GuiButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel", new Object[0])));
+
         this.buttonList.add(new GuiButton(69, 5, 5, 90, 20, "Version"));
+
         this.selectServer(this.serverListSelector.func_148193_k());
     }
 
@@ -140,7 +148,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
             } else if (button.id == 8) {
                 this.refreshServerList();
             } else if (button.id == 69) {
-                this.mc.displayGuiScreen(new GuiProtocolSelector(this));
+                this.mc.displayGuiScreen(new GuiViaVersion());
             }
         }
     }

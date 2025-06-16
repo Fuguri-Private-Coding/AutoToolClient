@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.deeplearn.rotation.AIRotationSmooth;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.managers.CombatManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -35,11 +36,14 @@ import java.util.function.BooleanSupplier;
 public class KillAura extends Module {
 
     final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 8, 6, 0.1f);
+    final FloatSetting rangeDistance = new FloatSetting("RangeDistance", this, 3,8,6,0.1f);
+
     final MultiMode targets = new MultiMode("Targets", this)
             .add("Players", true)
             .add("Mobs")
             .add("Animals")
             .add("Villagers");
+
     final Mode sortType = new Mode("SortType", this)
             .addModes("Distance", "FOV")
             .setMode("FOV");
@@ -85,8 +89,6 @@ public class KillAura extends Module {
             .addModes("Linear", "AIModel")
             .setMode("Linear");
 
-    final CheckBox greatestCommonDivisor = new CheckBox("GreatestCommonDivisorFix (GCDFix)", this);
-
     final FloatSetting linearSmoothStrength = new FloatSetting(
             "LinearSmoothStrength", this,
             () -> smoothMode.getMode().equalsIgnoreCase("Linear"),
@@ -94,6 +96,7 @@ public class KillAura extends Module {
     );
 
     final BooleanSupplier modelVisible = () -> smoothMode.getMode().equalsIgnoreCase("AIModel");
+
     public final Mode model = new Mode("AIModel", this, modelVisible);
     final FloatSetting yawMultiplier = new FloatSetting("YawMultiplier", this, modelVisible, 0.5f, 2, 1, 0.1f);
     final FloatSetting pitchMultiplier = new FloatSetting("PitchMultiplier", this, modelVisible, 0.5f, 2, 1, 0.1f);
@@ -148,6 +151,7 @@ public class KillAura extends Module {
         if (event instanceof TickEvent) combatManager.setTarget(findNewTarget());
         if (combatManager.getTarget() == null) return;
         EntityLivingBase target = combatManager.getTarget();
+        if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) return;
         Rot lr = Rot.getServerRotation().copy();
 
         if (event instanceof MotionEvent e) {
@@ -196,7 +200,7 @@ public class KillAura extends Module {
             }
 
             RotUtils.limitDelta(delta, speed);
-            if (greatestCommonDivisor.isToggled()) delta = RotUtils.fixDelta(delta);
+            delta = RotUtils.fixDelta(delta);
             lr = lr.add(delta);
             lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
             Rot.setServerRotation(lr);
@@ -227,12 +231,8 @@ public class KillAura extends Module {
             e.setYaw(lr.getYaw());
         }
         if (!moveFix.getMode().equalsIgnoreCase("OFF")) {
-            if (event instanceof MoveFlyingEvent e) {
-                e.setYaw(lr.getYaw());
-            }
-            if (event instanceof JumpEvent e) {
-                e.setYaw(lr.getYaw());
-            }
+            if (event instanceof MoveFlyingEvent e) e.setYaw(lr.getYaw());
+            if (event instanceof JumpEvent e) e.setYaw(lr.getYaw());
         }
         if (event instanceof MoveEvent e) {
             switch (moveFix.getMode()) {

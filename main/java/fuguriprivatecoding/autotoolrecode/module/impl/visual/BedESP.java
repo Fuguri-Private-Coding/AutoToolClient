@@ -25,29 +25,31 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @ModuleInfo(name = "BedESP", category = Category.VISUAL)
 public class BedESP extends Module {
 
     final IntegerSetting range = new IntegerSetting("Range", this, 2, 256, 64);
-    final IntegerSetting rate = new IntegerSetting("Rate", this, 1,30, 5);
+    final IntegerSetting rate = new IntegerSetting("Rate", this, 1, 30, 5);
 
     final CheckBox fadeColor = new CheckBox("FadeColor", this);
-    final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, fadeColor::isToggled, 1f,1f,1f,1f);
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeColor::isToggled,0.1f, 20, 1, 0.1f);
+    final ColorSetting color1 = new ColorSetting("Color1", this, 1f, 1f, 1f, 1f);
+    final ColorSetting color2 = new ColorSetting("Color2", this, fadeColor::isToggled, 1f, 1f, 1f, 1f);
+    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeColor::isToggled, 0.1f, 20, 1, 0.1f);
 
     Shadows shadows;
 
     private final List<BlockPos[]> beds = new ArrayList<>();
     private long lastCheck = 0;
 
+    Thread update;
+
     @Override
     public void onDisable() {
         super.onDisable();
         if (!beds.isEmpty()) beds.clear();
+        if (update.isAlive()) update.interrupt();
     }
 
     @EventTarget
@@ -80,22 +82,42 @@ public class BedESP extends Module {
     }
 
     public void updateBedPos() {
-        new Thread(() -> {
-            if (!beds.isEmpty()) beds.clear();
-            int i;
-            for (int n = i = range.getValue(); i >= -n; --i) {
-                for (int j = -n; j <= n; ++j) {
-                    for (int k = -n; k <= n; ++k) {
-                        BlockPos blockPos = new BlockPos(mc.thePlayer.posX + j, mc.thePlayer.posY + i, mc.thePlayer.posZ + k);
-                        IBlockState blockState = mc.theWorld.getBlockState(blockPos);
-                        if (blockState.getBlock() == Blocks.bed && blockState.getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT) {
-                            for (BlockPos[] bed : beds) if (Arrays.equals(bed, new BlockPos[]{blockPos, blockPos.offset(blockState.getValue(BlockBed.FACING))})) return;
-                            this.beds.add(new BlockPos[]{blockPos, blockPos.offset(blockState.getValue(BlockBed.FACING))});
+        update = new Thread(() -> {
+            List<BlockPos[]> foundBeds = new ArrayList<>();
+
+            int rangeValue = range.getValue();
+            for (int y = rangeValue; y >= -rangeValue; --y) {
+                for (int x = -rangeValue; x <= rangeValue; ++x) {
+                    for (int z = -rangeValue; z <= rangeValue; ++z) {
+                        BlockPos pos = new BlockPos(
+                                mc.thePlayer.posX + x,
+                                mc.thePlayer.posY + y,
+                                mc.thePlayer.posZ + z
+                        );
+
+                        IBlockState state = mc.theWorld.getBlockState(pos);
+                        if (state.getBlock() == Blocks.bed && state.getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT) {
+                            BlockPos headPos = pos.offset(state.getValue(BlockBed.FACING));
+                            foundBeds.add(new BlockPos[]{pos, headPos});
                         }
                     }
                 }
             }
-        }).start();
+
+            synchronized(beds) {
+                beds.removeIf(bedPair -> {
+                    if (bedPair == null || bedPair[0] == null) return true;
+                    return foundBeds.stream().noneMatch(found -> isSamePos(bedPair[0], found[0]));
+                });
+
+                for (BlockPos[] foundBed : foundBeds) if (beds.stream().noneMatch(bed -> isSamePos(bed[0], foundBed[0]))) beds.add(foundBed);
+            }
+        });
+        update.start();
+    }
+
+    public boolean isSamePos(BlockPos blockPos, BlockPos blockPos2) {
+        return blockPos == blockPos2 || (blockPos.getX() == blockPos2.getX() && blockPos.getY() == blockPos2.getY() && blockPos.getZ() == blockPos2.getZ());
     }
 
     private void renderBed(final BlockPos[] blockPos, Color color) {

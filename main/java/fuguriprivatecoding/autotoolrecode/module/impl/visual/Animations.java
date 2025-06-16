@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.RenderItemEvent;
@@ -14,6 +13,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
+import lombok.Getter;
 
 @ModuleInfo(name = "Animations", category = Category.VISUAL)
 public class Animations extends Module {
@@ -22,7 +22,7 @@ public class Animations extends Module {
     static boolean animate;
 
     Mode mode = new Mode("Mode", this)
-            .addModes("1.7", "Sigma", "Sigma 2", "Scale", "Exhibition", "Exhibition2", "Spin", "Basic", "Slide")
+            .addModes("1.7", "Swong", "Sigma", "Sigma 2", "Scale", "Exhibition", "Exhibition2", "Spin", "Basic", "Slide")
             .setMode("Sigma");
 
     FloatSetting X = new FloatSetting("X", this, -1f, 1f, 0f, 0.1f) {};
@@ -44,6 +44,14 @@ public class Animations extends Module {
             switch (mode.getMode()) {
                 case "1.7" -> {
                     itemRenderer.transformFirstPersonItem(animationProgression, renderItemEvent.getSwingProgress());
+                    itemRenderer.doBlockTransformations();
+                }
+
+                case "Swong" -> {
+                    itemRenderer.transformFirstPersonItem(animationProgression / 2.0F, renderItemEvent.getSwingProgress());
+                    GlStateManager.rotate(convertedProgress * 30.0F / 2.0F, -convertedProgress, -0.0F, 9.0F);
+                    GlStateManager.rotate(convertedProgress * 40.0F, 1.0F, -convertedProgress / 2.0F, -0.0F);
+                    GlStateManager.translate(0.0F, 0.2F, 0.0F);
                     itemRenderer.doBlockTransformations();
                 }
 
@@ -114,10 +122,6 @@ public class Animations extends Module {
                 }
             }
         }
-    }
-
-    public static void setAnimate(boolean animate) {
-        Animations.animate = animate;
     }
 }
 

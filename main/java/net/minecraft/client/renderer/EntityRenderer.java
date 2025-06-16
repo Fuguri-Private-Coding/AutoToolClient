@@ -2,6 +2,8 @@ package net.minecraft.client.renderer;
 
 import com.google.common.base.Predicates;
 import com.google.gson.JsonSyntaxException;
+
+import java.awt.*;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.List;
@@ -12,10 +14,8 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.BlockOverlay;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCamera;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.NoRender;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
@@ -141,6 +141,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private float torchFlickerX;
     private float torchFlickerDX;
     private int rainSoundCounter;
+    private static final ResourceLocation TEXTURE_SNOW_HEAVY = new ResourceLocation("textures/environment/snow.png");
     private float[] rainXCoords = new float[1024];
     private float[] rainYCoords = new float[1024];
     private FloatBuffer fogColorBuffer = GLAllocation.createDirectFloatBuffer(16);
@@ -1495,6 +1496,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Shaders.beginWeather();
         }
 
+        if (shadows.module.get("Weather") && shadows.isToggled()) BloomUtils.addToDraw(() -> this.renderRainSnow(partialTicks));
+
         this.renderRainSnow(partialTicks);
 
         if (flag) {
@@ -1556,9 +1559,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Reflector.callVoid(Reflector.ForgeHooksClient_dispatchRenderLast, renderglobal, partialTicks);
         }
 
-        this.enableLightmap();
         new Render3DEvent().call();
-        this.disableLightmap();
 
         this.mc.mcProfiler.endStartSection("hand");
 
@@ -1611,6 +1612,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         if (!Config.isRainFancy()) {
             f /= 2.0F;
         }
+
+        Ambience ambience = Client.INST.getModuleManager().getModule(Ambience.class);
+        if (ambience != null && ambience.skipRainParticles()) return;
 
         if (f != 0.0F && Config.isRainSplash()) {
             this.random.setSeed((long) this.rendererUpdateCount * 312987231L);
@@ -1744,9 +1748,11 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                         }
 
                         if (k2 != l2) {
-                            this.random.setSeed(l1 * l1 * 3121 + l1 * 45238971L ^ k1 * k1 * 418711 + k1 * 13761);
+                            this.random.setSeed(l1 * l1 * 3121L + l1 * 45238971L ^ k1 * k1 * 418711L + k1 * 13761L);
                             blockpos$mutableblockpos.set(l1, k2, k1);
-                            float f1 = biomegenbase.getFloatTemperature(blockpos$mutableblockpos);
+
+                            final Ambience ambience = Client.INST.getModuleManager().getModule(Ambience.class);
+                            final float f1 = ambience.getFloatTemperature(blockpos$mutableblockpos, biomegenbase);
 
                             if (world.getWorldChunkManager().getTemperatureAtHeight(f1, j2) >= 0.15F) {
                                 if (j1 != 0) {
@@ -1768,18 +1774,29 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                                 int j3 = world.getCombinedLight(blockpos$mutableblockpos, 0);
                                 int k3 = j3 >> 16 & 65535;
                                 int l3 = j3 & 65535;
-                                worldrenderer.pos((double) l1 - d3 + 0.5D, (double) k2, (double) k1 - d4 + 0.5D).tex(0.0D, (double) k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(k3, l3).endVertex();
-                                worldrenderer.pos((double) l1 + d3 + 0.5D, (double) k2, (double) k1 + d4 + 0.5D).tex(1.0D, (double) k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(k3, l3).endVertex();
-                                worldrenderer.pos((double) l1 + d3 + 0.5D, (double) l2, (double) k1 + d4 + 0.5D).tex(1.0D, (double) l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(k3, l3).endVertex();
-                                worldrenderer.pos((double) l1 - d3 + 0.5D, (double) l2, (double) k1 - d4 + 0.5D).tex(0.0D, (double) l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(k3, l3).endVertex();
+                                worldrenderer.pos((double) l1 - d3 + 0.5D, k2, (double) k1 - d4 + 0.5D).tex(0.0D, (double) k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(k3, l3).endVertex();
+                                worldrenderer.pos((double) l1 + d3 + 0.5D, k2, (double) k1 + d4 + 0.5D).tex(1.0D, (double) k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(k3, l3).endVertex();
+                                worldrenderer.pos((double) l1 + d3 + 0.5D, l2, (double) k1 + d4 + 0.5D).tex(1.0D, (double) l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(k3, l3).endVertex();
+                                worldrenderer.pos((double) l1 - d3 + 0.5D, l2, (double) k1 - d4 + 0.5D).tex(0.0D, (double) l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(k3, l3).endVertex();
                             } else {
+                                Color color = Color.white;
+                                ResourceLocation texture = TEXTURE_SNOW_HEAVY;
+
+                                if (ambience.isToggled()) {
+                                    if (ambience.fadeColor.isToggled()) {
+                                        color = ColorUtils.mixColors(ambience.color1.getColor(), ambience.color2.getColor(), ambience.fadeSpeed.getValue());
+                                    } else {
+                                        color = ambience.color1.getColor();
+                                    }
+                                }
+
                                 if (j1 != 1) {
-                                    if (j1 >= 0) {
+                                    if (j1 == 0) {
                                         tessellator.draw();
                                     }
 
                                     j1 = 1;
-                                    this.mc.getTextureManager().bindTexture(locationSnowPng);
+                                    this.mc.getTextureManager().bindTexture(texture);
                                     worldrenderer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
                                 }
 
@@ -1794,10 +1811,11 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                                 int i4 = (world.getCombinedLight(blockpos$mutableblockpos, 0) * 3 + 15728880) / 4;
                                 int j4 = i4 >> 16 & 65535;
                                 int k4 = i4 & 65535;
-                                worldrenderer.pos((double) l1 - d3 + 0.5D, (double) k2, (double) k1 - d4 + 0.5D).tex(0.0D + d9, (double) k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f4).lightmap(j4, k4).endVertex();
-                                worldrenderer.pos((double) l1 + d3 + 0.5D, (double) k2, (double) k1 + d4 + 0.5D).tex(1.0D + d9, (double) k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f4).lightmap(j4, k4).endVertex();
-                                worldrenderer.pos((double) l1 + d3 + 0.5D, (double) l2, (double) k1 + d4 + 0.5D).tex(1.0D + d9, (double) l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f4).lightmap(j4, k4).endVertex();
-                                worldrenderer.pos((double) l1 - d3 + 0.5D, (double) l2, (double) k1 - d4 + 0.5D).tex(0.0D + d9, (double) l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f4).lightmap(j4, k4).endVertex();
+
+                                worldrenderer.pos((double) l1 - d3 + 0.5D, k2, (double) k1 - d4 + 0.5D).tex(0.0D + d9, (double) k2 * 0.25D + d8 + d10).color(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, f4).lightmap(j4, k4).endVertex();
+                                worldrenderer.pos((double) l1 + d3 + 0.5D, k2, (double) k1 + d4 + 0.5D).tex(1.0D + d9, (double) k2 * 0.25D + d8 + d10).color(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, f4).lightmap(j4, k4).endVertex();
+                                worldrenderer.pos((double) l1 + d3 + 0.5D, l2, (double) k1 + d4 + 0.5D).tex(1.0D + d9, (double) l2 * 0.25D + d8 + d10).color(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, f4).lightmap(j4, k4).endVertex();
+                                worldrenderer.pos((double) l1 - d3 + 0.5D, l2, (double) k1 - d4 + 0.5D).tex(0.0D + d9, (double) l2 * 0.25D + d8 + d10).color(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, f4).lightmap(j4, k4).endVertex();
                             }
                         }
                     }

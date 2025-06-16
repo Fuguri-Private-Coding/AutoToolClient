@@ -28,6 +28,7 @@ public class ModuleManager {
 				 new KillAura(),
 				 new Dot(),
 				 new BedESP(),
+				 //new TestScaff(),
 				 new ChestStealer(),
 				 new MoreKB(),
 				 new Velocity(),
@@ -70,7 +71,6 @@ public class ModuleManager {
 				 new Animations(),
 				 new MotionBlur(),
 				 new AutoPlace(),
-				 new TimeChanger(),
 				 new ClickSettings(),
 				 new Particle(),
 				 new Test(),
@@ -85,7 +85,10 @@ public class ModuleManager {
 				 new HUD(),
 				 new ModelTrainer(),
 				 new KeepSprint(),
-				 new AutoLeave()
+				 new AutoLeave(),
+				 new KillEffects(),
+				 new FreeLook(),
+				 new Ambience()
 		);
 	}
 

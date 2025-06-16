@@ -235,7 +235,7 @@ public class ClickGuiScreen extends GuiScreen {
 		modulesTotalHeight = 0;
 
 		ScissorUtils.enableScissor();
-		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, widthsModule, sizeBackground.y - 15);
+		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, widthsModule + 2, sizeBackground.y - 15);
 
 		for (Module module : Client.INST.getModuleManager().getModulesByCategory(selectedCategory))	{
 			fontRenderer.drawString(

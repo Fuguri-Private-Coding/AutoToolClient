@@ -13,14 +13,14 @@ import net.minecraft.entity.player.EntityPlayer;
 @ModuleInfo(name = "Particle", category = Category.VISUAL)
 public class Particle extends Module {
 
-    IntegerSetting multiple = new IntegerSetting("Multiple", this, 1, 5, 2);
+    IntegerSetting multiplier = new IntegerSetting("Multiplier", this, 1, 5, 2);
 
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof AttackEvent attackEvent) {
             Entity target = attackEvent.getHittingEntity();
             if (target instanceof EntityPlayer) {
-                for (int i = 0; i < multiple.getValue(); i++) {
+                for (int i = 0; i < multiplier.getValue(); i++) {
                     mc.thePlayer.onEnchantmentCritical(target);
                 }
             }

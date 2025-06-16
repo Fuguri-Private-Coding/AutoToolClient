@@ -13,13 +13,6 @@ public class MoreSwing extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof TickEvent) {
-            if (Client.INST.getCombatManager().getTarget() != null) {
-                if (mc.thePlayer.swingProgressInt >= 3 || mc.thePlayer.swingProgressInt < 0) {
-                    mc.thePlayer.swingProgressInt = -1;
-                    mc.thePlayer.isSwingInProgress = true;
-                }
-            }
-        }
+        if (event instanceof TickEvent && Client.INST.getCombatManager().getTarget() != null) mc.thePlayer.swingItemNoPacket();
     }
 }

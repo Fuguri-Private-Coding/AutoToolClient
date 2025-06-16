@@ -129,9 +129,9 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof Render3DEvent) {
-            if (target != Client.INST.getCombatManager().getTarget()) {
+            if (target != Client.INST.getCombatManager().getTargetOrSelectedEntity()) {
                 handle(true);
-                target = Client.INST.getCombatManager().getTarget();
+                target = Client.INST.getCombatManager().getTargetOrSelectedEntity();
             }
 
             if (delayBetweenBackTracks > 0) {
@@ -177,6 +177,8 @@ public class BackTrack extends Module {
 
                 switch (render.getMode()) {
                     case "Player" -> {
+                        mc.entityRenderer.enableLightmap();
+                        RenderHelper.enableStandardItemLighting();
                         mc.getRenderManager().doRenderEntity(
                                 target,
                                 x, y, z,
@@ -184,6 +186,8 @@ public class BackTrack extends Module {
                                 mc.timer.renderPartialTicks,
                                 true
                         );
+                        mc.entityRenderer.disableLightmap();
+                        RenderHelper.disableStandardItemLighting();
                     }
                     case "Box" -> {
                         Color fadeColor;

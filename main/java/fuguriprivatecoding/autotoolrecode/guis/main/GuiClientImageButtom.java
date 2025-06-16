@@ -34,7 +34,7 @@ public class GuiClientImageButtom extends GuiButton {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 
-        if (shadows.isToggled() && shadows.module.get("MainMenuGui")) {
+        if (shadows.isToggled() && shadows.module.get("MainMenu")) {
             BloomUtils.addToDraw(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 2f, Color.BLACK));
         }
 

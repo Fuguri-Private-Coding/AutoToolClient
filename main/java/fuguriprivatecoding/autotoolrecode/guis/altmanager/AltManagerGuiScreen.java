@@ -61,10 +61,10 @@ public class AltManagerGuiScreen extends GuiScreen {
         ScaledResolution sc = new ScaledResolution(mc);
         int currentScroll = Mouse.getDWheel();
 
-        scroll -= currentScroll / 120 * 10;
+        scroll -= currentScroll / 120 * 15;
 
-        float settingsVisibleHeight = sc.getScaledHeight() - 25;
-        float maxScroll = Math.max(scrollTotalHeight - settingsVisibleHeight,0);
+        float altVisibleHeight = sc.getScaledHeight() - 25;
+        float maxScroll = Math.max(scrollTotalHeight - altVisibleHeight,0);
 
         if (scroll > 0) scroll = 0;
         if (scroll < -maxScroll) scroll = (int) -maxScroll;
@@ -78,7 +78,7 @@ public class AltManagerGuiScreen extends GuiScreen {
 
         RoundedUtils.drawRect(sc.getScaledWidth() - 265, 10, 250, sc.getScaledHeight() - 20, 5f, new Color(15, 15, 15, 150));
 
-        if (shadows.isToggled() && shadows.module.get("MainMenuGui")) {
+        if (shadows.isToggled() && shadows.module.get("MainMenu")) {
             BloomUtils.addToDraw(() -> RoundedUtils.drawRect(sc.getScaledWidth() - 265, 10, 250, sc.getScaledHeight() - 20, 5f, new Color(15, 15, 15, 255)));
         }
 
@@ -100,7 +100,10 @@ public class AltManagerGuiScreen extends GuiScreen {
 
         altManagerGuiText.drawTextBox();
         altManagerGuiText.setMaxStringLength(16);
-        mc.fontRendererObj.drawCenteredString("Current logged as " + mc.getSession().getUsername(), (sc.getScaledWidth() / 2f) - 10 - (fontRendererObj.getStringWidth("Current logged as " + mc.getSession().getUsername()) / 2f), 2.5f, new Color(255, 255, 255, 150).getRGB());
+
+        String currentUser = "Account: " + mc.getSession().getUsername();
+
+        mc.fontRendererObj.drawString(currentUser, 2.5f, 2.5f, new Color(255, 255, 255, 150).getRGB());
         super.drawScreen(mouseX,mouseY,partialTicks);
     }
 
