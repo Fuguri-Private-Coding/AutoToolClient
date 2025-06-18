@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.connection;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
@@ -7,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
@@ -45,6 +47,7 @@ public class Ping extends Module {
             .add("PlaceBlock")
             .add("ChangeSprint")
             .add("ClickWindow")
+            .add("Scaffold")
             .add("OpenedGui");
 
     Mode renderModes = new Mode("RenderMode", this)
@@ -68,7 +71,6 @@ public class Ping extends Module {
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (mc.isIntegratedServerRunning()) return;
         long currentTime = System.currentTimeMillis();
-        if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChest) && actions.get("OpenedGui")) reset();
         switch (event) {
             case ChangeSprintEvent _ -> {
                 if (actions.get("ChangeSprint")) {
@@ -79,16 +81,6 @@ public class Ping extends Module {
             case PacketEvent e -> {
                 if (currentTime - lastResetTime < delayBeforeNextLag) {
                     resetAllPackets();
-                    break;
-                }
-
-                if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) {
-                    reset();
-                    break;
-                }
-
-                if (actions.get("UsingItem") && mc.thePlayer.isUsingItem()) {
-                    reset();
                     break;
                 }
 
@@ -150,6 +142,12 @@ public class Ping extends Module {
             }
             case RunGameLoopEvent _ -> handlePackets();
             case TickEvent _ -> {
+                if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChest) && actions.get("OpenedGui")) reset();
+                if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && actions.get("Scaffold")) reset();
+
+                if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) reset();
+                if (actions.get("UsingItem") && mc.thePlayer.isUsingItem()) reset();
+
                 lastPos = currentPos;
                 if (posBuffer.isEmpty()) {
                     currentPos = mc.thePlayer.getPositionVector();

@@ -3,7 +3,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.FakeTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
@@ -14,7 +13,6 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
-import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayTraceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
@@ -26,30 +24,16 @@ import net.minecraft.util.MovingObjectPosition;
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT)
 public class TimerRange extends Module {
 
-    IntegerSetting minTicks = new IntegerSetting("MinTicks", this, 0,20,2) {
-        @Override
-        public int getValue() {
-            if (maxTicks.value < value) { value = maxTicks.value; }
-            return value;
-        }
-    };
-    IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 0,20,2){
-        @Override
-        public int getValue() {
-            if (minTicks.value > value) { value = minTicks.value; }
-            return value;
-        }
-    };
+    IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 0, 20, 2);
 
-    IntegerSetting maxTargetHurtTime = new IntegerSetting("TargetHurtTime", this, 0,10,0);
-    FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0,2.5f,1,0.1f);
+    IntegerSetting maxTargetHurtTime = new IntegerSetting("TargetHurtTime", this, 0, 10, 0);
+    FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0, 2.5f, 1, 0.1f);
 
     Mode predictMode = new Mode("PredictType", this)
             .addModes("RayCast", "Distance")
-            .setMode("RayCast")
-            ;
+            .setMode("RayCast");
 
-    FloatSetting minDistanceToSkipTick = new FloatSetting("MinDistanceToSkipTick", this,() -> predictMode.getMode().equalsIgnoreCase("Distance"), 2.5f,6,3,0.1f);
+    FloatSetting minDistanceToSkipTick = new FloatSetting("MinDistanceToSkipTick", this, () -> predictMode.getMode().equalsIgnoreCase("Distance"), 2.5f, 6, 3, 0.1f);
 
     boolean teleporting, click = false;
     int teleportTicks, balance = 0;
@@ -61,8 +45,15 @@ public class TimerRange extends Module {
             mc.clickMouse();
             click = false;
         }
-        if (event instanceof TickEvent) {
+
+        if (event instanceof TickEvent e) {
             EntityLivingBase target = Client.INST.getCombatManager().getTarget();
+
+            if (balance > 0) {
+                e.cancel();
+                balance--;
+                return;
+            }
 
             if (target == null || target.hurtTime > maxTargetHurtTime.getValue()) return;
 
@@ -112,32 +103,19 @@ public class TimerRange extends Module {
                 }
             }
 
-            if (teleportTicks < minTicks.getValue()) return;
-
             teleporting = true;
             for (int i = 0; i < teleportTicks; i++) {
                 try {
                     mc.runTick();
+                    balance++;
                     if (RayCastUtils.rayCast(3.0, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                         click = true;
                         break;
                     }
-                } catch (Exception ignored) { }
-            }
-            teleporting = false;
-
-            balance = teleportTicks;
-            mc.timer.timerSpeed = 0f;
-        }
-
-        if (event instanceof FakeTickEvent) {
-            if (balance <= 0) {
-                balance = 0;
-                mc.timer.timerSpeed = 1f;
-            } else {
-                balance--;
+                } catch (Exception ignored) {}
             }
         }
+        teleporting = false;
         if (event instanceof RunGameLoopEvent && balance > 0) mc.timer.renderPartialTicks = partialTicks.getValue();
     }
 }

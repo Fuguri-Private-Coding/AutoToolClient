@@ -19,7 +19,7 @@ import net.minecraft.network.play.client.C0BPacketEntityAction;
 public class MoreKB extends Module {
 
     final Mode mode = new Mode("Mode", this)
-            .addModes("One", "WTap", "STap", "LegitFast")
+            .addModes("WTap", "STap", "LegitFast")
             .setMode("LegitFast");
 
     final IntegerSetting minDelay = new IntegerSetting("MinDelayAfterHit", this, 0, 10, 3) {
@@ -90,13 +90,6 @@ public class MoreKB extends Module {
             case "LegitFast" -> {
                 if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
                     mc.thePlayer.setSprinting(false);
-                    reset--;
-                }
-            }
-
-            case "One" -> {
-                if (event instanceof SprintEvent && !mc.thePlayer.isServerSprintState()) {
-                    mc.getNetHandler().addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
                     reset--;
                 }
             }

@@ -38,10 +38,7 @@ public class ClickManager implements Imports {
             clicking = needClick(target);
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
             if (rayCast != null && rayCast.isFriend() || !clicking) { return; }
-
-            for (int i = 0; i < iters; i++) {
-                mc.clickMouse();
-            }
+            for (int i = 0; i < iters; i++) mc.clickMouse();
         }
     }
 

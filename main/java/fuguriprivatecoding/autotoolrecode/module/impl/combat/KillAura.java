@@ -14,7 +14,6 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
-import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayTraceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
@@ -84,6 +83,8 @@ public class KillAura extends Module {
             return value;
         }
     };
+
+    final CheckBox gcd = new CheckBox("GCD (FIX)", this);
 
     final Mode smoothMode = new Mode("SmoothMode", this)
             .addModes("Linear", "AIModel")
@@ -200,7 +201,7 @@ public class KillAura extends Module {
             }
 
             RotUtils.limitDelta(delta, speed);
-            delta = RotUtils.fixDelta(delta);
+            if (gcd.isToggled()) delta = RotUtils.fixDelta(delta);
             lr = lr.add(delta);
             lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
             Rot.setServerRotation(lr);

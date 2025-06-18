@@ -18,20 +18,16 @@ public class FreeLook extends Module {
 
     @Override
     public void onDisable() {
-        if (!Rot.isChanged()) {
-            mc.thePlayer.rotationYaw = originalYaw;
-            mc.thePlayer.rotationPitch = originalPitch;
-            mc.gameSettings.thirdPersonView = previousPerspective;
-        }
+        mc.thePlayer.rotationYaw = originalYaw;
+        mc.thePlayer.rotationPitch = originalPitch;
+        mc.gameSettings.thirdPersonView = previousPerspective;
     }
 
     @Override
     public void onEnable() {
-        if (!Rot.isChanged()) {
-            previousPerspective = mc.gameSettings.thirdPersonView;
-            originalYaw = lastYaw = Rot.getServerRotation().getYaw();
-            originalPitch = lastPitch = Rot.getServerRotation().getPitch();
-        }
+        previousPerspective = mc.gameSettings.thirdPersonView;
+        originalYaw = lastYaw = Rot.getServerRotation().getYaw();
+        originalPitch = lastPitch = Rot.getServerRotation().getPitch();
     }
 
     @EventTarget
@@ -50,21 +46,6 @@ public class FreeLook extends Module {
 
             lastPitch = MathHelper.clamp(lastPitch, -90, 90);
             mc.gameSettings.thirdPersonView = 1;
-        }
-
-        if (!Rot.isChanged()) {
-            if (event instanceof UpdateBodyRotationEvent e) e.setYaw(lastYaw);
-            if (event instanceof JumpEvent e) e.setYaw(lastYaw);
-            if (event instanceof LookEvent e) {
-                e.setYaw(lastYaw);
-                e.setPitch(lastPitch);
-            }
-
-            if (event instanceof ChangeHeadRotationEvent e) {
-                e.setYaw(lastYaw);
-                e.setPitch(lastPitch);
-            }
-            if (event instanceof MoveFlyingEvent e) e.setYaw(lastYaw);
         }
     }
 }

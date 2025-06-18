@@ -87,7 +87,7 @@ public class ModuleManager {
 				 new KeepSprint(),
 				 new AutoLeave(),
 				 new KillEffects(),
-				 new FreeLook(),
+				 //new FreeLook(),
 				 new Ambience()
 		);
 	}
