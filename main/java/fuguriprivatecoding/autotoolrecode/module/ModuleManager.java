@@ -88,7 +88,8 @@ public class ModuleManager {
 				 new AutoLeave(),
 				 new KillEffects(),
 				 //new FreeLook(),
-				 new Ambience()
+				 new Ambience(),
+				 new TargetHUD()
 		);
 	}
 

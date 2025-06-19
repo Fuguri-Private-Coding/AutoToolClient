@@ -79,6 +79,8 @@ public class BackTrack extends Module {
     final ColorSetting color2 = new ColorSetting("Color2", this, () -> render.getMode().equalsIgnoreCase("Box") && fadeColor.isToggled(), 1f,1f,1f,1f);
     final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> render.getMode().equalsIgnoreCase("Box") && fadeColor.isToggled(),0.1f, 20, 1, 0.1f);
 
+    CheckBox whileKillAura = new CheckBox("WhileKillAura", this);
+
     CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
     CheckBox debugDistance = new CheckBox("DebugDistance", this, true);
 
@@ -129,9 +131,9 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof Render3DEvent) {
-            if (target != Client.INST.getCombatManager().getTargetOrSelectedEntity()) {
+            if (target != (whileKillAura.isToggled() ? Client.INST.getCombatManager().getTarget() : Client.INST.getCombatManager().getTargetOrSelectedEntity())) {
                 handle(true);
-                target = Client.INST.getCombatManager().getTargetOrSelectedEntity();
+                target = (whileKillAura.isToggled() ? Client.INST.getCombatManager().getTarget() : Client.INST.getCombatManager().getTargetOrSelectedEntity());
             }
 
             if (delayBetweenBackTracks > 0) {
@@ -177,8 +179,8 @@ public class BackTrack extends Module {
 
                 switch (render.getMode()) {
                     case "Player" -> {
-                        mc.entityRenderer.enableLightmap();
-                        RenderHelper.enableStandardItemLighting();
+                        //mc.entityRenderer.enableLightmap();
+                        //RenderHelper.enableStandardItemLighting();
                         mc.getRenderManager().doRenderEntity(
                                 target,
                                 x, y, z,
@@ -192,7 +194,7 @@ public class BackTrack extends Module {
                     case "Box" -> {
                         Color fadeColor;
                         if (this.fadeColor.isToggled()) {
-                            fadeColor = ColorUtils.mixColors(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
+                            fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
                         } else {
                             fadeColor = color1.getColor();
                         }

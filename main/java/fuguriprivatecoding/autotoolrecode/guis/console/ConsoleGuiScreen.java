@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
@@ -86,7 +87,6 @@ public class ConsoleGuiScreen extends GuiScreen {
         textField.setFocused(true);
         textField.setMaxStringLength(100);
 
-        String username = System.getProperty("user.name");
         String name = switch (delay) {
             case 0, 1, 2 -> "Console_";
             case 3, 4 -> "Console";
@@ -122,13 +122,12 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y + (fullScreen ? 0 : 20));
-
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), new Color(0,0,0, clickGui.backgroundAlpha.getValue()));
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
         RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
 
         mc.fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 4,  -1);
-        mc.fontRendererObj.drawString("C:\\Users\\" + username + ">" + textField.getText() + (delay > 15 ? "" : "_"), background.x + 2 + 2, background.y + sizeBackground.y + (fullScreen ? -10 - 3 : 7), -1);
+        mc.fontRendererObj.drawString(textField.getText() + (delay > 15 ? "" : "_"), background.x + 2 + 2, background.y + sizeBackground.y + (fullScreen ? -10 - 3 : 7), -1);
         mc.fontRendererObj.drawString("Clear History", background.x + sizeBackground.x - 5 - width, background.y + 3.5f, -1);
 
         RoundedUtils.drawRect(background.x + 4.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
@@ -138,7 +137,9 @@ public class ConsoleGuiScreen extends GuiScreen {
         RoundedUtils.drawRect(background.x + 5, background.y + 4, 6.5f, 6.5f, 3f, Color.red);
         RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
         RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
+        ScissorUtils.disableScissor();
 
+        ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 33 : 15));
 
         float offset = scrolls.y;
@@ -149,7 +150,6 @@ public class ConsoleGuiScreen extends GuiScreen {
             totalHeight += 10;
             offset += 10;
         }
-
         ScissorUtils.disableScissor();
 
         if (moving) {
@@ -179,7 +179,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         if (keyCode == Keyboard.KEY_RETURN && !textField.getText().isEmpty()) {
             if (changed) return;
             if (!Client.INST.getCommandManager().handle(textField.getText())) {
-                history.add("C:\\Users\\" + username + ": " + textField.getText());
+                history.add(username + ": " + textField.getText());
             }
             textField.setText("");
         }

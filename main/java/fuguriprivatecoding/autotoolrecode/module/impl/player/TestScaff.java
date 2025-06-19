@@ -137,7 +137,7 @@ public class TestScaff extends Module {
         if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {
             Color fadeColor;
             if (this.fadeColor.isToggled()) {
-                fadeColor = ColorUtils.mixColors(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
+                fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
             } else {
                 fadeColor = color1.getColor();
             }

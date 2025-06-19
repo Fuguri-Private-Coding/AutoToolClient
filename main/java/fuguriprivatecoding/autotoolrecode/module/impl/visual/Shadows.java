@@ -9,28 +9,12 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 public class Shadows extends Module {
 
     public MultiMode module = new MultiMode("Modules", this)
-            .add("ClickGui")
-            .add("ConsoleGui")
-            .add("MainMenu")
-            .add("ItemsFirstPerson")
-            .add("ArrayList")
-            .add("TargetESP")
-            .add("Dot")
-            .add("BreakIndicator")
-            .add("CPSCounter")
-            .add("BPSCounter")
-            .add("FPSCounter")
-            .add("BlockOverlay")
-            .add("ConfigGui")
-            .add("Chat")
-            .add("Trails")
-            .add("NameTags")
-            .add("Scaffold")
-            .add("ChestESP")
-            .add("BedESP")
-            .add("Particles")
-            .add("Weather")
-            ;
+            .addModes("ClickGui","ConsoleGui","MainMenu","ItemsFirstPerson","ArrayList",
+                    "TargetESP","Dot" ,"BreakIndicator", "CPSCounter", "BPSCounter",
+                    "FPSCounter", "BlockOverlay", "ConfigGui", "Chat", "Trails",
+                    "NameTags", "Scaffold", "ChestESP", "BedESP", "WorldParticles",
+                    "Weather", "TargetHUD"
+            );
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);
     public FloatSetting brightness = new FloatSetting("Brightness", this, 0,3,1,0.1f);

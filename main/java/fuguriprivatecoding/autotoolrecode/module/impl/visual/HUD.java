@@ -3,15 +3,11 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
+import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.ScaledResolution;
@@ -22,119 +18,112 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "HUD", category = Category.VISUAL)
 public class HUD extends Module {
+    private final MultiMode hudElements = new MultiMode("HUDElements", this)
+            .addModes("FPSCounter", "BPSCounter", "BreakIndicator");
 
-    MultiMode hudElements = new MultiMode("HUDElements", this)
-            .add("FPSCounter")
-            .add("BPSCounter")
-            .add("CPSCounter")
-            .add("BreakIndicator");
+    private final FloatSetting fpsPosH = createPositionSetting("FPSPosX", "FPSCounter");
+    private final FloatSetting fpsPosV = createPositionSetting("FPSPosY", "FPSCounter");
+    private final FloatSetting fpsRadius = createRadiusSetting("FPSRadius", "FPSCounter");
+    private final ColorSetting fpsColor = createBgColorSetting("FPSColor", "FPSCounter");
+    private final CheckBox fpsTextShadow = createTextShadowSetting("FPSTextShadow", "FPSCounter");
+    private final ColorSetting fpsTextColor = createTextColorSetting("FPSTextColor", "FPSCounter");
 
-    FloatSetting fpsPosH = new FloatSetting("FPSPosX", this,() -> hudElements.get("FPSCounter"), 0,10000,0,0.1f);
-    FloatSetting fpsPosV = new FloatSetting("FPSPosY", this,() -> hudElements.get("FPSCounter"), 0,10000,0,0.1f);
-    FloatSetting fpsRadius = new FloatSetting("FPSRadius", this,() -> hudElements.get("FPSCounter"), 0.5f,5,1f,0.1f);
-    ColorSetting fpsColor = new ColorSetting("FPSColor", this,() -> hudElements.get("FPSCounter"), 0,0,0,0.4f);
-    CheckBox fpsTextShadow = new CheckBox("FPSTextShadow",this,() -> hudElements.get("FPSCounter"), true);
-    ColorSetting fpsTextColor = new ColorSetting("FPSTextColor", this,() -> hudElements.get("FPSCounter"), 1,1,1,1);
+    private final FloatSetting bpsPosH = createPositionSetting("BPSPosX", "BPSCounter");
+    private final FloatSetting bpsPosV = createPositionSetting("BPSPosY", "BPSCounter");
+    private final FloatSetting bpsRadius = createRadiusSetting("BPSRadius", "BPSCounter");
+    private final ColorSetting bpsColor = createBgColorSetting("BPSColor", "BPSCounter");
+    private final CheckBox bpsTextShadow = createTextShadowSetting("BPSTextShadow", "BPSCounter");
+    private final ColorSetting bpsTextColor = createTextColorSetting("BPSTextColor", "BPSCounter");
+    private final CheckBox includeY = new CheckBox("BPSIncludeY", this, () -> hudElements.get("BPSCounter"), false);
 
-    FloatSetting bpsPosH = new FloatSetting("BPSPosX", this,() -> hudElements.get("BPSCounter"), 0,10000,0,0.1f);
-    FloatSetting bpsPosV = new FloatSetting("BPSPosY", this,() -> hudElements.get("BPSCounter"), 0,10000,0,0.1f);
-    FloatSetting bpsRadius = new FloatSetting("BPSRadius", this,() -> hudElements.get("BPSCounter"), 0.5f,5,1f,0.1f);
-    ColorSetting bpsColor = new ColorSetting("BPSColor", this,() -> hudElements.get("BPSCounter"), 0,0,0,0.4f);
-    CheckBox bpsTextShadow = new CheckBox("BPSTextShadow",this,() -> hudElements.get("BPSCounter"), true);
-    ColorSetting bpsTextColor = new ColorSetting("BPSTextColor", this,() -> hudElements.get("BPSCounter"), 1,1,1,1);
-    CheckBox includeY = new CheckBox("BPSIncludeY", this,() -> hudElements.get("BPSCounter"), false);
+    private final FloatSetting breakIndicatorPosH = createPositionSetting("BreakIndicatorPosX", "BreakIndicator");
+    private final FloatSetting breakIndicatorPosV = createPositionSetting("BreakIndicatorPosY", "BreakIndicator");
+    private final FloatSetting breakIndicatorRadius = createRadiusSetting("BreakIndicatorRadius", "BreakIndicator");
+    private final ColorSetting breakIndicatorColor = createBgColorSetting("BreakIndicatorColor", "BreakIndicator");
+    private final CheckBox breakIndicatorTextShadow = createTextShadowSetting("BreakIndicatorTextShadow", "BreakIndicator");
+    private final ColorSetting breakIndicatorTextColor = createTextColorSetting("BreakIndicatorTextColor", "BreakIndicator");
 
-    FloatSetting cpsPosH = new FloatSetting("CPSPosX", this,() -> hudElements.get("CPSCounter"), 0,10000,0,0.1f);
-    FloatSetting cpsPosV = new FloatSetting("CPSPosY", this,() -> hudElements.get("CPSCounter"), 0,10000,0,0.1f);
-    FloatSetting cpsRadius = new FloatSetting("CPSRadius", this,() -> hudElements.get("CPSCounter"), 0.5f,5,1f,0.1f);
-    ColorSetting cpsColor = new ColorSetting("CPSColor", this,() -> hudElements.get("CPSCounter"), 0,0,0,0.4f);
-    CheckBox cpsTextShadow = new CheckBox("CPSTextShadow",this,() -> hudElements.get("CPSCounter"), true);
-    ColorSetting cpsTextColor = new ColorSetting("CPSTextColor", this,() -> hudElements.get("CPSCounter"), 1,1,1,1);
+    private static final float PADDING = 2.5f;
+    private static final float TEXT_PADDING = 4f;
+    private static final long FPS_WINDOW_MS = 1000L;
 
-    FloatSetting breakIndicatorPosH = new FloatSetting("BreakIndicatorPosX", this,() -> hudElements.get("BreakIndicator"), 0,10000,0,0.1f);
-    FloatSetting breakIndicatorPosV = new FloatSetting("BreakIndicatorPosY", this,() -> hudElements.get("BreakIndicator"), 0,10000,0,0.1f);
-    FloatSetting breakIndicatorRadius = new FloatSetting("BreakIndicatorRadius", this,() -> hudElements.get("BreakIndicator"), 0.5f,5,1f,0.1f);
-    ColorSetting breakIndicatorColor = new ColorSetting("BreakIndicatorColor", this,() -> hudElements.get("BreakIndicator"), 0,0,0,0.4f);
-    CheckBox breakIndicatorTextShadow = new CheckBox("BreakIndicatorTextShadow",this,() -> hudElements.get("BreakIndicator"), true);
-    ColorSetting breakIndicatorTextColor = new ColorSetting("BreakIndicatorTextColor", this,() -> hudElements.get("BreakIndicator"), 1,1,1,1);
-
-    Shadows shadows;
-
-    private final java.util.List<Long> leftClicks = new CopyOnWriteArrayList<>();
-    private final List<Long> rightClicks = new CopyOnWriteArrayList<>();
     private final List<Long> frames = new CopyOnWriteArrayList<>();
+    private Shadows shadows;
+
+    private FloatSetting createPositionSetting(String name, String element) {
+        return new FloatSetting(name, this, () -> hudElements.get(element), 0, 10000, 0, 0.1f);
+    }
+    private FloatSetting createRadiusSetting(String name, String element) {
+        return new FloatSetting(name, this, () -> hudElements.get(element), 0.5f, 5, 1f, 0.1f);
+    }
+    private ColorSetting createBgColorSetting(String name, String element) {
+        return new ColorSetting(name, this, () -> hudElements.get(element), 0, 0, 0, 0.4f);
+    }
+    private CheckBox createTextShadowSetting(String name, String element) {
+        return new CheckBox(name, this, () -> hudElements.get(element), true);
+    }
+    private ColorSetting createTextColorSetting(String name, String element) {
+        return new ColorSetting(name, this, () -> hudElements.get(element), 1, 1, 1, 1);
+    }
+
+    @Override
+    public void onEnable() {
+        ScaledResolution sc = new ScaledResolution(mc);
+        float maxWidth = sc.getScaledWidth();
+        float maxHeight = sc.getScaledHeight();
+
+        fpsPosH.setMax(maxWidth);
+        fpsPosV.setMax(maxHeight);
+        bpsPosH.setMax(maxWidth);
+        bpsPosV.setMax(maxHeight);
+        breakIndicatorPosH.setMax(maxWidth);
+        breakIndicatorPosV.setMax(maxHeight);
+    }
 
     @EventTarget
     public void onEvent(Event event) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
-        ScaledResolution sc = new ScaledResolution(mc);
-
-        bpsPosH.setMax(sc.getScaledWidth());
-        bpsPosV.setMax(sc.getScaledHeight());
-        cpsPosH.setMax(sc.getScaledWidth());
-        cpsPosV.setMax(sc.getScaledHeight());
-        breakIndicatorPosH.setMax(sc.getScaledWidth());
-        breakIndicatorPosV.setMax(sc.getScaledHeight());
-        fpsPosH.setMax(sc.getScaledWidth());
-        fpsPosV.setMax(sc.getScaledHeight());
-
-        if (event instanceof ClickEvent clickEvent && hudElements.get("CPSCounter")) {
-            switch (clickEvent.getButton()) {
-                case LEFT -> leftClicks.add(System.currentTimeMillis());
-                case RIGHT -> rightClicks.add(System.currentTimeMillis());
-            }
-        }
-
         if (event instanceof Render2DEvent) {
-            if (hudElements.get("BPSCounter")) {
-                String text = String.format("%.3f", mc.thePlayer.getBps(includeY.isToggled()));
-                float width = mc.fontRendererObj.getStringWidth(text);
-
-                if (shadows.isToggled() && shadows.module.get("BPSCounter"))
-                    BloomUtils.addToDraw(() -> RoundedUtils.drawRect(bpsPosH.getValue(), bpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, bpsRadius.getValue(), Color.WHITE));
-
-                RoundedUtils.drawRect(bpsPosH.getValue(), bpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, bpsRadius.getValue(), bpsColor.getColor());
-                mc.fontRendererObj.drawString(String.format("%.3f", mc.thePlayer.getBps(includeY.isToggled())), bpsPosH.getValue() + 2.5f, bpsPosV.getValue() + 2.5f, bpsTextColor.getColor().getRGB(), bpsTextShadow.isToggled());
-            }
-
-            if (hudElements.get("CPSCounter")) {
-                leftClicks.removeIf(time -> System.currentTimeMillis() - time >= 1000L);
-                rightClicks.removeIf(time -> System.currentTimeMillis() - time >= 1000L);
-
-                int leftCps = leftClicks.size();
-                int rightCps = rightClicks.size();
-
-                String text = leftCps + " / " + rightCps;
-                float width = mc.fontRendererObj.getStringWidth(text);
-
-                if (shadows.isToggled() && shadows.module.get("CPSCounter")) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(cpsPosH.getValue(), cpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, cpsRadius.getValue(), Color.WHITE));
-
-                RoundedUtils.drawRect(cpsPosH.getValue(), cpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, cpsRadius.getValue(), cpsColor.getColor());
-                mc.fontRendererObj.drawString(text,cpsPosH.getValue() + 2.5f ,cpsPosV.getValue() + 2.5f, cpsTextColor.getColor().getRGB(), cpsTextShadow.isToggled());
-            }
-
-            if (hudElements.get("BreakIndicator") && (mc.playerController.curBlockDamageMP > 0 || Client.INST.getModuleManager().getModule(ClickGui.class).isToggled())) {
-                String text = "Progress: " + String.format("%.0f", mc.playerController.curBlockDamageMP * 100) + "%";
-                float width = mc.fontRendererObj.getStringWidth(text);
-
-                if (shadows.isToggled() && shadows.module.get("BreakIndicator")) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(breakIndicatorPosH.getValue(), breakIndicatorPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, breakIndicatorRadius.getValue(), Color.WHITE));
-
-                RoundedUtils.drawRect(breakIndicatorPosH.getValue(), breakIndicatorPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, breakIndicatorRadius.getValue(), breakIndicatorColor.getColor());
-                mc.fontRendererObj.drawString(text, breakIndicatorPosH.getValue() + 2.5f, breakIndicatorPosV.getValue() + 2.5f, breakIndicatorTextColor.getColor().getRGB(), breakIndicatorTextShadow.isToggled());
-            }
-
-            if (hudElements.get("FPSCounter")) {
-                frames.add(System.currentTimeMillis());
-                frames.removeIf(aLong -> System.currentTimeMillis() - aLong >= 1000);
-
-                String text = "FPS: " + frames.size();
-                float width = mc.fontRendererObj.getStringWidth(text);
-
-                if (shadows.isToggled() && shadows.module.get("FPSCounter")) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(fpsPosH.getValue(), fpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, fpsRadius.getValue(), Color.WHITE));
-
-                RoundedUtils.drawRect(fpsPosH.getValue(), fpsPosV.getValue(), width + 4, mc.fontRendererObj.FONT_HEIGHT + 4, fpsRadius.getValue(), fpsColor.getColor());
-                mc.fontRendererObj.drawString(text,fpsPosH.getValue() + 2.5f ,fpsPosV.getValue() + 2.5f, fpsTextColor.getColor().getRGB(), fpsTextShadow.isToggled());
-            }
+            renderBPSCounter();
+            renderBreakIndicator();
+            renderFPSCounter();
         }
+    }
+
+    private void renderBPSCounter() {
+        if (!hudElements.get("BPSCounter")) return;
+
+        String text = String.format("%.3f", mc.thePlayer.getBps(includeY.isToggled()));
+        renderHudElement(text, bpsPosH.getValue(), bpsPosV.getValue(), bpsRadius.getValue(), bpsColor.getColor(), bpsTextColor.getColor(), bpsTextShadow.isToggled(), "BPSCounter");
+    }
+
+    private void renderBreakIndicator() {
+        if (!hudElements.get("BreakIndicator")) return;
+        if (mc.playerController.curBlockDamageMP <= 0 && !Client.INST.getModuleManager().getModule(ClickGui.class).isToggled()) return;
+
+        String text = "Progress: " + String.format("%.0f", mc.playerController.curBlockDamageMP * 100) + "%";
+        renderHudElement(text, breakIndicatorPosH.getValue(), breakIndicatorPosV.getValue(), breakIndicatorRadius.getValue(), breakIndicatorColor.getColor(), breakIndicatorTextColor.getColor(), breakIndicatorTextShadow.isToggled(), "BreakIndicator");
+    }
+
+    private void renderFPSCounter() {
+        if (!hudElements.get("FPSCounter")) return;
+
+        frames.add(System.currentTimeMillis());
+        frames.removeIf(timestamp -> System.currentTimeMillis() - timestamp >= FPS_WINDOW_MS);
+
+        String text = "FPS: " + frames.size();
+        renderHudElement(text, fpsPosH.getValue(), fpsPosV.getValue(), fpsRadius.getValue(), fpsColor.getColor(), fpsTextColor.getColor(), fpsTextShadow.isToggled(), "FPSCounter");
+    }
+
+    private void renderHudElement(String text, float x, float y, float radius, Color bgColor, Color textColor, boolean shadow, String elementName) {
+        float width = mc.fontRendererObj.getStringWidth(text) + TEXT_PADDING;
+        float height = mc.fontRendererObj.FONT_HEIGHT + TEXT_PADDING;
+
+        if (shadows != null && shadows.isToggled() && shadows.module.get(elementName)) {
+            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, radius, Color.WHITE));
+        }
+
+        RoundedUtils.drawRect(x, y, width, height, radius, bgColor);
+        mc.fontRendererObj.drawString(text, x + PADDING, y + PADDING, textColor.getRGB(), shadow);
     }
 }

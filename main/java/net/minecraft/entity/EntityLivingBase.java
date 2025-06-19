@@ -19,6 +19,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.BaseAttributeMap;
@@ -47,14 +48,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.CombatTracker;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -152,6 +146,10 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         this.dataWatcher.addObject(8, Byte.valueOf((byte) 0));
         this.dataWatcher.addObject(9, Byte.valueOf((byte) 0));
         this.dataWatcher.addObject(6, Float.valueOf(1.0F));
+    }
+
+    public ResourceLocation getSkin() {
+        return mc.getNetHandler().getPlayerInfo(entityUniqueID).getLocationSkin() != null ? mc.getNetHandler().getPlayerInfo(entityUniqueID).getLocationSkin() : DefaultPlayerSkin.getDefaultSkinLegacy();
     }
 
     protected void applyEntityAttributes() {

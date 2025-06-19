@@ -35,13 +35,10 @@ import java.util.function.BooleanSupplier;
 public class KillAura extends Module {
 
     final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 8, 6, 0.1f);
-    final FloatSetting rangeDistance = new FloatSetting("RangeDistance", this, 3,8,6,0.1f);
+    //final FloatSetting rangeDistance = new FloatSetting("RangeDistance", this, 3,8,6,0.1f);
 
     final MultiMode targets = new MultiMode("Targets", this)
-            .add("Players", true)
-            .add("Mobs")
-            .add("Animals")
-            .add("Villagers");
+            .addModes("Players","Mobs","Animals","Villagers");
 
     final Mode sortType = new Mode("SortType", this)
             .addModes("Distance", "FOV")

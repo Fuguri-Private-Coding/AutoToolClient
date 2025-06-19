@@ -84,7 +84,7 @@ public class ClickGuiScreen extends GuiScreen {
 		int currentScroll = Mouse.getDWheel();
 
 		if (this.clickGui.fadeColor.isToggled()) {
-			MAIN_COLOR = ColorUtils.mixColors(clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
+			MAIN_COLOR = ColorUtils.fadeColor(clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
 		} else {
 			MAIN_COLOR = clickGui.color1.getColor();
 		}

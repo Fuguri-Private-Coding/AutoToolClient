@@ -175,8 +175,8 @@ public class Ping extends Module {
                         RenderUtils.stop3D();
                     }
                     case "Player" -> {
-                        RenderHelper.enableStandardItemLighting();
-                        mc.entityRenderer.enableLightmap();
+                        //RenderHelper.enableStandardItemLighting();
+                        //mc.entityRenderer.enableLightmap();
                         mc.getRenderManager().doRenderEntity(
                             player,
                             x, y, z,

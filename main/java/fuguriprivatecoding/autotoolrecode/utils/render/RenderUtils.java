@@ -39,6 +39,12 @@ public class RenderUtils implements Imports {
         GlStateManager.disableBlend();
     }
 
+    public static void quickDrawHead(ResourceLocation skin, int x, int y, int width, int height) {
+        mc.getTextureManager().bindTexture(skin);
+        Gui.drawScaledCustomSizeModalRect(x, y, 8f, 8f, 8, 8, width, height, 64f, 64f);
+        Gui.drawScaledCustomSizeModalRect(x, y, 40f, 8f, 8, 8, width, height, 64f, 64f);
+    }
+
     public static void start3DNameTag() {
         glPushAttrib(GL_ENABLE_BIT);
         glPushMatrix();

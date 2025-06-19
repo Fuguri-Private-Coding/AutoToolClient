@@ -52,6 +52,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import org.lwjgl.util.vector.Vector3f;
 
 public abstract class Entity implements ICommandSender
 {
@@ -2319,6 +2320,11 @@ public abstract class Entity implements ICommandSender
     public Vec3 getPositionVector()
     {
         return new Vec3(this.posX, this.posY, this.posZ);
+    }
+
+    public Vector3f getPositionVector3f()
+    {
+        return new Vector3f((float)this.posX,(float) this.posY,(float) this.posZ);
     }
 
     public World getEntityWorld()

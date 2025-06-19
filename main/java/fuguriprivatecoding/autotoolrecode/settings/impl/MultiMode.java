@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.doubles.Doubles;
 
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 
@@ -31,6 +32,11 @@ public class MultiMode extends Setting {
 
     public MultiMode add(String name) {
         values.add(new Doubles<>(name, false));
+        return this;
+    }
+
+    public MultiMode addModes(String... modes) {
+        for (String mode : modes) values.add(new Doubles<>(mode, false));
         return this;
     }
 

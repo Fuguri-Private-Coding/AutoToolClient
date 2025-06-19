@@ -21,7 +21,7 @@ public class AutoLeave extends Module {
             .setMode("HotKey")
             ;
 
-    IntegerSetting health = new IntegerSetting("Health", this, () -> mode.getMode().equalsIgnoreCase("Health"), 1,20,3);
+    IntegerSetting health = new IntegerSetting("Health", this, () -> mode.getMode().equalsIgnoreCase("Health"), 1,19,3);
 
     KeyBind key = new KeyBind("Key", this, () -> mode.getMode().equalsIgnoreCase("HotKey"), Keyboard.KEY_M);
 

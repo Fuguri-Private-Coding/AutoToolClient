@@ -1470,7 +1470,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 Shaders.beginParticles();
             }
 
-            if (shadows.isToggled() && shadows.module.get("Particles")) {
+            if (shadows.isToggled() && shadows.module.get("WorldParticles")) {
                 BloomUtils.addToDraw(() -> effectrenderer.renderParticles(entity,partialTicks));
             }
 
@@ -1784,7 +1784,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
                                 if (ambience.isToggled()) {
                                     if (ambience.fadeColor.isToggled()) {
-                                        color = ColorUtils.mixColors(ambience.color1.getColor(), ambience.color2.getColor(), ambience.fadeSpeed.getValue());
+                                        color = ColorUtils.fadeColor(ambience.color1.getColor(), ambience.color2.getColor(), ambience.fadeSpeed.getValue());
                                     } else {
                                         color = ambience.color1.getColor();
                                     }

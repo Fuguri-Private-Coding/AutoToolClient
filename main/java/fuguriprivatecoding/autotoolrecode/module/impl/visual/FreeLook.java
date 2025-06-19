@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.input.Keyboard;
 
@@ -39,8 +40,7 @@ public class FreeLook extends Module {
             }
 
             mc.mouseHelper.mouseXYChange();
-            final float f = mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;
-            final float f1 = (float) (f * f * f * 1.5);
+            final float f1 = RotUtils.getMouseGCD();
             lastYaw += mc.mouseHelper.deltaX * f1;
             lastPitch -= mc.mouseHelper.deltaY * f1;
 

@@ -10,10 +10,6 @@ import org.lwjgl.input.Keyboard;
 @ModuleInfo(name = "ClickGui", category = Category.VISUAL, key = Keyboard.KEY_RSHIFT)
 public class ClickGui extends Module {
 
-	private final Mode mode = new Mode("Mode", this)
-			.addModes("New", "Old")
-			.setMode("Old");
-
 	public FloatSetting animationSpeed = new FloatSetting("AnimationSpeed", this, 1, 20, 10, 0.5f) {};
 	public FloatSetting backgroundRadius = new FloatSetting("BackgroundRadius", this, 0.5f, 10, 2, 0.5f) {};
 	public IntegerSetting backgroundAlpha = new IntegerSetting("BackgroundAlpha", this, 0, 255, 100);

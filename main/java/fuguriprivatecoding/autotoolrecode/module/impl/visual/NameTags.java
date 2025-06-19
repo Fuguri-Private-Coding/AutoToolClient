@@ -16,6 +16,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -56,7 +57,6 @@ public class NameTags extends Module {
         boolean murder = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.murders.contains(ent.getName());
         boolean detective = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.detectives.contains(ent.getName());
         boolean user = entity instanceof EntityPlayer ent && ClientSocket.users.get(ent.getName()) != null;
-        FontRenderer fontRenderer = mc.fontRendererObj;
         float distance = mc.thePlayer.getDistanceToEntity(entity);
         float scale = Math.max(distance / 2.5f, 5.0f);
         scale /= 200f;
@@ -80,11 +80,18 @@ public class NameTags extends Module {
         String friendText = friend ? "§2[Friend]§a " : "";
         String userText = user ? ClientSocket.users.get(entity.getName()) + " " : "";
         String text = userText + friendText + murderText + detectiveText + entity.getDisplayName().getFormattedText();
-        float offset = fontRenderer.FONT_HEIGHT - 8f;
-        float stringWidth = fontRenderer.getStringWidth(text) / 2f;
-        if (shadows.isToggled() && shadows.module.get("NameTags")) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, Color.WHITE));
-        RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, fontRenderer.FONT_HEIGHT + 4, 2f, color.getColor());
-        fontRenderer.drawString(text, -stringWidth, offset, textColor.getColor().getRGB(), true);
+        float offset = mc.fontRendererObj.FONT_HEIGHT - 8f;
+        float stringWidth = mc.fontRendererObj.getStringWidth(text) / 2f;
+        if (shadows.isToggled() && shadows.module.get("NameTags")) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, mc.fontRendererObj.FONT_HEIGHT + 4, 2f, Color.WHITE));
+        RoundedUtils.drawRect(
+                -stringWidth - 2,
+                offset - 3,
+                stringWidth * 2 + 4,
+                mc.fontRendererObj.FONT_HEIGHT + 4,
+                2f,
+                color.getColor()
+        );
+        mc.fontRendererObj.drawString(text, -stringWidth, offset, textColor.getColor().getRGB(), true);
         glColor4f(1f, 1f, 1f, 1f);
         glPopMatrix();
     }

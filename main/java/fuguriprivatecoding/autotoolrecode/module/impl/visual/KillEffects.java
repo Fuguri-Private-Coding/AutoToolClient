@@ -9,8 +9,10 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.player.EntityPlayer;
 
 @ModuleInfo(name = "KillEffects", category = Category.VISUAL)
 public class KillEffects extends Module {
@@ -35,7 +37,10 @@ public class KillEffects extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof AttackEvent e) target = e.getHittingEntity();
+        if (event instanceof AttackEvent e) {
+            EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
+            if (!rayCast.isFriend()) target = e.getHittingEntity();
+        }
         if (event instanceof TickEvent) {
             if (target != null) {
                 if (effect.isToggled()) {
