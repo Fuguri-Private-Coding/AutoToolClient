@@ -92,7 +92,7 @@ public class TimerRange extends Module {
                         target.getCollisionBorderSize()
                 );
 
-                boolean skipTickDistance = predictMode.getMode().equalsIgnoreCase("Distance") && DistanceUtils.getDistance(simulatedPlayer, targetBox) > minDistanceToSkipTick.getValue(); //&& mouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY;
+                boolean skipTickDistance = predictMode.getMode().equalsIgnoreCase("Distance") && DistanceUtils.getDistance(simulatedPlayer, targetBox) > minDistanceToSkipTick.getValue();
                 boolean skipTickRayCast = predictMode.getMode().equalsIgnoreCase("RayCast") && (smallMouse == null || smallMouse.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY);
 
                 if (skipTickRayCast || skipTickDistance) {

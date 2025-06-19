@@ -17,13 +17,11 @@ import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.Vec3;
-import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -33,8 +31,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Ping extends Module {
 
     private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 50, 1000, 400);
-
-    private final CheckBox subtrackOwnDelay = new CheckBox("SubtrackOwnDelay",this,true);
 
     private final IntegerSetting delayBeforeNextLagAfterReset = new IntegerSetting("DelayBeforeNextLagAfterReset", this, 0, 1000, 500);
 
@@ -175,8 +171,6 @@ public class Ping extends Module {
                         RenderUtils.stop3D();
                     }
                     case "Player" -> {
-                        //RenderHelper.enableStandardItemLighting();
-                        //mc.entityRenderer.enableLightmap();
                         mc.getRenderManager().doRenderEntity(
                             player,
                             x, y, z,
@@ -195,7 +189,7 @@ public class Ping extends Module {
 
     private void handlePackets() {
         buffer.removeIf(packetWithTime -> {
-           if (System.currentTimeMillis() - packetWithTime.time() >= maxDelay.getValue()) {
+           if (System.currentTimeMillis() - packetWithTime.time() >= maxDelay.getValue() ) {
                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetWithTime.packet());
                return true;
            }

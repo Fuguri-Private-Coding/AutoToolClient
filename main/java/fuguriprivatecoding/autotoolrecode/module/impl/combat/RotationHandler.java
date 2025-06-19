@@ -4,14 +4,12 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
-import fuguriprivatecoding.autotoolrecode.irc.packet.ClientSocket;
-import fuguriprivatecoding.autotoolrecode.managers.CombatManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
@@ -29,7 +27,7 @@ public class RotationHandler extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (!Client.INST.getModuleManager().getModule("Scaffold").isToggled() && (!Client.INST.getModuleManager().getModule("KillAura").isToggled() || Client.INST.getCombatManager().getTarget() == null)) {
+        if ((Client.INST.getCombatManager().getTarget() == null || DistanceUtils.getDistance(Client.INST.getCombatManager().getTarget()) > Client.INST.getModuleManager().getModule(KillAura.class).rotateDistance.getValue()) && !Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) {
             if (Rot.isChanged()) {
                 if (event instanceof MotionEvent motionEvent) {
                     Rot rot = Rot.getServerRotation().copy();
@@ -57,11 +55,11 @@ public class RotationHandler extends Module {
                     lookEvent.setYaw(Rot.getServerRotation().getYaw());
                     lookEvent.setPitch(Rot.getServerRotation().getPitch());
                 }
-                if (event instanceof MoveFlyingEvent moveFlyingEvent) {
-                    moveFlyingEvent.setYaw(Rot.getServerRotation().getYaw());
-                }
                 if (event instanceof MoveEvent e) {
                     MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
+                }
+                if (event instanceof MoveFlyingEvent e) {
+                    e.setYaw(Rot.getServerRotation().getYaw());
                 }
                 if (event instanceof JumpEvent jumpEvent) {
                     jumpEvent.setYaw(Rot.getServerRotation().getYaw());

@@ -54,6 +54,7 @@ public class BedESP extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
+        if (mc.thePlayer == null || mc.theWorld == null) return;
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (event instanceof WorldChangeEvent && !beds.isEmpty()) beds.clear();
         if (event instanceof TickEvent) {

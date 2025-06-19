@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemSoup;
@@ -26,7 +27,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @ModuleInfo(name = "AutoSoup", category = Category.COMBAT)
 public class AutoSoup extends Module {
 
-    int health;
 
     final IntegerSetting minHealth = new IntegerSetting("MinHealth", this, 4, 20, 9) {
         @Override
@@ -35,7 +35,6 @@ public class AutoSoup extends Module {
             return value;
         }
     };
-
     final IntegerSetting maxHealth = new IntegerSetting("MaxHealth", this, 4, 20, 12) {
         @Override
         public int getValue() {
@@ -44,29 +43,15 @@ public class AutoSoup extends Module {
         }
     };
 
-    int delayBetweenUse;
-    final IntegerSetting minDelayBetweenUse = new IntegerSetting("MinDelayBetweenUse", this, 0, 10, 9) {
-        @Override
-        public int getValue() {
-            if (maxDelayBetweenUse.value < value) { value = maxDelayBetweenUse.value; }
-            return value;
-        }
-    };
+    final IntegerSetting delay = new IntegerSetting("Delay", this, 0, 500, 0);
 
-    final IntegerSetting maxDelayBetweenUse = new IntegerSetting("MaxDelayBetweenUse", this, 0, 10, 9) {
-        @Override
-        public int getValue() {
-            if (minDelayBetweenUse.value > value) { value = minDelayBetweenUse.value; }
-            return value;
-        }
-    };
+    int health, soupSlot;
 
-    int soupSlot;
-
-    final CheckBox randomSlot = new CheckBox("RandomSlot", this, false);
+    StopWatch stopWatch;
 
     public AutoSoup() {
         resetValues();
+        stopWatch = new StopWatch();
     }
 
     @EventTarget
@@ -91,31 +76,25 @@ public class AutoSoup extends Module {
                             }
                         }
 
-                        mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 0, 1, mc.thePlayer);
+                        if (hasEmptySlotsInHotbar()) mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 0, 1, mc.thePlayer);
                         break;
                     }
+                    resetValues();
                 }
             }
         }
         if (event instanceof LegitClickTimingEvent) {
-             if (mc.currentScreen == null) {
+            if (mc.currentScreen == null && stopWatch.reachedMS(delay.getValue())) {
                 if (mc.thePlayer.inventory.getCurrentItem() != null && mc.thePlayer.inventory.getCurrentItem().getItem() == Items.bowl) {
                     mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
                     resetValues();
                     mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
-
                     return;
                 }
 
-                if (delayBetweenUse > 0) {
-                    delayBetweenUse--;
-                    return;
-                }
+                if (soupSlot == -1) soupSlot = getSoupInHotBar();
 
-                if (soupSlot == -1) {
-                    soupSlot = getSoupInHotBar();
-                }
-                if (mc.thePlayer.getHealth() < health && soupSlot != -1) {
+                if (mc.thePlayer.getHealth() <= health && soupSlot != -1) {
                     if (mc.thePlayer.inventory.currentItem != soupSlot) {
                         mc.thePlayer.inventory.currentItem = soupSlot;
                         mc.playerController.syncCurrentPlayItemNoEvent();
@@ -123,10 +102,20 @@ public class AutoSoup extends Module {
                     }
 
                     mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
-                    delayBetweenUse = RandomUtils.nextInt(minDelayBetweenUse.getValue(), maxDelayBetweenUse.getValue());
+                    stopWatch.reset();
                 }
             }
         }
+    }
+
+    public static boolean hasEmptySlotsInHotbar() {
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = mc.thePlayer.inventory.getStackInSlot(i);
+            if (stack == null || stack.getItem() == null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int getSoupExceptHotbar() {
@@ -164,20 +153,13 @@ public class AutoSoup extends Module {
             possibleSlots.add(i);
         }
 
-        if (possibleSlots.isEmpty()) {
-            return -1;
-        }
+        if (possibleSlots.isEmpty()) return -1;
 
-        if (randomSlot.isToggled()) {
-            return possibleSlots.get(RandomUtils.nextInt(0, possibleSlots.size() - 1));
-        } else {
-            return possibleSlots.getFirst();
-        }
+        return possibleSlots.getFirst();
     }
 
     void resetValues() {
         soupSlot = -1;
         health = RandomUtils.nextInt(minHealth.getValue(), maxHealth.getValue());
-        delayBetweenUse = RandomUtils.nextInt(minDelayBetweenUse.getValue(), maxDelayBetweenUse.getValue());
     }
 }

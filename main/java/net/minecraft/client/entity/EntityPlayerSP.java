@@ -109,6 +109,10 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     public void heal(float healAmount) {
     }
 
+    public int getPing() {
+        return mc.getNetHandler().getPlayerInfo(getUniqueID()).getResponseTime();
+    }
+
     public void mountEntity(Entity entityIn) {
         super.mountEntity(entityIn);
 

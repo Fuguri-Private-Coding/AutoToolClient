@@ -62,14 +62,12 @@ public class BackTrack extends Module {
         }
     };
 
+    final CheckBox subtrackOwnDelay = new CheckBox("SubtrackOwnDelay", this);
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenBackTracks", this, 0, 20, 0) ;
-
     final CheckBox onlyWhenNeed = new CheckBox("OnlyWhenNeed", this, true);
-
     final IntegerSetting maxHurtTimeWhenWorking = new IntegerSetting("MaxHurtTimeWhenWorking",this, onlyWhenNeed::isToggled, 3, 8, 5);
 
     CheckBox renderOnlyIfWorking = new CheckBox("RenderOnlyIfWorking", this, true);
-
     Mode render = new Mode("Render", this)
             .addModes("Player", "Box", "OFF")
             .setMode("Player");
@@ -179,8 +177,6 @@ public class BackTrack extends Module {
 
                 switch (render.getMode()) {
                     case "Player" -> {
-                        //mc.entityRenderer.enableLightmap();
-                        //RenderHelper.enableStandardItemLighting();
                         mc.getRenderManager().doRenderEntity(
                                 target,
                                 x, y, z,
