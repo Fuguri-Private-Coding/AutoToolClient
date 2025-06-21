@@ -17,6 +17,7 @@ import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.network.play.client.C16PacketClientStatus;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
@@ -26,7 +27,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @ModuleInfo(name = "AutoSoup", category = Category.COMBAT)
 public class AutoSoup extends Module {
-
 
     final IntegerSetting minHealth = new IntegerSetting("MinHealth", this, 4, 20, 9) {
         @Override
@@ -43,21 +43,31 @@ public class AutoSoup extends Module {
         }
     };
 
-    final IntegerSetting delay = new IntegerSetting("Delay", this, 0, 500, 0);
+    final IntegerSetting minUseDelay = new IntegerSetting("MinUseDelay", this, 0, 500, 0);
+    final IntegerSetting maxUseDelay = new IntegerSetting("MaxUseDelay", this, 0, 500, 0);
+
+    final CheckBox refill = new CheckBox("Refill", this, true);
+
+    final IntegerSetting minRefillDelay = new IntegerSetting("MinRefillDelay", this, refill::isToggled, 0, 500, 0);
+    final IntegerSetting maxRefillDelay = new IntegerSetting("MaxRefillDelay", this, refill::isToggled, 0, 500, 0);
+
+    final CheckBox autoOpen = new CheckBox("AutoOpen", this, refill::isToggled);
+    final CheckBox autoClose = new CheckBox("AutoClose", this, refill::isToggled);
 
     int health, soupSlot;
 
-    StopWatch stopWatch;
+    StopWatch useTimer, refillTimer;
 
     public AutoSoup() {
-        resetValues();
-        stopWatch = new StopWatch();
+        useTimer = new StopWatch();
+        refillTimer = new StopWatch();
     }
 
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof RunGameLoopEvent) {
-            if (mc.currentScreen instanceof GuiInventory) {
+            if (mc.currentScreen == null && autoOpen.isToggled() && hotbarIsEmpty()) openInventory();
+            if (mc.currentScreen instanceof GuiInventory && refill.isToggled()) {
                 int emptySoup = getEmptySoup();
                 if (emptySoup != -1) {
                     if (Math.sin(ThreadLocalRandom.current().nextDouble(0.0, Math.PI * 2)) <= 0.5) {
@@ -67,7 +77,9 @@ public class AutoSoup extends Module {
                     int slot = getSoupExceptHotbar();
                     int i = 0;
 
-                    while (true) {
+                    int randomizeRefillDelay = RandomUtils.nextInt(minRefillDelay.getValue(), maxRefillDelay.getValue());
+
+                    while (refillTimer.reachedMS(randomizeRefillDelay)) {
                         if (i < 9) {
                             ItemStack item = mc.thePlayer.inventory.mainInventory[i];
                             if (item != null) {
@@ -76,7 +88,12 @@ public class AutoSoup extends Module {
                             }
                         }
 
-                        if (hasEmptySlotsInHotbar()) mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 0, 1, mc.thePlayer);
+                        if (hasEmptySlotsInHotbar()) {
+                            mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 0, 1, mc.thePlayer);
+                            refillTimer.reset();
+                        } else if (autoClose.isToggled()) {
+                            mc.thePlayer.closeScreen();
+                        }
                         break;
                     }
                     resetValues();
@@ -84,7 +101,9 @@ public class AutoSoup extends Module {
             }
         }
         if (event instanceof LegitClickTimingEvent) {
-            if (mc.currentScreen == null && stopWatch.reachedMS(delay.getValue())) {
+            if (mc.currentScreen != null) resetValues();
+            int randomizeUseDelay = RandomUtils.nextInt(minUseDelay.getValue(), maxUseDelay.getValue());
+            if (mc.currentScreen == null && useTimer.reachedMS(randomizeUseDelay)) {
                 if (mc.thePlayer.inventory.getCurrentItem() != null && mc.thePlayer.inventory.getCurrentItem().getItem() == Items.bowl) {
                     mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
                     resetValues();
@@ -102,13 +121,27 @@ public class AutoSoup extends Module {
                     }
 
                     mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
-                    stopWatch.reset();
+                    useTimer.reset();
                 }
             }
         }
     }
 
-    public static boolean hasEmptySlotsInHotbar() {
+    boolean hotbarIsEmpty() {
+        for (int i = 0; i < 9; i++) {
+            final ItemStack item = mc.thePlayer.inventory.getStackInSlot(i);
+            if (item == null || !(item.getItem() instanceof ItemSoup)) { continue; }
+            return false;
+        }
+        return true;
+    }
+
+    public void openInventory() {
+        mc.getNetHandler().addToSendQueue(new C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT));
+        mc.displayGuiScreen(new GuiInventory(mc.thePlayer));
+    }
+
+    public boolean hasEmptySlotsInHotbar() {
         for (int i = 0; i < 9; i++) {
             ItemStack stack = mc.thePlayer.inventory.getStackInSlot(i);
             if (stack == null || stack.getItem() == null) {
@@ -161,5 +194,7 @@ public class AutoSoup extends Module {
     void resetValues() {
         soupSlot = -1;
         health = RandomUtils.nextInt(minHealth.getValue(), maxHealth.getValue());
+        mc.thePlayer.inventory.fakeCurrentItem = 0;
+        mc.thePlayer.inventory.currentItem = 0;
     }
 }
