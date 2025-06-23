@@ -13,6 +13,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.gui.FontRenderer;
@@ -31,7 +32,6 @@ public class NameTags extends Module {
     FloatSetting height = new FloatSetting("Height", this, 0,2,0.6F, 0.1F);
 
     ColorSetting color = new ColorSetting("Color", this, 0,0,0,0.4f);
-    ColorSetting textColor = new ColorSetting("TextColor", this, 1,1,1,1);
 
     MurderMystery murderDetector;
     MidClick midClick;
@@ -82,16 +82,11 @@ public class NameTags extends Module {
         String text = userText + friendText + murderText + detectiveText + entity.getDisplayName().getFormattedText();
         float offset = mc.fontRendererObj.FONT_HEIGHT - 8f;
         float stringWidth = mc.fontRendererObj.getStringWidth(text) / 2f;
-        if (shadows.isToggled() && shadows.module.get("NameTags")) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, mc.fontRendererObj.FONT_HEIGHT + 4, 2f, Color.WHITE));
-        RoundedUtils.drawRect(
-                -stringWidth - 2,
-                offset - 3,
-                stringWidth * 2 + 4,
-                mc.fontRendererObj.FONT_HEIGHT + 4,
-                2f,
-                color.getColor()
-        );
-        mc.fontRendererObj.drawString(text, -stringWidth, offset, textColor.getColor().getRGB(), true);
+        if (shadows.isToggled() && shadows.module.get("NameTags")) {
+            BloomUtils.addToDraw(() -> Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, -1));
+        }
+        Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, color.getColor().getRGB());
+        mc.fontRendererObj.drawString(text, -stringWidth, offset, -1, true);
         glColor4f(1f, 1f, 1f, 1f);
         glPopMatrix();
     }

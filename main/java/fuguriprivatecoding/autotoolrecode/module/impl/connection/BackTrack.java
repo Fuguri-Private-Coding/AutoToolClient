@@ -28,6 +28,7 @@ import net.minecraft.util.AxisAlignedBB;
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "BackTrack", category = Category.CONNECTION)
 public class BackTrack extends Module {
@@ -62,20 +63,23 @@ public class BackTrack extends Module {
         }
     };
 
-    final CheckBox subtrackOwnDelay = new CheckBox("SubtrackOwnDelay", this);
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenBackTracks", this, 0, 20, 0) ;
     final CheckBox onlyWhenNeed = new CheckBox("OnlyWhenNeed", this, true);
     final IntegerSetting maxHurtTimeWhenWorking = new IntegerSetting("MaxHurtTimeWhenWorking",this, onlyWhenNeed::isToggled, 3, 8, 5);
 
     CheckBox renderOnlyIfWorking = new CheckBox("RenderOnlyIfWorking", this, true);
     Mode render = new Mode("Render", this)
-            .addModes("Player", "Box", "OFF")
+            .addModes("Player", "HitBox", "Box", "OFF")
             .setMode("Player");
 
-    final CheckBox fadeColor = new CheckBox("FadeColor", this, () -> render.getMode().equalsIgnoreCase("Box"));
-    final ColorSetting color1 = new ColorSetting("Color1", this, () -> render.getMode().equalsIgnoreCase("Box"), 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, () -> render.getMode().equalsIgnoreCase("Box") && fadeColor.isToggled(), 1f,1f,1f,1f);
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> render.getMode().equalsIgnoreCase("Box") && fadeColor.isToggled(),0.1f, 20, 1, 0.1f);
+    BooleanSupplier renderBox = () -> (render.getMode().equalsIgnoreCase("Box") || render.getMode().equalsIgnoreCase("HitBox"));
+
+    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this, renderBox);
+    final ColorSetting color1 = new ColorSetting("Color1", this, renderBox, 1f,1f,1f,1f);
+    final ColorSetting color2 = new ColorSetting("Color2", this, () -> renderBox.getAsBoolean() && fadeBoxColor.isToggled(), 1f,1f,1f,1f);
+    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> renderBox.getAsBoolean() && fadeBoxColor.isToggled(),0.1f, 20, 1, 0.1f);
+
+    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, () -> render.getMode().equalsIgnoreCase("HitBox"), 1f,5f,1f,0.1f);
 
     CheckBox whileKillAura = new CheckBox("WhileKillAura", this);
 
@@ -88,6 +92,8 @@ public class BackTrack extends Module {
     private long delay = 90;
 
     private int delayBetweenBackTracks;
+
+    Color fadeColor;
 
     @EventTarget
     public void onEvent(Event event) {
@@ -188,8 +194,7 @@ public class BackTrack extends Module {
                         RenderHelper.disableStandardItemLighting();
                     }
                     case "Box" -> {
-                        Color fadeColor;
-                        if (this.fadeColor.isToggled()) {
+                        if (this.fadeBoxColor.isToggled()) {
                             fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
                         } else {
                             fadeColor = color1.getColor();
@@ -197,7 +202,18 @@ public class BackTrack extends Module {
 
                         RenderUtils.start3D();
                         RenderUtils.drawBoundingBox(target.getEntityBoundingBox().offset(x - target.posX, y - target.posY, z - target.posZ), fadeColor);
-                        GlStateManager.resetColor();
+                        RenderUtils.stop3D();
+                    }
+
+                    case "HitBox" -> {
+                        if (this.fadeBoxColor.isToggled()) {
+                            fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
+                        } else {
+                            fadeColor = color1.getColor();
+                        }
+
+                        RenderUtils.start3D();
+                        RenderUtils.drawHitBox(target.getEntityBoundingBox().offset(x - target.posX, y - target.posY, z - target.posZ), fadeColor, lineWidth.getValue());
                         RenderUtils.stop3D();
                     }
                 }

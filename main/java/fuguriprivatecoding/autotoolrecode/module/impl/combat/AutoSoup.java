@@ -43,16 +43,37 @@ public class AutoSoup extends Module {
         }
     };
 
-    final IntegerSetting minUseDelay = new IntegerSetting("MinUseDelay", this, 0, 500, 0);
-    final IntegerSetting maxUseDelay = new IntegerSetting("MaxUseDelay", this, 0, 500, 0);
+    final IntegerSetting minUseDelay = new IntegerSetting("MinUseDelay", this, 0, 500, 0) {
+        @Override
+        public int getValue() {
+            if (maxUseDelay.value < value) { value = maxUseDelay.value; }
+            return value;
+        }
+    };
+    final IntegerSetting maxUseDelay = new IntegerSetting("MaxUseDelay", this, 0, 500, 0) {
+        @Override
+        public int getValue() {
+            if (minUseDelay.value > value) { value = minUseDelay.value; }
+            return value;
+        }
+    };
 
     final CheckBox refill = new CheckBox("Refill", this, true);
 
-    final IntegerSetting minRefillDelay = new IntegerSetting("MinRefillDelay", this, refill::isToggled, 0, 500, 0);
-    final IntegerSetting maxRefillDelay = new IntegerSetting("MaxRefillDelay", this, refill::isToggled, 0, 500, 0);
-
-    final CheckBox autoOpen = new CheckBox("AutoOpen", this, refill::isToggled);
-    final CheckBox autoClose = new CheckBox("AutoClose", this, refill::isToggled);
+    final IntegerSetting minRefillDelay = new IntegerSetting("MinRefillDelay", this, refill::isToggled, 0, 500, 0) {
+        @Override
+        public int getValue() {
+            if (maxRefillDelay.value < value) { value = maxRefillDelay.value; }
+            return value;
+        }
+    };
+    final IntegerSetting maxRefillDelay = new IntegerSetting("MaxRefillDelay", this, refill::isToggled, 0, 500, 0) {
+        @Override
+        public int getValue() {
+            if (minRefillDelay.value > value) { value = minRefillDelay.value; }
+            return value;
+        }
+    };
 
     int health, soupSlot;
 
@@ -66,7 +87,6 @@ public class AutoSoup extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof RunGameLoopEvent) {
-            if (mc.currentScreen == null && autoOpen.isToggled() && hotbarIsEmpty()) openInventory();
             if (mc.currentScreen instanceof GuiInventory && refill.isToggled()) {
                 int emptySoup = getEmptySoup();
                 if (emptySoup != -1) {
@@ -91,8 +111,6 @@ public class AutoSoup extends Module {
                         if (hasEmptySlotsInHotbar()) {
                             mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 0, 1, mc.thePlayer);
                             refillTimer.reset();
-                        } else if (autoClose.isToggled()) {
-                            mc.thePlayer.closeScreen();
                         }
                         break;
                     }
@@ -125,15 +143,6 @@ public class AutoSoup extends Module {
                 }
             }
         }
-    }
-
-    boolean hotbarIsEmpty() {
-        for (int i = 0; i < 9; i++) {
-            final ItemStack item = mc.thePlayer.inventory.getStackInSlot(i);
-            if (item == null || !(item.getItem() instanceof ItemSoup)) { continue; }
-            return false;
-        }
-        return true;
     }
 
     public void openInventory() {

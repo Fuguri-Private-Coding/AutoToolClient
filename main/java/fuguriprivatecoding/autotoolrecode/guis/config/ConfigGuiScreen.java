@@ -6,10 +6,12 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiText;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
@@ -40,6 +42,7 @@ public class ConfigGuiScreen extends GuiScreen {
     int delay = 10;
 
     Shadows shadows;
+    Blur blur;
 
     int scroll, totalHeight;
 
@@ -69,6 +72,7 @@ public class ConfigGuiScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
 
         boolean configScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
@@ -122,6 +126,10 @@ public class ConfigGuiScreen extends GuiScreen {
 
         if (shadows.isToggled() && shadows.module.get("ConfigGui")) {
             BloomUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), Color.black));
+        }
+
+        if (blur.isToggled() && blur.module.get("ConfigGui")) {
+            GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), Color.black));
         }
 
         ScissorUtils.enableScissor();

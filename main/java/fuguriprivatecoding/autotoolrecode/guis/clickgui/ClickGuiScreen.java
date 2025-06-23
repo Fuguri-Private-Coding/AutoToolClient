@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
@@ -13,10 +14,12 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.doubles.Doubles;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -52,6 +55,7 @@ public class ClickGuiScreen extends GuiScreen {
 	Module selectedModule = null;
 
 	Shadows shadows;
+	Blur blur;
 
 	boolean resizing, moving, binding, closing, showConsoleAfterClose, showConfigAfterClose;
 
@@ -81,6 +85,7 @@ public class ClickGuiScreen extends GuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+		if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
 		int currentScroll = Mouse.getDWheel();
 
 		if (this.clickGui.fadeColor.isToggled()) {
@@ -170,12 +175,16 @@ public class ClickGuiScreen extends GuiScreen {
 				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), Color.black);
 			});
 		}
+		if (blur.isToggled() && blur.module.get("ClickGui")) {
+			GaussianBlurUtils.addToDraw(() -> {
+				RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.black);
+				RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.black);
+				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), Color.black);
+			});
+		}
 
 		RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
 		RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
-
-//		RoundedUtils.drawRect(0,sc.getScaledHeight() - 20, sc.getScaledWidth(), 20, 1f, BACKGROUND_COLOR);
-//		RoundedUtils.drawRect(0, sc.getScaledHeight() - 20, 25, 20, 1f, BACKGROUND_COLOR);
 
 		fontRenderer.drawString("Console", 5 + 25 - widthConsole, sc.getScaledHeight() - 15 - 1, -1);
 		fontRenderer.drawString("Config", 5 + 60 + 25 - widthConfig, sc.getScaledHeight() - 15 - 1 , -1);
@@ -184,7 +193,15 @@ public class ClickGuiScreen extends GuiScreen {
 		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
 
 		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
-		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clickGui.backgroundRadius.getValue(), HEADER_COLOR);
+		StencilUtils.renderStencil(
+				() -> {
+					RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 10, clickGui.backgroundRadius.getValue(), HEADER_COLOR);
+				},
+				() -> {
+					RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 1f, HEADER_COLOR);
+				}
+		);
+		RoundedUtils.drawRect(background.x, background.y + 5, sizeBackground.x, 10, 1f, HEADER_COLOR);
 		RoundedUtils.drawRect(background.x + sizeBackground.x - 5, background.y + sizeBackground.y - 5, 5, 5, 1, BACKGROUND_COLOR);
 
 		fontRenderer.drawString(name, background.x + 35, background.y + 4, CATEGORY_COLOR.getRGB());

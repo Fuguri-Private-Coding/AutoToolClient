@@ -75,22 +75,12 @@ public class RenderUtils implements Imports {
     }
 
     public static void drawBlockESP(BlockPos blockPos, float red, float green, float blue, float alpha) {
-        GL11.glColor4f(red, green, blue, alpha);
+        glColor4f(red,green,blue,alpha);
         double x = blockPos.getX() - mc.getRenderManager().viewerPosX;
         double y = blockPos.getY() - mc.getRenderManager().viewerPosY;
         double z = blockPos.getZ() - mc.getRenderManager().viewerPosZ;
         Block block = mc.theWorld.getBlockState(blockPos).getBlock();
-        drawBoundingBox(
-                new AxisAlignedBB(
-                        x + block.getBlockBoundsMinX(),
-                        y + block.getBlockBoundsMinY(),
-                        z + block.getBlockBoundsMinZ(),
-                        x + block.getBlockBoundsMaxX(),
-                        y + block.getBlockBoundsMaxY(),
-                        z + block.getBlockBoundsMaxZ()
-                )
-        );
-
+        drawBoundingBox(new AxisAlignedBB(x + block.getBlockBoundsMinX(), y + block.getBlockBoundsMinY(), z + block.getBlockBoundsMinZ(), x + block.getBlockBoundsMaxX(), y + block.getBlockBoundsMaxY(), z + block.getBlockBoundsMaxZ()));
         ColorUtils.resetColor();
     }
 
@@ -114,6 +104,16 @@ public class RenderUtils implements Imports {
 
     public static void drawBoundingBox(AxisAlignedBB abb, Color color) {
         drawBoundingBox(abb, color.getRed() / 255f,color.getGreen() / 255f,color.getBlue() / 255f,color.getAlpha() / 255f);
+    }
+
+    public static void drawHitBox(AxisAlignedBB bb, Color color, float lineWidth) {
+        drawBoundingBox(bb.expand(0.1f,0.1f,0.1f), color);
+
+        if (lineWidth > 0) {
+            glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1f);
+            renderHitBox(bb.expand(0.1f,0.1f,0.1f), lineWidth);
+            ColorUtils.resetColor();
+        }
     }
 
     public static void drawBoundingBox(AxisAlignedBB abb, float r, float g, float b, float a) {
@@ -432,6 +432,12 @@ public class RenderUtils implements Imports {
 
     public static void renderHitBox(AxisAlignedBB bb) {
         renderHitBox(bb, GL_LINE_LOOP);
+    }
+
+    public static void renderHitBox(AxisAlignedBB bb, float lineWidth) {
+        glLineWidth(lineWidth);
+        renderHitBox(bb, GL_LINE_LOOP);
+        glLineWidth(1f);
     }
 
     public static void drawImage(ResourceLocation image, int x, int y, int width, int height) {

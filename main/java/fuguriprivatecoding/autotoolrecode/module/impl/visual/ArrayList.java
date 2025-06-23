@@ -9,7 +9,9 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
+import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 
@@ -19,20 +21,25 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleInfo(name = "ArrayList", category = Category.VISUAL)
 public class ArrayList extends Module {
 
-	final CheckBox showRenderModules = new CheckBox("ShowRenderModules", this, false);
-
-	final ColorSetting color = new ColorSetting("Color", this, 1f,1f,1f,1f);
+	final ColorSetting color = new ColorSetting("TextColor", this, 1f,1f,1f,1f);
 	final CheckBox textShadow = new CheckBox("TextShadow", this, false);
 
 	final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, 0,0,0,0.5f);
 
 	final CheckBox suffix = new CheckBox("Suffix", this);
 
+	final MultiMode categories = new MultiMode("HideCategories", this)
+			.addModes("Combat", "Move", "Visual", "Connection", "Exploit", "Legit", "Player", "Misc", "Client")
+			;
+
 	Shadows shadows;
+
+	Blur blur;
 
 	@EventTarget
 	public void onEvent(Event event) {
 		if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+		if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
 		if (event instanceof Render2DEvent) {
 			final FontRenderer font = mc.fontRendererObj;
 			List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModuleManager().getEnabledModules());
@@ -41,15 +48,28 @@ public class ArrayList extends Module {
 
 			double offset = 0;
 			for (Module module : moduleList) {
-				if (module.isHide() || !showRenderModules.isToggled() && module.getCategory() == Category.VISUAL) continue;
+				if (categories.get("Combat") && module.getCategory() == Category.COMBAT) continue;
+				if (categories.get("Move") && module.getCategory() == Category.MOVE) continue;
+				if (categories.get("Visual") && module.getCategory() == Category.VISUAL) continue;
+				if (categories.get("Connection") && module.getCategory() == Category.CONNECTION) continue;
+				if (categories.get("Exploit") && module.getCategory() == Category.EXPLOIT) continue;
+				if (categories.get("Legit") && module.getCategory() == Category.LEGIT) continue;
+				if (categories.get("Player") && module.getCategory() == Category.PLAYER) continue;
+				if (categories.get("Misc") && module.getCategory() == Category.MISC) continue;
+				if (categories.get("Client") && module.getCategory() == Category.CLIENT) continue;
+				if (module.isHide()) continue;
 
 				if (shadows.isToggled() && shadows.module.get("ArrayList")) {
 					double finalOffset = offset;
 					BloomUtils.addToDraw(() -> Gui.drawRect(6,(float) finalOffset + 19f, font.getStringWidth(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : "")) + 10, (float) finalOffset + 6f, -1));
 				}
 
-				Gui.drawRect(6,(float) offset + 19f, (float) font.getStringWidth(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : "")) + 10, (float) offset + 6f, backgroundColor.getColor().getRGB());
+				if (blur.isToggled() && blur.module.get("ArrayList")) {
+					double finalOffset = offset;
+					GaussianBlurUtils.addToDraw(() -> Gui.drawRect(6,(float) finalOffset + 19f, font.getStringWidth(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : "")) + 10, (float) finalOffset + 6f, -1));
+				}
 
+				Gui.drawRect(6,(float) offset + 19f, (float) font.getStringWidth(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : "")) + 10, (float) offset + 6f, backgroundColor.getColor().getRGB());
 				font.drawString(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : ""), 8.5f, (float) (8.5f + offset), color.getColor().getRGB(), textShadow.isToggled());
 				offset += 13;
 			}

@@ -24,8 +24,8 @@ public class ModuleManager {
 		INSTANCE = this;
 		 register(
 				 new AutoSoup(),
-				 new Reach(),
 				 new KillAura(),
+				 new Blur(),
 				 new Dot(),
 				 new BedESP(),
 				 //new TestScaff(),

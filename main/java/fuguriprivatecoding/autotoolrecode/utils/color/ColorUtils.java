@@ -18,13 +18,24 @@ public class ColorUtils {
         return new Color(redPart, greenPart, bluePart, alphaPart);
     }
 
-    public Color mixColor(final Color color1, final Color color2, final int i, final double offset) {
-        final double percent = (Math.cos(i * Math.PI / 180 * offset) + 1) / 2;
+    public Color mixColor(final Color color1, final Color color2, final int i, final double offset, final double speed) {
+        double time = System.currentTimeMillis() / 1000.0;
+        double angle = time * speed;
+
+        double staticOffset = i * offset * (Math.PI / 180);
+
+        double sinWave = Math.sin(angle + staticOffset);
+        double cosWave = Math.cos(angle + staticOffset);
+
+        final double percent = (sinWave + cosWave + 2) / 4;
+
         final double inverse_percent = 1.0 - percent;
+
         final int redPart = (int) (color1.getRed() * percent + color2.getRed() * inverse_percent);
         final int greenPart = (int) (color1.getGreen() * percent + color2.getGreen() * inverse_percent);
         final int bluePart = (int) (color1.getBlue() * percent + color2.getBlue() * inverse_percent);
         final int alphaPart = (int) (color1.getAlpha() * percent + color2.getAlpha() * inverse_percent);
+
         return new Color(redPart, greenPart, bluePart, alphaPart);
     }
 

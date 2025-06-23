@@ -73,7 +73,7 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(2, 5,0);
+		version = new ClientVersion(2, 8,0);
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");

@@ -7,21 +7,28 @@ import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-
 import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
 @ModuleInfo(name = "TargetHUD", category = Category.VISUAL)
 public class TargetHUD extends Module {
+
+    private final CheckBox renderHealth = new CheckBox("RenderHealth", this);
+    private final CheckBox renderName = new CheckBox("RenderName", this);
+    private final CheckBox renderHead = new CheckBox("RenderHead", this);
+    private final CheckBox renderBackground = new CheckBox("RenderBackground", this);
 
     private final IntegerSetting scale = new IntegerSetting("Scale", this, 1, 10, 5);
 
@@ -41,7 +48,7 @@ public class TargetHUD extends Module {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (event instanceof Render3DEvent && mc.currentScreen == null) {
             EntityLivingBase target = Client.INST.getCombatManager().getTarget();
-            if (target == null) return;
+            if (target == null || target.getName() == null || target.getSkin() == null) return;
 
             double[] pos = calculateEntityPosition(target);
 
@@ -84,17 +91,18 @@ public class TargetHUD extends Module {
         float currentHealth = target.getHealth();
         float healthPercentage = currentHealth / maxHealth;
 
-        updateHealthAnimation(healthPercentage);
-
         if (shadows != null && shadows.isToggled() && shadows.module.get("TargetHUD")) {
             BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-TEXTURE_WIDTH / 2f, -TEXTURE_HEIGHT / 2f, TEXTURE_WIDTH, TEXTURE_HEIGHT, CORNER_RADIUS, Color.WHITE));
         }
+        if (renderBackground.isToggled()) RoundedUtils.drawRect(-TEXTURE_WIDTH / 2f, -TEXTURE_HEIGHT / 2f, TEXTURE_WIDTH, TEXTURE_HEIGHT, CORNER_RADIUS, new Color(0, 0, 0, 150));
 
-        RoundedUtils.drawRect(-TEXTURE_WIDTH / 2f, -TEXTURE_HEIGHT / 2f, TEXTURE_WIDTH, TEXTURE_HEIGHT, CORNER_RADIUS, new Color(0, 0, 0, 150));
+        if (target instanceof EntityPlayer && renderHead.isToggled()) renderPlayerHead((EntityPlayer)target, hurtTime);
+        if (renderName.isToggled()) renderPlayerName(target);
 
-        if (target instanceof EntityPlayer) renderPlayerHead((EntityPlayer)target, hurtTime);
-        renderPlayerName(target);
-        renderHealthBar(hurtTime, healthPercentage);
+        if (renderHealth.isToggled()) {
+            updateHealthAnimation(healthPercentage);
+            renderHealthBar(hurtTime, healthPercentage);
+        }
     }
 
     private void updateHealthAnimation(float healthPercentage) {
@@ -109,8 +117,12 @@ public class TargetHUD extends Module {
     }
 
     private void renderPlayerHead(EntityPlayer player, float hurtTime) {
-        glColor4f(1f, 1f - hurtTime, 1f - hurtTime, 1f);
-        RenderUtils.quickDrawHead(player.getSkin(), (int) (-TEXTURE_WIDTH / 2f + PADDING), (int) (-TEXTURE_HEIGHT / 2f + PADDING), (int) HEAD_SIZE, (int) (TEXTURE_HEIGHT - 2 * PADDING));
+        StencilUtils.renderStencil(
+                () -> RoundedUtils.drawRect((-TEXTURE_WIDTH / 2f + PADDING), (-TEXTURE_HEIGHT / 2f + PADDING), HEAD_SIZE, (TEXTURE_HEIGHT - 2 * PADDING), 10f, Color.white),
+                () -> {
+            glColor4f(1f, 1f - hurtTime, 1f - hurtTime, 1f);
+            RenderUtils.quickDrawHead(player.getSkin(), (int) (-TEXTURE_WIDTH / 2f + PADDING), (int) (-TEXTURE_HEIGHT / 2f + PADDING), (int) HEAD_SIZE, (int) (TEXTURE_HEIGHT - 2 * PADDING));
+        });
     }
 
     private void renderPlayerName(EntityLivingBase target) {

@@ -16,6 +16,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -42,6 +43,7 @@ public class BedESP extends Module {
     private long lastCheck = 0;
 
     Shadows shadows;
+    Blur blur;
     Thread update;
     Color fadeColor;
 
@@ -56,6 +58,7 @@ public class BedESP extends Module {
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (event instanceof WorldChangeEvent && !beds.isEmpty()) beds.clear();
         if (event instanceof TickEvent) {
             if (System.currentTimeMillis() - lastCheck < rate.getValue() * 100L) return;
@@ -75,6 +78,7 @@ public class BedESP extends Module {
             RenderUtils.start3D();
             for (BlockPos[] bed : beds) {
                 if (shadows.isToggled() && shadows.module.get("BedESP")) BloomUtils.addToDraw(() -> renderBed(bed, Color.white));
+                if (blur.isToggled() && blur.module.get("BedESP")) GaussianBlurUtils.addToDraw(() -> renderBed(bed, Color.white));
                 renderBed(bed, fadeColor);
             }
             RenderUtils.stop3D();

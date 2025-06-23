@@ -11,6 +11,8 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 
@@ -36,6 +38,8 @@ public class TargetESP extends Module {
     final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
     final ColorSetting color2 = new ColorSetting("Color2", this, fadeBoxColor::isToggled, 1f,1f,1f,1f);
     final FloatSetting fadeOffset = new FloatSetting("FadeOffset", this, fadeBoxColor::isToggled,0.1f, 20, 1, 0.1f);
+
+    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled, 0.1f, 20, 1, 0.1f);
 
     private final List<Sigma2> poses = new ArrayList<>();
 
@@ -80,7 +84,6 @@ public class TargetESP extends Module {
         double y = target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - viewerPosY;
         double z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - viewerPosZ;
 
-        glPushMatrix();
         glDisable(GL_TEXTURE_2D);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
@@ -94,7 +97,7 @@ public class TargetESP extends Module {
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
 
             if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue());
+                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue());
             } else {
                 fadeColor = color1;
             }
@@ -111,7 +114,7 @@ public class TargetESP extends Module {
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
 
             if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue());
+                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue());
             } else {
                 fadeColor = color1;
             }
@@ -128,7 +131,6 @@ public class TargetESP extends Module {
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);
-        glPopMatrix();
     }
 
     private void renderSigma2(Color color1, Color color2) {
@@ -146,8 +148,8 @@ public class TargetESP extends Module {
         f *= target.height + 0.1f;
         poses.add(new Sigma2((float) f, System.currentTimeMillis()));
         poses.removeIf(pose -> System.currentTimeMillis() - pose.time() >= 500 / speed.getValue() * length.getValue());
-
-        glPushMatrix();
+        mc.entityRenderer.disableLightmap();
+        RenderHelper.disableStandardItemLighting();
         glDisable(GL_TEXTURE_2D);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
@@ -160,7 +162,7 @@ public class TargetESP extends Module {
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
 
             if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue());
+                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue());
             } else {
                 fadeColor = color1;
             }
@@ -176,7 +178,7 @@ public class TargetESP extends Module {
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
 
             if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue());
+                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue());
             } else {
                 fadeColor = color1;
             }
@@ -186,6 +188,7 @@ public class TargetESP extends Module {
             RenderUtils.glColor(fadeColor, 1f);
             glVertex3d(x1, y + poses.getLast().value + 0.02, z1);
         }
+
         glEnd();
         glEnable(GL_CULL_FACE);
         glShadeModel(7424);
@@ -193,7 +196,6 @@ public class TargetESP extends Module {
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);
-        glPopMatrix();
     }
 
     private record Sigma2(float value, long time) { }

@@ -9,10 +9,8 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
-import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
+import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -23,9 +21,11 @@ import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.Vec3;
 
+import java.awt.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "Ping", category = Category.CONNECTION)
 public class Ping extends Module {
@@ -46,16 +46,26 @@ public class Ping extends Module {
             .add("Scaffold")
             .add("OpenedGui");
 
-    Mode renderModes = new Mode("RenderMode", this)
-            .addModes("Player", "Box", "OFF")
+    private final Mode renderModes = new Mode("RenderMode", this)
+            .addModes("Player", "HitBox", "OFF")
             .setMode("Player");
 
-    private long lastResetTime;
-    private long delayBeforeNextLag;
+    BooleanSupplier renderBox = () -> (renderModes.getMode().equalsIgnoreCase("HitBox"));
+
+    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this, renderBox);
+    final ColorSetting color1 = new ColorSetting("Color1", this, renderBox, 1f,1f,1f,1f);
+    final ColorSetting color2 = new ColorSetting("Color2", this, () -> renderBox.getAsBoolean() && fadeBoxColor.isToggled(), 1f,1f,1f,1f);
+    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> renderBox.getAsBoolean() && fadeBoxColor.isToggled(),0.1f, 20, 1, 0.1f);
+
+    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f,5f,1f,0.1f);
+
+    private long lastResetTime, delayBeforeNextLag;
     private final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
     private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
 
     Vec3 lastPos, currentPos;
+
+    Color fadeColor;
 
     @Override
     public void onDisable() {
@@ -138,8 +148,10 @@ public class Ping extends Module {
             }
             case RunGameLoopEvent _ -> handlePackets();
             case TickEvent _ -> {
-                if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChest) && actions.get("OpenedGui")) reset();
-                if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && actions.get("Scaffold")) reset();
+                if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChest) && actions.get("OpenedGui"))
+                    reset();
+                if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && actions.get("Scaffold"))
+                    reset();
 
                 if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) reset();
                 if (actions.get("UsingItem") && mc.thePlayer.isUsingItem()) reset();
@@ -152,7 +164,7 @@ public class Ping extends Module {
                 }
             }
             case Render3DEvent _ -> {
-                if (mc.gameSettings.thirdPersonView == 0 || lastPos == null || currentPos == null) {
+                if (mc.gameSettings.thirdPersonView == 0 || lastPos == null || currentPos == null || renderModes.getMode().equalsIgnoreCase("OFF")) {
                     break;
                 }
 
@@ -163,20 +175,26 @@ public class Ping extends Module {
                 double z = lastPos.zCoord + (currentPos.zCoord - lastPos.zCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
 
                 switch (renderModes.getMode()) {
-                    case "Box" -> {
+                    case "HitBox" -> {
+                        if (this.fadeBoxColor.isToggled()) {
+                            fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
+                        } else {
+                            fadeColor = color1.getColor();
+                        }
                         RenderUtils.start3D();
                         Vec3 smoothPos = new Vec3(x, y, z);
                         Vec3 diff = smoothPos.subtract(player.getPositionVector());
-                        RenderUtils.renderHitBox(player.getEntityBoundingBox().offset(diff));
+                        RenderUtils.drawHitBox(player.getEntityBoundingBox().offset(diff), fadeColor, lineWidth.getValue());
                         RenderUtils.stop3D();
                     }
+
                     case "Player" -> {
                         mc.getRenderManager().doRenderEntity(
-                            player,
-                            x, y, z,
-                            player.getRotationYawHead(),
-                            mc.timer.renderPartialTicks,
-                            true
+                                player,
+                                x, y, z,
+                                player.getRotationYawHead(),
+                                mc.timer.renderPartialTicks,
+                                true
                         );
                         mc.entityRenderer.disableLightmap();
                         RenderHelper.disableStandardItemLighting();

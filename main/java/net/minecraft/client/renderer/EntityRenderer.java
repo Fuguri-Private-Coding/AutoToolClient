@@ -16,7 +16,9 @@ import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -41,6 +43,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.client.shader.ShaderLinkHelper;
 import net.minecraft.crash.CrashReport;
@@ -174,8 +177,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private float avgServerTickDiff = 0.0F;
     private ShaderGroup[] fxaaShaders = new ShaderGroup[10];
     private boolean loadVisibleChunks = false;
+    private Framebuffer framebuffer = new Framebuffer(1, 1, false);
 
     Shadows shadows;
+    Blur blur;
 
     public EntityRenderer(Minecraft mcIn, IResourceManager resourceManagerIn) {
         this.shaderIndex = shaderCount;
@@ -1002,6 +1007,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
     public void updateCameraAndRender(float partialTicks, long nanoTime) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         Config.renderPartialTicks = partialTicks;
         this.frameInit();
         boolean flag = Display.isActive();
@@ -1088,8 +1094,21 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 if (!this.mc.gameSettings.hideGUI || this.mc.currentScreen != null) {
                     GlStateManager.alphaFunc(516, 0.1F);
                     this.mc.ingameGUI.renderGameOverlay(partialTicks);
+                    if (blur.isToggled()) GaussianBlurUtils.draw();
 
+                    GlStateManager.pushMatrix();
                     new Render2DEvent().call();
+                    GlStateManager.popMatrix();
+
+                    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                    GlStateManager.disableLighting();
+                    GlStateManager.enableAlpha();
+
+                    if (shadows.isToggled()) BloomUtils.draw();
+                    this.mc.getFramebuffer().bindFramebuffer(false);
+                    this.framebuffer.bindFramebufferTexture();
+                    Shader.drawQuad();
+                    GlStateManager.bindTexture(0);
 
                     if (this.mc.gameSettings.ofShowFps && !this.mc.gameSettings.showDebugInfo) {
                         Config.drawFps();
@@ -1144,8 +1163,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 }
             }
         }
-
-        if (shadows.isToggled()) BloomUtils.draw();
 
         this.frameFinish();
         this.waitForServerThread();
