@@ -3,7 +3,6 @@ package fuguriprivatecoding.autotoolrecode;
 import de.florianmichael.viamcp.ViaMCP;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiScreen;
 import fuguriprivatecoding.autotoolrecode.guis.config.ConfigGuiScreen;
-import fuguriprivatecoding.autotoolrecode.irc.packet.ClientSocket;
 import fuguriprivatecoding.autotoolrecode.config.ConfigManager;
 import fuguriprivatecoding.autotoolrecode.command.CommandManager;
 import fuguriprivatecoding.autotoolrecode.deeplearn.DeepLearningEngine;
@@ -14,7 +13,9 @@ import fuguriprivatecoding.autotoolrecode.guis.console.*;
 import fuguriprivatecoding.autotoolrecode.managers.*;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleManager;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.IRCModule;
 import fuguriprivatecoding.autotoolrecode.utils.font.*;
+import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
 import fuguriprivatecoding.autotoolrecode.utils.discord.*;
 import fuguriprivatecoding.autotoolrecode.utils.file.*;
@@ -61,8 +62,8 @@ public enum Client implements Imports {
 	ConfigGuiScreen configGuiScreen;
 	AltManagerGuiScreen altManagerGui;
 	NewClickGuiScreen newClickGuiScreen;
-	Discord discord;
-	@Setter ClientSocket clientSocket;
+	@Setter Discord discord;
+	@Setter IRC irc;
 
 	FontsRepository fonts;
 
@@ -72,8 +73,13 @@ public enum Client implements Imports {
 		long start = System.nanoTime();
 		starting = true;
 
+		WindowIconHelper.setWindowIcon(
+				new ResourceLocation("minecraft", "hackclient/image/logo16.png"),
+				new ResourceLocation("minecraft", "hackclient/image/logo32.png")
+		);
+
 		name = "AutoTool";
-		version = new ClientVersion(2, 8,0);
+		version = new ClientVersion(3, 0,0);
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");
@@ -87,12 +93,14 @@ public enum Client implements Imports {
 
 		console = new ConsoleGuiScreen();
 
+		discord = new Discord();
+		discord.init();
+
 		combatManager = new CombatManager();
 		friendManager = new FriendManager();
         soundsManager = new SoundsManager();
 
-		discord = new Discord();
-		discord.init();
+		discord.startRPC();
 
 		moduleManager = new ModuleManager();
 
@@ -117,9 +125,6 @@ public enum Client implements Imports {
 		ViaMCP.create();
 		ViaMCP.INSTANCE.initAsyncSlider();
 
-//		fonts = new FontsRepository();
-//		Fonts.init();
-
 		clickGui = new ClickGuiScreen();
 
 		configGuiScreen = new ConfigGuiScreen();
@@ -129,38 +134,59 @@ public enum Client implements Imports {
 
         starting = false;
 
-		WindowIconHelper.setWindowIcon(
-				new ResourceLocation("minecraft", "hackclient/image/logo16.png"),
-				new ResourceLocation("minecraft", "hackclient/image/logo32.png")
-		);
-
 		double elapsedNanos = System.nanoTime() - start;
 		console.log("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
 	}
 
 	public String getChangeLog() {
 		return """
-				БАГ ФИКСЫ ЙОПТА
+				PENIS AUTOTOOL WELCOME NICE PENIS!!! GITLER HAPUT...
 				""";
 	}
 
 	public void onClose() {
 		configManager.saveConfig(configManager.getDefaultConfig());
 		configManager.saveBinds();
+		if (IRC.myID != -1) irc.getServerChannel().deleteMessageById(IRC.myID).queue();
 	}
 
 	public String getFullName() {
 		return getName() + " " + getVersion();
 	}
 
+	private long lastTime;
+
 	@EventTarget
 	public void onEvent(Event event) {
+		if (event instanceof ServerJoinEvent) {
+			if (!IRCModule.usersOnline.isEmpty()) IRCModule.usersOnline.clear();
+			join();
+		}
+		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
+			lastTime = System.currentTimeMillis();
+			new Thread(HWIDUtils::check).start();
+		}
 		if (event instanceof KeyEvent keyEvent) {
 			for (Module module : moduleManager.getModules()) {
 				if (module.getKey() == keyEvent.getKey()) {
 					module.toggle();
 				}
 			}
+		}
+	}
+
+	public void join() {
+		if (IRC.myID != -1) {
+			Client.INST.getIrc().getServerChannel().deleteMessageById(IRC.myID).queue(_ -> {
+				IRC.myID = -1;
+				Client.INST.getIrc().getServerChannel().sendMessage(
+						mc.getSession().getUsername() + " " + Client.INST.getProfile()
+				).queue(sendMessage -> IRC.myID = sendMessage.getIdLong());
+			});
+		} else {
+			Client.INST.getIrc().getServerChannel().sendMessage(
+					mc.getSession().getUsername() + " " + Client.INST.getProfile()
+			).queue(sendMessage -> IRC.myID = sendMessage.getIdLong());
 		}
 	}
 }

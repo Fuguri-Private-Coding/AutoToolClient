@@ -51,6 +51,8 @@ public class AutoClicker extends Module {
 
             if (mc.thePlayer.isUsingItem()) return;
 
+            if (Mouse.isButtonDown(1)) return;
+
             if (mc.currentScreen != null) return;
 
             if (allowBreakBlock.isToggled() && RayCastUtils.rayCast(Client.INST.getCombatManager().getEntityReach(), Client.INST.getCombatManager().getBlockReach(), Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) return;

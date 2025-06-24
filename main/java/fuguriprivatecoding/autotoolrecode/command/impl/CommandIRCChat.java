@@ -2,13 +2,12 @@ package fuguriprivatecoding.autotoolrecode.command.impl;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.command.Command;
-import fuguriprivatecoding.autotoolrecode.irc.packet.ClientSocket;
-import fuguriprivatecoding.autotoolrecode.irc.packet.impl.MessagePacket;
+import fuguriprivatecoding.autotoolrecode.utils.discord.IRC;
 
 public class CommandIRCChat extends Command {
 
     public CommandIRCChat() {
-        super("IRCChat", "/irc <message>" , "irc");
+        super("IRCChat", "/irc <message> || /bc <message> (Only Owner)" , "irc", "bc");
     }
 
     @Override
@@ -19,14 +18,25 @@ public class CommandIRCChat extends Command {
         }
 
         if (args[0].equalsIgnoreCase("irc")) {
-            ClientSocket irc = Client.INST.getClientSocket();
+            IRC irc = Client.INST.getIrc();
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(Client.INST.getProfile().toString()).append(" ");
+            stringBuilder.append(Client.INST.getProfile().getColored()).append(" ");
             for (String arg : args) {
                 if (arg.equalsIgnoreCase(args[0])) continue;
                 stringBuilder.append(arg).append(" ");
             }
-            irc.sendPacketToServer(new MessagePacket(Client.INST.getProfile(), stringBuilder.toString()));
+            irc.sendIRCMessage(stringBuilder.toString());
+        }
+
+        if (args[0].equalsIgnoreCase("bc") && Client.INST.getProfile().getRole().equalsIgnoreCase("Owner")) {
+            IRC irc = Client.INST.getIrc();
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("§f[§7Server§f]§f").append(" ");
+            for (String arg : args) {
+                if (arg.equalsIgnoreCase(args[0])) continue;
+                stringBuilder.append(arg).append(" ");
+            }
+            irc.sendIRCMessage(stringBuilder.toString());
         }
     }
 }

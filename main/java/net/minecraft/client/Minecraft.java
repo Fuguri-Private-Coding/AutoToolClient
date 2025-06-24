@@ -37,6 +37,7 @@ import javax.imageio.ImageIO;
 
 import de.florianmichael.viamcp.fixes.AttackOrder;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.utils.discord.IRC;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
@@ -597,18 +598,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     }
 
     public void displayCrashReport(CrashReport crashReportIn) {
-//        try {
-//            Client.INSTANCE.getConfigManager().save(Client.INSTANCE.getDefaultConfig());
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        try {
-//            Client.INSTANCE.getConfigManager().saveBinds(Client.INSTANCE.getBindsDirectory());
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-
+        if (IRC.myID != -1) Client.INST.getIrc().getServerChannel().deleteMessageById(IRC.myID).queue();
         File file1 = new File(getMinecraft().mcDataDir, "crash-reports");
         File file2 = new File(file1, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
         Bootstrap.printToSYSOUT(crashReportIn.getCompleteReport());
@@ -874,7 +864,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.fakeTimer.updateTimer();
         }
 
-        new RunGameLoopEvent().call();
+        new RunGameLoopEvent().callNoWorldNoPlayer();
 
         this.mcProfiler.startSection("scheduledExecutables");
 

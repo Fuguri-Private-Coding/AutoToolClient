@@ -35,7 +35,8 @@ public class GuiClientMainMenu extends GuiScreen {
         final FontRenderer font = mc.fontRendererObj;
 
         font.drawString(Client.INST.getChangeLog(), 5, 5, -1, true);
-        font.drawString(Client.INST.getName(), sc.getScaledWidth() / 2f - font.getStringWidth(Client.INST.getName()) / 2f, sc.getScaledHeight() / 2f, Color.WHITE.getRGB(), true);
+        final String userText = "Hello, " + Client.INST.getProfile().getUsername() + " welcome to AutoTool!";
+        font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f, Color.WHITE.getRGB());
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 

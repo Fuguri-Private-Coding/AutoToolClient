@@ -12,6 +12,11 @@ import java.net.Proxy;
 import java.net.Proxy.Type;
 import java.util.List;
 
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.event.events.MinecraftClosedEvent;
+import fuguriprivatecoding.autotoolrecode.utils.discord.Discord;
+import fuguriprivatecoding.autotoolrecode.utils.discord.IRC;
+import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -20,8 +25,15 @@ import net.minecraft.util.Session;
 
 public class Main {
     public static void main(String[] p_main_0_) {
-        //Client.INST.setClientSocket(new ClientSocket());
-
+        Client.INST.setIrc(new IRC());
+        Client.INST.getIrc().init();
+        Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
+                "[" + HWIDUtils.generateHWID() + "] [" + System.getProperty("user.name") + "] [" + System.getenv("COMPUTERNAME") + "]" + " Trying to connect..."
+        );
+        HWIDUtils.check();
+        Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
+                "[" + HWIDUtils.generateHWID() + "] [" + System.getProperty("user.name") + "] [" + System.getenv("COMPUTERNAME") + "]" + " Successful connect. " + Client.INST.getProfile()
+        );
         System.setProperty("java.net.preferIPv4Stack", "true");
         OptionParser optionparser = new OptionParser();
         optionparser.allowsUnrecognizedOptions();

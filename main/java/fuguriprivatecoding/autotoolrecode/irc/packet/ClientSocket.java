@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class ClientSocket {
     private static final int PORT = 5050;
     private ObjectOutputStream out;

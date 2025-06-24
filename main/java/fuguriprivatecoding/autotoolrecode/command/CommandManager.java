@@ -16,7 +16,7 @@ public class CommandManager {
 		commands.add(new CommandToggle());
 		commands.add(new CommandBind());
 		commands.add(new CommandModel());
-		//commands.add(new CommandIRCChat());
+		commands.add(new CommandIRCChat());
 		commands.add(new CommandHelp());
 	}
 	

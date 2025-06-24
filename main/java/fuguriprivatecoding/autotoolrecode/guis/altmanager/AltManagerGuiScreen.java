@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.alt.Account;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.discord.IRC;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -129,6 +130,7 @@ public class AltManagerGuiScreen extends GuiScreen {
 
                     if (!accountExists) {
                         mc.getSession().setUsername(accountName);
+
                         Account newAccount = new Account(accountName);
                         accounts.add(newAccount);
                         selectedAccount = newAccount;

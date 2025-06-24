@@ -34,10 +34,10 @@ public class Velocity extends Module {
     public void onEvent(Event event) {
         switch (mode.getMode()) {
             case "Vanilla" -> {
-                if (event instanceof PacketEvent packetEvent
-                        && packetEvent.getPacket() instanceof S12PacketEntityVelocity s12
+                if (event instanceof PacketEvent e
+                        && e.getPacket() instanceof S12PacketEntityVelocity s12
                         && s12.getEntityID() == mc.thePlayer.getEntityId()) {
-                    packetEvent.cancel();
+                    e.cancel();
                     double needMotionX = s12.getMotionX() / 8000d;
                     double needMotionY = s12.getMotionY() / 8000d;
                     double needMotionZ = s12.getMotionZ() / 8000d;
@@ -55,13 +55,12 @@ public class Velocity extends Module {
                     mc.thePlayer.motionZ += deltaMotionZ;
                 }
             }
-
             case "Intave" -> {
                 if (event instanceof AttackEvent) {
                     if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.isSprinting()) {
+                        mc.thePlayer.setSprinting(false);
                         mc.thePlayer.motionX *= 0.6f;
                         mc.thePlayer.motionZ *= 0.6f;
-                        mc.thePlayer.setSprinting(false);
                     }
                 }
                 if (event instanceof MoveButtonEvent moveButtonEvent && jump.isToggled()) {

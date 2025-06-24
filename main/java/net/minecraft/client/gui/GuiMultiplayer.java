@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 
+import fuguriprivatecoding.autotoolrecode.event.events.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.guis.multiplayer.GuiViaVersion;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
@@ -296,6 +297,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
 
     private void connectToServer(ServerData server) {
         this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, server));
+        new ServerJoinEvent(server).callNoWorldNoPlayer();
     }
 
     public void selectServer(int index) {

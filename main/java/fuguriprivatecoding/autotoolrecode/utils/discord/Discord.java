@@ -15,7 +15,7 @@ import net.minecraft.client.gui.GuiMultiplayer;
 
 public class Discord implements Imports {
 
-    public Discord() {
+    public void startRPC() {
         Client.INST.getEventManager().register(this);
     }
 
@@ -42,6 +42,9 @@ public class Discord implements Imports {
         }).build();
 
         DiscordRPC.discordInitialize("1356982126746140713", handlers, true);
+
+        update("Starting Game...", "SOSAl!");
+        DiscordRPC.discordRunCallbacks();
     }
 
     @EventTarget

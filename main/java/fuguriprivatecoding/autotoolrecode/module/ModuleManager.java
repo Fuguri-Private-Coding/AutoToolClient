@@ -87,6 +87,8 @@ public class ModuleManager {
 				 new KeepSprint(),
 				 new AutoLeave(),
 				 new KillEffects(),
+				 new GuiMove(),
+				 new IRCModule(),
 				 //new FreeLook(),
 				 new Ambience(),
 				 new TargetHUD()

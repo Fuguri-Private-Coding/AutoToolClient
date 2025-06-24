@@ -41,5 +41,18 @@ public class EventManager implements Imports {
         }
     }
 
+    public void callNoWorldNoPlayer(Event event) {
+        for (Subscriber subscriber : subscribers) {
+            if (!subscriber.method().getParameterTypes()[0].isAssignableFrom(event.getClass())) {
+                continue;
+            }
+
+            try {
+                subscriber.method().invoke(subscriber.object(), event);
+            } catch (IllegalAccessException | InvocationTargetException _) {
+            }
+        }
+    }
+
     private record Subscriber(Object object, Method method) {}
 }
