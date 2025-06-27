@@ -20,19 +20,32 @@ public class IRC extends ListenerAdapter {
     public MessageChannel loginChannel;
     public MessageChannel serverChannel;
     public MessageChannel hwidChannel;
+    public MessageChannel onlineChannel;
     public static long myID = -1;
+    public static long myOnlineID = -1;
 
     public void init() {
+        JDA jda;
         {
-            String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GWZvER.shF_rSJG9yPypoRALEyRsmF-uEnUp5cPQxbyFw";
+            {
+                {
+                    {
+                        {
+                            {
+                                String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GWZvER.shF_rSJG9yPypoRALEyRsmF-uEnUp5cPQxbyFw";
 
-            JDA jda = JDABuilder.createDefault(token)
-                    .enableIntents(
-                            GatewayIntent.MESSAGE_CONTENT,
-                            GatewayIntent.GUILD_MESSAGES
-                    )
-                    .addEventListeners(this)
-                    .build();
+                                jda = JDABuilder.createDefault(token)
+                                        .enableIntents(
+                                                GatewayIntent.MESSAGE_CONTENT,
+                                                GatewayIntent.GUILD_MESSAGES
+                                        )
+                                        .addEventListeners(this)
+                                        .build();
+                            }
+                        }
+                    }
+                }
+            }
 
             try {
                 jda.awaitReady();
@@ -43,6 +56,7 @@ public class IRC extends ListenerAdapter {
                         if (channel.getName().equalsIgnoreCase("login-log")) setLoginChannel(channel);
                         if (channel.getName().equalsIgnoreCase("server-log")) setServerChannel(channel);
                         if (channel.getName().equalsIgnoreCase("hwid-list")) setHwidChannel(channel);
+                        if (channel.getName().equalsIgnoreCase("online-users")) setOnlineChannel(channel);
                     }
                 }
 

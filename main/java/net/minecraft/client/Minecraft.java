@@ -599,6 +599,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     public void displayCrashReport(CrashReport crashReportIn) {
         if (IRC.myID != -1) Client.INST.getIrc().getServerChannel().deleteMessageById(IRC.myID).queue();
+        Client.INST.disconnect();
         File file1 = new File(getMinecraft().mcDataDir, "crash-reports");
         File file2 = new File(file1, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
         Bootstrap.printToSYSOUT(crashReportIn.getCompleteReport());

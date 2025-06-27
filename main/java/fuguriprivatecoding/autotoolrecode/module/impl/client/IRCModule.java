@@ -27,19 +27,24 @@ public class IRCModule extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof TickEvent && System.currentTimeMillis() - lastTime >= 500) {
+        if (event instanceof TickEvent && System.currentTimeMillis() - lastTime >= 5000) {
             new Thread(() -> {
-                for (Message message : Client.INST.getIrc().getServerChannel().getIterableHistory().stream().toList()) {
-                    String msg = message.getContentRaw();
-                    String[] args = msg.split(" ");
+                try {
+                    if (Client.INST.getIrc().getServerChannel().getIterableHistory().stream().toList().isEmpty()) return;
+                    for (Message message : Client.INST.getIrc().getServerChannel().getIterableHistory().stream().toList()) {
+                        String msg = message.getContentRaw();
+                        String[] args = msg.split(" ");
 
-                    String ign = args[0];
-                    String clientName = args[1].replace("[", "").replace("]", "");
-                    String role = args[2].replace("[", "").replace("]", "");
+                        String ign = args[0];
+                        String clientName = args[1].replace("[", "").replace("]", "");
+                        String role = args[2].replace("[", "").replace("]", "");
 
-                    if (usersOnline.containsKey(ign) && usersOnline.containsValue(new Profile(clientName, role))) continue;
+                        if (usersOnline.containsKey(ign)) continue;
 
-                    usersOnline.put(ign, new Profile(clientName, role));
+                        usersOnline.put(ign, new Profile(clientName, role));
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                 }
             }).start();
             lastTime = System.currentTimeMillis();
