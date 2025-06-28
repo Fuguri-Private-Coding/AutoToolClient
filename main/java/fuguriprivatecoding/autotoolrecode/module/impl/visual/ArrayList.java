@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 
@@ -34,12 +33,9 @@ public class ArrayList extends Module {
 
 	Shadows shadows;
 
-	Blur blur;
-
 	@EventTarget
 	public void onEvent(Event event) {
 		if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
-		if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
 		if (event instanceof Render2DEvent) {
 			final FontRenderer font = mc.fontRendererObj;
 			List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModuleManager().getEnabledModules());
@@ -62,11 +58,6 @@ public class ArrayList extends Module {
 				if (shadows.isToggled() && shadows.module.get("ArrayList")) {
 					double finalOffset = offset;
 					BloomUtils.addToDraw(() -> Gui.drawRect(6,(float) finalOffset + 19f, font.getStringWidth(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : "")) + 10, (float) finalOffset + 6f, -1));
-				}
-
-				if (blur.isToggled() && blur.module.get("ArrayList")) {
-					double finalOffset = offset;
-					GaussianBlurUtils.addToDraw(() -> Gui.drawRect(6,(float) finalOffset + 19f, font.getStringWidth(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : "")) + 10, (float) finalOffset + 6f, -1));
 				}
 
 				Gui.drawRect(6,(float) offset + 19f, (float) font.getStringWidth(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : "")) + 10, (float) offset + 6f, backgroundColor.getColor().getRGB());

@@ -22,7 +22,22 @@ import net.minecraft.util.DamageSource;
 
 @ModuleInfo(name = "InvManager", category = Category.PLAYER)
 public class InvManager extends Module {
-    
+
+    private final IntegerSetting minStartDelay = new IntegerSetting("MinStartDelay", this, 0, 500, 50) {
+        @Override
+        public int getValue() {
+            if (maxStartDelay.value < value) { value = maxStartDelay.value; }
+            return value;
+        }
+    };
+    private final IntegerSetting maxStartDelay = new IntegerSetting("MaxStartDelay", this, 0, 500, 50) {
+        @Override
+        public int getValue() {
+            if (minStartDelay.value > value) { value = minStartDelay.value; }
+            return value;
+        }
+    };
+
     private final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 500, 50) {
         @Override
         public int getValue() {
@@ -38,7 +53,7 @@ public class InvManager extends Module {
         }
     };
 
-    private final CheckBox legit = new CheckBox("Legit", this);
+    private final CheckBox legit = new CheckBox("OpenInv", this);
 
     private final IntegerSetting swordSlot = new IntegerSetting("Sword Slot", this, 1, 9, 1);
     private final IntegerSetting pickaxeSlot = new IntegerSetting("Pickaxe Slot", this,1, 9, 1);
@@ -50,6 +65,7 @@ public class InvManager extends Module {
     private final IntegerSetting pearlSlot = new IntegerSetting("Pearl Slot", this,1, 9, 1);
 
     private final StopWatch stopwatch = new StopWatch();
+    private final StopWatch startTimer = new StopWatch();
     private boolean moved;
     private long nextClick;
 
@@ -62,8 +78,11 @@ public class InvManager extends Module {
 
             if (legit.isToggled() && !(mc.currentScreen instanceof GuiInventory)) {
                 this.stopwatch.reset();
+                this.startTimer.reset();
                 return;
             }
+
+            if (!startTimer.reachedMS(RandomUtils.nextInt(minStartDelay.getValue(), maxStartDelay.getValue()))) return;
 
             this.moved = false;
 

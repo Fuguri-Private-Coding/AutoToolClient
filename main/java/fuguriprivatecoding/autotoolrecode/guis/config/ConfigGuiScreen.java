@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiText;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
@@ -15,40 +16,36 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurU
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.Util;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
-
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static java.lang.Math.min;
 
 public class ConfigGuiScreen extends GuiScreen {
 
     Vector2f pos, size, lastMouse, lastSize, lastPos;
-
     boolean moving, closing, creatingConfig;
-
     final Animation2D background, sizeBackground, scrolls;
-
     ClickGui clickGui;
-
     int delay = 10;
-
-    Shadows shadows;
-    Blur blur;
-
     int scroll, totalHeight;
-
     Config selectedConfig;
 
     private final AltManagerGuiText textField;
+
+    Shadows shadows;
+    Blur blur;
 
     public ConfigGuiScreen() {
         Client.INST.getEventManager().register(this);
@@ -113,6 +110,7 @@ public class ConfigGuiScreen extends GuiScreen {
         float widthSave = fontRendererObj.getStringWidth("Save") / 2f;
         float widthFolder = fontRendererObj.getStringWidth("Folder") / 2f;
         float widthRefresh = fontRendererObj.getStringWidth("Refresh") / 2f;
+        float widthOnlineDownload = fontRendererObj.getStringWidth("Online") / 2f;
 
         background.endX = pos.x;
         background.endY = pos.y;
@@ -167,17 +165,19 @@ public class ConfigGuiScreen extends GuiScreen {
         }
 
         RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.WHITE);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.green);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.yellow);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.RED);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.blue);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.gray);
         fontRendererObj.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3, -1, true);
+        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.green);
         fontRendererObj.drawString("Load", background.x + sizeBackground.x - 55 + 25 - widthLoad, background.y + 20 + 20 + 3, -1, true);
+        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.yellow);
         fontRendererObj.drawString("Save", background.x + sizeBackground.x - 55 + 25 - widthSave, background.y + 20 + 20 + 20 + 3, -1, true);
+        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.RED);
         fontRendererObj.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 20 + 20 + 3, -1, true);
+        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.blue);
         fontRendererObj.drawString("Folder", background.x + sizeBackground.x - 55 + 25 - widthFolder, background.y + 20 + 20 + 20 + 20 + 20 + 3, -1, true);
+        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.gray);
         fontRendererObj.drawString("Refresh", background.x + sizeBackground.x - 55 + 25 - widthRefresh, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 3, -1, true);
+        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.cyan);
+        fontRendererObj.drawString("Online", background.x + sizeBackground.x - 55 + 25 - widthOnlineDownload, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20 + 3, -1, true);
 
         ScissorUtils.disableScissor();
 
@@ -239,6 +239,7 @@ public class ConfigGuiScreen extends GuiScreen {
         boolean delete = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 20 + 15;
         boolean folder = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 20 + 20 + 15;
         boolean refresh = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 20 + 20 + 20 + 15;
+        boolean online = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20 + 15;
 
         float offset = 0;
         float yOffset = scrolls.y;
@@ -297,6 +298,10 @@ public class ConfigGuiScreen extends GuiScreen {
                 }
             }
 
+            if (online) {
+                new Thread(this::downLoadOnlineConfigs).start();
+            }
+
             if (refresh) {
                 Client.INST.getConfigManager().refreshConfigs();
                 ClientUtils.chatLog("Successful refreshed.");
@@ -323,6 +328,40 @@ public class ConfigGuiScreen extends GuiScreen {
                     ClientUtils.chatLog("Successful saved config: " + selectedConfig.getName() + ".");
                 }
             }
+        }
+    }
+
+    private void downLoadOnlineConfigs() {
+        try {
+            ClientUtils.chatLog("Downloading online configs and models...");
+            MessageChannel configsChannel = Client.INST.getIrc().getOnlineConfigsChannel();
+
+            List<Message> messages = configsChannel.getIterableHistory().takeAsync(100).get();
+
+            for (Message message : messages) {
+                if (message.getAttachments().isEmpty()) continue;
+
+                message.getAttachments().forEach(attachment -> {
+                    try {
+                        if (attachment.getFileName().endsWith(".json")) {
+                            attachment.getProxy().downloadToFile(new File(Client.INST.getConfigManager().getConfigsDirectory() + "/" + attachment.getFileName()))
+                                    .thenAccept(_ -> Client.INST.getConfigManager().refreshConfigs());
+                        }
+                    } catch (Exception _) {
+                        ClientUtils.chatLog("Failed download configs");
+                    }
+                    try {
+                        if (attachment.getFileName().endsWith(".params")) {
+                            attachment.getProxy().downloadToFile(new File(Client.INST.getModelsDirectory() + "/" + attachment.getFileName()))
+                                    .thenAccept(_ -> Client.INST.getModuleManager().getModule(KillAura.class).updateModels());
+                        }
+                    } catch (Exception _) {
+                        ClientUtils.chatLog("Failed download models");
+                    }
+                });
+            }
+        } catch (Exception e) {
+            ClientUtils.chatLog("У ВАС ИНТЕРНЕТ ХУЕТА ПОЛНАЯ ИЛИ ЗАПРЕТ ПОЙДИ СКАЧАЙ ТУПОЙ УЕБАН!");
         }
     }
 

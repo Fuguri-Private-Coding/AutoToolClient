@@ -80,9 +80,8 @@ public enum Client implements Imports {
 				new ResourceLocation("minecraft", "hackclient/image/logo32.png")
 		);
 
-
 		name = "AutoTool";
-		version = new ClientVersion(3, 2,0);
+		version = new ClientVersion(3, 3,0);
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");
@@ -143,14 +142,13 @@ public enum Client implements Imports {
 
 	public String getChangeLog() {
 		return """
-				Gilter Нафунял в лаваш.
+				gg
 				""";
 	}
 
 	public void onClose() {
 		configManager.saveConfig(configManager.getDefaultConfig());
 		configManager.saveBinds();
-		if (IRC.myID != -1) irc.getServerChannel().deleteMessageById(IRC.myID).queue();
 		disconnect();
 	}
 
@@ -187,6 +185,7 @@ public enum Client implements Imports {
 
 	public void disconnect() {
 		if (IRC.myOnlineID != -1) irc.getOnlineChannel().deleteMessageById(IRC.myOnlineID).queue();
+		if (IRC.myID != -1) irc.getServerChannel().deleteMessageById(IRC.myID).queue();
 	}
 
 	public void join() {

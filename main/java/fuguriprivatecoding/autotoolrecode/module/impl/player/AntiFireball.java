@@ -18,15 +18,11 @@ import net.minecraft.entity.projectile.EntityFireball;
 @ModuleInfo(name = "AntiFireball", category = Category.PLAYER)
 public class AntiFireball extends Module {
 
-    final StopWatch stopWatch;
-
     final IntegerSetting delay = new IntegerSetting("Delay", this, 0, 500, 0);
     final FloatSetting distance = new FloatSetting("Distance", this, 3f, 12f, 6f, 0.5f) {};
     final CheckBox debug = new CheckBox("Debug", this, false);
 
-    public AntiFireball() {
-        stopWatch = new StopWatch();
-    }
+    final StopWatch stopWatch = new StopWatch();
 
     @EventTarget
     public void onEvent(Event event) {

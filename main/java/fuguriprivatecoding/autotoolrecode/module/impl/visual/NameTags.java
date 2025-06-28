@@ -25,8 +25,7 @@ import static org.lwjgl.opengl.GL11.*;
 public class NameTags extends Module {
 
     FloatSetting height = new FloatSetting("Height", this, 0,2,0.6F, 0.1F);
-
-    ColorSetting color = new ColorSetting("Color", this, 0,0,0,0.4f);
+    ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, 0,0,0,0.4f);
 
     MurderMystery murderDetector;
     MidClick midClick;
@@ -80,7 +79,7 @@ public class NameTags extends Module {
         if (shadows.isToggled() && shadows.module.get("NameTags")) {
             BloomUtils.addToDraw(() -> Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, -1));
         }
-        Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, color.getColor().getRGB());
+        Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, backgroundColor.getColor().getRGB());
         mc.fontRendererObj.drawString(text, -stringWidth, offset, -1, true);
         glColor4f(1f, 1f, 1f, 1f);
         glPopMatrix();

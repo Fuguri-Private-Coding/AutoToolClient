@@ -7,9 +7,8 @@ import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -25,10 +24,8 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "TargetHUD", category = Category.VISUAL)
 public class TargetHUD extends Module {
 
-    private final CheckBox renderHealth = new CheckBox("RenderHealth", this);
-    private final CheckBox renderName = new CheckBox("RenderName", this);
-    private final CheckBox renderHead = new CheckBox("RenderHead", this);
-    private final CheckBox renderBackground = new CheckBox("RenderBackground", this);
+    private final MultiMode render = new MultiMode("Render", this)
+            .addModes("RenderHealth","RenderName","RenderBackground","RenderHead");
 
     private final IntegerSetting scale = new IntegerSetting("Scale", this, 1, 10, 5);
 
@@ -94,12 +91,13 @@ public class TargetHUD extends Module {
         if (shadows != null && shadows.isToggled() && shadows.module.get("TargetHUD")) {
             BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-TEXTURE_WIDTH / 2f, -TEXTURE_HEIGHT / 2f, TEXTURE_WIDTH, TEXTURE_HEIGHT, CORNER_RADIUS, Color.WHITE));
         }
-        if (renderBackground.isToggled()) RoundedUtils.drawRect(-TEXTURE_WIDTH / 2f, -TEXTURE_HEIGHT / 2f, TEXTURE_WIDTH, TEXTURE_HEIGHT, CORNER_RADIUS, new Color(0, 0, 0, 150));
 
-        if (target instanceof EntityPlayer && renderHead.isToggled()) renderPlayerHead((EntityPlayer)target, hurtTime);
-        if (renderName.isToggled()) renderPlayerName(target);
+        if (render.get("RenderBackground")) RoundedUtils.drawRect(-TEXTURE_WIDTH / 2f, -TEXTURE_HEIGHT / 2f, TEXTURE_WIDTH, TEXTURE_HEIGHT, CORNER_RADIUS, new Color(0, 0, 0, 150));
 
-        if (renderHealth.isToggled()) {
+        if (target instanceof EntityPlayer && render.get("RenderHead")) renderPlayerHead((EntityPlayer)target, hurtTime);
+        if (render.get("RenderName")) renderPlayerName(target);
+
+        if (render.get("RenderHealth")) {
             updateHealthAnimation(healthPercentage);
             renderHealthBar(hurtTime, healthPercentage);
         }

@@ -33,7 +33,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-@ModuleInfo(name = "TestScaff", category = Category.PLAYER)
+//@ModuleInfo(name = "TestScaff", category = Category.PLAYER)
 public class TestScaff extends Module {
 
     IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 1, 180, 30) {

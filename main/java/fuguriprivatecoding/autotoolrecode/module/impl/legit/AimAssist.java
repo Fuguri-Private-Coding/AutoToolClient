@@ -21,8 +21,8 @@ import net.minecraft.util.Vec3;
 @ModuleInfo(name = "AimAssist", category = Category.LEGIT)
 public class AimAssist extends Module {
 
-    final CheckBox moveVertical = new CheckBox("MoveVertical", this, false);
     final FloatSetting hSpeed = new FloatSetting("HorizontalSpeed", this, 0.1f, 30.0f, 5.0f, 0.1f) {};
+    final CheckBox moveVertical = new CheckBox("MoveVertical", this, false);
     final FloatSetting vSpeed = new FloatSetting("VerticalSpeed", this, moveVertical::isToggled, 0.1f, 15.0f, 2.5f, 0.1f) {};
     final FloatSetting distance = new FloatSetting("Distance", this, 3.0f, 12.0f, 6.0f, 0.1f) {};
     final IntegerSetting fov = new IntegerSetting("Fov", this, 10, 180, 35);

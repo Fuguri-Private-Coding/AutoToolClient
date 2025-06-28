@@ -41,7 +41,6 @@ public class Scaffold extends Module {
             return super.getValue();
         }
     };
-
     IntegerSetting maxYawSpeed = new IntegerSetting("MaxYawSpeed", this, 1, 180, 30) {
         @Override
         public int getValue() {
@@ -49,7 +48,6 @@ public class Scaffold extends Module {
             return super.getValue();
         }
     };
-
     IntegerSetting minPitchSpeed = new IntegerSetting("MinPitchSpeed", this, 1, 180, 15) {
         @Override
         public int getValue() {
@@ -57,7 +55,6 @@ public class Scaffold extends Module {
             return super.getValue();
         }
     };
-
     IntegerSetting maxPitchSpeed = new IntegerSetting("MaxPitchSpeed", this, 1, 180, 15) {
         @Override
         public int getValue() {
@@ -74,15 +71,14 @@ public class Scaffold extends Module {
 
     final CheckBox swingItem = new CheckBox("ServerSwingItem", this, true);
 
-    IntegerSetting minCps = new IntegerSetting("MinCps", this, () -> clickMode.getMode().equals("Legit"), 1, 40, 7) {
+    IntegerSetting minCps = new IntegerSetting("MinCps", this, 1, 40, 7) {
         @Override
         public int getValue() {
             if (maxCps.value < value) { value = maxCps.value; }
             return super.getValue();
         }
     };
-
-    IntegerSetting maxCps = new IntegerSetting("MaxCps", this, () -> clickMode.getMode().equals("Legit"), 0, 40, 11) {
+    IntegerSetting maxCps = new IntegerSetting("MaxCps", this, 0, 40, 11) {
         @Override
         public int getValue() {
             if (minCps.value > value) { value = minCps.value; }
@@ -91,9 +87,9 @@ public class Scaffold extends Module {
     };
 
     final CheckBox bypassServerPitch = new CheckBox("BypassServerPitch", this, true);
-    FloatSetting serverPitch = new FloatSetting("ServerPitch", this, bypassServerPitch::isToggled , 70, 85, 77,0.1f);
-    FloatSetting bestPitchNoDiagonal = new FloatSetting("FrontPitch", this, 70, 85, 77,0.1f);
-    FloatSetting diagonalPitch = new FloatSetting("DiagonalPitch", this, 70, 85, 77,0.1f);
+    final FloatSetting serverPitch = new FloatSetting("ServerPitch", this, bypassServerPitch::isToggled , 70, 85, 77,0.1f);
+    final FloatSetting bestPitchNoDiagonal = new FloatSetting("FrontPitch", this, 70, 85, 77,0.1f);
+    final FloatSetting diagonalPitch = new FloatSetting("DiagonalPitch", this, 70, 85, 77,0.1f);
     final CheckBox alwaysSprint = new CheckBox("AlwaysSprint", this, true);
     final CheckBox ninjaBridge = new CheckBox("NinjaBridge", this, true);
 

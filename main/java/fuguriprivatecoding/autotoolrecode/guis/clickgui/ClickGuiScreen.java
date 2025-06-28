@@ -731,10 +731,11 @@ public class ClickGuiScreen extends GuiScreen {
 							xOffset = 0;
 							yOffset += 11;
 						}
-						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset
-						&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode)
-						&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset
-						&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset + 10) {
+						boolean clickMode = mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset && mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset + 10;
+						if (clickMode) {
+							multiBooleanSetting.set(mode, !isSelected);
+						}
+						if (clickMode && Mouse.isButtonDown(0) && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 							multiBooleanSetting.set(mode, !isSelected);
 						}
 						xOffset += fontRenderer.getStringWidth(mode) + 5;

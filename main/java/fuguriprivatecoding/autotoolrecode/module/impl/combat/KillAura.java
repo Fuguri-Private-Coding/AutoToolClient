@@ -36,6 +36,7 @@ public class KillAura extends Module {
 
     final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 8, 6, 0.1f);
     final FloatSetting rotateDistance = new FloatSetting("RotateDistance", this, 3,8,6,0.1f);
+    final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
 
     final MultiMode targets = new MultiMode("Targets", this)
             .addModes("Players","Mobs","Animals","Villagers");
@@ -106,7 +107,6 @@ public class KillAura extends Module {
 
     final CheckBox lockView = new CheckBox("LockView", this);
 
-    final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
     final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 1, 40, 17) {
         @Override
         public int getValue() {

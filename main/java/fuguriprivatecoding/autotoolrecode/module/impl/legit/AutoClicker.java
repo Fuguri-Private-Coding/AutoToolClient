@@ -29,7 +29,6 @@ public class AutoClicker extends Module {
             return super.getValue();
         }
     };
-
     final FloatSetting maxCps = new FloatSetting("MaxCps", this, 0.0f, 25.0f, 17.0f, 0.1f) {
         @Override
         public float getValue() {
@@ -47,14 +46,7 @@ public class AutoClicker extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof RunGameLoopEvent) {
-            if (!Mouse.isButtonDown(0)) return;
-
-            if (mc.thePlayer.isUsingItem()) return;
-
-            if (Mouse.isButtonDown(1)) return;
-
-            if (mc.currentScreen != null) return;
-
+            if (!Mouse.isButtonDown(0) || mc.thePlayer.isUsingItem() || Mouse.isButtonDown(1) || mc.currentScreen != null) return;
             if (allowBreakBlock.isToggled() && RayCastUtils.rayCast(Client.INST.getCombatManager().getEntityReach(), Client.INST.getCombatManager().getBlockReach(), Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) return;
 
             if (stopWatch.reachedMS(delay)) {

@@ -21,6 +21,8 @@ public class IRC extends ListenerAdapter {
     public MessageChannel serverChannel;
     public MessageChannel hwidChannel;
     public MessageChannel onlineChannel;
+    public MessageChannel changeLogChannel;
+    public MessageChannel onlineConfigsChannel;
     public static long myID = -1;
     public static long myOnlineID = -1;
 
@@ -57,6 +59,8 @@ public class IRC extends ListenerAdapter {
                         if (channel.getName().equalsIgnoreCase("server-log")) setServerChannel(channel);
                         if (channel.getName().equalsIgnoreCase("hwid-list")) setHwidChannel(channel);
                         if (channel.getName().equalsIgnoreCase("online-users")) setOnlineChannel(channel);
+                        if (channel.getName().equalsIgnoreCase("change-log")) setChangeLogChannel(channel);
+                        if (channel.getName().equalsIgnoreCase("online-configs")) setOnlineConfigsChannel(channel);
                     }
                 }
 

@@ -18,9 +18,6 @@ public class Shadows extends Module {
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);
     public FloatSetting brightness = new FloatSetting("Brightness", this, 0,3,1,0.1f);
-    public FloatSetting horizontal1Compress = new FloatSetting("Horizontal1Compress", this, 0, 10, 2, 0.1f);
-    public FloatSetting vertical1Compress = new FloatSetting("Vertical1Compress", this, 0, 10, 0, 0.1f);
-    public FloatSetting vertical2Compress = new FloatSetting("Vertical2Compress", this, 0, 10, 2, 0.1f);
 
     public CheckBox fade = new CheckBox("Fade", this, false);
     public ColorSetting color = new ColorSetting("ShadowColor", this, 0,0,0,1);

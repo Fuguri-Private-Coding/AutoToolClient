@@ -11,7 +11,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.input.Keyboard;
 
-@ModuleInfo(name = "FreeLook", category = Category.VISUAL)
+//@ModuleInfo(name = "FreeLook", category = Category.VISUAL)
 public class FreeLook extends Module {
 
     private int previousPerspective;

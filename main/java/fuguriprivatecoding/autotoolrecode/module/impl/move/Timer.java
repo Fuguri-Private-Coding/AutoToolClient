@@ -1,5 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
+import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.EventTarget;
+import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -10,12 +13,17 @@ public class Timer extends Module {
 
 	FloatSetting timerSpeed = new FloatSetting("TimerSpeed", this, 0.1f, 10f, 2f, 0.1f) {};
 
-	public void onEnable() {
-		mc.timer.timerSpeed = timerSpeed.getValue();
-	}
-
 	public void onDisable() {
 		mc.timer.timerSpeed = 1.0F;
+	}
+
+	@EventTarget
+	public void onEvent(Event event) {
+		if (event instanceof TickEvent) {
+			if (mc.timer.timerSpeed == 1) {
+				mc.timer.timerSpeed = timerSpeed.getValue();
+			}
+		}
 	}
 
 	@Override

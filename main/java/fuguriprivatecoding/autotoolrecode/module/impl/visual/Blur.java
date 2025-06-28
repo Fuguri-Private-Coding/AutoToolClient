@@ -12,11 +12,10 @@ public class Blur extends Module {
 
     public MultiMode module = new MultiMode("Modules", this)
             .addModes("ClickGui","ConsoleGui", "ConfigGui",
-                    "Scaffold", "ChestESP", "BedESP","ArrayList", "FPSCounter",
-                    "BPSCounter", "BreakIndicator", "BlockOverlay"
+                    "Scaffold", "ChestESP", "BedESP","BlockOverlay"
             );
 
-    public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);
+    public IntegerSetting radius = new IntegerSetting("Radius", this, 6, 70, 6);
     public FloatSetting horizontal1Compress = new FloatSetting("Horizontal1Compress", this, 0, 10, 2, 0.1f);
     public FloatSetting vertical1Compress = new FloatSetting("Vertical1Compress", this, 0, 10, 0, 0.1f);
     public FloatSetting vertical2Compress = new FloatSetting("Vertical2Compress", this, 0, 10, 2, 0.1f);

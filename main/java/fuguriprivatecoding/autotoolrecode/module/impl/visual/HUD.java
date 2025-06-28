@@ -50,7 +50,6 @@ public class HUD extends Module {
 
     private final List<Long> frames = new CopyOnWriteArrayList<>();
     private Shadows shadows;
-    private Blur blur;
 
     private FloatSetting createPositionSetting(String name, String element) {
         return new FloatSetting(name, this, () -> hudElements.get(element), 0, 10000, 0, 0.1f);
@@ -85,7 +84,6 @@ public class HUD extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
-        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (event instanceof Render2DEvent) {
             renderBPSCounter();
             renderBreakIndicator();
@@ -124,10 +122,6 @@ public class HUD extends Module {
 
         if (shadows != null && shadows.isToggled() && shadows.module.get(elementName)) {
             BloomUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, radius, Color.WHITE));
-        }
-
-        if (blur != null && blur.isToggled() && blur.module.get(elementName)) {
-            GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, radius, Color.WHITE));
         }
 
         RoundedUtils.drawRect(x, y, width, height, radius, bgColor);

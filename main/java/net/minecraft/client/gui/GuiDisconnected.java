@@ -16,7 +16,7 @@ public class GuiDisconnected extends GuiScreen
     public GuiDisconnected(GuiScreen screen, String reasonLocalizationKey, IChatComponent chatComp)
     {
         this.parentScreen = screen;
-        this.reason = I18n.format(reasonLocalizationKey, new Object[0]);
+        this.reason = I18n.format(reasonLocalizationKey);
         this.message = chatComp;
     }
 
