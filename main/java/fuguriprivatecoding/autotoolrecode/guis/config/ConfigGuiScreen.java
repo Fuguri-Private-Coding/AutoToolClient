@@ -347,16 +347,12 @@ public class ConfigGuiScreen extends GuiScreen {
                             attachment.getProxy().downloadToFile(new File(Client.INST.getConfigManager().getConfigsDirectory() + "/" + attachment.getFileName()))
                                     .thenAccept(_ -> Client.INST.getConfigManager().refreshConfigs());
                         }
-                    } catch (Exception _) {
-                        ClientUtils.chatLog("Failed download configs");
-                    }
-                    try {
                         if (attachment.getFileName().endsWith(".params")) {
                             attachment.getProxy().downloadToFile(new File(Client.INST.getModelsDirectory() + "/" + attachment.getFileName()))
                                     .thenAccept(_ -> Client.INST.getModuleManager().getModule(KillAura.class).updateModels());
                         }
                     } catch (Exception _) {
-                        ClientUtils.chatLog("Failed download models");
+                        ClientUtils.chatLog("Failed download configs and models.");
                     }
                 });
             }
