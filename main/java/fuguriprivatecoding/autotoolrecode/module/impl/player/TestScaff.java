@@ -21,6 +21,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.block.*;
+import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
@@ -43,7 +44,6 @@ public class TestScaff extends Module {
             return super.getValue();
         }
     };
-
     IntegerSetting maxYawSpeed = new IntegerSetting("MaxYawSpeed", this, 1, 180, 30) {
         @Override
         public int getValue() {
@@ -51,7 +51,6 @@ public class TestScaff extends Module {
             return super.getValue();
         }
     };
-
     IntegerSetting minPitchSpeed = new IntegerSetting("MinPitchSpeed", this, 1, 180, 15) {
         @Override
         public int getValue() {
@@ -59,7 +58,6 @@ public class TestScaff extends Module {
             return super.getValue();
         }
     };
-
     IntegerSetting maxPitchSpeed = new IntegerSetting("MaxPitchSpeed", this, 1, 180, 15) {
         @Override
         public int getValue() {
@@ -70,8 +68,6 @@ public class TestScaff extends Module {
 
     FloatSetting smooth = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f) {};
 
-    final CheckBox swingItem = new CheckBox("ServerSwingItem", this, true);
-
     IntegerSetting minCps = new IntegerSetting("MinCps", this, 1, 40, 7) {
         @Override
         public int getValue() {
@@ -79,7 +75,6 @@ public class TestScaff extends Module {
             return super.getValue();
         }
     };
-
     IntegerSetting maxCps = new IntegerSetting("MaxCps", this, 0, 40, 11) {
         @Override
         public int getValue() {
@@ -215,15 +210,13 @@ public class TestScaff extends Module {
 //
 //        if (stopWatch.reachedMS(delay)) {
 //            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
-//                if (swingItem.isToggled()) {
-//                    mc.thePlayer.swingItem();
-//                }
+//                mc.thePlayer.swingItem();
 //                stopWatch.reset();
 //                delay = 1000 / RandomUtils.nextInt(minCps.getValue(), maxCps.getValue());
 //            }
 //        }
         if (mouse != null && mouse.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
-                && sameBlockPos(mouse.getBlockPos(), blockPos)) {
+                && mouse.sideHit != EnumFacing.UP && mouse.sideHit != EnumFacing.DOWN) {
             if (mc.playerController.onPlayerRightClick(
                     mc.thePlayer,
                     mc.theWorld,
@@ -261,13 +254,13 @@ public class TestScaff extends Module {
 //            rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(yaw));
 //        }'
 
-        float yaw = MathHelper.wrapDegree((float) MathUtils.round(mc.thePlayer.rotationYaw, 45) - 180);
+        float yaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw - 180), 45);
 
         if (yaw / 45 % 2 == 0) {
             yaw += 45;
         }
 
-        Rot rotation = new Rot(yaw, getPitch(yaw));
+        Rot rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
 
         Delta delta = RotUtils.getDelta(Rot.getServerRotation(), rotation);
 
@@ -296,7 +289,7 @@ public class TestScaff extends Module {
         for (float i = 45; i < 81; i += step) {
             MovingObjectPosition mouses = RayCastUtils.rayCast(3, 4.5, new Rot(yaw, i));
             if (mouses == null || mouses.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                    || positionHashMap.containsValue(mouses) || !sameBlockPos(mouses.getBlockPos(), blockPos)
+                    || positionHashMap.containsValue(mouses)
                     || mouses.sideHit == EnumFacing.UP
                     || mouses.sideHit == EnumFacing.DOWN) continue;
             positionHashMap.put(i, mouses);
@@ -311,16 +304,6 @@ public class TestScaff extends Module {
         pitches.sort(Comparator.comparingDouble(pitch -> Math.abs(Rot.getServerRotation().getPitch()) - pitch));
         mouse = positionHashMap.get(pitches.getFirst());
         return pitches.getFirst();
-    }
-
-    private boolean sameBlockPos(BlockPos pos1, BlockPos pos2) {
-        if (pos1 == null && pos2 != null) {
-            return false;
-        }
-        if (pos1 != null && pos2 == null) {
-            return false;
-        }
-        return mc.theWorld.getBlockState(pos1).getBlock() == mc.theWorld.getBlockState(pos2).getBlock();
     }
 
     public int findBlock() {

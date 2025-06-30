@@ -152,6 +152,7 @@ public class ConfigManager implements Imports {
                 }
                 JsonObject moduleObject = (JsonObject) entry.getValue();
                 module.setToggled(moduleObject.get("toggled").getAsBoolean());
+               //module.setHide(moduleObject.get("hide").getAsBoolean());
                 for (Setting setting : module.getSettings()) {
                     JsonElement settingElement = moduleObject.get(setting.getName());
                     if (settingElement == null) {
@@ -201,6 +202,7 @@ public class ConfigManager implements Imports {
         for (Module module : Client.INST.getModuleManager().getModules()) {
             JsonObject moduleObject = new JsonObject();
             moduleObject.addProperty("toggled", module.isToggled());
+           // moduleObject.addProperty("hide", module.isHide());
             for (Setting setting : module.getSettings()) {
                 switch (setting) {
                     case IntegerSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());

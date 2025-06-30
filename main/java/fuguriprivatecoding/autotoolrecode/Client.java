@@ -73,15 +73,10 @@ public enum Client implements Imports {
 		long start = System.nanoTime();
 		starting = true;
 
-		connect();
-
-		WindowIconHelper.setWindowIcon(
-				new ResourceLocation("minecraft", "hackclient/image/logo16.png"),
-				new ResourceLocation("minecraft", "hackclient/image/logo32.png")
-		);
-
 		name = "AutoTool";
 		version = new ClientVersion(3, 3,0);
+
+		connect();
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");
@@ -92,6 +87,11 @@ public enum Client implements Imports {
 
 		eventManager = new EventManager();
 		eventManager.register(this);
+
+		WindowIconHelper.setWindowIcon(
+				new ResourceLocation("minecraft", "hackclient/image/logo16.png"),
+				new ResourceLocation("minecraft", "hackclient/image/logo32.png")
+		);
 
 		console = new ConsoleGuiScreen();
 
@@ -179,7 +179,7 @@ public enum Client implements Imports {
 
 	public void connect() {
 		irc.getOnlineChannel().sendMessage(
-				Client.INST.getProfile().toString()
+				Client.INST.getProfile().toString() + " " + version.toString()
 		).queue(sendMessage -> IRC.myOnlineID = sendMessage.getIdLong());
 	}
 

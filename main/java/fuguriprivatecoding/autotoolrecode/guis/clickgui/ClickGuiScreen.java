@@ -695,19 +695,31 @@ public class ClickGuiScreen extends GuiScreen {
 		offset = 0;
 		for (Category category : Category.values()) {
 			boolean selectCategory = mouseX > background.x + verticalLineXOffset + 5 + 5 + offset && mouseX < background.x + verticalLineXOffset + 5 + 5 + offset + fontRenderer.getStringWidth(category.name) && mouseY > background.y + 2 && mouseY < background.y + 2 + fontRenderer.FONT_HEIGHT;
-			if (selectCategory) {
-				selectedCategory = category;
-				selectedModule = null;
-				moduleLine.x = 0;
-				moduleLine.y = 0;
+			switch (mouseButton) {
+				case 0 -> {
+					if (selectCategory) {
+						selectedCategory = category;
+						selectedModule = null;
+						moduleLine.x = 0;
+						moduleLine.y = 0;
+					}
+				}
+				case 1 -> {
+					if (selectCategory) {
+
+					}
+				}
 			}
+
 			offset += fontRenderer.getStringWidth(category.name) + 5;
 		}
 
 		offset = settingsScrolls.y;
 		if (selectedModule != null) {
 			boolean bind = mouseX > background.x + verticalLineXOffset + 5 && mouseX < background.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey()))) && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9;
+			//boolean hide = mouseX > background.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Hide: " + (selectedModule.isHide())) + 5 + 10 && mouseX < background.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Hide: " + (selectedModule.isHide())) + 5 + 10 + fontRenderer.getStringWidth("Hide: " + (selectedModule.isHide())) + 5 && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9;
             if (bind) binding = true;
+			//if (hide) selectedModule.setHide(!selectedModule.isHide());
 
 			for (Setting setting : selectedModule.getSettings()) {
 				if (!setting.isVisible())

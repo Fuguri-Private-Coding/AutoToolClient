@@ -47,5 +47,27 @@ public class FreeLook extends Module {
             lastPitch = MathHelper.clamp(lastPitch, -90, 90);
             mc.gameSettings.thirdPersonView = 1;
         }
+
+        if (event instanceof MotionEvent e) {
+            e.setYaw(originalYaw);
+            e.setPitch(originalPitch);
+        }
+
+        if (event instanceof ChangeHeadRotationEvent e) {
+            e.setYaw(originalYaw);
+            e.setPitch(originalPitch);
+        }
+
+        if (event instanceof LookEvent e) {
+            e.setYaw(originalYaw);
+            e.setPitch(originalPitch);
+        }
+
+        if (event instanceof UpdateBodyRotationEvent e) {
+            e.setYaw(originalYaw);
+        }
+
+        if (event instanceof MoveFlyingEvent e) e.setYaw(originalYaw);
+        if (event instanceof JumpEvent e) e.setYaw(originalYaw);
     }
 }

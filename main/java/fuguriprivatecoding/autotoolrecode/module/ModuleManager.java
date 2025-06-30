@@ -12,6 +12,8 @@ import fuguriprivatecoding.autotoolrecode.module.impl.client.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import org.atteo.classindex.ClassIndex;
+
 import java.util.List;
 
 @Getter
@@ -22,83 +24,16 @@ public class ModuleManager {
 
 	public ModuleManager() {
 		INSTANCE = this;
-		register(
-				new AutoSoup(),
-				new KillAura(),
-				new Blur(),
-				new Dot(),
-				new BedESP(),
-				//new TestScaff(),
-				new ChestStealer(),
-				new MoreKB(),
-				new Velocity(),
-				new MurderMystery(),
-				new InvManager(),
-				new Trails(),
-				new ESP(),
-				new BackTrack(),
-				new RotationHandler(),
-				new Shadows(),
-				new Fly(),
-				new AutoClicker(),
-				new AutoTool(),
-				new Scaffold(),
-				new AntiFireball(),
-				new ChestESP(),
-				new DiscordRPCModule(),
-				new Phase(),
-				new NoGuiClose(),
-				new AirStuck(),
-				new VClip(),
-				new NoSlow(),
-				new NoWeb(),
-				new Speed(),
-				new Sprint(),
-				new Timer(),
-				new Disabler(),
-				new ArrayList(),
-				new MoreSwing(),
-				new Ping(),
-				new TargetESP(),
-				new FullBright(),
-				new ClientSpoofer(),
-				new TimerRange(),
-				new ClickGui(),
-				new Fixes(),
-				new FlagDetector(),
-				new AimAssist(),
-				new Blink(),
-				new Animations(),
-				new MotionBlur(),
-				new AutoPlace(),
-				new ClickSettings(),
-				new Particle(),
-				new Test(),
-				new TrashTalk(),
-				new NameTags(),
-				new NoRender(),
-				new MidClick(),
-				new CustomCape(),
-				new InvClicker(),
-				new CustomCamera(),
-				new BlockOverlay(),
-				new HUD(),
-				new ModelTrainer(),
-				new KeepSprint(),
-				new AutoLeave(),
-				new KillEffects(),
-				new GuiMove(),
-				new IRCModule(),
-				//new FreeLook(),
-				new Ambience(),
-				new TargetHUD()
-		);
-	}
 
-	private void register(Module... modulesToRegister) {
-		modules = new CopyOnWriteArrayList<>(modulesToRegister);
-	}
+		modules = new CopyOnWriteArrayList<>();
 
+		ClassIndex.getAnnotated(ModuleInfo.class).forEach(module -> {
+			try {
+				modules.add((Module) module.getDeclaredConstructor().newInstance());
+			} catch (Exception _) {}
+		});
+	}
+	
 	public List<Module> getModulesByCategory(Category category) {
 		return modules.stream().filter(module -> module.getCategory() == category).collect(Collectors.toList());
 	}
