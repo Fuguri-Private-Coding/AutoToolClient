@@ -74,7 +74,7 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(3, 3,0);
+		version = new ClientVersion(4, 0,0);
 
 		connect();
 
@@ -142,7 +142,11 @@ public enum Client implements Imports {
 
 	public String getChangeLog() {
 		return """
-				gg
+				лень думать над канга логам так что иди нахуй тупой даун!
+				
+				[main] INFO net.dv8tion.jda.api.JDA - Login Successful!
+				[JDA MainWS-WriteThread] INFO net.dv8tion.jda.internal.requests.WebSocketClient - Connected to WebSocket
+				[JDA MainWS-ReadThread] INFO net.dv8tion.jda.api.JDA - Finished Loading!
 				""";
 	}
 

@@ -69,11 +69,10 @@ public class BedESP extends Module {
         if (event instanceof Render3DEvent) {
             if (beds.isEmpty()) return;
 
-            if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
-            } else {
-                fadeColor = color1.getColor();
-            }
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
+                    : color1.getColor();
+
 
             RenderUtils.start3D();
             for (BlockPos[] bed : beds) {

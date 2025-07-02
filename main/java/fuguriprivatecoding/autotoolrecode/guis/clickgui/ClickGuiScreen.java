@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.ArrayList;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
@@ -31,6 +32,8 @@ import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.Math.*;
 
@@ -88,11 +91,9 @@ public class ClickGuiScreen extends GuiScreen {
 		if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
 		int currentScroll = Mouse.getDWheel();
 
-		if (this.clickGui.fadeColor.isToggled()) {
-			MAIN_COLOR = ColorUtils.fadeColor(clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
-		} else {
-			MAIN_COLOR = clickGui.color1.getColor();
-		}
+		MAIN_COLOR = clickGui.fadeColor.isToggled() ?
+				ColorUtils.fadeColor(clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue())
+				: clickGui.color1.getColor();
 
 		BACKGROUND_COLOR = new Color(0,0,0,clickGui.backgroundAlpha.getValue());
 
@@ -218,7 +219,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		float widthsModule = 0;
 		for (Module module : Client.INST.getModuleManager().getModules()) {
-			float moduleWidth = fontRenderer.getStringWidth(module.getName());
+			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			if (moduleWidth > widthsModule) widthsModule = moduleWidth;
 		}
 
@@ -252,11 +253,11 @@ public class ClickGuiScreen extends GuiScreen {
 		modulesTotalHeight = 0;
 
 		ScissorUtils.enableScissor();
-		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, widthsModule + 2, sizeBackground.y - 15);
+		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, widthsModule + 5, sizeBackground.y - 15);
 
 		for (Module module : Client.INST.getModuleManager().getModulesByCategory(selectedCategory))	{
 			fontRenderer.drawString(
-					module.getName(),
+					module.getName() + (!module.isHide() ? " ✓" : " ×"),
 					background.x + 4,
 					background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset,
 					module.isToggled() ? MAIN_COLOR_INT : CATEGORY_COLOR.getRGB()
@@ -267,7 +268,6 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 
 		if (selectedModule != null) RoundedUtils.drawRect(background.x + 2, moduleLine.y - 12, 1, 12, 3, MAIN_COLOR);
-
 		ScissorUtils.disableScissor();
 
 		ScissorUtils.enableScissor();
@@ -293,6 +293,12 @@ public class ClickGuiScreen extends GuiScreen {
 			fontRenderer.drawString(
 					"Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())),
 					background.x + verticalLineXOffset + 5,
+					background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6,
+						CATEGORY_COLOR.getRGB()
+					);
+			fontRenderer.drawString(
+					"Hide: " + selectedModule.isHide(),
+					background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()),
 					background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6,
 						CATEGORY_COLOR.getRGB()
 					);
@@ -656,7 +662,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		float widthsModule = 0;
 		for (Module module : Client.INST.getModuleManager().getModules()) {
-			float moduleWidth = fontRenderer.getStringWidth(module.getName());
+			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			if (moduleWidth > widthsModule) widthsModule = moduleWidth;
 		}
 
@@ -673,8 +679,9 @@ public class ClickGuiScreen extends GuiScreen {
 		float offset = modulesScrolls.y;
 
 		for (Module module : Client.INST.getModuleManager().getModulesByCategory(selectedCategory))	{
-			float moduleWidth = fontRenderer.getStringWidth(module.getName());
+			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 9;
+			if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y || mouseY < background.y + 15) continue;
 			if (moduleCondition) {
 				switch (mouseButton) {
 					case 0 -> module.toggle();
@@ -695,44 +702,43 @@ public class ClickGuiScreen extends GuiScreen {
 		offset = 0;
 		for (Category category : Category.values()) {
 			boolean selectCategory = mouseX > background.x + verticalLineXOffset + 5 + 5 + offset && mouseX < background.x + verticalLineXOffset + 5 + 5 + offset + fontRenderer.getStringWidth(category.name) && mouseY > background.y + 2 && mouseY < background.y + 2 + fontRenderer.FONT_HEIGHT;
-			switch (mouseButton) {
-				case 0 -> {
-					if (selectCategory) {
+			if (selectCategory) {
+				switch (mouseButton) {
+					case 0 -> {
 						selectedCategory = category;
 						selectedModule = null;
 						moduleLine.x = 0;
 						moduleLine.y = 0;
 					}
-				}
-				case 1 -> {
-					if (selectCategory) {
 
+					case 2 -> {
+						selectedCategory = category;
+						selectedModule = null;
+						moduleLine.x = 0;
+						moduleLine.y = 0;
+						List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModuleManager().getModulesByCategory(selectedCategory));
+						for (Module module : moduleList) {
+							module.setHide(!module.isHide());
+						}
 					}
 				}
 			}
-
 			offset += fontRenderer.getStringWidth(category.name) + 5;
 		}
 
 		offset = settingsScrolls.y;
 		if (selectedModule != null) {
 			boolean bind = mouseX > background.x + verticalLineXOffset + 5 && mouseX < background.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey()))) && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9;
-			//boolean hide = mouseX > background.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Hide: " + (selectedModule.isHide())) + 5 + 10 && mouseX < background.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Hide: " + (selectedModule.isHide())) + 5 + 10 + fontRenderer.getStringWidth("Hide: " + (selectedModule.isHide())) + 5 && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9;
+			boolean hide = mouseX > background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide())
+					&& mouseX < background.x + sizeBackground.x - 5 && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9;
             if (bind) binding = true;
-			//if (hide) selectedModule.setHide(!selectedModule.isHide());
+			if (hide) selectedModule.setHide(!selectedModule.isHide());
 
 			for (Setting setting : selectedModule.getSettings()) {
 				if (!setting.isVisible())
 					continue;
 
 				float settingWidth = fontRenderer.getStringWidth(setting.getName() + ": ");
-				fontRenderer.drawString(
-						setting.getName() + ": ",
-						background.x + verticalLineXOffset + 5,
-						background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
-						-1
-				);
-
 				if (setting instanceof MultiMode multiBooleanSetting) {
 					float xOffset = 0;
 					float yOffset = 0;
@@ -792,7 +798,6 @@ public class ClickGuiScreen extends GuiScreen {
 				offset += 11;
 			}
 		}
-
 	}
 
 	@Override
@@ -813,8 +818,14 @@ public class ClickGuiScreen extends GuiScreen {
 			}
 			selectedModule.setKey(keyCode);
 		} else if (activeKeyBind != null) {
-			if (keyCode == Keyboard.KEY_ESCAPE) activeKeyBind.setKey(0);else activeKeyBind.setKey(keyCode);
-			activeKeyBind = null;
+			if (keyCode == Keyboard.KEY_ESCAPE) {
+				activeKeyBind.setKey(Keyboard.KEY_NONE);
+				activeKeyBind = null;
+				return;
+			} else {
+				activeKeyBind.setKey(keyCode);
+				activeKeyBind = null;
+			}
 		}
 
 		if (keyCode == Keyboard.KEY_ESCAPE && !closing) {

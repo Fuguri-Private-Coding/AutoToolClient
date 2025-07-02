@@ -176,11 +176,10 @@ public class Ping extends Module {
 
                 switch (renderModes.getMode()) {
                     case "HitBox" -> {
-                        if (this.fadeBoxColor.isToggled()) {
-                            fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
-                        } else {
-                            fadeColor = color1.getColor();
-                        }
+                        fadeColor = fadeBoxColor.isToggled() ?
+                                ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
+                                : color1.getColor();
+
                         RenderUtils.start3D();
                         Vec3 smoothPos = new Vec3(x, y, z);
                         Vec3 diff = smoothPos.subtract(player.getPositionVector());

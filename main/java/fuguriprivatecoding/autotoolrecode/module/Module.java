@@ -1,15 +1,14 @@
 package fuguriprivatecoding.autotoolrecode.module;
 
-import lombok.Getter;
-import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 public class Module implements Imports {
 

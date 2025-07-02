@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
@@ -37,7 +36,7 @@ public class TargetESP extends Module {
     final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
     final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
     final ColorSetting color2 = new ColorSetting("Color2", this, fadeBoxColor::isToggled, 1f,1f,1f,1f);
-    final FloatSetting fadeOffset = new FloatSetting("FadeOffset", this, fadeBoxColor::isToggled,0.1f, 20, 1, 0.1f);
+    final FloatSetting fadeOffset = new FloatSetting("FadeOffset", this, fadeBoxColor::isToggled,0f, 20, 1, 0.1f);
 
     final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled, 0.1f, 20, 1, 0.1f);
 
@@ -53,14 +52,14 @@ public class TargetESP extends Module {
             switch (mode.getMode()) {
                 case "Sigma" -> {
                     if (shadows.isToggled() && shadows.module.get("TargetESP")) {
-                        BloomUtils.addToDraw(() -> renderSigma(Color.WHITE, Color.WHITE));
+                        BloomUtils.addToDraw(() -> renderSigma(Color.white, Color.white));
                     }
                     renderSigma(color1.getColor(), color2.getColor());
                 }
 
                 case "Sigma2" -> {
                     if (shadows.isToggled() && shadows.module.get("TargetESP")) {
-                        BloomUtils.addToDraw(() -> renderSigma2(Color.WHITE, Color.WHITE));
+                        BloomUtils.addToDraw(() -> renderSigma2(Color.white, Color.white));
                     }
                     renderSigma2(color1.getColor(), color2.getColor());
                 }
@@ -96,11 +95,9 @@ public class TargetESP extends Module {
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
 
-            if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue());
-            } else {
-                fadeColor = color1;
-            }
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue())
+                    : color1;
 
             ColorUtils.glColor(fadeColor);
             glVertex3d(x1, y1, z1);
@@ -113,11 +110,9 @@ public class TargetESP extends Module {
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
 
-            if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue());
-            } else {
-                fadeColor = color1;
-            }
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue())
+                    : color1;
 
             ColorUtils.glColor(fadeColor, 1.0f);
             glVertex3d(x1, y1, z1);
@@ -161,11 +156,9 @@ public class TargetESP extends Module {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
 
-            if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue());
-            } else {
-                fadeColor = color1;
-            }
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue())
+                    : color1;
 
             RenderUtils.glColor(fadeColor, 0f);
             glVertex3d(x1, y + poses.getFirst().value, z1);
@@ -177,11 +170,9 @@ public class TargetESP extends Module {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
 
-            if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue());
-            } else {
-                fadeColor = color1;
-            }
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue())
+                    : color1;
 
             RenderUtils.glColor(fadeColor, 1f);
             glVertex3d(x1, y + poses.getLast().value, z1);

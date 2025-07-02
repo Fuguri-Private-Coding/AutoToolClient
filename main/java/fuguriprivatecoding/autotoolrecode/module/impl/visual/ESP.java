@@ -50,11 +50,9 @@ public class ESP extends Module {
                 for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
                     if (playerEntity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) { continue; }
 
-                    if (this.fadeBoxColor.isToggled()) {
-                        fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
-                    } else {
-                        fadeColor = color1.getColor();
-                    }
+                    fadeColor = fadeBoxColor.isToggled() ?
+                            ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
+                            : color1.getColor();
 
                     Vec3 smoothPos = new Vec3(
                             playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * mc.timer.renderPartialTicks,

@@ -19,7 +19,6 @@ import java.nio.FloatBuffer;
 
 public class BloomUtils implements Imports {
 
-    private static Shader program;
     private static Framebuffer inputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static Framebuffer outputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static GaussianKernel gaussianKernel = new GaussianKernel(0);
@@ -34,7 +33,8 @@ public class BloomUtils implements Imports {
 
     public static void draw() {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
-        if (program == null) program = Client.INST.getShaderManager().getBloom();
+        Shader program = Client.INST.getShaderManager().getBloom();
+
         if (!Display.isActive() || !Display.isVisible() || !shadows.isToggled()) return;
 
         inputFramebuffer.bindFramebuffer(true);
@@ -59,10 +59,9 @@ public class BloomUtils implements Imports {
             Uniform.uniform1i(programId, "image2", 20);
         }
 
-        Color color = shadows.color.getColor();
-        if (shadows.fade.isToggled()) {
-            color = ColorUtils.fadeColor(shadows.color.getColor(), shadows.twoColor.getColor(), shadows.speed.getValue());
-        }
+        Color color = shadows.fade.isToggled() ?
+                ColorUtils.fadeColor(shadows.color.getColor(), shadows.twoColor.getColor(), shadows.speed.getValue())
+                : shadows.color.getColor();
 
         Uniform.uniform4f(programId, "color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
         Uniform.uniform1f(programId,"brightness", shadows.brightness.getValue());

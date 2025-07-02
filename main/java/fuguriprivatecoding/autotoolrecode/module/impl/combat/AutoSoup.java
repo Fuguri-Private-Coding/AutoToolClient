@@ -145,11 +145,6 @@ public class AutoSoup extends Module {
         }
     }
 
-    public void openInventory() {
-        mc.getNetHandler().addToSendQueue(new C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT));
-        mc.displayGuiScreen(new GuiInventory(mc.thePlayer));
-    }
-
     public boolean hasEmptySlotsInHotbar() {
         for (int i = 0; i < 9; i++) {
             ItemStack stack = mc.thePlayer.inventory.getStackInSlot(i);

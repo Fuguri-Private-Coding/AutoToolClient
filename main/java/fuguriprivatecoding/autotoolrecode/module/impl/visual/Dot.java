@@ -44,11 +44,10 @@ public class Dot extends Module {
         if (event instanceof Render3DEvent) {
             Vec3 smooth = prevPos.add(pos.subtract(prevPos).multiple(mc.timer.renderPartialTicks));
 
-            if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
-            } else {
-                fadeColor = color1.getColor();
-            }
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
+                    : color1.getColor();
+
 
             if (shadows.isToggled() && shadows.module.get("Dot")) BloomUtils.addToDraw(() -> RenderUtils.drawDot(smooth, size.getValue(), Color.white));
             RenderUtils.drawDot(smooth, size.getValue(), fadeColor);

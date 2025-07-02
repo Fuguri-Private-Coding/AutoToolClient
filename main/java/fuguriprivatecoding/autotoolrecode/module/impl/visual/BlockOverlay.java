@@ -41,11 +41,10 @@ public class BlockOverlay extends Module {
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (event instanceof DrawBlockHighlightEvent) {
 
-            if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
-            } else {
-                fadeColor = color1.getColor();
-            }
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
+                    : color1.getColor();
+
 
             MovingObjectPosition renderRayCast = mc.objectMouseOver;
             if (renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {

@@ -35,6 +35,7 @@ public class Trails extends Module {
     final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
     final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
     final ColorSetting color2 = new ColorSetting("Color2", this, fadeBoxColor::isToggled, 1f,1f,1f,1f);
+    final FloatSetting fadeOffset = new FloatSetting("FadeOffset", this, fadeBoxColor::isToggled,0f, 50, 1, 0.1f);
     final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled,0.1f, 20, 1, 0.1f);
 
     Shadows shadows;
@@ -64,27 +65,20 @@ public class Trails extends Module {
             GL11.glTranslated(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
             GL11.glLineWidth(lineWidth.getValue());
             GL11.glDisable(GL11.GL_DEPTH_TEST);
-
-            if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
-            } else {
-                fadeColor = color1.getColor();
-            }
-
             switch (mode.getMode()) {
                 case "SingleLine" -> {
                     if (shadows.isToggled() && shadows.module.get("Trails")) {
                         GL11.glColor4f(1,1,1,1);
-                        BloomUtils.addToDraw(() -> renderSingleLine(Color.white));
+                        BloomUtils.addToDraw(() -> renderSingleLine(Color.white, Color.white));
                     }
-                    renderSingleLine(fadeColor);
+                    renderSingleLine(color1.getColor(), color2.getColor());
                 }
                 case "PlayerLine" -> {
                     if (shadows.isToggled() && shadows.module.get("Trails")) {
                         GL11.glColor4f(1,1,1,1);
-                        BloomUtils.addToDraw(() -> renderPlayerLine(Color.white));
+                        BloomUtils.addToDraw(() -> renderPlayerLine(Color.white, Color.white));
                     }
-                    renderPlayerLine(fadeColor);
+                    renderPlayerLine(color1.getColor(), color2.getColor());
                 }
             }
             ColorUtils.resetColor();
@@ -95,39 +89,54 @@ public class Trails extends Module {
         }
     }
 
-    private void renderSingleLine(Color color) {
+    private void renderSingleLine(Color color1, Color color2) {
         GL11.glBegin(GL11.GL_LINE_STRIP);
         bottomList.forEach(p -> {
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.mixColor(color1, color2, bottomList.indexOf(p), fadeOffset.getValue(), fadeSpeed.getValue())
+                    : color1;
+
             Vec3 pos = p.getFirst();
-            RenderUtils.glColor(color, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+            RenderUtils.glColor(fadeColor, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
             GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
         });
         GL11.glEnd();
     }
 
-    private void renderPlayerLine(Color color) {
+    private void renderPlayerLine(Color color1, Color color2) {
         GL11.glBegin(GL11.GL_LINE_STRIP);
         bottomList.forEach(p -> {
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.mixColor(color1, color2, bottomList.indexOf(p), fadeOffset.getValue(), fadeSpeed.getValue())
+                    : color1;
+
             Vec3 pos = p.getFirst();
-            RenderUtils.glColor(color, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+            RenderUtils.glColor(fadeColor, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
             GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
         });
         GL11.glEnd();
 
         GL11.glBegin(GL11.GL_LINE_STRIP);
         topList.forEach(p -> {
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.mixColor(color1, color2, topList.indexOf(p), fadeOffset.getValue(), fadeSpeed.getValue())
+                    : color1;
+
             Vec3 pos = p.getFirst();
-            RenderUtils.glColor(color, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+            RenderUtils.glColor(fadeColor, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
             GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
         });
         GL11.glEnd();
-
 
         GL11.glShadeModel(GL11.GL_SMOOTH);
         GL11.glBegin(GL11.GL_QUAD_STRIP);
 
         for (Doubles<Vec3, Long> bottomVec : bottomList) {
-            RenderUtils.glColor(color, 0.6f * (1 - (float) (System.currentTimeMillis() - bottomVec.getSecond()) / (lifeTime.getValue() * 1000)));
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.mixColor(color1, color2, bottomList.indexOf(bottomVec), fadeOffset.getValue(), fadeSpeed.getValue())
+                    : color1;
+
+            RenderUtils.glColor(fadeColor, 0.6f * (1 - (float) (System.currentTimeMillis() - bottomVec.getSecond()) / (lifeTime.getValue() * 1000)));
             GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord, bottomVec.getFirst().zCoord);
             GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord + mc.thePlayer.height, bottomVec.getFirst().zCoord);
         }

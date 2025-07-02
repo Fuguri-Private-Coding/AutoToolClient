@@ -181,6 +181,12 @@ public class BackTrack extends Module {
                 y = target.lry + (target.ry - target.lry) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
                 z = target.lrz + (target.rz - target.lrz) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
 
+                if (!render.getMode().equalsIgnoreCase("Player")) {
+                    fadeColor = fadeBoxColor.isToggled() ?
+                            ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
+                            : color1.getColor();
+                }
+
                 switch (render.getMode()) {
                     case "Player" -> {
                         mc.getRenderManager().doRenderEntity(
@@ -194,24 +200,12 @@ public class BackTrack extends Module {
                         RenderHelper.disableStandardItemLighting();
                     }
                     case "Box" -> {
-                        if (this.fadeBoxColor.isToggled()) {
-                            fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
-                        } else {
-                            fadeColor = color1.getColor();
-                        }
-
                         RenderUtils.start3D();
                         RenderUtils.drawBoundingBox(target.getEntityBoundingBox().offset(x - target.posX, y - target.posY, z - target.posZ), fadeColor);
                         RenderUtils.stop3D();
                     }
 
                     case "HitBox" -> {
-                        if (this.fadeBoxColor.isToggled()) {
-                            fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
-                        } else {
-                            fadeColor = color1.getColor();
-                        }
-
                         RenderUtils.start3D();
                         RenderUtils.drawHitBox(target.getEntityBoundingBox().offset(x - target.posX, y - target.posY, z - target.posZ), fadeColor, lineWidth.getValue());
                         RenderUtils.stop3D();

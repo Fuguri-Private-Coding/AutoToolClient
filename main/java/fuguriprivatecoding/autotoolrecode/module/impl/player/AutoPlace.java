@@ -56,7 +56,6 @@ public class AutoPlace extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        super.onEvent(event);
         if (mc.currentScreen != null) return;
         switch (mode.getMode()) {
             case "Legit" -> {

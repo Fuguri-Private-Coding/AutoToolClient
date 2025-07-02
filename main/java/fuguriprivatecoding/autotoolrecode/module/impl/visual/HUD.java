@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;

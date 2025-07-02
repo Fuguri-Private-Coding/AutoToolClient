@@ -7,72 +7,111 @@ import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
+import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
 
+import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "ArrayList", category = Category.VISUAL)
 public class ArrayList extends Module {
 
-	final ColorSetting color = new ColorSetting("TextColor", this, 1f,1f,1f,1f);
-	final CheckBox textShadow = new CheckBox("TextShadow", this, false);
+    IntegerSetting yPosOffset = new IntegerSetting("Y-Pos Offset", this,0, 100, 0);
+    IntegerSetting xPosOffset = new IntegerSetting("X-Pos Offset", this,0, 100, 0);
 
-	final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, 0,0,0,0.5f);
+    Mode pos = new Mode("Positions",this)
+            .addModes("Right Up", "Left Up")
+            .setMode("Left Up")
+            ;
 
-	final CheckBox suffix = new CheckBox("Suffix", this);
+    CheckBox fade = new CheckBox("Text Fade", this, false);
+    ColorSetting color1 = new ColorSetting("Text Color1", this, 0,0,0,1);
+    ColorSetting color2 = new ColorSetting("Text Color2", this,() -> fade.isToggled(), 0,0,0,1);
+    FloatSetting colorOffset = new FloatSetting("Text Offset", this,() -> fade.isToggled(),0.1f, 50, 1, 0.1f);
+    FloatSetting speed = new FloatSetting("Text Speed", this,() -> fade.isToggled(),0.1f, 20, 1, 0.1f);
+    CheckBox shadow = new CheckBox("Text Shadow", this, true);
 
-	final MultiMode categories = new MultiMode("HideCategories", this)
-			.addModes("Combat", "Move", "Visual", "Connection", "Exploit", "Legit", "Player", "Misc", "Client")
-			;
+    CheckBox background = new CheckBox("Background",this, true);
+    CheckBox bgFade = new CheckBox("Background Fade", this, () -> background.isToggled(), false);
+    ColorSetting bgColor1 = new ColorSetting("Background Color1", this, () -> background.isToggled(), 0,0,0,1);
+    ColorSetting bgColor2 = new ColorSetting("Background Color2", this,() -> background.isToggled() && bgFade.isToggled(), 0,0,0,1);
+    FloatSetting bgColorOffset = new FloatSetting("Background Offset", this,() -> background.isToggled() && bgFade.isToggled(),0.1f, 50, 1, 0.1f);
+    FloatSetting bgSpeed = new FloatSetting("Background Speed", this,() -> background.isToggled() && bgFade.isToggled(),0.1f, 20, 1, 0.1f);
 
-	Shadows shadows;
+    Shadows shadows;
 
-	@EventTarget
-	public void onEvent(Event event) {
-		if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
-		if (event instanceof Render2DEvent) {
-			final FontRenderer font = mc.fontRendererObj;
-			List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModuleManager().getEnabledModules());
+    Color fadeTextColor;
+    Color fadeBackgroundColor;
 
-			sort(moduleList, font);
+    FontRenderer font = mc.fontRendererObj;
+    ScaledResolution sc = new ScaledResolution(mc);
 
-			double offset = 0;
-			for (Module module : moduleList) {
-				if (categories.get("Combat") && module.getCategory() == Category.COMBAT) continue;
-				if (categories.get("Move") && module.getCategory() == Category.MOVE) continue;
-				if (categories.get("Visual") && module.getCategory() == Category.VISUAL) continue;
-				if (categories.get("Connection") && module.getCategory() == Category.CONNECTION) continue;
-				if (categories.get("Exploit") && module.getCategory() == Category.EXPLOIT) continue;
-				if (categories.get("Legit") && module.getCategory() == Category.LEGIT) continue;
-				if (categories.get("Player") && module.getCategory() == Category.PLAYER) continue;
-				if (categories.get("Misc") && module.getCategory() == Category.MISC) continue;
-				if (categories.get("Client") && module.getCategory() == Category.CLIENT) continue;
-				if (module.isHide()) continue;
+    @EventTarget
+    public void onEvent(Event event) {
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (event instanceof Render2DEvent) {
+            List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModuleManager().getEnabledModules());
 
-				if (shadows.isToggled() && shadows.module.get("ArrayList")) {
-					double finalOffset = offset;
-					BloomUtils.addToDraw(() -> Gui.drawRect(6,(float) finalOffset + 19f, font.getStringWidth(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : "")) + 10, (float) finalOffset + 6f, -1));
-				}
+            sort(moduleList, font);
 
-				Gui.drawRect(6,(float) offset + 19f, (float) font.getStringWidth(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : "")) + 10, (float) offset + 6f, backgroundColor.getColor().getRGB());
-				font.drawString(module.getName() + (suffix.isToggled() ? (!module.getSuffix().equalsIgnoreCase("") ? " - " + module.getSuffix() : "") : ""), 8.5f, (float) (8.5f + offset), color.getColor().getRGB(), textShadow.isToggled());
-				offset += 13;
-			}
-		}
-	}
+            double offset = yPosOffset.getValue();
+            for (Module module : moduleList) {
+                fadeTextColor = fade.isToggled() ? ColorUtils.mixColor(
+                        color1.getColor(), color2.getColor(), moduleList.indexOf(module),
+                        colorOffset.getValue(), speed.getValue()) : color1.getColor();
 
-	void sort(final List<Module> toSort, final FontRenderer fontToCalcWidth) {
-		toSort.sort( (m1, m2) -> {
-			final double width1 = fontToCalcWidth.getStringWidth(m1.getName() + (suffix.isToggled() ? (!m1.getSuffix().equalsIgnoreCase("") ? " - " + m1.getSuffix() : "") : ""));
-			final double width2 = fontToCalcWidth.getStringWidth(m2.getName() + (suffix.isToggled() ? (!m2.getSuffix().equalsIgnoreCase("") ? " - " + m2.getSuffix() : "") : ""));
+                if (background.isToggled()) {
+                    fadeBackgroundColor = bgFade.isToggled() ? ColorUtils.mixColor(
+                            bgColor1.getColor(), bgColor2.getColor(), moduleList.indexOf(module),
+                            bgColorOffset.getValue(), bgSpeed.getValue()) : bgColor1.getColor();
+                }
 
-			return Double.compare(width2, width1);
-		});
-	}
+                double finalOffset = offset;
+                switch (pos.getMode()) {
+                    case "Right Up" -> {
+                        if (shadows.isToggled() && shadows.module.get("ArrayList")) {
+                            BloomUtils.addToDraw(() -> {
+                                if (background.isToggled()) {
+                                    Gui.drawRect(sc.getScaledWidth() - xPosOffset.getValue() - (float) font.getStringWidth(module.getName()) - 4f, (float) (finalOffset + 13f), sc.getScaledWidth() - xPosOffset.getValue(), (float) finalOffset, -1);
+                                } else {
+                                    font.drawString(module.getName(), sc.getScaledWidth() - xPosOffset.getValue() - (float) font.getStringWidth(module.getName()) - 1.75f, (float) (2.5f + finalOffset), -1, shadow.isToggled());
+                                }
+                            });
+                        }
+                        if (background.isToggled()) Gui.drawRect(sc.getScaledWidth() - xPosOffset.getValue() - (float) font.getStringWidth(module.getName()) - 4f, (float) (offset + 13f), sc.getScaledWidth() - xPosOffset.getValue(), (float) offset, fadeBackgroundColor.getRGB());
+                        font.drawString(module.getName(), sc.getScaledWidth() - xPosOffset.getValue() - (float) font.getStringWidth(module.getName()) - 1.75f, (float) (2.5f + offset), fadeTextColor.getRGB(), shadow.isToggled());
+                    }
+
+                    case "Left Up" -> {
+                        if (shadows.isToggled() && shadows.module.get("ArrayList")) {
+                            BloomUtils.addToDraw(() -> {
+                                if (background.isToggled()) {
+                                    Gui.drawRect(xPosOffset.getValue(), (float) finalOffset + 13, (float) font.getStringWidth(module.getName()) + 4 + xPosOffset.getValue(), (float) finalOffset, -1);
+                                } else {
+                                    font.drawString(module.getName(), 2.5f + xPosOffset.getValue(), (float) (2.5f + finalOffset), -1, shadow.isToggled());
+                                }
+                            });
+                        }
+                        if (background.isToggled()) Gui.drawRect(xPosOffset.getValue(),(float) offset + 13f, (float) font.getStringWidth(module.getName()) + 4 + xPosOffset.getValue(), (float) offset, fadeBackgroundColor.getRGB());
+                        font.drawString(module.getName(), 2.5f + xPosOffset.getValue(), (float) (2.5f + offset), fadeTextColor.getRGB(), shadow.isToggled());
+                    }
+                }
+                offset += 13;
+            }
+        }
+    }
+
+    void sort(final List<Module> toSort, final FontRenderer fontToCalcWidth) {
+        toSort.sort( (m1, m2) -> {
+            final double width1 = fontToCalcWidth.getStringWidth(m1.getName());
+            final double width2 = fontToCalcWidth.getStringWidth(m2.getName());
+
+            return Double.compare(width2, width1);
+        });
+    }
 }

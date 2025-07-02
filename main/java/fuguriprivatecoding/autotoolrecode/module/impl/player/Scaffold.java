@@ -99,10 +99,10 @@ public class Scaffold extends Module {
     final CheckBox autoThirdPerson = new CheckBox("ThirdPerson", this, true);
 
     final CheckBox render = new CheckBox("Render", this, true);
-    final CheckBox fadeColor = new CheckBox("FadeColor", this, render::isToggled);
+    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this, render::isToggled);
     final ColorSetting color1 = new ColorSetting("Color1", this, render::isToggled, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, () -> render.isToggled() && fadeColor.isToggled(), 1f,1f,1f,1f);
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> render.isToggled() && fadeColor.isToggled(),0.1f, 20, 1, 0.1f);
+    final ColorSetting color2 = new ColorSetting("Color2", this, () -> render.isToggled() && fadeBoxColor.isToggled(), 1f,1f,1f,1f);
+    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> render.isToggled() && fadeBoxColor.isToggled(),0.1f, 20, 1, 0.1f);
 
     final StopWatch stopWatch;
 
@@ -139,6 +139,8 @@ public class Scaffold extends Module {
         stopWatch = new StopWatch();
     }
 
+    Color fadeColor;
+
     @EventTarget
     public void onEvent(Event event) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
@@ -167,12 +169,9 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {
-            Color fadeColor;
-            if (this.fadeColor.isToggled()) {
-                fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
-            } else {
-                fadeColor = color1.getColor();
-            }
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
+                    : color1.getColor();
 
             RenderUtils.start3D();
             if (shadows.isToggled() && shadows.module.get("Scaffold")) {

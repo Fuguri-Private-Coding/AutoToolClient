@@ -1,14 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module;
 
-import fuguriprivatecoding.autotoolrecode.module.impl.combat.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.connection.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.exploit.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.legit.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.misc.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.move.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.player.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.client.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -19,7 +10,7 @@ import java.util.List;
 @Getter
 public class ModuleManager {
 
-	private CopyOnWriteArrayList<Module> modules;
+	private final CopyOnWriteArrayList<Module> modules;
 	public static ModuleManager INSTANCE;
 
 	public ModuleManager() {
@@ -53,6 +44,6 @@ public class ModuleManager {
     }
 
 	public List<Module> getEnabledModules() {
-		return modules.stream().filter(Module::isToggled).collect(Collectors.toList());
+		return modules.stream().filter(Module::isToggled).filter(m -> !m.isHide()).collect(Collectors.toList());
 	}
 }

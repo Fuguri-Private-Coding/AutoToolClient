@@ -3,12 +3,11 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.LegitClickTimingEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
@@ -35,13 +34,15 @@ public class TimerRange extends Module {
 
     FloatSetting minDistanceToSkipTick = new FloatSetting("MinDistanceToSkipTick", this, () -> predictMode.getMode().equalsIgnoreCase("Distance"), 2.5f, 6, 3, 0.1f);
 
+    CheckBox clickTeleport = new CheckBox("Click",this);
+
     boolean teleporting, click = false;
     int teleportTicks, balance = 0;
 
     @EventTarget
     public void onEvent(Event event) {
         if (teleporting) return;
-        if (event instanceof LegitClickTimingEvent && click) {
+        if (event instanceof LegitClickTimingEvent && click && clickTeleport.isToggled()) {
             mc.clickMouse();
             click = false;
         }
@@ -114,8 +115,10 @@ public class TimerRange extends Module {
                     }
                 } catch (Exception ignored) {}
             }
+            teleporting = false;
         }
-        teleporting = false;
-        if (event instanceof RunGameLoopEvent && balance > 0) mc.timer.renderPartialTicks = partialTicks.getValue();
+        if (event instanceof RunGameLoopEvent && balance > 0) {
+            mc.timer.renderPartialTicks = partialTicks.getValue();
+        }
     }
 }

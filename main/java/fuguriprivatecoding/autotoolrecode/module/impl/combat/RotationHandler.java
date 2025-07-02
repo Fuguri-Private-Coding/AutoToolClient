@@ -12,10 +12,12 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 
 @ModuleInfo(name = "RotationHandler", category = Category.COMBAT)
 public class RotationHandler extends Module {

@@ -40,11 +40,9 @@ public class ChestESP extends Module {
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (event instanceof Render3DEvent) {
-            if (this.fadeBoxColor.isToggled()) {
-                fadeColor = ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue());
-            } else {
-                fadeColor = color1.getColor();
-            }
+            fadeColor = fadeBoxColor.isToggled() ?
+                    ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
+                    : color1.getColor();
 
             RenderUtils.start3D();
             for (TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {

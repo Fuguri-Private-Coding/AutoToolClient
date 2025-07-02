@@ -77,8 +77,8 @@ public class ConsoleGuiScreen extends GuiScreen {
         float maxScroll = Math.max(0, totalHeight - consoleVisibleHeight);
 
         if (scroll > 0) scroll = 0;
-        if (scroll < -maxScroll) scroll = (int) -maxScroll;
         if (history.isEmpty()) scroll = 0;
+        if (scroll < -maxScroll) scroll = (int) -maxScroll;
 
         if (closing) {
             if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
@@ -268,5 +268,4 @@ public class ConsoleGuiScreen extends GuiScreen {
             if (delay == 0) delay = 30;
         }
     }
-
 }
