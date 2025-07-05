@@ -102,6 +102,10 @@ public class Shader implements Imports {
 		GL20.glUniform2i(getLocation(name), i, j);
 	}
 
+	public void uniformMat4(String name, FloatBuffer mat) {
+		GL20.glUniformMatrix4(getLocation(name), false, mat);
+	}
+
 	public void uniform1f(final String name, final float f) {
 		GL20.glUniform1f(getLocation(name), f);
 	}

@@ -1094,7 +1094,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 if (!this.mc.gameSettings.hideGUI || this.mc.currentScreen != null) {
                     GlStateManager.alphaFunc(516, 0.1F);
                     this.mc.ingameGUI.renderGameOverlay(partialTicks);
-                    if (blur.isToggled()) GaussianBlurUtils.draw();
 
                     GlStateManager.pushMatrix();
                     new Render2DEvent().call();
@@ -1104,6 +1103,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.disableLighting();
                     GlStateManager.enableAlpha();
 
+                    if (blur.isToggled()) GaussianBlurUtils.draw();
                     if (shadows.isToggled()) BloomUtils.draw();
                     this.mc.getFramebuffer().bindFramebuffer(false);
                     this.framebuffer.bindFramebufferTexture();

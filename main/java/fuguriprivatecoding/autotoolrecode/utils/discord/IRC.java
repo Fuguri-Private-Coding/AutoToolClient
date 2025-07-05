@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.discord;
 
+import fuguriprivatecoding.autotoolrecode.profile.DiscordProfile;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.Client;
@@ -11,7 +12,13 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
+
 import java.awt.*;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,9 +32,10 @@ public class IRC extends ListenerAdapter {
     public MessageChannel onlineConfigsChannel;
     public static long myID = -1;
     public static long myOnlineID = -1;
+    static JDA jda;
+    public static DiscordProfile profile = new DiscordProfile();
 
     public void init() {
-        JDA jda;
         {
             {
                 {
@@ -38,9 +46,21 @@ public class IRC extends ListenerAdapter {
 
                                 jda = JDABuilder.createDefault(token)
                                         .enableIntents(
+                                                GatewayIntent.GUILD_MEMBERS,
+                                                GatewayIntent.GUILD_PRESENCES,
                                                 GatewayIntent.MESSAGE_CONTENT,
-                                                GatewayIntent.GUILD_MESSAGES
+                                                GatewayIntent.GUILD_MESSAGES,
+                                                GatewayIntent.DIRECT_MESSAGES,
+                                                GatewayIntent.GUILD_MESSAGE_REACTIONS,
+                                                GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+                                                GatewayIntent.GUILD_VOICE_STATES,
+                                                GatewayIntent.GUILD_MODERATION,
+                                                GatewayIntent.GUILD_INVITES,
+                                                GatewayIntent.GUILD_WEBHOOKS,
+                                                GatewayIntent.SCHEDULED_EVENTS
                                         )
+                                        .setMemberCachePolicy(MemberCachePolicy.ALL)
+                                        .setChunkingFilter(ChunkingFilter.ALL)
                                         .addEventListeners(this)
                                         .build();
                             }
@@ -79,6 +99,28 @@ public class IRC extends ListenerAdapter {
             Client.INST.getConsole().history.add("§f[§2IRC§f] " + message);
         }
     }
+
+    public static void setDiscordProfile(String userId) {
+        if (jda == null) return;
+
+        jda.getGuilds().forEach(guild -> guild.retrieveMemberById(userId).queue(member -> {
+            if (member != null) {
+                member.getUser().retrieveProfile().queue(user -> {
+                    try {
+                        profile.setId(member.getId());
+                        profile.setAvatarUrl(member.getEffectiveAvatarUrl());
+                        profile.setBannerUrl(user.getBannerUrl());
+                        profile.setUserName(member.getEffectiveName());
+                        profile.setTag(Client.INST.getDiscord().getName());
+                        profile.setProfileColor(member.getColor());
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }, error -> System.out.println("Could not retrieve profile: " + error));
+            }
+        }, error -> System.out.println("Member not found in guild " + guild.getName())));
+    }
+
 
     public void sendIRCMessage(String text) {
         chatChannel.sendMessage(text).queue();

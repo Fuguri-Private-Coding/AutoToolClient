@@ -96,13 +96,9 @@ public enum Client implements Imports {
 		console = new ConsoleGuiScreen();
 
 		discord = new Discord();
-		discord.init();
-
 		combatManager = new CombatManager();
 		friendManager = new FriendManager();
         soundsManager = new SoundsManager();
-
-		discord.startRPC();
 
 		moduleManager = new ModuleManager();
 
@@ -134,6 +130,9 @@ public enum Client implements Imports {
 		mc.gameSettings.ofFastRender = false;
 		Display.setTitle(getFullName());
 
+		discord.init();
+		discord.startRPC();
+
         starting = false;
 
 		double elapsedNanos = System.nanoTime() - start;
@@ -142,11 +141,7 @@ public enum Client implements Imports {
 
 	public String getChangeLog() {
 		return """
-				лень думать над канга логам так что иди нахуй тупой даун!
 				
-				[main] INFO net.dv8tion.jda.api.JDA - Login Successful!
-				[JDA MainWS-WriteThread] INFO net.dv8tion.jda.internal.requests.WebSocketClient - Connected to WebSocket
-				[JDA MainWS-ReadThread] INFO net.dv8tion.jda.api.JDA - Finished Loading!
 				""";
 	}
 
@@ -171,6 +166,7 @@ public enum Client implements Imports {
 		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
 			lastTime = System.currentTimeMillis();
 			new Thread(HWIDUtils::check).start();
+			if (discord.getId() != null) IRC.setDiscordProfile(Client.INST.getDiscord().getId());
 		}
 		if (event instanceof KeyEvent keyEvent) {
 			for (Module module : moduleManager.getModules()) {

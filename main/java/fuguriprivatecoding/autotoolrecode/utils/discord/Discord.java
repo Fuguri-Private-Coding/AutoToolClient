@@ -1,10 +1,10 @@
 package fuguriprivatecoding.autotoolrecode.utils.discord;
 
+import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.guis.console.ConsoleGuiScreen;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
@@ -19,16 +19,17 @@ public class Discord implements Imports {
         Client.INST.getEventManager().register(this);
     }
 
-    long timestamp;
+    long timestamp, lastTime;
 
     @Getter
-    private String name;
+    private String name, id;
 
     public boolean run = false;
 
     ConsoleGuiScreen console;
 
     public void init() {
+        if (console == null) console = Client.INST.getConsole();
         run = true;
         DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler(discordUser -> {
             console.log("§a[§9Discord§a]§e Connected to user " + discordUser.username + ".");
@@ -36,6 +37,7 @@ public class Discord implements Imports {
             timestamp = System.currentTimeMillis();
             if (discordUser.userId != null) {
                 name = discordUser.username;
+                id = discordUser.userId;
             } else {
                 System.exit(0);
             }
@@ -49,8 +51,7 @@ public class Discord implements Imports {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (console == null) console = Client.INST.getConsole();
-        if (event instanceof TickEvent) {
+        if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 1000) {
             if (run) {
                 if (mc.thePlayer != null) {
                     if (mc.isSingleplayer()) {
@@ -67,6 +68,7 @@ public class Discord implements Imports {
                 }
 
                 DiscordRPC.discordRunCallbacks();
+                lastTime = System.currentTimeMillis();
             }
         }
     }

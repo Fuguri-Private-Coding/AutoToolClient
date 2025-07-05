@@ -32,7 +32,7 @@ public class ArrayList extends Module {
     CheckBox fade = new CheckBox("Text Fade", this, false);
     ColorSetting color1 = new ColorSetting("Text Color1", this, 0,0,0,1);
     ColorSetting color2 = new ColorSetting("Text Color2", this,() -> fade.isToggled(), 0,0,0,1);
-    FloatSetting colorOffset = new FloatSetting("Text Offset", this,() -> fade.isToggled(),0.1f, 50, 1, 0.1f);
+    FloatSetting colorOffset = new FloatSetting("Text Offset", this,() -> fade.isToggled(),0f, 50, 1, 0.1f);
     FloatSetting speed = new FloatSetting("Text Speed", this,() -> fade.isToggled(),0.1f, 20, 1, 0.1f);
     CheckBox shadow = new CheckBox("Text Shadow", this, true);
 
@@ -40,69 +40,87 @@ public class ArrayList extends Module {
     CheckBox bgFade = new CheckBox("Background Fade", this, () -> background.isToggled(), false);
     ColorSetting bgColor1 = new ColorSetting("Background Color1", this, () -> background.isToggled(), 0,0,0,1);
     ColorSetting bgColor2 = new ColorSetting("Background Color2", this,() -> background.isToggled() && bgFade.isToggled(), 0,0,0,1);
-    FloatSetting bgColorOffset = new FloatSetting("Background Offset", this,() -> background.isToggled() && bgFade.isToggled(),0.1f, 50, 1, 0.1f);
+    FloatSetting bgColorOffset = new FloatSetting("Background Offset", this,() -> background.isToggled() && bgFade.isToggled(),0f, 50, 1, 0.1f);
     FloatSetting bgSpeed = new FloatSetting("Background Speed", this,() -> background.isToggled() && bgFade.isToggled(),0.1f, 20, 1, 0.1f);
+
+    CheckBox line = new CheckBox("Line",this, true);
+    CheckBox lineFade = new CheckBox("Line Fade", this, () -> line.isToggled(), false);
+    ColorSetting lineColor1 = new ColorSetting("Line Color1", this,() -> line.isToggled(), 0,0,0,1);
+    ColorSetting lineColor2 = new ColorSetting("Line Color2", this,() -> line.isToggled() && lineFade.isToggled(), 0,0,0,1);
+    FloatSetting lineColorOffset = new FloatSetting("Line Offset", this,() -> line.isToggled() && lineFade.isToggled(),0f, 50, 1, 0.1f);
+    FloatSetting lineSpeed = new FloatSetting("Line Speed", this,() -> line.isToggled() && lineFade.isToggled(),0.1f, 20, 1, 0.1f);
 
     Shadows shadows;
 
     Color fadeTextColor;
     Color fadeBackgroundColor;
+    Color fadeLineColor;
 
     FontRenderer font = mc.fontRendererObj;
-    ScaledResolution sc = new ScaledResolution(mc);
 
     @EventTarget
     public void onEvent(Event event) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (event instanceof Render2DEvent) {
             List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModuleManager().getEnabledModules());
+            ScaledResolution sc = new ScaledResolution(mc);
 
             sort(moduleList, font);
 
             double offset = yPosOffset.getValue();
             for (Module module : moduleList) {
-                fadeTextColor = fade.isToggled() ? ColorUtils.mixColor(
-                        color1.getColor(), color2.getColor(), moduleList.indexOf(module),
-                        colorOffset.getValue(), speed.getValue()) : color1.getColor();
-
-                if (background.isToggled()) {
-                    fadeBackgroundColor = bgFade.isToggled() ? ColorUtils.mixColor(
-                            bgColor1.getColor(), bgColor2.getColor(), moduleList.indexOf(module),
-                            bgColorOffset.getValue(), bgSpeed.getValue()) : bgColor1.getColor();
-                }
+                updateColors(moduleList, module);
 
                 double finalOffset = offset;
                 switch (pos.getMode()) {
                     case "Right Up" -> {
                         if (shadows.isToggled() && shadows.module.get("ArrayList")) {
-                            BloomUtils.addToDraw(() -> {
-                                if (background.isToggled()) {
-                                    Gui.drawRect(sc.getScaledWidth() - xPosOffset.getValue() - (float) font.getStringWidth(module.getName()) - 4f, (float) (finalOffset + 13f), sc.getScaledWidth() - xPosOffset.getValue(), (float) finalOffset, -1);
-                                } else {
-                                    font.drawString(module.getName(), sc.getScaledWidth() - xPosOffset.getValue() - (float) font.getStringWidth(module.getName()) - 1.75f, (float) (2.5f + finalOffset), -1, shadow.isToggled());
-                                }
-                            });
+                            BloomUtils.addToDraw(() -> renderRightUp(finalOffset, module, sc, Color.white, Color.white, Color.white));
                         }
-                        if (background.isToggled()) Gui.drawRect(sc.getScaledWidth() - xPosOffset.getValue() - (float) font.getStringWidth(module.getName()) - 4f, (float) (offset + 13f), sc.getScaledWidth() - xPosOffset.getValue(), (float) offset, fadeBackgroundColor.getRGB());
-                        font.drawString(module.getName(), sc.getScaledWidth() - xPosOffset.getValue() - (float) font.getStringWidth(module.getName()) - 1.75f, (float) (2.5f + offset), fadeTextColor.getRGB(), shadow.isToggled());
+                        renderRightUp(finalOffset, module, sc, fadeBackgroundColor, fadeLineColor, fadeTextColor);
                     }
 
                     case "Left Up" -> {
                         if (shadows.isToggled() && shadows.module.get("ArrayList")) {
-                            BloomUtils.addToDraw(() -> {
-                                if (background.isToggled()) {
-                                    Gui.drawRect(xPosOffset.getValue(), (float) finalOffset + 13, (float) font.getStringWidth(module.getName()) + 4 + xPosOffset.getValue(), (float) finalOffset, -1);
-                                } else {
-                                    font.drawString(module.getName(), 2.5f + xPosOffset.getValue(), (float) (2.5f + finalOffset), -1, shadow.isToggled());
-                                }
-                            });
+                            BloomUtils.addToDraw(() -> renderLeftUp(finalOffset, module, Color.white, Color.white, Color.white));
                         }
-                        if (background.isToggled()) Gui.drawRect(xPosOffset.getValue(),(float) offset + 13f, (float) font.getStringWidth(module.getName()) + 4 + xPosOffset.getValue(), (float) offset, fadeBackgroundColor.getRGB());
-                        font.drawString(module.getName(), 2.5f + xPosOffset.getValue(), (float) (2.5f + offset), fadeTextColor.getRGB(), shadow.isToggled());
+                        renderLeftUp(finalOffset, module, fadeBackgroundColor, fadeLineColor, fadeTextColor);
                     }
                 }
                 offset += 13;
             }
+        }
+    }
+
+    private void renderRightUp(double finalOffset, Module module, ScaledResolution sc, Color fadeBackgroundColor, Color fadeLineColor, Color fadeTextColor) {
+        if (background.isToggled()) Gui.drawRect(sc.getScaledWidth() - xPosOffset.getValue() - (float) font.getStringWidth(module.getName()) - 4f, (float) (finalOffset + 13f), sc.getScaledWidth() - xPosOffset.getValue(), (float) finalOffset, fadeBackgroundColor.getRGB());
+        font.drawString(module.getName(), sc.getScaledWidth() - xPosOffset.getValue() - (float) font.getStringWidth(module.getName()) - 1.75f, (float) (2.5f + finalOffset), fadeTextColor.getRGB(), shadow.isToggled());
+        if (line.isToggled()) {
+            Gui.drawRect(sc.getScaledWidth() - xPosOffset.getValue(), (float) (finalOffset + 13f), sc.getScaledWidth() - xPosOffset.getValue() + 2, (float) finalOffset, fadeLineColor.getRGB());
+        }
+    }
+
+    private void renderLeftUp(double finalOffset, Module module, Color fadeBackgroundColor, Color fadeLineColor, Color fadeTextColor) {
+        if (background.isToggled()) Gui.drawRect(xPosOffset.getValue(),(float) finalOffset + 13f, (float) font.getStringWidth(module.getName()) + 4 + xPosOffset.getValue(), (float) finalOffset, fadeBackgroundColor.getRGB());
+        font.drawString(module.getName(), 2.5f + xPosOffset.getValue(), (float) (2.5f + finalOffset), fadeTextColor.getRGB(), shadow.isToggled());
+        if (line.isToggled()) Gui.drawRect(xPosOffset.getValue() - 2, (float) finalOffset + 13, xPosOffset.getValue(), (float) finalOffset, fadeLineColor.getRGB());
+    }
+
+    private void updateColors(List<Module> moduleList, Module module) {
+        fadeTextColor = fade.isToggled() ? ColorUtils.mixColor(
+                color1.getColor(), color2.getColor(), moduleList.indexOf(module),
+                colorOffset.getValue(), speed.getValue()) : color1.getColor();
+
+        if (background.isToggled()) {
+            fadeBackgroundColor = bgFade.isToggled() ? ColorUtils.mixColor(
+                    bgColor1.getColor(), bgColor2.getColor(), moduleList.indexOf(module),
+                    bgColorOffset.getValue(), bgSpeed.getValue()) : bgColor1.getColor();
+        }
+
+        if (line.isToggled()) {
+            fadeLineColor = lineFade.isToggled() ? ColorUtils.mixColor(
+                    lineColor1.getColor(), lineColor2.getColor(), moduleList.indexOf(module),
+                    lineColorOffset.getValue(), lineSpeed.getValue()) : lineColor1.getColor();
         }
     }
 

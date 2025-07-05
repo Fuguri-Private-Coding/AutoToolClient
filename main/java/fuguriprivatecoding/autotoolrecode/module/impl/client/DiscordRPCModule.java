@@ -19,7 +19,7 @@ public class DiscordRPCModule extends Module {
 
     @Override
     public void onEnable() {
-        discord.init();
+        if (!Client.INST.isStarting()) discord.init();
     }
 
     @Override

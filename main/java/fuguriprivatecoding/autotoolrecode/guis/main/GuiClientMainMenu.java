@@ -1,13 +1,17 @@
 package fuguriprivatecoding.autotoolrecode.guis.main;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.utils.discord.IRC;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import fuguriprivatecoding.autotoolrecode.utils.resource.ResourceUtils;
 import net.minecraft.client.gui.*;
 import net.minecraft.util.ResourceLocation;
-
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class GuiClientMainMenu extends GuiScreen {
 
@@ -16,6 +20,13 @@ public class GuiClientMainMenu extends GuiScreen {
     }
 
     ResourceLocation exitLogo = new ResourceLocation("minecraft", "hackclient/mainmenu/exit.png");
+
+    private InputStream avatarStream;
+    private InputStream bannerStream;
+    private ResourceLocation avatarTexture;
+    private ResourceLocation bannerTexture;
+
+    private boolean initialized = false;
 
     @Override
     public void initGui() {
@@ -30,14 +41,60 @@ public class GuiClientMainMenu extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         final ScaledResolution sc = new ScaledResolution(mc);
+        final FontRenderer font = mc.fontRendererObj;
+        final String userText = "Hello, " + Client.INST.getProfile().getUsername() + " welcome to AutoTool!";
         BackgroundUtils.run();
 
-        final FontRenderer font = mc.fontRendererObj;
+        if (!initialized) {
+            font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f - 45, Color.WHITE.getRGB());
+            new Thread(this::updateImages).start();
+            renderDiscordProfile(sc, font);
+        } else {
+            font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f, Color.WHITE.getRGB());
+        }
 
         font.drawString(Client.INST.getChangeLog(), 5, 5, -1, true);
-        final String userText = "Hello, " + Client.INST.getProfile().getUsername() + " welcome to AutoTool!";
-        font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f, Color.WHITE.getRGB());
         super.drawScreen(mouseX, mouseY, partialTicks);
+    }
+
+    private void renderDiscordProfile(ScaledResolution sc, FontRenderer font) {
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 101, sc.getScaledHeight() / 2f - 31, 202, 52, 5f, IRC.profile.getProfileColor() != null ? IRC.profile.getProfileColor() : Color.black);
+
+        if (bannerTexture != null) {
+            StencilUtils.renderStencil(
+                    () -> RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 100, sc.getScaledHeight() / 2f - 30, 200, 50, 5f, Color.WHITE),
+                    () -> ResourceUtils.drawDiscord(bannerTexture, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 - 30, 200, 50)
+            );
+        }
+
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 95 - 1, sc.getScaledHeight() / 2f - 25 - 1, 42, 42, 22.5f, IRC.profile.getProfileColor() != null ? IRC.profile.getProfileColor() : Color.black);
+        if (avatarTexture != null) {
+            StencilUtils.renderStencil(
+                    () -> RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 95, sc.getScaledHeight() / 2f - 25, 40, 40, 22.5f, Color.WHITE),
+                    () -> ResourceUtils.drawDiscord(avatarTexture, sc.getScaledWidth() / 2 - 95, sc.getScaledHeight() / 2 - 25, 40, 40)
+            );
+        }
+        if (IRC.profile.getUserName() != null) font.drawString(IRC.profile.getUserName(), sc.getScaledWidth() / 2f - 45, sc.getScaledHeight() / 2f - 10f, IRC.profile.getProfileColor() != null ? IRC.profile.getProfileColor().getRGB() : Color.BLACK.getRGB(), true);
+    }
+
+    private void updateImages() {
+        if (avatarStream == null && IRC.profile.getAvatar() != null) {
+            avatarStream = IRC.profile.getAvatar();
+        }
+
+        if (bannerStream == null && IRC.profile.getBanner() != null) {
+            bannerStream = IRC.profile.getBanner();
+        }
+
+        if (avatarStream != null && avatarTexture == null) {
+            avatarTexture = ResourceUtils.loadTextureFromStream(avatarStream, "discord_avatar");
+        }
+
+        if (bannerStream != null && bannerTexture == null) {
+            bannerTexture = ResourceUtils.loadTextureFromStream(bannerStream, "discord_banner");
+        }
+
+        if (bannerTexture != null && avatarTexture != null && !initialized) initialized = true;
     }
 
     @Override

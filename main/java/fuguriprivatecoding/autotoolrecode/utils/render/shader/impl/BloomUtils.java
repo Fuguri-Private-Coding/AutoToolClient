@@ -33,9 +33,8 @@ public class BloomUtils implements Imports {
 
     public static void draw() {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
-        Shader program = Client.INST.getShaderManager().getBloom();
-
         if (!Display.isActive() || !Display.isVisible() || !shadows.isToggled()) return;
+        Shader program = Client.INST.getShaderManager().getBloom();
 
         inputFramebuffer.bindFramebuffer(true);
 
@@ -66,7 +65,7 @@ public class BloomUtils implements Imports {
         Uniform.uniform4f(programId, "color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
         Uniform.uniform1f(programId,"brightness", shadows.brightness.getValue());
         Uniform.uniform2f(programId, "texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
-        Uniform.uniform2f(programId, "direction", 2, 0);
+        Uniform.uniform2f(programId, "direction", shadows.offset1.getValue(), 0);
 
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_SRC_ALPHA);
@@ -76,7 +75,7 @@ public class BloomUtils implements Imports {
 
         mc.getFramebuffer().bindFramebuffer(true);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        Uniform.uniform2f(programId, "direction", 0.0f, 2);
+        Uniform.uniform2f(programId, "direction", 0.0f, shadows.offset2.getValue());
         outputFramebuffer.bindFramebufferTexture();
         GL13.glActiveTexture(GL13.GL_TEXTURE20);
         inputFramebuffer.bindFramebufferTexture();

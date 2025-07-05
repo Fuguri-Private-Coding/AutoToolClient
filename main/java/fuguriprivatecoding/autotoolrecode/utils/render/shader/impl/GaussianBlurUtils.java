@@ -16,7 +16,6 @@ import java.nio.FloatBuffer;
 
 public class GaussianBlurUtils implements Imports {
 
-    private static Shader program;
     private static Framebuffer inputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static Framebuffer outputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static GaussianKernel gaussianKernel = new GaussianKernel(0);
@@ -30,14 +29,14 @@ public class GaussianBlurUtils implements Imports {
     }
 
     public static void draw() {
-        if (program == null) program = Client.INST.getShaderManager().getGaussianBlur();
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (!Display.isActive() || !Display.isVisible() || !blur.isToggled()) return;
+        Shader program = Client.INST.getShaderManager().getGaussianBlur();
 
         inputFramebuffer.bindFramebuffer(true);
 
-        final int programId = program.getProgramId();
         final int radius = blur.radius.getValue();
+        final int programId = program.getProgramId();
 
         outputFramebuffer.bindFramebuffer(true);
         program.start();
@@ -53,7 +52,7 @@ public class GaussianBlurUtils implements Imports {
             Uniform.uniform1f(programId, "u_radius", radius);
             Uniform.uniformFB(programId, "u_kernel", buffer);
             Uniform.uniform1i(programId, "u_diffuse_sampler", 0);
-            Uniform.uniform1i(programId, "u_other_sampler", 10);
+            Uniform.uniform1i(programId, "u_other_sampler", 20);
         }
 
         Uniform.uniform2f(programId, "u_texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
@@ -68,7 +67,7 @@ public class GaussianBlurUtils implements Imports {
         mc.getFramebuffer().bindFramebuffer(true);
         Uniform.uniform2f(programId, "u_direction", 0.0F, blur.vertical2Compress.getValue());
         outputFramebuffer.bindFramebufferTexture();
-        GL13.glActiveTexture(GL13.GL_TEXTURE10);
+        GL13.glActiveTexture(GL13.GL_TEXTURE20);
         inputFramebuffer.bindFramebufferTexture();
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         Shader.drawQuad();
