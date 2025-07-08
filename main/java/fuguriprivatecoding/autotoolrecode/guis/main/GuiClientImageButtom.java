@@ -3,8 +3,6 @@ package fuguriprivatecoding.autotoolrecode.guis.main;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -34,11 +32,7 @@ public class GuiClientImageButtom extends GuiButton {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 
-        if (shadows.isToggled() && shadows.module.get("MainMenu")) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 2f, Color.BLACK));
-        }
-
-        RoundedUtils.drawRect(xPosition, yPosition, width, height, 2f, new Color(15,15,15,150));
+        RenderUtils.drawRoundedGradientOutlinedRectangle(xPosition, yPosition, xPosition + width, yPosition + height, 3.4f,new Color(0,0,0,150).getRGB(), 0, Color.black.getRGB());
         RenderUtils.drawImage(image, xPosition, yPosition, width, height);
     }                                       
 }                                           

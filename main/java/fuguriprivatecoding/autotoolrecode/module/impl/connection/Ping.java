@@ -65,8 +65,6 @@ public class Ping extends Module {
 
     Vec3 lastPos, currentPos;
 
-    Color fadeColor;
-
     @Override
     public void onDisable() {
         resetAllPackets();
@@ -176,7 +174,7 @@ public class Ping extends Module {
 
                 switch (renderModes.getMode()) {
                     case "HitBox" -> {
-                        fadeColor = fadeBoxColor.isToggled() ?
+                        Color fadeColor = fadeBoxColor.isToggled() ?
                                 ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
                                 : color1.getColor();
 

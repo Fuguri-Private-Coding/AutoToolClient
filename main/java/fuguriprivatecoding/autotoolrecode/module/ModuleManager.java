@@ -29,6 +29,7 @@ public class ModuleManager {
 				new Blur(),
 				new Dot(),
 				new BedESP(),
+				//new Effect(),
 				//new TestScaff(),
 				new TimeBooster(),
 				new ChestStealer(),
@@ -90,7 +91,7 @@ public class ModuleManager {
 				new AutoLeave(),
 				new KillEffects(),
 				new GuiMove(),
-				new IRCModule(),
+				new IRC(),
 				//new FreeLook(),
 				new Ambience(),
 				new TargetHUD()

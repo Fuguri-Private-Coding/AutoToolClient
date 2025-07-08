@@ -5,10 +5,8 @@ import fuguriprivatecoding.autotoolrecode.alt.Account;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
-import fuguriprivatecoding.autotoolrecode.utils.discord.IRC;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -79,10 +77,6 @@ public class AltManagerGuiScreen extends GuiScreen {
 
         RoundedUtils.drawRect(sc.getScaledWidth() - 265, 10, 250, sc.getScaledHeight() - 20, 5f, new Color(15, 15, 15, 150));
 
-        if (shadows.isToggled() && shadows.module.get("MainMenu")) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(sc.getScaledWidth() - 265, 10, 250, sc.getScaledHeight() - 20, 5f, new Color(15, 15, 15, 255)));
-        }
-
         float offset = scrolls.y;
 
         scrollTotalHeight = 0;
@@ -126,7 +120,7 @@ public class AltManagerGuiScreen extends GuiScreen {
             case 1 -> {
                 if (!altManagerGuiText.getText().isEmpty()) {
                     String accountName = altManagerGuiText.getText();
-                    boolean accountExists = accounts.stream().anyMatch(acc -> acc.getName().equalsIgnoreCase(accountName));
+                    boolean accountExists = accounts.stream().anyMatch(acc -> acc.getName().equals(accountName));
 
                     if (!accountExists) {
                         mc.getSession().setUsername(accountName);

@@ -2,12 +2,12 @@ package fuguriprivatecoding.autotoolrecode.command.impl;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.command.Command;
-import fuguriprivatecoding.autotoolrecode.utils.discord.IRC;
+import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 
-public class CommandIRCChat extends Command {
+public class CommandIRC extends Command {
 
-    public CommandIRCChat() {
-        super("IRCChat", "/irc <message> || /bc <message> (Only Owner)" , "irc", "bc");
+    public CommandIRC() {
+        super("IRC", "/irc <message> || /bc <message> (Only Owner)" , "irc", "bc");
     }
 
     @Override
@@ -18,7 +18,7 @@ public class CommandIRCChat extends Command {
         }
 
         if (args[0].equalsIgnoreCase("irc")) {
-            IRC irc = Client.INST.getIrc();
+            ClientIRC irc = Client.INST.getIrc();
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append(Client.INST.getProfile().getColored()).append(" ");
             for (String arg : args) {
@@ -29,7 +29,7 @@ public class CommandIRCChat extends Command {
         }
 
         if (args[0].equalsIgnoreCase("bc") && Client.INST.getProfile().getRole().equalsIgnoreCase("Owner")) {
-            IRC irc = Client.INST.getIrc();
+            ClientIRC irc = Client.INST.getIrc();
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("§f[§7Server§f]§f").append(" ");
             for (String arg : args) {

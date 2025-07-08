@@ -2,16 +2,13 @@ package fuguriprivatecoding.autotoolrecode.guis.multiplayer;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
-import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.resources.I18n;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
@@ -64,10 +61,6 @@ public class MultiPlayerGuiScreen extends GuiScreen {
         mc.getFramebuffer().framebufferClear();
         BackgroundUtils.run();
         mc.getFramebuffer().bindFramebuffer(true);
-
-        if (shadows.isToggled() && shadows.module.get("MainMenu")) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 200, 40, 400, sc.getScaledHeight() - 100, 5f, Color.white));
-        }
 
         RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 200, 40, 400, sc.getScaledHeight() - 100, 5f, new Color(15, 15, 15, 150));
 

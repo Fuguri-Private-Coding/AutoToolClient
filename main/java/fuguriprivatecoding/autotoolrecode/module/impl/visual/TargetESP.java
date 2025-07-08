@@ -32,6 +32,7 @@ public class TargetESP extends Module {
     final FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f) {};
     final IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
     final FloatSetting length = new FloatSetting("Length", this, 0.2f, 2.5f, 0.6f, 0.1f) {};
+    final FloatSetting radius = new FloatSetting("Radius", this, 0.1f, 2f, 0.7f, 0.1f) {};
 
     final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
     final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
@@ -91,8 +92,8 @@ public class TargetESP extends Module {
         glShadeModel(7425);
         glBegin(GL_QUAD_STRIP);
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
-            double x1 = x + sin(i * Math.PI / 180) * 0.7;
-            double z1 = z + cos(i * Math.PI / 180) * 0.7;
+            double x1 = x + sin(i * Math.PI / 180) * radius.getValue();
+            double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
 
             fadeColor = fadeBoxColor.isToggled() ?
@@ -104,10 +105,13 @@ public class TargetESP extends Module {
             ColorUtils.glColor(fadeColor, 0f);
             glVertex3d(x1, y1 + animationTranslate * length.getValue(), z1);
         }
+        glEnd();
+        glLineWidth(5f);
+        glBegin(GL_LINE_STRIP);
 
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
-            double x1 = x + sin(i * Math.PI / 180) * 0.7;
-            double z1 = z + cos(i * Math.PI / 180) * 0.7;
+            double x1 = x + sin(i * Math.PI / 180) * radius.getValue();
+            double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
 
             fadeColor = fadeBoxColor.isToggled() ?
@@ -117,12 +121,13 @@ public class TargetESP extends Module {
             ColorUtils.glColor(fadeColor, 1.0f);
             glVertex3d(x1, y1, z1);
             ColorUtils.glColor(fadeColor, 1.0f);
-            glVertex3d(x1, y1 + 0.02f, z1);
+            glVertex3d(x1, y1, z1);
         }
         glEnd();
         glEnable(GL_CULL_FACE);
         glShadeModel(7424);
         ColorUtils.resetColor();
+        glLineWidth(1f);
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);
@@ -166,6 +171,11 @@ public class TargetESP extends Module {
             glVertex3d(x1, y + poses.getLast().value, z1);
         }
 
+        glEnd();
+
+        glLineWidth(5f);
+        glBegin(GL_LINE_STRIP);
+
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
             double x1 = x + sin(i * Math.PI / 180) * 0.7;
             double z1 = z + cos(i * Math.PI / 180) * 0.7;
@@ -177,12 +187,13 @@ public class TargetESP extends Module {
             RenderUtils.glColor(fadeColor, 1f);
             glVertex3d(x1, y + poses.getLast().value, z1);
             RenderUtils.glColor(fadeColor, 1f);
-            glVertex3d(x1, y + poses.getLast().value + 0.02, z1);
+            glVertex3d(x1, y + poses.getLast().value, z1);
         }
 
         glEnd();
         glEnable(GL_CULL_FACE);
         glShadeModel(7424);
+        glLineWidth(1f);
         ColorUtils.resetColor();
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);

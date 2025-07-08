@@ -93,7 +93,7 @@ public class BackTrack extends Module {
 
     private int delayBetweenBackTracks;
 
-    Color fadeColor;
+    private Color fadeColor;
 
     @EventTarget
     public void onEvent(Event event) {

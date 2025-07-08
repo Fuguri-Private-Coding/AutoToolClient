@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.Futures;
 import com.mojang.authlib.GameProfile;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import de.florianmichael.vialoadingbase.ViaLoadingBase;
+import fuguriprivatecoding.autotoolrecode.Client;
 import io.netty.buffer.Unpooled;
 import java.io.File;
 import java.io.IOException;
@@ -604,7 +605,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
                 this.gameController.displayGuiScreen(new GuiDisconnected(this.guiScreenServer, "disconnect.lost", reason));
             }
         } else {
-            this.gameController.displayGuiScreen(new GuiDisconnected(new GuiMultiplayer(new GuiClientMainMenu()), "disconnect.lost", reason));
+            this.gameController.displayGuiScreen(new GuiDisconnected(new GuiMultiplayer(Client.INST.getMainMenu()), "disconnect.lost", reason));
         }
     }
 

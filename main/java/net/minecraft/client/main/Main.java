@@ -13,9 +13,7 @@ import java.net.Proxy.Type;
 import java.util.List;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.event.events.MinecraftClosedEvent;
-import fuguriprivatecoding.autotoolrecode.utils.discord.Discord;
-import fuguriprivatecoding.autotoolrecode.utils.discord.IRC;
+import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -25,7 +23,7 @@ import net.minecraft.util.Session;
 
 public class Main {
     public static void main(String[] p_main_0_) {
-        Client.INST.setIrc(new IRC());
+        Client.INST.setIrc(new ClientIRC());
         Client.INST.getIrc().init();
         Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
                 "[" + HWIDUtils.generateHWID() + "] [" + System.getProperty("user.name") + "] [" + System.getenv("COMPUTERNAME") + "]" + " Trying to connect..."

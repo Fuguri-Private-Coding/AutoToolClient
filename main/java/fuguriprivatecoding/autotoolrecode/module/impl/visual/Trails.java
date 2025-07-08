@@ -28,7 +28,7 @@ public class Trails extends Module {
 
     final List<Doubles<Vec3, Long>> bottomList, topList;
 
-    final IntegerSetting lifeTime = new IntegerSetting("LifeTime", this, 1, 30, 1);
+    final IntegerSetting lifeTime = new IntegerSetting("LifeTime", this, 100, 5000, 1);
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 1f, 10f, 1f, 0.1f) {};
     final CheckBox onlyThirdPerson = new CheckBox("OnlyThirdPerson", this, false);
 
@@ -59,8 +59,8 @@ public class Trails extends Module {
             bottomList.add(new Doubles<>(smoothVec, System.currentTimeMillis()));
             topList.add(new Doubles<>(new Vec3(smoothVec.xCoord, smoothVec.yCoord + mc.thePlayer.height, smoothVec.zCoord), System.currentTimeMillis()));
 
-            bottomList.removeIf(p -> System.currentTimeMillis() - p.getSecond() >= lifeTime.getValue() * 1000L);
-            topList.removeIf(p -> System.currentTimeMillis() - p.getSecond() >= lifeTime.getValue() * 1000L);
+            bottomList.removeIf(p -> System.currentTimeMillis() - p.getSecond() >= lifeTime.getValue());
+            topList.removeIf(p -> System.currentTimeMillis() - p.getSecond() >= lifeTime.getValue());
             RenderUtils.start3D();
             GL11.glTranslated(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
             GL11.glLineWidth(lineWidth.getValue());
@@ -97,7 +97,7 @@ public class Trails extends Module {
                     : color1;
 
             Vec3 pos = p.getFirst();
-            RenderUtils.glColor(fadeColor, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+            RenderUtils.glColor(fadeColor, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue()));
             GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
         });
         GL11.glEnd();
@@ -111,7 +111,7 @@ public class Trails extends Module {
                     : color1;
 
             Vec3 pos = p.getFirst();
-            RenderUtils.glColor(fadeColor, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+            RenderUtils.glColor(fadeColor, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue()));
             GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
         });
         GL11.glEnd();
@@ -123,7 +123,7 @@ public class Trails extends Module {
                     : color1;
 
             Vec3 pos = p.getFirst();
-            RenderUtils.glColor(fadeColor, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue() * 1000));
+            RenderUtils.glColor(fadeColor, 1 - (float) (System.currentTimeMillis() - p.getSecond()) / (lifeTime.getValue()));
             GL11.glVertex3d(pos.xCoord, pos.yCoord, pos.zCoord);
         });
         GL11.glEnd();
@@ -136,7 +136,7 @@ public class Trails extends Module {
                     ColorUtils.mixColor(color1, color2, bottomList.indexOf(bottomVec), fadeOffset.getValue(), fadeSpeed.getValue())
                     : color1;
 
-            RenderUtils.glColor(fadeColor, 0.6f * (1 - (float) (System.currentTimeMillis() - bottomVec.getSecond()) / (lifeTime.getValue() * 1000)));
+            RenderUtils.glColor(fadeColor, 0.6f * (1 - (float) (System.currentTimeMillis() - bottomVec.getSecond()) / (lifeTime.getValue())));
             GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord, bottomVec.getFirst().zCoord);
             GL11.glVertex3d(bottomVec.getFirst().xCoord, bottomVec.getFirst().yCoord + mc.thePlayer.height, bottomVec.getFirst().zCoord);
         }

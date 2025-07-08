@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.utils.discord;
+package fuguriprivatecoding.autotoolrecode.irc;
 
 import fuguriprivatecoding.autotoolrecode.profile.DiscordProfile;
 import lombok.Getter;
@@ -14,15 +14,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-
 import java.awt.*;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.List;
 
 @Getter
 @Setter
-public class IRC extends ListenerAdapter {
+public class ClientIRC extends ListenerAdapter {
     public MessageChannel chatChannel;
     public MessageChannel loginChannel;
     public MessageChannel serverChannel;
@@ -120,7 +116,6 @@ public class IRC extends ListenerAdapter {
             }
         }, error -> System.out.println("Member not found in guild " + guild.getName())));
     }
-
 
     public void sendIRCMessage(String text) {
         chatChannel.sendMessage(text).queue();

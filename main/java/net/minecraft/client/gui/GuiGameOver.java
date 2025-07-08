@@ -2,6 +2,7 @@ package net.minecraft.client.gui;
 
 import java.io.IOException;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GlStateManager;
@@ -61,7 +62,7 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback
             case 1:
                 if (this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled())
                 {
-                    this.mc.displayGuiScreen(new GuiClientMainMenu());
+                    this.mc.displayGuiScreen(Client.INST.getMainMenu());
                 }
                 else
                 {
@@ -78,7 +79,7 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback
         {
             this.mc.theWorld.sendQuittingDisconnectingPacket();
             this.mc.loadWorld((WorldClient)null);
-            this.mc.displayGuiScreen(new GuiClientMainMenu());
+            this.mc.displayGuiScreen(Client.INST.getMainMenu());
         }
         else
         {

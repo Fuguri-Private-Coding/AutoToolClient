@@ -2,8 +2,7 @@ package fuguriprivatecoding.autotoolrecode.guis.altmanager;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
 
@@ -21,11 +20,7 @@ public class AltManagerGuiText extends GuiTextField {
     public void drawTextBox() {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
 
-        if (shadows.module.get("MainMenu") && shadows.isToggled()) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 6f, Color.BLACK));
-        }
-
-        RoundedUtils.drawRect(xPosition, yPosition, width, height, 5f, new Color(15,15,15,150));
+        RenderUtils.drawRoundedGradientOutlinedRectangle(xPosition, yPosition, xPosition + width, yPosition + height, 8.5f,new Color(0,0,0,150).getRGB(), 0, Color.black.getRGB());
 
         fontRendererInstance.drawString(getText(), xPosition + 4,yPosition + height / 3, Color.WHITE.getRGB());
     }

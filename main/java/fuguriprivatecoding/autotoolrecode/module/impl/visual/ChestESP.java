@@ -30,9 +30,9 @@ public class ChestESP extends Module {
 
     final CheckBox enderChest = new CheckBox("ShowEnderChest", this);
 
+    Color fadeColor;
     Shadows shadows;
     Blur blur;
-    Color fadeColor;
 
     @EventTarget
     public void onEvent(Event event) {

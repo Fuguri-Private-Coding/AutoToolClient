@@ -7,29 +7,42 @@ import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.module.impl.client.IRCModule;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
+import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.Vec3;
+
+import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
 @ModuleInfo(name = "NameTags", category = Category.VISUAL)
 public class NameTags extends Module {
 
-    FloatSetting height = new FloatSetting("Height", this, 0,2,0.6F, 0.1F);
-    ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, 0,0,0,0.4f);
+    FloatSetting yOffset = new FloatSetting("Y-Offset", this, 0f,5f,1f,0.1f);
+
+    CheckBox bgFade = new CheckBox("Background Fade", this, false);
+    ColorSetting bgColor1 = new ColorSetting("Background Color1", this, 0,0,0,0.5f);
+    ColorSetting bgColor2 = new ColorSetting("Background Color2", this,() -> bgFade.isToggled(), 0,0,0,1);
+    FloatSetting bgSpeed = new FloatSetting("Background Speed", this,() -> bgFade.isToggled(),0.1f, 20, 1, 0.1f);
 
     MurderMystery murderDetector;
     MidClick midClick;
     Shadows shadows;
+
+    Color backgroundFadeColor;
+
+    String detectiveText, murderText, friendText, userText, text;
 
     @EventTarget
     public void onEvent(Event event) {
@@ -37,30 +50,61 @@ public class NameTags extends Module {
         if (murderDetector == null) murderDetector = Client.INST.getModuleManager().getModule(MurderMystery.class);
         if (midClick == null) midClick = Client.INST.getModuleManager().getModule(MidClick.class);
         if (event instanceof Render3DEvent) {
+            updateColors();
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
                 if (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) continue;
+                updateText(entity);
+
+                Vec3 pos = calculateTranslatedPos(entity);
+
                 RenderUtils.start3DNameTag();
-                renderNameTag(entity);
+                setRendering(entity, pos, this::render);
                 RenderUtils.stop3DNameTag();
             }
         }
     }
 
-    public void renderNameTag(Entity entity) {
+    private void updateColors() {
+        backgroundFadeColor = bgFade.isToggled()
+                ? ColorUtils.fadeColor(
+                        bgColor1.getColor(), bgColor2.getColor(), bgSpeed.getValue()) :
+                        bgColor1.getColor();
+    }
+
+    public void updateText(Entity entity) {
         boolean friend = entity instanceof EntityPlayer ent && midClick.showInName.isToggled() && ent.isFriend();
         boolean murder = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.murders.contains(ent.getName());
         boolean detective = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.detectives.contains(ent.getName());
-        boolean user = entity instanceof EntityPlayer ent && IRCModule.usersOnline.get(ent.getName()) != null;
+        boolean user = entity instanceof EntityPlayer ent && IRC.usersOnline.get(ent.getName()) != null;
+        detectiveText = detective ? "§6[Detective]§6 " : "";
+        murderText = murder ? "§4[Murder]§4 " : "";
+        friendText = friend ? "§2[Friend]§a " : "";
+        userText = user ? IRC.usersOnline.get(entity.getName()).getColored() + " " : "";
+        text = userText + friendText + murderText + detectiveText + entity.getDisplayName().getFormattedText();
+    }
+
+    private Vec3 calculateTranslatedPos(Entity entity) {
+        return new Vec3(
+                (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks - RenderManager.renderPosX),
+                (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks - RenderManager.renderPosY + entity.getEyeHeight() + yOffset.getValue()),
+                (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks - RenderManager.renderPosZ)
+        );
+    }
+
+    public void render() {
+        float offset = mc.fontRendererObj.FONT_HEIGHT - 8f;
+        float stringWidth = mc.fontRendererObj.getStringWidth(text) / 2f;
+        if (shadows.isToggled() && shadows.module.get("NameTags")) BloomUtils.addToDraw(() -> Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, -1));
+        Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, backgroundFadeColor.getRGB());
+        mc.fontRendererObj.drawString(text, -stringWidth, offset, -1, true);
+    }
+
+    private void setRendering(Entity entity, Vec3 pos, Runnable render) {
         float distance = mc.thePlayer.getDistanceToEntity(entity);
         float scale = Math.max(distance / 2.5f, 5.0f);
         scale /= 200f;
         glPushMatrix();
-        glTranslated(
-                (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks - RenderManager.renderPosX),
-                (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks - RenderManager.renderPosY + entity.getEyeHeight() + height.getValue()),
-                (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks - RenderManager.renderPosZ)
-        );
-
+        glTranslated(pos.xCoord, pos.yCoord, pos.zCoord);
         glNormal3f(0.0f, 1.0f, 0.0f);
         glRotatef(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f);
         glRotatef(mc.renderManager.playerViewX, 1.0f, 0.0f, 0.0f);
@@ -69,18 +113,7 @@ public class NameTags extends Module {
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        String detectiveText = detective ? "§6[Detective]§6 " : "";
-        String murderText = murder ? "§4[Murder]§4 " : "";
-        String friendText = friend ? "§2[Friend]§a " : "";
-        String userText = user ? IRCModule.usersOnline.get(entity.getName()).getColored() + " " : "";
-        String text = userText + friendText + murderText + detectiveText + entity.getDisplayName().getFormattedText();
-        float offset = mc.fontRendererObj.FONT_HEIGHT - 8f;
-        float stringWidth = mc.fontRendererObj.getStringWidth(text) / 2f;
-        if (shadows.isToggled() && shadows.module.get("NameTags")) {
-            BloomUtils.addToDraw(() -> Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, -1));
-        }
-        Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, backgroundColor.getColor().getRGB());
-        mc.fontRendererObj.drawString(text, -stringWidth, offset, -1, true);
+        render.run();
         glColor4f(1f, 1f, 1f, 1f);
         glPopMatrix();
     }

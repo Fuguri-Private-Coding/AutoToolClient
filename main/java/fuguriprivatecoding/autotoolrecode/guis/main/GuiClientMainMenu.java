@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.guis.main;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.utils.discord.IRC;
+import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -45,20 +45,20 @@ public class GuiClientMainMenu extends GuiScreen {
         final String userText = "Hello, " + Client.INST.getProfile().getUsername() + " welcome to AutoTool!";
         BackgroundUtils.run();
 
-        if (!initialized) {
-            font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f - 45, Color.WHITE.getRGB());
-            new Thread(this::updateImages).start();
-            renderDiscordProfile(sc, font);
-        } else {
+//        if (initialized) {
+//            font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f - 45, Color.WHITE.getRGB());
+//            renderDiscordProfile(sc, font);
+//        } else {
+            //updateImages();
             font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f, Color.WHITE.getRGB());
-        }
+        //}
 
         font.drawString(Client.INST.getChangeLog(), 5, 5, -1, true);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     private void renderDiscordProfile(ScaledResolution sc, FontRenderer font) {
-        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 101, sc.getScaledHeight() / 2f - 31, 202, 52, 5f, IRC.profile.getProfileColor() != null ? IRC.profile.getProfileColor() : Color.black);
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 101, sc.getScaledHeight() / 2f - 31, 202, 52, 5f, ClientIRC.profile.getProfileColor() != null ? ClientIRC.profile.getProfileColor() : Color.black);
 
         if (bannerTexture != null) {
             StencilUtils.renderStencil(
@@ -67,23 +67,24 @@ public class GuiClientMainMenu extends GuiScreen {
             );
         }
 
-        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 95 - 1, sc.getScaledHeight() / 2f - 25 - 1, 42, 42, 22.5f, IRC.profile.getProfileColor() != null ? IRC.profile.getProfileColor() : Color.black);
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 95 - 1, sc.getScaledHeight() / 2f - 25 - 1, 42, 42, 22.5f, ClientIRC.profile.getProfileColor() != null ? ClientIRC.profile.getProfileColor() : Color.black);
         if (avatarTexture != null) {
             StencilUtils.renderStencil(
                     () -> RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 95, sc.getScaledHeight() / 2f - 25, 40, 40, 22.5f, Color.WHITE),
                     () -> ResourceUtils.drawDiscord(avatarTexture, sc.getScaledWidth() / 2 - 95, sc.getScaledHeight() / 2 - 25, 40, 40)
             );
         }
-        if (IRC.profile.getUserName() != null) font.drawString(IRC.profile.getUserName(), sc.getScaledWidth() / 2f - 45, sc.getScaledHeight() / 2f - 10f, IRC.profile.getProfileColor() != null ? IRC.profile.getProfileColor().getRGB() : Color.BLACK.getRGB(), true);
+        if (ClientIRC.profile.getUserName() != null) font.drawString(ClientIRC.profile.getUserName(), sc.getScaledWidth() / 2f - 45, sc.getScaledHeight() / 2f - 10f, ClientIRC.profile.getProfileColor() != null ? ClientIRC.profile.getProfileColor().getRGB() : Color.BLACK.getRGB(), true);
     }
 
     private void updateImages() {
-        if (avatarStream == null && IRC.profile.getAvatar() != null) {
-            avatarStream = IRC.profile.getAvatar();
+        if (initialized) return;
+        if (avatarStream == null && ClientIRC.profile.getAvatar() != null) {
+            avatarStream = ClientIRC.profile.getAvatar();
         }
 
-        if (bannerStream == null && IRC.profile.getBanner() != null) {
-            bannerStream = IRC.profile.getBanner();
+        if (bannerStream == null && ClientIRC.profile.getBanner() != null) {
+            bannerStream = ClientIRC.profile.getBanner();
         }
 
         if (avatarStream != null && avatarTexture == null) {
@@ -94,7 +95,7 @@ public class GuiClientMainMenu extends GuiScreen {
             bannerTexture = ResourceUtils.loadTextureFromStream(bannerStream, "discord_banner");
         }
 
-        if (bannerTexture != null && avatarTexture != null && !initialized) initialized = true;
+        initialized = bannerTexture != null && avatarTexture != null && !initialized;
     }
 
     @Override

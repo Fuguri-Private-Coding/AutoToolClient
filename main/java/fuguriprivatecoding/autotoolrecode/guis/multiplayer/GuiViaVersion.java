@@ -7,7 +7,6 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -46,10 +45,6 @@ public class GuiViaVersion extends GuiScreen {
         mc.getFramebuffer().framebufferClear();
         BackgroundUtils.run();
         mc.getFramebuffer().bindFramebuffer(true);
-
-        if (shadows.isToggled() && shadows.module.get("MainMenu")) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 200, 20, 400, sc.getScaledHeight() - 40, 5f, Color.white));
-        }
 
         String currentVersion = "Current Version: " + ViaLoadingBase.getInstance().getTargetVersion().getName();
 

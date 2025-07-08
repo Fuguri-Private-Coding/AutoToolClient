@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @ModuleInfo(name = "IRC", category = Category.CLIENT)
-public class IRCModule extends Module {
+public class IRC extends Module {
 
     public static HashMap<String, Profile> usersOnline = new HashMap<>();
 
@@ -30,7 +30,7 @@ public class IRCModule extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof TickEvent && System.currentTimeMillis() - lastTime >= 5000) {
+        if (event instanceof TickEvent && System.currentTimeMillis() - lastTime >= 7000) {
         new Thread(() -> {
             if (!Client.INST.getIrc().getServerChannel().getIterableHistory().stream().toList().isEmpty()) {
                 history = Client.INST.getIrc().getServerChannel().getIterableHistory().stream().toList();

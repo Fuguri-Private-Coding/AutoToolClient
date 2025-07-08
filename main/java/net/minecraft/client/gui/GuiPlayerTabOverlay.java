@@ -5,11 +5,9 @@ import com.google.common.collect.Ordering;
 import com.mojang.authlib.GameProfile;
 import java.util.Comparator;
 import java.util.List;
-
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.irc.packet.ClientSocket;
 import fuguriprivatecoding.autotoolrecode.managers.FriendManager;
-import fuguriprivatecoding.autotoolrecode.module.impl.client.IRCModule;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
 import net.minecraft.client.Minecraft;
@@ -52,7 +50,7 @@ public class GuiPlayerTabOverlay extends Gui
         String friend = friendManager.isFriend(networkPlayerInfoIn.getGameProfile().getName(), midClick.reverseFriends.isToggled()) ? "§2[Friend]§9 " : "";
         String murder = murderDetector.isToggled() && murderDetector.murders.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§4[Murder]§4 " : "";
         String detective = murderDetector.isToggled() && murderDetector.detectives.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§6[Detective]§6 " : "";
-        String user = IRCModule.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()) != null ? IRCModule.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()).getColored() + " " : "";
+        String user = IRC.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()) != null ? IRC.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()).getColored() + " " : "";
         String name = networkPlayerInfoIn.getDisplayName() != null ? networkPlayerInfoIn.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(networkPlayerInfoIn.getPlayerTeam(), networkPlayerInfoIn.getGameProfile().getName());
 
         return user + friend + murder + detective + name;

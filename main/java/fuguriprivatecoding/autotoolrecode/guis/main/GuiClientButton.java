@@ -2,8 +2,7 @@ package fuguriprivatecoding.autotoolrecode.guis.main;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -29,11 +28,7 @@ public class GuiClientButton extends GuiButton {
 
         final FontRenderer fonts = mc.fontRendererObj;
 
-        if (shadows.isToggled() && shadows.module.get("MainMenu")) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(xPosition, yPosition, width, height, 3f, Color.BLACK));
-        }
-
-        RoundedUtils.drawRect(xPosition, yPosition, width, height, 2f, new Color(15, 15, 15, 150));
+        RenderUtils.drawRoundedGradientOutlinedRectangle(xPosition, yPosition, xPosition + width, yPosition + height, 0, new Color(0,0,0,150).getRGB(), 0, Color.black.getRGB());
 
         final Color color = Color.WHITE;
         fonts.drawString(displayString, xPosition + width / 2f - fonts.getStringWidth(displayString) / 2f, yPosition + (height - 8) / 2f, hovered ? color.darker().getRGB() : color.getRGB(), true);

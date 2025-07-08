@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode;
 
 import de.florianmichael.viamcp.ViaMCP;
+import Effekseer.installer.LoadNatives;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiScreen;
 import fuguriprivatecoding.autotoolrecode.guis.config.ConfigGuiScreen;
 import fuguriprivatecoding.autotoolrecode.config.ConfigManager;
@@ -10,10 +11,12 @@ import fuguriprivatecoding.autotoolrecode.event.*;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.guis.clickgui.*;
 import fuguriprivatecoding.autotoolrecode.guis.console.*;
+import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
+import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.managers.*;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleManager;
-import fuguriprivatecoding.autotoolrecode.module.impl.client.IRCModule;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.utils.font.*;
 import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
@@ -62,8 +65,11 @@ public enum Client implements Imports {
 	ConfigGuiScreen configGuiScreen;
 	AltManagerGuiScreen altManagerGui;
 	NewClickGuiScreen newClickGuiScreen;
+	GuiClientMainMenu mainMenu;
+	LoadNatives loadNatives;
 	@Setter Discord discord;
-	@Setter IRC irc;
+	@Setter
+	ClientIRC irc;
 
 	FontsRepository fonts;
 
@@ -74,7 +80,7 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(4, 0,0);
+		version = new ClientVersion(4, 1,0);
 
 		connect();
 
@@ -99,6 +105,9 @@ public enum Client implements Imports {
 		combatManager = new CombatManager();
 		friendManager = new FriendManager();
         soundsManager = new SoundsManager();
+
+//		loadNatives = new LoadNatives();
+//		loadNatives.init();
 
 		moduleManager = new ModuleManager();
 
@@ -130,6 +139,8 @@ public enum Client implements Imports {
 		mc.gameSettings.ofFastRender = false;
 		Display.setTitle(getFullName());
 
+		mainMenu = new GuiClientMainMenu();
+
 		discord.init();
 		discord.startRPC();
 
@@ -160,13 +171,13 @@ public enum Client implements Imports {
 	@EventTarget
 	public void onEvent(Event event) {
 		if (event instanceof ServerJoinEvent) {
-			if (!IRCModule.usersOnline.isEmpty()) IRCModule.usersOnline.clear();
+			if (!IRC.usersOnline.isEmpty()) IRC.usersOnline.clear();
 			join();
 		}
 		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
 			lastTime = System.currentTimeMillis();
 			new Thread(HWIDUtils::check).start();
-			if (discord.getId() != null) IRC.setDiscordProfile(Client.INST.getDiscord().getId());
+			//if (discord.getId() != null) IRC.setDiscordProfile(Client.INST.getDiscord().getId());
 		}
 		if (event instanceof KeyEvent keyEvent) {
 			for (Module module : moduleManager.getModules()) {
@@ -180,26 +191,26 @@ public enum Client implements Imports {
 	public void connect() {
 		irc.getOnlineChannel().sendMessage(
 				Client.INST.getProfile().toString() + " " + version.toString()
-		).queue(sendMessage -> IRC.myOnlineID = sendMessage.getIdLong());
+		).queue(sendMessage -> ClientIRC.myOnlineID = sendMessage.getIdLong());
 	}
 
 	public void disconnect() {
-		if (IRC.myOnlineID != -1) irc.getOnlineChannel().deleteMessageById(IRC.myOnlineID).queue();
-		if (IRC.myID != -1) irc.getServerChannel().deleteMessageById(IRC.myID).queue();
+		if (ClientIRC.myOnlineID != -1) irc.getOnlineChannel().deleteMessageById(ClientIRC.myOnlineID).queue();
+		if (ClientIRC.myID != -1) irc.getServerChannel().deleteMessageById(ClientIRC.myID).queue();
 	}
 
 	public void join() {
-		if (IRC.myID != -1) {
-			Client.INST.getIrc().getServerChannel().deleteMessageById(IRC.myID).queue(_ -> {
-				IRC.myID = -1;
+		if (ClientIRC.myID != -1) {
+			Client.INST.getIrc().getServerChannel().deleteMessageById(ClientIRC.myID).queue(_ -> {
+				ClientIRC.myID = -1;
 				Client.INST.getIrc().getServerChannel().sendMessage(
 						mc.getSession().getUsername() + " " + Client.INST.getProfile()
-				).queue(sendMessage -> IRC.myID = sendMessage.getIdLong());
+				).queue(sendMessage -> ClientIRC.myID = sendMessage.getIdLong());
 			});
 		} else {
 			Client.INST.getIrc().getServerChannel().sendMessage(
 					mc.getSession().getUsername() + " " + Client.INST.getProfile()
-			).queue(sendMessage -> IRC.myID = sendMessage.getIdLong());
+			).queue(sendMessage -> ClientIRC.myID = sendMessage.getIdLong());
 		}
 	}
 }

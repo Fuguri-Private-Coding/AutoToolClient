@@ -37,8 +37,6 @@ import javax.imageio.ImageIO;
 
 import de.florianmichael.viamcp.fixes.AttackOrder;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
-import fuguriprivatecoding.autotoolrecode.utils.discord.IRC;
-import fuguriprivatecoding.autotoolrecode.utils.file.WindowIconHelper;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
@@ -455,9 +453,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         this.ingameGUI = new GuiIngame(this);
 
         if (this.serverName != null) {
-            this.displayGuiScreen(new GuiConnecting(new GuiClientMainMenu(), this, this.serverName, this.serverPort));
+            this.displayGuiScreen(new GuiConnecting(Client.INST.getMainMenu(), this, this.serverName, this.serverPort));
         } else {
-            this.displayGuiScreen(new GuiClientMainMenu());
+            this.displayGuiScreen(Client.INST.getMainMenu());
         }
 
         this.renderEngine.deleteTexture(this.mojangLogo);

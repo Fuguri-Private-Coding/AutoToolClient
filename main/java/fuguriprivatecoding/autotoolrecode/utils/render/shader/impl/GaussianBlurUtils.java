@@ -56,7 +56,7 @@ public class GaussianBlurUtils implements Imports {
         }
 
         Uniform.uniform2f(programId, "u_texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
-        Uniform.uniform2f(programId, "u_direction", blur.horizontal1Compress.getValue(), blur.vertical1Compress.getValue());
+        Uniform.uniform2f(programId, "u_direction", blur.offset1.getValue(), 0);
 
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
@@ -65,7 +65,7 @@ public class GaussianBlurUtils implements Imports {
         Shader.drawQuad();
 
         mc.getFramebuffer().bindFramebuffer(true);
-        Uniform.uniform2f(programId, "u_direction", 0.0F, blur.vertical2Compress.getValue());
+        Uniform.uniform2f(programId, "u_direction", 0, blur.offset2.getValue());
         outputFramebuffer.bindFramebufferTexture();
         GL13.glActiveTexture(GL13.GL_TEXTURE20);
         inputFramebuffer.bindFramebufferTexture();

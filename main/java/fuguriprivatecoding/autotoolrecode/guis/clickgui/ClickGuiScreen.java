@@ -6,7 +6,6 @@ import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.ArrayList;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
@@ -25,7 +24,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
@@ -186,9 +184,13 @@ public class ClickGuiScreen extends GuiScreen {
 
 		RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
 		RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
+		RenderUtils.drawRoundedGradientOutlinedRectangle(5, sc.getScaledHeight() - 20, 5 + 50, sc.getScaledHeight() - 20 + 15, clickGui.backgroundRadius.getValue() * 1.7f, 0,Color.black.getRGB(),Color.BLACK.getRGB());
+		RenderUtils.drawRoundedGradientOutlinedRectangle(5 + 60, sc.getScaledHeight() - 20, 5 + 60 + 50, sc.getScaledHeight() - 20 + 15, clickGui.backgroundRadius.getValue() * 1.7f, 0,Color.black.getRGB(),Color.BLACK.getRGB());
 
 		fontRenderer.drawString("Console", 5 + 25 - widthConsole, sc.getScaledHeight() - 15 - 1, -1);
 		fontRenderer.drawString("Config", 5 + 60 + 25 - widthConfig, sc.getScaledHeight() - 15 - 1 , -1);
+
+		RenderUtils.drawRoundedGradientOutlinedRectangle(background.x, background.y, background.x + sizeBackground.x, background.y + sizeBackground.y, clickGui.backgroundRadius.getValue() * 1.7f, 0,Color.black.getRGB(),Color.BLACK.getRGB());
 
 		ScissorUtils.enableScissor();
 		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
@@ -203,7 +205,7 @@ public class ClickGuiScreen extends GuiScreen {
 				}
 		);
 		RoundedUtils.drawRect(background.x, background.y + 5, sizeBackground.x, 10, 1f, HEADER_COLOR);
-		RoundedUtils.drawRect(background.x + sizeBackground.x - 5, background.y + sizeBackground.y - 5, 5, 5, 1, BACKGROUND_COLOR);
+		RoundedUtils.drawRect(background.x + sizeBackground.x - 5, background.y + sizeBackground.y - 5, 5, 5, clickGui.backgroundRadius.getValue() / 3f, BACKGROUND_COLOR);
 
 		fontRenderer.drawString(name, background.x + 35, background.y + 4, CATEGORY_COLOR.getRGB());
 
@@ -284,7 +286,7 @@ public class ClickGuiScreen extends GuiScreen {
 			offset += fontRenderer.getStringWidth(category.name) + 5;
 		}
 
-		RoundedUtils.drawRect(background.x + verticalLineXOffset, background.y + 15, 2, sizeBackground.y - 15, 0.2f, BACKGROUND_COLOR);
+		RoundedUtils.drawRect(background.x + verticalLineXOffset, background.y + 15, 1, sizeBackground.y - 15, 0.2f, Color.BLACK);
 
 		offset = settingsScrolls.y;
 
@@ -591,8 +593,9 @@ public class ClickGuiScreen extends GuiScreen {
 			}
 			ScissorUtils.disableScissor();
 		} else {
-			ResourceLocation image = new ResourceLocation("minecraft", "hackclient/image/modulenull.png");
-			RenderUtils.drawImage(image, (int) (background.x + verticalLineXOffset + 5), (int) background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, 250, 250);
+			fontRenderer.drawString("Скрытие модулей:", background.x + verticalLineXOffset + 5, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, MAIN_COLOR.getRGB());
+			fontRenderer.drawString("Тапните по категории колесиком чтобы скрыть модули в категории,", background.x + verticalLineXOffset + 5, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT * 2 + 6, MAIN_COLOR.getRGB());
+			fontRenderer.drawString("а также чтобы скрыть модуль тапните по нему колесиком.", background.x + verticalLineXOffset + 5, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT * 3 + 6, MAIN_COLOR.getRGB());
 		}
 		ScissorUtils.disableScissor();
 
@@ -690,10 +693,7 @@ public class ClickGuiScreen extends GuiScreen {
 						settingsScroll = 0;
 						selectedModule = module;
 					}
-                    case 2 -> {
-                        selectedModule = module;
-                        binding = true;
-                    }
+                    case 2 -> module.setHide(!module.isHide());
                 }
 			}
 			offset += fontRenderer.FONT_HEIGHT + 2;
