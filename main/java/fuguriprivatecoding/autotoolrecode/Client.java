@@ -19,6 +19,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleManager;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.utils.font.*;
 import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
+import fuguriprivatecoding.autotoolrecode.utils.inventory.SpoofSlotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
 import fuguriprivatecoding.autotoolrecode.utils.discord.*;
 import fuguriprivatecoding.autotoolrecode.utils.file.*;
@@ -67,6 +68,7 @@ public enum Client implements Imports {
 	NewClickGuiScreen newClickGuiScreen;
 	GuiClientMainMenu mainMenu;
 	LoadNatives loadNatives;
+	SpoofSlotUtils spoofUtils;
 	@Setter Discord discord;
 	@Setter
 	ClientIRC irc;
@@ -80,7 +82,7 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(4, 1,0);
+		version = new ClientVersion(4, 1,1);
 
 		connect();
 
@@ -110,6 +112,8 @@ public enum Client implements Imports {
 //		loadNatives.init();
 
 		moduleManager = new ModuleManager();
+
+		spoofUtils = new SpoofSlotUtils();
 
 		shaderManager = new ShaderManager();
 		shaderManager.init();

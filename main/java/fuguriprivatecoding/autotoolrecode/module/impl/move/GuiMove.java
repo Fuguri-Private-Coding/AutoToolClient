@@ -18,7 +18,7 @@ public class GuiMove extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            if (mc.currentScreen instanceof ClickGuiScreen || mc.currentScreen instanceof ConfigGuiScreen || mc.currentScreen instanceof ConsoleGuiScreen) {
+            if (mc.currentScreen instanceof ClickGuiScreen) {
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindForward.getKeyCode()));
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindBack.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindBack.getKeyCode()));
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindRight.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindRight.getKeyCode()));

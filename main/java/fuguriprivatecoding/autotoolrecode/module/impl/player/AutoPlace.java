@@ -30,6 +30,8 @@ public class AutoPlace extends Module {
 
     CheckBox needHoldRight = new CheckBox("HoldRight", this, () -> mode.getMode().equalsIgnoreCase("AutoPlace"));
 
+    CheckBox cancelRightCPS = new CheckBox("CancelRightCPS", this, () -> mode.getName().equalsIgnoreCase("AutoPlace"), false);
+
     IntegerSetting minCps = new IntegerSetting("MinCps", this, () -> mode.getMode().equals("Legit"), 1, 40, 7) {
         @Override
         public int getValue() {
@@ -93,6 +95,12 @@ public class AutoPlace extends Module {
                                 mc.thePlayer.swingItem();
                             }
                         }
+                    }
+                }
+                if (cancelRightCPS.isToggled()) {
+                    boolean needClick = Mouse.isButtonDown(1) && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
+                    if (event instanceof ClickEvent e) {
+                        if (needClick && e.getButton() == ClickEvent.Button.RIGHT) e.cancel();
                     }
                 }
             }

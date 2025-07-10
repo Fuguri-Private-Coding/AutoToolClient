@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import static java.lang.Math.*;
+
 public class RotUtils implements Imports {
 	public static Vec3 getBestHitVec(Entity entity) {
 		return getBestHitVec(getEntityExpandedBB(entity));
@@ -24,6 +26,24 @@ public class RotUtils implements Imports {
 	public static Vec3 getBestHitVec(AxisAlignedBB bb) {
 		Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
 		return bb.clampVecToInside(eyes);
+	}
+
+	public static float[] faceTrajectory(Entity target, boolean predict, float predictSize, float gravity, float velocity) {
+		double posX = target.posX + (predict ? (target.posX - target.prevPosX) * predictSize : 0.0) - (mc.thePlayer.posX + (predict ? mc.thePlayer.posX - mc.thePlayer.prevPosX : 0.0));
+		double posY = target.getEntityBoundingBox().minY + (predict ? (target.getEntityBoundingBox().minY - target.prevPosY) * predictSize : 0.0) + target.getEyeHeight() - 0.15 - (mc.thePlayer.getEntityBoundingBox().minY + (predict ? mc.thePlayer.posY - mc.thePlayer.prevPosY : 0.0)) - mc.thePlayer.getEyeHeight();
+		double posZ = target.posZ + (predict ? (target.posZ - target.prevPosZ) * predictSize : 0.0) - (mc.thePlayer.posZ + (predict ? mc.thePlayer.posZ - mc.thePlayer.prevPosZ : 0.0));
+		double posSqrt = sqrt(posX * posX + posZ * posZ);
+
+		velocity = min((velocity * velocity + velocity * 2) / 3, 1f);
+
+		float gravityModifier = 0.12f * gravity;
+
+		return new float[]{
+				(float) toDegrees(atan2(posZ, posX)) - 90f,
+				(float) -toDegrees(atan((velocity * velocity - sqrt(
+						velocity * velocity * velocity * velocity - gravityModifier * (gravityModifier * posSqrt * posSqrt + 2 * posY * velocity * velocity)
+				)) / (gravityModifier * posSqrt)))
+		};
 	}
 
 	public static Rot getBestRotation(AxisAlignedBB bb) {
@@ -45,7 +65,7 @@ public class RotUtils implements Imports {
 
 	public static Rot getRotationToPoint(Vec3 needPoint) {
 		Vec3 delta = needPoint.subtract(mc.thePlayer.getPositionEyes(1.0F));
-		double distance = Math.sqrt(delta.xCoord * delta.xCoord + delta.zCoord * delta.zCoord);
+		double distance = sqrt(delta.xCoord * delta.xCoord + delta.zCoord * delta.zCoord);
 		return new Rot(
 				(float) (Math.toDegrees(Math.atan2(delta.zCoord, delta.xCoord)) - 90),
 				(float) -Math.toDegrees(Math.atan2(delta.yCoord, distance))

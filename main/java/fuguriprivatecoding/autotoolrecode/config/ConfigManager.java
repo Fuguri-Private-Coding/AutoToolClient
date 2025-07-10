@@ -109,22 +109,29 @@ public class ConfigManager implements Imports {
             reader.close();
             Client.INST.getAltManagerGui().accounts.clear();
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-                JsonObject moduleObject = (JsonObject) entry.getValue();
-                Client.INST.getAltManagerGui().accounts.add(new Account(moduleObject.get("name").getAsString()));
+                Account account = getAccount(entry);
+
+                Client.INST.getAltManagerGui().accounts.add(account);
             }
         } catch (RuntimeException | IOException e) {
             e.printStackTrace(System.out);
         }
     }
 
+    private static Account getAccount(Map.Entry<String, JsonElement> entry) {
+        JsonObject moduleObject = (JsonObject) entry.getValue();
+        Account account;
+        if (moduleObject.get("uuid") != null && moduleObject.get("token") != null) {
+            account = new Account(moduleObject.get("name").getAsString(), moduleObject.get("token").getAsString(), moduleObject.get("uuid").getAsString());
+        } else {
+            account = new Account(moduleObject.get("name").getAsString());
+        }
+        return account;
+    }
+
     public void saveAccounts() {
         FileUtils.createIfNotExists(accountFile);
-        JsonObject mainObject = new JsonObject();
-        for (Account account : Client.INST.getAltManagerGui().accounts) {
-            JsonObject moduleObject = new JsonObject();
-            moduleObject.addProperty("name", account.getName());
-            mainObject.add(account.getName(), moduleObject);
-        }
+        JsonObject mainObject = getAccountObject();
         try {
             PrintWriter writer = new PrintWriter(new FileWriter(accountFile));
             Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
@@ -133,6 +140,20 @@ public class ConfigManager implements Imports {
         } catch (IOException e) {
             e.printStackTrace(System.out);
         }
+    }
+
+    private static JsonObject getAccountObject() {
+        JsonObject mainObject = new JsonObject();
+        for (Account account : Client.INST.getAltManagerGui().accounts) {
+            JsonObject moduleObject = new JsonObject();
+            moduleObject.addProperty("name", account.getName());
+            if (account.getUuid() != null && account.getRefreshToken() != null) {
+                moduleObject.addProperty("uuid", account.getUuid());
+                moduleObject.addProperty("token", account.getRefreshToken());
+            }
+            mainObject.add(account.getName(), moduleObject);
+        }
+        return mainObject;
     }
 
     public void loadConfig(Config config) {
