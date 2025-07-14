@@ -2,9 +2,11 @@ package net.minecraft.util;
 
 import java.util.Random;
 import java.util.UUID;
+
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.optifine.util.MathUtils;
 
-public class MathHelper
+public class MathHelper implements Imports
 {
     public static final float SQRT_2 = sqrt_float(2.0F);
     private static final int SIN_BITS = 12;
@@ -23,10 +25,87 @@ public class MathHelper
     private static final double field_181163_d;
     private static final double[] field_181164_e;
     private static final double[] field_181165_f;
+    private static boolean updateLerp;
 
     public static float sin(float p_76126_0_)
     {
         return fastMath ? SIN_TABLE_FAST[(int)(p_76126_0_ * radToIndex) & 4095] : SIN_TABLE[(int)(p_76126_0_ * 10430.378F) & 65535];
+    }
+
+    public static float interpolate(float current, float target) {
+        return interpolate(current, target, mc.timer.renderPartialTicks);
+    }
+
+    public static float interpolate(float current, float target, float multiple) {
+        if (multiple == mc.timer.renderPartialTicks) {
+            return current + (target - current) * multiple;
+        }
+
+        if (updateLerp) {
+            return current + (target - current) * multiple;
+        }
+
+        return current;
+    }
+
+    public static double interpolate(double current, double target) {
+        return interpolate(current, target, mc.timer.renderPartialTicks);
+    }
+
+    public static double interpolate(double current, double target, float multiple) {
+        return interpolate((float) current, (float) target, multiple);
+    }
+
+    public static Vec3 interpolate(Vec3 current, Vec3 target) {
+        return interpolate(current, target, mc.timer.renderPartialTicks);
+    }
+
+    public static Vec3 interpolate(Vec3 current, Vec3 target, float multiple) {
+        if (multiple == mc.timer.renderPartialTicks) {
+            return new Vec3(
+                    interpolate(current.xCoord, target.xCoord, multiple),
+                    interpolate(current.yCoord, target.yCoord, multiple),
+                    interpolate(current.zCoord, target.zCoord, multiple));
+        }
+
+        if (updateLerp) {
+            return new Vec3(
+                    interpolate(current.xCoord, target.xCoord, multiple),
+                    interpolate(current.yCoord, target.yCoord, multiple),
+                    interpolate(current.zCoord, target.zCoord, multiple));
+        }
+
+        return current;
+    }
+
+    public static AxisAlignedBB interpolate(AxisAlignedBB current, AxisAlignedBB target) {
+        return interpolate(current, target, mc.timer.renderPartialTicks);
+    }
+
+    public static AxisAlignedBB interpolate(AxisAlignedBB current, AxisAlignedBB target, float multiple) {
+        if (multiple == mc.timer.renderPartialTicks) {
+            return new AxisAlignedBB(
+                    interpolate(current.minX, target.minX, multiple),
+                    interpolate(current.minY, target.minY, multiple),
+                    interpolate(current.minZ, target.minZ, multiple),
+                    interpolate(current.maxX, target.maxX, multiple),
+                    interpolate(current.maxY, target.maxY, multiple),
+                    interpolate(current.maxZ, target.maxZ, multiple)
+            );
+        }
+
+        if (updateLerp) {
+            return new AxisAlignedBB(
+                    interpolate(current.minX, target.minX, multiple),
+                    interpolate(current.minY, target.minY, multiple),
+                    interpolate(current.minZ, target.minZ, multiple),
+                    interpolate(current.maxX, target.maxX, multiple),
+                    interpolate(current.maxY, target.maxY, multiple),
+                    interpolate(current.maxZ, target.maxZ, multiple)
+            );
+        }
+
+        return current;
     }
 
     public static float cos(float value)

@@ -26,6 +26,7 @@ public class ModuleManager {
 		register(
 				new AutoSoup(),
 				new KillAura(),
+				new Trajectory(),
 				new Blur(),
 				new Dot(),
 				new BedESP(),

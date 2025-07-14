@@ -34,6 +34,7 @@ public class ChestStealer extends Module {
     };
 
     final CheckBox checkName = new CheckBox("CheckName", this, true);
+    final CheckBox randomSlots = new CheckBox("RandomSlots", this, true);
 
     final StopWatch delayStopWatch;
     final StopWatch startDelayStopWatch;
@@ -58,7 +59,7 @@ public class ChestStealer extends Module {
                 if (!delayStopWatch.reachedMS(delay) || !startDelayStopWatch.reachedMS(startDelay.getValue())) return;
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
-                final int nextSlot = updatePos(container);
+                final int nextSlot = updatePos(container, randomSlots.isToggled());
 
                 if (nextSlot == -1) return;
 
@@ -70,15 +71,16 @@ public class ChestStealer extends Module {
         }
     }
 
-    int updatePos(ContainerChest container) {
-        for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
-            final Slot slot = container.getSlot(i);
-
-            if (!slot.getHasStack()) {
-                continue;
+    int updatePos(ContainerChest container, boolean random) {
+        if (random) {
+            int slot = RandomUtils.nextInt(0, container.getLowerChestInventory().getSizeInventory());
+            final Slot getSlot = container.getSlot(slot);
+            if (getSlot.getHasStack()) return slot;
+        } else {
+            for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
+                final Slot slot = container.getSlot(i);
+                if (slot.getHasStack()) return i;
             }
-
-            return i;
         }
 
         return -1;
