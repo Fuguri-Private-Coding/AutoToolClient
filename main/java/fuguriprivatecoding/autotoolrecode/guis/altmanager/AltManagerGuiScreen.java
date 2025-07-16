@@ -43,6 +43,8 @@ public class AltManagerGuiScreen extends GuiScreen {
     int scroll, scrollTotalHeight;
     Animation2D scrolls;
 
+    static String updatedText;
+
     Shadows shadows;
 
     public AltManagerGuiScreen() {
@@ -55,10 +57,10 @@ public class AltManagerGuiScreen extends GuiScreen {
         super.initGui();
         ScaledResolution sc = new ScaledResolution(mc);
         Client.INST.getConfigManager().loadAccounts();
-        altManagerGuiText = new AltManagerGuiText(0, mc.fontRendererObj, 100, sc.getScaledHeight() - 100, 100, 20);
-        buttonList.add(new GuiClientButton(1, 100,  sc.getScaledHeight() - 75, 100, 20, "Login"));
-        buttonList.add(new GuiClientButton(2, 100, sc.getScaledHeight() - 50, 100, 20, "Delete"));
-        buttonList.add(new GuiClientButton(3, 100, sc.getScaledHeight() - 25, 100, 20, "Microsoft"));
+        altManagerGuiText = new AltManagerGuiText(0, mc.fontRendererObj, 75, sc.getScaledHeight() - 100, 100, 20);
+        buttonList.add(new GuiClientButton(1, 75,  sc.getScaledHeight() - 75, 100, 20, "Login"));
+        buttonList.add(new GuiClientButton(2, 75, sc.getScaledHeight() - 50, 100, 20, "Delete"));
+        buttonList.add(new GuiClientButton(3, 75, sc.getScaledHeight() - 25, 100, 20, "Microsoft"));
     }
 
     @Override
@@ -82,18 +84,20 @@ public class AltManagerGuiScreen extends GuiScreen {
         BackgroundUtils.run();
         mc.getFramebuffer().bindFramebuffer(true);
 
-        RoundedUtils.drawRect(sc.getScaledWidth() - 265, 10, 250, sc.getScaledHeight() - 20, 5f, new Color(15, 15, 15, 150));
+        RoundedUtils.drawRect(sc.getScaledWidth() - 265, 15, 250, sc.getScaledHeight() - 25, 5f, new Color(15, 15, 15, 150));
+
+        fontRendererObj.drawCenteredString(updatedText, sc.getScaledWidth() - 265 + 125, 5, -1);
 
         float offset = scrolls.y;
 
         scrollTotalHeight = 0;
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), sc.getScaledWidth() - 260, 10, 250, sc.getScaledHeight() - 20);
+        ScissorUtils.scissor(new ScaledResolution(mc), sc.getScaledWidth() - 260, 15, 250, sc.getScaledHeight() - 25);
 
         for (Account account : accounts) {
-            RoundedUtils.drawRect(sc.getScaledWidth() - 260, 10 + 5 + offset, 250 - 10, 20, 4f, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? new Color(75,75,75,150) : new Color(15,15,15,150));
-            fontRendererObj.drawString(account.getName() + ((account.getUuid() != null) ? " | Microsoft." : " | Offline"), sc.getScaledWidth() - 250, 10 + 11f + offset, account.getName().equals(mc.getSession().getUsername()) ? Color.green.getRGB() : -1);
+            RoundedUtils.drawRect(sc.getScaledWidth() - 260, 10 + 10 + offset, 250 - 10, 20, 4f, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? new Color(75,75,75,150) : new Color(15,15,15,150));
+            fontRendererObj.drawString(account.getName() + ((account.getUuid() != null) ? " | Microsoft." : " | Offline"), sc.getScaledWidth() - 250, 10 + 5 + 11f + offset, account.getName().equals(mc.getSession().getUsername()) ? Color.green.getRGB() : -1);
             offset += 25;
             scrollTotalHeight += 25;
         }
@@ -107,6 +111,10 @@ public class AltManagerGuiScreen extends GuiScreen {
 
         mc.fontRendererObj.drawString(currentUser, 2.5f, 2.5f, new Color(255, 255, 255, 150).getRGB());
         super.drawScreen(mouseX,mouseY,partialTicks);
+    }
+
+    public static void updateStatus(String status) {
+        updatedText = status;
     }
 
     public static String generateRandomNick() {
@@ -126,44 +134,52 @@ public class AltManagerGuiScreen extends GuiScreen {
         switch (button.id) {
             case 1 -> {
                 if (!altManagerGuiText.getText().isEmpty()) {
+                    updateStatus("Adding account...");
                     String accountName = altManagerGuiText.getText();
                     boolean accountExists = accounts.stream().anyMatch(acc -> acc.getName().equals(accountName));
 
                     if (!accountExists) {
+                        updateStatus("Account exists logging account...");
                         mc.getSession().setUsername(accountName);
-
                         Account newAccount = new Account(accountName);
                         accounts.add(newAccount);
                         selectedAccount = newAccount;
+                        updateStatus("Successful added account: " + accountName + ".");
                     }
                     altManagerGuiText.setText("");
                 } else if (selectedAccount != null) {
                     if (selectedAccount.getUuid() != null) {
-                        try {
-                            Account microsoftAltCredential = selectedAccount;
-                            Map.Entry<String, String> authRefreshTokens = Auth.refreshToken(microsoftAltCredential.getRefreshToken());
-                            String xblToken = Auth.authXBL(authRefreshTokens.getKey());
-                            Map.Entry<String, String> xstsTokenUserhash = Auth.authXSTS(xblToken);
-                            String accessToken = Auth.authMinecraft(xstsTokenUserhash.getValue(), xstsTokenUserhash.getKey());
+                        new Thread(() -> {
+                            try {
+                                updateStatus("Logging in...");
+                                Account account = selectedAccount;
+                                Map.Entry<String, String> authRefreshTokens = Auth.refreshToken(account.getRefreshToken());
+                                String xblToken = Auth.authXBL(authRefreshTokens.getKey());
+                                Map.Entry<String, String> xstsTokenUserhash = Auth.authXSTS(xblToken);
+                                String accessToken = Auth.authMinecraft(xstsTokenUserhash.getValue(), xstsTokenUserhash.getKey());
 
-                            mc.setSession(new Session(microsoftAltCredential.getName(),
-                                    microsoftAltCredential.getUuid(),
-                                    accessToken, "msa"));
-                            System.out.println("Successful login.");
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                        }
+                                mc.setSession(new Session(account.getName(),
+                                        account.getUuid(),
+                                        accessToken, "msa"));
+                                updateStatus("Successful login.");
+                            } catch (Exception e) {
+                                updateStatus(e.getMessage());
+                            }
+                        }).start();
                     } else {
                         mc.getSession().setUsername(selectedAccount.getName());
+                        updateStatus("Successful logged account: " + selectedAccount.getName() + ".");
                     }
                 } else {
                     mc.getSession().setUsername(generateRandomNick());
+                    updateStatus("Successful generated name..");
                 }
             }
 
             case 2 -> {
                 if (selectedAccount != null) {
                     accounts.removeIf(acc -> acc == selectedAccount);
+                    updateStatus("Successful deleted account: " + selectedAccount.getName() + ".");
                     selectedAccount = null;
                 }
             }
@@ -171,16 +187,16 @@ public class AltManagerGuiScreen extends GuiScreen {
             case 3 -> {
                 final MicrosoftAuthCallback callback = new MicrosoftAuthCallback();
 
-                CompletableFuture<Account> future = callback.start((s, o) -> System.out.println(s));
+                CompletableFuture<Account> future = callback.start((s, o) -> updateStatus(s));
 
                 Sys.openURL(MicrosoftAuthCallback.url);
 
                 future.whenCompleteAsync((account, error) -> {
                     if (error != null) {
-                        System.out.println("Failed to login Account: " + error);
+                        updateStatus("Failed added account: " + error + ".");
                     } else {
-                        System.out.println("Successful to login Account: " + account.getName());
                         accounts.add(new Account(account.getName(), account.getRefreshToken(), account.getUuid()));
+                        updateStatus("Successful added account: " + account.getName() + ".");
                         selectedAccount = account;
                     }
                 });
@@ -198,28 +214,33 @@ public class AltManagerGuiScreen extends GuiScreen {
             if (mouseButton == 0) {
                 if (mouseX > sc.getScaledWidth() - 260 &&
                         mouseX < sc.getScaledWidth() - 260 + (250 - 10) &&
-                        mouseY > 10 + 5 + offset &&
-                        mouseY < 10 + 5 + offset + 20) {
+                        mouseY > 10 + 10 + offset &&
+                        mouseY < 10 + 10 + offset + 20) {
 
                     long currentTime = System.currentTimeMillis();
 
                     if (lastClickedAccount == account && (currentTime - lastClickTime) < 250) {
                         if (account.getUuid() != null) {
-                            try {
-                                Map.Entry<String, String> authRefreshTokens = Auth.refreshToken(account.getRefreshToken());
-                                String xblToken = Auth.authXBL(authRefreshTokens.getKey());
-                                Map.Entry<String, String> xstsTokenUserhash = Auth.authXSTS(xblToken);
-                                String accessToken = Auth.authMinecraft(xstsTokenUserhash.getValue(), xstsTokenUserhash.getKey());
+                            new Thread(() -> {
+                                try {
+                                    updateStatus("Logging in...");
+                                    Map.Entry<String, String> authRefreshTokens = Auth.refreshToken(account.getRefreshToken());
+                                    String xblToken = Auth.authXBL(authRefreshTokens.getKey());
+                                    Map.Entry<String, String> xstsTokenUserhash = Auth.authXSTS(xblToken);
+                                    String accessToken = Auth.authMinecraft(xstsTokenUserhash.getValue(), xstsTokenUserhash.getKey());
 
-                                mc.setSession(new Session(account.getName(),
-                                        account.getUuid(),
-                                        accessToken, "msa"));
-                                System.out.println("Successful login.");
-                            } catch (Exception e) {
-                                System.out.println(e.getMessage());
-                            }
+                                    mc.setSession(new Session(account.getName(),
+                                            account.getUuid(),
+                                            accessToken, "msa"));
+                                    updateStatus("Successful login.");
+                                } catch (Exception e) {
+                                    System.out.println(e.getMessage());
+                                    updateStatus(e.getMessage());
+                                }
+                            }).start();
                         } else {
                             mc.getSession().setUsername(account.getName());
+                            updateStatus("Successful logged account: " + account.getName() + ".");
                         }
                     } else {
                         toggleAccount(account);

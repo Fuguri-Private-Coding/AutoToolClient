@@ -35,6 +35,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     private boolean elytraOfCape = false;
     private String nameClear = null;
     private static final ResourceLocation TEXTURE_ELYTRA = new ResourceLocation("textures/entity/elytra.png");
+    ResourceLocation locationCape;
 
     public AbstractClientPlayer(World worldIn, GameProfile playerProfile)
     {
@@ -85,10 +86,11 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     public ResourceLocation getLocationCape() {
         if (this instanceof EntityPlayerSP) {
             CustomCape customCape = Client.INST.getModuleManager().getModule(CustomCape.class);
-            ResourceLocation capeLocation = customCape.getCape();
-
-            if (customCape.isToggled() && capeLocation != null) {
-                return capeLocation;
+            if (!customCape.selectedCape.equalsIgnoreCase(customCape.capeMode.getMode())) {
+                locationCape = customCape.getCape();
+            }
+            if (customCape.isToggled() && locationCape != null) {
+                return locationCape;
             }
         }
 
