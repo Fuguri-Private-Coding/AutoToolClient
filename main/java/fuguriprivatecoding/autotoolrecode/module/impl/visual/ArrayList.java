@@ -94,16 +94,16 @@ public class ArrayList extends Module {
     }
 
     private void renderRightUp(double xOffset, double yOffset, Module module, ScaledResolution sc, Color fadeBackgroundColor, Color fadeLineColor, Color fadeTextColor) {
-        if (background.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(module.getName()) - 4f), (float) (yOffset + 13f), sc.getScaledWidth() - xPosOffset.getValue(), (float) yOffset, fadeBackgroundColor.getRGB());
-        font.drawString(module.getName(), (float) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(module.getName()) - 1.75f), (float) (2.5f + yOffset), fadeTextColor.getRGB(), shadow.isToggled());
-        if (line.isToggled()) {
-            Gui.drawRect((int) (sc.getScaledWidth() - xOffset), (float) (yOffset + 13f), sc.getScaledWidth() - xPosOffset.getValue() + 2, (float) yOffset, fadeLineColor.getRGB());
-        }
+        String moduleText = module.getName();
+        if (background.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText) - 4f), (float) (yOffset + 13f), sc.getScaledWidth() - xPosOffset.getValue(), (float) yOffset, fadeBackgroundColor.getRGB());
+        font.drawString(moduleText, (float) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText) - 1.75f), (float) (2.5f + yOffset), fadeTextColor.getRGB(), shadow.isToggled());
+        if (line.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset), (float) (yOffset + 13f), sc.getScaledWidth() - xPosOffset.getValue() + 2, (float) yOffset, fadeLineColor.getRGB());
     }
 
     private void renderLeftUp(double xOffset, double yOffset, Module module, Color fadeBackgroundColor, Color fadeLineColor, Color fadeTextColor) {
-        if (background.isToggled()) Gui.drawRect((int) xOffset,(float) yOffset + 13f, (float) font.getStringWidth(module.getName()) + 4 + xPosOffset.getValue(), (float) yOffset, fadeBackgroundColor.getRGB());
-        font.drawString(module.getName(), (float) (2.5f + xOffset), (float) (2.5f + yOffset), fadeTextColor.getRGB(), shadow.isToggled());
+        String moduleText = module.getName();
+        if (background.isToggled()) Gui.drawRect((int) xOffset,(float) yOffset + 13f, (float) font.getStringWidth(moduleText) + 4 + xPosOffset.getValue(), (float) yOffset, fadeBackgroundColor.getRGB());
+        font.drawString(moduleText, (float) (2.5f + xOffset), (float) (2.5f + yOffset), fadeTextColor.getRGB(), shadow.isToggled());
         if (line.isToggled()) Gui.drawRect((int) (xOffset - 2), (float) yOffset + 13, xPosOffset.getValue(), (float) yOffset, fadeLineColor.getRGB());
     }
 
