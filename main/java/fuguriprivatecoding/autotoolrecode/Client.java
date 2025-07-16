@@ -68,10 +68,8 @@ public enum Client implements Imports {
 	NewClickGuiScreen newClickGuiScreen;
 	GuiClientMainMenu mainMenu;
 	LoadNatives loadNatives;
-	SpoofSlotUtils spoofUtils;
 	@Setter Discord discord;
-	@Setter
-	ClientIRC irc;
+	@Setter ClientIRC irc;
 
 	FontsRepository fonts;
 
@@ -82,7 +80,7 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(4, 1,1);
+		version = new ClientVersion(4, 1,2);
 
 		connect();
 
@@ -112,8 +110,6 @@ public enum Client implements Imports {
 //		loadNatives.init();
 
 		moduleManager = new ModuleManager();
-
-		spoofUtils = new SpoofSlotUtils();
 
 		shaderManager = new ShaderManager();
 		shaderManager.init();

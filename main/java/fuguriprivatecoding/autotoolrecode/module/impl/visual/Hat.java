@@ -28,7 +28,7 @@ public class Hat extends Module {
             .addModes("ChinaHat", "Halo")
             .setMode("Halo");
 
-    final FloatSetting yOffset = new FloatSetting("Y-Offset", this, () -> mode.getMode().equalsIgnoreCase("Halo"), -1,1,-0.10f,0.01f);
+    final FloatSetting yOffset = new FloatSetting("Y-Offset", this, () -> mode.getMode().equalsIgnoreCase("Halo"), -2,1,-0.10f,0.01f);
 
     final IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
     final FloatSetting radius = new FloatSetting("Radius", this, 0.1f, 2f, 0.7f, 0.1f) {};
@@ -41,7 +41,7 @@ public class Hat extends Module {
 
     final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled, 0.1f, 20, 1, 0.1f);
 
-    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 1f,10f,1f,0.1f);
+    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 0f,10f,1f,0.1f);
 
     Color fadeColor;
     Shadows shadows;

@@ -24,7 +24,7 @@ public class TimeBooster extends Module {
 
     CheckBox checkBalance = new CheckBox("CheckBalance", this);
 
-    boolean active,teleporting = false;
+    boolean active, teleporting = false;
 
     int balance;
 
@@ -49,7 +49,7 @@ public class TimeBooster extends Module {
                 for (int i = 0; i < maxTicks.getValue(); i++) {
                     try {
                         mc.runTick();
-                        balance++;
+                        if (checkBalance.isToggled()) balance++;
                     } catch (Exception _) {}
                 }
                 teleporting = false;
