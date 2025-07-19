@@ -13,7 +13,7 @@ public class Shadows extends Module {
                     "TargetESP","Dot" ,"BreakIndicator", "CPSCounter", "BPSCounter",
                     "FPSCounter", "BlockOverlay", "ConfigGui", "Chat", "Trails",
                     "NameTags", "Scaffold", "ChestESP", "BedESP", "WorldParticles",
-                    "Weather", "TargetHUD", "Hat"
+                    "Weather", "TargetHUD", "Hat", "HotKeyGui"
             );
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);

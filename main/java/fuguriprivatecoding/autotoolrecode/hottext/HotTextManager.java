@@ -18,10 +18,10 @@ public class HotTextManager implements Imports {
 
     public HotTextManager() {
         Client.INST.getEventManager().register(this);
-        hotTexts.add(new HotText(Keyboard.KEY_U, "/kp1"));
-        hotTexts.add(new HotText(Keyboard.KEY_I, "/kp2"));
-        hotTexts.add(new HotText(Keyboard.KEY_O, "/bw"));
-        hotTexts.add(new HotText(Keyboard.KEY_P, "/sw"));
+//        hotTexts.add(new HotText(Keyboard.KEY_U, "/kp1"));
+//        hotTexts.add(new HotText(Keyboard.KEY_I, "/kp2"));
+//        hotTexts.add(new HotText(Keyboard.KEY_O, "/bw"));
+//        hotTexts.add(new HotText(Keyboard.KEY_P, "/sw"));
     }
 
     @EventTarget

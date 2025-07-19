@@ -10,4 +10,5 @@ import lombok.Setter;
 public class HotText {
     private int key;
     private String text;
+    private float value;
 }
