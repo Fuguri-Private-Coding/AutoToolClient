@@ -14,6 +14,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
@@ -26,6 +27,7 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 
 import java.io.File;
@@ -42,7 +44,7 @@ public class KillAura extends Module {
             .addModes("Players","Mobs","Animals","Villagers");
 
     final Mode sortType = new Mode("SortType", this)
-            .addModes("Distance", "FOV", "HurtTime")
+            .addModes("Distance", "FOV", "HurtTime", "Switch")
             .setMode("FOV");
 
     final Mode hitVec = new Mode("HitVec", this)
@@ -294,9 +296,18 @@ public class KillAura extends Module {
             double value = Double.MAX_VALUE;
 
             switch (sortType.getMode()) {
-                case "Distance" -> value = DistanceUtils.getDistance(entity);
+                case "Distance" -> {
+                    value = DistanceUtils.getDistance(entity);
+                }
                 case "FOV" -> value = RotUtils.getFovToEntity(entity);
                 case "HurtTime" -> value = ent.hurtTime;
+                case "Switch" -> {
+                    if (DistanceUtils.getDistance(entity) > 3) {
+                        value = DistanceUtils.getDistance(entity);
+                    } else if (DistanceUtils.getDistance(entity) < 3) {
+                        value = ent.hurtTime;
+                    }
+                }
             }
 
             if (value < bestValue) {

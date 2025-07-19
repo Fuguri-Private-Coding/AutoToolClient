@@ -19,7 +19,6 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleManager;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.utils.font.*;
 import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
-import fuguriprivatecoding.autotoolrecode.utils.inventory.SpoofSlotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
 import fuguriprivatecoding.autotoolrecode.utils.discord.*;
 import fuguriprivatecoding.autotoolrecode.utils.file.*;
@@ -28,10 +27,13 @@ import fuguriprivatecoding.autotoolrecode.utils.packet.*;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.utils.sound.SoundsManager;
 import fuguriprivatecoding.autotoolrecode.utils.version.ClientVersion;
+import net.dv8tion.jda.api.entities.Message;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -47,7 +49,6 @@ public enum Client implements Imports {
 
 	File clientDirectory;
 	File modelsDirectory;
-	File capesDirectory;
 
 	File soundsDirectory;
 
@@ -82,14 +83,14 @@ public enum Client implements Imports {
 		name = "AutoTool";
 		version = new ClientVersion(4, 1,2);
 
+		updateClient();
 		connect();
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");
 		soundsDirectory = new File(name + "/sounds");
-		capesDirectory = new File(name + "/capes");
 
-		FileUtils.createIfNotExists(clientDirectory, modelsDirectory, soundsDirectory, capesDirectory);
+		FileUtils.createIfNotExists(clientDirectory, modelsDirectory, soundsDirectory);
 
 		eventManager = new EventManager();
 		eventManager.register(this);
@@ -148,6 +149,15 @@ public enum Client implements Imports {
 
 		double elapsedNanos = System.nanoTime() - start;
 		console.log("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
+	}
+
+	 private void updateClient() {
+		for (Message message : irc.getClientVersionChannel().getIterableHistory().stream().toList()) {
+			if (!message.getContentRaw().equalsIgnoreCase(version.toString())) {
+				JOptionPane.showMessageDialog(null, "Твоя версия клиента устарела: " + version.toString() + ", Пожалуйста обновите клиент до: " + message.getContentRaw());
+				System.exit(-1);
+			}
+		}
 	}
 
 	public String getChangeLog() {

@@ -88,6 +88,7 @@ public class ModuleManager {
 				new CustomCamera(),
 				new BlockOverlay(),
 				new HUD(),
+				new FakeGameMode(),
 				new ModelTrainer(),
 				new KeepSprint(),
 				new AutoLeave(),

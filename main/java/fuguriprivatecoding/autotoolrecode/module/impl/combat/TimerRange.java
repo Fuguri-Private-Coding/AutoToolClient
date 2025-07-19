@@ -16,6 +16,7 @@ import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayTraceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;

@@ -240,7 +240,6 @@ public class Scaffold extends Module {
     }
 
     void legitPlace() {
-        if (mc.currentScreen != null) return;
         MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
 
         if (findBlock() == -1 || mouseOver == null || mouseOver.getBlockPos() == null || mc.theWorld.getBlockState(mouseOver.getBlockPos()).getBlock().getMaterial() == Material.air) {
@@ -259,7 +258,6 @@ public class Scaffold extends Module {
     }
 
     void ragePlace() {
-        if (mc.currentScreen != null) return;
         ItemStack stack = mc.thePlayer.getHeldItem();
         if (stack == null) return;
         if (sneakIfRotate.isToggled() && lastDelta > 0) return;

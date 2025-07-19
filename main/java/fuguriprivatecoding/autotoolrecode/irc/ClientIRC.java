@@ -26,6 +26,8 @@ public class ClientIRC extends ListenerAdapter {
     public MessageChannel onlineChannel;
     public MessageChannel changeLogChannel;
     public MessageChannel onlineConfigsChannel;
+    public MessageChannel clientVersionChannel;
+    String token;
     public static long myID = -1;
     public static long myOnlineID = -1;
     static JDA jda;
@@ -38,8 +40,10 @@ public class ClientIRC extends ListenerAdapter {
                     {
                         {
                             {
-                                String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GWZvER.shF_rSJG9yPypoRALEyRsmF-uEnUp5cPQxbyFw";
+                                {
+                                    token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GWZvER.shF_rSJG9yPypoRALEyRsmF-uEnUp5cPQxbyFw";
 
+                                }
                                 jda = JDABuilder.createDefault(token)
                                         .enableIntents(
                                                 GatewayIntent.GUILD_MEMBERS,
@@ -77,6 +81,7 @@ public class ClientIRC extends ListenerAdapter {
                         if (channel.getName().equalsIgnoreCase("online-users")) setOnlineChannel(channel);
                         if (channel.getName().equalsIgnoreCase("change-log")) setChangeLogChannel(channel);
                         if (channel.getName().equalsIgnoreCase("online-configs")) setOnlineConfigsChannel(channel);
+                        if (channel.getName().equalsIgnoreCase("client-version")) setClientVersionChannel(channel);
                     }
                 }
 
