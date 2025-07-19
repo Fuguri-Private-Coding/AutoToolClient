@@ -25,7 +25,7 @@ public class ArrayList extends Module {
     IntegerSetting xPosOffset = new IntegerSetting("X-Pos Offset", this,0, 100, 0);
 
     Mode pos = new Mode("Positions",this)
-            .addModes("Right Up", "Left Up")
+            .addModes("Left Up", "Right Up")
             .setMode("Left Up")
             ;
 

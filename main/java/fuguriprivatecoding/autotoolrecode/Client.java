@@ -12,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.guis.clickgui.*;
 import fuguriprivatecoding.autotoolrecode.guis.console.*;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
+import fuguriprivatecoding.autotoolrecode.hottext.HotTextManager;
 import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.managers.*;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -63,6 +64,7 @@ public enum Client implements Imports {
     CommandManager commandManager;
     ClickManager clickManager;
 	DeepLearningEngine deepLearningEngine;
+	HotTextManager hotTextManager;
 	ClickGuiScreen clickGui;
 	ConfigGuiScreen configGuiScreen;
 	AltManagerGuiScreen altManagerGui;
@@ -127,6 +129,8 @@ public enum Client implements Imports {
 
 		deepLearningEngine = new DeepLearningEngine();
 		deepLearningEngine.init();
+
+		hotTextManager = new HotTextManager();
 
 		new PositionResolverComponent();
 
