@@ -13,7 +13,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 public class KeepSprint extends Module {
     
     private final FloatSetting hurtHitMotion = new FloatSetting("HurtHitMotion",this, 0f,1f,0.6f,0.1f);
-    private final FloatSetting hitMotion = new FloatSetting("HurtMotion",this, 0f,1f,0.6f,0.1f);
+    private final FloatSetting hitMotion = new FloatSetting("HitMotion",this, 0f,1f,0.6f,0.1f);
 
     private final CheckBox sprintSlowDownVelocity = new CheckBox("HurtHitSprint", this);
     private final CheckBox sprintSlowDownNormal = new CheckBox("HitSprint", this);

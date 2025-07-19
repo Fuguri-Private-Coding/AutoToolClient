@@ -18,7 +18,7 @@ import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
@@ -187,30 +187,35 @@ public class BackTrack extends Module {
                             : color1.getColor();
                 }
 
-                switch (render.getMode()) {
-                    case "Player" -> {
-                        mc.getRenderManager().doRenderEntity(
-                                target,
-                                x, y, z,
-                                target.getRotationYawHead(),
-                                mc.timer.renderPartialTicks,
-                                true
-                        );
-                        mc.entityRenderer.disableLightmap();
-                        RenderHelper.disableStandardItemLighting();
-                    }
-                    case "Box" -> {
-                        RenderUtils.start3D();
-                        RenderUtils.drawBoundingBox(target.getEntityBoundingBox().offset(x - target.posX, y - target.posY, z - target.posZ), fadeColor);
-                        RenderUtils.stop3D();
-                    }
-
-                    case "HitBox" -> {
-                        RenderUtils.start3D();
-                        RenderUtils.drawHitBox(target.getEntityBoundingBox().offset(x - target.posX, y - target.posY, z - target.posZ), fadeColor, lineWidth.getValue());
-                        RenderUtils.stop3D();
-                    }
-                }
+                double finalX = x;
+                double finalY = y;
+                double finalZ = z;
+                GaussianBlurUtils.addToDraw(() -> {
+//                    switch (render.getMode()) {
+//                        case "Player" -> {
+                            mc.getRenderManager().doRenderEntity(
+                                    target,
+                                    finalX, finalY, finalZ,
+                                    target.getRotationYawHead(),
+                                    mc.timer.renderPartialTicks,
+                                    true
+                            );
+                            mc.entityRenderer.disableLightmap();
+                            RenderHelper.disableStandardItemLighting();
+//                        }
+//                        case "Box" -> {
+//                            RenderUtils.start3D();
+//                            RenderUtils.drawBoundingBox(target.getEntityBoundingBox().offset(finalX - target.posX, finalY - target.posY, finalZ - target.posZ), fadeColor);
+//                            RenderUtils.stop3D();
+//                        }
+//
+//                        case "HitBox" -> {
+//                            RenderUtils.start3D();
+//                            RenderUtils.drawHitBox(target.getEntityBoundingBox().offset(finalX - target.posX, finalY - target.posY, finalZ - target.posZ), fadeColor, lineWidth.getValue());
+//                            RenderUtils.stop3D();
+//                        }
+//                    }
+                });
             }
         }
     }
