@@ -161,6 +161,7 @@ public class Phase extends Module {
                         IBlockState state = mc.theWorld.getBlockState(pos);
                         if (state.getBlock() == Blocks.air || state.getBlock() == Blocks.glass || state.getBlock() == Blocks.stained_glass) {
                             IBlockState state1 = mc.theWorld.getBlockState(pos.add(0, -1, 0));
+                            IBlockState state7 = mc.theWorld.getBlockState(pos.add(0, -1, 0));
                             IBlockState state2 = mc.theWorld.getBlockState(pos.add(-1, 0, 0));
                             IBlockState state3 = mc.theWorld.getBlockState(pos.add(1, 0, 0));
                             IBlockState state4 = mc.theWorld.getBlockState(pos.add(0, 0, -1));
@@ -172,7 +173,8 @@ public class Phase extends Module {
                                     && state3.getBlock().getMaterial().isSolid() && state3.getBlock() != Blocks.web
                                     && state4.getBlock().getMaterial().isSolid() && state4.getBlock() != Blocks.web
                                     && state5.getBlock().getMaterial().isSolid() && state5.getBlock() != Blocks.web
-                                    && (state6.getBlock().getMaterial().isSolid() || state.getBlock() != Blocks.air)) {
+                                    && (state6.getBlock().getMaterial().isSolid() || state.getBlock() != Blocks.air)
+                                    && state7.getBlock().getMaterial().isSolid()) {
                                 if (!holes.contains(pos)) {
                                     holes.add(pos);
                                 }
