@@ -58,7 +58,7 @@ public class ClickGuiScreen extends GuiScreen {
 	Shadows shadows;
 	Blur blur;
 
-	boolean resizing, moving, binding, closing, showConsoleAfterClose, showConfigAfterClose;
+	boolean resizing, moving, binding, closing, showConsoleAfterClose, showConfigAfterClose, showHotKeysAfterClose;
 
 	int settingsScroll, settingsTotalHeight, modulesScroll, modulesTotalHeight;
 
@@ -110,6 +110,11 @@ public class ClickGuiScreen extends GuiScreen {
 					mc.displayGuiScreen(Client.INST.getConfigGuiScreen());
 					showConfigAfterClose = false;
 				}
+				if (showHotKeysAfterClose) {
+					mc.currentScreen = null;
+					mc.displayGuiScreen(Client.INST.getHotTextGui());
+					showHotKeysAfterClose = false;
+				}
             }
         }
 
@@ -152,6 +157,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		float widthConsole = fontRenderer.getStringWidth("Console") / 2f;
 		float widthConfig = fontRenderer.getStringWidth("Config") / 2f;
+		float widthHotKeys = fontRenderer.getStringWidth("HotKeys") / 2f;
 
 		modulesScrolls.endY	= modulesScroll;
 		settingsScrolls.endY = settingsScroll;
@@ -171,6 +177,7 @@ public class ClickGuiScreen extends GuiScreen {
 			BloomUtils.addToDraw(() -> {
 				RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.black);
 				RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.black);
+				RoundedUtils.drawRect(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.black);
 				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), Color.black);
 			});
 		}
@@ -178,17 +185,22 @@ public class ClickGuiScreen extends GuiScreen {
 			GaussianBlurUtils.addToDraw(() -> {
 				RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.black);
 				RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.black);
+				RoundedUtils.drawRect(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.black);
 				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), Color.black);
 			});
 		}
 
 		RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
 		RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
+		RoundedUtils.drawRect(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
+
 		RenderUtils.drawRoundedGradientOutlinedRectangle(5, sc.getScaledHeight() - 20, 5 + 50, sc.getScaledHeight() - 20 + 15, clickGui.backgroundRadius.getValue() * 1.7f, 0,Color.black.getRGB(),Color.BLACK.getRGB());
 		RenderUtils.drawRoundedGradientOutlinedRectangle(5 + 60, sc.getScaledHeight() - 20, 5 + 60 + 50, sc.getScaledHeight() - 20 + 15, clickGui.backgroundRadius.getValue() * 1.7f, 0,Color.black.getRGB(),Color.BLACK.getRGB());
+		RenderUtils.drawRoundedGradientOutlinedRectangle(5 + 60 + 60, sc.getScaledHeight() - 20, 5 + 60 + 60 + 50, sc.getScaledHeight() - 20 + 15, clickGui.backgroundRadius.getValue() * 1.7f, 0,Color.black.getRGB(),Color.BLACK.getRGB());
 
 		fontRenderer.drawString("Console", 5 + 25 - widthConsole, sc.getScaledHeight() - 15 - 1, -1);
 		fontRenderer.drawString("Config", 5 + 60 + 25 - widthConfig, sc.getScaledHeight() - 15 - 1 , -1);
+		fontRenderer.drawString("HotKeys", 5 + 60 + 60 + 25 - widthHotKeys, sc.getScaledHeight() - 15 - 1 , -1);
 
 		RenderUtils.drawRoundedGradientOutlinedRectangle(background.x, background.y, background.x + sizeBackground.x, background.y + sizeBackground.y, clickGui.backgroundRadius.getValue() * 1.7f, 0,Color.black.getRGB(),Color.BLACK.getRGB());
 
@@ -197,12 +209,8 @@ public class ClickGuiScreen extends GuiScreen {
 
 		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), BACKGROUND_COLOR);
 		StencilUtils.renderStencil(
-				() -> {
-					RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 10, clickGui.backgroundRadius.getValue(), HEADER_COLOR);
-				},
-				() -> {
-					RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 1f, HEADER_COLOR);
-				}
+				() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 10, clickGui.backgroundRadius.getValue(), HEADER_COLOR),
+				() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 1f, HEADER_COLOR)
 		);
 		RoundedUtils.drawRect(background.x, background.y + 5, sizeBackground.x, 10, 1f, HEADER_COLOR);
 		RoundedUtils.drawRect(background.x + sizeBackground.x - 5, background.y + sizeBackground.y - 5, 5, 5, clickGui.backgroundRadius.getValue() / 3f, BACKGROUND_COLOR);
@@ -612,6 +620,7 @@ public class ClickGuiScreen extends GuiScreen {
 		boolean collapse = mouseX > background.x + 25 && mouseX < background.x + 25 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean console = mouseX > 5 && mouseX < 50 && mouseY > sc.getScaledHeight() - 20 && mouseY < sc.getScaledHeight() - 5;
 		boolean config = mouseX > 5 + 60 && mouseX < 50 + 60 && mouseY > sc.getScaledHeight() - 20 && mouseY < sc.getScaledHeight() - 5;
+		boolean hotKeys = mouseX > 5 + 60 + 60 && mouseX < 50 + 60 + 60 && mouseY > sc.getScaledHeight() - 20 && mouseY < sc.getScaledHeight() - 5;
 
 		if (Mouse.isButtonDown(0)) {
 			if (quit) {
@@ -643,6 +652,15 @@ public class ClickGuiScreen extends GuiScreen {
 
 			if (config) {
 				showConfigAfterClose = true;
+				lastPos.set(pos);
+				lastSize.set(size);
+				closing = true;
+				size.set(0, 0);
+				pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
+			}
+
+			if (hotKeys) {
+				showHotKeysAfterClose = true;
 				lastPos.set(pos);
 				lastSize.set(size);
 				closing = true;

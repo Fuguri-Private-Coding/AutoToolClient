@@ -12,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.guis.clickgui.*;
 import fuguriprivatecoding.autotoolrecode.guis.console.*;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
+import fuguriprivatecoding.autotoolrecode.hottext.HotTextGui;
 import fuguriprivatecoding.autotoolrecode.hottext.HotTextManager;
 import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.managers.*;
@@ -68,6 +69,7 @@ public enum Client implements Imports {
 	ClickGuiScreen clickGui;
 	ConfigGuiScreen configGuiScreen;
 	AltManagerGuiScreen altManagerGui;
+	HotTextGui hotTextGui;
 	NewClickGuiScreen newClickGuiScreen;
 	GuiClientMainMenu mainMenu;
 	LoadNatives loadNatives;
@@ -123,6 +125,8 @@ public enum Client implements Imports {
 		configManager.loadBinds();
 
 		altManagerGui = new AltManagerGuiScreen();
+
+		hotTextGui = new HotTextGui();
 
 		commandManager = new CommandManager();
 		clickManager = new ClickManager();

@@ -13,7 +13,7 @@ public class Blur extends Module {
 
     public MultiMode module = new MultiMode("Modules", this)
             .addModes("ClickGui","ConsoleGui", "ConfigGui",
-                    "Scaffold", "ChestESP", "BedESP","BlockOverlay"
+                    "Scaffold", "ChestESP", "BedESP","BlockOverlay", "HotKeyGui"
             );
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 6, 70, 6);

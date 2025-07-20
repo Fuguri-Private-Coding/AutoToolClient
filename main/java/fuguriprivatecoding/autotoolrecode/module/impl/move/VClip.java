@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.module.impl.exploit;
+package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
@@ -15,7 +15,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.util.BlockPos;
 
-@ModuleInfo(name = "VClip", category = Category.EXPLOIT)
+@ModuleInfo(name = "VClip", category = Category.MOVE)
 public class VClip extends Module {
 
     private int tickCounter = 0;
