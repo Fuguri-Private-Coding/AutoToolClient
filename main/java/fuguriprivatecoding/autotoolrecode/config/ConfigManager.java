@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.config;
 
 import com.google.gson.*;
 import fuguriprivatecoding.autotoolrecode.alt.Account;
+import fuguriprivatecoding.autotoolrecode.hottext.HotText;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
@@ -28,22 +29,27 @@ public class ConfigManager implements Imports {
     File configsDirectory;
     File bindsDirectory;
     File accountDirectory;
+    File hotTextDirectory;
     private List<Config> configs;
     Config defaultConfig;
     File bindFile;
     File accountFile;
+    File hotTextFile;
 
     public void init() {
         configs = new ArrayList<>();
         configsDirectory = new File(Client.INST.getName() + "/configs");
         bindsDirectory = new File(Client.INST.getName() + "/binds");
         accountDirectory = new File(Client.INST.getName() + "/account");
+        hotTextDirectory = new File(Client.INST.getName() + "/hotkeys");
         bindsDirectory.mkdirs();
         configsDirectory.mkdirs();
         accountDirectory.mkdirs();
+        hotTextDirectory.mkdirs();
         defaultConfig = new Config("default");
         bindFile = new File(bindsDirectory, "binds.json");
         accountFile = new File(accountDirectory, "accounts.json");
+        hotTextFile = new File(hotTextDirectory, "hotkeys.json");
         refreshConfigs();
     }
 
@@ -129,6 +135,28 @@ public class ConfigManager implements Imports {
         return account;
     }
 
+    public void loadHotKeys() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(hotTextFile));
+            JsonParser parser = new JsonParser();
+            JsonObject json = (JsonObject) parser.parse(reader);
+            reader.close();
+            Client.INST.getHotTextGui().hotKeys.clear();
+            for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                HotText hotText = getHotKey(entry);
+
+                Client.INST.getHotTextGui().hotKeys.add(hotText);
+            }
+        } catch (RuntimeException | IOException e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    private static HotText getHotKey(Map.Entry<String, JsonElement> entry) {
+        JsonObject moduleObject = (JsonObject) entry.getValue();
+        return new HotText(moduleObject.get("key").getAsInt(),moduleObject.get("text").getAsString(),0);
+    }
+
     public void saveAccounts() {
         FileUtils.createIfNotExists(accountFile);
         JsonObject mainObject = getAccountObject();
@@ -152,6 +180,30 @@ public class ConfigManager implements Imports {
                 moduleObject.addProperty("token", account.getRefreshToken());
             }
             mainObject.add(account.getName(), moduleObject);
+        }
+        return mainObject;
+    }
+
+    public void saveHotKeys() {
+        FileUtils.createIfNotExists(hotTextFile);
+        JsonObject mainObject = getHotKeyObject();
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(hotTextFile));
+            Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+            writer.println(prettyGson.toJson(mainObject));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    private static JsonObject getHotKeyObject() {
+        JsonObject mainObject = new JsonObject();
+        for (HotText hotText : Client.INST.getHotTextGui().hotKeys) {
+            JsonObject moduleObject = new JsonObject();
+            moduleObject.addProperty("text", hotText.getText());
+            moduleObject.addProperty("key", hotText.getKey());
+            mainObject.add(hotText.getText(), moduleObject);
         }
         return mainObject;
     }

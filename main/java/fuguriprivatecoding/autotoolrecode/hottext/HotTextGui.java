@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.hottext;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.config.Config;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
@@ -10,7 +9,6 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -34,13 +32,14 @@ public class HotTextGui extends GuiScreen {
     public static final HotTextGui INST = new HotTextGui();
 
     Vector2f pos, size, lastMouse, lastSize, lastPos;
-    boolean moving, closing, creatingHotKey;
+    boolean moving, closing, creatingHotKey, binding, changingText;
     int scroll, totalHeight = 0;
     final Animation2D background, sizeBackground, scrolls;
 
-    List<HotText> hotKeys = new ArrayList<>();
+    public List<HotText> hotKeys = new ArrayList<>();
 
     private final AltManagerGuiText textField;
+    private final AltManagerGuiText changeTextField;
 
     HotText selectedHotText;
 
@@ -49,6 +48,7 @@ public class HotTextGui extends GuiScreen {
         mc = Minecraft.getMinecraft();
 
         ScaledResolution sc = new ScaledResolution(mc);
+        Client.INST.getConfigManager().loadHotKeys();
 
         lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
         lastPos = new Vector2f(50f, 50f);
@@ -57,6 +57,7 @@ public class HotTextGui extends GuiScreen {
         size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
         pos = new Vector2f(50f, 50f);
         textField = new AltManagerGuiText(1, mc.fontRendererObj, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
+        changeTextField = new AltManagerGuiText(1, mc.fontRendererObj, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
 
         scrolls = new Animation2D();
         background = new Animation2D();
@@ -67,22 +68,17 @@ public class HotTextGui extends GuiScreen {
     Blur blur;
     ClickGui clickGui;
     int delay = 30;
-    long lastTime;
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
-        ScaledResolution sc = new ScaledResolution(mc);
 
         boolean hotScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
-
         if (hotScroll) scroll -= Mouse.getDWheel() / 120 * 10;
 
-        long deltaTime = System.currentTimeMillis() - lastTime;
-
-        float hotKeysVisibleHeight = sizeBackground.y - 15;
+        float hotKeysVisibleHeight = sizeBackground.y - 55;
         float maxScroll = Math.max(0, totalHeight - hotKeysVisibleHeight);
 
         if (scroll > 0) scroll = 0;
@@ -112,7 +108,6 @@ public class HotTextGui extends GuiScreen {
         float widthName = mc.fontRendererObj.getStringWidth(name);
         float widthCreate = fontRendererObj.getStringWidth("Create") / 2f;
         float widthDelete = fontRendererObj.getStringWidth("Delete") / 2f;
-        float widthRefresh = fontRendererObj.getStringWidth("Refresh") / 2f;
 
         scrolls.endY = scroll;
         background.endX = pos.x;
@@ -148,41 +143,27 @@ public class HotTextGui extends GuiScreen {
         RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
         RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
 
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.WHITE);
+        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.GRAY);
         fontRendererObj.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3, -1, true);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.WHITE);
+        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.RED);
         fontRendererObj.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 3, -1, true);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.WHITE);
-        fontRendererObj.drawString("Refresh", background.x + sizeBackground.x - 55 + 25 - widthRefresh, background.y + 20 + 20 + 20 + 3, -1, true);
 
         ScissorUtils.disableScissor();
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y);
+        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - 15);
 
         float offset = 0;
         float yOffset = scrolls.y;
         totalHeight = 0;
         for (HotText hotText : hotKeys) {
-            boolean tapHotText = mouseX > background.x + 5 + offset && mouseX < background.x + 5 + offset + 100 && mouseY > background.y + 20 + yOffset && mouseY < background.y + 20 + yOffset + 30;
-            if (tapHotText) {
-                hotText.setValue(hotText.getValue() + deltaTime / 100f);
-            }
+            String bindText = (hotText == selectedHotText ? (binding ? "▬" : (hotText.getKey() == 0 ? "-" : Keyboard.getKeyName(hotText.getKey()))) : (hotText.getKey() == 0 ? "-" : Keyboard.getKeyName(hotText.getKey())));
+            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 150, 30, clickGui.backgroundRadius.getValue(), selectedHotText != null ? selectedHotText == hotText ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150));
+            fontRendererObj.drawString(bindText,background.x + 10 + 80 + 50 + offset, background.y + 30 + yOffset, -1);
+            if (hotText != null) fontRendererObj.drawString(hotText.getText(), background.x + 10 + offset, background.y + 30 + yOffset, -1);
+            offset += 155;
 
-            float widthText = mc.fontRendererObj.getStringWidth(hotText.getText());
-
-            if (hotText.getValue() >= widthText) {
-                hotText.setValue(0);
-            }
-
-            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clickGui.backgroundRadius.getValue(), selectedHotText != null ? selectedHotText == hotText ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150));
-            ScissorUtils.enableScissor();
-            ScissorUtils.scissor(new ScaledResolution(mc), background.x + 5 + offset,background.y + 20 + yOffset, 80, 30);
-            fontRendererObj.drawString(hotText.getText(), background.x + 10 + offset - hotText.getValue(), background.y + 30 + yOffset, -1);
-            offset += 105;
-
-            ScissorUtils.disableScissor();
-            if (offset > background.x + sizeBackground.x - 200) {
+            if (offset > background.x + sizeBackground.x - 250) {
                 yOffset += 35;
                 offset = 0;
                 totalHeight += 35;
@@ -194,7 +175,13 @@ public class HotTextGui extends GuiScreen {
         if (creatingHotKey) {
             RoundedUtils.drawRect(5,5,15,15,3f,Color.RED);
             textField.drawTextBox();
-            textField.setMaxStringLength(16);
+            textField.setMaxStringLength(20);
+        }
+
+        if (changingText) {
+            RoundedUtils.drawRect(5,5,15,15,3f,Color.RED);
+            changeTextField.drawTextBox();
+            changeTextField.setMaxStringLength(20);
         }
 
         if (moving) {
@@ -205,10 +192,23 @@ public class HotTextGui extends GuiScreen {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
+        if (creatingHotKey) textField.textboxKeyTyped(typedChar, keyCode);
+        if (changingText) changeTextField.textboxKeyTyped(typedChar, keyCode);
+        if (selectedHotText == null) binding = false;
 
-        if (keyCode == 1 && !closing && !creatingHotKey) {
+        if (binding) {
+            binding = false;
+            if (keyCode == Keyboard.KEY_ESCAPE) {
+                selectedHotText.setKey(Keyboard.KEY_NONE);
+                return;
+            }
+            selectedHotText.setKey(keyCode);
+        }
+
+        if (keyCode == 1 && !closing && !creatingHotKey && !changingText) {
             ScaledResolution sc = new ScaledResolution(mc);
+            Client.INST.getConfigManager().saveHotKeys();
+            Client.INST.getHotTextManager().updateHotKeys();
             lastPos.set(pos);
             lastSize.set(size);
             closing = true;
@@ -217,13 +217,18 @@ public class HotTextGui extends GuiScreen {
         }
 
         if (keyCode == Keyboard.KEY_RETURN && creatingHotKey && !textField.getText().isEmpty()) {
-            Config config = new Config(textField.getText());
-            Client.INST.getConfigManager().saveConfig(config);
-            ClientUtils.chatLog("Successful created config: " + textField.getText() + ".");
-            Client.INST.getConfigManager().refreshConfigs();
+            HotText hotText = new HotText(0, textField.getText(),0);
+            hotKeys.add(hotText);
             textField.setText("");
             textField.setFocused(false);
             creatingHotKey = false;
+        }
+
+        if (keyCode == Keyboard.KEY_RETURN && changingText && !changeTextField.getText().isEmpty()) {
+            selectedHotText.setText(changeTextField.getText());
+            changeTextField.setText("");
+            changeTextField.setFocused(false);
+            changingText = false;
         }
     }
 
@@ -232,12 +237,18 @@ public class HotTextGui extends GuiScreen {
         ScaledResolution sc = new ScaledResolution(mc);
 
         if (mouseX > 5 && mouseX < 20 && mouseY > 5 && mouseY < 20) {
-            textField.setText("");
-            textField.setFocused(false);
-            creatingHotKey = false;
+            if (creatingHotKey) {
+                textField.setText("");
+                textField.setFocused(false);
+                creatingHotKey = false;
+            } else if (changingText) {
+                changeTextField.setText("");
+                changeTextField.setFocused(false);
+                changingText = false;
+            }
         }
 
-        if (creatingHotKey) return;
+        if (creatingHotKey || changingText) return;
 
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
@@ -245,16 +256,28 @@ public class HotTextGui extends GuiScreen {
         boolean move = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y && mouseY < background.y + 15;
         boolean create = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 && mouseY < background.y + 20 + 15;
         boolean delete = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 && mouseY < background.y + 20 + 20 + 15;
-        boolean refresh = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 15;
 
         float offset = 0;
         float yOffset = scrolls.y;
         totalHeight = 0;
         for (HotText hotText : hotKeys) {
-            boolean tapHotText = mouseX > background.x + 5 + offset && mouseX < background.x + 5 + offset + 100 && mouseY > background.y + 20 + yOffset && mouseY < background.y + 20 + yOffset + 30;
-            offset += 105;
-            if (mouseButton == 0 && tapHotText) selectedHotText = hotText;
-            if (offset > background.x + sizeBackground.x - 200) {
+            boolean tapHotText = mouseX > background.x + 5 + offset && mouseX < background.x + 5 + offset + 80 + 50 && mouseY > background.y + 20 + yOffset && mouseY < background.y + 20 + yOffset + 30;
+            boolean tapBindHotText = mouseX > background.x + 5 + 50 + offset && mouseX < background.x + 5 + offset + 150 && mouseY > background.y + 20 + yOffset && mouseY < background.y + 20 + yOffset + 30;
+            offset += 155;
+
+            if (mouseButton == 0) {
+                if (tapBindHotText && selectedHotText == hotText) {
+                    binding = true;
+                }
+                if (tapHotText) selectedHotText = hotText;
+            } else if (mouseButton == 1) {
+                if (tapHotText) {
+                    changingText = true;
+                    changeTextField.setFocused(true);
+                }
+            }
+
+            if (offset > background.x + sizeBackground.x - 250) {
                 yOffset += 35;
                 offset = 0;
                 totalHeight += 35;
@@ -265,6 +288,8 @@ public class HotTextGui extends GuiScreen {
             if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y) return;
 
             if (quit) {
+                Client.INST.getConfigManager().saveHotKeys();
+                Client.INST.getHotTextManager().updateHotKeys();
                 lastPos.set(pos);
                 lastSize.set(size);
                 closing = true;
@@ -287,9 +312,17 @@ public class HotTextGui extends GuiScreen {
                 moving = true;
                 lastMouse.set(mouseX, mouseY);
             }
+
             if (create) {
                 creatingHotKey = true;
                 textField.setFocused(true);
+            }
+
+            if (selectedHotText != null && hotKeys.contains(selectedHotText)) {
+                if (delete) {
+                    hotKeys.remove(selectedHotText);
+                    selectedHotText = null;
+                }
             }
         }
     }
@@ -301,6 +334,7 @@ public class HotTextGui extends GuiScreen {
 
     @Override
     public void initGui() {
+        Client.INST.getConfigManager().loadHotKeys();
         sizeBackground.reset();
         background.reset();
         pos.set(lastPos);

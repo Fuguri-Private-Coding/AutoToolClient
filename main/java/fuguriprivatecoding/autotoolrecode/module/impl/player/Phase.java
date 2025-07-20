@@ -102,7 +102,7 @@ public class Phase extends Module {
 
             if (newBreakingBlock == null) return;
             if (currentBreakingBlock != null && System.currentTimeMillis() - lastBreakTime > 500L) resetBreaking();
-            if (!newBreakingBlock.equals(player.getPosition().down()) && !Mouse.isButtonDown(0)) return;
+            if (!Mouse.isButtonDown(0)) return;
             if (!clipDown.isToggled()) return;
             if (newBreakingBlock.getY() >= player.posY) return;
             if (!newBreakingBlock.equals(currentBreakingBlock)) resetBreaking();
@@ -135,7 +135,7 @@ public class Phase extends Module {
             if (event instanceof Render3DEvent) {
                 RenderUtils.start3D();
                 for (BlockPos hole : holes) {
-                    RenderUtils.drawBlockESP(hole, 0, 0.9f, 0, 0.5f);
+                    RenderUtils.drawBlockESP(hole, 0, 0.9f, 0, 0.15f);
                 }
                 RenderUtils.stop3D();
             }
@@ -161,7 +161,7 @@ public class Phase extends Module {
                         IBlockState state = mc.theWorld.getBlockState(pos);
                         if (state.getBlock() == Blocks.air || state.getBlock() == Blocks.glass || state.getBlock() == Blocks.stained_glass) {
                             IBlockState state1 = mc.theWorld.getBlockState(pos.add(0, -1, 0));
-                            IBlockState state7 = mc.theWorld.getBlockState(pos.add(0, -1, 0));
+                            IBlockState state7 = mc.theWorld.getBlockState(pos.add(0, -2, 0));
                             IBlockState state2 = mc.theWorld.getBlockState(pos.add(-1, 0, 0));
                             IBlockState state3 = mc.theWorld.getBlockState(pos.add(1, 0, 0));
                             IBlockState state4 = mc.theWorld.getBlockState(pos.add(0, 0, -1));

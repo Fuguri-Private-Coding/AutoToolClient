@@ -85,7 +85,7 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(4, 1,2);
+		version = new ClientVersion(4, 1,3);
 
 		updateClient();
 		connect();
@@ -127,6 +127,7 @@ public enum Client implements Imports {
 		altManagerGui = new AltManagerGuiScreen();
 
 		hotTextGui = new HotTextGui();
+		hotTextManager = new HotTextManager();
 
 		commandManager = new CommandManager();
 		clickManager = new ClickManager();
@@ -134,7 +135,6 @@ public enum Client implements Imports {
 		deepLearningEngine = new DeepLearningEngine();
 		deepLearningEngine.init();
 
-		hotTextManager = new HotTextManager();
 
 		new PositionResolverComponent();
 
