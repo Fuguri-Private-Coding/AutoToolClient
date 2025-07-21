@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
@@ -29,19 +30,22 @@ public class Module implements Imports {
 	public void toggle() {
 		toggled = !toggled;
 		float volume = 1;
-		if (Client.INST.getModuleManager() != null && Client.INST.getModuleManager().getModule(ClickGui.class) != null) {
-			volume = Client.INST.getModuleManager().getModule(ClickGui.class).toggleModuleVolume.getValue();
-		}
+		if (Client.INST.getModuleManager() != null && Client.INST.getModuleManager().getModule(ClientSettings.class) != null) volume = Client.INST.getModuleManager().getModule(ClientSettings.class).toggleModuleVolume.getValue();
 
 		if (toggled) {
-			Client.INST.getSoundsManager().getEnableSound().asyncPlay(volume);
+			playSound(volume);
 			Client.INST.getEventManager().register(this);
 			onEnable();
 		} else {
-			Client.INST.getSoundsManager().getDisableSound().asyncPlay(volume);
+			playSound(volume);
 			Client.INST.getEventManager().unregister(this);
 			onDisable();
 		}
+	}
+
+	void playSound(float volume) {
+		if (Client.INST.isStarting() || name.equalsIgnoreCase("ClickGui")) return;
+		if (toggled) Client.INST.getSoundsManager().getEnableSound().asyncPlay(volume);else Client.INST.getSoundsManager().getDisableSound().asyncPlay(volume);
 	}
 
 	public boolean toggled() {

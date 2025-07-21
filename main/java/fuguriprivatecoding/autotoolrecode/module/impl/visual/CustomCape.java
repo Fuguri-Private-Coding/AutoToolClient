@@ -37,16 +37,12 @@ public class CustomCape extends Module {
         updateCape();
     }
 
-    public Mode capeMode = new Mode("Mode", this)
-            .addModes("Russian", "AutoTool", "LouFCat", "DollCat", "AutoToolCat", "Felix", "AugustusRose", "AugustusMango", "AugustusMagma", "AugustusTitanium", "AugustusMagic", "AugustusClassic", "AugustusAmethyst", "AugustusCandy", "Augustus", "ESound")
-            .setMode("Russian");
+    public Mode capeMode = new Mode("Mode", this);
 
     private void updateCape() {
         capeMode.getModes().clear();
-        if (capeDirectory.listFiles() != null) {
-            for (File cape : capeDirectory.listFiles()) {
-                capeMode.addMode(cape.getName().replaceAll(".png", ""));
-            }
+        for (File cape : capeDirectory.listFiles()) {
+            capeMode.addMode(cape.getName().replaceAll(".png", ""));
         }
     }
 

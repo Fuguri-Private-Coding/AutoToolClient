@@ -3,14 +3,18 @@ package net.minecraft.client.gui;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.NoRender;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.ScoreBoard;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -275,7 +279,11 @@ public class GuiIngame extends Gui {
         ScoreObjective scoreobjective1 = scoreobjective != null ? scoreobjective : scoreboard.getObjectiveInDisplaySlot(1);
 
         if (scoreobjective1 != null) {
-            this.renderScoreboard(scoreobjective1, scaledresolution);
+            if (shadows.module.get("ScoreBoard") && shadows.isToggled()) {
+                ScoreObjective finalScoreobjective = scoreobjective1;
+                BloomUtils.addToDraw(() -> renderScoreboard(finalScoreobjective,scaledresolution, true));
+            }
+            this.renderScoreboard(scoreobjective1, scaledresolution, false);
         }
 
         GlStateManager.enableBlend();
@@ -472,9 +480,20 @@ public class GuiIngame extends Gui {
         this.streamIndicator.render(scaledRes.getScaledWidth() - 10, 10);
     }
 
-    private void renderScoreboard(ScoreObjective objective, ScaledResolution scaledRes) {
-        NoRender noRender = Client.INST.getModuleManager().getModule(NoRender.class);
-        if (noRender.isToggled() && noRender.scoreBoard.isToggled()) return;
+    private void renderScoreboard(ScoreObjective objective, ScaledResolution scaledRes, boolean shadow) {
+        ScoreBoard scoreBoard = Client.INST.getModuleManager().getModule(ScoreBoard.class);
+        Color fadeColor;
+        if (scoreBoard.isToggled() && !scoreBoard.remove.isToggled()) {
+            fadeColor = scoreBoard.fadeBoxColor.isToggled() ?
+                    ColorUtils.fadeColor(scoreBoard.color1.getColor(), scoreBoard.color2.getColor(), scoreBoard.fadeSpeed.getValue())
+                    : scoreBoard.color1.getColor();
+        } else {
+            fadeColor = new Color(0,0,0,50);
+        }
+
+        if (shadow) fadeColor = Color.black;
+
+        if (scoreBoard.isToggled() && scoreBoard.remove.isToggled()) return;
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<Score> collection = scoreboard.getSortedScores(objective);
         List<Score> list = Lists.newArrayList(Iterables.filter(collection, p_apply_1_ -> p_apply_1_.getPlayerName() != null && !p_apply_1_.getPlayerName().startsWith("#")));
@@ -492,29 +511,23 @@ public class GuiIngame extends Gui {
             String s = ScorePlayerTeam.formatPlayerName(scoreplayerteam, score.getPlayerName()) + ": " + EnumChatFormatting.RED + score.getScorePoints();
             i = Math.max(i, this.getFontRenderer().getStringWidth(s));
         }
-
-        int i1 = collection.size() * this.getFontRenderer().FONT_HEIGHT;
-        int j1 = scaledRes.getScaledHeight() / 2 + i1 / 3;
-        int k1 = 3;
-        int l1 = scaledRes.getScaledWidth() - i - k1;
         int j = 0;
+        int posX = scoreBoard.isToggled() && !scoreBoard.remove.isToggled() ? scoreBoard.posX.getValue() * (scaledRes.getScaledWidth() / 100) : scaledRes.getScaledWidth() - (3 + 2 + 5 + i);
+        int posY = scoreBoard.isToggled() && !scoreBoard.remove.isToggled() ? scoreBoard.posY.getValue() * (scaledRes.getScaledHeight() / 100) : scaledRes.getScaledHeight() / 2;
 
-        for (Score score1 : collection) {
+        for (Score score1 : collection.stream().toList().reversed()) {
             ++j;
             ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score1.getPlayerName());
             String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score1.getPlayerName());
-            String s2 = EnumChatFormatting.RED + "" + score1.getScorePoints();
-            int k = j1 - j * this.getFontRenderer().FONT_HEIGHT;
-            int l = scaledRes.getScaledWidth() - k1 + 2;
-            drawRect(l1 - 2, k, l, k + this.getFontRenderer().FONT_HEIGHT, 1342177280);
-            this.getFontRenderer().drawString(s1, l1, k, 553648127);
-            this.getFontRenderer().drawString(s2, l - this.getFontRenderer().getStringWidth(s2), k, 553648127);
+            int k = posY + j * this.getFontRenderer().FONT_HEIGHT;
+            int l = posX + 3 + 2 + 5 + i;
+            drawRect(posX, k, l, k + this.getFontRenderer().FONT_HEIGHT, fadeColor.getRGB());
+            this.getFontRenderer().drawString(s1, posX + 2, k, 553648127);
 
             if (j == collection.size()) {
+                drawRect(posX, posY, l, posY + 9, fadeColor.getRGB());
                 String s3 = objective.getDisplayName();
-                drawRect(l1 - 2, k - this.getFontRenderer().FONT_HEIGHT - 1, l, k - 1, 1610612736);
-                drawRect(l1 - 2, k - 1, l, k, 1342177280);
-                this.getFontRenderer().drawString(s3, l1 + i / 2 - this.getFontRenderer().getStringWidth(s3) / 2, k - this.getFontRenderer().FONT_HEIGHT, 553648127);
+                this.getFontRenderer().drawString(s3, posX + 2 + i / 2 - this.getFontRenderer().getStringWidth(s3) / 2, posY + 1, 553648127);
             }
         }
     }

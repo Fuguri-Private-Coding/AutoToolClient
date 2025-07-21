@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
@@ -18,12 +19,15 @@ import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Vec3;
 
 import java.awt.*;
 import java.util.List;
@@ -95,15 +99,19 @@ public class BackTrack extends Module {
 
     private Color fadeColor;
 
+    private Shadows shadows;
+
     @EventTarget
     public void onEvent(Event event) {
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (target != null && event instanceof AttackEvent && debugDistance.isToggled()) {
             AxisAlignedBB realBox = target.getEntityBoundingBox().offset(target.nx - target.posX, target.ny - target.posY, target.nz - target.posZ).expand(
                     target.getCollisionBorderSize(),
                     target.getCollisionBorderSize(),
                     target.getCollisionBorderSize()
             );
-            if (!packetBuffer.isEmpty() && DistanceUtils.getDistance(realBox) > 3) ClientUtils.chatLog("Distance: " + String.format("%.4f", DistanceUtils.getDistance(realBox)));
+            if (!packetBuffer.isEmpty() && DistanceUtils.getDistance(realBox) > 3)
+                ClientUtils.chatLog("Distance: " + String.format("%.4f", DistanceUtils.getDistance(realBox)));
         }
 
         if (event instanceof PacketEvent e) {
@@ -181,43 +189,58 @@ public class BackTrack extends Module {
                 y = target.lry + (target.ry - target.lry) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
                 z = target.lrz + (target.rz - target.lrz) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
 
-                if (!render.getMode().equalsIgnoreCase("Player")) {
-                    fadeColor = fadeBoxColor.isToggled() ?
-                            ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
-                            : color1.getColor();
-                }
+                if (!render.getMode().equalsIgnoreCase("Player")) updateColors();
 
-                double finalX = x;
-                double finalY = y;
-                double finalZ = z;
-                GaussianBlurUtils.addToDraw(() -> {
-//                    switch (render.getMode()) {
-//                        case "Player" -> {
-                            mc.getRenderManager().doRenderEntity(
-                                    target,
-                                    finalX, finalY, finalZ,
-                                    target.getRotationYawHead(),
-                                    mc.timer.renderPartialTicks,
-                                    true
-                            );
-                            mc.entityRenderer.disableLightmap();
-                            RenderHelper.disableStandardItemLighting();
-//                        }
-//                        case "Box" -> {
-//                            RenderUtils.start3D();
-//                            RenderUtils.drawBoundingBox(target.getEntityBoundingBox().offset(finalX - target.posX, finalY - target.posY, finalZ - target.posZ), fadeColor);
-//                            RenderUtils.stop3D();
-//                        }
-//
-//                        case "HitBox" -> {
-//                            RenderUtils.start3D();
-//                            RenderUtils.drawHitBox(target.getEntityBoundingBox().offset(finalX - target.posX, finalY - target.posY, finalZ - target.posZ), fadeColor, lineWidth.getValue());
-//                            RenderUtils.stop3D();
-//                        }
-//                    }
-                });
+                Vec3 pos = new Vec3(x,y,z);
+                AxisAlignedBB bb = target.getEntityBoundingBox().offset(pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ);
+                switch (render.getMode()) {
+                    case "Player" -> {
+                        if (shadows.module.get("BackTrack") && shadows.isToggled()) {
+                            BloomUtils.addToDraw(() -> renderPlayer(pos, target, target.rotationYawHead, mc.timer.renderPartialTicks));
+                        }
+                        renderPlayer(pos, target, target.rotationYawHead, mc.timer.renderPartialTicks);
+                    }
+
+                    case "Box" -> {
+                        if (shadows.module.get("BackTrack") && shadows.isToggled()) {
+                            BloomUtils.addToDraw(() -> renderBox(bb, Color.white));
+                        }
+                        renderBox(bb, fadeColor);
+                    }
+
+                    case "HitBox" -> {
+                        if (shadows.module.get("BackTrack") && shadows.isToggled()) {
+                            BloomUtils.addToDraw(() -> renderHitBox(bb, Color.white, lineWidth.getValue()));
+                        }
+                        renderHitBox(bb, fadeColor, lineWidth.getValue());
+                    }
+                }
             }
         }
+    }
+
+    private void updateColors() {
+        fadeColor = fadeBoxColor.isToggled() ?
+                ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
+                : color1.getColor();
+    }
+
+    private void renderHitBox(AxisAlignedBB bb, Color color, float lineWidth) {
+        RenderUtils.start3D();
+        RenderUtils.drawHitBox(bb,color, lineWidth);
+        RenderUtils.stop3D();
+    }
+
+    private void renderBox(AxisAlignedBB bb, Color color) {
+        RenderUtils.start3D();
+        RenderUtils.drawBoundingBox(bb,color);
+        RenderUtils.stop3D();
+    }
+
+    private void renderPlayer(Vec3 pos, Entity target, float rotationYawHead, float partialTicks) {
+        mc.getRenderManager().doRenderEntity(target, pos.xCoord, pos.yCoord, pos.zCoord, rotationYawHead, partialTicks, true);
+        mc.entityRenderer.disableLightmap();
+        RenderHelper.disableStandardItemLighting();
     }
 
     private void handle(boolean clear) {

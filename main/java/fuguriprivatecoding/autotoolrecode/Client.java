@@ -85,7 +85,7 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(4, 1,3);
+		version = new ClientVersion(4, 1,4);
 
 		updateClient();
 		connect();

@@ -11,9 +11,7 @@ import org.lwjgl.input.Keyboard;
 public class ClickGui extends Module {
 
 	public FloatSetting animationSpeed = new FloatSetting("AnimationSpeed", this, 1, 20, 10, 0.5f) {};
-	public FloatSetting backgroundRadius = new FloatSetting("BackgroundRadius", this, 0.5f, 7, 7, 0.1f) {};
 	public IntegerSetting backgroundAlpha = new IntegerSetting("BackgroundAlpha", this, 0, 255, 100);
-	public FloatSetting toggleModuleVolume = new FloatSetting("ToggleModuleVolume", this, 0.1f, 1, 1, 0.1f) {};
 
 	public final CheckBox fadeColor = new CheckBox("FadeColor", this);
 	public final ColorSetting color1 = new ColorSetting("Color1", this, 0f,1f,1f,1f);

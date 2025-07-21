@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
@@ -58,6 +59,7 @@ public class ConsoleGuiScreen extends GuiScreen {
     Shadows shadows;
     Blur blur;
     ClickGui clickGui;
+    ClientSettings clientSettings;
 
     int delay = 30;
 
@@ -69,6 +71,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
+        if (clientSettings == null) clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
 
         boolean consoleScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + (fullScreen ? 20 : 2) + 15 && mouseY < background.y + sizeBackground.y + (fullScreen ? 20 : 2);
 
@@ -120,24 +123,24 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         if (shadows.isToggled() && shadows.module.get("ConsoleGui")) {
             BloomUtils.addToDraw(() -> {
-                RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clickGui.backgroundRadius.getValue(), new Color(0,0,0,255));
-                RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), shadows.color.getColor());
+                RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clientSettings.backgroundRadius.getValue(), new Color(0,0,0,255));
+                RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), shadows.color.getColor());
             });
         }
         if (blur.isToggled() && blur.module.get("ConsoleGui")) {
             GaussianBlurUtils.addToDraw(() -> {
-                RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clickGui.backgroundRadius.getValue(), new Color(0,0,0,255));
-                RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), shadows.color.getColor());
+                RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clientSettings.backgroundRadius.getValue(), new Color(0,0,0,255));
+                RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), shadows.color.getColor());
             });
         }
 
-        RenderUtils.drawRoundedGradientOutlinedRectangle(background.x, background.y, background.x + sizeBackground.x, background.y + sizeBackground.y, clickGui.backgroundRadius.getValue() * 1.7f, 0,Color.black.getRGB(),Color.BLACK.getRGB());
+        RenderUtils.drawRoundedGradientOutlinedRectangle(background.x, background.y, background.x + sizeBackground.x, background.y + sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, 0,Color.black.getRGB(),Color.BLACK.getRGB());
 
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y + (fullScreen ? 0 : 20));
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), new Color(0,0,0, clickGui.backgroundAlpha.getValue()));
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
-        RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clickGui.backgroundRadius.getValue(), new Color(0,0,0,255));
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), new Color(0,0,0, clickGui.backgroundAlpha.getValue()));
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clientSettings.backgroundRadius.getValue(), new Color(0,0,0,200));
+        RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clientSettings.backgroundRadius.getValue(), new Color(0,0,0,255));
 
         mc.fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 4,  -1);
         mc.fontRendererObj.drawString(textField.getText() + (delay > 15 ? "" : "_"), background.x + 2 + 2, background.y + sizeBackground.y + (fullScreen ? -10 - 3 : 7), -1);

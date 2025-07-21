@@ -9,18 +9,22 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
-
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -30,9 +34,20 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "Ping", category = Category.CONNECTION)
 public class Ping extends Module {
 
-    private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 50, 1000, 400);
-
-    private final IntegerSetting delayBeforeNextLagAfterReset = new IntegerSetting("DelayBeforeNextLagAfterReset", this, 0, 1000, 500);
+    private final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 50, 1000, 400) {
+        @Override
+        public int getValue() {
+            if (maxDelay.value < value) { value = maxDelay.value; }
+            return super.getValue();
+        }
+    };
+    private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 50, 1000, 400) {
+        @Override
+        public int getValue() {
+            if (minDelay.value > value) { value = minDelay.value; }
+            return super.getValue();
+        }
+    };
 
     private final MultiMode actions = new MultiMode("ActionsToReset", this)
             .add("Attack", true)
@@ -45,6 +60,17 @@ public class Ping extends Module {
             .add("ClickWindow")
             .add("Scaffold")
             .add("OpenedGui");
+
+    final IntegerSetting attackTimeCondition = new IntegerSetting("AttackTimeCondition", this, () -> actions.get("Attack"),0, 1000, 0);
+    final IntegerSetting damageTimeCondition = new IntegerSetting("DamageTimeCondition", this, () -> actions.get("Damage"),0, 1000, 0);
+    final IntegerSetting velocityTimeCondition = new IntegerSetting("VelocityTimeCondition", this, () -> actions.get("Velocity"),0, 1000, 0);
+    final IntegerSetting flagTimeCondition = new IntegerSetting("FlagTimeCondition", this, () -> actions.get("Flag"),0, 1000, 0);
+    final IntegerSetting usingItemTimeCondition = new IntegerSetting("UsingItemTimeCondition", this, () -> actions.get("UsingItem"),0, 1000, 0);
+    final IntegerSetting placeBlockTimeCondition = new IntegerSetting("PlaceBlockTimeCondition", this, () -> actions.get("PlaceBlock"),0, 1000, 0);
+    final IntegerSetting changeSprintTimeCondition = new IntegerSetting("ChangeSprintTimeCondition", this, () -> actions.get("ChangeSprint"),0, 1000, 0);
+    final IntegerSetting clickWindowTimeCondition = new IntegerSetting("ClickWindowTimeCondition", this, () -> actions.get("ClickWindow"),0, 1000, 0);
+    final IntegerSetting scaffoldTimeCondition = new IntegerSetting("ScaffoldTimeCondition", this, () -> actions.get("Scaffold"),0, 1000, 0);
+    final IntegerSetting openedGuiTimeCondition = new IntegerSetting("OpenedGuiTimeCondition", this, () -> actions.get("OpenedGui"),0, 1000, 0);
 
     private final Mode renderModes = new Mode("RenderMode", this)
             .addModes("Player", "HitBox", "OFF")
@@ -59,11 +85,16 @@ public class Ping extends Module {
 
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f,5f,1f,0.1f);
 
+    private int delay = 50;
     private long lastResetTime, delayBeforeNextLag;
     private final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
     private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
 
     Vec3 lastPos, currentPos;
+
+    Color fadeColor;
+
+    Shadows shadows;
 
     @Override
     public void onDisable() {
@@ -72,14 +103,13 @@ public class Ping extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (mc.isIntegratedServerRunning()) return;
         long currentTime = System.currentTimeMillis();
         switch (event) {
             case ChangeSprintEvent _ -> {
-                if (actions.get("ChangeSprint")) {
-                    reset();
-                }
+                if (actions.get("ChangeSprint")) reset(changeSprintTimeCondition.getValue());
             }
 
             case PacketEvent e -> {
@@ -92,41 +122,41 @@ public class Ping extends Module {
 
                 switch (packet) {
                     case C01PacketChatMessage _ -> {
-                        reset();
+                        reset(0);
                         return;
                     }
 
                     case C02PacketUseEntity handlingPacket -> {
                         if (actions.get("Attack") && handlingPacket.getAction() == C02PacketUseEntity.Action.ATTACK) {
-                            reset();
+                            reset(attackTimeCondition.getValue());
                             return;
                         }
                     }
 
                     case C0EPacketClickWindow _ -> {
                         if (actions.get("ClickWindow")) {
-                            reset();
+                            reset(clickWindowTimeCondition.getValue());
                             return;
                         }
                     }
 
                     case S12PacketEntityVelocity handlingPacket -> {
                         if (actions.get("Velocity") && handlingPacket.getEntityID() == mc.thePlayer.getEntityId()) {
-                            reset();
+                            reset(velocityTimeCondition.getValue());
                             return;
                         }
                     }
 
                     case S08PacketPlayerPosLook _ -> {
                         if (actions.get("Flag")) {
-                            reset();
+                            reset(flagTimeCondition.getValue());
                             return;
                         }
                     }
 
                     case C08PacketPlayerBlockPlacement _ -> {
                         if (actions.get("PlaceBlock")) {
-                            reset();
+                            reset(placeBlockTimeCondition.getValue());
                             return;
                         }
                     }
@@ -147,12 +177,12 @@ public class Ping extends Module {
             case RunGameLoopEvent _ -> handlePackets();
             case TickEvent _ -> {
                 if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChest) && actions.get("OpenedGui"))
-                    reset();
+                    reset(openedGuiTimeCondition.getValue());
                 if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && actions.get("Scaffold"))
-                    reset();
+                    reset(scaffoldTimeCondition.getValue());
 
-                if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) reset();
-                if (actions.get("UsingItem") && mc.thePlayer.isUsingItem()) reset();
+                if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) reset(damageTimeCondition.getValue());
+                if (actions.get("UsingItem") && mc.thePlayer.isUsingItem()) reset(usingItemTimeCondition.getValue());
 
                 lastPos = currentPos;
                 if (posBuffer.isEmpty()) {
@@ -172,29 +202,24 @@ public class Ping extends Module {
                 double y = lastPos.yCoord + (currentPos.yCoord - lastPos.yCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
                 double z = lastPos.zCoord + (currentPos.zCoord - lastPos.zCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
 
+                if (!renderModes.getMode().equalsIgnoreCase("Player")) updateColors();
+
+                Vec3 pos = new Vec3(x, y, z);
                 switch (renderModes.getMode()) {
                     case "HitBox" -> {
-                        Color fadeColor = fadeBoxColor.isToggled() ?
-                                ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
-                                : color1.getColor();
-
-                        RenderUtils.start3D();
-                        Vec3 smoothPos = new Vec3(x, y, z);
-                        Vec3 diff = smoothPos.subtract(player.getPositionVector());
-                        RenderUtils.drawHitBox(player.getEntityBoundingBox().offset(diff), fadeColor, lineWidth.getValue());
-                        RenderUtils.stop3D();
+                        Vec3 diff = pos.subtract(player.getPositionVector());
+                        AxisAlignedBB bb = player.getEntityBoundingBox().offset(diff);
+                        if (shadows.module.get("Ping") && shadows.isToggled()) {
+                            BloomUtils.addToDraw(() -> renderHitBox(bb, Color.white,lineWidth.getValue()));
+                        }
+                        renderHitBox(bb, fadeColor,lineWidth.getValue());
                     }
 
                     case "Player" -> {
-                        mc.getRenderManager().doRenderEntity(
-                                player,
-                                x, y, z,
-                                player.getRotationYawHead(),
-                                mc.timer.renderPartialTicks,
-                                true
-                        );
-                        mc.entityRenderer.disableLightmap();
-                        RenderHelper.disableStandardItemLighting();
+                        if (shadows.module.get("Ping") && shadows.isToggled()) {
+                            BloomUtils.addToDraw(() -> renderPlayer(player,pos,player.rotationYawHead,mc.timer.renderPartialTicks));
+                        }
+                        renderPlayer(player,pos,player.rotationYawHead,mc.timer.renderPartialTicks);
                     }
                 }
             }
@@ -202,15 +227,33 @@ public class Ping extends Module {
         }
     }
 
+    private void renderPlayer(Entity target, Vec3 pos, float rotationYawHead, float partialTicks) {
+        mc.getRenderManager().doRenderEntity(target, pos.xCoord, pos.yCoord, pos.zCoord, rotationYawHead, partialTicks, true);
+        mc.entityRenderer.disableLightmap();
+        RenderHelper.disableStandardItemLighting();
+    }
+
+    private void renderHitBox(AxisAlignedBB bb, Color color, float lineWidth) {
+        RenderUtils.start3D();
+        RenderUtils.drawHitBox(bb, color, lineWidth);
+        RenderUtils.stop3D();
+    }
+
+    private void updateColors() {
+        fadeColor = fadeBoxColor.isToggled() ?
+                ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
+                : color1.getColor();
+    }
+
     private void handlePackets() {
         buffer.removeIf(packetWithTime -> {
-           if (System.currentTimeMillis() - packetWithTime.time() >= maxDelay.getValue() ) {
+           if (System.currentTimeMillis() - packetWithTime.time() >= delay) {
                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetWithTime.packet());
                return true;
            }
            return false;
         });
-        posBuffer.removeIf(pos -> System.currentTimeMillis() - pos.time() >= maxDelay.getValue());
+        posBuffer.removeIf(pos -> System.currentTimeMillis() - pos.time() >= delay);
     }
 
     private void resetAllPackets() {
@@ -219,10 +262,11 @@ public class Ping extends Module {
         posBuffer.clear();
     }
 
-    private void reset() {
+    private void reset(int time) {
         resetAllPackets();
         lastResetTime = System.currentTimeMillis();
-        delayBeforeNextLag = delayBeforeNextLagAfterReset.getValue();
+        delayBeforeNextLag = time;
+        delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
     }
 
     private record PacketWithTime(Packet packet, long time) {}

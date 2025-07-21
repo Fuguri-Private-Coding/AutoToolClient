@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiText;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
@@ -66,14 +67,14 @@ public class HotTextGui extends GuiScreen {
 
     Shadows shadows;
     Blur blur;
-    ClickGui clickGui;
+    ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
+    ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
     int delay = 30;
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
-        if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
 
         boolean hotScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
         if (hotScroll) scroll -= Mouse.getDWheel() / 120 * 10;
@@ -120,18 +121,18 @@ public class HotTextGui extends GuiScreen {
         sizeBackground.update(15f);
 
         if (shadows.isToggled() && shadows.module.get("HotKeyGui")) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), shadows.color.getColor()));
+            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), shadows.color.getColor()));
         }
 
         if (blur.isToggled() && blur.module.get("HotKeyGui")) {
-            GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), shadows.color.getColor()));
+            GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), shadows.color.getColor()));
         }
 
-        RenderUtils.drawRoundedGradientOutlinedRectangle(background.x, background.y, background.x + sizeBackground.x, background.y + sizeBackground.y, clickGui.backgroundRadius.getValue() * 1.7f, 0,Color.black.getRGB(),Color.BLACK.getRGB());
+        RenderUtils.drawRoundedGradientOutlinedRectangle(background.x, background.y, background.x + sizeBackground.x, background.y + sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, 0,Color.black.getRGB(),Color.BLACK.getRGB());
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clickGui.backgroundRadius.getValue(), new Color(0,0,0, clickGui.backgroundAlpha.getValue()));
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clickGui.backgroundRadius.getValue(), new Color(0,0,0,200));
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), new Color(0,0,0, clickGui.backgroundAlpha.getValue()));
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clientSettings.backgroundRadius.getValue(), new Color(0,0,0,200));
 
         mc.fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 4,  -1);
 
@@ -143,9 +144,9 @@ public class HotTextGui extends GuiScreen {
         RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
         RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
 
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.GRAY);
+        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.GRAY);
         fontRendererObj.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3, -1, true);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clickGui.backgroundRadius.getValue(), Color.RED);
+        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.RED);
         fontRendererObj.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 3, -1, true);
 
         ScissorUtils.disableScissor();
@@ -158,7 +159,7 @@ public class HotTextGui extends GuiScreen {
         totalHeight = 0;
         for (HotText hotText : hotKeys) {
             String bindText = (hotText == selectedHotText ? (binding ? "▬" : (hotText.getKey() == 0 ? "-" : Keyboard.getKeyName(hotText.getKey()))) : (hotText.getKey() == 0 ? "-" : Keyboard.getKeyName(hotText.getKey())));
-            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 150, 30, clickGui.backgroundRadius.getValue(), selectedHotText != null ? selectedHotText == hotText ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150));
+            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 150, 30, clientSettings.backgroundRadius.getValue(), selectedHotText != null ? selectedHotText == hotText ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150));
             fontRendererObj.drawString(bindText,background.x + 10 + 80 + 50 + offset, background.y + 30 + yOffset, -1);
             if (hotText != null) fontRendererObj.drawString(hotText.getText(), background.x + 10 + offset, background.y + 30 + yOffset, -1);
             offset += 155;

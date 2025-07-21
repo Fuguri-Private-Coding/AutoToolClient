@@ -3,6 +3,8 @@ package fuguriprivatecoding.autotoolrecode.config;
 import com.google.gson.*;
 import fuguriprivatecoding.autotoolrecode.alt.Account;
 import fuguriprivatecoding.autotoolrecode.hottext.HotText;
+import fuguriprivatecoding.autotoolrecode.module.Category;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
@@ -52,6 +54,8 @@ public class ConfigManager implements Imports {
         hotTextFile = new File(hotTextDirectory, "hotkeys.json");
         refreshConfigs();
     }
+
+    ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
 
     private Config loadConfigFromFile(File configFile) {
         try {
@@ -220,6 +224,10 @@ public class ConfigManager implements Imports {
                     continue;
                 }
                 Module module = Client.INST.getModuleManager().getModule(entry.getKey());
+//                if (clientSettings.notLoadCategoryFromConfig.get("Combat")) {
+//                    List<Module> notToLoadModules = Client.INST.getModuleManager().getModulesByCategory(Category.COMBAT);
+//                }
+
                 if (module == null) {
                     continue;
                 }

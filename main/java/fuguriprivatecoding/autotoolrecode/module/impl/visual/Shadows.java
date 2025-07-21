@@ -9,11 +9,11 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 public class Shadows extends Module {
 
     public MultiMode module = new MultiMode("Modules", this)
-            .addModes("ClickGui","ConsoleGui","MainMenu","ItemsFirstPerson","ArrayList",
+            .addModes("ClickGui","ConsoleGui","ItemsFirstPerson","ArrayList",
                     "TargetESP","Dot" ,"BreakIndicator", "CPSCounter", "BPSCounter",
                     "FPSCounter", "BlockOverlay", "ConfigGui", "Chat", "Trails",
                     "NameTags", "Scaffold", "ChestESP", "BedESP", "WorldParticles",
-                    "Weather", "TargetHUD", "Hat", "HotKeyGui"
+                    "Weather", "TargetHUD", "Hat", "HotKeyGui", "BackTrack", "Ping", "ScoreBoard"
             );
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);
