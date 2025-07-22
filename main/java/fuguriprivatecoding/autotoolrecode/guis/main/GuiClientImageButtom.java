@@ -32,7 +32,7 @@ public class GuiClientImageButtom extends GuiButton {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
         hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 
-        RenderUtils.drawRoundedGradientOutlinedRectangle(xPosition, yPosition, xPosition + width, yPosition + height, 3.4f,new Color(0,0,0,150).getRGB(), 0, Color.black.getRGB());
+        RenderUtils.drawRoundedOutLineRectangle(xPosition, yPosition, width, height, 3.4f,new Color(0,0,0,150).getRGB(), Color.black.getRGB(), Color.black.getRGB());
         RenderUtils.drawImage(image, xPosition, yPosition, width, height);
     }                                       
 }                                           

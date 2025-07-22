@@ -23,7 +23,7 @@ public class AltManagerGuiText extends GuiTextField {
     public void drawTextBox() {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
 
-        RenderUtils.drawRoundedGradientOutlinedRectangle(xPosition, yPosition, xPosition + width, yPosition + height, 8.5f,new Color(0,0,0,150).getRGB(), 0, Color.black.getRGB());
+        RenderUtils.drawRoundedOutLineRectangle(xPosition, yPosition, width, height, 8.5f,new Color(0,0,0,150).getRGB(), Color.black.getRGB(), Color.black.getRGB());
 
         fontRendererInstance.drawString(getText(), xPosition + 4,yPosition + height / 3, Color.WHITE.getRGB());
     }

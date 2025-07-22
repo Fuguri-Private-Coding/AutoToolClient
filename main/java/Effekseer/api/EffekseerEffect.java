@@ -6,7 +6,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class EffekseerEffect implements Closeable {
+public class EffekseerEffect  implements Closeable {
     protected final EffekseerEffectCore impl;
 
     private boolean isLoaded = false;

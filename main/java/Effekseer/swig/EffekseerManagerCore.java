@@ -8,6 +8,8 @@
 
 package Effekseer.swig;
 
+import net.minecraft.util.Vec3;
+
 public class EffekseerManagerCore {
   private transient long swigCPtr;
   protected transient boolean swigCMemOwn;
@@ -102,6 +104,10 @@ public class EffekseerManagerCore {
 
   public void SetEffectPosition(int handle, float x, float y, float z) {
     EffekseerCoreJNI.EffekseerManagerCore_SetEffectPosition(swigCPtr, this, handle, x, y, z);
+  }
+
+  public void SetEffectPosition(int handle, Vec3 pos) {
+    EffekseerCoreJNI.EffekseerManagerCore_SetEffectPosition(swigCPtr, this, handle, (float) pos.xCoord, (float) pos.yCoord, (float) pos.zCoord);
   }
 
   public void SetEffectRotation(int handle, float x, float y, float z) {

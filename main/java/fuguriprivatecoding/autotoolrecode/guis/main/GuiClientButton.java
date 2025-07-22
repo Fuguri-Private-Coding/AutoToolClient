@@ -28,7 +28,7 @@ public class GuiClientButton extends GuiButton {
 
         final FontRenderer fonts = mc.fontRendererObj;
 
-        RenderUtils.drawRoundedGradientOutlinedRectangle(xPosition, yPosition, xPosition + width, yPosition + height, 0, new Color(0,0,0,150).getRGB(), 0, Color.black.getRGB());
+        RenderUtils.drawRoundedOutLineRectangle(xPosition, yPosition, width, height, 0, new Color(0,0,0,150).getRGB(), Color.black.getRGB(), Color.black.getRGB());
 
         final Color color = Color.WHITE;
         fonts.drawString(displayString, xPosition + width / 2f - fonts.getStringWidth(displayString) / 2f, yPosition + (height - 8) / 2f, hovered ? color.darker().getRGB() : color.getRGB(), true);

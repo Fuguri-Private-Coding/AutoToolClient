@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode;
 
+import Effekseer.render.RenderEffects;
 import de.florianmichael.viamcp.ViaMCP;
 import Effekseer.installer.LoadNatives;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiScreen;
@@ -73,6 +74,7 @@ public enum Client implements Imports {
 	NewClickGuiScreen newClickGuiScreen;
 	GuiClientMainMenu mainMenu;
 	LoadNatives loadNatives;
+	RenderEffects renderEffects;
 	@Setter Discord discord;
 	@Setter ClientIRC irc;
 
@@ -111,8 +113,10 @@ public enum Client implements Imports {
 		friendManager = new FriendManager();
         soundsManager = new SoundsManager();
 
-//		loadNatives = new LoadNatives();
-//		loadNatives.init();
+		loadNatives = new LoadNatives();
+		loadNatives.init();
+
+		renderEffects = new RenderEffects();
 
 		moduleManager = new ModuleManager();
 
@@ -121,7 +125,6 @@ public enum Client implements Imports {
 
 		configManager = new ConfigManager();
 		configManager.init();
-		configManager.loadConfig(configManager.getDefaultConfig());
 		configManager.loadBinds();
 
 		altManagerGui = new AltManagerGuiScreen();
@@ -134,7 +137,6 @@ public enum Client implements Imports {
 
 		deepLearningEngine = new DeepLearningEngine();
 		deepLearningEngine.init();
-
 
 		new PositionResolverComponent();
 
@@ -153,7 +155,11 @@ public enum Client implements Imports {
 		discord.init();
 		discord.startRPC();
 
-        starting = false;
+		configManager.loadConfig(configManager.getDefaultConfig());
+
+		configManager.loadModulesFromConfig();
+
+		starting = false;
 
 		double elapsedNanos = System.nanoTime() - start;
 		console.log("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
@@ -175,6 +181,7 @@ public enum Client implements Imports {
 	}
 
 	public void onClose() {
+		configManager.saveModulesFromConfig();
 		configManager.saveConfig(configManager.getDefaultConfig());
 		configManager.saveBinds();
 		disconnect();

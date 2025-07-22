@@ -39,8 +39,8 @@ public class RenderUtils implements Imports {
         GlStateManager.disableBlend();
     }
 
-    public static void drawRoundedOutLineRectangle(float x, float y, float width, float height, float radius, int bgColor, int d, int outLineColor) {
-        drawRoundedGradientOutlinedRectangle(x,y,x + width,y + height, radius, bgColor, d, outLineColor);
+    public static void drawRoundedOutLineRectangle(float x, float y, float width, float height, float radius, int bgColor, int outLineColor1, int outLineColor2) {
+        drawRoundedGradientOutlinedRectangle(x,y,x + width,y + height, radius, bgColor, outLineColor1, outLineColor2);
     }
 
     public static void drawRoundedGradientOutlinedRectangle(float n, float n2, float n3, float n4, final float n5, final int n6, final int n7, final int n8) { // credit to the creator of raven b4

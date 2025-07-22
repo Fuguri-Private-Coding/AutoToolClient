@@ -1,5 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
+import Effekseer.installer.Loader;
+import Effekseer.swig.EffekseerEffectCore;
+import Effekseer.swig.EffekseerManagerCore;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
@@ -9,10 +12,12 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.Vec3;
 
 @ModuleInfo(name = "KillEffects", category = Category.VISUAL)
 public class KillEffects extends Module {
@@ -20,8 +25,8 @@ public class KillEffects extends Module {
     CheckBox effect = new CheckBox("Effect", this);
 
     Mode effects = new Mode("Effects", this, effect::isToggled)
-            .addModes("Lightning")
-            .setMode("Lightning")
+            .addModes("Lightning", "Sacred", "Ember", "MinecraftLightning")
+            .setMode("MinecraftLightning")
             ;
 
     CheckBox sound = new CheckBox("Sound", this);
@@ -35,6 +40,19 @@ public class KillEffects extends Module {
     Entity target;
     EntityLightningBolt bolt;
 
+    EffekseerEffectCore effectEmber;
+    EffekseerEffectCore effectSacred;
+    EffekseerEffectCore effectLightning;
+
+    Vec3 targetPos;
+    int effectHandle;
+
+    public KillEffects() {
+        effectEmber = Loader.loadEffect("killEffects/Ember.efkefc", 0.2f);
+        effectSacred = Loader.loadEffect("killEffects/Sacred.efkefc", 0.2f);
+        effectLightning = Loader.loadEffect("killEffects/lightning/lightning.efkefc", 0.2f);
+    }
+
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof AttackEvent e) {
@@ -44,48 +62,34 @@ public class KillEffects extends Module {
         if (event instanceof TickEvent) {
             if (target != null) {
                 if (effect.isToggled()) {
-                    switch (effects.getMode()) {
-                        case "Lightning" -> {
-                            if (mc.theWorld.getLoadedEntityList().contains(target)) {
-                                bolt = new EntityLightningBolt(mc.theWorld, target.posX, target.posY, target.posZ);
+                    EffekseerManagerCore effekseerManagerCore = Client.INST.getLoadNatives().getEffekseerManagerCore();
+
+                    if (mc.theWorld.getLoadedEntityList().contains(target)) targetPos = new Vec3(target.posX,target.posY,target.posZ);
+                    if (!mc.theWorld.getLoadedEntityList().contains(target)) {
+                        switch (effects.getMode()) {
+                            case "MinecraftLightning" -> {
+                                bolt = new EntityLightningBolt(mc.theWorld, targetPos.xCoord, targetPos.yCoord, targetPos.zCoord);
                                 bolt.setEntityId(-777);
-                            }
-                            if (!mc.theWorld.getLoadedEntityList().contains(target) && bolt != null) {
                                 mc.theWorld.addEntityToWorld(bolt.getEntityId(), bolt);
                                 mc.theWorld.playSound(bolt.posX, bolt.posY, bolt.posZ, "ambient.weather.thunder", 1f, 1f, false);
-                                target = null;
+                            }
+                            case "Lightning" -> effectHandle = effekseerManagerCore.Play(effectLightning);
+                            case "Sacred" -> effectHandle = effekseerManagerCore.Play(effectSacred);
+                            case "Ember" -> effectHandle = effekseerManagerCore.Play(effectEmber);
+                        }
+                        effekseerManagerCore.SetEffectPosition(effectHandle, targetPos);
+                        if (sound.isToggled()) {
+                            switch (sounds.getMode()) {
+                                case "Skeet" -> Client.INST.getSoundsManager().getSkeetSound().asyncPlay(volume.getValue());
+                                case "NeverLose" -> Client.INST.getSoundsManager().getNeverLoseSound().asyncPlay(volume.getValue());
+                                case "HalfLife" -> Client.INST.getSoundsManager().getKilledSound().asyncPlay(volume.getValue());
                             }
                         }
-                        case "TNT" -> {
-
-                        }
+                        target = null;
                     }
                 }
 
-                if (sound.isToggled()) {
-                    switch (sounds.getMode()) {
-                        case "Skeet" -> {
-                            if (!mc.theWorld.getLoadedEntityList().contains(target) && bolt != null) {
-                                Client.INST.getSoundsManager().getSkeetSound().asyncPlay(volume.getValue());
-                                target = null;
-                            }
-                        }
 
-                        case "NeverLose" -> {
-                            if (!mc.theWorld.getLoadedEntityList().contains(target) && bolt != null) {
-                                Client.INST.getSoundsManager().getNeverLoseSound().asyncPlay(volume.getValue());
-                                target = null;
-                            }
-                        }
-
-                        case "HalfLife" -> {
-                            if (!mc.theWorld.getLoadedEntityList().contains(target) && bolt != null) {
-                                Client.INST.getSoundsManager().getKilledSound().asyncPlay(volume.getValue());
-                                target = null;
-                            }
-                        }
-                    }
-                }
             }
         }
     }

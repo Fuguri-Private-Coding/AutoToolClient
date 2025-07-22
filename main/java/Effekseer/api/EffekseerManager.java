@@ -1,5 +1,6 @@
 package Effekseer.api;
 
+import Effekseer.api.ParticleEmitter;
 import Effekseer.swig.EffekseerManagerCore;
 import org.joml.Matrix4f;
 
@@ -76,7 +77,6 @@ public class EffekseerManager implements Closeable {
     }
 
     private static final ThreadLocal<float[]> MATRIX_BUFFER = ThreadLocal.withInitial(() -> new float[16]);
-
 
     public void setCameraMatrix(Matrix4f m) {
         var buffer = FloatBuffer.wrap(MATRIX_BUFFER.get());

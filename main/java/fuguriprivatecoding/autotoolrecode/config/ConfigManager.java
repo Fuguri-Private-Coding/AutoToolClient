@@ -17,6 +17,11 @@ import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.*;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -28,15 +33,10 @@ import java.util.Map;
 @Getter
 public class ConfigManager implements Imports {
 
-    File configsDirectory;
-    File bindsDirectory;
-    File accountDirectory;
-    File hotTextDirectory;
+    File configsDirectory, loadModulesDirectory, accountDirectory, hotTextDirectory, bindsDirectory;
+    File bindFile, loadModulesFile, hotTextFile, accountFile;
     private List<Config> configs;
     Config defaultConfig;
-    File bindFile;
-    File accountFile;
-    File hotTextFile;
 
     public void init() {
         configs = new ArrayList<>();
@@ -44,14 +44,17 @@ public class ConfigManager implements Imports {
         bindsDirectory = new File(Client.INST.getName() + "/binds");
         accountDirectory = new File(Client.INST.getName() + "/account");
         hotTextDirectory = new File(Client.INST.getName() + "/hotkeys");
-        bindsDirectory.mkdirs();
-        configsDirectory.mkdirs();
-        accountDirectory.mkdirs();
-        hotTextDirectory.mkdirs();
+        loadModulesDirectory = new File(Client.INST.getName() + "/loadModules");
         defaultConfig = new Config("default");
         bindFile = new File(bindsDirectory, "binds.json");
         accountFile = new File(accountDirectory, "accounts.json");
         hotTextFile = new File(hotTextDirectory, "hotkeys.json");
+        loadModulesFile = new File(loadModulesDirectory, "loadModules.json");
+        configsDirectory.mkdirs();
+        bindsDirectory.mkdirs();
+        accountDirectory.mkdirs();
+        hotTextDirectory.mkdirs();
+        loadModulesDirectory.mkdirs();
         refreshConfigs();
     }
 
@@ -212,6 +215,275 @@ public class ConfigManager implements Imports {
         return mainObject;
     }
 
+    public void loadModulesFromConfig() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(loadModulesFile));
+            JsonParser parser = new JsonParser();
+            JsonObject json = (JsonObject) parser.parse(reader);
+            reader.close();
+            for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                Module module = Client.INST.getModuleManager().getModule(entry.getKey());
+                JsonObject moduleObject = (JsonObject) entry.getValue();
+                module.setLoadFromConfig(moduleObject.get("loadFromConfig").getAsBoolean());
+            }
+        } catch (RuntimeException | IOException e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    public void saveModulesFromConfig() {
+        FileUtils.createIfNotExists(loadModulesFile);
+        JsonObject mainObject = getLoadModulesObject();
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(loadModulesFile));
+            Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+            writer.println(prettyGson.toJson(mainObject));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    private static JsonObject getLoadModulesObject() {
+        JsonObject mainObject = new JsonObject();
+        for (Module module : Client.INST.getModuleManager().getModules()) {
+            JsonObject moduleObject = new JsonObject();
+            moduleObject.addProperty("loadFromConfig", module.isLoadFromConfig());
+            mainObject.add(module.getName(), moduleObject);
+        }
+        return mainObject;
+    }
+
+    public void importSettingsInModule(Module module) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        try {
+            if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+                String clipboardText = (String) clipboard.getData(DataFlavor.stringFlavor);
+
+                Gson gson = new Gson();
+                JsonObject json = null;
+                try {
+                    json = gson.fromJson(clipboardText, JsonObject.class);
+                } catch (JsonSyntaxException e) {
+                    ClientUtils.chatLog("Uncorrected JSON in Clipboard");
+                }
+
+                if (json == null) return;
+
+                for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                    if (module == null) {
+                        continue;
+                    }
+
+                    JsonObject moduleObject = (JsonObject) entry.getValue();
+                    for (Setting setting : module.getSettings()) {
+                        JsonElement settingElement = moduleObject.get(setting.getName());
+                        if (settingElement == null) {
+                            continue;
+                        }
+
+                        switch (setting) {
+                            case IntegerSetting set -> set.setValue(settingElement.getAsInt());
+                            case FloatSetting set -> set.setValue(settingElement.getAsFloat());
+                            case CheckBox set -> set.setToggled(settingElement.getAsBoolean());
+                            case KeyBind set -> set.setKey(settingElement.getAsInt());
+                            case Mode set -> set.setMode(settingElement.getAsString());
+                            case MultiMode set -> {
+                                JsonObject jsonObject = settingElement.getAsJsonObject();
+                                for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                                    set.set(entry1.getKey(), entry1.getValue().getAsBoolean());
+                                }
+                            }
+                            case ColorSetting set -> {
+                                JsonObject jsonObject = settingElement.getAsJsonObject();
+                                for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                                    switch (entry1.getKey()) {
+                                        case "Red" -> set.setRed(entry1.getValue().getAsFloat());
+                                        case "Green" -> set.setGreen(entry1.getValue().getAsFloat());
+                                        case "Blue" -> set.setBlue(entry1.getValue().getAsFloat());
+                                        case "Alpha" -> set.setAlpha(entry1.getValue().getAsFloat());
+                                    }
+                                }
+                            }
+                            default -> throw new IllegalStateException("Unexpected value: " + setting);
+                        }
+                    }
+                }
+
+                if (module != null) ClientUtils.chatLog("Successful imported settings in clipboard to " + module.getName());
+            } else {
+                ClientUtils.chatLog("Clipboard is null");
+            }
+        } catch (UnsupportedFlavorException | IOException e) {
+            ClientUtils.chatLog("Failed to read settings in Clipboard");
+        } catch (JsonSyntaxException e) {
+            ClientUtils.chatLog("Uncorrected JSON in Clipboard");
+        }
+    }
+
+    public void importSettingsInCategory(Category category) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        try {
+            if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+                String clipboardText = (String) clipboard.getData(DataFlavor.stringFlavor);
+
+                Gson gson = new Gson();
+                JsonObject json = null;
+                try {
+                    json = gson.fromJson(clipboardText, JsonObject.class);
+                } catch (JsonSyntaxException e) {
+                    ClientUtils.chatLog("Uncorrected JSON in Clipboard");
+                }
+
+                if (json == null) return;
+
+                List<Module> moduleList = Client.INST.getModuleManager().getModulesByCategory(category);
+                for (Module module : moduleList) {
+                    for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                        if (module == null) {
+                            continue;
+                        }
+
+                        JsonObject moduleObject = (JsonObject) entry.getValue();
+                        module.setToggled(moduleObject.get("toggled").getAsBoolean());
+                        for (Setting setting : module.getSettings()) {
+                            JsonElement settingElement = moduleObject.get(setting.getName());
+                            if (settingElement == null) {
+                                continue;
+                            }
+
+                            switch (setting) {
+                                case IntegerSetting set -> set.setValue(settingElement.getAsInt());
+                                case FloatSetting set -> set.setValue(settingElement.getAsFloat());
+                                case CheckBox set -> set.setToggled(settingElement.getAsBoolean());
+                                case KeyBind set -> set.setKey(settingElement.getAsInt());
+                                case Mode set -> set.setMode(settingElement.getAsString());
+                                case MultiMode set -> {
+                                    JsonObject jsonObject = settingElement.getAsJsonObject();
+                                    for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                                        set.set(entry1.getKey(), entry1.getValue().getAsBoolean());
+                                    }
+                                }
+                                case ColorSetting set -> {
+                                    JsonObject jsonObject = settingElement.getAsJsonObject();
+                                    for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                                        switch (entry1.getKey()) {
+                                            case "Red" -> set.setRed(entry1.getValue().getAsFloat());
+                                            case "Green" -> set.setGreen(entry1.getValue().getAsFloat());
+                                            case "Blue" -> set.setBlue(entry1.getValue().getAsFloat());
+                                            case "Alpha" -> set.setAlpha(entry1.getValue().getAsFloat());
+                                        }
+                                    }
+                                }
+                                default -> throw new IllegalStateException("Unexpected value: " + setting);
+                            }
+                        }
+                    }
+                }
+
+                ClientUtils.chatLog("Successful imported settings in clipboard to " + category.name);
+            } else {
+                ClientUtils.chatLog("Clipboard is null");
+            }
+        } catch (UnsupportedFlavorException | IOException e) {
+            ClientUtils.chatLog("Failed to read settings in Clipboard");
+        } catch (JsonSyntaxException e) {
+            ClientUtils.chatLog("Uncorrected JSON in Clipboard");
+        }
+    }
+
+    public void exportSettingsInCategory(Category category) {
+        JsonObject mainObject = getExportSettingsInCategoryObject(category);
+        Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+        String textToCopy = prettyGson.toJson(mainObject);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection selection = new StringSelection(textToCopy);
+        clipboard.setContents(selection, null);
+        ClientUtils.chatLog("Successful exported settings in clipboard to " + category.name);
+    }
+
+    public JsonObject getExportSettingsInCategoryObject(Category category) {
+        JsonObject mainObject = new JsonObject();
+        List<Module> moduleList = Client.INST.getModuleManager().getModulesByCategory(category);
+        for (Module module : moduleList) {
+            JsonObject moduleObject = new JsonObject();
+            moduleObject.addProperty("toggled", module.isToggled());
+            for (Setting setting : module.getSettings()) {
+                switch (setting) {
+                    case IntegerSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());
+                    case FloatSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());
+                    case CheckBox set -> moduleObject.addProperty(setting.getName(), set.isToggled());
+                    case KeyBind set -> moduleObject.addProperty(setting.getName(), set.getKey());
+                    case Mode set -> moduleObject.addProperty(setting.getName(), set.getMode());
+                    case MultiMode set -> {
+                        JsonObject multiBooleanObject = new JsonObject();
+                        for (Doubles<String, Boolean> value : set.getValues()) {
+                            multiBooleanObject.addProperty(value.getFirst(), value.getSecond());
+                        }
+                        moduleObject.add(set.getName(), multiBooleanObject);
+                    }
+                    case ColorSetting set -> {
+                        JsonObject colorSettingObject = new JsonObject();
+                        colorSettingObject.addProperty("Red", set.getRed());
+                        colorSettingObject.addProperty("Green", set.getGreen());
+                        colorSettingObject.addProperty("Blue", set.getBlue());
+                        colorSettingObject.addProperty("Alpha", set.getAlpha());
+                        moduleObject.add(set.getName(), colorSettingObject);
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + setting);
+                }
+            }
+            mainObject.add(module.getName(), moduleObject);
+        }
+        return mainObject;
+    }
+
+    public void exportSettingsInModule(Module module) {
+        JsonObject mainObject = getExportSettingsInModuleObject(module);
+        Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+        String textToCopy = prettyGson.toJson(mainObject);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection selection = new StringSelection(textToCopy);
+        clipboard.setContents(selection, null);
+        ClientUtils.chatLog("Successful exported settings in clipboard to " + module.getName());
+    }
+
+    public JsonObject getExportSettingsInModuleObject(Module module) {
+        JsonObject mainObject = new JsonObject();
+        JsonObject moduleObject = new JsonObject();
+        moduleObject.addProperty("toggled", module.isToggled());
+        moduleObject.addProperty("hide", module.isHide());
+        for (Setting setting : module.getSettings()) {
+            switch (setting) {
+                case IntegerSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());
+                case FloatSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());
+                case CheckBox set -> moduleObject.addProperty(setting.getName(), set.isToggled());
+                case KeyBind set -> moduleObject.addProperty(setting.getName(), set.getKey());
+                case Mode set -> moduleObject.addProperty(setting.getName(), set.getMode());
+                case MultiMode set -> {
+                    JsonObject multiBooleanObject = new JsonObject();
+                    for (Doubles<String, Boolean> value : set.getValues()) {
+                        multiBooleanObject.addProperty(value.getFirst(), value.getSecond());
+                    }
+                    moduleObject.add(set.getName(), multiBooleanObject);
+                }
+                case ColorSetting set -> {
+                    JsonObject colorSettingObject = new JsonObject();
+                    colorSettingObject.addProperty("Red", set.getRed());
+                    colorSettingObject.addProperty("Green", set.getGreen());
+                    colorSettingObject.addProperty("Blue", set.getBlue());
+                    colorSettingObject.addProperty("Alpha", set.getAlpha());
+                    moduleObject.add(set.getName(), colorSettingObject);
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + setting);
+            }
+        }
+        mainObject.add(module.getName(), moduleObject);
+        return mainObject;
+    }
+
     public void loadConfig(Config config) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(config.getConfigFile()));
@@ -224,11 +496,8 @@ public class ConfigManager implements Imports {
                     continue;
                 }
                 Module module = Client.INST.getModuleManager().getModule(entry.getKey());
-//                if (clientSettings.notLoadCategoryFromConfig.get("Combat")) {
-//                    List<Module> notToLoadModules = Client.INST.getModuleManager().getModulesByCategory(Category.COMBAT);
-//                }
 
-                if (module == null) {
+                if (module == null || !module.isLoadFromConfig()) {
                     continue;
                 }
                 JsonObject moduleObject = (JsonObject) entry.getValue();
