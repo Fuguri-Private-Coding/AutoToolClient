@@ -8,9 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.ScaledResolution;
 
@@ -18,7 +16,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(name = "HUD", category = Category.VISUAL)
+@ModuleInfo(name = "HUD", category = Category.VISUAL, description = "Добавляет на экран полезную информацию.")
 public class HUD extends Module {
     private final MultiMode hudElements = new MultiMode("HUDElements", this)
             .addModes("FPSCounter", "BPSCounter", "BreakIndicator");
@@ -50,7 +48,7 @@ public class HUD extends Module {
     private static final long FPS_WINDOW_MS = 1000L;
 
     private final List<Long> frames = new CopyOnWriteArrayList<>();
-    private Shadows shadows;
+    private Glow shadows;
 
     private FloatSetting createPositionSetting(String name, String element) {
         return new FloatSetting(name, this, () -> hudElements.get(element), 0, 10000, 0, 0.1f);
@@ -84,7 +82,7 @@ public class HUD extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (event instanceof Render2DEvent) {
             renderBPSCounter();
             renderBreakIndicator();

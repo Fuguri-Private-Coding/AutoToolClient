@@ -8,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 
-@ModuleInfo(name = "Timer", category = Category.MOVE)
+@ModuleInfo(name = "Timer", category = Category.MOVE, description = "Ускоряет игру")
 public class Timer extends Module {
 
 	FloatSetting timerSpeed = new FloatSetting("TimerSpeed", this, 0.1f, 10f, 2f, 0.1f) {};

@@ -14,4 +14,5 @@ public @interface ModuleInfo {
 	boolean toggled() default false;
 	boolean hide() default false;
 	boolean loadFromConfig() default true;
+	String description() default "";
 }

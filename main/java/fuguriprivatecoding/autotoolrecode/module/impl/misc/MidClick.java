@@ -14,8 +14,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.input.Mouse;
 
-@ModuleInfo(name = "MidClick", category = Category.MISC)
+@ModuleInfo(name = "MidClick", category = Category.MISC, description = "Добавление друзей по колесику кнопки мыши.")
 public class MidClick extends Module {
+
     FloatSetting range = new FloatSetting("Range", this, 3f, 1000f, 1000f, 1f) {};
     public CheckBox reverseFriends = new CheckBox("Reverse", this, true);
     public CheckBox showInName = new CheckBox("ShowFriendPrefixInName", this, true);

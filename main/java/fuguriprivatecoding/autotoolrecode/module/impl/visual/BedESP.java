@@ -28,7 +28,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@ModuleInfo(name = "BedESP", category = Category.VISUAL)
+@ModuleInfo(name = "BedESP", category = Category.VISUAL, description = "Показывает где находится кроовать.")
 public class BedESP extends Module {
 
     final IntegerSetting range = new IntegerSetting("Range", this, 2, 256, 64);
@@ -42,7 +42,7 @@ public class BedESP extends Module {
     private final List<BlockPos[]> beds = new ArrayList<>();
     private long lastCheck = 0;
 
-    Shadows shadows;
+    Glow shadows;
     Blur blur;
     Thread update;
     Color fadeColor;
@@ -57,7 +57,7 @@ public class BedESP extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (event instanceof WorldChangeEvent && !beds.isEmpty()) beds.clear();
         if (event instanceof TickEvent) {

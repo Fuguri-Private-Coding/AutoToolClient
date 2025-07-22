@@ -6,7 +6,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 
-@ModuleInfo(name = "CustomCamera", category = Category.VISUAL)
+@ModuleInfo(name = "CustomCamera", category = Category.VISUAL, description = "Позволяет отдалить или приблизить камеру.")
 public class CustomCamera extends Module {
     public FloatSetting cameraDistance = new FloatSetting("CameraDistance",this, 1f, 5f, 1f, 0.1f) {};
     public CheckBox cameraClip = new CheckBox("CameraClip", this, true);

@@ -7,7 +7,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.RenderItemEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.UpdateRenderingItem;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Animations;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.NoRender;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -54,7 +54,7 @@ public class ItemRenderer {
     private final RenderItem itemRenderer;
     private int equippedItemSlot = -1;
 
-    Shadows shadows;
+    Glow shadows;
 
     public ItemRenderer(Minecraft mcIn) {
         this.mc = mcIn;
@@ -292,7 +292,7 @@ public class ItemRenderer {
     }
 
     public void renderItemInFirstPerson(float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (!Config.isShaders() || !Shaders.isSkipRenderHand()) {
             float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
             AbstractClientPlayer abstractclientplayer = this.mc.thePlayer;

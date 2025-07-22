@@ -11,7 +11,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
@@ -20,7 +20,6 @@ import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -34,7 +33,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "BackTrack", category = Category.CONNECTION)
+@ModuleInfo(name = "BackTrack", category = Category.CONNECTION, description = "Абьюз интернета для увеличения дистанции удара.")
 public class BackTrack extends Module {
 
     final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 5000, 200) {
@@ -99,11 +98,11 @@ public class BackTrack extends Module {
 
     private Color fadeColor;
 
-    private Shadows shadows;
+    private Glow shadows;
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (target != null && event instanceof AttackEvent && debugDistance.isToggled()) {
             AxisAlignedBB realBox = target.getEntityBoundingBox().offset(target.nx - target.posX, target.ny - target.posY, target.nz - target.posZ).expand(
                     target.getCollisionBorderSize(),

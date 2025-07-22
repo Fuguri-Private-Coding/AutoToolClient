@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 
-@ModuleInfo(name = "KeepSprint", category = Category.COMBAT)
+@ModuleInfo(name = "KeepSprint", category = Category.COMBAT, description = "Не замедлятся от удара.")
 public class KeepSprint extends Module {
     
     private final FloatSetting hurtHitMotion = new FloatSetting("HurtHitMotion",this, 0f,1f,0.6f,0.1f);

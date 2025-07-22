@@ -9,10 +9,9 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -62,7 +61,7 @@ public class ClickGuiScreen extends GuiScreen {
 	Category clickedCategory;
 	Module clickedModule;
 
-	Shadows shadows;
+	Glow shadows;
 	Blur blur;
 
 	boolean resizing, moving, binding, closing, showConsoleAfterClose, showConfigAfterClose, showHotKeysAfterClose;
@@ -94,7 +93,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+		if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
 		if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
 		int currentScroll = Mouse.getDWheel();
 
@@ -107,6 +106,8 @@ public class ClickGuiScreen extends GuiScreen {
         if (closing) {
             if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
                 closing = false;
+				clickedModule = null;
+				clickedCategory = null;
                 mc.currentScreen.onGuiClosed();
 				mc.displayGuiScreen(null);
 				if (showConsoleAfterClose) {
@@ -274,13 +275,15 @@ public class ClickGuiScreen extends GuiScreen {
 		ScissorUtils.enableScissor();
 		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, widthsModule + 5, sizeBackground.y - 15);
 
-		for (Module module : Client.INST.getModuleManager().getModulesByCategory(selectedCategory))	{
+		List<Module> moduleList = Client.INST.getModuleManager().getModulesByCategory(selectedCategory);
+
+		for (Module module : moduleList) {
 			fontRenderer.drawString(
 					module.getName() + (!module.isHide() ? " ✓" : " ×"),
 					background.x + 4,
 					background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset,
 					module.isToggled() ? MAIN_COLOR_INT : CATEGORY_COLOR.getRGB()
-					);
+			);
 			offset += fontRenderer.FONT_HEIGHT + 2;
 			modulesTotalHeight += fontRenderer.FONT_HEIGHT + 2;
 			if (module == selectedModule) moduleLine.endY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset;
@@ -636,6 +639,29 @@ public class ClickGuiScreen extends GuiScreen {
 			fontRenderer.drawString("Hide", clickedModulePos.x + 3, clickedModulePos.y + 23, -1, true);
 		}
 
+		float offsetModuleDesc = modulesScrolls.y;
+
+		for (Module module : moduleList) {
+			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
+			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc + 9;
+			if (moduleCondition && !module.getDescription().equalsIgnoreCase("") && clickedModule == null) {
+				if (!module.isHovered()) {
+					module.setHoverStartTime(System.currentTimeMillis());
+					module.setHovered(true);
+				} else {
+					long hoverTime = System.currentTimeMillis() - module.getHoverStartTime();
+					if (hoverTime >= 500) {
+						float descriptionWidth = fontRenderer.getStringWidth(module.getDescription());
+						RenderUtils.drawRoundedOutLineRectangle(mouseX, mouseY, descriptionWidth + 6, 14, 2f / 1.4f, Color.BLACK.getRGB(), MAIN_COLOR.getRGB(), Color.BLACK.getRGB());
+						fontRenderer.drawString(module.getDescription(), mouseX + 3, mouseY + 3, -1, true);
+					}
+				}
+			} else {
+				module.setHovered(false);
+			}
+			offsetModuleDesc += fontRenderer.FONT_HEIGHT + 2;
+		}
+
 		ScissorUtils.disableScissor();
 
 		moduleLine.update(clickGui.animationSpeed.getValue());
@@ -702,7 +728,7 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 
 		if (clickedCategory != null && clickedCategoryPos.x != 0 && clickedCategoryPos.y != 0) {
-			boolean clickRectangle = mouseX > clickedCategoryPos.x - 5 && mouseX < clickedCategoryPos.x + 110 && mouseY > clickedCategoryPos.y - 5 && mouseY < clickedCategoryPos.y + 48;
+			boolean clickRectangle = mouseX > clickedCategoryPos.x - 5 && mouseX < clickedCategoryPos.x + 110 && mouseY > clickedCategoryPos.y - 5 && mouseY < clickedCategoryPos.y + 58;
 			boolean clickHideCategory = mouseX > clickedCategoryPos.x + 3 && mouseX < clickedCategoryPos.x + 3 + fontRenderer.getStringWidth("HideCategory") && mouseY > clickedCategoryPos.y + 3 && mouseY < clickedCategoryPos.y + 3 + fontRenderer.FONT_HEIGHT;
 			boolean clickLoadFromConfig = mouseX > clickedCategoryPos.x + 3 && mouseX < clickedCategoryPos.x + 3 + fontRenderer.getStringWidth("LoadFromConfig") && mouseY > clickedCategoryPos.y + 13 && mouseY < clickedCategoryPos.y + 13 + fontRenderer.FONT_HEIGHT;
 			boolean clickImportCategory = mouseX > clickedCategoryPos.x + 3 && mouseX < clickedCategoryPos.x + 3 + fontRenderer.getStringWidth("Import") && mouseY > clickedCategoryPos.y + 23 && mouseY < clickedCategoryPos.y + 23 + fontRenderer.FONT_HEIGHT;

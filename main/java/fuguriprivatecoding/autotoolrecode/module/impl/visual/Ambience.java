@@ -15,7 +15,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "Ambience", category = Category.VISUAL)
+@ModuleInfo(name = "Ambience", category = Category.VISUAL, description = "Изменяет погоду/время.")
 public class Ambience extends Module {
 
     IntegerSetting time = new IntegerSetting("Time", this, 0, 20, 20);

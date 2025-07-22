@@ -26,10 +26,13 @@ public class ModuleManager {
 		register(
 				new AutoSoup(),
 				new KillAura(),
+				new BridgeAssist(),
 				new Trajectory(),
 				new Hat(),
 				new Blur(),
 				new Dot(),
+				new FastPlace(),
+				//new FreeLook(),
 				new BedESP(),
 				//new Effect(),
 				//new TestScaff(),
@@ -43,7 +46,7 @@ public class ModuleManager {
 				new ESP(),
 				new BackTrack(),
 				new RotationHandler(),
-				new Shadows(),
+				new Glow(),
 				new Fly(),
 				new AutoClicker(),
 				new AutoTool(),
@@ -98,7 +101,6 @@ public class ModuleManager {
 				new ClientSettings(),
 				new ScoreBoard(),
 				new IRC(),
-				//new FreeLook(),
 				new Ambience(),
 				new TargetHUD()
 		);

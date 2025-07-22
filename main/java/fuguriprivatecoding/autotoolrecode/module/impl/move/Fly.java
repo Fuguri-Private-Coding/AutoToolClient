@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
 
-@ModuleInfo(name = "Fly", category = Category.MOVE)
+@ModuleInfo(name = "Fly", category = Category.MOVE, description = "Позволяет вам летать.")
 public class Fly extends Module {
 
     Mode mode = new Mode("Mode", this)

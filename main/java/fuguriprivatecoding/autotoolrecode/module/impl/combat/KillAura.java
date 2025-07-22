@@ -33,7 +33,7 @@ import net.minecraft.util.Vec3;
 import java.io.File;
 import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "KillAura", category = Category.COMBAT)
+@ModuleInfo(name = "KillAura", category = Category.COMBAT, description = "Автоматически целится и бьет противника.")
 public class KillAura extends Module {
 
     final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 8, 6, 0.1f);

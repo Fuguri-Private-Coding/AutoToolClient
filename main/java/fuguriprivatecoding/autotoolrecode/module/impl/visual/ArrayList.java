@@ -18,7 +18,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(name = "ArrayList", category = Category.VISUAL)
+@ModuleInfo(name = "ArrayList", category = Category.VISUAL, description = "Показывает список включенных модулей.")
 public class ArrayList extends Module {
 
     IntegerSetting yPosOffset = new IntegerSetting("Y-Pos Offset", this,0, 100, 0);
@@ -50,7 +50,7 @@ public class ArrayList extends Module {
     FloatSetting lineColorOffset = new FloatSetting("Line Offset", this,() -> line.isToggled() && lineFade.isToggled(),0f, 50, 1, 0.1f);
     FloatSetting lineSpeed = new FloatSetting("Line Speed", this,() -> line.isToggled() && lineFade.isToggled(),0.1f, 20, 1, 0.1f);
 
-    Shadows shadows;
+    Glow shadows;
 
     Color fadeTextColor;
     Color fadeBackgroundColor;
@@ -60,7 +60,7 @@ public class ArrayList extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (event instanceof Render2DEvent) {
             List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModuleManager().getEnabledModules());
             ScaledResolution sc = new ScaledResolution(mc);

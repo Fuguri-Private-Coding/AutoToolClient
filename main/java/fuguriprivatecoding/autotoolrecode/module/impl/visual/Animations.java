@@ -15,7 +15,7 @@ import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 import lombok.Getter;
 
-@ModuleInfo(name = "Animations", category = Category.VISUAL)
+@ModuleInfo(name = "Animations", category = Category.VISUAL, description = "СВАГАВСКИЕ ХАЛЯЛЬ АНИМАЦИИ МЕЧА.")
 public class Animations extends Module {
 
     @Getter

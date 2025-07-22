@@ -17,8 +17,9 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import org.lwjgl.input.Mouse;
 
-@ModuleInfo(name = "AimAssist", category = Category.LEGIT)
+@ModuleInfo(name = "AimAssist", category = Category.LEGIT, description = "Помощь в прицеливании.")
 public class AimAssist extends Module {
 
     final FloatSetting hSpeed = new FloatSetting("HorizontalSpeed", this, 0.1f, 30.0f, 5.0f, 0.1f) {};
@@ -28,6 +29,7 @@ public class AimAssist extends Module {
     final IntegerSetting fov = new IntegerSetting("Fov", this, 10, 180, 35);
     final CheckBox onlyMoveForward = new CheckBox("OnlyMoveForward", this, false);
     final CheckBox onlyWhenSprinting = new CheckBox("OnlyWhenSprinting", this, false);
+    final CheckBox onlyWhenMouseHolding = new CheckBox("OnlyWhenMouseHolding", this, false);
 
     @Override
     public void onDisable() {
@@ -46,6 +48,7 @@ public class AimAssist extends Module {
             if (RotUtils.getFovToEntity(target) > fov.getValue()) return;
             if (onlyMoveForward.isToggled() && mc.thePlayer.moveForward <= 0) return;
             if (onlyWhenSprinting.isToggled() && !mc.thePlayer.isSprinting()) return;
+            if (onlyWhenMouseHolding.isToggled() && !Mouse.isButtonDown(0)) return;
 
             Vec3 targetPoint = target.getPositionEyes(1.0f);
             Rot playerRotation = new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);

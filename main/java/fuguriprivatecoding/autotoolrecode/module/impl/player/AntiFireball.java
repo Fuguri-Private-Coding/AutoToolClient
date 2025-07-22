@@ -15,7 +15,7 @@ import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityFireball;
 
-@ModuleInfo(name = "AntiFireball", category = Category.PLAYER)
+@ModuleInfo(name = "AntiFireball", category = Category.PLAYER, description = "Автоматически отбивает фаербол противника.")
 public class AntiFireball extends Module {
 
     final IntegerSetting delay = new IntegerSetting("Delay", this, 0, 500, 0);

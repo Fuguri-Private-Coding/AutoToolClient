@@ -5,8 +5,8 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 
-@ModuleInfo(name = "Shadows", category = Category.VISUAL)
-public class Shadows extends Module {
+@ModuleInfo(name = "Glow", category = Category.VISUAL, description = "Бесплатное свечение скачать.")
+public class Glow extends Module {
 
     public MultiMode module = new MultiMode("Modules", this)
             .addModes("ClickGui","ConsoleGui","ItemsFirstPerson","ArrayList",

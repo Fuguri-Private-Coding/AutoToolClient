@@ -12,7 +12,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
-@ModuleInfo(name = "NoSlow", category = Category.MOVE)
+@ModuleInfo(name = "NoSlow", category = Category.MOVE, description = "Позволяет вам ходить без замедления при использовании предмета.")
 public class NoSlow extends Module {
 
     Mode mode = new Mode("Mode", this)

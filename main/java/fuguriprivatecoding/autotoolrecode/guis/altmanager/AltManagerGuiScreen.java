@@ -5,7 +5,7 @@ import fuguriprivatecoding.autotoolrecode.alt.Account;
 import fuguriprivatecoding.autotoolrecode.alt.Auth;
 import fuguriprivatecoding.autotoolrecode.alt.MicrosoftAuthCallback;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
@@ -45,7 +45,7 @@ public class AltManagerGuiScreen extends GuiScreen {
 
     static String updatedText;
 
-    Shadows shadows;
+    Glow shadows;
 
     public AltManagerGuiScreen() {
         mc = Minecraft.getMinecraft();
@@ -65,7 +65,7 @@ public class AltManagerGuiScreen extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         ScaledResolution sc = new ScaledResolution(mc);
         int currentScroll = Mouse.getDWheel();
 

@@ -11,7 +11,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
-@ModuleInfo(name = "FlagDetector", category = Category.MISC)
+@ModuleInfo(name = "FlagDetector", category = Category.MISC, description = "Показывает когда вас телепортирует античит.")
 public class FlagDetector extends Module {
 
     CheckBox resetFlagsOnWorld = new CheckBox("ResetFlagsOnWorld", this, false);

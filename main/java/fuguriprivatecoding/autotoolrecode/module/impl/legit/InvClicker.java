@@ -14,7 +14,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import java.lang.reflect.Method;
 
-@ModuleInfo(name = "InvClicker", category = Category.LEGIT)
+@ModuleInfo(name = "InvClicker", category = Category.LEGIT, description = "Автоматически кликает в инвентаре за вас.")
 public class InvClicker extends Module {
 
     IntegerSetting delay = new IntegerSetting("Delay", this, 0, 10,0);

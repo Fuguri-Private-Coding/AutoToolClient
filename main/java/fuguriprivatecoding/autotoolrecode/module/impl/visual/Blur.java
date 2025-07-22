@@ -8,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
 
-@ModuleInfo(name = "Blur", category = Category.VISUAL)
+@ModuleInfo(name = "Blur", category = Category.VISUAL, description = "Размытие экрана.")
 public class Blur extends Module {
 
     public MultiMode module = new MultiMode("Modules", this)

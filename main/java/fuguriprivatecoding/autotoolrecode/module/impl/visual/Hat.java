@@ -21,7 +21,7 @@ import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glShadeModel;
 
-@ModuleInfo(name = "Hat", category = Category.VISUAL)
+@ModuleInfo(name = "Hat", category = Category.VISUAL, description = "#шапка-скачать.")
 public class Hat extends Module {
 
     final Mode mode = new Mode("Mode", this)
@@ -44,11 +44,11 @@ public class Hat extends Module {
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 0f,10f,1f,0.1f);
 
     Color fadeColor;
-    Shadows shadows;
+    Glow shadows;
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (event instanceof Render3DEvent) {
             if (mc.gameSettings.thirdPersonView == 0 && whileThirdPerson.isToggled()) return;
             switch (mode.getMode()) {

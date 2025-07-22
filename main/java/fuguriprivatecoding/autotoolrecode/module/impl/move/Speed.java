@@ -13,7 +13,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 
-@ModuleInfo(name = "Speed", category = Category.MOVE)
+@ModuleInfo(name = "Speed", category = Category.MOVE, description = "Позволяет вам двигатся быстрее.")
 public class Speed extends Module {
 
 	int ticks;

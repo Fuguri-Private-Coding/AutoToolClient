@@ -16,7 +16,7 @@ import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import java.util.Random;
 
-@ModuleInfo(name = "Velocity", category = Category.COMBAT)
+@ModuleInfo(name = "Velocity", category = Category.COMBAT, description = "Позволяет откидыватся меньше.")
 public class Velocity extends Module {
 
     final Mode mode = new Mode("Mode", this)

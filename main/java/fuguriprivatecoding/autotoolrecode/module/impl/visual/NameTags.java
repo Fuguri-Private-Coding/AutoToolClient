@@ -26,7 +26,7 @@ import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
-@ModuleInfo(name = "NameTags", category = Category.VISUAL)
+@ModuleInfo(name = "NameTags", category = Category.VISUAL, description = "Отображение никнейма игроков.")
 public class NameTags extends Module {
 
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, 0f,5f,1f,0.1f);
@@ -38,7 +38,7 @@ public class NameTags extends Module {
 
     MurderMystery murderDetector;
     MidClick midClick;
-    Shadows shadows;
+    Glow shadows;
 
     Color backgroundFadeColor;
 
@@ -46,7 +46,7 @@ public class NameTags extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (murderDetector == null) murderDetector = Client.INST.getModuleManager().getModule(MurderMystery.class);
         if (midClick == null) midClick = Client.INST.getModuleManager().getModule(MidClick.class);
         if (event instanceof Render3DEvent) {

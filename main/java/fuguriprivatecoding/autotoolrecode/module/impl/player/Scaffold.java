@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -24,14 +24,13 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 
 import java.awt.*;
 
-@ModuleInfo(name = "Scaffold", category = Category.PLAYER)
+@ModuleInfo(name = "Scaffold", category = Category.PLAYER,description = "Автоматически ставит блоки под вами.")
 public class Scaffold extends Module {
 
     IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 1, 180, 30) {
@@ -112,7 +111,7 @@ public class Scaffold extends Module {
 
     BlockPos renderPos = null;
     long lastTime = 0L;
-    Shadows shadows;
+    Glow shadows;
     Blur blur;
 
     int personFirst;
@@ -143,7 +142,7 @@ public class Scaffold extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         switch (clickMode.getMode()) {
             case "AutoPlace" -> {

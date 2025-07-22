@@ -8,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 
-@ModuleInfo(name = "ScoreBoard", category = Category.VISUAL)
+@ModuleInfo(name = "Scoreboard", category = Category.VISUAL, description = "Позволяет изменять Scoreboard.")
 public class ScoreBoard extends Module {
 
     public CheckBox remove = new CheckBox("Remove", this, true);

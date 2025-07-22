@@ -21,7 +21,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 
-@ModuleInfo(name = "TimerRange", category = Category.COMBAT)
+@ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
 public class TimerRange extends Module {
 
     IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 0, 20, 2);

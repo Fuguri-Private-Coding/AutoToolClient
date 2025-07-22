@@ -20,7 +20,7 @@ import net.minecraft.tileentity.TileEntityEnderChest;
 
 import java.awt.*;
 
-@ModuleInfo(name = "ChestESP", category = Category.VISUAL)
+@ModuleInfo(name = "ChestESP", category = Category.VISUAL, description = "Показывает где находятся сундуки.")
 public class ChestESP extends Module {
 
     final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
@@ -31,12 +31,12 @@ public class ChestESP extends Module {
     final CheckBox enderChest = new CheckBox("ShowEnderChest", this);
 
     Color fadeColor;
-    Shadows shadows;
+    Glow shadows;
     Blur blur;
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (event instanceof Render3DEvent) {

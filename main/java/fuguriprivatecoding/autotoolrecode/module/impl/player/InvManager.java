@@ -20,7 +20,7 @@ import net.minecraft.item.*;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 
-@ModuleInfo(name = "InvManager", category = Category.PLAYER)
+@ModuleInfo(name = "InvManager", category = Category.PLAYER, description = "Автоматически сортирует ваш инвентарь и выкидывает мусор.")
 public class InvManager extends Module {
 
     private final IntegerSetting minStartDelay = new IntegerSetting("MinStartDelay", this, 0, 500, 50) {

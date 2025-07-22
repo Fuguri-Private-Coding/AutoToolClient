@@ -15,7 +15,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.util.BlockPos;
 
-@ModuleInfo(name = "VClip", category = Category.MOVE)
+@ModuleInfo(name = "VClip", category = Category.MOVE, description = "Позволяет телепортироватся вверх.")
 public class VClip extends Module {
 
     private int tickCounter = 0;

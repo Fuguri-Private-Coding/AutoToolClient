@@ -338,47 +338,44 @@ public class ConfigManager implements Imports {
                 }
 
                 if (json == null) return;
+                for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                    Module module = Client.INST.getModuleManager().getModule(entry.getKey());
+                    if (module == null || module.getCategory() != category) {
+                        continue;
+                    }
 
-                List<Module> moduleList = Client.INST.getModuleManager().getModulesByCategory(category);
-                for (Module module : moduleList) {
-                    for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-                        if (module == null) {
+                    JsonObject moduleObject = (JsonObject) entry.getValue();
+                    module.setToggled(moduleObject.get("toggled").getAsBoolean());
+                    for (Setting setting : module.getSettings()) {
+                        JsonElement settingElement = moduleObject.get(setting.getName());
+                        if (settingElement == null) {
                             continue;
                         }
 
-                        JsonObject moduleObject = (JsonObject) entry.getValue();
-                        module.setToggled(moduleObject.get("toggled").getAsBoolean());
-                        for (Setting setting : module.getSettings()) {
-                            JsonElement settingElement = moduleObject.get(setting.getName());
-                            if (settingElement == null) {
-                                continue;
+                        switch (setting) {
+                            case IntegerSetting set -> set.setValue(settingElement.getAsInt());
+                            case FloatSetting set -> set.setValue(settingElement.getAsFloat());
+                            case CheckBox set -> set.setToggled(settingElement.getAsBoolean());
+                            case KeyBind set -> set.setKey(settingElement.getAsInt());
+                            case Mode set -> set.setMode(settingElement.getAsString());
+                            case MultiMode set -> {
+                                JsonObject jsonObject = settingElement.getAsJsonObject();
+                                for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                                    set.set(entry1.getKey(), entry1.getValue().getAsBoolean());
+                                }
                             }
-
-                            switch (setting) {
-                                case IntegerSetting set -> set.setValue(settingElement.getAsInt());
-                                case FloatSetting set -> set.setValue(settingElement.getAsFloat());
-                                case CheckBox set -> set.setToggled(settingElement.getAsBoolean());
-                                case KeyBind set -> set.setKey(settingElement.getAsInt());
-                                case Mode set -> set.setMode(settingElement.getAsString());
-                                case MultiMode set -> {
-                                    JsonObject jsonObject = settingElement.getAsJsonObject();
-                                    for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
-                                        set.set(entry1.getKey(), entry1.getValue().getAsBoolean());
+                            case ColorSetting set -> {
+                                JsonObject jsonObject = settingElement.getAsJsonObject();
+                                for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                                    switch (entry1.getKey()) {
+                                        case "Red" -> set.setRed(entry1.getValue().getAsFloat());
+                                        case "Green" -> set.setGreen(entry1.getValue().getAsFloat());
+                                        case "Blue" -> set.setBlue(entry1.getValue().getAsFloat());
+                                        case "Alpha" -> set.setAlpha(entry1.getValue().getAsFloat());
                                     }
                                 }
-                                case ColorSetting set -> {
-                                    JsonObject jsonObject = settingElement.getAsJsonObject();
-                                    for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
-                                        switch (entry1.getKey()) {
-                                            case "Red" -> set.setRed(entry1.getValue().getAsFloat());
-                                            case "Green" -> set.setGreen(entry1.getValue().getAsFloat());
-                                            case "Blue" -> set.setBlue(entry1.getValue().getAsFloat());
-                                            case "Alpha" -> set.setAlpha(entry1.getValue().getAsFloat());
-                                        }
-                                    }
-                                }
-                                default -> throw new IllegalStateException("Unexpected value: " + setting);
                             }
+                            default -> throw new IllegalStateException("Unexpected value: " + setting);
                         }
                     }
                 }
@@ -453,8 +450,6 @@ public class ConfigManager implements Imports {
     public JsonObject getExportSettingsInModuleObject(Module module) {
         JsonObject mainObject = new JsonObject();
         JsonObject moduleObject = new JsonObject();
-        moduleObject.addProperty("toggled", module.isToggled());
-        moduleObject.addProperty("hide", module.isHide());
         for (Setting setting : module.getSettings()) {
             switch (setting) {
                 case IntegerSetting set -> moduleObject.addProperty(setting.getName(), set.getValue());

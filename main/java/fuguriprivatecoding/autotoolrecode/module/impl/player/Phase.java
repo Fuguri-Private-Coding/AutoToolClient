@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "Phase", category = Category.PLAYER)
+@ModuleInfo(name = "Phase", category = Category.PLAYER, description = "Позволяет ходить через стены.")
 public class Phase extends Module {
 
     CheckBox sneak = new CheckBox("Sneak", this, true);

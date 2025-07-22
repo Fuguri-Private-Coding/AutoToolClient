@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "Ping", category = Category.CONNECTION)
+@ModuleInfo(name = "Ping", category = Category.CONNECTION, description = "Абьюз интернета для получение преимущевства.")
 public class Ping extends Module {
 
     private final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 50, 1000, 400) {
@@ -94,7 +94,7 @@ public class Ping extends Module {
 
     Color fadeColor;
 
-    Shadows shadows;
+    Glow shadows;
 
     @Override
     public void onDisable() {
@@ -103,7 +103,7 @@ public class Ping extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (mc.isIntegratedServerRunning()) return;
         long currentTime = System.currentTimeMillis();

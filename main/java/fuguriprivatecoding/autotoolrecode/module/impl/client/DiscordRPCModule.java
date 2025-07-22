@@ -8,7 +8,8 @@ import fuguriprivatecoding.autotoolrecode.utils.discord.Discord;
 
 @ModuleInfo(
         name = "DiscordRPC",
-        category = Category.CLIENT
+        category = Category.CLIENT,
+        description = "Мульти донксинг халяль клиент ДИСКОРД РПС"
 )
 public class DiscordRPCModule extends Module {
     Discord discord;

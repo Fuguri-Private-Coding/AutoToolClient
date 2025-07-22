@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@ModuleInfo(name = "ModelTrainer", category = Category.MISC)
+@ModuleInfo(name = "ModelTrainer", category = Category.MISC, description = "Позволяет вам тренировать свою AI Модель.")
 public class ModelTrainer extends Module {
 
     Mode modeTrainer = new Mode("TrainerMode", this)

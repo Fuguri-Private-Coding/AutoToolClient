@@ -9,12 +9,10 @@ import java.util.List;
 import java.util.Random;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.NoRender;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ScoreBoard;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -83,7 +81,7 @@ public class GuiIngame extends Gui {
     private long lastSystemTime = 0L;
     private long healthUpdateCounter = 0L;
 
-    Shadows shadows;
+    Glow shadows;
 
     public GuiIngame(Minecraft mcIn) {
         this.mc = mcIn;
@@ -103,7 +101,7 @@ public class GuiIngame extends Gui {
     }
 
     public void renderGameOverlay(float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         ScaledResolution scaledresolution = new ScaledResolution(this.mc);
         int i = scaledresolution.getScaledWidth();
         int j = scaledresolution.getScaledHeight();

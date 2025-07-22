@@ -21,7 +21,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(name = "FindHoles", category = Category.PLAYER)
+@ModuleInfo(name = "FindHoles", category = Category.PLAYER, description = "Проверяет есть ли пустые пространста в определенном радиусе и показывает куда можно залесть.")
 public class FindHoles extends Module {
 
     IntegerSetting range = new IntegerSetting("Range", this, 5, 100, 1);

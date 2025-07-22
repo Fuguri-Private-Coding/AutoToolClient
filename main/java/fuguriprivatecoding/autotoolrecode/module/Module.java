@@ -22,6 +22,9 @@ public class Module implements Imports {
 	@Getter final List<Setting> settings;
 	@Getter @Setter boolean hide = annotation.hide();
 	@Getter @Setter boolean loadFromConfig = annotation.loadFromConfig();
+	@Getter String description = annotation.description();
+	@Getter @Setter long hoverStartTime;
+	@Getter @Setter boolean isHovered;
 
 	public Module() {
 		settings = new ArrayList<>();

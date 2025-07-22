@@ -16,7 +16,7 @@ import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.input.Mouse;
 
-@ModuleInfo(name = "AutoClicker", category = Category.LEGIT)
+@ModuleInfo(name = "AutoClicker", category = Category.LEGIT, description = "Автоматически кликает за вас.")
 public class AutoClicker extends Module {
 
     final StopWatch stopWatch;

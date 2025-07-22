@@ -12,7 +12,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
-@ModuleInfo(name = "GuiMove", category = Category.MOVE)
+@ModuleInfo(name = "GuiMove", category = Category.MOVE, description = "Позовляет вам двигатся в клиентовских окнах.")
 public class GuiMove extends Module {
 
     @EventTarget

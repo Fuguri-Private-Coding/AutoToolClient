@@ -22,7 +22,7 @@ import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
-@ModuleInfo(name = "TargetHUD", category = Category.VISUAL)
+@ModuleInfo(name = "TargetHUD", category = Category.VISUAL, description = "Показывает информацию о противнике.")
 public class TargetHUD extends Module {
 
     private final MultiMode render = new MultiMode("Render", this)
@@ -57,7 +57,7 @@ public class TargetHUD extends Module {
     private final IntegerSetting scale = new IntegerSetting("Scale", this, 1, 10, 5);
 
     private final Animation2D healthAnimation = new Animation2D();
-    private Shadows shadows;
+    private Glow shadows;
 
     Color textNameFadeColor;
     Color backgroundFadeColor;
@@ -74,7 +74,7 @@ public class TargetHUD extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (event instanceof Render3DEvent && mc.currentScreen == null) {
             EntityLivingBase target = Client.INST.getCombatManager().getTarget();
             if (target == null || target.getName() == null || target.getSkin() == null) return;

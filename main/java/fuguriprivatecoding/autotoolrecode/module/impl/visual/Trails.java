@@ -19,7 +19,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(name = "Trails", category = Category.VISUAL)
+@ModuleInfo(name = "Trails", category = Category.VISUAL, description = "Оставляет след за вами.")
 public class Trails extends Module {
 
     final Mode mode = new Mode("Mode", this)
@@ -38,7 +38,7 @@ public class Trails extends Module {
     final FloatSetting fadeOffset = new FloatSetting("FadeOffset", this, fadeBoxColor::isToggled,0f, 50, 1, 0.1f);
     final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled,0.1f, 20, 1, 0.1f);
 
-    Shadows shadows;
+    Glow shadows;
     Color fadeColor;
 
     public Trails() {
@@ -48,7 +48,7 @@ public class Trails extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (onlyThirdPerson.isToggled() && mc.gameSettings.thirdPersonView == 0) return;
         if (event instanceof Render3DEvent) {
             Vec3 smoothVec = new Vec3(

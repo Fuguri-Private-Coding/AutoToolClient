@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.GaussianKernel;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Uniform;
@@ -23,7 +23,7 @@ public class BloomUtils implements Imports {
     private static Framebuffer outputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static GaussianKernel gaussianKernel = new GaussianKernel(0);
 
-    public static Shadows shadows;
+    public static Glow shadows;
 
     public static void addToDraw(Runnable run) {
         inputFramebuffer.bindFramebuffer(true);
@@ -32,7 +32,7 @@ public class BloomUtils implements Imports {
     }
 
     public static void draw() {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (!Display.isActive() || !Display.isVisible() || !shadows.isToggled()) return;
         Shader program = Client.INST.getShaderManager().getBloom();
 

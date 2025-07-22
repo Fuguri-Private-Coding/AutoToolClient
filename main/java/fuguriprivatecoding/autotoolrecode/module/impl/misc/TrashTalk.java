@@ -14,7 +14,7 @@ import org.apache.commons.lang3.RandomUtils;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ModuleInfo(name = "TrashTalk", category = Category.MISC)
+@ModuleInfo(name = "TrashTalk", category = Category.MISC, description = "ПОЛИВАЕТ ГОВНОМ ВАШЕГО ПРОТИВНИКА.")
 public class TrashTalk extends Module {
 
     IntegerSetting delay = new IntegerSetting("Delay", this, 0, 6, 3);

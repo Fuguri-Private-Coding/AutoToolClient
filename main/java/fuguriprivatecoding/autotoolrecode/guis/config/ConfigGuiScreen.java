@@ -10,7 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -50,7 +50,7 @@ public class ConfigGuiScreen extends GuiScreen {
 
     Color mainColor;
 
-    Shadows shadows;
+    Glow shadows;
     Blur blur;
 
     public ConfigGuiScreen() {
@@ -74,7 +74,7 @@ public class ConfigGuiScreen extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
 
         mainColor = clickGui.fadeColor.isToggled() ?

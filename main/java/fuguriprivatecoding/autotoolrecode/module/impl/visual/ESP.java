@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "ESP", category = Category.VISUAL)
+@ModuleInfo(name = "ESP", category = Category.VISUAL, description = "Отображение игроков сквозь стены.")
 public class ESP extends Module {
 
     final MultiMode modes = new MultiMode("Modes", this)

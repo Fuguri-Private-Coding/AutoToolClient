@@ -14,7 +14,7 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 
-@ModuleInfo(name = "ChestStealer", category = Category.PLAYER)
+@ModuleInfo(name = "ChestStealer", category = Category.PLAYER, description = "Автоматически берет вещи из сундука.")
 public class ChestStealer extends Module {
 
     final IntegerSetting startDelay = new IntegerSetting("StartDelay", this, 0, 1000, 250);

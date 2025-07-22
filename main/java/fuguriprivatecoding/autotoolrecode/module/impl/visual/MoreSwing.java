@@ -8,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 
-@ModuleInfo(name = "MoreSwing", category = Category.VISUAL)
+@ModuleInfo(name = "MoreSwing", category = Category.VISUAL, description = "Не останавливаясь дергает рукой #типа-бьет.")
 public class MoreSwing extends Module {
 
     @EventTarget

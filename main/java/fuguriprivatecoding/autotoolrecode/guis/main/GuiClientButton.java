@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.guis.main;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -11,7 +11,7 @@ import java.awt.*;
 
 public class GuiClientButton extends GuiButton {
 
-    Shadows shadows;
+    Glow shadows;
 
     public GuiClientButton(int buttonId, int x, int y, String buttonText) {
         super(buttonId, x, y, buttonText);
@@ -23,7 +23,7 @@ public class GuiClientButton extends GuiButton {
 
     @Override
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 
         final FontRenderer fonts = mc.fontRendererObj;

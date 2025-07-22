@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import net.minecraft.util.ResourceLocation;
 
-@ModuleInfo(name = "MotionBlur", category = Category.VISUAL)
+@ModuleInfo(name = "MotionBlur", category = Category.VISUAL, description = "Размытие экрана при движение камерой.")
 public class MotionBlur extends Module {
 
     public IntegerSetting blurAmount = new IntegerSetting("BlurAmount", this, 1, 9, 7);

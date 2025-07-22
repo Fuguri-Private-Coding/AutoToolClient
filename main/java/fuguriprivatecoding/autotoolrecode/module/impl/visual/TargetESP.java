@@ -22,7 +22,7 @@ import java.util.List;
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 
-@ModuleInfo(name = "TargetESP", category = Category.VISUAL)
+@ModuleInfo(name = "TargetESP", category = Category.VISUAL, description = "Показывает какого противника вы бьете.")
 public class TargetESP extends Module {
 
     final Mode mode = new Mode("Mode", this)
@@ -43,12 +43,12 @@ public class TargetESP extends Module {
 
     private final List<Sigma2> poses = new ArrayList<>();
 
-    Shadows shadows;
+    Glow shadows;
     Color fadeColor;
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (event instanceof Render3DEvent) {
             switch (mode.getMode()) {
                 case "Sigma" -> {

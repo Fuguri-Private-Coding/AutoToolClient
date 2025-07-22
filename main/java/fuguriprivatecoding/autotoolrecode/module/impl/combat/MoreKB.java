@@ -15,7 +15,7 @@ import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
-@ModuleInfo(name = "MoreKB", category = Category.COMBAT)
+@ModuleInfo(name = "MoreKB", category = Category.COMBAT, description = "Автоматический ресет спринта после удара.")
 public class MoreKB extends Module {
 
     final Mode mode = new Mode("Mode", this)

@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.Message;
 import java.util.HashMap;
 import java.util.List;
 
-@ModuleInfo(name = "IRC", category = Category.CLIENT)
+@ModuleInfo(name = "IRC", category = Category.CLIENT, description = "ХАЛЯЛЬ ДОКСИНГ В МАЙНКРАФТЕ НАХУЙ")
 public class IRC extends Module {
 
     public static HashMap<String, Profile> usersOnline = new HashMap<>();

@@ -20,7 +20,7 @@ import net.minecraft.util.MovingObjectPosition;
 
 import java.awt.*;
 
-@ModuleInfo(name = "BlockOverlay", category = Category.VISUAL)
+@ModuleInfo(name = "BlockOverlay", category = Category.VISUAL, description = "Выделяет блок на который вы смотрите.")
 public class BlockOverlay extends Module {
 
     final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
@@ -28,7 +28,7 @@ public class BlockOverlay extends Module {
     final ColorSetting color2 = new ColorSetting("Color2", this, fadeBoxColor::isToggled, 1f,1f,1f,1f);
     final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled,0.1f, 20, 1, 0.1f);
 
-    Shadows shadows;
+    Glow shadows;
     Blur blur;
     Color fadeColor;
 
@@ -37,7 +37,7 @@ public class BlockOverlay extends Module {
         if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) {
             return;
         }
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (event instanceof DrawBlockHighlightEvent) {
 

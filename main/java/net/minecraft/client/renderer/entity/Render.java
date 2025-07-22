@@ -47,6 +47,9 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     }
 
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        if (entity instanceof EntityPlayer && Client.INST.getModuleManager().getModule(NameTags.class).isToggled()) {
+            return;
+        }
         this.renderName(entity, x, y, z);
     }
 
@@ -61,7 +64,9 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     }
 
     protected void renderOffsetLivingLabel(T entityIn, double x, double y, double z, String str, float p_177069_9_, double p_177069_10_) {
-        if (Client.INST.getModuleManager().getModule(NameTags.class).isToggled()) return;
+        if (entityIn instanceof EntityPlayer && Client.INST.getModuleManager().getModule(NameTags.class).isToggled()) {
+            return;
+        }
         this.renderLivingLabel(entityIn, str, x, y, z, 256);
     }
 

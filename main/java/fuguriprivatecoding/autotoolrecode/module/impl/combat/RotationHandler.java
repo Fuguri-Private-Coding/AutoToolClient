@@ -19,7 +19,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 
-@ModuleInfo(name = "RotationHandler", category = Category.COMBAT)
+@ModuleInfo(name = "RotationHandler", category = Category.COMBAT, description = "Плавно поворачиватся обратно после изменения ротации.")
 public class RotationHandler extends Module {
 
     final IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 0, 180, 30);

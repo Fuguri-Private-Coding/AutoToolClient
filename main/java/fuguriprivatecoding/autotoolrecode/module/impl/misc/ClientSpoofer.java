@@ -5,7 +5,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
 
-@ModuleInfo(name = "ClientSpoofer", category = Category.MISC)
+@ModuleInfo(name = "ClientSpoofer", category = Category.MISC, description = "Спуфает название клиента которое видит античит.")
 public class ClientSpoofer extends Module {
 
     public Mode brand = new Mode("Brand", this)

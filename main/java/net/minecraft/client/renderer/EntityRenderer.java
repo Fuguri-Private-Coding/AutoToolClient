@@ -179,7 +179,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private boolean loadVisibleChunks = false;
     private Framebuffer framebuffer = new Framebuffer(1, 1, false);
 
-    Shadows shadows;
+    Glow shadows;
     Blur blur;
 
     public EntityRenderer(Minecraft mcIn, IResourceManager resourceManagerIn) {
@@ -1006,7 +1006,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     }
 
     public void updateCameraAndRender(float partialTicks, long nanoTime) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         Config.renderPartialTicks = partialTicks;
         this.frameInit();

@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 
-@ModuleInfo(name = "Fixes", category = Category.MISC)
+@ModuleInfo(name = "Fixes", category = Category.MISC, description = "Убирает задержки механики майнкрафта.")
 public class Fixes extends Module {
 
     MultiMode fixes = new MultiMode("Fixes", this)

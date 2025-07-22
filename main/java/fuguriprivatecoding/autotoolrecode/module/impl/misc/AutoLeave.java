@@ -13,7 +13,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import org.lwjgl.input.Keyboard;
 
-@ModuleInfo(name = "AutoLeave", category = Category.MISC)
+@ModuleInfo(name = "AutoLeave", category = Category.MISC, description = "Авто выход в хаб сервера.")
 public class AutoLeave extends Module {
 
     Mode mode = new Mode("Mode", this)

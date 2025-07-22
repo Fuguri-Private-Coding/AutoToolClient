@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import net.minecraft.network.play.client.C14PacketTabComplete;
@@ -33,7 +33,7 @@ public class GuiChat extends GuiScreen {
     private String defaultInputFieldText = "";
 
 
-    Shadows shadows;
+    Glow shadows;
     Animation2D animation2D;
 
     {
@@ -217,7 +217,7 @@ public class GuiChat extends GuiScreen {
     }
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         animation2D.endX = fontRendererObj.getStringWidth(inputField.getText() + "_") + 4;
         animation2D.update(50f);
         if (shadows.isToggled() && shadows.module.get("Chat")) {

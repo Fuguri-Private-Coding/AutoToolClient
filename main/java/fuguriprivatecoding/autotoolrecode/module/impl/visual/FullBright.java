@@ -10,7 +10,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
-@ModuleInfo(name = "FullBright", category = Category.VISUAL)
+@ModuleInfo(name = "FullBright", category = Category.VISUAL, description = "Позволяет видеть в темноте.")
 public class FullBright extends Module {
 
     Mode mode = new Mode("Mode", this)

@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
-@ModuleInfo(name = "CustomCape", category = Category.VISUAL)
+@ModuleInfo(name = "CustomCape", category = Category.VISUAL, description = "Изменяет вам плащ.")
 public class CustomCape extends Module {
 
     File capeDirectory = new File(Client.INST.getName() + "/capes");

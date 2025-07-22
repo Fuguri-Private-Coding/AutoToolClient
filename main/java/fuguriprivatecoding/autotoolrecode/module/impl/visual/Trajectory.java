@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@ModuleInfo(name = "Trajectory", category = Category.VISUAL)
+@ModuleInfo(name = "Trajectory", category = Category.VISUAL, description = "Показывает траекторию полета бросаемых вещей.")
 public class Trajectory extends Module {
 
     CheckBox fade = new CheckBox("Fade", this, false);

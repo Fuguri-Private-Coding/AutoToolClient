@@ -10,7 +10,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 
-@ModuleInfo(name = "Particle", category = Category.VISUAL)
+@ModuleInfo(name = "Particle", category = Category.VISUAL, description = "#больше-партиклов-при-ударе.")
 public class Particle extends Module {
 
     IntegerSetting multiplier = new IntegerSetting("Multiplier", this, 1, 5, 2);

@@ -11,7 +11,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
-@ModuleInfo(name = "AirStuck", category = Category.PLAYER)
+@ModuleInfo(name = "AirStuck", category = Category.PLAYER, description = "Позволяет вам зависнуть в воздухе.")
 public class AirStuck extends Module {
 
     Mode mode = new Mode("Mode", this)

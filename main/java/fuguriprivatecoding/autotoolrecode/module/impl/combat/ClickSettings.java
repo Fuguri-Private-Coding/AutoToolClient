@@ -5,7 +5,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 
-@ModuleInfo(name = "ClickSettings", category = Category.COMBAT)
+@ModuleInfo(name = "ClickSettings", category = Category.COMBAT, description = "Позволяет бить в тайминг.")
 public class ClickSettings extends Module {
 
     public final IntegerSetting minStartHurtTime = new IntegerSetting("MinStartHurtTime", this, 0, 10, 3) {

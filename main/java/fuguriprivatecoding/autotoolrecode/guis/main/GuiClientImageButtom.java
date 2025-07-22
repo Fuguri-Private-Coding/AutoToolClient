@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.guis.main;
 
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class GuiClientImageButtom extends GuiButton {
 
-    Shadows shadows;
+    Glow shadows;
 
     @Getter
     final ResourceLocation image;
@@ -29,7 +29,7 @@ public class GuiClientImageButtom extends GuiButton {
 
     @Override
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 
         RenderUtils.drawRoundedOutLineRectangle(xPosition, yPosition, width, height, 3.4f,new Color(0,0,0,150).getRGB(), Color.black.getRGB(), Color.black.getRGB());

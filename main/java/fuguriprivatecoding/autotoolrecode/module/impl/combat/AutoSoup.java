@@ -17,7 +17,7 @@ import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.Range;
 
-@ModuleInfo(name = "AutoSoup", category = Category.COMBAT)
+@ModuleInfo(name = "AutoSoup", category = Category.COMBAT, description = "Автоматический хил супами")
 public class AutoSoup extends Module {
 
     final IntegerSetting minHealth = new IntegerSetting("MinHealth", this, 4, 20, 9) {

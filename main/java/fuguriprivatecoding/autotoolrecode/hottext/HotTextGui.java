@@ -8,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiText;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Shadows;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -66,7 +66,7 @@ public class HotTextGui extends GuiScreen {
         sizeBackground = new Animation2D();
     }
 
-    Shadows shadows;
+    Glow shadows;
     Blur blur;
     ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
     ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
@@ -75,7 +75,7 @@ public class HotTextGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Shadows.class);
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
 
         mainColor = clickGui.fadeColor.isToggled() ?
