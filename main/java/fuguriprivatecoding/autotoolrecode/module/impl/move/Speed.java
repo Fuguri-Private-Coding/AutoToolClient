@@ -12,6 +12,11 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MathHelper;
+
+import static fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils.strafe;
 
 @ModuleInfo(name = "Speed", category = Category.MOVE, description = "Позволяет вам двигатся быстрее.")
 public class Speed extends Module {

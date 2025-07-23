@@ -31,22 +31,22 @@ public class IRC extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof TickEvent && System.currentTimeMillis() - lastTime >= 7000) {
-        new Thread(() -> {
-            if (!Client.INST.getIrc().getServerChannel().getIterableHistory().stream().toList().isEmpty()) {
+            new Thread(() -> {
                 history = Client.INST.getIrc().getServerChannel().getIterableHistory().stream().toList();
-                for (Message message : history) {
-                    String msg = message.getContentRaw();
-                    String[] args = msg.split(" ");
+                if (!history.isEmpty()) {
+                    for (Message message : history) {
+                        String msg = message.getContentRaw();
+                        String[] args = msg.split(" ");
 
-                    String ign = args[0];
-                    String clientName = args[1].replace("[", "").replace("]", "");
-                    String role = args[2].replace("[", "").replace("]", "");
+                        String ign = args[0];
+                        String clientName = args[1].replace("[", "").replace("]", "");
+                        String role = args[2].replace("[", "").replace("]", "");
 
-                    if (usersOnline.containsKey(ign)) continue;
+                        if (usersOnline.containsKey(ign)) continue;
 
-                    usersOnline.put(ign, new Profile(clientName, role));
+                        usersOnline.put(ign, new Profile(clientName, role));
+                    }
                 }
-            }
             }).start();
             lastTime = System.currentTimeMillis();
         }
