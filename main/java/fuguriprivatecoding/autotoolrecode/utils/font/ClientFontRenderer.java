@@ -18,8 +18,10 @@ public class ClientFontRenderer implements Imports {
     final float imgSize = 1028f;
     Font font;
 
-    public int fontHeight;
-    int charOffset ;
+    public int FONT_HEIGHT;
+    int charOffset;
+
+    public String name;
 
     protected DynamicTexture tex;
     protected DynamicTexture texBold;
@@ -32,6 +34,7 @@ public class ClientFontRenderer implements Imports {
 
     public ClientFontRenderer(Font font) {
         this(font, true, true);
+        this.name = font.getName();
     }
 
     public ClientFontRenderer(Font font, boolean antiAlias, boolean fractionalMetrics) {
@@ -46,16 +49,12 @@ public class ClientFontRenderer implements Imports {
 
     }
 
-    protected DynamicTexture setupTexture(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars)
-    {
+    protected DynamicTexture setupTexture(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
         BufferedImage img = this.generateFontImage(font, antiAlias, fractionalMetrics, chars);
 
-        try
-        {
+        try {
             return new DynamicTexture(img);
-        }
-        catch (Exception e2)
-        {
+        } catch (Exception e2) {
             e2.printStackTrace();
             return null;
         }
@@ -64,20 +63,17 @@ public class ClientFontRenderer implements Imports {
     void setupColorcodes() {
         int index = 0;
 
-        while (index < 32)
-        {
+        while (index < 32) {
             int noClue = (index >> 3 & 1) * 85;
             int red = (index >> 2 & 1) * 170 + noClue;
             int green = (index >> 1 & 1) * 170 + noClue;
             int blue = (index >> 0 & 1) * 170 + noClue;
 
-            if (index == 6)
-            {
+            if (index == 6) {
                 red += 85;
             }
 
-            if (index >= 16)
-            {
+            if (index >= 16) {
                 red /= 4;
                 green /= 4;
                 blue /= 4;
@@ -95,25 +91,23 @@ public class ClientFontRenderer implements Imports {
         int length = charArray.length;
         int i2 = 0;
 
-        while (i2 < length)
-        {
+        while (i2 < length) {
             char c2 = charArray[i2];
 
-            if (c2 < this.charData.length && c2 != COLOR_INVOKER)
-            {
-                width += this.charData[c2].width - 8 + this.charOffset*this.fontScaleOffset;
+            if (c2 < this.charData.length && c2 != COLOR_INVOKER) {
+                width += this.charData[c2].width - 8 + this.charOffset * this.fontScaleOffset;
             }
 
             ++i2;
         }
 
-        return width / (2*this.fontScaleOffset);
+        return width / (2 * this.fontScaleOffset);
     }
 
     BufferedImage generateFontImage(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
-        int imgSize = (int)this.imgSize;
+        int imgSize = (int) this.imgSize;
         BufferedImage bufferedImage = new BufferedImage(imgSize, imgSize, 2);
-        Graphics2D g2 = (Graphics2D)bufferedImage.getGraphics();
+        Graphics2D g2 = (Graphics2D) bufferedImage.getGraphics();
         g2.setFont(font);
         g2.setColor(new Color(255, 255, 255, 0));
         g2.fillRect(0, 0, imgSize, imgSize);
@@ -127,32 +121,28 @@ public class ClientFontRenderer implements Imports {
         int positionY = 1;
         int i2 = 0;
 
-        while (i2 < chars.length)
-        {
-            char ch2 = (char)i2;
+        while (i2 < chars.length) {
+            char ch2 = (char) i2;
             CharData charData = new CharData();
             Rectangle2D dimensions = fontMetrics.getStringBounds(String.valueOf(ch2), g2);
             charData.width = dimensions.getBounds().width + 8;
             charData.height = dimensions.getBounds().height;
 
-            if (positionX + charData.width >= imgSize)
-            {
+            if (positionX + charData.width >= imgSize) {
                 positionX = 0;
                 positionY += charHeight;
                 charHeight = 0;
             }
 
-            if (charData.height > charHeight)
-            {
+            if (charData.height > charHeight) {
                 charHeight = charData.height;
             }
 
             charData.storedX = positionX;
             charData.storedY = positionY;
 
-            if (charData.height > this.fontHeight)
-            {
-                this.fontHeight = charData.height;
+            if (charData.height > this.FONT_HEIGHT) {
+                this.FONT_HEIGHT = charData.height;
             }
 
             chars[i2] = charData;
@@ -172,8 +162,7 @@ public class ClientFontRenderer implements Imports {
         return drawString(text, x, y, color.getRGB(), shadow, 9f);
     }
 
-    public float drawString(String text, double x2, double y2, int color, boolean shadow, float kerning)
-    {
+    public float drawString(String text, double x2, double y2, int color, boolean shadow, float kerning) {
         if (text == null) {
             return 0.0f;
         }
@@ -181,7 +170,7 @@ public class ClientFontRenderer implements Imports {
         x2 -= 1.0;
 
         CharData[] currentData = this.charData;
-        float alpha = (float)(color >> 24 & 255) / 255.0f;
+        float alpha = (float) (color >> 24 & 255) / 255.0f;
         boolean randomCase = false;
         boolean bold = false;
         boolean italic = false;
@@ -194,7 +183,7 @@ public class ClientFontRenderer implements Imports {
         GlStateManager.scale(0.5 / fontScaleOffset, 0.5 / fontScaleOffset, 0.5 / fontScaleOffset);
         GL11.glEnable(GL11.GL_BLEND);
         GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-        GlStateManager.color((float)(color >> 16 & 255) / 255.0f, (float)(color >> 8 & 255) / 255.0f, (float)(color & 255) / 255.0f, alpha);
+        GlStateManager.color((float) (color >> 16 & 255) / 255.0f, (float) (color >> 8 & 255) / 255.0f, (float) (color & 255) / 255.0f, alpha);
         int size = text.length();
         GlStateManager.enableTexture2D();
         GlStateManager.bindTexture(this.tex.getGlTextureId());
@@ -203,26 +192,20 @@ public class ClientFontRenderer implements Imports {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
         int i2 = 0;
 
-        while (i2 < size)
-        {
+        while (i2 < size) {
 
             char character = text.charAt(i2);
 
-            if (character == '\u00a7' && i2 < size)
-            {
+            if (character == '\u00a7' && i2 < size) {
                 int colorIndex = 21;
 
-                try
-                {
+                try {
                     colorIndex = "0123456789abcdefklmnor".indexOf(text.charAt(i2 + 1));
-                }
-                catch (Exception e2)
-                {
+                } catch (Exception e2) {
                     e2.printStackTrace();
                 }
 
-                if (colorIndex < 16)
-                {
+                if (colorIndex < 16) {
                     bold = false;
                     italic = false;
                     randomCase = false;
@@ -231,83 +214,61 @@ public class ClientFontRenderer implements Imports {
                     GlStateManager.bindTexture(this.tex.getGlTextureId());
                     currentData = this.charData;
 
-                    if (colorIndex < 0 || colorIndex > 15)
-                    {
+                    if (colorIndex < 0 || colorIndex > 15) {
                         colorIndex = 15;
                     }
 
-                    if (shadow)
-                    {
+                    if (shadow) {
                         colorIndex += 16;
                     }
 
                     int colorcode = this.colorCode[colorIndex];
 
-                    GlStateManager.color((float)(colorcode >> 16 & 255) / 255.0f, (float)(colorcode >> 8 & 255) / 255.0f, (float)(colorcode & 255) / 255.0f, alpha);
-                }
-                else if (colorIndex == 16)
-                {
+                    GlStateManager.color((float) (colorcode >> 16 & 255) / 255.0f, (float) (colorcode >> 8 & 255) / 255.0f, (float) (colorcode & 255) / 255.0f, alpha);
+                } else if (colorIndex == 16) {
                     randomCase = true;
-                }
-                else if (colorIndex == 17)
-                {
+                } else if (colorIndex == 17) {
                     bold = true;
 
-                    if (italic)
-                    {
+                    if (italic) {
                         GlStateManager.bindTexture(this.texItalic.getGlTextureId());
                         currentData = this.boldItalicChars;
-                    }
-                    else
-                    {
+                    } else {
                         GlStateManager.bindTexture(this.texBold.getGlTextureId());
                         currentData = this.boldChars;
                     }
-                }
-                else if (colorIndex == 18)
-                {
+                } else if (colorIndex == 18) {
                     strikethrough = true;
-                }
-                else if (colorIndex == 19)
-                {
+                } else if (colorIndex == 19) {
                     underline = true;
-                }
-                else if (colorIndex == 20)
-                {
+                } else if (colorIndex == 20) {
                     italic = true;
 
-                    if (bold)
-                    {
+                    if (bold) {
                         GlStateManager.bindTexture(this.texItalicBold.getGlTextureId());
                         currentData = this.boldItalicChars;
-                    }
-                    else
-                    {
+                    } else {
                         GlStateManager.bindTexture(this.texItalic.getGlTextureId());
                         currentData = this.italicChars;
                     }
-                }
-                else if (colorIndex == 21)
-                {
+                } else if (colorIndex == 21) {
                     bold = false;
                     italic = false;
                     randomCase = false;
                     underline = false;
                     strikethrough = false;
-                    GlStateManager.color((float)(color >> 16 & 255) / 255.0f, (float)(color >> 8 & 255) / 255.0f, (float)(color & 255) / 255.0f, alpha);
+                    GlStateManager.color((float) (color >> 16 & 255) / 255.0f, (float) (color >> 8 & 255) / 255.0f, (float) (color & 255) / 255.0f, alpha);
                     GlStateManager.bindTexture(this.tex.getGlTextureId());
                     currentData = this.charData;
                 }
 
                 ++i2;
-            }
-            else if (character < currentData.length && character >= '\u0000')
-            {
+            } else if (character < currentData.length && character >= '\u0000') {
                 GL11.glBegin(GL11.GL_TRIANGLES);
-                this.drawChar(currentData, character, (float)x2, (float)y2);
+                this.drawChar(currentData, character, (float) x2, (float) y2);
                 GL11.glEnd();
 
-                x2 += (double)(currentData[character].width - 8.3f + this.charOffset);
+                x2 += (double) (currentData[character].width - 8.3f + this.charOffset);
             }
 
             ++i2;
@@ -321,22 +282,18 @@ public class ClientFontRenderer implements Imports {
         GlStateManager.enableBlend();
         GlStateManager.color(1f, 1f, 1f, 0f);
 
-        return (float)x2 / 2.0f;
+        return (float) x2 / 2.0f;
     }
-    public void drawChar(CharData[] chars, char c2, float x2, float y2) throws ArrayIndexOutOfBoundsException
-    {
-        try
-        {
+
+    public void drawChar(CharData[] chars, char c2, float x2, float y2) throws ArrayIndexOutOfBoundsException {
+        try {
             this.drawQuad(x2, y2, chars[c2].width, chars[c2].height, chars[c2].storedX, chars[c2].storedY, chars[c2].width, chars[c2].height);
-        }
-        catch (Exception e2)
-        {
+        } catch (Exception e2) {
             e2.printStackTrace();
         }
     }
 
-    protected void drawQuad(float x2, float y2, float width, float height, float srcX, float srcY, float srcWidth, float srcHeight)
-    {
+    protected void drawQuad(float x2, float y2, float width, float height, float srcX, float srcY, float srcWidth, float srcHeight) {
         float renderSRCX = srcX / this.imgSize;
         float renderSRCY = srcY / this.imgSize;
         float renderSRCWidth = srcWidth / this.imgSize;

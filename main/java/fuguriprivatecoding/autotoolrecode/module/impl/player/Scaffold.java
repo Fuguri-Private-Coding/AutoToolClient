@@ -91,6 +91,7 @@ public class Scaffold extends Module {
     final FloatSetting diagonalPitch = new FloatSetting("DiagonalPitch", this, 70, 85, 77,0.1f);
     final CheckBox alwaysSprint = new CheckBox("AlwaysSprint", this, true);
     final CheckBox ninjaBridge = new CheckBox("NinjaBridge", this, true);
+    final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, ninjaBridge::isToggled, 0f,0.1f,0.05f, 0.01f);
 
     final CheckBox sneakIfRotate = new CheckBox("SneakIfRotate", this, true);
     final CheckBox sneakIfNoBlocks = new CheckBox("SneakIfNoBlocks", this, true);
@@ -187,7 +188,11 @@ public class Scaffold extends Module {
             MoveUtils.moveFix(moveEvent, MoveUtils.getDirection(mc.thePlayer.rotationYaw, moveEvent.getForward(), moveEvent.getStrafe()));
             if (sneakIfRotate.isToggled() && lastDelta > 0) moveEvent.setSneak(true);
             if (sneakIfNoBlocks.isToggled() && findBlock() == -1) moveEvent.setSneak(true);
-            if (ninjaBridge.isToggled() && mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX,mc.thePlayer.posY - 0.01, mc.thePlayer.posZ))) moveEvent.setSneak(true);
+
+            if (ninjaBridge.isToggled()) {
+                BlockPos pos = getBlockPos(edgeOffset.getValue());
+                if (mc.theWorld.isAirBlock(pos)) moveEvent.setSneak(true);
+            }
         }
 
         if (event instanceof SprintEvent && alwaysSprint.isToggled()) {
@@ -236,6 +241,25 @@ public class Scaffold extends Module {
         if (event instanceof UpdateBodyRotationEvent UpdateBodyRotationEvent) {
             UpdateBodyRotationEvent.setYaw(Rot.getServerRotation().getYaw());
         }
+    }
+
+    private BlockPos getBlockPos(float edgeOffset) {
+        double x = mc.thePlayer.posX;
+        double y = mc.thePlayer.posY - 0.5;
+        double z = mc.thePlayer.posZ;
+
+        boolean movingX = Math.abs(mc.thePlayer.motionX) > 0.1;
+        boolean movingZ = Math.abs(mc.thePlayer.motionZ) > 0.1;
+
+        if (movingX || movingZ) {
+            if (Math.abs(mc.thePlayer.motionX) > Math.abs(mc.thePlayer.motionZ)) {
+                x += (mc.thePlayer.motionX > 0) ? -edgeOffset : edgeOffset;
+            } else {
+                z += (mc.thePlayer.motionZ > 0) ? -edgeOffset : edgeOffset;
+            }
+        }
+
+        return new BlockPos(x, y, z);
     }
 
     void legitPlace() {

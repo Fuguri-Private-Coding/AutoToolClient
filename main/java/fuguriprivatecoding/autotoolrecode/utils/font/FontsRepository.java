@@ -16,8 +16,9 @@ public class FontsRepository implements Imports {
     }
 
     public void initFonts() {
-        fonts.put("JetBrains", new ClientFontRenderer(generateFont(getFile("JetBrains"), 30, true)));
-        fonts.put("Roboto", new ClientFontRenderer(generateFont(getFile("Roboto"), 30, true)));
+        fonts.put("JetBrains", new ClientFontRenderer(generateFont(getFile("JetBrains"), 32, true)));
+        fonts.put("Roboto", new ClientFontRenderer(generateFont(getFile("Roboto"), 32, true)));
+        fonts.put("MuseoSans", new ClientFontRenderer(generateFont(getFile("MuseoSans"), 32, true)));
     }
 
     public ResourceLocation getFile(String name) {

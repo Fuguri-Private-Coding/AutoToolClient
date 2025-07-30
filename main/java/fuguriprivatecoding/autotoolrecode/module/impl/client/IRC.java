@@ -23,9 +23,13 @@ public class IRC extends Module {
 
     @Override
     public void onDisable() {
-        super.onDisable();
-        if (!usersOnline.isEmpty()) usersOnline.clear();
+        Client.INST.disconnect();
         history = null;
+    }
+
+    @Override
+    public void onEnable() {
+        Client.INST.connect();
     }
 
     @EventTarget

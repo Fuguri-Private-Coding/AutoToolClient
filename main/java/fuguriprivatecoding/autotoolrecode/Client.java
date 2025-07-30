@@ -90,7 +90,7 @@ public enum Client implements Imports {
 		version = new ClientVersion(4, 1,6);
 
 		updateClient();
-		connect();
+		check();
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");
@@ -107,6 +107,8 @@ public enum Client implements Imports {
 		);
 
 		console = new ConsoleGuiScreen();
+
+		fonts = new FontsRepository();
 
 		discord = new Discord();
 		combatManager = new CombatManager();
@@ -184,7 +186,7 @@ public enum Client implements Imports {
 		configManager.saveModulesFromConfig();
 		configManager.saveConfig(configManager.getDefaultConfig());
 		configManager.saveBinds();
-		disconnect();
+		disconnectClient();
 	}
 
 	public String getFullName() {
@@ -195,14 +197,12 @@ public enum Client implements Imports {
 
 	@EventTarget
 	public void onEvent(Event event) {
-		if (event instanceof ServerJoinEvent) {
-			if (!IRC.usersOnline.isEmpty()) IRC.usersOnline.clear();
-			join();
+		if (event instanceof ServerJoinEvent && moduleManager.getModule(IRC.class).isToggled()) {
+			connect();
 		}
 		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
 			lastTime = System.currentTimeMillis();
 			new Thread(HWIDUtils::check).start();
-			//if (discord.getId() != null) IRC.setDiscordProfile(Client.INST.getDiscord().getId());
 		}
 		if (event instanceof KeyEvent keyEvent) {
 			for (Module module : moduleManager.getModules()) {
@@ -213,18 +213,22 @@ public enum Client implements Imports {
 		}
 	}
 
-	public void connect() {
+	public void check() {
 		irc.getOnlineChannel().sendMessage(
 				Client.INST.getProfile().toString() + " " + version.toString()
 		).queue(sendMessage -> ClientIRC.myOnlineID = sendMessage.getIdLong());
 	}
 
-	public void disconnect() {
+	public void disconnectClient() {
 		if (ClientIRC.myOnlineID != -1) irc.getOnlineChannel().deleteMessageById(ClientIRC.myOnlineID).queue();
 		if (ClientIRC.myID != -1) irc.getServerChannel().deleteMessageById(ClientIRC.myID).queue();
 	}
 
-	public void join() {
+	public void disconnect() {
+		if (ClientIRC.myID != -1) irc.getServerChannel().deleteMessageById(ClientIRC.myID).queue();
+	}
+
+	public void connect() {
 		if (ClientIRC.myID != -1) {
 			Client.INST.getIrc().getServerChannel().deleteMessageById(ClientIRC.myID).queue(_ -> {
 				ClientIRC.myID = -1;

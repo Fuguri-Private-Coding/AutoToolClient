@@ -4,8 +4,6 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.guis.clickgui.ClickGuiScreen;
-import fuguriprivatecoding.autotoolrecode.guis.config.ConfigGuiScreen;
-import fuguriprivatecoding.autotoolrecode.guis.console.ConsoleGuiScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;

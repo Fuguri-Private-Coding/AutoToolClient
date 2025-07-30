@@ -85,6 +85,7 @@ public class TargetESP extends Module {
         double z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - viewerPosZ;
 
         glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
@@ -130,6 +131,7 @@ public class TargetESP extends Module {
         glLineWidth(1f);
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
         glEnable(GL_TEXTURE_2D);
     }
 
@@ -151,6 +153,7 @@ public class TargetESP extends Module {
         mc.entityRenderer.disableLightmap();
         RenderHelper.disableStandardItemLighting();
         glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
@@ -158,8 +161,8 @@ public class TargetESP extends Module {
         glShadeModel(7425);
         glBegin(GL_QUAD_STRIP);
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
-            double x1 = x + sin(i * Math.PI / 180) * 0.7;
-            double z1 = z + cos(i * Math.PI / 180) * 0.7;
+            double x1 = x + sin(i * Math.PI / 180) * radius.getValue();
+            double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
 
             fadeColor = fadeBoxColor.isToggled() ?
                     ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue())
@@ -196,6 +199,7 @@ public class TargetESP extends Module {
         glLineWidth(1f);
         ColorUtils.resetColor();
         glDisable(GL_LINE_SMOOTH);
+        glEnable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);
     }

@@ -13,7 +13,7 @@ import net.minecraft.util.BlockPos;
 @ModuleInfo(name = "BridgeAssist", category = Category.LEGIT, description = "Помогает в строительстве.")
 public class BridgeAssist extends Module {
 
-    FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, 0f,0.1f,0.5f, 0.01f);
+    FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, 0f,0.1f,0.05f, 0.01f);
     CheckBox sneakIfPressed = new CheckBox("SneakIfPressed", this);
     CheckBox pitchCheck = new CheckBox("PitchCheck", this);
     FloatSetting minPitch = new FloatSetting("MinPitch", this, pitchCheck::isToggled, 0f,90f,50f, 0.1f);

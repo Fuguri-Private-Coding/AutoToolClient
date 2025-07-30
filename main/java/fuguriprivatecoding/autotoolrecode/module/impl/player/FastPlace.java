@@ -35,7 +35,6 @@ public class FastPlace extends Module {
 
     StopWatch stopWatch;
     long delay;
-    int clicks;
 
     public FastPlace() {
         stopWatch = new StopWatch();
@@ -44,19 +43,15 @@ public class FastPlace extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (mc.currentScreen != null) return;
-        if (event instanceof RunGameLoopEvent && stopWatch.reachedMS(delay)) {
-            stopWatch.reset();
-            delay = (long) (1000D / RandomUtils.nextDouble(minCps.getValue(), maxCps.getValue()));
-            clicks++;
-        }
         boolean needClick = Mouse.isButtonDown(1) && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
         if (event instanceof TickEvent) {
-            for (int i = 0; i < clicks; i++) {
+            if (stopWatch.reachedMS(delay)) {
                 if (needClick && mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mc.objectMouseOver.getBlockPos(), mc.objectMouseOver.sideHit, mc.objectMouseOver.hitVec)) {
                     mc.thePlayer.swingItem();
+                    delay = (long) (1000D / RandomUtils.nextDouble(minCps.getValue(), maxCps.getValue()));
+                    stopWatch.reset();
                 }
             }
-            clicks = 0;
         }
         if (event instanceof ClickEvent e) {
             if (needClick && e.getButton() == ClickEvent.Button.RIGHT) e.cancel();

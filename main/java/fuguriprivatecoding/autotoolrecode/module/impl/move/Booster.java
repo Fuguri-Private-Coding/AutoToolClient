@@ -14,8 +14,8 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.KeyBind;
 import org.lwjgl.input.Keyboard;
 
-@ModuleInfo(name = "TimeBooster", category = Category.MOVE, description = "Позволяет вам телепортироватся по нажатию кнопке.")
-public class TimeBooster extends Module {
+@ModuleInfo(name = "Booster", category = Category.MOVE, description = "Позволяет вам телепортироватся по нажатию кнопке.")
+public class Booster extends Module {
 
     KeyBind key = new KeyBind("Key", this, Keyboard.KEY_NONE);
 
