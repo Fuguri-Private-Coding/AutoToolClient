@@ -265,7 +265,7 @@ public class ConfigManager implements Imports {
                 JsonObject json = null;
                 try {
                     json = gson.fromJson(clipboardText, JsonObject.class);
-                } catch (JsonSyntaxException e) {
+                } catch (JsonSyntaxException | ClassCastException e) {
                     ClientUtils.chatLog("Uncorrected JSON in Clipboard");
                 }
 

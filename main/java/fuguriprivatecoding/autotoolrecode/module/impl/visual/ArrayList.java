@@ -8,9 +8,12 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.doubles.Doubles;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -58,6 +61,7 @@ public class ArrayList extends Module {
     FloatSetting lineSpeed = new FloatSetting("Line Speed", this,() -> line.isToggled() && lineFade.isToggled(),0.1f, 20, 1, 0.1f);
 
     Glow shadows;
+    Blur blur;
 
     Color fadeTextColor;
     Color fadeBackgroundColor;
@@ -69,6 +73,7 @@ public class ArrayList extends Module {
     public void onEvent(Event event) {
         if (!font.name.equalsIgnoreCase(fonts.getMode())) font = Client.INST.getFonts().fonts.get(fonts.getMode());
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
+        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (event instanceof Render2DEvent) {
             List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModuleManager().getEnabledModules());
             ScaledResolution sc = new ScaledResolution(mc);
@@ -86,12 +91,18 @@ public class ArrayList extends Module {
                         if (shadows.isToggled() && shadows.module.get("ArrayList")) {
                             BloomUtils.addToDraw(() -> renderRightUp(xOffset, yFinalOffset, module, sc, Color.white, Color.white, Color.white));
                         }
+                        if (blur.isToggled() && blur.module.get("ArrayList")) {
+                            GaussianBlurUtils.addToDraw(() -> renderRightUp(xOffset, yFinalOffset, module, sc, Color.white, Color.white, Color.white));
+                        }
                         renderRightUp(xOffset, yFinalOffset, module, sc, fadeBackgroundColor, fadeLineColor, fadeTextColor);
                     }
 
                     case "Left Up" -> {
                         if (shadows.isToggled() && shadows.module.get("ArrayList")) {
                             BloomUtils.addToDraw(() -> renderLeftUp(xOffset, yFinalOffset, module, Color.white, Color.white, Color.white));
+                        }
+                        if (blur.isToggled() && blur.module.get("ArrayList")) {
+                            GaussianBlurUtils.addToDraw(() -> renderLeftUp(xOffset, yFinalOffset, module, Color.white, Color.white, Color.white));
                         }
                         renderLeftUp(xOffset, yFinalOffset, module, fadeBackgroundColor, fadeLineColor, fadeTextColor);
                     }

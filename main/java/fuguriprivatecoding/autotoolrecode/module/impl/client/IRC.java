@@ -24,7 +24,7 @@ public class IRC extends Module {
     @Override
     public void onDisable() {
         Client.INST.disconnect();
-        history = null;
+        history.clear();
     }
 
     @Override
