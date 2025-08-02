@@ -22,7 +22,7 @@ public class FontsRepository implements Imports {
     }
 
     public ResourceLocation getFile(String name) {
-        return new ResourceLocation("minecraft", "/hackclient/fonts/" + name + ".ttf");
+        return new ResourceLocation("minecraft", "hackclient/fonts/" + name + ".ttf");
     }
 
     public Font generateFont(ResourceLocation fontFile, float size, boolean bold) {
@@ -31,7 +31,7 @@ public class FontsRepository implements Imports {
             Font font = Font.createFont(0, inputStream);
             return font.deriveFont(bold ? Font.BOLD : Font.PLAIN, size);
         } catch (Exception e) {
-            System.out.println("Error while loading font");
+            System.out.println(e.getMessage());
         }
 
         return null;

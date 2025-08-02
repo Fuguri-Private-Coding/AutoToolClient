@@ -60,11 +60,11 @@ public enum Client implements Imports {
 	EventManager eventManager;
 	CombatManager combatManager;
 	FriendManager friendManager;
-    ModuleManager moduleManager;
-    ShaderManager shaderManager;
-    ConfigManager configManager;
-    CommandManager commandManager;
-    ClickManager clickManager;
+	ModuleManager moduleManager;
+	ShaderManager shaderManager;
+	ConfigManager configManager;
+	CommandManager commandManager;
+	ClickManager clickManager;
 	DeepLearningEngine deepLearningEngine;
 	HotTextManager hotTextManager;
 	ClickGuiScreen clickGui;
@@ -75,8 +75,10 @@ public enum Client implements Imports {
 	GuiClientMainMenu mainMenu;
 	LoadNatives loadNatives;
 	RenderEffects renderEffects;
-	@Setter Discord discord;
-	@Setter ClientIRC irc;
+	@Setter
+	Discord discord;
+	@Setter
+	ClientIRC irc;
 
 	FontsRepository fonts;
 
@@ -87,7 +89,9 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(4, 1, 7);
+		version = new ClientVersion(4, 1, 8);
+
+		Display.setTitle(getFullName());
 
 		updateClient();
 		check();
@@ -96,15 +100,10 @@ public enum Client implements Imports {
 		modelsDirectory = new File(name + "/models");
 		soundsDirectory = new File(name + "/sounds");
 
-		FileUtils.createIfNotExists(clientDirectory, modelsDirectory, soundsDirectory);
+		FileUtils.createDirectoriesIfNotExists(clientDirectory, modelsDirectory, soundsDirectory);
 
 		eventManager = new EventManager();
 		eventManager.register(this);
-
-		WindowIconHelper.setWindowIcon(
-				new ResourceLocation("minecraft", "hackclient/image/logo16.png"),
-				new ResourceLocation("minecraft", "hackclient/image/logo32.png")
-		);
 
 		console = new ConsoleGuiScreen();
 
@@ -113,7 +112,7 @@ public enum Client implements Imports {
 		discord = new Discord();
 		combatManager = new CombatManager();
 		friendManager = new FriendManager();
-        soundsManager = new SoundsManager();
+		soundsManager = new SoundsManager();
 
 		loadNatives = new LoadNatives();
 		loadNatives.init();
@@ -150,7 +149,6 @@ public enum Client implements Imports {
 		configGuiScreen = new ConfigGuiScreen();
 
 		mc.gameSettings.ofFastRender = false;
-		Display.setTitle(getFullName());
 
 		mainMenu = new GuiClientMainMenu();
 
@@ -167,7 +165,7 @@ public enum Client implements Imports {
 		console.log("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
 	}
 
-	 private void updateClient() {
+	private void updateClient() {
 		for (Message message : irc.getClientVersionChannel().getIterableHistory().stream().toList()) {
 			if (!message.getContentRaw().equalsIgnoreCase(version.toString())) {
 				JOptionPane.showMessageDialog(null, "Твоя версия клиента устарела: " + version.toString() + ", Пожалуйста обновите клиент до: " + message.getContentRaw());

@@ -50,11 +50,13 @@ public class ConfigManager implements Imports {
         accountFile = new File(accountDirectory, "accounts.json");
         hotTextFile = new File(hotTextDirectory, "hotkeys.json");
         loadModulesFile = new File(loadModulesDirectory, "loadModules.json");
-        configsDirectory.mkdirs();
-        bindsDirectory.mkdirs();
-        accountDirectory.mkdirs();
-        hotTextDirectory.mkdirs();
-        loadModulesDirectory.mkdirs();
+
+        try {
+            FileUtils.createDirectoriesIfNotExists(configsDirectory, bindsDirectory, accountDirectory, hotTextDirectory, loadModulesDirectory);
+        } catch (IOException e) {
+            System.out.println("Failed create directories.");
+        }
+
         refreshConfigs();
     }
 

@@ -4,6 +4,7 @@ import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
+import lombok.Setter;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -14,7 +15,8 @@ public class Config {
     private static final String CONFIG_FORMAT = ".json";
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
-    @Getter private String name;
+    @Getter @Setter
+    private String name;
     @Getter private final File configFile;
     private Date lastUpdateDate;
 

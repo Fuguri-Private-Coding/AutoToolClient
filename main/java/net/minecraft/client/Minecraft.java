@@ -37,6 +37,7 @@ import javax.imageio.ImageIO;
 
 import de.florianmichael.viamcp.fixes.AttackOrder;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.utils.file.WindowIconHelper;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
@@ -397,6 +398,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         this.mcResourceManager.registerReloadListener(this.mcSoundHandler);
         this.mcMusicTicker = new MusicTicker(this);
         this.fontRendererObj = new FontRenderer(this.gameSettings, new ResourceLocation("textures/font/ascii.png"), this.renderEngine, false);
+
+        WindowIconHelper.setWindowIcon(
+                new ResourceLocation("minecraft", "hackclient/image/logo16.png"),
+                new ResourceLocation("minecraft", "hackclient/image/logo32.png")
+        );
 
         if (this.gameSettings.language != null) {
             this.fontRendererObj.setUnicodeFlag(this.isUnicode());
