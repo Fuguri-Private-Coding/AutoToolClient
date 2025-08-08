@@ -8,10 +8,12 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtils;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.ItemUtil;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.enchantment.Enchantment;
@@ -53,7 +55,44 @@ public class InvManager extends Module {
         }
     };
 
-    private final CheckBox legit = new CheckBox("OpenInv", this);
+    private final CheckBox spoof = new CheckBox("Spoof", this);
+    private final CheckBox stopWalkingIfSpoof = new CheckBox("StopWalkingIfSpoof", this);
+
+//    private final Mode firstSlot = new Mode("FirstSlot", this)
+//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
+//            .setMode("Sword");
+//
+//    private final Mode secondSlot = new Mode("SecondSlot", this)
+//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
+//            .setMode("Sword");
+//
+//    private final Mode threeSlot = new Mode("ThreeSlot", this)
+//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
+//            .setMode("Sword");
+//
+//    private final Mode fourSlot = new Mode("FourSlot", this)
+//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
+//            .setMode("Sword");
+//
+//    private final Mode fiveSlot = new Mode("FiveSlot", this)
+//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
+//            .setMode("Sword");
+//
+//    private final Mode sixSlot = new Mode("SixSlot", this)
+//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
+//            .setMode("Sword");
+//
+//    private final Mode sevenSlot = new Mode("SevenSlot", this)
+//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
+//            .setMode("Sword");
+//
+//    private final Mode eightSlot = new Mode("EightSlot", this)
+//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
+//            .setMode("Sword");
+//
+//    private final Mode nineSlot = new Mode("NineSlot", this)
+//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
+//            .setMode("Sword");
 
     private final IntegerSetting swordSlot = new IntegerSetting("Sword Slot", this, 1, 9, 1);
     private final IntegerSetting pickaxeSlot = new IntegerSetting("Pickaxe Slot", this,1, 9, 1);
@@ -76,10 +115,12 @@ public class InvManager extends Module {
                 return;
             }
 
-            if (legit.isToggled() && !(mc.currentScreen instanceof GuiInventory)) {
+            if (!spoof.isToggled() && !(mc.currentScreen instanceof GuiInventory)) {
                 this.stopwatch.reset();
                 this.startTimer.reset();
                 return;
+            } else if (spoof.isToggled() && stopWalkingIfSpoof.isToggled()) {
+                if (MoveUtils.isMoving()) return;
             }
 
             if (!startTimer.reachedMS(RandomUtils.nextInt(minStartDelay.getValue(), maxStartDelay.getValue()))) return;
@@ -351,6 +392,14 @@ public class InvManager extends Module {
             }
         }
     }
+
+//    private int getItemToMove(String item, int slot) {
+//        switch (item) {
+//            case "Sword" -> {
+//
+//            }
+//        }
+//    }
     
 
     private void throwItem(final int slot) {

@@ -3,9 +3,9 @@ package net.minecraft.util;
 public class Vec3
 {
     public static final Vec3 ZERO = new Vec3(0,0,0);
-    public final double xCoord;
-    public final double yCoord;
-    public final double zCoord;
+    public double xCoord;
+    public double yCoord;
+    public double zCoord;
 
     public Vec3(double x, double y, double z)
     {

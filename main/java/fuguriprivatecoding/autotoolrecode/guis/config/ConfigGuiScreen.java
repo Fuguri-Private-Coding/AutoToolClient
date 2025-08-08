@@ -19,6 +19,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurU
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.minecraft.client.Minecraft;
@@ -140,13 +141,16 @@ public class ConfigGuiScreen extends GuiScreen {
         if (blur.isToggled() && blur.module.get("ConfigGui")) {
             GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.black));
         }
+        RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),mainColor.getRGB(),Color.BLACK.getRGB());
 
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
 
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), new Color(0,0,0, clickGui.backgroundAlpha.getValue()));
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clientSettings.backgroundRadius.getValue(), new Color(0,0,0,200));
-        RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, 0, mainColor.getRGB(),Color.BLACK.getRGB());
+        StencilUtils.renderStencil(
+                () -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 10, clientSettings.backgroundRadius.getValue(), Color.black),
+                () -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 1f, Color.black)
+        );
+        RoundedUtils.drawRect(background.x, background.y + 5, sizeBackground.x, 10, 1f, Color.black);
 
         fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 4,-1);
 
@@ -160,12 +164,14 @@ public class ConfigGuiScreen extends GuiScreen {
 
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15f, sizeBackground.x, sizeBackground.y - 15);
+        int rectColor = new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB();
 
         float offset = 0;
         float yOffset = scrolls.y;
         totalHeight = 0;
         for (Config config : Client.INST.getConfigManager().getConfigs()) {
-            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clientSettings.backgroundRadius.getValue(), selectedConfig != null ? selectedConfig == config ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150));
+            int selectedColor = selectedConfig != null ? selectedConfig == config ? new Color(50,50,50,150).getRGB() : new Color(0,0,0,150).getRGB() : new Color(0,0,0,150).getRGB();
+            RenderUtils.drawRoundedOutLineRectangle(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clientSettings.backgroundRadius.getValue() * 1.7f, selectedColor, mainColor.getRGB(),Color.BLACK.getRGB());
             fontRendererObj.drawString(config.getName(), background.x + 10 + offset, background.y + 30 + yOffset, -1);
             offset += 105;
 
@@ -176,19 +182,20 @@ public class ConfigGuiScreen extends GuiScreen {
             }
         }
 
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.WHITE);
+
+        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3, -1, true);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.green);
+        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Load", background.x + sizeBackground.x - 55 + 25 - widthLoad, background.y + 20 + 20 + 3, -1, true);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.yellow);
+        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Save", background.x + sizeBackground.x - 55 + 25 - widthSave, background.y + 20 + 20 + 20 + 3, -1, true);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.RED);
+        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 20 + 20 + 3, -1, true);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.blue);
+        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Folder", background.x + sizeBackground.x - 55 + 25 - widthFolder, background.y + 20 + 20 + 20 + 20 + 20 + 3, -1, true);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.gray);
+        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Refresh", background.x + sizeBackground.x - 55 + 25 - widthRefresh, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 3, -1, true);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.cyan);
+        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Online", background.x + sizeBackground.x - 55 + 25 - widthOnlineDownload, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20 + 3, -1, true);
 
         ScissorUtils.disableScissor();

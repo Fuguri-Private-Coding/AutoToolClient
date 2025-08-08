@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation;
 @Getter
 public class ShaderManager {
 
-	Shader rounded, background, bloom, gaussianBlur;
+	Shader rounded, background, bloom, gaussianBlur, bloomReal;
 
 	public ShaderManager() {
 		init();
@@ -16,6 +16,7 @@ public class ShaderManager {
 		rounded = new Shader(getShaderSource("rounded.glsl"), getShaderSource("vertex.txt"));
 
 		bloom = new Shader(getShaderSource("bloom.glsl"), getShaderSource("vertex.txt"));
+//		bloomReal = new Shader(getShaderSource("bloomreal.glsl"), getShaderSource("vertex.txt"));
 
 		gaussianBlur = new Shader(getShaderSource("blur.glsl"), getShaderSource("vertex.txt"));
 

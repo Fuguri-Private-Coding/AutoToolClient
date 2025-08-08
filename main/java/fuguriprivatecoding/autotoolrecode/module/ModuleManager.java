@@ -68,6 +68,7 @@ public class ModuleManager {
 				new MoreSwing(),
 				new Ping(),
 				new TargetESP(),
+				new Notifications(),
 				new FullBright(),
 				new ClientSpoofer(),
 				new TimerRange(),

@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.predict;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -133,7 +134,7 @@ public class SimulatedPlayer implements Imports {
 
     private static final float SPEED_IN_AIR = 0.02F;
 
-    public static SimulatedPlayer fromClientPlayer(MovementInput input) {
+    public static SimulatedPlayer fromClientPlayer(MovementInput input, float rotationYaw) {
         EntityPlayerSP player = mc.thePlayer;
 
         PlayerCapabilities capabilities = createCapabilitiesCopy(player);
@@ -155,7 +156,7 @@ public class SimulatedPlayer implements Imports {
                 player.isInWater(),
                 player.onGround,
                 player.isAirBorne,
-                player.rotationYaw,
+                rotationYaw,
                 player.posX,
                 player.posY,
                 player.posZ,

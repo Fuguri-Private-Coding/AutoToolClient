@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.font;
 
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -17,6 +18,17 @@ public class ClientFontRenderer implements Imports {
     boolean antiAlias, fractionalMetrics;
     final float imgSize = 1028f;
     Font font;
+
+
+//    // Фон
+//    Color bgColor = bgFade.isToggled() ?
+//            ColorUtils.fadeColor(bgColor1.getColor(), bgColor2.getColor(), bgSpeed.getValue()) :
+//            bgColor1.getColor();
+//
+//    // Обводка
+//    Color outlineColor = outLineFade.isToggled() ?
+//            ColorUtils.fadeColor(outLineColor1.getColor(), outLineColor2.getColor(), outLineSpeed.getValue()) :
+//            outLineColor1.getColor();
 
     public int FONT_HEIGHT;
     int charOffset;
@@ -142,7 +154,7 @@ public class ClientFontRenderer implements Imports {
             charData.storedY = positionY;
 
             if (charData.height > this.FONT_HEIGHT) {
-                this.FONT_HEIGHT = charData.height;
+                this.FONT_HEIGHT = 9;
             }
 
             chars[i2] = charData;

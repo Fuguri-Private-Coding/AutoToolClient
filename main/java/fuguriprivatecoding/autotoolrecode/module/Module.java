@@ -3,7 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Notifications;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import java.util.ArrayList;
@@ -50,14 +50,20 @@ public class Module implements Imports {
 	void playSound(float volume) {
 		if (Client.INST.isStarting() || name.equalsIgnoreCase("ClickGui")) return;
 		if (toggled) Client.INST.getSoundsManager().getEnableSound().asyncPlay(volume);else Client.INST.getSoundsManager().getDisableSound().asyncPlay(volume);
+		Notifications.instance.addNotification(name,toggled);
 	}
 
 	public boolean toggled() {
         return toggled;
 	}
 
-	public void onEnable() {}
-	public void onDisable() {}
+	public void onEnable() {
+
+	}
+
+	public void onDisable() {
+
+	}
 
 	public void onEvent(Event event) {}
 

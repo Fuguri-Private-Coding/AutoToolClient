@@ -17,6 +17,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.block.Block;
@@ -1103,7 +1104,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.bindTexture(0);
 
                     GlStateManager.pushMatrix();
-                    new Render2DEvent().call();
+                    new Render2DEvent(i1,j1).call();
                     GlStateManager.popMatrix();
 
                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1111,6 +1112,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.enableAlpha();
 
                     if (shadows.isToggled()) BloomUtils.draw();
+//                    GL11.glColor4f(1f,1f,1f,1f);
+//                    BloomRealUtils.draw();
                     this.mc.getFramebuffer().bindFramebuffer(false);
                     this.framebuffer.bindFramebufferTexture();
                     Shader.drawQuad();
