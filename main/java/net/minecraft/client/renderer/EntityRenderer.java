@@ -17,6 +17,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.block.Block;
@@ -598,6 +599,12 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 float f1 = entity.rotationYaw;
                 float f2 = entity.rotationPitch;
 
+
+//                if (entity == mc.thePlayer && freeLook.isToggled()) {
+//                    f1 = freeLook.rotYaw;
+//                    f2 = freeLook.rotPitch;
+//                }
+
                 if (this.mc.gameSettings.thirdPersonView == 2) {
                     f2 += 180.0F;
                 }
@@ -627,6 +634,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 if (this.mc.gameSettings.thirdPersonView == 2) {
                     GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
                 }
+
 
                 GlStateManager.rotate(entity.rotationPitch - f2, 1.0F, 0.0F, 0.0F);
                 GlStateManager.rotate(entity.rotationYaw - f1, 0.0F, 1.0F, 0.0F);
@@ -659,12 +667,16 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 GlStateManager.rotate(f6, 0.0F, 1.0F, 0.0F);
             }
         } else if (!this.mc.gameSettings.debugCamEnable) {
-            GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
+            FreeLook freeLook = Client.INST.getModuleManager().getModule(FreeLook.class);
+            float pitch = freeLook.isToggled() ? freeLook.rotPitch : entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+            float yaw = freeLook.isToggled() ? freeLook.rotYaw : entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks;
+
+            GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
 
             if (entity instanceof EntityAnimal entityanimal) {
                 GlStateManager.rotate(entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F, 0.0F, 1.0F, 0.0F);
             } else {
-                GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, 1.0F, 0.0F);
+                GlStateManager.rotate(yaw + 180, 0.0F, 1.0F, 0.0F);
             }
         }
 
@@ -1103,7 +1115,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.bindTexture(0);
 
                     GlStateManager.pushMatrix();
-                    new Render2DEvent().call();
+                    new Render2DEvent(i1,j1).call();
                     GlStateManager.popMatrix();
 
                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1111,6 +1123,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.enableAlpha();
 
                     if (shadows.isToggled()) BloomUtils.draw();
+//                    GL11.glColor4f(1f,1f,1f,1f);
+//                    BloomRealUtils.draw();
                     this.mc.getFramebuffer().bindFramebuffer(false);
                     this.framebuffer.bindFramebufferTexture();
                     Shader.drawQuad();

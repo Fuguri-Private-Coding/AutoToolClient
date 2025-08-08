@@ -42,4 +42,8 @@ public class Mode extends Setting {
         this.modes.addAll(List.of(modes));
         return this;
     }
+
+    public boolean is(String mode) {
+        return this.mode.equalsIgnoreCase(mode);
+    }
 }

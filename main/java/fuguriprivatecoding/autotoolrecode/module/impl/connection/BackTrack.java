@@ -89,7 +89,7 @@ public class BackTrack extends Module {
     CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
     CheckBox debugDistance = new CheckBox("DebugDistance", this, true);
 
-    private final List<TimedVar<Packet>> packetBuffer = new CopyOnWriteArrayList<>();
+    public final List<TimedVar<Packet>> packetBuffer = new CopyOnWriteArrayList<>();
 
     private EntityLivingBase target;
     private long delay = 90;

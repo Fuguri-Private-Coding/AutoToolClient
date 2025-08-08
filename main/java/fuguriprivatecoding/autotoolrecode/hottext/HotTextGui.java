@@ -16,6 +16,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -133,12 +134,16 @@ public class HotTextGui extends GuiScreen {
         if (blur.isToggled() && blur.module.get("HotKeyGui")) {
             GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), shadows.color.getColor()));
         }
+        RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),mainColor.getRGB(),Color.BLACK.getRGB());
+
+        StencilUtils.renderStencil(
+                () -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 10, clientSettings.backgroundRadius.getValue(), Color.black),
+                () -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 1f, Color.black)
+        );
+        RoundedUtils.drawRect(background.x, background.y + 5, sizeBackground.x, 10, 1f, Color.black);
 
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), new Color(0,0,0, clickGui.backgroundAlpha.getValue()));
-        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, clientSettings.backgroundRadius.getValue(), new Color(0,0,0,200));
-        RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, 0, mainColor.getRGB(),Color.BLACK.getRGB());
 
         mc.fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 4,  -1);
 
@@ -149,10 +154,11 @@ public class HotTextGui extends GuiScreen {
         RoundedUtils.drawRect(background.x + 5, background.y + 4, 6.5f, 6.5f, 3f, Color.red);
         RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
         RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
+        int rectColor = new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB();
 
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.GRAY);
+        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3, -1, true);
-        RoundedUtils.drawRect(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.RED);
+        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 3, -1, true);
 
         ScissorUtils.disableScissor();
@@ -165,7 +171,8 @@ public class HotTextGui extends GuiScreen {
         totalHeight = 0;
         for (HotText hotText : hotKeys) {
             String bindText = (hotText == selectedHotText ? (binding ? "▬" : (hotText.getKey() == 0 ? "-" : Keyboard.getKeyName(hotText.getKey()))) : (hotText.getKey() == 0 ? "-" : Keyboard.getKeyName(hotText.getKey())));
-            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 150, 30, clientSettings.backgroundRadius.getValue(), selectedHotText != null ? selectedHotText == hotText ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150));
+            int selectedColor = selectedHotText != null ? selectedHotText == hotText ? new Color(50,50,50,150).getRGB() : new Color(0,0,0,150).getRGB() : new Color(0,0,0,150).getRGB();
+            RenderUtils.drawRoundedOutLineRectangle(background.x + 5 + offset, background.y + 20 + yOffset, 150, 30, clientSettings.backgroundRadius.getValue() * 1.7f, selectedColor, mainColor.getRGB(),Color.BLACK.getRGB());
             fontRendererObj.drawString(bindText,background.x + 10 + 80 + 50 + offset, background.y + 30 + yOffset, -1);
             if (hotText != null) fontRendererObj.drawString(hotText.getText(), background.x + 10 + offset, background.y + 30 + yOffset, -1);
             offset += 155;

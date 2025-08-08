@@ -26,7 +26,6 @@ public class DistanceUtils implements Imports {
 		return eyes.distanceTo(pos);
 	}
 
-
 	public static double getDistance(AxisAlignedBB bb) {
 		return mc.thePlayer.getPositionEyes(1.0f).distanceTo(RotUtils.getBestHitVec(bb));
 	}

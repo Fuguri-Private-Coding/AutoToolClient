@@ -6,6 +6,9 @@ import fuguriprivatecoding.autotoolrecode.event.events.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
@@ -14,7 +17,14 @@ import net.minecraft.util.MovingObjectPosition;
 @ModuleInfo(name = "AutoTool", category = Category.PLAYER, description = "Автоматически берет инструмент в руку в зависимости от блока.")
 public class AutoTool extends Module {
 
+    IntegerSetting minSwitchDelayTick = new IntegerSetting("MinSwitchDelayTick", this, 0,5,0);
+    IntegerSetting maxSwitchDelayTick = new IntegerSetting("MaxSwitchDelayTick", this, 0,5,2);
+
     boolean flag;
+
+    int delay;
+
+    StopWatch timer = new StopWatch();
 
     @Override
     public void onDisable() {
@@ -29,11 +39,12 @@ public class AutoTool extends Module {
 
         final MovingObjectPosition mouse = mc.objectMouseOver;
 
-        if (event instanceof LegitClickTimingEvent) {
+        if (event instanceof LegitClickTimingEvent && timer.reachedMS(delay * 50L)) {
             if (mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mouse.getBlockPos() == null || !mc.gameSettings.keyBindAttack.isKeyDown()) {
                 if (flag) {
                     flag = false;
                     switchBack();
+                    timer.reset();
                 }
                 return;
             }
@@ -41,6 +52,8 @@ public class AutoTool extends Module {
             flag = true;
             final BlockPos block = mouse.getBlockPos();
             mc.thePlayer.inventory.currentItem = getBestSlot(mc.theWorld.getBlockState(block).getBlock());
+            delay = RandomUtils.nextInt(minSwitchDelayTick.getValue(),maxSwitchDelayTick.getValue());
+            timer.reset();
         }
     }
 

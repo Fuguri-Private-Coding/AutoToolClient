@@ -13,7 +13,7 @@ public class Glow extends Module {
                     "TargetESP","Dot" ,"BreakIndicator", "CPSCounter", "BPSCounter",
                     "FPSCounter", "BlockOverlay", "ConfigGui", "Chat", "Trails",
                     "NameTags", "Scaffold", "ChestESP", "BedESP", "WorldParticles",
-                    "Weather", "TargetHUD", "Hat", "HotKeyGui", "BackTrack", "Ping", "ScoreBoard"
+                    "Weather", "TargetHUD", "Hat", "HotKeyGui", "BackTrack", "Ping", "ScoreBoard", "Notifications"
             );
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);

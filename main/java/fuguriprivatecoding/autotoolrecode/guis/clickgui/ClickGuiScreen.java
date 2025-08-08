@@ -212,12 +212,11 @@ public class ClickGuiScreen extends GuiScreen {
 		fontRenderer.drawString("Config", 5 + 60 + 25 - widthConfig, sc.getScaledHeight() - 15 - 1 , -1);
 		fontRenderer.drawString("HotKeys", 5 + 60 + 60 + 25 - widthHotKeys, sc.getScaledHeight() - 15 - 1 , -1);
 
-		RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, 0,MAIN_COLOR.getRGB(),Color.BLACK.getRGB());
+		RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),MAIN_COLOR.getRGB(),Color.BLACK.getRGB());
 
 		ScissorUtils.enableScissor();
 		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
 
-		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR);
 		StencilUtils.renderStencil(
 				() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 10, clientSettings.backgroundRadius.getValue(), HEADER_COLOR),
 				() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 1f, HEADER_COLOR)
