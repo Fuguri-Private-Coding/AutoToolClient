@@ -37,6 +37,9 @@ public class TimerRange extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
+        if (event instanceof RunGameLoopEvent && balance > 0) {
+            mc.timer.renderPartialTicks = partialTicks.getValue();
+        }
         if (teleporting) return;
         if (event instanceof LegitClickTimingEvent && click && clickTeleport.isToggled()) {
             mc.clickMouse();
@@ -52,7 +55,7 @@ public class TimerRange extends Module {
                 return;
             }
 
-            if (target == null || target.hurtTime > maxTargetHurtTime.getValue()) return;
+            if (target == null) return;
 
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, Rot.getServerRotation().getYaw());
 
@@ -86,6 +89,8 @@ public class TimerRange extends Module {
                 }
             }
 
+            if (target.hurtTime > maxTargetHurtTime.getValue()) return;
+
             teleporting = true;
             for (int i = 0; i < teleportTicks; i++) {
                 try {
@@ -98,9 +103,6 @@ public class TimerRange extends Module {
                 } catch (Exception ignored) {}
             }
             teleporting = false;
-        }
-        if (event instanceof RunGameLoopEvent && balance > 0) {
-            mc.timer.renderPartialTicks = partialTicks.getValue();
         }
     }
 
