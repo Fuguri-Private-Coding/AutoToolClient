@@ -12,9 +12,13 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Interpolation;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
@@ -30,7 +34,10 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 
+import java.awt.*;
 import java.io.File;
+import java.util.Arrays;
+import java.util.UUID;
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, description = "Автоматически целится и бьет противника.")
@@ -90,6 +97,8 @@ public class KillAura extends Module {
             .addModes("Linear", "AIModel")
             .setMode("Linear");
 
+    final IntegerSetting rotationDuration = new IntegerSetting("Rotation Duration", this, 1, 2000, 600);
+
     final FloatSetting linearSmoothStrength = new FloatSetting(
             "LinearSmoothStrength", this,
             () -> smoothMode.getMode().equalsIgnoreCase("Linear"),
@@ -138,12 +147,17 @@ public class KillAura extends Module {
     @Override
     public void onEnable() {
         updateModels();
+        interpolation.reset();
+        startTest = new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
     }
 
     @Override
     public void onDisable() {
         Client.INST.getCombatManager().setTarget(null);
     }
+
+    Rot startTest = new Rot();
+    Interpolation interpolation = new Interpolation(Easing.EASE_IN_OUT_BACK, 200);
 
     @EventTarget
     public void onEvent(Event event) {
@@ -175,7 +189,23 @@ public class KillAura extends Module {
                 };
 
                 if (needRotation == null) return;
+
+                interpolation.setDuration(rotationDuration.getValue());
+                interpolation.setEasing(Easing.EASE_IN_OUT_BACK);
+
+//                interpolation.setEasing(Easing.EASE_IN_OUT_CIRC);
+                if (interpolation.getRaw() == 1) {
+                    startTest = needRotation.copy();
+                    interpolation.reset();
+                }
+
+                needRotation = new Rot(
+                        startTest.getYaw() + MathHelper.wrapDegree(needRotation.getYaw() - startTest.getYaw()) * (float) interpolation.get(),
+                        startTest.getPitch() + (needRotation.getPitch() - startTest.getPitch()) * (float) interpolation.get()
+                );
+
                 Rot delta = RotUtils.getDelta(lr, needRotation);
+
                 Rot speed = new Rot(
                         RandomUtils.nextFloat(minYawSpeed.getValue(), maxYawSpeed.getValue()),
                         RandomUtils.nextFloat(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
@@ -241,25 +271,34 @@ public class KillAura extends Module {
                     case "Target" -> MoveUtils.moveFix(e, RotUtils.getRotationToPoint(target.getPositionVector()).getYaw());
                 }
             }
+//            if (event instanceof Render2DEvent) {
+//                RoundedUtils.drawRect(400, 200, 10 + 100, 12, 6, Color.BLACK);
+//                RoundedUtils.drawRect(400, 200, 10 + (float) interpolation.getRaw() * 100, 12, 6, Color.WHITE);
+//                RoundedUtils.drawRect(400, 215, 10 + 100, 12, 6, Color.BLACK);
+//                RoundedUtils.drawRect(400, 215, 10 + (float) interpolation.get() * 100, 12, 6, Color.RED);
+//            }
         }
     }
 
     private AxisAlignedBB getHitBox(EntityLivingBase target) {
         AxisAlignedBB box = target.getEntityBoundingBox();
 
-        double horizontalPercent = 0.5 + horizontalHitBoxSize.getValue() / 200d;
-        double verticalPercent = 0.5 + verticalHitBoxSize.getValue() / 200d;
+        double horizontalPercent = horizontalHitBoxSize.getValue() / 200d;
+        double verticalPercent = verticalHitBoxSize.getValue() / 200d;
 
-        double invertHorizontalPercent = 1 - horizontalPercent;
-        double invertVerticalPercent = 1 - verticalPercent;
+        Vec3 center = new Vec3(
+                (box.maxX + box.minX) / 2,
+                (box.maxY + box.minY) / 2,
+                (box.maxZ + box.minZ) / 2
+        );
 
         box = new AxisAlignedBB(
-                box.minX + box.getLengthX() * invertHorizontalPercent,
-                box.minY + box.getLengthY() * invertVerticalPercent,
-                box.minZ + box.getLengthZ() * invertHorizontalPercent,
-                box.minX + box.getLengthX() * horizontalPercent,
-                box.minY + box.getLengthY() * verticalPercent,
-                box.minZ + box.getLengthZ() * horizontalPercent
+                center.xCoord - box.getLengthX() * horizontalPercent,
+                center.yCoord - box.getLengthY() * verticalPercent,
+                center.zCoord - box.getLengthZ() * horizontalPercent,
+                center.xCoord + box.getLengthX() * horizontalPercent,
+                center.yCoord + box.getLengthY() * verticalPercent,
+                center.zCoord + box.getLengthZ() * horizontalPercent
         );
         return box;
     }
@@ -296,11 +335,9 @@ public class KillAura extends Module {
             double value = Double.MAX_VALUE;
 
             switch (sortType.getMode()) {
-                case "Distance" -> {
-                    value = DistanceUtils.getDistance(entity);
-                }
+                case "Distance" -> value = DistanceUtils.getDistance(entity);
                 case "FOV" -> value = RotUtils.getFovToEntity(entity);
-                case "HurtTime" -> value = ent.hurtTime;
+                case "HurtTime" -> value = DistanceUtils.getDistance(entity) + ent.hurtTime;
                 case "Switch" -> {
                     if (DistanceUtils.getDistance(entity) > 3) {
                         value = DistanceUtils.getDistance(entity);
