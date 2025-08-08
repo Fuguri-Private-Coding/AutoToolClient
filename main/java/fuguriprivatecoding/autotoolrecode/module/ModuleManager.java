@@ -70,6 +70,7 @@ public class ModuleManager {
 				new TargetESP(),
 				new Notifications(),
 				new FullBright(),
+				new FreeLook(),
 				new ClientSpoofer(),
 				new TimerRange(),
 				new ClickGui(),

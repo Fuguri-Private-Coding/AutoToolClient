@@ -249,8 +249,19 @@ public abstract class Entity implements ICommandSender
         setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
     }
 
-    public void setAngles(float yaw, float pitch)
-    {
+    public void setAngles(float yaw, float pitch) {
+        FreeLook freeLook = Client.INST.getModuleManager().getModule(FreeLook.class);
+        if (Minecraft.getMinecraft().thePlayer == this) {
+            if (freeLook.isToggled()) {
+                freeLook.rotYaw += yaw * 0.15f;
+                freeLook.rotPitch = Math.clamp(freeLook.rotPitch - pitch * 0.15f, -90, 90);
+                return;
+            } else {
+                freeLook.rotYaw = rotationYaw;
+                freeLook.rotPitch = rotationPitch;
+            }
+        }
+
         float f = this.rotationPitch;
         float f1 = this.rotationYaw;
         this.rotationYaw = (float)((double)this.rotationYaw + (double)yaw * 0.15D);

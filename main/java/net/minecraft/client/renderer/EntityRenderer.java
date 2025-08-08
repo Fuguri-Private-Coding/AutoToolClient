@@ -599,6 +599,12 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 float f1 = entity.rotationYaw;
                 float f2 = entity.rotationPitch;
 
+
+//                if (entity == mc.thePlayer && freeLook.isToggled()) {
+//                    f1 = freeLook.rotYaw;
+//                    f2 = freeLook.rotPitch;
+//                }
+
                 if (this.mc.gameSettings.thirdPersonView == 2) {
                     f2 += 180.0F;
                 }
@@ -628,6 +634,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 if (this.mc.gameSettings.thirdPersonView == 2) {
                     GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
                 }
+
 
                 GlStateManager.rotate(entity.rotationPitch - f2, 1.0F, 0.0F, 0.0F);
                 GlStateManager.rotate(entity.rotationYaw - f1, 0.0F, 1.0F, 0.0F);
@@ -660,12 +667,16 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 GlStateManager.rotate(f6, 0.0F, 1.0F, 0.0F);
             }
         } else if (!this.mc.gameSettings.debugCamEnable) {
-            GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
+            FreeLook freeLook = Client.INST.getModuleManager().getModule(FreeLook.class);
+            float pitch = freeLook.isToggled() ? freeLook.rotPitch : entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+            float yaw = freeLook.isToggled() ? freeLook.rotYaw : entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks;
+
+            GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
 
             if (entity instanceof EntityAnimal entityanimal) {
                 GlStateManager.rotate(entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F, 0.0F, 1.0F, 0.0F);
             } else {
-                GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, 1.0F, 0.0F);
+                GlStateManager.rotate(yaw + 180, 0.0F, 1.0F, 0.0F);
             }
         }
 
