@@ -31,7 +31,6 @@ import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.utils.sound.SoundsManager;
 import fuguriprivatecoding.autotoolrecode.utils.version.ClientVersion;
 import net.dv8tion.jda.api.entities.Message;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import lombok.Getter;
 import lombok.Setter;
@@ -89,7 +88,7 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(4, 1, 8);
+		version = new ClientVersion(4, 2, 0);
 
 		Display.setTitle(getFullName());
 
