@@ -171,8 +171,8 @@ public class HotTextGui extends GuiScreen {
         totalHeight = 0;
         for (HotText hotText : hotKeys) {
             String bindText = (hotText == selectedHotText ? (binding ? "▬" : (hotText.getKey() == 0 ? "-" : Keyboard.getKeyName(hotText.getKey()))) : (hotText.getKey() == 0 ? "-" : Keyboard.getKeyName(hotText.getKey())));
-            int selectedColor = selectedHotText != null ? selectedHotText == hotText ? new Color(50,50,50,150).getRGB() : new Color(0,0,0,150).getRGB() : new Color(0,0,0,150).getRGB();
-            RenderUtils.drawRoundedOutLineRectangle(background.x + 5 + offset, background.y + 20 + yOffset, 150, 30, clientSettings.backgroundRadius.getValue() * 1.7f, selectedColor, mainColor.getRGB(),Color.BLACK.getRGB());
+            Color selectedColor = selectedHotText != null ? selectedHotText == hotText ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150);
+            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 150, 30, clientSettings.backgroundRadius.getValue(), selectedColor);
             fontRendererObj.drawString(bindText,background.x + 10 + 80 + 50 + offset, background.y + 30 + yOffset, -1);
             if (hotText != null) fontRendererObj.drawString(hotText.getText(), background.x + 10 + offset, background.y + 30 + yOffset, -1);
             offset += 155;

@@ -88,8 +88,6 @@ public class KillEffects extends Module {
                         target = null;
                     }
                 }
-
-
             }
         }
     }

@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import net.dv8tion.jda.api.entities.Message;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class IRC extends Module {
     @Override
     public void onDisable() {
         Client.INST.disconnect();
-        history.clear();
+        history = new ArrayList<>();
     }
 
     @Override
@@ -46,7 +47,7 @@ public class IRC extends Module {
                         String clientName = args[1].replace("[", "").replace("]", "");
                         String role = args[2].replace("[", "").replace("]", "");
 
-                        if (usersOnline.containsKey(ign)) continue;
+                        if (usersOnline.containsKey(ign) && usersOnline.containsValue(new Profile(clientName, role))) continue;
 
                         usersOnline.put(ign, new Profile(clientName, role));
                     }

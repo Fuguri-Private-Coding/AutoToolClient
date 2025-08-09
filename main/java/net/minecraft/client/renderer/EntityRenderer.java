@@ -1123,8 +1123,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.enableAlpha();
 
                     if (shadows.isToggled()) BloomUtils.draw();
-//                    GL11.glColor4f(1f,1f,1f,1f);
-//                    BloomRealUtils.draw();
+                    if (shadows.isToggled()) BloomRealUtils.draw();
                     this.mc.getFramebuffer().bindFramebuffer(false);
                     this.framebuffer.bindFramebufferTexture();
                     Shader.drawQuad();

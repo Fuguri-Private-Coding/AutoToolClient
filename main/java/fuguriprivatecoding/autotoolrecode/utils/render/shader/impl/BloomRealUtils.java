@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.GaussianKernel;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
@@ -13,11 +12,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-
-import java.awt.*;
 import java.nio.FloatBuffer;
-
-import static org.lwjgl.opengl.GL11.*;
 
 public class BloomRealUtils implements Imports {
 
@@ -34,12 +29,13 @@ public class BloomRealUtils implements Imports {
     }
 
     public static void draw() {
-        if (!Display.isActive() || !Display.isVisible()) return;
+        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
+        if (!Display.isActive() || !Display.isVisible() || !shadows.isToggled()) return;
         Shader program = Client.INST.getShaderManager().getBloomReal();
 
         inputFramebuffer.bindFramebuffer(true);
 
-        final int radius = 22;
+        final int radius = shadows.radius.getValue();
         final int programId = program.getProgramId();
 
         outputFramebuffer.bindFramebuffer(true);
@@ -59,9 +55,9 @@ public class BloomRealUtils implements Imports {
             Uniform.uniform1i(programId, "image2", 20);
         }
 
-        Uniform.uniform1f(programId,"brightness", 1f);
+        Uniform.uniform1f(programId,"brightness", shadows.brightness.getValue());
         Uniform.uniform2f(programId, "texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
-        Uniform.uniform2f(programId, "direction", 2, 0);
+        Uniform.uniform2f(programId, "direction", shadows.offset1.getValue(), 0);
 
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_SRC_ALPHA);
@@ -71,7 +67,7 @@ public class BloomRealUtils implements Imports {
 
         mc.getFramebuffer().bindFramebuffer(true);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        Uniform.uniform2f(programId, "direction", 0.0f, 2);
+        Uniform.uniform2f(programId, "direction", 0.0f, shadows.offset2.getValue());
         outputFramebuffer.bindFramebufferTexture();
         GL13.glActiveTexture(GL13.GL_TEXTURE20);
         inputFramebuffer.bindFramebufferTexture();

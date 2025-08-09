@@ -180,8 +180,8 @@ public class TargetESP extends Module {
         glBegin(GL_LINE_STRIP);
 
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
-            double x1 = x + sin(i * Math.PI / 180) * 0.7;
-            double z1 = z + cos(i * Math.PI / 180) * 0.7;
+            double x1 = x + sin(i * Math.PI / 180) * radius.getValue();
+            double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
 
             fadeColor = fadeBoxColor.isToggled() ?
                     ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue())

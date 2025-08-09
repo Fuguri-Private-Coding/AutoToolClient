@@ -16,7 +16,8 @@ public class ShaderManager {
 		rounded = new Shader(getShaderSource("rounded.glsl"), getShaderSource("vertex.txt"));
 
 		bloom = new Shader(getShaderSource("bloom.glsl"), getShaderSource("vertex.txt"));
-//		bloomReal = new Shader(getShaderSource("bloomreal.glsl"), getShaderSource("vertex.txt"));
+
+		bloomReal = new Shader(getShaderSource("bloomreal.glsl"), getShaderSource("vertex.txt"));
 
 		gaussianBlur = new Shader(getShaderSource("blur.glsl"), getShaderSource("vertex.txt"));
 

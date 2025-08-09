@@ -39,7 +39,7 @@ import static java.lang.Math.min;
 public class ConfigGuiScreen extends GuiScreen {
 
     Vector2f pos, size, lastMouse, lastSize, lastPos;
-    boolean moving, closing, creatingConfig, renamingConfig;
+    boolean moving, closing, creatingConfig;
     final Animation2D background, sizeBackground, scrolls;
     ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);;
     ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
@@ -48,7 +48,6 @@ public class ConfigGuiScreen extends GuiScreen {
     Config selectedConfig;
 
     private final AltManagerGuiText textField;
-    private final AltManagerGuiText renameTextField;
 
     Color mainColor;
 
@@ -68,7 +67,6 @@ public class ConfigGuiScreen extends GuiScreen {
 
         lastMouse = new Vector2f(0, 0);
         textField = new AltManagerGuiText(1, mc.fontRendererObj, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
-        renameTextField = new AltManagerGuiText(1, mc.fontRendererObj, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
 
         background = new Animation2D();
         sizeBackground = new Animation2D();
@@ -141,6 +139,7 @@ public class ConfigGuiScreen extends GuiScreen {
         if (blur.isToggled() && blur.module.get("ConfigGui")) {
             GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.black));
         }
+
         RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),mainColor.getRGB(),Color.BLACK.getRGB());
 
         ScissorUtils.enableScissor();
@@ -170,8 +169,8 @@ public class ConfigGuiScreen extends GuiScreen {
         float yOffset = scrolls.y;
         totalHeight = 0;
         for (Config config : Client.INST.getConfigManager().getConfigs()) {
-            int selectedColor = selectedConfig != null ? selectedConfig == config ? new Color(50,50,50,150).getRGB() : new Color(0,0,0,150).getRGB() : new Color(0,0,0,150).getRGB();
-            RenderUtils.drawRoundedOutLineRectangle(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clientSettings.backgroundRadius.getValue() * 1.7f, selectedColor, mainColor.getRGB(),Color.BLACK.getRGB());
+            Color selectedColor = selectedConfig != null ? selectedConfig == config ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150);
+            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clientSettings.backgroundRadius.getValue(), selectedColor);
             fontRendererObj.drawString(config.getName(), background.x + 10 + offset, background.y + 30 + yOffset, -1);
             offset += 105;
 
@@ -181,7 +180,6 @@ public class ConfigGuiScreen extends GuiScreen {
                 totalHeight += 35;
             }
         }
-
 
         RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3, -1, true);
@@ -200,16 +198,9 @@ public class ConfigGuiScreen extends GuiScreen {
 
         ScissorUtils.disableScissor();
 
-        if (creatingConfig && !renamingConfig) {
-            RoundedUtils.drawRect(5,5,15,15,3f,Color.RED);
+        if (creatingConfig) {
             textField.drawTextBox();
             textField.setMaxStringLength(16);
-        }
-
-        if (renamingConfig && !creatingConfig) {
-            RoundedUtils.drawRect(5,5,15,15,3f,Color.RED);
-            renameTextField.drawTextBox();
-            renameTextField.setMaxStringLength(16);
         }
 
         if (moving) {
@@ -221,9 +212,15 @@ public class ConfigGuiScreen extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (creatingConfig) textField.textboxKeyTyped(typedChar, keyCode);
-        if (renamingConfig) renameTextField.textboxKeyTyped(typedChar, keyCode);
 
-        if (keyCode == 1 && !closing && !creatingConfig && !renamingConfig) {
+        if (keyCode == 1 && creatingConfig) {
+            textField.setText("");
+            textField.setFocused(false);
+            creatingConfig = false;
+            return;
+        }
+
+        if (keyCode == 1 && !closing) {
             ScaledResolution sc = new ScaledResolution(mc);
             lastPos.set(pos);
             lastSize.set(size);
@@ -242,35 +239,12 @@ public class ConfigGuiScreen extends GuiScreen {
                 textField.setFocused(false);
                 creatingConfig = false;
             }
-
-            if (renamingConfig && !renameTextField.getText().isEmpty()) {
-                ClientUtils.chatLog("Successful renamed " + selectedConfig.getName() + " to " + renameTextField.getText() + ".");
-                renameTextField.setText("");
-                renameTextField.setFocused(false);
-                renamingConfig = false;
-            }
         }
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         ScaledResolution sc = new ScaledResolution(mc);
-
-        if (mouseX > 5 && mouseX < 20 && mouseY > 5 && mouseY < 20) {
-            if (creatingConfig) {
-                textField.setText("");
-                textField.setFocused(false);
-                creatingConfig = false;
-            }
-
-            if (renamingConfig) {
-                renameTextField.setText("");
-                renameTextField.setFocused(false);
-                renamingConfig = false;
-            }
-        }
-
-        if (creatingConfig || renamingConfig) return;
 
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
@@ -290,16 +264,7 @@ public class ConfigGuiScreen extends GuiScreen {
             boolean selectConfig = mouseX > background.x + 5 + offset && mouseX < background.x + 5 + offset + 100 && mouseY > background.y + 20 + yOffset && mouseY < background.y + 20 + yOffset + 30;
             if (load || save || delete || folder || refresh || create) break;
             if (selectConfig) {
-                switch (mouseButton) {
-                    case 0 -> selectedConfig = config;
-//                    case 1 -> {
-//                        if (!selectedConfig.equals(config)) {
-//                            selectedConfig = config;
-//                        }
-//                        renameTextField.setFocused(true);
-//                        renamingConfig = true;
-//                    }
-                }
+                selectedConfig = config;
             }
             offset += 105;
             if (offset > background.x + sizeBackground.x - 200) {
@@ -353,7 +318,7 @@ public class ConfigGuiScreen extends GuiScreen {
             }
 
             if (online) {
-                new Thread(this::downLoadOnlineConfigs).start();
+                new Thread(this::downloadOnlineConfigs).start();
             }
 
             if (refresh) {
@@ -386,7 +351,7 @@ public class ConfigGuiScreen extends GuiScreen {
         }
     }
 
-    private void downLoadOnlineConfigs() {
+    private void downloadOnlineConfigs() {
         try {
             ClientUtils.chatLog("Downloading online configs and models...");
             MessageChannel configsChannel = Client.INST.getIrc().getOnlineConfigsChannel();

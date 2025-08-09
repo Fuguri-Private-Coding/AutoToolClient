@@ -47,7 +47,7 @@ public class AutoClicker extends Module {
     public void onEvent(Event event) {
         if (event instanceof RunGameLoopEvent) {
             if (!Mouse.isButtonDown(0) || mc.thePlayer.isUsingItem() || Mouse.isButtonDown(1) || mc.currentScreen != null) return;
-            if (allowBreakBlock.isToggled() && RayCastUtils.rayCast(Client.INST.getCombatManager().getEntityReach(), Client.INST.getCombatManager().getBlockReach(), Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) return;
+            if (allowBreakBlock.isToggled() && RayCastUtils.rayCast(3, 4.5, new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) return;
 
             if (stopWatch.reachedMS(delay)) {
                 stopWatch.reset();

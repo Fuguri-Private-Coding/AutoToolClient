@@ -27,10 +27,11 @@ public class ESP extends Module {
     final MultiMode modes = new MultiMode("Modes", this)
             .add("HitBox")
             .add("Glow")
+            .add("Chams")
             //.add("")
             ;
 
-    BooleanSupplier renderBox = () -> (modes.get("HitBox"));
+    BooleanSupplier renderBox = () -> (modes.get("HitBox") || modes.get("Chams"));
 
     final CheckBox fadeBoxColor = new CheckBox("FadeColor", this, renderBox);
     final ColorSetting color1 = new ColorSetting("Color1", this, renderBox, 1f,1f,1f,1f);
@@ -74,6 +75,16 @@ public class ESP extends Module {
                 for (final EntityPlayer player : mc.theWorld.playerEntities) {
                     if (mc.getRenderManager() == null || (player == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || player.isDead) continue;
                     BloomUtils.addToDraw(() -> mc.renderManager.renderEntitySimple(player, mc.timer.renderPartialTicks));
+                }
+                RenderHelper.disableStandardItemLighting();
+                mc.entityRenderer.disableLightmap();
+            }
+
+            if (modes.get("Chams")) {
+                for (EntityPlayer player : mc.theWorld.playerEntities) {
+                    if (mc.getRenderManager() == null || (player == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || player.isDead) continue;
+                    GL11.glColor4f(fadeColor.getRed(),fadeColor.getGreen(),fadeColor.getBlue(),fadeColor.getAlpha());
+                    mc.renderManager.renderEntitySimple(player, mc.timer.renderPartialTicks);
                 }
                 RenderHelper.disableStandardItemLighting();
                 mc.entityRenderer.disableLightmap();
