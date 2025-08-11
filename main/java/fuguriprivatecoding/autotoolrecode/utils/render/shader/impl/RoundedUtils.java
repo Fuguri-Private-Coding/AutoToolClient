@@ -18,7 +18,8 @@ public class RoundedUtils implements Imports {
         int id = program.getProgramId();
         program.start();
         Uniform.uniform2f(id, "u_size", width, height);
-        Uniform.uniform1f(id, "u_radius", radius);
+        Uniform.uniform4f(id, "u_radius", radius,radius,radius,radius);
+        Uniform.uniform1f(id, "u_smooth", 0f);
         Uniform.uniform4f(id, "u_color", color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, color.getAlpha() / 255.0F);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -30,7 +31,7 @@ public class RoundedUtils implements Imports {
     }
 
     public static void drawRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {
-        draw(x, y, width, height, radius, color);
+        draw(x - 1f, y - 1f, width + 2, height + 2, radius, color);
     }
 
 }

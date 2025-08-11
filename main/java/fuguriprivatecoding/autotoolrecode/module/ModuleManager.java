@@ -93,6 +93,7 @@ public class ModuleManager {
 				new InvClicker(),
 				new CustomCamera(),
 				new BlockOverlay(),
+				new DynamicIsland(),
 				//new HUD(),
 				new FakeGameMode(),
 				new ModelTrainer(),

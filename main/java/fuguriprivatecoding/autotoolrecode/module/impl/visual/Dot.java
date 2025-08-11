@@ -23,7 +23,7 @@ import java.awt.*;
 @ModuleInfo(name = "Dot", category = Category.VISUAL, description = "Показывает текущие измененные ротации.")
 public class Dot extends Module {
 
-    final FloatSetting size = new FloatSetting("Size", this, 0f, 1f, 0.5f, 0.05f) {};
+    final FloatSetting size = new FloatSetting("Size", this, 0.1f, 1f, 0.5f, 0.1f) {};
     final CheckBox onlyChangeRotationModules = new CheckBox("OnlyChangeRotationModules", this, true);
 
     final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
@@ -48,9 +48,8 @@ public class Dot extends Module {
                     ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
                     : color1.getColor();
 
-
-            if (shadows.isToggled() && shadows.module.get("Dot")) BloomUtils.addToDraw(() -> RenderUtils.drawDot(smooth, size.getValue(), Color.white));
-            RenderUtils.drawDot(smooth, size.getValue(), fadeColor);
+            if (shadows.isToggled() && shadows.module.get("Dot")) BloomUtils.addToDraw(() -> RenderUtils.drawDot(smooth, size.getValue() / 10, Color.white));
+            RenderUtils.drawDot(smooth, size.getValue() / 10, fadeColor);
         }
         if (event instanceof TickEvent) {
             prevPos = pos;
