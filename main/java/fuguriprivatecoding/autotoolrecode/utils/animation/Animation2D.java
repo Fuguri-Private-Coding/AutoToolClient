@@ -20,6 +20,26 @@ public class Animation2D {
         stopWatch = new StopWatch();
     }
 
+    public void translateEndPos(float endX, float endY) {
+        this.endX += endX;
+        this.endY += endY;
+    }
+
+    public void translatePos(float x, float y) {
+        this.x += x;
+        this.y += y;
+    }
+
+    public void setEndPos(float endX, float endY) {
+        this.endX = endX;
+        this.endY = endY;
+    }
+
+    public void setPos(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public void update(float smooth) {
         smooth /= 1000f;
         smooth *= stopWatch.reachedMS();

@@ -117,17 +117,6 @@ public class AltManagerGuiScreen extends GuiScreen {
         updatedText = status;
     }
 
-    public static String generateRandomNick() {
-        int length = random.nextInt(16) + 1;
-        StringBuilder sb = new StringBuilder(length);
-        sb.append(CHARACTERS.charAt(random.nextInt(26)));
-        for (int i = 1; i < length; i++) {
-            sb.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
-        }
-
-        return sb.toString();
-    }
-
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
@@ -171,7 +160,7 @@ public class AltManagerGuiScreen extends GuiScreen {
                         updateStatus("Successful logged account: " + selectedAccount.getName() + ".");
                     }
                 } else {
-                    mc.getSession().setUsername(generateRandomNick());
+                    mc.getSession().setUsername(Client.INST.getGenerator().generateRealisticNick(16));
                     updateStatus("Successful generated name..");
                 }
             }

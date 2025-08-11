@@ -10,4 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Render2DEvent extends Event {
     int width, height;
+    int mouseX, mouseY;
 }

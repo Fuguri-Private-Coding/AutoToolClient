@@ -67,6 +67,7 @@ public class ModuleManager {
 				new ArrayList(),
 				new MoreSwing(),
 				new Debugger(),
+				new HUD(),
 				new Ping(),
 				new TargetESP(),
 				new Notifications(),

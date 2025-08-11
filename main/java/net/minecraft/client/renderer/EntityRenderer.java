@@ -1115,7 +1115,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.bindTexture(0);
 
                     GlStateManager.pushMatrix();
-                    new Render2DEvent(i1,j1).call();
+                    new Render2DEvent(i1, j1, k1, l1).call();
                     GlStateManager.popMatrix();
 
                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
