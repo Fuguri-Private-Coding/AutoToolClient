@@ -13,7 +13,7 @@ public class RoundedUtils implements Imports {
 
     private static Shader program;
 
-    private static void draw(final float x, final float y, final float width, final float height, final float radius, final Color color) {
+    private static void draw(final float x, final float y, final float width, final float height, final float radius, Color color) {
         if (program == null) program = Client.INST.getShaderManager().getRounded();
         int id = program.getProgramId();
         program.start();

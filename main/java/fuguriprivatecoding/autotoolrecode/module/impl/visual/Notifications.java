@@ -72,7 +72,7 @@ public class Notifications extends Module {
     ClientFontRenderer font = Client.INST.getFonts().fonts.get("JetBrains");
 
     public static Notifications instance;
-    private final List<Notification> notificationList = new CopyOnWriteArrayList<>();
+    public final List<Notification> notificationList = new CopyOnWriteArrayList<>();
     private final StopWatch timer = new StopWatch();
 
     Color bgColor, lineColor, textColor, textDisableColor, textEnableColor;

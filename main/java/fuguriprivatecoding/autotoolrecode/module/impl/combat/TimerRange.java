@@ -38,7 +38,7 @@ public class TimerRange extends Module {
     CheckBox renderRealPlayerPosition = new CheckBox("Render Real Player Position", this);
 
     Mode render = new Mode("Render", this, renderRealPlayerPosition::isToggled)
-            .addModes("Player", "HitBox", "Box", "OFF")
+            .addModes("Player", "HitBox", "Box")
             .setMode("Player");
 
     BooleanSupplier renderBox = () -> (render.getMode().equalsIgnoreCase("Box") || render.getMode().equalsIgnoreCase("HitBox")) && renderRealPlayerPosition.isToggled();

@@ -18,6 +18,41 @@ public class ColorUtils {
         return new Color(redPart, greenPart, bluePart, alphaPart);
     }
 
+    public static Color mix(int c1, int c2, double size, double max) {
+        int f3 = c1 >> 24 & 255;
+        int f4 = c1 >> 24 & 255;
+        Color col1 = new Color(c1);
+        Color col2 = new Color(c2);
+        int diffR = (int)((double)col1.getRed() - (double)(col1.getRed() - col2.getRed()) / max * size);
+        int diffG = (int)((double)col1.getGreen() - (double)(col1.getGreen() - col2.getGreen()) / max * size);
+        int diffB = (int)((double)col1.getBlue() - (double)(col1.getBlue() - col2.getBlue()) / max * size);
+        if (diffR > 255) {
+            diffR = 255;
+        }
+
+        if (diffR < 0) {
+            diffR = 0;
+        }
+
+        if (diffG > 255) {
+            diffG = 255;
+        }
+
+        if (diffG < 0) {
+            diffG = 0;
+        }
+
+        if (diffB > 255) {
+            diffB = 255;
+        }
+
+        if (diffB < 0) {
+            diffB = 0;
+        }
+
+        return (new Color(diffR, diffG, diffB));
+    }
+
     public Color mixColor(final Color color1, final Color color2, final int i, final double offset, final double speed) {
         double time = System.currentTimeMillis() / 1000.0;
         double angle = time * speed;
