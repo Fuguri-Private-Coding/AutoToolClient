@@ -4,7 +4,9 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
+import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
@@ -31,7 +33,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-//@ModuleInfo(name = "TestScaff", category = Category.PLAYER)
+@ModuleInfo(name = "TestScaff", category = Category.PLAYER)
 public class TestScaff extends Module {
 
     IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 1, 180, 30) {
@@ -115,15 +117,16 @@ public class TestScaff extends Module {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
 
         if (event instanceof TickEvent) {
-            updateBlockPos();
-            rotate();
-            legitPlace();
+
         }
 
         if (event instanceof TickEvent) {
             MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
             BlockPos analyzingBlock = renderRayCast.getBlockPos();
             if (analyzingBlock != null && renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) renderPos = analyzingBlock;
+            updateBlockPos();
+            rotate();
+            legitPlace();
         }
 
         if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {
@@ -189,7 +192,6 @@ public class TestScaff extends Module {
         }
     }
 
-
     private void updateBlockPos() {
         BlockPos newBlockPos = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ);
         if (!mc.theWorld.isAirBlock(newBlockPos)) {
@@ -199,8 +201,8 @@ public class TestScaff extends Module {
 
     void legitPlace() {
         if (mc.currentScreen != null) return;
-//        MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
-//
+        MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
+
 //        if (findBlock() == -1 || mouseOver == null || mouseOver.getBlockPos() == null || mc.theWorld.getBlockState(mouseOver.getBlockPos()).getBlock().getMaterial() == Material.air) {
 //            return;
 //        }
@@ -251,7 +253,7 @@ public class TestScaff extends Module {
 //            rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(yaw));
 //        }'
 
-        float yaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw - 180), 45);
+        float yaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), 45);
 
         if (yaw / 45 % 2 == 0) {
             yaw += 45;

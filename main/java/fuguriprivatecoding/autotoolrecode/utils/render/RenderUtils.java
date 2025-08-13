@@ -584,7 +584,7 @@ public class RenderUtils implements Imports {
         xs = x1 - radius;
         ys = y + radius;
 
-        ColorUtils.glColor(ColorUtils.mixColor(color1,color2, 1, offset2, speed));
+        ColorUtils.glColor(ColorUtils.mixColor(color1,color2, 0, offset2, speed));
         for (double i = 0.0F; i < 90.0F; i += 0.1F) {
             GL11.glVertex2d(xs + Math.sin(i * Math.PI / 180.0F) * radius, ys - Math.cos(i * Math.PI / 180.0F) * radius);
         }
@@ -600,7 +600,7 @@ public class RenderUtils implements Imports {
         xs = x + radius;
         ys = y1 - radius;
 
-        ColorUtils.glColor(ColorUtils.mixColor(color1,color2, 1, offset4, speed));
+        ColorUtils.glColor(ColorUtils.mixColor(color1,color2, 2, offset4, speed));
         for (double i = 180.0F; i < 270.0F; i += 0.1F) {
             GL11.glVertex2d(xs + Math.sin(i * Math.PI / 180.0F) * radius, ys - Math.cos(i * Math.PI / (double)180.0F) * radius);
         }

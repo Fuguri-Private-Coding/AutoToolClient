@@ -14,6 +14,7 @@ import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -184,11 +185,11 @@ public class ClickGuiScreen extends GuiScreen {
 		ScaledResolution sc = new ScaledResolution(mc);
 
 		if (shadows.isToggled() && shadows.module.get("ClickGui")) {
-			BloomUtils.addToDraw(() -> {
-				RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.black);
-				RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.black);
-				RoundedUtils.drawRect(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.black);
-				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.black);
+			BloomRealUtils.addToDraw(() -> {
+				RenderUtils.drawMixedRoundedRect(5, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
+				RenderUtils.drawMixedRoundedRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
+				RenderUtils.drawMixedRoundedRect(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
+				RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
 			});
 		}
 		if (blur.isToggled() && blur.module.get("ClickGui")) {

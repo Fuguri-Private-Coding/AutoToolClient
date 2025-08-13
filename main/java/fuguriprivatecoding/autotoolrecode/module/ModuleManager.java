@@ -29,6 +29,7 @@ public class ModuleManager {
 				new BridgeAssist(),
 				new Trajectory(),
 				new Hat(),
+				new TestScaff(),
 				new Blur(),
 				new Dot(),
 				new FastPlace(),

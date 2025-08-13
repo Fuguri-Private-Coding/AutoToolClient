@@ -87,6 +87,7 @@ public class Scaffold extends Module {
 
     final CheckBox bypassServerPitch = new CheckBox("BypassServerPitch", this, true);
     final FloatSetting serverPitch = new FloatSetting("ServerPitch", this, bypassServerPitch::isToggled , 70, 85, 77,0.1f);
+    final FloatSetting yaw = new FloatSetting("Yaw", this, 0, 45, 45,0.1f);
     final FloatSetting bestPitchNoDiagonal = new FloatSetting("FrontPitch", this, 70, 85, 77,0.1f);
     final FloatSetting diagonalPitch = new FloatSetting("DiagonalPitch", this, 70, 85, 77,0.1f);
     final CheckBox alwaysSprint = new CheckBox("AlwaysSprint", this, true);
