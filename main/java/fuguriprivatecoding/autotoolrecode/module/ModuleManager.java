@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.*;
@@ -12,6 +13,8 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.legit.*;
 import lombok.Getter;
+import org.atteo.classindex.ClassIndex;
+
 import java.util.List;
 
 @Getter
@@ -22,93 +25,105 @@ public class ModuleManager {
 
 	public ModuleManager() {
 		INSTANCE = this;
+		modules = new CopyOnWriteArrayList<>();
 
-		register(
-				new AutoSoup(),
-				new KillAura(),
-				new BridgeAssist(),
-				new Trajectory(),
-				new Hat(),
-				new TestScaff(),
-				new Blur(),
-				new Dot(),
-				new FastPlace(),
-				//new FreeLook(),
-				new BedESP(),
-				//new Effect(),
-				//new TestScaff(),
-				new Booster(),
-				new ChestStealer(),
-				new MoreKB(),
-				new Velocity(),
-				new MurderMystery(),
-				new InvManager(),
-				new Trails(),
-				new ESP(),
-				new BackTrack(),
-				new RotationHandler(),
-				new Glow(),
-				new Fly(),
-				new AutoClicker(),
-				new AutoTool(),
-				new Scaffold(),
-				new AntiFireball(),
-				new ChestESP(),
-				new DiscordRPCModule(),
-				new Phase(),
-				new NoGuiClose(),
-				new AirStuck(),
-				new VClip(),
-				new NoSlow(),
-				new NoWeb(),
-				new Speed(),
-				new Sprint(),
-				new Timer(),
-				new Disabler(),
-				new ArrayList(),
-				new MoreSwing(),
-				new Debugger(),
-				new HUD(),
-				new Ping(),
-				new TargetESP(),
-				new Notifications(),
-				new FullBright(),
-				new FreeLook(),
-				new ClientSpoofer(),
-				new TimerRange(),
-				new ClickGui(),
-				new Fixes(),
-				new FlagDetector(),
-				new AimAssist(),
-				new Blink(),
-				new Animations(),
-				new MotionBlur(),
-				new AutoPlace(),
-				new ClickSettings(),
-				new Particle(),
-				new Test(),
-				new NameTags(),
-				new NoRender(),
-				new MidClick(),
-				new CustomCape(),
-				new InvClicker(),
-				new CustomCamera(),
-				new BlockOverlay(),
-				new DynamicIsland(),
-				//new HUD(),
-				new FakeGameMode(),
-				new ModelTrainer(),
-				new KeepSprint(),
-				new AutoLeave(),
-				new KillEffects(),
-				new GuiMove(),
-				new FindHoles(),
-				new ClientSettings(),
-				new ScoreBoard(),
-				new IRC(),
-				new Ambience(),
-				new TargetHUD()
-		);
+		ClassIndex.getAnnotated(ModuleInfo.class).forEach(module -> {
+            try {
+                modules.add((Module) module.getDeclaredConstructor().newInstance());
+				System.out.println(module.getName());
+            } catch (InstantiationException | IllegalAccessException e) {
+				System.out.println("failed load");
+				System.out.println(e.getMessage());
+            } catch (InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+//		register(
+//				new AutoSoup(),
+//				new KillAura(),
+//				new BridgeAssist(),
+//				new Trajectory(),
+//				new Hat(),
+//				new TestScaff(),
+//				new Blur(),
+//				new Dot(),
+//				new FastPlace(),
+//				//new FreeLook(),
+//				new BedESP(),
+//				//new Effect(),
+//				//new TestScaff(),
+//				new Booster(),
+//				new ChestStealer(),
+//				new MoreKB(),
+//				new Velocity(),
+//				new MurderMystery(),
+//				new InvManager(),
+//				new Trails(),
+//				new ESP(),
+//				new BackTrack(),
+//				new RotationHandler(),
+//				new Glow(),
+//				new Fly(),
+//				new AutoClicker(),
+//				new AutoTool(),
+//				new Scaffold(),
+//				new AntiFireball(),
+//				new ChestESP(),
+//				new DiscordRPCModule(),
+//				new Phase(),
+//				new NoGuiClose(),
+//				new AirStuck(),
+//				new VClip(),
+//				new NoSlow(),
+//				new NoWeb(),
+//				new Speed(),
+//				new Sprint(),
+//				new Timer(),
+//				new Disabler(),
+//				new ArrayList(),
+//				new MoreSwing(),
+//				new Debugger(),
+//				new Ping(),
+//				new TargetESP(),
+//				new Notifications(),
+//				new FullBright(),
+//				new FreeLook(),
+//				new ClientSpoofer(),
+//				new TimerRange(),
+//				new ClickGui(),
+//				new Fixes(),
+//				new FlagDetector(),
+//				new AimAssist(),
+//				new Blink(),
+//				new Animations(),
+//				new MotionBlur(),
+//				new AutoPlace(),
+//				new ClickSettings(),
+//				new Particle(),
+//				new Test(),
+//				new NameTags(),
+//				new NoRender(),
+//				new MidClick(),
+//				new CustomCape(),
+//				new InvClicker(),
+//				new CustomCamera(),
+//				new BlockOverlay(),
+//				new DynamicIsland(),
+//				//new HUD(),
+//				new FakeGameMode(),
+//				new ModelTrainer(),
+//				new KeepSprint(),
+//				new AutoLeave(),
+//				new KillEffects(),
+//				new GuiMove(),
+//				new FindHoles(),
+//				new ClientSettings(),
+//				new ScoreBoard(),
+//				new IRC(),
+//				new Ambience(),
+//				new TargetHUD()
+//		);
 	}
 
 	private void register(Module... modulesToRegister) {

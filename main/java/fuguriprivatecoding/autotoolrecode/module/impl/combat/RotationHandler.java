@@ -34,7 +34,7 @@ public class RotationHandler extends Module {
         if (
                 (Client.INST.getCombatManager().getTarget() == null
                 || DistanceUtils.getDistance(Client.INST.getCombatManager().getTarget()) > Client.INST.getModuleManager().getModule(KillAura.class).rotateDistance.getValue())
-                        && !Client.INST.getModuleManager().getModule(TestScaff.class).isToggled() && !Client.INST.getModuleManager().getModule(AntiFireball.class).rotating
+                        && !Client.INST.getModuleManager().getModule(TestScaff.class).isToggled() && !Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && !Client.INST.getModuleManager().getModule(AntiFireball.class).rotating
         ) {
             if (Rot.isChanged()) {
                 if (event instanceof MotionEvent motionEvent) {

@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.player;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -110,7 +111,7 @@ public class InvManager extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof MotionEvent) {
+        if (event instanceof TickEvent) {
             if (mc.thePlayer.ticksExisted <= 40) {
                 return;
             }

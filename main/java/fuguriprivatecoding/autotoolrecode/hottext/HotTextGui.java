@@ -51,7 +51,6 @@ public class HotTextGui extends GuiScreen {
         mc = Minecraft.getMinecraft();
 
         ScaledResolution sc = new ScaledResolution(mc);
-        Client.INST.getConfigManager().loadHotKeys();
 
         lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
         lastPos = new Vector2f(50f, 50f);

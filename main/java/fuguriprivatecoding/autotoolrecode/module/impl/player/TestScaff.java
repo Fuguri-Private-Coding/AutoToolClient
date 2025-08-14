@@ -100,6 +100,8 @@ public class TestScaff extends Module {
     int delay = 0;
 
     BlockPos renderPos = null;
+
+    float lastPitch = 80;
     Glow shadows;
 
     @Override
@@ -115,10 +117,6 @@ public class TestScaff extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
-
-        if (event instanceof TickEvent) {
-
-        }
 
         if (event instanceof TickEvent) {
             MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
@@ -214,8 +212,11 @@ public class TestScaff extends Module {
 //                delay = 1000 / RandomUtils.nextInt(minCps.getValue(), maxCps.getValue());
 //            }
 //        }
-        if (mouse != null && mouse.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
-                && mouse.sideHit != EnumFacing.UP && mouse.sideHit != EnumFacing.DOWN) {
+        if (mouse.sideHit == mouseOver.sideHit &&
+                mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
+                && mouse.sideHit != EnumFacing.DOWN
+//                && mouse.sideHit != EnumFacing.UP
+        ) {
             if (mc.playerController.onPlayerRightClick(
                     mc.thePlayer,
                     mc.theWorld,
@@ -253,15 +254,26 @@ public class TestScaff extends Module {
 //            rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(yaw));
 //        }'
 
-        float yaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), 45);
+        float yaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), 0.1f);
 
-        if (yaw / 45 % 2 == 0) {
-            yaw += 45;
+        if (yaw / 0.1f % 2 == 0) {
+            yaw += 0.1f;
+        }
+        Rot rotation;
+
+        if ((mc.gameSettings.keyBindJump.isKeyDown() && (mc.thePlayer.onGround || mc.thePlayer.jumpTicks > 5)) || (!mc.gameSettings.keyBindJump.isKeyDown() && !mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ))) ) {
+            rotation = new Rot(MathHelper.wrapDegree(yaw + 180), getPitch(MathHelper.wrapDegree(yaw)));
+
+        } else {
+            rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
         }
 
-        Rot rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
-
         Delta delta = RotUtils.getDelta(Rot.getServerRotation(), rotation);
+
+        delta = delta.limit(
+                RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
+                RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
+        );
 
         delta = delta.limit(
                 RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
@@ -284,24 +296,25 @@ public class TestScaff extends Module {
     private float getPitch(float yaw) {
         Map<Float, MovingObjectPosition> positionHashMap = new HashMap<>();
 
-        float step = 0.1f;
-        for (float i = 45; i < 81; i += step) {
+        float step = 0.5f;
+        for (float i = 45; i < 90; i += step) {
             MovingObjectPosition mouses = RayCastUtils.rayCast(3, 4.5, new Rot(yaw, i));
             if (mouses == null || mouses.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
                     || positionHashMap.containsValue(mouses)
-                    || mouses.sideHit == EnumFacing.UP
+//                    || mouses.sideHit == EnumFacing.UP
                     || mouses.sideHit == EnumFacing.DOWN) continue;
             positionHashMap.put(i, mouses);
         }
 
         if (positionHashMap.isEmpty()) {
-            return 79;
+            return lastPitch;
         }
 
         List<Float> pitches = new ArrayList<>(positionHashMap.keySet());
 
         pitches.sort(Comparator.comparingDouble(pitch -> Math.abs(Rot.getServerRotation().getPitch()) - pitch));
         mouse = positionHashMap.get(pitches.getFirst());
+        lastPitch = pitches.getFirst();
         return pitches.getFirst();
     }
 

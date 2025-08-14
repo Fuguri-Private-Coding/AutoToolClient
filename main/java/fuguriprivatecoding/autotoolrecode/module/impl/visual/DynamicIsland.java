@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.connection.BackTrack;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.TestScaff;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
@@ -84,7 +85,7 @@ public class DynamicIsland extends Module {
 
             EntityLivingBase ent = Client.INST.getCombatManager().getTarget();
             BackTrack backTrack = Client.INST.getModuleManager().getModule(BackTrack.class);
-            Scaffold scaffOld = Client.INST.getModuleManager().getModule(Scaffold.class);
+            TestScaff scaffOld = Client.INST.getModuleManager().getModule(TestScaff.class);
 
             String name = Client.INST.getFullName();
             String bps = String.format("%.3f", mc.thePlayer.getBps(false));
@@ -108,13 +109,13 @@ public class DynamicIsland extends Module {
                 resetNeedY(30, yOffset);
             }
 
-            if (mc.thePlayer.inventory.getCurrentItem() != null) {
-                if (scaffOld.isToggled() && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
-                    scaffold = "Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize;
-                    currentText = scaffold;
-                    resetNeedY(45, yOffset);
-                }
-            }
+//            if (mc.thePlayer.inventory.getCurrentItem() != null) {
+//                if (scaffOld.isToggled() && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
+//                    scaffold = "Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize;
+//                    currentText = scaffold;
+//                    resetNeedY(45, yOffset);
+//                }
+//            }
 
             if (backTrack.isToggled() && backTrack.packetBuffer.size() > 10 && ent != null) {
                 AxisAlignedBB realBox = ent.getEntityBoundingBox().offset(ent.nx - ent.posX, ent.ny - ent.posY, ent.nz - ent.posZ).expand(

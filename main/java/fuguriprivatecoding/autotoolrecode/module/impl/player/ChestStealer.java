@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -48,7 +48,7 @@ public class ChestStealer extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof RunGameLoopEvent) {
+        if (event instanceof TickEvent) {
             if (mc.currentScreen instanceof GuiChest guiChest) {
                 if (checkName.isToggled() && !guiChest.getLowerChestInventory().getName().contains("Chest")) {
                     return;

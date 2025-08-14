@@ -20,7 +20,6 @@ import fuguriprivatecoding.autotoolrecode.managers.*;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleManager;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
-import fuguriprivatecoding.autotoolrecode.managers.HUDManager;
 import fuguriprivatecoding.autotoolrecode.utils.font.*;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
@@ -77,7 +76,6 @@ public enum Client implements Imports {
 	LoadNatives loadNatives;
 	RenderEffects renderEffects;
 	NameGenerator generator;
-	HUDManager hudManager;
 	@Setter
 	Discord discord;
 	@Setter
@@ -124,8 +122,6 @@ public enum Client implements Imports {
 
 		moduleManager = new ModuleManager();
 
-		hudManager = new HUDManager();
-
 		shaderManager = new ShaderManager();
 		shaderManager.init();
 
@@ -139,6 +135,8 @@ public enum Client implements Imports {
 
 		hotTextGui = new HotTextGui();
 		hotTextManager = new HotTextManager();
+
+		Client.INST.getConfigManager().loadHotKeys();
 
 		commandManager = new CommandManager();
 		clickManager = new ClickManager();
