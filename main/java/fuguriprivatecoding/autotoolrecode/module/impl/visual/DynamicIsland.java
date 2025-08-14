@@ -8,7 +8,6 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.connection.BackTrack;
-import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.TestScaff;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
@@ -19,16 +18,12 @@ import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
-
-import static org.lwjgl.opengl.GL11.glColor4f;
 
 @ModuleInfo(name = "DynamicIsland", category = Category.VISUAL)
 public class DynamicIsland extends Module {
@@ -41,7 +36,6 @@ public class DynamicIsland extends Module {
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, 0, 100, 5, 0.1f);
 
     FloatSetting width = new FloatSetting("Width", this, 0f,50f,10f,0.1f);
-    FloatSetting height = new FloatSetting("Height", this, 0f,50f,10f,0.1f);
     FloatSetting animationSpeed = new FloatSetting("Animation Speed", this, 0f,50f,15f,0.1f);
 
     CheckBox textFade = new CheckBox("Text Fade", this, false);
@@ -66,10 +60,10 @@ public class DynamicIsland extends Module {
     Color fadeTextColor;
     Color fadeBackgroundColor;
 
-    Animation2D size = new Animation2D();
     Animation2D currentWidth = new Animation2D();
-    Animation2D needY = new Animation2D();
     Animation2D currentHeight = new Animation2D();
+    Animation2D size = new Animation2D();
+    Animation2D needY = new Animation2D();
     String currentText;
 
     @EventTarget
@@ -109,13 +103,13 @@ public class DynamicIsland extends Module {
                 resetNeedY(30, yOffset);
             }
 
-//            if (mc.thePlayer.inventory.getCurrentItem() != null) {
-//                if (scaffOld.isToggled() && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
-//                    scaffold = "Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize;
-//                    currentText = scaffold;
-//                    resetNeedY(45, yOffset);
-//                }
-//            }
+            if (mc.thePlayer.inventory.getCurrentItem() != null) {
+                if (scaffOld.isToggled() && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
+                    scaffold = "Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize;
+                    currentText = scaffold;
+                    resetNeedY(45, yOffset);
+                }
+            }
 
             if (backTrack.isToggled() && backTrack.packetBuffer.size() > 10 && ent != null) {
                 AxisAlignedBB realBox = ent.getEntityBoundingBox().offset(ent.nx - ent.posX, ent.ny - ent.posY, ent.nz - ent.posZ).expand(

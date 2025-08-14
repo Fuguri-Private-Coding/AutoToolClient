@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.ClickEvent;
@@ -27,6 +28,7 @@ public class AutoPlace extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
+        if (Client.INST.getModuleManager().getModule(TestScaff.class).isToggled()) return;
         if (mc.currentScreen != null) return;
         if (event instanceof DrawBlockHighlightEvent) {
             if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock))
@@ -41,6 +43,7 @@ public class AutoPlace extends Module {
                 if (mc.theWorld.getBlockState(mc.objectMouseOver.getBlockPos()).getBlock().getMaterial() != Material.air) {
                     if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mc.objectMouseOver.getBlockPos(), mc.objectMouseOver.sideHit, mc.objectMouseOver.hitVec)) {
                         mc.thePlayer.swingItem();
+                        mc.getItemRenderer().resetEquippedProgress();
                     }
                 }
             }

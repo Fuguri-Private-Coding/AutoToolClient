@@ -1,11 +1,13 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.TestScaff;
 import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 
@@ -32,7 +34,10 @@ public class Fixes extends Module {
                     wasInGui = true;
                 }
             }
-            if (fixes.get("JumpDelay")) mc.thePlayer.jumpTicks = 0;
+
+            if (fixes.get("JumpDelay") && !Client.INST.getModuleManager().getModule(TestScaff.class).isToggled()) {
+                mc.thePlayer.jumpTicks = 0;
+            }
         }
     }
 }
