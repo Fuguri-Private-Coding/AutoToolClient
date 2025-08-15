@@ -28,6 +28,7 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import java.io.File;
 import java.util.function.BooleanSupplier;
@@ -165,6 +166,7 @@ public class KillAura extends Module {
                 delay = Math.round(1000f / RandomUtils.nextFloat(minCPS.getValue(), maxCPS.getValue()));
             }
         }
+
         if (DistanceUtils.getDistance(target) < rotateDistance.getValue()) {
             Rot lr = Rot.getServerRotation().copy();
 

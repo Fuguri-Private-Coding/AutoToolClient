@@ -79,8 +79,20 @@ public class TestScaff extends Module {
     CheckBox serverSwing = new CheckBox("Server Swing", this, noSwing::isToggled, true);
 
     final CheckBox speedTelly = new CheckBox("Speed Telly", this, tellyVisible, true);
-    IntegerSetting minTellyTicks = new IntegerSetting("Min Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 2, 12, 5);
-    IntegerSetting maxTellyTicks = new IntegerSetting("Max Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 2, 12, 5);
+    IntegerSetting minTellyTicks = new IntegerSetting("Min Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 2, 12, 5) {
+        @Override
+        public int getValue() {
+            if (maxTellyTicks.value < value) { value = maxTellyTicks.value; }
+            return super.getValue();
+        }
+    };
+    IntegerSetting maxTellyTicks = new IntegerSetting("Max Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 2, 12, 5) {
+        @Override
+        public int getValue() {
+            if (minTellyTicks.value > value) { value = minTellyTicks.value; }
+            return super.getValue();
+        }
+    };
 
     final CheckBox ninjaBridge = new CheckBox("Ninja Bridge", this, godVisible, true);
     final FloatSetting edgeOffset = new FloatSetting("Edge Offset", this, () -> godVisible.getAsBoolean() && ninjaBridge.isToggled(), 0f,0.1f,0.05f, 0.01f);
@@ -216,7 +228,7 @@ public class TestScaff extends Module {
 
         if (mouse.sideHit == mouseOver.sideHit
                 && mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
-                && getSameYValue(mouse)) {
+                && getSameYValue(mouse) && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
             if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem(), mouse.getBlockPos(), mouse.sideHit, mouse.hitVec)) {
                 if (noSwing.isToggled()) {
                     if (serverSwing.isToggled()) mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
@@ -229,14 +241,10 @@ public class TestScaff extends Module {
 
     boolean getSameYValue(MovingObjectPosition mouse) {
         if (sameY.isToggled()) {
-            if (Mouse.isButtonDown(1)) {
-                return mouse.sideHit != EnumFacing.DOWN;
-            } else {
-                return mouse.sideHit != EnumFacing.DOWN && mouse.sideHit != EnumFacing.UP;
-            }
-        } else {
-            return mouse.sideHit != EnumFacing.DOWN;
+            if (Mouse.isButtonDown(1)) return mouse.sideHit != EnumFacing.DOWN;
+            return mouse.sideHit != EnumFacing.DOWN && mouse.sideHit != EnumFacing.UP;
         }
+        return mouse.sideHit != EnumFacing.DOWN;
     }
 
     void rotate() {
@@ -251,7 +259,7 @@ public class TestScaff extends Module {
         Rot rotation;
 
         if (rotMode.getMode().equalsIgnoreCase("TellyBridge")) {
-            if ((mc.gameSettings.keyBindJump.isKeyDown() && (mc.thePlayer.onGround || mc.thePlayer.jumpTicks > RandomUtils.nextInt(minTellyTicks.getValue(), maxTellyTicks.getValue()))) || (!mc.gameSettings.keyBindJump.isKeyDown() && !mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ))) ) {
+            if (getTellyValue()) {
                 rotation = new Rot(MathHelper.wrapDegree(yaw + 180), 80);
             } else {
                 rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
@@ -263,7 +271,7 @@ public class TestScaff extends Module {
         Delta delta = RotUtils.getDelta(Rot.getServerRotation(), rotation);
 
         if (rotMode.getMode().equalsIgnoreCase("TellyBridge")) {
-            if ((mc.gameSettings.keyBindJump.isKeyDown() && (mc.thePlayer.onGround || mc.thePlayer.jumpTicks > RandomUtils.nextInt(minTellyTicks.getValue(), maxTellyTicks.getValue()))) || (!mc.gameSettings.keyBindJump.isKeyDown() && !mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ))) ) {
+            if (getTellyValue()) {
                 delta = delta.limit(
                         RandomUtils.nextInt(180, 180),
                         RandomUtils.nextInt(180, 180)
@@ -289,6 +297,16 @@ public class TestScaff extends Module {
                 Rot.getServerRotation().getYaw() + delta.getYaw(),
                 Math.clamp(Rot.getServerRotation().getPitch() + delta.getPitch(), -90, 90)
         ));
+    }
+
+    boolean getTellyValue() {
+        if (MoveUtils.isMoving()) {
+            if (mc.gameSettings.keyBindJump.isKeyDown()) {
+                return mc.thePlayer.onGround || mc.thePlayer.jumpTicks > RandomUtils.nextInt(minTellyTicks.getValue(), maxTellyTicks.getValue());
+            }
+            return !mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ));
+        }
+        return false;
     }
 
     private float getPitch(float yaw) {
