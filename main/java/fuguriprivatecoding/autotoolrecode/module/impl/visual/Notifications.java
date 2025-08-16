@@ -95,7 +95,7 @@ public class Notifications extends Module {
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (glow == null) glow = Client.INST.getModuleManager().getModule(Glow.class);
         if (event instanceof Render2DEvent e) {
-            renderNotifications(e.getWidth(), e.getHeight());
+            renderNotifications(e.getSc().getScaledWidth(), e.getSc().getScaledHeight());
         }
     }
 

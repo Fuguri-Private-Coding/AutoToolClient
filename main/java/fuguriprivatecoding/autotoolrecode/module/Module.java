@@ -8,10 +8,12 @@ import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import java.util.ArrayList;
 import java.util.List;
+
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Module implements Imports {
+public class Module implements Imports, SettingAble {
 
 	final ModuleInfo annotation = getClass().getAnnotation(ModuleInfo.class);
 
@@ -75,5 +77,15 @@ public class Module implements Imports {
 
 	public String getSuffix() {
 		return "";
+	}
+
+	@Override
+	public void addSetting(Setting setting) {
+		settings.add(setting);
+	}
+
+	@Override
+	public void addSettings(Setting... settings) {
+		this.settings.addAll(List.of(settings));
 	}
 }

@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
@@ -14,12 +15,12 @@ public class MultiMode extends Setting {
     @Getter
     CopyOnWriteArrayList<Doubles<String, Boolean>> values;
 
-    public MultiMode(String name, Module parent) {
+    public MultiMode(String name, SettingAble parent) {
         super(name, parent);
         values = new CopyOnWriteArrayList<>();
     }
 
-    public MultiMode(String name, Module parent, BooleanSupplier visible) {
+    public MultiMode(String name, SettingAble parent, BooleanSupplier visible) {
         super(name, parent);
         setVisible(visible);
         values = new CopyOnWriteArrayList<>();

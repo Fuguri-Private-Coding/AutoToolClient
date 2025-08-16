@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -15,11 +16,11 @@ public class Mode extends Setting {
     String mode;
     @Setter List<String> modes = new ArrayList<>();
 
-    public Mode(String name, Module parent) {
+    public Mode(String name, SettingAble parent) {
         super(name, parent);
     }
 
-    public Mode(String name, Module parent, BooleanSupplier visible) {
+    public Mode(String name, SettingAble parent, BooleanSupplier visible) {
         super(name, parent);
         this.setVisible(visible);
     }

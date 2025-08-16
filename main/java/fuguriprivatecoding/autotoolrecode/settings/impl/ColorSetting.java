@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -14,7 +15,7 @@ public class ColorSetting extends Setting {
 
     float red, green, blue, alpha;
 
-    public ColorSetting(String name, Module parent, float red, float green, float blue, float alpha) {
+    public ColorSetting(String name, SettingAble parent, float red, float green, float blue, float alpha) {
         super(name, parent);
         this.red = red;
         this.green = green;
@@ -22,7 +23,7 @@ public class ColorSetting extends Setting {
         this.alpha = alpha;
     }
 
-    public ColorSetting(String name, Module parent, BooleanSupplier visible) {
+    public ColorSetting(String name, SettingAble parent, BooleanSupplier visible) {
         super(name, parent, visible);
         this.red = 1;
         this.green = 1;
@@ -30,7 +31,7 @@ public class ColorSetting extends Setting {
         this.alpha = 1;
     }
 
-    public ColorSetting(String name, Module parent) {
+    public ColorSetting(String name, SettingAble parent) {
         super(name, parent);
         this.red = 1;
         this.green = 1;
@@ -38,7 +39,7 @@ public class ColorSetting extends Setting {
         this.alpha = 1;
     }
 
-    public ColorSetting(String name, Module parent, BooleanSupplier visible, float red, float green, float blue, float alpha) {
+    public ColorSetting(String name, SettingAble parent, BooleanSupplier visible, float red, float green, float blue, float alpha) {
         super(name, parent, visible);
         this.red = red;
         this.green = green;

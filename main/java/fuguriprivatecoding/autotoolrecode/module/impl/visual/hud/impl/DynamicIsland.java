@@ -1,5 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual.hud.impl;
 
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.hud.HUDElement;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
@@ -8,13 +10,47 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.ScaledResolution;
 import org.joml.Vector2f;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
-public class DynamicIsland extends HUDElement {
+public class DynamicIsland extends HUDElement implements Imports {
+
+    private final List<DynamicIslandElement> dynamicIslandElements = List.of(
+            new DynamicIslandElement(
+                    Client.INST::getFullName,
+                    () -> true,
+                    0
+            ),
+            new DynamicIslandElement(
+                    () -> String.valueOf(mc.thePlayer.getBps(false)),
+                    MoveUtils::isMoving,
+                    1
+            ),
+            new DynamicIslandElement(
+                    () -> "Current Target - " + Client.INST.getCombatManager().getTarget(),
+                    () -> Client.INST.getCombatManager().getTarget() != null,
+                    2
+            ),
+            new DynamicIslandElement(
+                    () -> "Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize + "\n" + "Speed - " + mc.thePlayer.getBps(false),
+                    () -> new Vector2f((float) Math.max(getFont().getStringWidth("Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize), getFont().getStringWidth("Speed - " + mc.thePlayer.getBps(false))), 24),
+                    () -> Client.INST.getModuleManager().getModule(Scaffold.class).isToggled(),
+                    3
+            )
+    );
 
     Mode fonts = new Mode("Fonts", this)
             .addModes("MuseoSans", "Roboto", "JetBrains", "SFPro")
@@ -48,13 +84,14 @@ public class DynamicIsland extends HUDElement {
     Color fadeTextColor;
     Color fadeBackgroundColor;
 
+    String currentText = Client.INST.getFullName();
 
     Animation2D currentSize = new Animation2D();
     Animation needY = new Animation();
     Animation radius = new Animation();
 
     public DynamicIsland(Vector2f pos) {
-        super(new Vector2f(0.5f, pos.y));
+        super(new Vector2f(50, pos.y));
     }
 
     @Override
@@ -63,11 +100,32 @@ public class DynamicIsland extends HUDElement {
         float absoluteY = pos.y * sc.getScaledHeight();
 
 
+        currentSize.update(10f);
+        radius.update(10f);
 
+        radius.endX = 5f;
+
+        currentSize.endY = 10;
+        currentSize.endX = (float) font.getStringWidth(currentText) + 8;
 
         RoundedUtils.drawCenteredRect(absoluteX, absoluteY, currentSize.x, currentSize.y, radius.x, Color.BLACK);
 
+        font.drawCenteredString(currentText, absoluteX, absoluteY + 2.5f, Color.WHITE);
+    }
 
 
+
+    @Getter
+    @AllArgsConstructor
+    @RequiredArgsConstructor
+    private class DynamicIslandElement {
+        private final Supplier<String> text;
+        private Supplier<Vector2f> size = () -> new Vector2f((float) (getFont().getStringWidth(text.get()) + 8), 12);
+        private final BooleanSupplier use;
+        private final int priority;
+    }
+
+    private ClientFontRenderer getFont() {
+        return Client.INST.getFonts().fonts.get(fonts.getMode());
     }
 }

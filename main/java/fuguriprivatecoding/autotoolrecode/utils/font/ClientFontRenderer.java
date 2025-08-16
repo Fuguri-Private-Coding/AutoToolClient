@@ -170,6 +170,10 @@ public class ClientFontRenderer implements Imports {
         return drawString(text, x, y, color.getRGB(), true, 9f);
     }
 
+    public float drawCenteredString(String text, double x, double y, Color color) {
+        return drawString(text, x + 1 - getStringWidth(text) / 2f, y, color.getRGB(), true, 9f);
+    }
+
     public float drawString(String text, double x, double y, Color color, boolean shadow) {
         return drawString(text, x, y, color.getRGB(), shadow, 9f);
     }

@@ -1,23 +1,22 @@
 package fuguriprivatecoding.autotoolrecode.settings;
 
-import fuguriprivatecoding.autotoolrecode.module.Module;
-
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import java.util.function.BooleanSupplier;
 
 public class Setting implements ISetting {
 	final String name;
 	BooleanSupplier visible;
 
-	public Setting(String name, Module parent) {
+	public Setting(String name, SettingAble parent) {
 		this.name = name;
 		visible = () -> true;
-		parent.getSettings().add(this);
+		parent.addSetting(this);
 	}
 
-	public Setting(String name, Module parent, BooleanSupplier visible) {
+	public Setting(String name, SettingAble parent, BooleanSupplier visible) {
 		this.name = name;
 		this.visible = visible;
-		parent.getSettings().add(this);
+		parent.addSetting(this);
 	}
 
 	@Override

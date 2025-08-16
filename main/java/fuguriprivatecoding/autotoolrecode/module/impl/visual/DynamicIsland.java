@@ -70,7 +70,7 @@ public class DynamicIsland extends Module {
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent e) {
             ClientFontRenderer font = Client.INST.getFonts().fonts.get(fonts.getMode());
-            Vector2f screenSize = new Vector2f(e.getWidth(), e.getHeight());
+            Vector2f screenSize = new Vector2f(e.getSc().getScaledWidth(), e.getSc().getScaledHeight());
 
             updateColors();
 

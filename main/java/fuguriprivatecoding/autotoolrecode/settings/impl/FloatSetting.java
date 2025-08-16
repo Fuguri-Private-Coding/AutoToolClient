@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -15,7 +16,7 @@ public class FloatSetting extends Setting {
 
     public float value;
 
-    public FloatSetting(String name, Module parent, float min, float max, float value, float step) {
+    public FloatSetting(String name, SettingAble parent, float min, float max, float value, float step) {
         super(name, parent);
         this.min = min;
         this.max = max;
@@ -23,7 +24,7 @@ public class FloatSetting extends Setting {
         this.step = step;
     }
 
-    public FloatSetting(String name, Module parent, BooleanSupplier visible, float min, float max, float value, float step) {
+    public FloatSetting(String name, SettingAble parent, BooleanSupplier visible, float min, float max, float value, float step) {
         super(name, parent, visible);
         this.min = min;
         this.max = max;
