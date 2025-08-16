@@ -8,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.connection.BackTrack;
-import fuguriprivatecoding.autotoolrecode.module.impl.player.TestScaff;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
@@ -79,7 +79,7 @@ public class DynamicIsland extends Module {
 
             EntityLivingBase ent = Client.INST.getCombatManager().getTarget();
             BackTrack backTrack = Client.INST.getModuleManager().getModule(BackTrack.class);
-            TestScaff scaffOld = Client.INST.getModuleManager().getModule(TestScaff.class);
+            Scaffold scaffOld = Client.INST.getModuleManager().getModule(Scaffold.class);
 
             String name = Client.INST.getFullName();
             String bps = String.format("%.3f", mc.thePlayer.getBps(false));
@@ -106,7 +106,7 @@ public class DynamicIsland extends Module {
             if (mc.thePlayer.inventory.getCurrentItem() != null) {
                 if (scaffOld.isToggled() && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
                     scaffold = "Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize;
-                    currentText = scaffold;
+                    currentText = scaffold + (MoveUtils.isMoving() ? ", " + bps : "");
                     resetNeedY(45, yOffset);
                 }
             }

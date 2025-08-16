@@ -3,18 +3,11 @@ package fuguriprivatecoding.autotoolrecode.module.impl.player;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.DrawBlockHighlightEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
-import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;
@@ -28,7 +21,7 @@ public class AutoPlace extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (Client.INST.getModuleManager().getModule(TestScaff.class).isToggled()) return;
+        if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) return;
         if (mc.currentScreen != null) return;
         if (event instanceof DrawBlockHighlightEvent) {
             if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock))

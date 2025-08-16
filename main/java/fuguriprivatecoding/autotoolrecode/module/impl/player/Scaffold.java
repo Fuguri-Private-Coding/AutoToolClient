@@ -4,57 +4,62 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
-import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
+import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.*;
+import net.minecraft.network.play.client.C0APacketAnimation;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import org.lwjgl.input.Mouse;
 
 import java.awt.*;
+import java.util.*;
+import java.util.List;
+import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "Scaffold", category = Category.PLAYER,description = "Автоматически ставит блоки под вами.")
+@ModuleInfo(name = "Scaffold", category = Category.PLAYER)
 public class Scaffold extends Module {
 
-    IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 1, 180, 30) {
+    IntegerSetting minYawSpeed = new IntegerSetting("Min Yaw Speed", this, 1, 180, 30) {
         @Override
         public int getValue() {
             if (maxYawSpeed.value < value) { value = maxYawSpeed.value; }
             return super.getValue();
         }
     };
-    IntegerSetting maxYawSpeed = new IntegerSetting("MaxYawSpeed", this, 1, 180, 30) {
+    IntegerSetting maxYawSpeed = new IntegerSetting("Max Yaw Speed", this, 1, 180, 30) {
         @Override
         public int getValue() {
             if (minYawSpeed.value > value) { value = minYawSpeed.value; }
             return super.getValue();
         }
     };
-    IntegerSetting minPitchSpeed = new IntegerSetting("MinPitchSpeed", this, 1, 180, 15) {
+    IntegerSetting minPitchSpeed = new IntegerSetting("Min Pitch Speed", this, 1, 180, 15) {
         @Override
         public int getValue() {
             if (maxPitchSpeed.value < value) { value = maxPitchSpeed.value; }
             return super.getValue();
         }
     };
-    IntegerSetting maxPitchSpeed = new IntegerSetting("MaxPitchSpeed", this, 1, 180, 15) {
+    IntegerSetting maxPitchSpeed = new IntegerSetting("Max Pitch Speed", this, 1, 180, 15) {
         @Override
         public int getValue() {
             if (minPitchSpeed.value > value) { value = minPitchSpeed.value; }
@@ -62,152 +67,97 @@ public class Scaffold extends Module {
         }
     };
 
-    FloatSetting smooth = new FloatSetting("Smooth", this, 1, 10, 2f, 0.1f) {};
+    Mode rotMode = new Mode("Rotation Mode", this)
+            .addModes("TellyBridge", "GodBridge")
+            .setMode("GodBridge")
+            ;
 
-    final Mode clickMode = new Mode("ClickMode", this)
-            .addModes("AutoPlace", "Legit")
-            .setMode("AutoPlace");
+    BooleanSupplier tellyVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge");
+    BooleanSupplier godVisible = () -> rotMode.getMode().equalsIgnoreCase("GodBridge");
 
-    final CheckBox swingItem = new CheckBox("ServerSwingItem", this, true);
+    CheckBox noSwing = new CheckBox("No Swing", this);
+    CheckBox serverSwing = new CheckBox("Server Swing", this, noSwing::isToggled, true);
 
-    IntegerSetting minCps = new IntegerSetting("MinCps", this, 1, 40, 7) {
+    final CheckBox speedTelly = new CheckBox("Speed Telly", this, tellyVisible, true);
+    IntegerSetting minTellyTicks = new IntegerSetting("Min Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 2, 12, 5) {
         @Override
         public int getValue() {
-            if (maxCps.value < value) { value = maxCps.value; }
+            if (maxTellyTicks.value < value) { value = maxTellyTicks.value; }
             return super.getValue();
         }
     };
-    IntegerSetting maxCps = new IntegerSetting("MaxCps", this, 0, 40, 11) {
+    IntegerSetting maxTellyTicks = new IntegerSetting("Max Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 2, 12, 5) {
         @Override
         public int getValue() {
-            if (minCps.value > value) { value = minCps.value; }
+            if (minTellyTicks.value > value) { value = minTellyTicks.value; }
             return super.getValue();
         }
     };
 
-    final CheckBox bypassServerPitch = new CheckBox("BypassServerPitch", this, true);
-    final FloatSetting serverPitch = new FloatSetting("ServerPitch", this, bypassServerPitch::isToggled , 70, 85, 77,0.1f);
-    final FloatSetting yaw = new FloatSetting("Yaw", this, 0, 45, 45,0.1f);
-    final FloatSetting bestPitchNoDiagonal = new FloatSetting("FrontPitch", this, 70, 85, 77,0.1f);
-    final FloatSetting diagonalPitch = new FloatSetting("DiagonalPitch", this, 70, 85, 77,0.1f);
-    final CheckBox alwaysSprint = new CheckBox("AlwaysSprint", this, true);
-    final CheckBox ninjaBridge = new CheckBox("NinjaBridge", this, true);
-    final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, ninjaBridge::isToggled, 0f,0.1f,0.05f, 0.01f);
+    final CheckBox ninjaBridge = new CheckBox("Ninja Bridge", this, godVisible, true);
+    final FloatSetting edgeOffset = new FloatSetting("Edge Offset", this, () -> godVisible.getAsBoolean() && ninjaBridge.isToggled(), 0f,0.1f,0.05f, 0.01f);
 
-    final CheckBox sneakIfRotate = new CheckBox("SneakIfRotate", this, true);
-    final CheckBox sneakIfNoBlocks = new CheckBox("SneakIfNoBlocks", this, true);
+    final CheckBox sneakIfRotate = new CheckBox("Sneak If Rotate", this, godVisible, true);
+    final CheckBox sneakIfNoBlocks = new CheckBox("Sneak If Zero Blocks", this, godVisible, true);
 
-    final CheckBox autoThirdPerson = new CheckBox("ThirdPerson", this, true);
+    final CheckBox sameY = new CheckBox("SameY", this, true);
+
+    final CheckBox bypassServerPitch = new CheckBox("Bypass Server Pitch", this, godVisible, true);
+    FloatSetting serverPitch = new FloatSetting("Server Pitch", this, () -> godVisible.getAsBoolean() && bypassServerPitch.isToggled(), 70, 85, 77,0.1f);
 
     final CheckBox render = new CheckBox("Render", this, true);
-    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this, render::isToggled);
+    final CheckBox fadeColor = new CheckBox("Fade Color", this, render::isToggled);
     final ColorSetting color1 = new ColorSetting("Color1", this, render::isToggled, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, () -> render.isToggled() && fadeBoxColor.isToggled(), 1f,1f,1f,1f);
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> render.isToggled() && fadeBoxColor.isToggled(),0.1f, 20, 1, 0.1f);
+    final ColorSetting color2 = new ColorSetting("Color2", this, () -> render.isToggled() && fadeColor.isToggled(), 1f,1f,1f,1f);
+    final FloatSetting fadeSpeed = new FloatSetting("Fade Speed", this, () -> render.isToggled() && fadeColor.isToggled(),0.1f, 20, 1, 0.1f);
 
     final StopWatch stopWatch;
+    private MovingObjectPosition mouse;
 
-    float bestPitch = 77f;
-
-    int delay = 0;
-
-    BlockPos renderPos = null;
-    long lastTime = 0L;
+    double lastDelta = 0;
+    float lastPitch = 80;
     Glow shadows;
-    Blur blur;
-
-    int personFirst;
-
-    @Override
-    public void onEnable() {
-        super.onEnable();
-        if (autoThirdPerson.isToggled()) {
-            personFirst = mc.gameSettings.thirdPersonView;
-            mc.gameSettings.thirdPersonView = 1;
-        }
-    }
 
     @Override
     public void onDisable() {
-        super.onDisable();
         mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
-        if (autoThirdPerson.isToggled()) {
-            mc.gameSettings.thirdPersonView = personFirst;
-        }
     }
 
     public Scaffold() {
         stopWatch = new StopWatch();
     }
 
-    Color fadeColor;
-
     @EventTarget
     public void onEvent(Event event) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
-        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
-        switch (clickMode.getMode()) {
-            case "AutoPlace" -> {
-                if (event instanceof DrawBlockHighlightEvent) {
-                    ragePlace();
-                }
-                if (event instanceof TickEvent && !mc.thePlayer.onGround) {
-                    legitPlace();
-                }
-            }
-            case "Legit" -> {
-                if (event instanceof TickEvent) {
-                    legitPlace();
-                }
-            }
-        }
 
         if (event instanceof TickEvent) {
-            MovingObjectPosition renderRayCast = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
-            BlockPos analyzingBlock = renderRayCast.getBlockPos();
-            if (analyzingBlock != null && renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) renderPos = analyzingBlock;
             rotate();
+            legitPlace();
         }
 
-        if (event instanceof Render3DEvent && renderPos != null && render.isToggled()) {
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
-                    : color1.getColor();
+        if (event instanceof Render3DEvent && mouse.getBlockPos() != null && render.isToggled()) {
+            Color fadeColor = this.fadeColor.isToggled() ? ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue()) : color1.getColor();
 
             RenderUtils.start3D();
-            if (shadows.isToggled() && shadows.module.get("Scaffold")) {
-                BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f));
-            }
-            if (blur.isToggled() && blur.module.get("Scaffold")) {
-                GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderPos, fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f));
-            }
-            RenderUtils.drawBlockESP(renderPos, fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
+            if (shadows.isToggled() && shadows.module.get("Scaffold")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(mouse.getBlockPos(), fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f));
+            RenderUtils.drawBlockESP(mouse.getBlockPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
+            ColorUtils.resetColor();
             RenderUtils.stop3D();
         }
 
-        if (event instanceof MoveEvent moveEvent) {
-            MoveUtils.moveFix(moveEvent, MoveUtils.getDirection(mc.thePlayer.rotationYaw, moveEvent.getForward(), moveEvent.getStrafe()));
-            if (sneakIfRotate.isToggled() && lastDelta > 0) moveEvent.setSneak(true);
-            if (sneakIfNoBlocks.isToggled() && findBlock() == -1) moveEvent.setSneak(true);
+        if (event instanceof MoveEvent e) {
+            MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
 
-            if (ninjaBridge.isToggled()) {
-                BlockPos pos = getBlockPos(edgeOffset.getValue());
-                if (mc.theWorld.isAirBlock(pos)) moveEvent.setSneak(true);
+            if (rotMode.getMode().equalsIgnoreCase("GodBridge")) {
+                if (sneakIfRotate.isToggled() && lastDelta > 5) e.setSneak(true);
+                if (sneakIfNoBlocks.isToggled() && findBlock() == -1) e.setSneak(true);
+
+                if (ninjaBridge.isToggled()) {
+                    BlockPos pos = getBlockPos(edgeOffset.getValue());
+                    if (mc.theWorld.isAirBlock(pos)) e.setSneak(true);
+                }
             }
-        }
-
-        if (event instanceof SprintEvent && alwaysSprint.isToggled()) {
-            if (MoveUtils.isMoving() && mc.thePlayer.onGround && !mc.thePlayer.movementInput.jump && lastDelta == 0 && !mc.thePlayer.movementInput.sneak) {
-                mc.thePlayer.setSprinting(true);
-            }
-        }
-
-        if (event instanceof MoveFlyingEvent moveFlyingEvent) {
-            moveFlyingEvent.setYaw(Rot.getServerRotation().getYaw());
-        }
-
-        if (event instanceof JumpEvent jumpEvent) {
-            jumpEvent.setYaw(Rot.getServerRotation().getYaw());
         }
 
         if (event instanceof LegitClickTimingEvent) {
@@ -220,27 +170,37 @@ public class Scaffold extends Module {
             }
         }
 
-        if (event instanceof JumpEvent jumpEvent) {
-            jumpEvent.setYaw(Rot.getServerRotation().getYaw());
+        if (event instanceof JumpEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+        if (event instanceof UpdateBodyRotationEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+        if (event instanceof MoveFlyingEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+
+        if (event instanceof MotionEvent e) {
+            e.setYaw(Rot.getServerRotation().getYaw());
+
+            if (rotMode.getMode().equalsIgnoreCase("GodBridge")) {
+                if (bypassServerPitch.isToggled() && mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown()) {
+                    e.setPitch(serverPitch.getValue());
+                } else {
+                    e.setPitch(Rot.getServerRotation().getPitch());
+                }
+            } else {
+                if (speedTelly.isToggled()) mc.thePlayer.jumpTicks = 0;
+                e.setPitch(Rot.getServerRotation().getPitch());
+            }
         }
 
-        if (event instanceof MotionEvent motionEvent) {
-            motionEvent.setYaw(Rot.getServerRotation().getYaw());
-            if (bypassServerPitch.isToggled()) motionEvent.setPitch(serverPitch.getValue()); else motionEvent.setPitch(Rot.getServerRotation().getPitch());
+        if (event instanceof LookEvent e) {
+            e.setYaw(Rot.getServerRotation().getYaw());
+            e.setPitch(Rot.getServerRotation().getPitch());
         }
 
-        if (event instanceof LookEvent lookEvent) {
-            lookEvent.setYaw(Rot.getServerRotation().getYaw());
-            lookEvent.setPitch(Rot.getServerRotation().getPitch());
+        if (event instanceof ChangeHeadRotationEvent e) {
+            e.setYaw(Rot.getServerRotation().getYaw());
+            e.setPitch(Rot.getServerRotation().getPitch());
         }
 
-        if (event instanceof ChangeHeadRotationEvent changeHeadRotationEvent) {
-            changeHeadRotationEvent.setYaw(Rot.getServerRotation().getYaw());
-            changeHeadRotationEvent.setPitch(Rot.getServerRotation().getPitch());
-        }
-
-        if (event instanceof UpdateBodyRotationEvent UpdateBodyRotationEvent) {
-            UpdateBodyRotationEvent.setYaw(Rot.getServerRotation().getYaw());
+        if (event instanceof ClickEvent e) {
+            if (e.getButton() == ClickEvent.Button.RIGHT) e.cancel();
         }
     }
 
@@ -266,90 +226,68 @@ public class Scaffold extends Module {
     void legitPlace() {
         MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
 
-        if (findBlock() == -1 || mouseOver == null || mouseOver.getBlockPos() == null || mc.theWorld.getBlockState(mouseOver.getBlockPos()).getBlock().getMaterial() == Material.air) {
-            return;
-        }
-
-        if (stopWatch.reachedMS(delay)) {
-            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
-                if (swingItem.isToggled()) {
-                    mc.thePlayer.swingItem();
-                }
-                stopWatch.reset();
-                delay = 1000 / RandomUtils.nextInt(minCps.getValue(), maxCps.getValue());
-            }
-        }
-    }
-
-    void ragePlace() {
-        ItemStack stack = mc.thePlayer.getHeldItem();
-        if (stack == null) return;
-        if (sneakIfRotate.isToggled() && lastDelta > 0) return;
-        if (!(stack.getItem() instanceof ItemBlock)) return;
-        if (findBlock() == -1) return;
-
-        MovingObjectPosition mouse = mc.objectMouseOver;
-
-        if (mouse == null
-                || mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                || mouse.sideHit == EnumFacing.UP
-                || mouse.sideHit == EnumFacing.DOWN
-        ) return;
-
-        BlockPos pos = mouse.getBlockPos();
-        if (mc.theWorld.getBlockState(pos).getBlock().getMaterial() != Material.air) {
-            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, pos, mouse.sideHit, mouse.hitVec) && System.currentTimeMillis() - lastTime >= 25) {
-                if (swingItem.isToggled()) {
+        if (mouse.sideHit == mouseOver.sideHit
+                && mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
+                && getSameYValue(mouse) && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
+            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem(), mouse.getBlockPos(), mouse.sideHit, mouse.hitVec)) {
+                if (noSwing.isToggled()) {
+                    if (serverSwing.isToggled()) mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+                } else {
                     mc.thePlayer.swingItem();
                 }
             }
         }
     }
 
-    double lastDelta = 0;
+    boolean getSameYValue(MovingObjectPosition mouse) {
+        if (sameY.isToggled()) {
+            if (Mouse.isButtonDown(1)) return mouse.sideHit != EnumFacing.DOWN;
+            return mouse.sideHit != EnumFacing.DOWN && mouse.sideHit != EnumFacing.UP;
+        }
+        return mouse.sideHit != EnumFacing.DOWN;
+    }
 
     void rotate() {
-        if (mc.currentScreen != null) return;
-        boolean moveDiagonally = false;
-        float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), 45);
+        float yawStep = rotMode.getMode().equalsIgnoreCase("TellyBridge") ? 0.1f : 45f;
 
-        if (Math.round(roundedYaw / 45f) % 2 != 0) {
-            moveDiagonally = true;
+        float yaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), yawStep);
+
+        if (yaw / yawStep % 2 == 0) {
+            yaw += yawStep;
         }
 
-        Rot rotation = null;
+        Rot rotation;
 
-       if (!moveDiagonally) {
-           MovingObjectPosition leftRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(roundedYaw + 45, bestPitch));
-           MovingObjectPosition rightRayCast = RayCastUtils.rayCast(4.5, 4.5, new Rot(roundedYaw - 45, bestPitch));
-
-           bestPitch = bestPitchNoDiagonal.getValue();
-
-           if (leftRayCast != null && leftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-               rotation = new Rot(MathHelper.wrapDegree(roundedYaw + 45), bestPitch);
-           } else if (rightRayCast != null && rightRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-               rotation = new Rot(MathHelper.wrapDegree(roundedYaw - 45), bestPitch);
-           }
-       } else {
-            bestPitch = diagonalPitch.getValue();
-            rotation = new Rot(roundedYaw, bestPitch);
-       }
-
-       if (rotation == null) {
-           return;
-       }
+        if (rotMode.getMode().equalsIgnoreCase("TellyBridge")) {
+            if (getTellyValue()) {
+                rotation = new Rot(MathHelper.wrapDegree(yaw + 180), 80);
+            } else {
+                rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
+            }
+        } else {
+            rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
+        }
 
         Delta delta = RotUtils.getDelta(Rot.getServerRotation(), rotation);
 
-        delta = delta.limit(
-                RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
-                RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
-        );
-
-        delta = delta.divine(
-                smooth.getValue(),
-                smooth.getValue()
-        );
+        if (rotMode.getMode().equalsIgnoreCase("TellyBridge")) {
+            if (getTellyValue()) {
+                delta = delta.limit(
+                        RandomUtils.nextInt(180, 180),
+                        RandomUtils.nextInt(180, 180)
+                );
+            } else {
+                delta = delta.limit(
+                        RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
+                        RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
+                );
+            }
+        } else {
+            delta = delta.limit(
+                    RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
+                    RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
+            );
+        }
 
         delta = RotUtils.fixDelta(delta);
 
@@ -359,6 +297,42 @@ public class Scaffold extends Module {
                 Rot.getServerRotation().getYaw() + delta.getYaw(),
                 Math.clamp(Rot.getServerRotation().getPitch() + delta.getPitch(), -90, 90)
         ));
+    }
+
+    boolean getTellyValue() {
+        if (MoveUtils.isMoving()) {
+            if (mc.gameSettings.keyBindJump.isKeyDown()) {
+                return mc.thePlayer.onGround || mc.thePlayer.jumpTicks > RandomUtils.nextInt(minTellyTicks.getValue(), maxTellyTicks.getValue());
+            }
+            return !mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ));
+        }
+        return false;
+    }
+
+    private float getPitch(float yaw) {
+        Map<Float, MovingObjectPosition> positionHashMap = new HashMap<>();
+
+        float maxPitch = rotMode.getMode().equalsIgnoreCase("TellyBridge") ? 85 : 81;
+
+        float step = 0.8f;
+        for (float i = 45; i < maxPitch; i += step) {
+            MovingObjectPosition mouses = RayCastUtils.rayCast(3, 4.5, new Rot(yaw, i));
+            if (mouses == null || mouses.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+                    || positionHashMap.containsValue(mouses)
+                    || mouses.sideHit == EnumFacing.DOWN) continue;
+            positionHashMap.put(i, mouses);
+        }
+
+        if (positionHashMap.isEmpty()) {
+            return lastPitch;
+        }
+
+        List<Float> pitches = new ArrayList<>(positionHashMap.keySet());
+
+        pitches.sort(Comparator.comparingDouble(pitch -> Math.abs(Rot.getServerRotation().getPitch()) - pitch));
+        mouse = positionHashMap.get(pitches.getFirst());
+        lastPitch = pitches.getFirst();
+        return pitches.getFirst();
     }
 
     public int findBlock() {

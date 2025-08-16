@@ -7,7 +7,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.module.impl.player.TestScaff;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 
@@ -35,7 +35,7 @@ public class Fixes extends Module {
                 }
             }
 
-            if (fixes.get("JumpDelay") && !Client.INST.getModuleManager().getModule(TestScaff.class).isToggled()) {
+            if (fixes.get("JumpDelay") && !Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) {
                 mc.thePlayer.jumpTicks = 0;
             }
         }

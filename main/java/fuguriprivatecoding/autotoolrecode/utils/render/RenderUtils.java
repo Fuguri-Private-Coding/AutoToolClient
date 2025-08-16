@@ -557,6 +557,10 @@ public class RenderUtils implements Imports {
         drawMixedRoundedRect(x, y, x + width, y + height, color1, color2, radius, 90, 180, 270, 360, speed);
     }
 
+    public static void drawCenteredMixedRoundedRect(double x, double y, double width, double height, double radius, Color color1, Color color2, float speed) {
+        drawMixedRoundedRect(x - width / 2f, y, x + width, y + height, color1, color2, radius, 90, 180, 270, 360, speed);
+    }
+
     public static void drawMixedRoundedRect(double x, double y, double x1, double y1, Color color1, Color color2, double radius, double offset1, double offset2, double offset3, double offset4, float speed) {
         if (x1 < x) {
             double temp = x;

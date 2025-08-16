@@ -9,17 +9,14 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.AntiFireball;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
-import fuguriprivatecoding.autotoolrecode.module.impl.player.TestScaff;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
-import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
 
 @ModuleInfo(name = "RotationHandler", category = Category.COMBAT, description = "Плавно поворачиватся обратно после изменения ротации.")
 public class RotationHandler extends Module {
@@ -34,7 +31,7 @@ public class RotationHandler extends Module {
         if (
                 (Client.INST.getCombatManager().getTarget() == null
                 || DistanceUtils.getDistance(Client.INST.getCombatManager().getTarget()) > Client.INST.getModuleManager().getModule(KillAura.class).rotateDistance.getValue())
-                        && !Client.INST.getModuleManager().getModule(TestScaff.class).isToggled() && !Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && !Client.INST.getModuleManager().getModule(AntiFireball.class).rotating
+                        && !Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && !Client.INST.getModuleManager().getModule(AntiFireball.class).rotating
         ) {
             if (Rot.isChanged()) {
                 if (event instanceof MotionEvent motionEvent) {

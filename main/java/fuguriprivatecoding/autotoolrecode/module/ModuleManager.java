@@ -48,7 +48,6 @@ public class ModuleManager {
 				new Fly(),
 				new AutoClicker(),
 				new AutoTool(),
-				new Scaffold(),
 				new AntiFireball(),
 				new ChestESP(),
 				new DiscordRPCModule(),
@@ -103,7 +102,7 @@ public class ModuleManager {
 				new IRC(),
 				new Ambience(),
 				new TargetHUD(),
-				new TestScaff()
+				new Scaffold()
 		);
 	}
 

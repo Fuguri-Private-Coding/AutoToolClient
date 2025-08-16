@@ -34,4 +34,8 @@ public class RoundedUtils implements Imports {
         draw(x - 1f, y - 1f, width + 2, height + 2, radius, color);
     }
 
+    public static void drawCenteredRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {
+        draw(x - 1f - width / 2f, y - 1f, width + 2, height + 2, radius, color);
+    }
+
 }
