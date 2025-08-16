@@ -611,6 +611,7 @@ public class RenderUtils implements Imports {
 
         GL11.glEnd();
         GL11.glShadeModel(7424);
+        ColorUtils.resetColor();
         stop2D();
     }
 

@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -85,7 +86,7 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         if (consoleScroll) scroll -= Mouse.getDWheel() / 120 * 10;
 
-        float consoleVisibleHeight = sizeBackground.y - (fullScreen ? 20 : 2) - 15;
+        float consoleVisibleHeight = sizeBackground.y - 35;
         float maxScroll = Math.max(0, totalHeight - consoleVisibleHeight);
 
         if (scroll > 0) scroll = 0;
@@ -130,32 +131,26 @@ public class ConsoleGuiScreen extends GuiScreen {
         sizeBackground.update(15f);
 
         if (shadows.isToggled() && shadows.module.get("ConsoleGui")) {
-            BloomUtils.addToDraw(() -> {
-                RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clientSettings.backgroundRadius.getValue(), new Color(0,0,0,255));
-                RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), shadows.color.getColor());
+            BloomRealUtils.addToDraw(() -> {
+                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
             });
         }
         if (blur.isToggled() && blur.module.get("ConsoleGui")) {
             GaussianBlurUtils.addToDraw(() -> {
-                RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clientSettings.backgroundRadius.getValue(), new Color(0, 0, 0, 255));
-                RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), shadows.color.getColor());
+                RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, Color.BLACK.getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
             });
         }
-        RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),mainColor.getRGB(),Color.BLACK.getRGB());
+        RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y + (fullScreen ? 0 : 20));
+        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
 
-        StencilUtils.renderStencil(
-                () -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 10, clientSettings.backgroundRadius.getValue(), Color.black),
-                () -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 1f, Color.black)
-        );
-        RoundedUtils.drawRect(background.x, background.y + 5, sizeBackground.x, 10, 1f, Color.black);
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
 
-        RoundedUtils.drawRect(background.x, background.y + sizeBackground.y + (fullScreen ? -10 - 3 - 4.5f : 2f), sizeBackground.x, 18, clientSettings.backgroundRadius.getValue(), new Color(0,0,0,255));
+        RoundedUtils.drawRect(background.x, background.y + sizeBackground.y - 18, sizeBackground.x, 18, clientSettings.backgroundRadius.getValue() / 1.25f, 0, 0, clientSettings.backgroundRadius.getValue() / 1.25f, new Color(0,0,0,255));
 
         mc.fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 4,  -1);
-        mc.fontRendererObj.drawString(textField.getText() + (delay > 15 ? "" : "_"), background.x + 2 + 2, background.y + sizeBackground.y + (fullScreen ? -10 - 3 : 7), -1);
+        mc.fontRendererObj.drawString(textField.getText() + (delay > 15 ? "" : "_"), background.x + 2 + 2, background.y + sizeBackground.y - 12, -1);
         mc.fontRendererObj.drawString("Clear History", background.x + sizeBackground.x - 5 - width, background.y + 3.5f, -1);
 
         RoundedUtils.drawRect(background.x + 4.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
@@ -168,13 +163,13 @@ public class ConsoleGuiScreen extends GuiScreen {
         ScissorUtils.disableScissor();
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - (fullScreen ? 33 : 15));
+        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - 33);
 
         float offset = scrolls.y;
         totalHeight = 0;
 
         for (String s : history.reversed()) {
-            mc.fontRendererObj.drawString(s, background.x + 4, background.y + sizeBackground.y - 12 - offset + (fullScreen ? -10 - 5 : 1), -1);
+            mc.fontRendererObj.drawString(s, background.x + 4, background.y + sizeBackground.y - 28 - offset, -1);
             totalHeight += 10;
             offset += 10;
         }

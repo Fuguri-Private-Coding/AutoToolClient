@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.discord;
 
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
+import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;

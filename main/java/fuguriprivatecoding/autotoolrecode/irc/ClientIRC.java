@@ -113,7 +113,8 @@ public class ClientIRC extends ListenerAdapter {
                         profile.setBannerUrl(user.getBannerUrl());
                         profile.setUserName(member.getEffectiveName());
                         profile.setTag(Client.INST.getDiscord().getName());
-                        profile.setProfileColor(member.getColor());
+                        profile.setProfileColor(user.getAccentColor());
+                        profile.setServerRoleColor(member.getColor());
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }

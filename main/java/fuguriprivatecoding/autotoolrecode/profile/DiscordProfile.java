@@ -13,6 +13,7 @@ import java.net.URL;
 public class DiscordProfile {
     String id, avatarUrl, bannerUrl, userName, tag;
     Color profileColor;
+    Color serverRoleColor;
 
     public DiscordProfile() {}
 

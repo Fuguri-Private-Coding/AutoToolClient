@@ -28,29 +28,29 @@ import java.util.function.Supplier;
 
 public class DynamicIsland extends HUDElement implements Imports {
 
-    private final List<DynamicIslandElement> dynamicIslandElements = List.of(
-            new DynamicIslandElement(
-                    Client.INST::getFullName,
-                    () -> true,
-                    0
-            ),
-            new DynamicIslandElement(
-                    () -> String.valueOf(mc.thePlayer.getBps(false)),
-                    MoveUtils::isMoving,
-                    1
-            ),
-            new DynamicIslandElement(
-                    () -> "Current Target - " + Client.INST.getCombatManager().getTarget(),
-                    () -> Client.INST.getCombatManager().getTarget() != null,
-                    2
-            ),
-            new DynamicIslandElement(
-                    () -> "Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize + "\n" + "Speed - " + mc.thePlayer.getBps(false),
-                    () -> new Vector2f((float) Math.max(getFont().getStringWidth("Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize), getFont().getStringWidth("Speed - " + mc.thePlayer.getBps(false))), 24),
-                    () -> Client.INST.getModuleManager().getModule(Scaffold.class).isToggled(),
-                    3
-            )
-    );
+//    private final List<DynamicIslandElement> dynamicIslandElements = List.of(
+//            new DynamicIslandElement(
+//                    Client.INST::getFullName,
+//                    () -> true,
+//                    0
+//            ),
+//            new DynamicIslandElement(
+//                    () -> String.valueOf(mc.thePlayer.getBps(false)),
+//                    MoveUtils::isMoving,
+//                    1
+//            ),
+//            new DynamicIslandElement(
+//                    () -> "Current Target - " + Client.INST.getCombatManager().getTarget(),
+//                    () -> Client.INST.getCombatManager().getTarget() != null,
+//                    2
+//            ),
+//            new DynamicIslandElement(
+//                    () -> "Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize + "\n" + "Speed - " + mc.thePlayer.getBps(false),
+//                    () -> new Vector2f((float) Math.max(getFont().getStringWidth("Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize), getFont().getStringWidth("Speed - " + mc.thePlayer.getBps(false))), 24),
+//                    () -> Client.INST.getModuleManager().getModule(Scaffold.class).isToggled(),
+//                    3
+//            )
+//    );
 
     Mode fonts = new Mode("Fonts", this)
             .addModes("MuseoSans", "Roboto", "JetBrains", "SFPro")
@@ -106,24 +106,24 @@ public class DynamicIsland extends HUDElement implements Imports {
         radius.endX = 5f;
 
         currentSize.endY = 10;
-        currentSize.endX = (float) font.getStringWidth(currentText) + 8;
+//        currentSize.endX = (float) font.getStringWidth(currentText) + 8;
 
         RoundedUtils.drawCenteredRect(absoluteX, absoluteY, currentSize.x, currentSize.y, radius.x, Color.BLACK);
 
-        font.drawCenteredString(currentText, absoluteX, absoluteY + 2.5f, Color.WHITE);
+//        font.drawCenteredString(currentText, absoluteX, absoluteY + 2.5f, Color.WHITE);
     }
 
 
 
-    @Getter
-    @AllArgsConstructor
-    @RequiredArgsConstructor
-    private class DynamicIslandElement {
-        private final Supplier<String> text;
-        private Supplier<Vector2f> size = () -> new Vector2f((float) (getFont().getStringWidth(text.get()) + 8), 12);
-        private final BooleanSupplier use;
-        private final int priority;
-    }
+//    @Getter
+//    @AllArgsConstructor
+//    @RequiredArgsConstructor
+//    private class DynamicIslandElement {
+//        private final Supplier<String> text;
+//        private Supplier<Vector2f> size = () -> new Vector2f(text != null ? (float) (getFont().getStringWidth(text.get()) + 8) : 10, 12);
+//        private final BooleanSupplier use;
+//        private final int priority;
+//    }
 
     private ClientFontRenderer getFont() {
         return Client.INST.getFonts().fonts.get(fonts.getMode());

@@ -13,6 +13,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -127,19 +128,17 @@ public class HotTextGui extends GuiScreen {
         sizeBackground.update(15f);
 
         if (shadows.isToggled() && shadows.module.get("HotKeyGui")) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), shadows.color.getColor()));
+            BloomRealUtils.addToDraw(() -> {
+                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
+            });
         }
 
         if (blur.isToggled() && blur.module.get("HotKeyGui")) {
             GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), shadows.color.getColor()));
         }
-        RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),mainColor.getRGB(),Color.BLACK.getRGB());
+        RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
-        StencilUtils.renderStencil(
-                () -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 10, clientSettings.backgroundRadius.getValue(), Color.black),
-                () -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 1f, Color.black)
-        );
-        RoundedUtils.drawRect(background.x, background.y + 5, sizeBackground.x, 10, 1f, Color.black);
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
 
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
@@ -155,9 +154,9 @@ public class HotTextGui extends GuiScreen {
         RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
         int rectColor = new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB();
 
-        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
+        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3, -1, true);
-        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, mainColor.getRGB(),Color.BLACK.getRGB());
+        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
         fontRendererObj.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 3, -1, true);
 
         ScissorUtils.disableScissor();

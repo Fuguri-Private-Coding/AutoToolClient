@@ -5,6 +5,7 @@ import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -50,7 +51,7 @@ public class GuiViaVersion extends GuiScreen {
 
         fontRendererObj.drawString(currentVersion, sc.getScaledWidth() / 2f - fontRendererObj.getStringWidth(currentVersion) / 2f, 5, -1, true);
 
-        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 200, 20, 400, sc.getScaledHeight() - 40, 5f, new Color(15, 15, 15, 150));
+        RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 200, 20, 400, sc.getScaledHeight() - 40, 5f, new Color(0, 0, 0, 150).getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
 
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), sc.getScaledWidth() / 2f - 200, 20, 400, sc.getScaledHeight() - 40);
@@ -58,7 +59,7 @@ public class GuiViaVersion extends GuiScreen {
         float offset = scrolls.y;
         scrollTotalHeight = 0;
         for (ProtocolVersion protocol : ViaLoadingBase.PROTOCOLS) {
-            RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 195, 25 + offset, 390, 20, 5f, ViaLoadingBase.getInstance().getTargetVersion() == protocol ? new Color(75,75,75,150) : new Color(15,15,15,150));
+            RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 195, 25 + offset, 390, 20, 5f, ViaLoadingBase.getInstance().getTargetVersion() == protocol ? new Color(75,75,75,150) : new Color(0,0,0,150));
             fontRendererObj.drawString("Version: " + protocol.getName(), sc.getScaledWidth() / 2f - 190, 20f + 11.5f + offset, ViaLoadingBase.getInstance().getTargetVersion() == protocol ? Color.green.getRGB() : -1);
             offset += 25;
             scrollTotalHeight += 25;

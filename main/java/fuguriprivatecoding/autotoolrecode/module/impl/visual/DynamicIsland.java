@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.connection.BackTrack;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Animation;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
@@ -64,6 +65,10 @@ public class DynamicIsland extends Module {
     Animation2D currentHeight = new Animation2D();
     Animation2D size = new Animation2D();
     Animation2D needY = new Animation2D();
+    Animation radius = new Animation();
+
+    float prevY;
+
     String currentText;
 
     @EventTarget
@@ -105,8 +110,8 @@ public class DynamicIsland extends Module {
 
             if (mc.thePlayer.inventory.getCurrentItem() != null) {
                 if (scaffOld.isToggled() && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
-                    scaffold = "Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize;
-                    currentText = scaffold + (MoveUtils.isMoving() ? ", " + bps : "");
+                    scaffold = "Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize + ", Speed - " + bps;
+                    currentText = scaffold;
                     resetNeedY(45, yOffset);
                 }
             }
@@ -132,9 +137,9 @@ public class DynamicIsland extends Module {
             String finalBacktrack = backtrack;
 
             StencilUtils.renderStencil(
-                    () -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, currentHeight.y, bgRadius.getValue(), Color.BLACK, Color.BLACK, 1f),
+                    () -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, currentHeight.y, radius.x, Color.BLACK, Color.BLACK, 1f),
                     () -> {
-                        RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, currentHeight.y, bgRadius.getValue(), fadeBackgroundColor, fadeBackgroundColor, bgSpeed.getValue());
+                        RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, currentHeight.y, radius.x, fadeBackgroundColor, fadeBackgroundColor, bgSpeed.getValue());
 
                         font.drawString(name, (screenSize.x / 2f - font.getStringWidth(name) / 2f), 10 + needY.y,fadeTextColor);
                         font.drawString(bps, (screenSize.x / 2f - font.getStringWidth(bps) / 2f), 25 + needY.y,fadeTextColor);
@@ -145,11 +150,11 @@ public class DynamicIsland extends Module {
             );
 
             if (glow.isToggled()) {
-                BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, height, bgRadius.getValue(), bgColor1Shadow.getColor(), bgColor2Shadow.getColor(), bgSpeedShadow.getValue()));
+                BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, height, radius.x, bgColor1Shadow.getColor(), bgColor2Shadow.getColor(), bgSpeedShadow.getValue()));
             }
 
             if (blur.isToggled()) {
-                GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, height, bgRadius.getValue(), Color.WHITE, Color.WHITE, bgSpeedShadow.getValue()));
+                GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, height, radius.x, Color.WHITE, Color.WHITE, bgSpeedShadow.getValue()));
             }
         }
     }
@@ -159,6 +164,14 @@ public class DynamicIsland extends Module {
         size.update(animationSpeed.getValue());
         needY.update(animationSpeed.getValue());
         currentHeight.update(animationSpeed.getValue());
+        radius.update(animationSpeed.getValue());
+
+//        if (Math.abs(needY.y - prevY) > 0.1f) {
+//            radius.endX = 4;
+//            prevY = needY.y;
+//        } else {
+            radius.endX = bgRadius.getValue();
+//        }
     }
 
     private void updateColors() {

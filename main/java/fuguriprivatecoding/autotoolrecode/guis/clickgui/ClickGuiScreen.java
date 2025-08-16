@@ -189,7 +189,7 @@ public class ClickGuiScreen extends GuiScreen {
 				RenderUtils.drawMixedRoundedRect(5, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
 				RenderUtils.drawMixedRoundedRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
 				RenderUtils.drawMixedRoundedRect(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
-				RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
+				RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
 			});
 		}
 		if (blur.isToggled() && blur.module.get("ClickGui")) {
@@ -205,25 +205,21 @@ public class ClickGuiScreen extends GuiScreen {
 		RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR);
 		RoundedUtils.drawRect(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR);
 
-		RenderUtils.drawRoundedOutLineRectangle(5, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, 0,MAIN_COLOR.getRGB(),Color.BLACK.getRGB());
-		RenderUtils.drawRoundedOutLineRectangle(5 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, 0,MAIN_COLOR.getRGB(),Color.BLACK.getRGB());
-		RenderUtils.drawRoundedOutLineRectangle(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, 0,MAIN_COLOR.getRGB(),Color.BLACK.getRGB());
+		RenderUtils.drawRoundedOutLineRectangle(5, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, 0,Color.BLACK.getRGB(),Color.BLACK.getRGB());
+		RenderUtils.drawRoundedOutLineRectangle(5 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, 0,Color.BLACK.getRGB(),Color.BLACK.getRGB());
+		RenderUtils.drawRoundedOutLineRectangle(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, 0,Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
 		fontRenderer.drawString("Console", 5 + 25 - widthConsole, sc.getScaledHeight() - 15 - 1, -1);
 		fontRenderer.drawString("Config", 5 + 60 + 25 - widthConfig, sc.getScaledHeight() - 15 - 1 , -1);
 		fontRenderer.drawString("HotKeys", 5 + 60 + 60 + 25 - widthHotKeys, sc.getScaledHeight() - 15 - 1 , -1);
 
-		RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),MAIN_COLOR.getRGB(),Color.BLACK.getRGB());
+		RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
 		ScissorUtils.enableScissor();
 		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
 
-		StencilUtils.renderStencil(
-				() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 10, clientSettings.backgroundRadius.getValue(), HEADER_COLOR),
-				() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 1f, HEADER_COLOR)
-		);
-		RoundedUtils.drawRect(background.x, background.y + 5, sizeBackground.x, 10, 1f, HEADER_COLOR);
-		RoundedUtils.drawRect(background.x + sizeBackground.x - 5, background.y + sizeBackground.y - 5, 5, 5, clientSettings.backgroundRadius.getValue() / 3f, BACKGROUND_COLOR);
+		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, HEADER_COLOR);
+		RoundedUtils.drawRect(background.x + sizeBackground.x - 5, background.y + sizeBackground.y - 5, 5, 5, 0f, 4f,0f,clientSettings.backgroundRadius.getValue() / 1.25f, Color.BLACK);
 
 		fontRenderer.drawString(name, background.x + 35, background.y + 4, CATEGORY_COLOR.getRGB());
 

@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.alt.MicrosoftAuthCallback;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -84,7 +85,7 @@ public class AltManagerGuiScreen extends GuiScreen {
         BackgroundUtils.run();
         mc.getFramebuffer().bindFramebuffer(true);
 
-        RoundedUtils.drawRect(sc.getScaledWidth() - 265, 15, 250, sc.getScaledHeight() - 25, 5f, new Color(15, 15, 15, 150));
+        RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() - 265, 15, 250, sc.getScaledHeight() - 25, 5f, new Color(0, 0, 0, 150).getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
 
         fontRendererObj.drawCenteredString(updatedText, sc.getScaledWidth() - 265 + 125, 5, -1);
 
@@ -96,7 +97,7 @@ public class AltManagerGuiScreen extends GuiScreen {
         ScissorUtils.scissor(new ScaledResolution(mc), sc.getScaledWidth() - 260, 15, 250, sc.getScaledHeight() - 25);
 
         for (Account account : accounts) {
-            RoundedUtils.drawRect(sc.getScaledWidth() - 260, 10 + 10 + offset, 250 - 10, 20, 4f, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? new Color(75,75,75,150) : new Color(15,15,15,150));
+            RoundedUtils.drawRect(sc.getScaledWidth() - 260, 10 + 10 + offset, 250 - 10, 20, 4f, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? new Color(75,75,75,150) : new Color(0, 0, 0,150));
             fontRendererObj.drawString(account.getName() + ((account.getUuid() != null) ? " | Microsoft." : " | Offline"), sc.getScaledWidth() - 250, 10 + 5 + 11f + offset, account.getName().equals(mc.getSession().getUsername()) ? Color.green.getRGB() : -1);
             offset += 25;
             scrollTotalHeight += 25;
