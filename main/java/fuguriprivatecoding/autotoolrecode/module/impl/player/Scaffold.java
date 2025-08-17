@@ -183,7 +183,7 @@ public class Scaffold extends Module {
             e.setYaw(Rot.getServerRotation().getYaw());
 
             if (rotMode.getMode().equalsIgnoreCase("GodBridge")) {
-                if (bypassServerPitch.isToggled() && mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown()) {
+                if (bypassServerPitch.isToggled() && mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown() && !getSafeValue() && Rot.getServerRotation().getPitch() > 70 && Rot.getServerRotation().getPitch() < 85) {
                     e.setPitch(serverPitch.getValue());
                 } else {
                     e.setPitch(Rot.getServerRotation().getPitch());

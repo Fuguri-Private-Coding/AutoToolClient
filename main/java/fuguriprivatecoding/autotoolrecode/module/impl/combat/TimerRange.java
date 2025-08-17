@@ -134,7 +134,7 @@ public class TimerRange extends Module {
             if (!render.getMode().equalsIgnoreCase("Player")) updateColors();
 
             switch (render.getMode()) {
-                case "Player" -> renderPlayer(pos, target, target.rotationYawHead, mc.timer.renderPartialTicks);
+                case "Player" -> renderPlayer(realPositon, target, target.rotationYawHead, mc.timer.renderPartialTicks);
                 case "Box" -> renderBox(bb, fadeColor);
                 case "HitBox" -> renderHitBox(bb, fadeColor, lineWidth.getValue());
             }

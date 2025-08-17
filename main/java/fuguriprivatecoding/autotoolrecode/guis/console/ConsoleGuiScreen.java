@@ -149,7 +149,7 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         RoundedUtils.drawRect(background.x, background.y + sizeBackground.y - 18, sizeBackground.x, 18, clientSettings.backgroundRadius.getValue() / 1.25f, 0, 0, clientSettings.backgroundRadius.getValue() / 1.25f, new Color(0,0,0,255));
 
-        mc.fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 4,  -1);
+        mc.fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 3.5f,  -1);
         mc.fontRendererObj.drawString(textField.getText() + (delay > 15 ? "" : "_"), background.x + 2 + 2, background.y + sizeBackground.y - 12, -1);
         mc.fontRendererObj.drawString("Clear History", background.x + sizeBackground.x - 5 - width, background.y + 3.5f, -1);
 

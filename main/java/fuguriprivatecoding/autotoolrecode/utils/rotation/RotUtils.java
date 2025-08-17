@@ -64,11 +64,14 @@ public class RotUtils implements Imports {
 	}
 
 	public static Rot getRotationToPoint(Vec3 needPoint) {
-		Vec3 delta = needPoint.subtract(mc.thePlayer.getPositionEyes(1.0F));
-		double distance = sqrt(delta.xCoord * delta.xCoord + delta.zCoord * delta.zCoord);
+		return getRotationFromDiff(needPoint.subtract(mc.thePlayer.getPositionEyes(1.0F)));
+	}
+
+	public static Rot getRotationFromDiff(Vec3 diff) {
+		double distance = sqrt(diff.xCoord * diff.xCoord + diff.zCoord * diff.zCoord);
 		return new Rot(
-				(float) (Math.toDegrees(Math.atan2(delta.zCoord, delta.xCoord)) - 90),
-				(float) -Math.toDegrees(Math.atan2(delta.yCoord, distance))
+				(float) (Math.toDegrees(Math.atan2(diff.zCoord, diff.xCoord)) - 90),
+				(float) -Math.toDegrees(Math.atan2(diff.yCoord, distance))
 		);
 	}
 
