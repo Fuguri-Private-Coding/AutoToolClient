@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
@@ -24,10 +25,7 @@ import net.minecraft.block.*;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.*;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
@@ -116,6 +114,8 @@ public class Scaffold extends Module {
 
     double lastDelta = 0;
     float lastPitch = 80;
+    float[] lastRotation;
+    int jumpTicks;
     Glow shadows;
 
     @Override
@@ -132,6 +132,11 @@ public class Scaffold extends Module {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
 
         if (event instanceof TickEvent) {
+            if (!mc.thePlayer.onGround) {
+                jumpTicks++;
+            } else {
+                jumpTicks = 0;
+            }
             rotate();
             legitPlace();
         }
@@ -204,6 +209,25 @@ public class Scaffold extends Module {
         }
     }
 
+    boolean getSafeValue() {
+        if (jumpTicks > 11) {
+            return true;
+        }
+
+        if (jumpTicks > 6) {
+            return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.5f, mc.thePlayer.posZ)) &&
+                    mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.2f, mc.thePlayer.posZ)) &&
+                    mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0f, mc.thePlayer.posZ)) &&
+                    mc.thePlayer.jumpTicks == 0;
+        }
+
+        if (mc.thePlayer.hurtResistantTime > 0) {
+            return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.2f, mc.thePlayer.posZ));
+        }
+
+        return false;
+    }
+
     private BlockPos getBlockPos(float edgeOffset) {
         double x = mc.thePlayer.posX;
         double y = mc.thePlayer.posY - 0.5;
@@ -265,7 +289,12 @@ public class Scaffold extends Module {
                 rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
             }
         } else {
-            rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
+            if (getSafeValue()) {
+                float[] rot = getBestRotation();
+                rotation = new Rot(rot[0], rot[1]);
+            } else {
+                rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
+            }
         }
 
         Delta delta = RotUtils.getDelta(Rot.getServerRotation(), rotation);
@@ -330,9 +359,77 @@ public class Scaffold extends Module {
         List<Float> pitches = new ArrayList<>(positionHashMap.keySet());
 
         pitches.sort(Comparator.comparingDouble(pitch -> Math.abs(Rot.getServerRotation().getPitch()) - pitch));
-        mouse = positionHashMap.get(pitches.getFirst());
+        if (!getSafeValue() && rotMode.getMode().equalsIgnoreCase("GodBridge")) {
+            mouse = positionHashMap.get(pitches.getFirst());
+        }
+
+        if (rotMode.getMode().equalsIgnoreCase("TellyBridge")) mouse = positionHashMap.get(pitches.getFirst());
         lastPitch = pitches.getFirst();
         return pitches.getFirst();
+    }
+
+    private float[] getBestRotation() {
+        float step = 2f;
+        List<RotationData> validRotations = new ArrayList<>();
+
+        for (float yaw = -180; yaw < 180; yaw += step) {
+            float pitch = getPitch(yaw);
+            MovingObjectPosition hit = RayCastUtils.rayCast(3, 4.5, new Rot(yaw, pitch));
+
+            if (hit == null
+                    || hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+                    || hit.sideHit == EnumFacing.DOWN
+                    || hit.sideHit == EnumFacing.UP) {
+                continue;
+            }
+
+            validRotations.add(new RotationData(
+                    MathHelper.wrapDegree(yaw),
+                    pitch,
+                    hit.hitVec,
+                    hit
+            ));
+        }
+
+        if (validRotations.isEmpty()) {
+            return lastRotation;
+        }
+
+        RotationData closest = findClosestRotation(validRotations);
+        lastRotation = new float[]{closest.yaw, closest.pitch};
+        mouse = closest.mouse;
+        return lastRotation;
+    }
+
+    private RotationData findClosestRotation(List<RotationData> rotations) {
+        RotationData closest = null;
+        double minDistance = Double.MAX_VALUE;
+
+        Vec3 playerPos = mc.thePlayer.getPositionVector(); // Здесь нужно получить позицию игрока
+
+        for (RotationData data : rotations) {
+            double dist = playerPos.distanceTo(data.hitPos);
+            if (dist < minDistance) {
+                minDistance = dist;
+                closest = data;
+            }
+        }
+
+        return closest;
+    }
+
+    private static class RotationData {
+        public final float yaw;
+        public final float pitch;
+        public final Vec3 hitPos;
+        public final MovingObjectPosition mouse;
+
+        public RotationData(float yaw, float pitch, Vec3 hitPos, MovingObjectPosition mouse) {
+            this.yaw = yaw;
+            this.pitch = pitch;
+            this.hitPos = hitPos;
+            this.mouse = mouse;
+        }
     }
 
     public int findBlock() {
