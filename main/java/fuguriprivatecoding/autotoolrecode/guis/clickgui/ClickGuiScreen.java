@@ -13,6 +13,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -26,6 +27,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
@@ -69,7 +71,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 	int settingsScroll, settingsTotalHeight, modulesScroll, modulesTotalHeight;
 
-	final Animation2D moduleLine, settingLine, background, sizeBackground, settingsScrolls, modulesScrolls;
+	final Animation2D moduleLine, settingLine, background, sizeBackground, settingsScrolls, modulesScrolls, guis;
 
 	public ClickGuiScreen() {
 		lastMouse = new Vector2f(0, 0);
@@ -90,6 +92,7 @@ public class ClickGuiScreen extends GuiScreen {
 		settingLine = new Animation2D();
 		settingsScrolls = new Animation2D();
 		modulesScrolls = new Animation2D();
+		guis = new Animation2D();
 	}
 
 	@Override
@@ -106,7 +109,9 @@ public class ClickGuiScreen extends GuiScreen {
 
         if (closing) {
             if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
-                closing = false;
+				guis.endY = 0;
+				guis.y = 0;
+				closing = false;
 				clickedModule = null;
 				clickedCategory = null;
                 mc.currentScreen.onGuiClosed();
@@ -166,10 +171,6 @@ public class ClickGuiScreen extends GuiScreen {
 		final FontRenderer fontRenderer = mc.fontRendererObj;
 		final float clientNameWidth = fontRenderer.getStringWidth(Client.INST.getName());
 
-		float widthConsole = fontRenderer.getStringWidth("Console") / 2f;
-		float widthConfig = fontRenderer.getStringWidth("Config") / 2f;
-		float widthHotKeys = fontRenderer.getStringWidth("HotKeys") / 2f;
-
 		modulesScrolls.endY	= modulesScroll;
 		settingsScrolls.endY = settingsScroll;
 		background.endX = pos.x;
@@ -186,32 +187,17 @@ public class ClickGuiScreen extends GuiScreen {
 
 		if (shadows.isToggled() && shadows.module.get("ClickGui")) {
 			BloomRealUtils.addToDraw(() -> {
-				RenderUtils.drawMixedRoundedRect(5, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
-				RenderUtils.drawMixedRoundedRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
-				RenderUtils.drawMixedRoundedRect(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
 				RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
+				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.y, 50, 2, 0, clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
+				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 100, sc.getScaledHeight() - guis.y, 200, 20, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
 			});
 		}
 		if (blur.isToggled() && blur.module.get("ClickGui")) {
 			GaussianBlurUtils.addToDraw(() -> {
-				RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.black);
-				RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.black);
-				RoundedUtils.drawRect(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), Color.black);
+				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 100, sc.getScaledHeight() - guis.y, 200, 20, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
 				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.black);
 			});
 		}
-
-		RoundedUtils.drawRect(5, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR);
-		RoundedUtils.drawRect(5 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR);
-		RoundedUtils.drawRect(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR);
-
-		RenderUtils.drawRoundedOutLineRectangle(5, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, 0,Color.BLACK.getRGB(),Color.BLACK.getRGB());
-		RenderUtils.drawRoundedOutLineRectangle(5 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, 0,Color.BLACK.getRGB(),Color.BLACK.getRGB());
-		RenderUtils.drawRoundedOutLineRectangle(5 + 60 + 60, sc.getScaledHeight() - 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, 0,Color.BLACK.getRGB(),Color.BLACK.getRGB());
-
-		fontRenderer.drawString("Console", 5 + 25 - widthConsole, sc.getScaledHeight() - 15 - 1, -1);
-		fontRenderer.drawString("Config", 5 + 60 + 25 - widthConfig, sc.getScaledHeight() - 15 - 1 , -1);
-		fontRenderer.drawString("HotKeys", 5 + 60 + 60 + 25 - widthHotKeys, sc.getScaledHeight() - 15 - 1 , -1);
 
 		RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
@@ -223,9 +209,13 @@ public class ClickGuiScreen extends GuiScreen {
 
 		fontRenderer.drawString(name, background.x + 35, background.y + 4, CATEGORY_COLOR.getRGB());
 
-		RoundedUtils.drawRect(background.x + 4.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
-		RoundedUtils.drawRect(background.x + 14.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
-		RoundedUtils.drawRect(background.x + 24.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, Color.black);
+		boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
+		boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
+		boolean collapse = mouseX > background.x + 25 && mouseX < background.x + 25 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
+
+		RoundedUtils.drawRect(background.x + 4.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, quit ? Color.WHITE : Color.BLACK);
+		RoundedUtils.drawRect(background.x + 14.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, fullscreen ? Color.WHITE : Color.BLACK);
+		RoundedUtils.drawRect(background.x + 24.5f, background.y + 3.5f, 7.5f, 7.5f, 4f, collapse ? Color.WHITE : Color.BLACK);
 
 		RoundedUtils.drawRect(background.x + 5, background.y + 4, 6.5f, 6.5f, 3f, Color.red);
 		RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
@@ -638,6 +628,7 @@ public class ClickGuiScreen extends GuiScreen {
 		float offsetModuleDesc = modulesScrolls.y;
 
 		for (Module module : moduleList) {
+			if (mouseX < background.x || mouseX > background.x + sizeBackground.x || mouseY < background.y + 15 || mouseY > background.y + sizeBackground.y) continue;
 			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc + 9;
 			if (moduleCondition && !module.getDescription().equalsIgnoreCase("") && clickedModule == null) {
@@ -660,6 +651,39 @@ public class ClickGuiScreen extends GuiScreen {
 
 		ScissorUtils.disableScissor();
 
+		boolean sidePanel = mouseY > sc.getScaledHeight() - 25 && mouseY < sc.getScaledHeight();
+
+		if (sidePanel) {
+			guis.endY = 25;
+		} else {
+			guis.endY = 0;
+		}
+
+		RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.y, 50, 2, 0, Color.BLACK.getRGB(), Color.black.getRGB(), Color.BLACK.getRGB());
+		RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 100, sc.getScaledHeight() - guis.y, 200, 20, clientSettings.backgroundRadius.getValue() * 2.5f, BACKGROUND_COLOR.getRGB(), Color.black.getRGB(),Color.black.getRGB());
+
+		ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+
+		boolean console = mouseX > sc.getScaledWidth() / 2f - 100 + 8 &&
+				mouseX < sc.getScaledWidth() / 2f - 100 + 8 + font.getStringWidth("CONSOLE ") &&
+				mouseY > sc.getScaledHeight() - guis.y && mouseY < sc.getScaledHeight() - guis.y + 18;
+
+		boolean config = mouseX > sc.getScaledWidth() / 2f - 100 + 5 + 73 &&
+				mouseX < sc.getScaledWidth() / 2f - 100 + 5 + 73 + font.getStringWidth("CONFIGS ") &&
+				mouseY > sc.getScaledHeight() - guis.y && mouseY < sc.getScaledHeight() - guis.y + 18;
+
+		boolean hotKeys = mouseX > sc.getScaledWidth() / 2f - 100 + 5 + 143 &&
+				mouseX < sc.getScaledWidth() / 2f - 100 + 5 + 143 + font.getStringWidth("HOTKEYS ") &&
+				mouseY > sc.getScaledHeight() - guis.y && mouseY < sc.getScaledHeight() - guis.y + 18;
+
+//		RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 100 + 8, sc.getScaledHeight() - guis.y + 16.5f, fontRenderer.getStringWidth("Console ") + 1, 0.5f, 0f, BACKGROUND_COLOR.getRGB(), console ? ColorUtils.fadeColor(Color.WHITE, MAIN_COLOR, 2f).getRGB() : Color.WHITE.getRGB(), console ? ColorUtils.fadeColor(Color.WHITE, MAIN_COLOR, 5f).getRGB() : Color.WHITE.getRGB());
+//		RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 100 + 5 + 78, sc.getScaledHeight() - guis.y + 16.5f, fontRenderer.getStringWidth("Config ") + 1, 0.5f, 0f, BACKGROUND_COLOR.getRGB(), config ? ColorUtils.fadeColor(Color.WHITE, MAIN_COLOR, 2f).getRGB() : Color.WHITE.getRGB(), config ? ColorUtils.fadeColor(Color.WHITE, MAIN_COLOR, 5f).getRGB() : Color.WHITE.getRGB());
+//		RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 100 + 5 + 143, sc.getScaledHeight() - guis.y + 16.5f, fontRenderer.getStringWidth("HotKeys ") + 1, 0.5f, 0f, BACKGROUND_COLOR.getRGB(), hotKeys ? ColorUtils.fadeColor(Color.WHITE, MAIN_COLOR, 2f).getRGB() : Color.WHITE.getRGB(), hotKeys ? ColorUtils.fadeColor(Color.WHITE, MAIN_COLOR, 5f).getRGB() : Color.WHITE.getRGB());
+		font.drawString("CONSOLE", sc.getScaledWidth() / 2f - 100 + 10, sc.getScaledHeight() - guis.y + 8.5f, console ? MAIN_COLOR : Color.WHITE);
+		font.drawString("CONFIGS", sc.getScaledWidth() / 2f - 100 + 5 + 77.5f, sc.getScaledHeight() - guis.y + 8.5f, config ? MAIN_COLOR : Color.WHITE);
+		font.drawString("HOTKEYS", sc.getScaledWidth() / 2f - 100 + 5 + 145, sc.getScaledHeight() - guis.y + 8.5f, hotKeys ? MAIN_COLOR : Color.WHITE);
+
+		guis.update(clickGui.animationSpeed.getValue());
 		moduleLine.update(clickGui.animationSpeed.getValue());
 		settingLine.update(clickGui.animationSpeed.getValue());
 	}
@@ -668,13 +692,14 @@ public class ClickGuiScreen extends GuiScreen {
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		ScaledResolution sc = new ScaledResolution(Minecraft.getMinecraft());
 		final FontRenderer fontRenderer = mc.fontRendererObj;
+		ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
 
 		boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean collapse = mouseX > background.x + 25 && mouseX < background.x + 25 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
-		boolean console = mouseX > 5 && mouseX < 50 && mouseY > sc.getScaledHeight() - 20 && mouseY < sc.getScaledHeight() - 5;
-		boolean config = mouseX > 5 + 60 && mouseX < 50 + 60 && mouseY > sc.getScaledHeight() - 20 && mouseY < sc.getScaledHeight() - 5;
-		boolean hotKeys = mouseX > 5 + 60 + 60 && mouseX < 50 + 60 + 60 && mouseY > sc.getScaledHeight() - 20 && mouseY < sc.getScaledHeight() - 5;
+		boolean console = mouseX > sc.getScaledWidth() / 2f - 100 + 8 && mouseX < sc.getScaledWidth() / 2f - 100 + 8 + font.getStringWidth("CONSOLE ") && mouseY > sc.getScaledHeight() - guis.y && mouseY < sc.getScaledHeight() - guis.y + 18;
+		boolean config = mouseX > sc.getScaledWidth() / 2f - 100 + 5 + 73 && mouseX < sc.getScaledWidth() / 2f - 100 + 5 + 73 + font.getStringWidth("CONFIGS ") && mouseY > sc.getScaledHeight() - guis.y && mouseY < sc.getScaledHeight() - guis.y + 18;
+		boolean hotKeys = mouseX > sc.getScaledWidth() / 2f - 100 + 5 + 143 && mouseX < sc.getScaledWidth() / 2f - 100 + 5 + 143 + font.getStringWidth("HOTKEYS ") && mouseY > sc.getScaledHeight() - guis.y && mouseY < sc.getScaledHeight() - guis.y + 18;
 
 		if (Mouse.isButtonDown(0)) {
 			if (quit) {
@@ -965,6 +990,7 @@ public class ClickGuiScreen extends GuiScreen {
 		Client.INST.getEventManager().register(this);
 		sizeBackground.reset();
 		background.reset();
+		guis.reset();
 		pos.set(lastPos);
 		size.set(lastSize);
 	}
