@@ -5,6 +5,7 @@ import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
@@ -47,9 +48,11 @@ public class GuiViaVersion extends GuiScreen {
         BackgroundUtils.run();
         mc.getFramebuffer().bindFramebuffer(true);
 
+        ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+
         String currentVersion = "Current Version: " + ViaLoadingBase.getInstance().getTargetVersion().getName();
 
-        fontRendererObj.drawString(currentVersion, sc.getScaledWidth() / 2f - fontRendererObj.getStringWidth(currentVersion) / 2f, 5, -1, true);
+        font.drawString(currentVersion, sc.getScaledWidth() / 2f - font.getStringWidth(currentVersion) / 2f, 5 + 2, Color.WHITE, true);
 
         RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 200, 20, 400, sc.getScaledHeight() - 40, 5f, new Color(0, 0, 0, 150).getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
 
@@ -60,7 +63,7 @@ public class GuiViaVersion extends GuiScreen {
         scrollTotalHeight = 0;
         for (ProtocolVersion protocol : ViaLoadingBase.PROTOCOLS) {
             RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 195, 25 + offset, 390, 20, 5f, ViaLoadingBase.getInstance().getTargetVersion() == protocol ? new Color(75,75,75,150) : new Color(0,0,0,150));
-            fontRendererObj.drawString("Version: " + protocol.getName(), sc.getScaledWidth() / 2f - 190, 20f + 11.5f + offset, ViaLoadingBase.getInstance().getTargetVersion() == protocol ? Color.green.getRGB() : -1);
+            font.drawString("Version: " + protocol.getName(), sc.getScaledWidth() / 2f - 190, 20f + 11.5f + 2 + offset, ViaLoadingBase.getInstance().getTargetVersion() == protocol ? Color.green : Color.WHITE);
             offset += 25;
             scrollTotalHeight += 25;
         }

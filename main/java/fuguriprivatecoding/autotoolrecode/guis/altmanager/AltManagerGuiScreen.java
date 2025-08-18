@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.alt.MicrosoftAuthCallback;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
@@ -72,6 +73,8 @@ public class AltManagerGuiScreen extends GuiScreen {
 
         scroll -= currentScroll / 120 * 15;
 
+        ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+
         float altVisibleHeight = sc.getScaledHeight() - 25;
         float maxScroll = Math.max(scrollTotalHeight - altVisibleHeight,0);
 
@@ -87,7 +90,7 @@ public class AltManagerGuiScreen extends GuiScreen {
 
         RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() - 265, 15, 250, sc.getScaledHeight() - 25, 5f, new Color(0, 0, 0, 150).getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
 
-        fontRendererObj.drawCenteredString(updatedText, sc.getScaledWidth() - 265 + 125, 5, -1);
+        if (updatedText != null) font.drawCenteredString(updatedText, sc.getScaledWidth() - 265 + 125, 5, Color.WHITE);
 
         float offset = scrolls.y;
 
@@ -98,7 +101,7 @@ public class AltManagerGuiScreen extends GuiScreen {
 
         for (Account account : accounts) {
             RoundedUtils.drawRect(sc.getScaledWidth() - 260, 10 + 10 + offset, 250 - 10, 20, 4f, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? new Color(75,75,75,150) : new Color(0, 0, 0,150));
-            fontRendererObj.drawString(account.getName() + ((account.getUuid() != null) ? " | Microsoft." : " | Offline"), sc.getScaledWidth() - 250, 10 + 5 + 11f + offset, account.getName().equals(mc.getSession().getUsername()) ? Color.green.getRGB() : -1);
+            font.drawString(account.getName() + ((account.getUuid() != null) ? " | Microsoft." : " | Offline."), sc.getScaledWidth() - 250, 10 + 5 + 2 + 11f + offset, account.getName().equals(mc.getSession().getUsername()) ? Color.green : Color.WHITE);
             offset += 25;
             scrollTotalHeight += 25;
         }
@@ -110,7 +113,7 @@ public class AltManagerGuiScreen extends GuiScreen {
 
         String currentUser = "Account: " + mc.getSession().getUsername();
 
-        mc.fontRendererObj.drawString(currentUser, 2.5f, 2.5f, new Color(255, 255, 255, 150).getRGB());
+        font.drawString(currentUser, 2.5f, 2.5f + 1, Color.WHITE);
         super.drawScreen(mouseX,mouseY,partialTicks);
     }
 

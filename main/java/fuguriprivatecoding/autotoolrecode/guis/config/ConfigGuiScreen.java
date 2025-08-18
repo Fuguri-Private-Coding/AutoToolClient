@@ -13,6 +13,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -113,14 +114,16 @@ public class ConfigGuiScreen extends GuiScreen {
             default -> "§k" + "Config".substring(0, min(delay - 20, 6));
         };
 
-        float widthName = mc.fontRendererObj.getStringWidth(name);
-        float widthCreate = fontRendererObj.getStringWidth("Create") / 2f;
-        float widthLoad = fontRendererObj.getStringWidth("Load") / 2f;
-        float widthDelete = fontRendererObj.getStringWidth("Delete") / 2f;
-        float widthSave = fontRendererObj.getStringWidth("Save") / 2f;
-        float widthFolder = fontRendererObj.getStringWidth("Folder") / 2f;
-        float widthRefresh = fontRendererObj.getStringWidth("Refresh") / 2f;
-        float widthOnlineDownload = fontRendererObj.getStringWidth("Online") / 2f;
+        ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+
+        double widthName = font.getStringWidth(name);
+        double widthCreate = font.getStringWidth("Create") / 2f;
+        double widthLoad = font.getStringWidth("Load") / 2f;
+        double widthDelete = font.getStringWidth("Delete") / 2f;
+        double widthSave = font.getStringWidth("Save") / 2f;
+        double widthFolder = font.getStringWidth("Folder") / 2f;
+        double widthRefresh = font.getStringWidth("Refresh") / 2f;
+        double widthOnlineDownload = font.getStringWidth("Online") / 2f;
 
         background.endX = pos.x;
         background.endY = pos.y;
@@ -151,7 +154,7 @@ public class ConfigGuiScreen extends GuiScreen {
 
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
 
-        fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 3.5f,-1);
+        font.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 3.5f + 2, Color.white);
 
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
@@ -175,7 +178,7 @@ public class ConfigGuiScreen extends GuiScreen {
         for (Config config : Client.INST.getConfigManager().getConfigs()) {
             Color selectedColor = selectedConfig != null ? selectedConfig == config ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150);
             RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clientSettings.backgroundRadius.getValue(), selectedColor);
-            fontRendererObj.drawString(config.getName(), background.x + 10 + offset, background.y + 30 + yOffset, -1);
+            font.drawString(config.getName(), background.x + 10 + offset, background.y + 30 + 2 + yOffset, Color.WHITE);
             offset += 105;
 
             if (offset > background.x + sizeBackground.x - 200) {
@@ -186,19 +189,19 @@ public class ConfigGuiScreen extends GuiScreen {
         }
 
         RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        fontRendererObj.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3, -1, true);
+        font.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3 + 2, Color.WHITE, true);
         RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        fontRendererObj.drawString("Load", background.x + sizeBackground.x - 55 + 25 - widthLoad, background.y + 20 + 20 + 3, -1, true);
+        font.drawString("Load", background.x + sizeBackground.x - 55 + 25 - widthLoad, background.y + 20 + 20 + 3 + 2, Color.WHITE, true);
         RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        fontRendererObj.drawString("Save", background.x + sizeBackground.x - 55 + 25 - widthSave, background.y + 20 + 20 + 20 + 3, -1, true);
+        font.drawString("Save", background.x + sizeBackground.x - 55 + 25 - widthSave, background.y + 20 + 20 + 20 + 3 + 2, Color.WHITE, true);
         RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        fontRendererObj.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 20 + 20 + 3, -1, true);
+        font.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 20 + 20 + 3 + 2, Color.WHITE, true);
         RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        fontRendererObj.drawString("Folder", background.x + sizeBackground.x - 55 + 25 - widthFolder, background.y + 20 + 20 + 20 + 20 + 20 + 3, -1, true);
+        font.drawString("Folder", background.x + sizeBackground.x - 55 + 25 - widthFolder, background.y + 20 + 20 + 20 + 20 + 20 + 3 + 2, Color.WHITE, true);
         RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        fontRendererObj.drawString("Refresh", background.x + sizeBackground.x - 55 + 25 - widthRefresh, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 3, -1, true);
+        font.drawString("Refresh", background.x + sizeBackground.x - 55 + 25 - widthRefresh, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 3 + 2, Color.WHITE, true);
         RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        fontRendererObj.drawString("Online", background.x + sizeBackground.x - 55 + 25 - widthOnlineDownload, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20 + 3, -1, true);
+        font.drawString("Online", background.x + sizeBackground.x - 55 + 25 - widthOnlineDownload, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20 + 3 + 2, Color.WHITE, true);
 
         ScissorUtils.disableScissor();
 

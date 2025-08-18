@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
@@ -113,9 +114,11 @@ public class HotTextGui extends GuiScreen {
             }
         }
 
-        float widthName = mc.fontRendererObj.getStringWidth(name);
-        float widthCreate = fontRendererObj.getStringWidth("Create") / 2f;
-        float widthDelete = fontRendererObj.getStringWidth("Delete") / 2f;
+        ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+
+        double widthName = font.getStringWidth(name);
+        double widthCreate = font.getStringWidth("Create") / 2f;
+        double widthDelete = font.getStringWidth("Delete") / 2f;
 
         scrolls.endY = scroll;
         background.endX = pos.x;
@@ -143,7 +146,7 @@ public class HotTextGui extends GuiScreen {
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
 
-        mc.fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 3.5f,  -1);
+        font.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 3.5f + 2, Color.WHITE);
 
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
@@ -159,9 +162,9 @@ public class HotTextGui extends GuiScreen {
         int rectColor = new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB();
 
         RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        fontRendererObj.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3, -1, true);
+        font.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3 + 2, Color.WHITE, true);
         RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        fontRendererObj.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 3, -1, true);
+        font.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 3 + 2, Color.WHITE, true);
 
         ScissorUtils.disableScissor();
 
@@ -175,8 +178,8 @@ public class HotTextGui extends GuiScreen {
             String bindText = (hotText == selectedHotText ? (binding ? "▬" : (hotText.getKey() == 0 ? "-" : Keyboard.getKeyName(hotText.getKey()))) : (hotText.getKey() == 0 ? "-" : Keyboard.getKeyName(hotText.getKey())));
             Color selectedColor = selectedHotText != null ? selectedHotText == hotText ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150);
             RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 150, 30, clientSettings.backgroundRadius.getValue(), selectedColor);
-            fontRendererObj.drawString(bindText,background.x + 10 + 80 + 50 + offset, background.y + 30 + yOffset, -1);
-            if (hotText != null) fontRendererObj.drawString(hotText.getText(), background.x + 10 + offset, background.y + 30 + yOffset, -1);
+            font.drawString(bindText,background.x + 10 + 80 + 50 + offset, background.y + 30 + 2 + yOffset, Color.WHITE);
+            if (hotText != null) font.drawString(hotText.getText(), background.x + 10 + offset, background.y + 30 + 2 + yOffset, Color.WHITE);
             offset += 155;
 
             if (offset > background.x + sizeBackground.x - 250) {

@@ -11,8 +11,8 @@ public class Glow extends Module {
     public MultiMode module = new MultiMode("Modules", this)
             .addModes("ClickGui","ConsoleGui","ItemsFirstPerson","ArrayList",
                     "TargetESP","Dot" ,"BreakIndicator", "CPSCounter", "BPSCounter",
-                    "FPSCounter", "BlockOverlay", "ConfigGui", "Chat", "Trails",
-                    "NameTags", "Scaffold", "ChestESP", "BedESP", "WorldParticles",
+                    "NameTags", "FPSCounter", "BlockOverlay", "ConfigGui", "Chat", "Trails",
+                    "Scaffold", "ChestESP", "BedESP", "WorldParticles",
                     "Weather", "TargetHUD", "Hat", "HotKeyGui", "BackTrack", "Ping", "ScoreBoard", "Notifications"
             );
 

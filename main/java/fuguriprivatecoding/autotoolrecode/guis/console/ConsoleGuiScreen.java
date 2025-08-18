@@ -9,20 +9,18 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
-
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
@@ -117,8 +115,10 @@ public class ConsoleGuiScreen extends GuiScreen {
             default -> "§k" + "Console_".substring(0, min(delay - 20, 8));
         };
 
-        float widthName = mc.fontRendererObj.getStringWidth(name);
-        float width = mc.fontRendererObj.getStringWidth("Clear History");
+        ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+
+        double widthName = font.getStringWidth(name);
+        double width = font.getStringWidth("Clear History");
 
         scrolls.endY = scroll;
         background.endX = pos.x;
@@ -149,9 +149,9 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         RoundedUtils.drawRect(background.x, background.y + sizeBackground.y - 18, sizeBackground.x, 18, clientSettings.backgroundRadius.getValue() / 1.25f, 0, 0, clientSettings.backgroundRadius.getValue() / 1.25f, new Color(0,0,0,255));
 
-        mc.fontRendererObj.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 3.5f,  -1);
-        mc.fontRendererObj.drawString(textField.getText() + (delay > 15 ? "" : "_"), background.x + 2 + 2, background.y + sizeBackground.y - 12.5f, -1);
-        mc.fontRendererObj.drawString("Clear History", background.x + sizeBackground.x - 5 - width, background.y + 3.5f, -1);
+        font.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 3.5f + 2, Color.WHITE);
+        mc.fontRendererObj.drawString(textField.getText() + (delay > 15 ? "" : "_"), background.x + 2 + 2, background.y + sizeBackground.y - 12.5f, Color.WHITE.getRGB());
+        font.drawString("Clear History", background.x + sizeBackground.x - 5 - width, background.y + 3.5f + 2, Color.WHITE);
 
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
@@ -218,7 +218,9 @@ public class ConsoleGuiScreen extends GuiScreen {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         ScaledResolution sc = new ScaledResolution(mc);
 
-        float width = mc.fontRendererObj.getStringWidth("Clear History");
+        ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+
+        double width = font.getStringWidth("Clear History");
 
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;

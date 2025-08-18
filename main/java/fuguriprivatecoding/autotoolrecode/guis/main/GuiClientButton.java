@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.guis.main;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -26,11 +27,11 @@ public class GuiClientButton extends GuiButton {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 
-        final FontRenderer fonts = mc.fontRendererObj;
+        final ClientFontRenderer fonts = Client.INST.getFonts().fonts.get("MuseoSans");
 
         RenderUtils.drawRoundedOutLineRectangle(xPosition, yPosition, width, height, 0, new Color(0,0,0,150).getRGB(), Color.black.getRGB(), Color.black.getRGB());
 
         final Color color = Color.WHITE;
-        fonts.drawString(displayString, xPosition + width / 2f - fonts.getStringWidth(displayString) / 2f, yPosition + (height - 8) / 2f, hovered ? color.darker().getRGB() : color.getRGB(), true);
+        fonts.drawString(displayString, xPosition + width / 2f - fonts.getStringWidth(displayString) / 2f, yPosition + 2 + (height - 8) / 2f, hovered ? color.darker() : color, true);
     }
 }

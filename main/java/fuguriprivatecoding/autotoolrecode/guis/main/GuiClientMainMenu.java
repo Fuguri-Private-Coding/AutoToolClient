@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.guis.main;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
@@ -41,23 +42,22 @@ public class GuiClientMainMenu extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         final ScaledResolution sc = new ScaledResolution(mc);
-        final FontRenderer font = mc.fontRendererObj;
+        final ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
         final String userText = "Hello, " + Client.INST.getProfile().getUsername() + " welcome to AutoTool!";
         BackgroundUtils.run();
 
         if (initialized) {
-            font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f - 45, Color.WHITE.getRGB());
+            font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f - 45 + 2, Color.WHITE);
             renderDiscordProfile(sc, font);
         } else if (ClientIRC.profile != null) {
             updateImages();
-            font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f, Color.WHITE.getRGB());
+            font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f + 2, Color.WHITE);
         }
 
-        font.drawString(Client.INST.getChangeLog(), 5, 5, -1, true);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    private void renderDiscordProfile(ScaledResolution sc, FontRenderer font) {
+    private void renderDiscordProfile(ScaledResolution sc, ClientFontRenderer font) {
         Color transpent = new Color(0,0,0,0);
         Color profileColor = ClientIRC.profile.getProfileColor() != null ? ClientIRC.profile.getProfileColor() : Color.black;
         Color serverRoleColor = ClientIRC.profile.getServerRoleColor() != null ? ClientIRC.profile.getServerRoleColor() : Color.black;
@@ -72,7 +72,7 @@ public class GuiClientMainMenu extends GuiScreen {
             );
         }
         RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 95, sc.getScaledHeight() / 2f - 25, 40, 40, 20f, new Color(0,0,0,0).getRGB(), profileColor.getRGB(), serverRoleColor.getRGB());
-        if (ClientIRC.profile.getUserName() != null) font.drawString(ClientIRC.profile.getUserName(), sc.getScaledWidth() / 2f - 45, sc.getScaledHeight() / 2f - 10f, Color.WHITE.getRGB(), true);
+        if (ClientIRC.profile.getUserName() != null) font.drawString(ClientIRC.profile.getUserName(), sc.getScaledWidth() / 2f - 45, sc.getScaledHeight() / 2f - 10f + 2, Color.WHITE, true);
     }
 
     private void updateImages() {
