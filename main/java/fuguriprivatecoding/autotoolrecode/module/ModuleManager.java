@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.module.impl.exploit.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.legit.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.hud.HUD;
 import lombok.Getter;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class ModuleManager {
 				new Trajectory(),
 				new Hat(),
 				new Blur(),
-				new HUD(),
+				new TEZD(),
 				new Dot(),
 				new FastPlace(),
 				new BedESP(),

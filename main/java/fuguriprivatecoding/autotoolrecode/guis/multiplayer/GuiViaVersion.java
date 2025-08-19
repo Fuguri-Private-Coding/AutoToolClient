@@ -33,7 +33,7 @@ public class GuiViaVersion extends GuiScreen {
         ScaledResolution sc = new ScaledResolution(mc);
         int currentScroll = Mouse.getDWheel();
 
-        scroll -= currentScroll / 120 * 20;
+        scroll += currentScroll / 120 * 20;
 
         float versionVisibleHeight = sc.getScaledHeight() - 45;
         float maxScroll = Math.max(scrollTotalHeight - versionVisibleHeight, 0);
