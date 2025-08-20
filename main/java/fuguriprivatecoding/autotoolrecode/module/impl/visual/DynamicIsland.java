@@ -108,12 +108,10 @@ public class DynamicIsland extends Module {
                 resetNeedY(30, yOffset);
             }
 
-            if (mc.thePlayer.inventory.getCurrentItem() != null) {
-                if (scaffOld.isToggled() && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
-                    scaffold = "Blocks Left - " + mc.thePlayer.inventory.getCurrentItem().stackSize + ", Speed - " + bps;
-                    currentText = scaffold;
-                    resetNeedY(45, yOffset);
-                }
+            if (scaffOld.getBlockCount() > 0 && scaffOld.isToggled()) {
+                scaffold = "Blocks Left - " + scaffOld.getBlockCount();
+                currentText = scaffold;
+                resetNeedY(45, yOffset);
             }
 
             if (backTrack.isToggled() && backTrack.packetBuffer.size() > 10 && ent != null) {
@@ -166,12 +164,7 @@ public class DynamicIsland extends Module {
         currentHeight.update(animationSpeed.getValue());
         radius.update(animationSpeed.getValue());
 
-//        if (Math.abs(needY.y - prevY) > 0.1f) {
-//            radius.endX = 4;
-//            prevY = needY.y;
-//        } else {
-            radius.endX = bgRadius.getValue();
-//        }
+        radius.endX = bgRadius.getValue();
     }
 
     private void updateColors() {

@@ -10,7 +10,6 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
@@ -20,8 +19,8 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
-import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.block.*;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
@@ -70,6 +69,7 @@ public class Scaffold extends Module {
             .setMode("GodBridge")
             ;
 
+
     BooleanSupplier tellyVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge");
     BooleanSupplier godVisible = () -> rotMode.getMode().equalsIgnoreCase("GodBridge");
 
@@ -77,14 +77,14 @@ public class Scaffold extends Module {
     CheckBox serverSwing = new CheckBox("Server Swing", this, noSwing::isToggled, true);
 
     final CheckBox speedTelly = new CheckBox("Speed Telly", this, tellyVisible, true);
-    IntegerSetting minTellyTicks = new IntegerSetting("Min Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 2, 12, 5) {
+    IntegerSetting minTellyTicks = new IntegerSetting("Min Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 4, 12, 5) {
         @Override
         public int getValue() {
             if (maxTellyTicks.value < value) { value = maxTellyTicks.value; }
             return super.getValue();
         }
     };
-    IntegerSetting maxTellyTicks = new IntegerSetting("Max Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 2, 12, 5) {
+    IntegerSetting maxTellyTicks = new IntegerSetting("Max Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 4, 12, 5) {
         @Override
         public int getValue() {
             if (minTellyTicks.value > value) { value = minTellyTicks.value; }
@@ -109,22 +109,37 @@ public class Scaffold extends Module {
     final ColorSetting color2 = new ColorSetting("Color2", this, () -> render.isToggled() && fadeColor.isToggled(), 1f,1f,1f,1f);
     final FloatSetting fadeSpeed = new FloatSetting("Fade Speed", this, () -> render.isToggled() && fadeColor.isToggled(),0.1f, 20, 1, 0.1f);
 
-    final StopWatch stopWatch;
+    private final List<Block> blacklistedBlocks = Arrays.asList(Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava, Blocks.wooden_slab, Blocks.chest, Blocks.flowing_lava,
+            Blocks.enchanting_table, Blocks.carpet, Blocks.glass_pane, Blocks.skull, Blocks.stained_glass_pane, Blocks.iron_bars, Blocks.snow_layer, Blocks.ice, Blocks.packed_ice,
+            Blocks.coal_ore, Blocks.diamond_ore, Blocks.emerald_ore, Blocks.trapped_chest, Blocks.torch, Blocks.anvil,
+            Blocks.noteblock, Blocks.jukebox, Blocks.tnt, Blocks.gold_ore, Blocks.iron_ore, Blocks.lapis_ore, Blocks.lit_redstone_ore, Blocks.quartz_ore, Blocks.redstone_ore,
+            Blocks.wooden_pressure_plate, Blocks.stone_pressure_plate, Blocks.light_weighted_pressure_plate, Blocks.heavy_weighted_pressure_plate,
+            Blocks.stone_button, Blocks.wooden_button, Blocks.lever, Blocks.tallgrass, Blocks.tripwire, Blocks.tripwire_hook, Blocks.rail, Blocks.waterlily, Blocks.red_flower,
+            Blocks.red_mushroom, Blocks.brown_mushroom, Blocks.vine, Blocks.trapdoor, Blocks.yellow_flower, Blocks.ladder, Blocks.furnace, Blocks.sand, Blocks.cactus,
+            Blocks.dispenser, Blocks.noteblock, Blocks.dropper, Blocks.crafting_table, Blocks.pumpkin, Blocks.sapling, Blocks.cobblestone_wall,
+            Blocks.oak_fence, Blocks.activator_rail, Blocks.detector_rail, Blocks.golden_rail, Blocks.redstone_torch, Blocks.acacia_stairs,
+            Blocks.birch_stairs, Blocks.brick_stairs, Blocks.dark_oak_stairs, Blocks.jungle_stairs, Blocks.nether_brick_stairs, Blocks.oak_stairs,
+            Blocks.quartz_stairs, Blocks.red_sandstone_stairs, Blocks.sandstone_stairs, Blocks.spruce_stairs, Blocks.stone_brick_stairs, Blocks.stone_stairs, Blocks.double_wooden_slab, Blocks.stone_slab, Blocks.double_stone_slab, Blocks.stone_slab2, Blocks.double_stone_slab2,
+            Blocks.web, Blocks.gravel, Blocks.daylight_detector_inverted, Blocks.daylight_detector, Blocks.soul_sand, Blocks.piston, Blocks.piston_extension,
+            Blocks.piston_head, Blocks.sticky_piston, Blocks.iron_trapdoor, Blocks.ender_chest, Blocks.end_portal, Blocks.end_portal_frame, Blocks.standing_banner,
+            Blocks.wall_banner, Blocks.deadbush, Blocks.slime_block, Blocks.acacia_fence_gate, Blocks.birch_fence_gate, Blocks.dark_oak_fence_gate,
+            Blocks.jungle_fence_gate, Blocks.spruce_fence_gate, Blocks.oak_fence_gate);
+
     private MovingObjectPosition mouse;
+
+    Rot rotation;
 
     double lastDelta = 0;
     float lastPitch = 80;
-    float[] lastRotation;
-    int jumpTicks;
+    Rot lastRotation;
+
+    int jumpTicks, blocksLeft;
+
     Glow shadows;
 
     @Override
     public void onDisable() {
-        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
-    }
-
-    public Scaffold() {
-        stopWatch = new StopWatch();
+        resetValues();
     }
 
     @EventTarget
@@ -132,11 +147,7 @@ public class Scaffold extends Module {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
 
         if (event instanceof TickEvent) {
-            if (!mc.thePlayer.onGround) {
-                jumpTicks++;
-            } else {
-                jumpTicks = 0;
-            }
+            updateValues();
             rotate();
             legitPlace();
         }
@@ -159,7 +170,7 @@ public class Scaffold extends Module {
                 if (sneakIfNoBlocks.isToggled() && findBlock() == -1) e.setSneak(true);
 
                 if (ninjaBridge.isToggled()) {
-                    BlockPos pos = getBlockPos(edgeOffset.getValue());
+                    BlockPos pos = getDirectionalBlockPos(edgeOffset.getValue());
                     if (mc.theWorld.isAirBlock(pos)) e.setSneak(true);
                 }
             }
@@ -210,7 +221,7 @@ public class Scaffold extends Module {
     }
 
     boolean getSafeValue() {
-        if (jumpTicks > 11) {
+        if (jumpTicks > 10) {
             return true;
         }
 
@@ -221,14 +232,28 @@ public class Scaffold extends Module {
                     mc.thePlayer.jumpTicks == 0;
         }
 
-        if (mc.thePlayer.hurtResistantTime > 0) {
+        if (mc.thePlayer.hurtResistantTime > 10 && mc.thePlayer.hurtTime == 0) {
             return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.2f, mc.thePlayer.posZ));
+        } else {
+            return mc.thePlayer.hurtTime > 0;
         }
-
-        return false;
     }
 
-    private BlockPos getBlockPos(float edgeOffset) {
+    private void updateValues() {
+        if (!mc.thePlayer.onGround) {
+            jumpTicks++;
+        } else {
+            jumpTicks = 0;
+        }
+    }
+
+    private void resetValues() {
+        jumpTicks = 0;
+        blocksLeft = 0;
+        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+    }
+
+    private BlockPos getDirectionalBlockPos(float edgeOffset) {
         double x = mc.thePlayer.posX;
         double y = mc.thePlayer.posY - 0.5;
         double z = mc.thePlayer.posZ;
@@ -259,6 +284,7 @@ public class Scaffold extends Module {
                 } else {
                     mc.thePlayer.swingItem();
                 }
+                blocksLeft++;
             }
         }
     }
@@ -280,8 +306,6 @@ public class Scaffold extends Module {
             yaw += yawStep;
         }
 
-        Rot rotation;
-
         if (rotMode.getMode().equalsIgnoreCase("TellyBridge")) {
             if (getTellyValue()) {
                 rotation = new Rot(MathHelper.wrapDegree(yaw + 180), 80);
@@ -290,8 +314,7 @@ public class Scaffold extends Module {
             }
         } else {
             if (getSafeValue()) {
-                float[] rot = getBestRotation();
-                rotation = new Rot(rot[0], rot[1]);
+                rotation = getBestRotation();
             } else {
                 rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
             }
@@ -322,10 +345,12 @@ public class Scaffold extends Module {
 
         lastDelta = delta.hypot();
 
-        Rot.setServerRotation(new Rot(
+        Rot rot = new Rot(
                 Rot.getServerRotation().getYaw() + delta.getYaw(),
                 Math.clamp(Rot.getServerRotation().getPitch() + delta.getPitch(), -90, 90)
-        ));
+        );
+
+        Rot.setServerRotation(rot);
     }
 
     boolean getTellyValue() {
@@ -368,8 +393,8 @@ public class Scaffold extends Module {
         return pitches.getFirst();
     }
 
-    private float[] getBestRotation() {
-        float step = 2f;
+    private Rot getBestRotation() {
+        float step = 1f;
         List<RotationData> validRotations = new ArrayList<>();
 
         for (float yaw = -180; yaw < 180; yaw += step) {
@@ -384,8 +409,7 @@ public class Scaffold extends Module {
             }
 
             validRotations.add(new RotationData(
-                    MathHelper.wrapDegree(yaw),
-                    pitch,
+                    new Rot(MathHelper.wrapDegree(yaw), pitch),
                     hit.hitVec,
                     hit
             ));
@@ -396,7 +420,7 @@ public class Scaffold extends Module {
         }
 
         RotationData closest = findClosestRotation(validRotations);
-        lastRotation = new float[]{closest.yaw, closest.pitch};
+        lastRotation = closest.rotation;
         mouse = closest.mouse;
         return lastRotation;
     }
@@ -405,7 +429,7 @@ public class Scaffold extends Module {
         RotationData closest = null;
         double minDistance = Double.MAX_VALUE;
 
-        Vec3 playerPos = mc.thePlayer.getPositionVector(); // Здесь нужно получить позицию игрока
+        Vec3 playerPos = mc.thePlayer.getPositionVector();
 
         for (RotationData data : rotations) {
             double dist = playerPos.distanceTo(data.hitPos);
@@ -418,18 +442,22 @@ public class Scaffold extends Module {
         return closest;
     }
 
-    private static class RotationData {
-        public final float yaw;
-        public final float pitch;
-        public final Vec3 hitPos;
-        public final MovingObjectPosition mouse;
+    public int getBlockCount() {
+        int blockCount = 0;
 
-        public RotationData(float yaw, float pitch, Vec3 hitPos, MovingObjectPosition mouse) {
-            this.yaw = yaw;
-            this.pitch = pitch;
-            this.hitPos = hitPos;
-            this.mouse = mouse;
+        for (int i = 36; i < 45; ++i) {
+            if (!mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()) continue;
+
+            final ItemStack is = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
+
+            if (!(is.getItem() instanceof ItemBlock && !blacklistedBlocks.contains(((ItemBlock) is.getItem()).getBlock()))) {
+                continue;
+            }
+
+            blockCount += is.stackSize;
         }
+
+        return blockCount;
     }
 
     public int findBlock() {
@@ -437,44 +465,19 @@ public class Scaffold extends Module {
 
         for (int i = 0; i < 9; i++) {
             ItemStack item = mc.thePlayer.inventory.mainInventory[i];
-            if (item == null || !(item.getItem() instanceof ItemBlock block)
-                    || block.getBlock() instanceof BlockSand
-                    || block.getBlock() instanceof BlockGravel
-                    || block.getBlock() instanceof BlockSoulSand
-                    || block.getBlock() instanceof BlockTNT
-                    || block.getBlock() instanceof BlockWeb
-                    || block.getBlock() instanceof BlockFence
-                    || block.getBlock() instanceof BlockFenceGate
-                    || block.getBlock() instanceof BlockWall
-                    || block.getBlock() instanceof BlockPane
-                    || block.getBlock() instanceof BlockStairs
-                    || block.getBlock() instanceof BlockSlab
-                    || block.getBlock() instanceof BlockCarpet
-                    || block.getBlock() instanceof BlockSnow
-                    || block.getBlock() instanceof BlockLilyPad
-                    || block.getBlock() instanceof BlockFire
-                    || block.getBlock() instanceof BlockRedstoneWire
-                    || block.getBlock() instanceof BlockTorch
-                    || block.getBlock() instanceof BlockLadder
-                    || block.getBlock() instanceof BlockFurnace
-                    || block.getBlock() instanceof BlockCactus
-                    || block.getBlock() instanceof BlockAnvil
-                    || block.getBlock() instanceof BlockDoor
-                    || block.getBlock() instanceof BlockEndPortal
-                    || block.getBlock() instanceof BlockEndPortalFrame
-                    || block.getBlock() instanceof BlockEnchantmentTable
-                    || block.getBlock() instanceof BlockChest
-                    || block.getBlock() instanceof BlockEnderChest
-                    || block.getBlock() instanceof BlockWorkbench
-                    || block.getBlock() instanceof BlockPressurePlate
-                    || block.getBlock() instanceof BlockTrapDoor
-                    || block.getBlock() instanceof BlockDropper
-                    || block.getBlock() instanceof BlockNote
-                    || item.stackSize == 0
-            ) continue;
+
+            if (item == null || !(item.getItem() instanceof ItemBlock itemBlock) || item.stackSize == 0) continue;
+
+            Block block = itemBlock.getBlock();
+
+            if (blacklistedBlocks.contains(block)) continue;
+
             bestSlot = i;
         }
 
         return bestSlot;
     }
+
+    private record RotationData(Rot rotation, Vec3 hitPos, MovingObjectPosition mouse) {}
+
 }

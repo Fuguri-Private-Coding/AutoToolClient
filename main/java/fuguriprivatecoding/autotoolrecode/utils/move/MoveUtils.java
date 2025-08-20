@@ -20,6 +20,40 @@ public class MoveUtils implements Imports {
                 && !mc.thePlayer.isSneaking();
     }
 
+    private static float yaw = 0;
+
+    public static float getDir() {
+        if (mc.gameSettings.keyBindForward.isKeyDown() && mc.gameSettings.keyBindLeft.isKeyDown()) {
+            yaw = 45f;
+        } else if (mc.gameSettings.keyBindForward.isKeyDown() && mc.gameSettings.keyBindRight.isKeyDown()) {
+            yaw = -45f;
+        } else if (mc.gameSettings.keyBindBack.isKeyDown() && mc.gameSettings.keyBindLeft.isKeyDown()) {
+            yaw = 135f;
+        } else if (mc.gameSettings.keyBindBack.isKeyDown() && mc.gameSettings.keyBindRight.isKeyDown()) {
+            yaw = -135f;
+        } else if (mc.gameSettings.keyBindBack.isKeyDown()) {
+            yaw = 180f;
+        } else if (mc.gameSettings.keyBindLeft.isKeyDown()) {
+            yaw = 90f;
+        } else if (mc.gameSettings.keyBindRight.isKeyDown()) {
+            yaw = -90f;
+        } else if (mc.gameSettings.keyBindForward.isKeyDown()) {
+            yaw = 0f;
+        }
+
+        return yaw;
+    }
+
+    public static float getYawFromKeybind() {
+        return mc.thePlayer.rotationYaw - getDir();
+    }
+
+    public static boolean isMovingStraight() {
+        float direction = getYawFromKeybind() + 180;
+        float movingYaw = Math.round(direction / 45) * 45;
+        return movingYaw % 90 == 0f;
+    }
+
     public static boolean isMoving() {
         return mc.thePlayer.moveForward != 0.0F || mc.thePlayer.moveStrafing != 0.0F && !mc.thePlayer.isCollidedHorizontally;
     }
