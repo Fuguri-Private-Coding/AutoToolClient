@@ -233,7 +233,7 @@ public class ConfigGuiScreen extends GuiScreen {
             lastSize.set(size);
             closing = true;
             size.set(0, 0);
-            pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
+            pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
         }
 
         if (keyCode == Keyboard.KEY_RETURN) {
@@ -289,7 +289,7 @@ public class ConfigGuiScreen extends GuiScreen {
                 lastSize.set(size);
                 closing = true;
                 size.set(0, 0);
-                pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
+                pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
             }
 
             if (fullscreen) {

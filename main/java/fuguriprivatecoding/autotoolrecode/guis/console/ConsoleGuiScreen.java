@@ -199,7 +199,7 @@ public class ConsoleGuiScreen extends GuiScreen {
             lastSize.set(size);
             closing = true;
             size.set(0, 0);
-            pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
+            pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
             return;
         }
 
@@ -236,7 +236,7 @@ public class ConsoleGuiScreen extends GuiScreen {
                 lastSize.set(size);
                 closing = true;
                 size.set(0, 0);
-                pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f);
+                pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
             }
 
             if (fullscreen) {
