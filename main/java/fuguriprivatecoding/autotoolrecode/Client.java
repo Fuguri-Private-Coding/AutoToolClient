@@ -90,7 +90,7 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(4, 2, 0);
+		version = new ClientVersion(4, 3, 0);
 
 		Display.setTitle(getFullName());
 
@@ -164,6 +164,8 @@ public enum Client implements Imports {
 
 		configManager.loadModulesFromConfig();
 
+		if (discord.getId() != null) ClientIRC.setDiscordProfile(Client.INST.getDiscord().getId());
+
 		starting = false;
 
 		double elapsedNanos = System.nanoTime() - start;
@@ -177,12 +179,6 @@ public enum Client implements Imports {
 				System.exit(-1);
 			}
 		}
-	}
-
-	public String getChangeLog() {
-		return """
-				
-				""";
 	}
 
 	public void onClose() {
