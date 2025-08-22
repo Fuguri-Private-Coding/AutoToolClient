@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
@@ -104,10 +105,7 @@ public class Scaffold extends Module {
     FloatSetting serverPitch = new FloatSetting("Server Pitch", this, () -> godVisible.getAsBoolean() && bypassServerPitch.isToggled(), 70, 85, 77,0.1f);
 
     final CheckBox render = new CheckBox("Render", this, true);
-    final CheckBox fadeColor = new CheckBox("Fade Color", this, render::isToggled);
-    final ColorSetting color1 = new ColorSetting("Color1", this, render::isToggled, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, () -> render.isToggled() && fadeColor.isToggled(), 1f,1f,1f,1f);
-    final FloatSetting fadeSpeed = new FloatSetting("Fade Speed", this, () -> render.isToggled() && fadeColor.isToggled(),0.1f, 20, 1, 0.1f);
+    final ColorSetting color = new ColorSetting("Color", this);
 
     private final List<Block> blacklistedBlocks = Arrays.asList(Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava, Blocks.wooden_slab, Blocks.chest, Blocks.flowing_lava,
             Blocks.enchanting_table, Blocks.carpet, Blocks.glass_pane, Blocks.skull, Blocks.stained_glass_pane, Blocks.iron_bars, Blocks.snow_layer, Blocks.ice, Blocks.packed_ice,
@@ -153,7 +151,7 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof Render3DEvent && mouse.getBlockPos() != null && render.isToggled()) {
-            Color fadeColor = this.fadeColor.isToggled() ? ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue()) : color1.getColor();
+            Color fadeColor = color.isFade() ? ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed()) : color.getColor();
 
             RenderUtils.start3D();
             if (shadows.isToggled() && shadows.module.get("Scaffold")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(mouse.getBlockPos(), fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f));
@@ -221,21 +219,23 @@ public class Scaffold extends Module {
     }
 
     boolean getSafeValue() {
-        if (jumpTicks > 10) {
-            return true;
-        }
-
-        if (jumpTicks > 6) {
-            return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.5f, mc.thePlayer.posZ)) &&
-                    mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.2f, mc.thePlayer.posZ)) &&
-                    mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0f, mc.thePlayer.posZ)) &&
-                    mc.thePlayer.jumpTicks == 0;
-        }
-
-        if (mc.thePlayer.hurtResistantTime > 10 && mc.thePlayer.hurtTime == 0) {
-            return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.2f, mc.thePlayer.posZ));
+        if (sameY.isToggled()) {
+            return jumpTicks > 12;
         } else {
-            return mc.thePlayer.hurtTime > 0;
+            if (jumpTicks > 10) {
+                return true;
+            } else if (jumpTicks > 6) {
+                return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.5f, mc.thePlayer.posZ)) &&
+                        mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.2f, mc.thePlayer.posZ)) &&
+                        mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0f, mc.thePlayer.posZ)) &&
+                        mc.thePlayer.jumpTicks == 0;
+            }
+
+            if (mc.thePlayer.hurtResistantTime > 10 && mc.thePlayer.hurtTime == 0) {
+                return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.2f, mc.thePlayer.posZ));
+            } else {
+                return mc.thePlayer.hurtTime > 0;
+            }
         }
     }
 
@@ -255,7 +255,7 @@ public class Scaffold extends Module {
 
     private BlockPos getDirectionalBlockPos(float edgeOffset) {
         double x = mc.thePlayer.posX;
-        double y = mc.thePlayer.posY - 0.5;
+        double y = mc.thePlayer.posY - 0.7;
         double z = mc.thePlayer.posZ;
 
         boolean movingX = Math.abs(mc.thePlayer.motionX) > 0.1;
@@ -278,7 +278,7 @@ public class Scaffold extends Module {
         if (mouse.sideHit == mouseOver.sideHit
                 && mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
                 && getSameYValue(mouse) && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
-            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem(), mouse.getBlockPos(), mouse.sideHit, mouse.hitVec)) {
+            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem(), mouseOver.getBlockPos(), mouse.sideHit, mouse.hitVec)) {
                 if (noSwing.isToggled()) {
                     if (serverSwing.isToggled()) mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
                 } else {
@@ -335,10 +335,17 @@ public class Scaffold extends Module {
                 );
             }
         } else {
-            delta = delta.limit(
-                    RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
-                    RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
-            );
+            if (getSafeValue()) {
+                delta = delta.limit(
+                        RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
+                        RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
+                );
+            } else {
+                delta = delta.limit(
+                        RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
+                        RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
+                );
+            }
         }
 
         delta = RotUtils.fixDelta(delta);
@@ -394,7 +401,7 @@ public class Scaffold extends Module {
     }
 
     private Rot getBestRotation() {
-        float step = 1f;
+        float step = 2f;
         List<RotationData> validRotations = new ArrayList<>();
 
         for (float yaw = -180; yaw < 180; yaw += step) {
@@ -425,14 +432,20 @@ public class Scaffold extends Module {
         return lastRotation;
     }
 
+    RotationData closest;
+
     private RotationData findClosestRotation(List<RotationData> rotations) {
-        RotationData closest = null;
+        rotations.sort(Comparator.comparingDouble(data -> {
+            Rot currentRotation = Rot.getServerRotation();
+            return MathHelper.wrapDegree(currentRotation.getYaw() - data.rotation.getYaw());
+        }));
+
+        int topCandidates = Math.min(100, rotations.size());
         double minDistance = Double.MAX_VALUE;
 
-        Vec3 playerPos = mc.thePlayer.getPositionVector();
-
-        for (RotationData data : rotations) {
-            double dist = playerPos.distanceTo(data.hitPos);
+        for (int i = 0; i < topCandidates; i++) {
+            RotationData data = rotations.get(i);
+            double dist = DistanceUtils.getDistance(data.hitPos);
             if (dist < minDistance) {
                 minDistance = dist;
                 closest = data;

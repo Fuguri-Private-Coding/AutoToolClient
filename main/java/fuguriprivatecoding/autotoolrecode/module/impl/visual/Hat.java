@@ -34,12 +34,7 @@ public class Hat extends Module {
     final FloatSetting radius = new FloatSetting("Radius", this, 0.1f, 2f, 0.7f, 0.1f) {};
     final CheckBox whileThirdPerson = new CheckBox("WhileThirdPerson", this);
 
-    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
-    final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, fadeBoxColor::isToggled, 1f,1f,1f,1f);
-    final FloatSetting fadeOffset = new FloatSetting("FadeOffset", this, fadeBoxColor::isToggled,0f, 20, 1, 0.1f);
-
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled, 0.1f, 20, 1, 0.1f);
+    public final ColorSetting color = new ColorSetting("Color", this);
 
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 0f,10f,1f,0.1f);
 
@@ -56,14 +51,14 @@ public class Hat extends Module {
                     if (shadows.isToggled() && shadows.module.get("Hat")) {
                         BloomUtils.addToDraw(() -> renderChinaHat(Color.white, Color.white));
                     }
-                    renderChinaHat(color1.getColor(), color2.getColor());
+                    renderChinaHat(color.getColor(), color.getFadeColor());
                 }
 
                 case "Halo" -> {
                     if (shadows.isToggled() && shadows.module.get("Hat")) {
                         BloomUtils.addToDraw(() -> renderHaloHat(Color.white, Color.white));
                     }
-                    renderHaloHat(color1.getColor(), color2.getColor());
+                    renderHaloHat(color.getColor(), color.getFadeColor());
                 }
             }
         }
@@ -92,8 +87,8 @@ public class Hat extends Module {
         glShadeModel(7425);
         glBegin(GL_QUAD_STRIP);
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.mixColor(color1, color2, i, fadeOffset.getValue(), fadeSpeed.getValue())
+            fadeColor = color.isFade() ?
+                    ColorUtils.mixColor(color1, color2, i, color.getOffset(), color.getSpeed())
                     : color1;
 
             ColorUtils.glColor(fadeColor);
@@ -107,8 +102,8 @@ public class Hat extends Module {
         glBegin(GL_LINE_STRIP);
 
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.mixColor(color1, color2, i, fadeOffset.getValue(), fadeSpeed.getValue())
+            fadeColor = color.isFade() ?
+                    ColorUtils.mixColor(color1, color2, i, color.getOffset(), color.getSpeed())
                     : color1;
 
             ColorUtils.glColor(fadeColor, 1f);
@@ -141,8 +136,8 @@ public class Hat extends Module {
         glBegin(GL_LINE_STRIP);
 
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.mixColor(color1, color2, i, fadeOffset.getValue(), fadeSpeed.getValue())
+            fadeColor = color.isFade() ?
+                    ColorUtils.mixColor(color1, color2, i, color.getOffset(), color.getSpeed())
                     : color1;
 
             ColorUtils.glColor(fadeColor, 1f);

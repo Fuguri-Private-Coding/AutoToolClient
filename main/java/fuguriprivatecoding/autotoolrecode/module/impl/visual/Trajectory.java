@@ -31,10 +31,8 @@ import java.util.Random;
 @ModuleInfo(name = "Trajectory", category = Category.VISUAL, description = "Показывает траекторию полета бросаемых вещей.")
 public class Trajectory extends Module {
 
-    CheckBox fade = new CheckBox("Fade", this, false);
-    ColorSetting color1 = new ColorSetting("Color1", this, 1,1,1,1);
-    ColorSetting color2 = new ColorSetting("Color2", this,() -> fade.isToggled(), 0,0,0,1);
-    FloatSetting speed = new FloatSetting("Speed", this,() -> fade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting color = new ColorSetting("Color", this);
+
     FloatSetting lineWidth = new FloatSetting("Line Width", this,0.1f, 20, 1, 0.1f);
 
     List<Vec3> positions = new ArrayList<>();
@@ -346,9 +344,9 @@ public class Trajectory extends Module {
     }
 
     private void updateColors() {
-        fadeColor = fade.isToggled()
+        fadeColor = color.isFade()
                 ? ColorUtils.fadeColor(
-                color1.getColor(), color2.getColor(),
-                speed.getValue()) : color1.getColor();
+                color.getColor(), color.getFadeColor(),
+                color.getSpeed()) : color.getColor();
     }
 }

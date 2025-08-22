@@ -305,6 +305,13 @@ public class ConfigManager implements Imports {
                                         case "Green" -> set.setGreen(entry1.getValue().getAsFloat());
                                         case "Blue" -> set.setBlue(entry1.getValue().getAsFloat());
                                         case "Alpha" -> set.setAlpha(entry1.getValue().getAsFloat());
+                                        case "FadeRed" -> set.setFadeRed(entry1.getValue().getAsFloat());
+                                        case "FadeGreen" -> set.setFadeGreen(entry1.getValue().getAsFloat());
+                                        case "FadeBlue" -> set.setFadeBlue(entry1.getValue().getAsFloat());
+                                        case "FadeAlpha" -> set.setFadeAlpha(entry1.getValue().getAsFloat());
+                                        case "Fade" -> set.setFade(entry1.getValue().getAsBoolean());
+                                        case "FadeSpeed" -> set.setSpeed(entry1.getValue().getAsFloat());
+                                        case "FadeOffset" -> set.setOffset(entry1.getValue().getAsFloat());
                                     }
                                 }
                             }
@@ -374,6 +381,13 @@ public class ConfigManager implements Imports {
                                         case "Green" -> set.setGreen(entry1.getValue().getAsFloat());
                                         case "Blue" -> set.setBlue(entry1.getValue().getAsFloat());
                                         case "Alpha" -> set.setAlpha(entry1.getValue().getAsFloat());
+                                        case "FadeRed" -> set.setFadeRed(entry1.getValue().getAsFloat());
+                                        case "FadeGreen" -> set.setFadeGreen(entry1.getValue().getAsFloat());
+                                        case "FadeBlue" -> set.setFadeBlue(entry1.getValue().getAsFloat());
+                                        case "FadeAlpha" -> set.setFadeAlpha(entry1.getValue().getAsFloat());
+                                        case "Fade" -> set.setFade(entry1.getValue().getAsBoolean());
+                                        case "FadeSpeed" -> set.setSpeed(entry1.getValue().getAsFloat());
+                                        case "FadeOffset" -> set.setOffset(entry1.getValue().getAsFloat());
                                     }
                                 }
                             }
@@ -429,6 +443,13 @@ public class ConfigManager implements Imports {
                         colorSettingObject.addProperty("Green", set.getGreen());
                         colorSettingObject.addProperty("Blue", set.getBlue());
                         colorSettingObject.addProperty("Alpha", set.getAlpha());
+                        colorSettingObject.addProperty("FadeRed", set.getFadeRed());
+                        colorSettingObject.addProperty("FadeGreen", set.getFadeGreen());
+                        colorSettingObject.addProperty("FadeBlue", set.getFadeBlue());
+                        colorSettingObject.addProperty("FadeAlpha", set.getFadeAlpha());
+                        colorSettingObject.addProperty("Fade", set.isFade());
+                        colorSettingObject.addProperty("FadeSpeed", set.getSpeed());
+                        colorSettingObject.addProperty("FadeOffset", set.getOffset());
                         moduleObject.add(set.getName(), colorSettingObject);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + setting);
@@ -472,6 +493,13 @@ public class ConfigManager implements Imports {
                     colorSettingObject.addProperty("Green", set.getGreen());
                     colorSettingObject.addProperty("Blue", set.getBlue());
                     colorSettingObject.addProperty("Alpha", set.getAlpha());
+                    colorSettingObject.addProperty("FadeRed", set.getFadeRed());
+                    colorSettingObject.addProperty("FadeGreen", set.getFadeGreen());
+                    colorSettingObject.addProperty("FadeBlue", set.getFadeBlue());
+                    colorSettingObject.addProperty("FadeAlpha", set.getFadeAlpha());
+                    colorSettingObject.addProperty("Fade", set.isFade());
+                    colorSettingObject.addProperty("FadeSpeed", set.getSpeed());
+                    colorSettingObject.addProperty("FadeOffset", set.getOffset());
                     moduleObject.add(set.getName(), colorSettingObject);
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + setting);
@@ -525,6 +553,13 @@ public class ConfigManager implements Imports {
                                     case "Green" -> set.setGreen(entry1.getValue().getAsFloat());
                                     case "Blue" -> set.setBlue(entry1.getValue().getAsFloat());
                                     case "Alpha" -> set.setAlpha(entry1.getValue().getAsFloat());
+                                    case "FadeRed" -> set.setFadeRed(entry1.getValue().getAsFloat());
+                                    case "FadeGreen" -> set.setFadeGreen(entry1.getValue().getAsFloat());
+                                    case "FadeBlue" -> set.setFadeBlue(entry1.getValue().getAsFloat());
+                                    case "FadeAlpha" -> set.setFadeAlpha(entry1.getValue().getAsFloat());
+                                    case "Fade" -> set.setFade(entry1.getValue().getAsBoolean());
+                                    case "FadeSpeed" -> set.setSpeed(entry1.getValue().getAsFloat());
+                                    case "FadeOffset" -> set.setOffset(entry1.getValue().getAsFloat());
                                 }
                             }
                         }
@@ -570,6 +605,13 @@ public class ConfigManager implements Imports {
                         colorSettingObject.addProperty("Green", set.getGreen());
                         colorSettingObject.addProperty("Blue", set.getBlue());
                         colorSettingObject.addProperty("Alpha", set.getAlpha());
+                        colorSettingObject.addProperty("FadeRed", set.getFadeRed());
+                        colorSettingObject.addProperty("FadeGreen", set.getFadeGreen());
+                        colorSettingObject.addProperty("FadeBlue", set.getFadeBlue());
+                        colorSettingObject.addProperty("FadeAlpha", set.getFadeAlpha());
+                        colorSettingObject.addProperty("Fade", set.isFade());
+                        colorSettingObject.addProperty("FadeSpeed", set.getSpeed());
+                        colorSettingObject.addProperty("FadeOffset", set.getOffset());
                         moduleObject.add(set.getName(), colorSettingObject);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + setting);

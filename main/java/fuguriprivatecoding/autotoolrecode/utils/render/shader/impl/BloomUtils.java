@@ -58,8 +58,8 @@ public class BloomUtils implements Imports {
             Uniform.uniform1i(programId, "image2", 20);
         }
 
-        Color color = shadows.fade.isToggled() ?
-                ColorUtils.fadeColor(shadows.color.getColor(), shadows.twoColor.getColor(), shadows.speed.getValue())
+        Color color = shadows.color.isFade() ?
+                ColorUtils.fadeColor(shadows.color.getColor(), shadows.color.getFadeColor(), shadows.color.getSpeed())
                 : shadows.color.getColor();
 
         Uniform.uniform4f(programId, "color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);

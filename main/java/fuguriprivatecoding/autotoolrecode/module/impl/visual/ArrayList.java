@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -35,12 +34,8 @@ public class ArrayList extends Module {
             .setMode("Left Up")
             ;
 
-    CheckBox textFade = new CheckBox("Text Fade", this, false);
-    ColorSetting textColor1 = new ColorSetting("Text Color1", this, 1,1,1,1);
-    ColorSetting textColor2 = new ColorSetting("Text Color2", this,() -> textFade.isToggled(), 0,0,0,1);
-    FloatSetting textColorOffset = new FloatSetting("Text Color Offset", this,() -> textFade.isToggled(),0f, 50, 1, 0.1f);
+    final ColorSetting textColor = new ColorSetting("Text Color", this);
     FloatSetting textYOffset = new FloatSetting("Text Y-Offset", this,-5f, 5, 0, 0.01f);
-    FloatSetting textSpeed = new FloatSetting("Text Speed", this,() -> textFade.isToggled(),0.1f, 20, 1, 0.1f);
     CheckBox shadow = new CheckBox("Text Shadow", this, true);
     IntegerSetting verticalSpacing = new IntegerSetting("Vertical Spacing", this, 1,25,0);
 
@@ -48,24 +43,12 @@ public class ArrayList extends Module {
     CheckBox blur = new CheckBox("Blur", this, false);
 
     CheckBox background = new CheckBox("Background",this, true);
-    CheckBox bgFade = new CheckBox("Background Fade", this, () -> background.isToggled(), false);
-    ColorSetting bgColor1 = new ColorSetting("Background Color1", this, () -> background.isToggled(), 0,0,0,1);
-    ColorSetting bgColor2 = new ColorSetting("Background Color2", this,() -> background.isToggled() && bgFade.isToggled(), 0,0,0,1);
-    FloatSetting bgColorOffset = new FloatSetting("Background Color Offset", this,() -> background.isToggled() && bgFade.isToggled(),0f, 50, 1, 0.1f);
-    FloatSetting bgSpeed = new FloatSetting("Background Speed", this,() -> background.isToggled() && bgFade.isToggled(),0.1f, 20, 1, 0.1f);
+    final ColorSetting bgColor = new ColorSetting("Background Color", this, () -> background.isToggled());
 
-    CheckBox bgFadeShadow = new CheckBox("Background Fade Shadow", this, () -> background.isToggled(), false);
-    ColorSetting bgColor1Shadow = new ColorSetting("Background Color1 Shadow", this, () -> background.isToggled(), 0,0,0,1);
-    ColorSetting bgColor2Shadow = new ColorSetting("Background Color2 Shadow", this,() -> background.isToggled() && bgFadeShadow.isToggled(), 0,0,0,1);
-    FloatSetting bgColorOffsetShadow = new FloatSetting("Background Color Offset Shadow", this,() -> background.isToggled() && bgFadeShadow.isToggled(),0f, 50, 1, 0.1f);
-    FloatSetting bgSpeedShadow = new FloatSetting("Background Speed Shadow", this,() -> background.isToggled() && bgFadeShadow.isToggled(),0.1f, 20, 1, 0.1f);
+    final ColorSetting bgColorShadow = new ColorSetting("Background Shadow Color", this, () -> background.isToggled());
 
     CheckBox line = new CheckBox("Line",this, true);
-    CheckBox lineFade = new CheckBox("Line Fade", this, () -> line.isToggled(), false);
-    ColorSetting lineColor1 = new ColorSetting("Line Color1", this,() -> line.isToggled(), 0,0,0,1);
-    ColorSetting lineColor2 = new ColorSetting("Line Color2", this,() -> line.isToggled() && lineFade.isToggled(), 0,0,0,1);
-    FloatSetting lineColorOffset = new FloatSetting("Line Color Offset", this,() -> line.isToggled() && lineFade.isToggled(),0f, 50, 1, 0.1f);
-    FloatSetting lineSpeed = new FloatSetting("Line Speed", this,() -> line.isToggled() && lineFade.isToggled(),0.1f, 20, 1, 0.1f);
+    final ColorSetting lineColor = new ColorSetting("Line Color", this, () -> line.isToggled());
 
     Color fadeTextColor;
     Color fadeBackgroundColor;
@@ -146,24 +129,24 @@ public class ArrayList extends Module {
     }
 
     private void updateColors(List<Module> moduleList, Module module) {
-        fadeTextColor = textFade.isToggled() ? ColorUtils.mixColor(
-                textColor1.getColor(), textColor2.getColor(), moduleList.indexOf(module),
-                textColorOffset.getValue(), textSpeed.getValue()) : textColor1.getColor();
+        fadeTextColor = textColor.isFade() ? ColorUtils.mixColor(
+                textColor.getColor(), textColor.getFadeColor(), moduleList.indexOf(module),
+                textColor.getOffset(), textColor.getSpeed()) : textColor.getColor();
 
         if (background.isToggled()) {
-            fadeBackgroundColor = bgFade.isToggled() ? ColorUtils.mixColor(
-                    bgColor1.getColor(), bgColor2.getColor(), moduleList.indexOf(module),
-                    bgColorOffset.getValue(), bgSpeed.getValue()) : bgColor1.getColor();
+            fadeBackgroundColor = bgColor.isFade() ? ColorUtils.mixColor(
+                    bgColor.getColor(), bgColor.getFadeColor(), moduleList.indexOf(module),
+                    bgColor.getOffset(), bgColor.getSpeed()) : bgColor.getColor();
 
-            fadeBackgroundShadowColor = bgFadeShadow.isToggled() ? ColorUtils.mixColor(
-                    bgColor1Shadow.getColor(), bgColor2Shadow.getColor(), moduleList.indexOf(module),
-                    bgColorOffsetShadow.getValue(), bgSpeedShadow.getValue()) : bgColor1Shadow.getColor();
+            fadeBackgroundShadowColor = bgColorShadow.isFade() ? ColorUtils.mixColor(
+                    bgColorShadow.getColor(), bgColorShadow.getFadeColor(), moduleList.indexOf(module),
+                    bgColorShadow.getOffset(), bgColorShadow.getSpeed()) : bgColorShadow.getColor();
         }
 
         if (line.isToggled()) {
-            fadeLineColor = lineFade.isToggled() ? ColorUtils.mixColor(
-                    lineColor1.getColor(), lineColor2.getColor(), moduleList.indexOf(module),
-                    lineColorOffset.getValue(), lineSpeed.getValue()) : lineColor1.getColor();
+            fadeLineColor = lineColor.isFade() ? ColorUtils.mixColor(
+                    bgColorShadow.getColor(), lineColor.getFadeColor(), moduleList.indexOf(module),
+                    lineColor.getOffset(), lineColor.getSpeed()) : lineColor.getColor();
         }
     }
 

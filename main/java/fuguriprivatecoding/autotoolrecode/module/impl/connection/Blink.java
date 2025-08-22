@@ -51,10 +51,7 @@ public class Blink extends Module {
 
     BooleanSupplier renderBox = () -> (renderModes.getMode().equalsIgnoreCase("HitBox"));
 
-    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this, renderBox);
-    final ColorSetting color1 = new ColorSetting("Color1", this, renderBox, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, () -> renderBox.getAsBoolean() && fadeBoxColor.isToggled(), 1f,1f,1f,1f);
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> renderBox.getAsBoolean() && fadeBoxColor.isToggled(),0.1f, 20, 1, 0.1f);
+    final ColorSetting color = new ColorSetting("Color", this, renderBox);
 
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f,5f,1f,0.1f);
 
@@ -108,9 +105,9 @@ public class Blink extends Module {
 
             switch (renderModes.getMode()) {
                 case "HitBox" -> {
-                    Color fadeColor = fadeBoxColor.isToggled() ?
-                            ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
-                            : color1.getColor();
+                    Color fadeColor = color.isFade() ?
+                            ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
+                            : color.getColor();
 
                     RenderUtils.start3D();
                     Vec3 smoothPos = new Vec3(x,y,z);

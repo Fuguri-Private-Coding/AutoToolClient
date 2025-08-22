@@ -1,5 +1,9 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
+import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.EventTarget;
+import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.ScoreboardRenderEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -7,7 +11,20 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.scoreboard.Score;
+import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
+import org.lwjgl.util.vector.Vector2f;
+import java.awt.*;
+import java.util.Collection;
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "Scoreboard", category = Category.VISUAL, description = "Позволяет изменять Scoreboard.")
@@ -20,8 +37,104 @@ public class ScoreBoard extends Module {
     public IntegerSetting posX = new IntegerSetting("Pos-X", this, visible, 0,100,0);
     public IntegerSetting posY = new IntegerSetting("Pos-Y", this, visible, 0,100,0);
 
-    public CheckBox fadeBoxColor = new CheckBox("FadeColor", this, visible);
-    public ColorSetting color1 = new ColorSetting("Color1", this,visible, 1f,1f,1f,1f);
-    public ColorSetting color2 = new ColorSetting("Color2", this, () -> visible.getAsBoolean() && fadeBoxColor.isToggled(),1f,1f,1f,1f);
-    public FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> visible.getAsBoolean() && fadeBoxColor.isToggled(),0.1f, 20, 1, 0.1f);
+    CheckBox roundedRect = new CheckBox("Rounded", this, visible);
+    public FloatSetting roundFactor = new FloatSetting("Round Factor", this, () -> visible.getAsBoolean() && roundedRect.isToggled(),0, 10, 5, 0.1f);
+
+    public final ColorSetting color = new ColorSetting("Color", this);
+
+    public CheckBox glow = new CheckBox("Glow", this, visible);
+    public CheckBox blur = new CheckBox("Blur", this, visible);
+
+    BooleanSupplier shadow = () -> glow.isToggled();
+
+    public final ColorSetting colorShadow = new ColorSetting("Shadow Color", this, shadow);
+
+    Color fadeColor;
+
+    @EventTarget
+    public void onEvent(Event event) {
+        if (event instanceof ScoreboardRenderEvent e) e.cancel();
+        if (event instanceof Render2DEvent) {
+            if (remove.isToggled()) return;
+
+            updateColors();
+
+            ScaledResolution sc = new ScaledResolution(mc);
+
+            Scoreboard scoreboard = mc.theWorld.getScoreboard();
+            ScoreObjective objective = scoreboard.getObjectiveInDisplaySlot(1);
+            if (objective != null) {
+                Vector2f pos = getPos(sc);
+                scoreboard = objective.getScoreboard();
+                Collection<Score> collection = scoreboard.getSortedScores(objective);
+                float width = 10.0F;
+
+                for(Score score2 : collection) {
+                    ScorePlayerTeam scoreplayerteam2 = scoreboard.getPlayersTeam(score2.getPlayerName());
+                    String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam2, score2.getPlayerName());
+                    if (width < mc.fontRendererObj.getStringWidth(s1)) {
+                        width = mc.fontRendererObj.getStringWidth(s1 + "    ");
+                    }
+                }
+
+                int height = collection.size() * 9 + 16;
+
+                if (roundedRect.isToggled()) {
+                    float finalWidth = width;
+
+                    if (glow.isToggled()) {
+                        BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
+                    }
+                    if (blur.isToggled()) {
+                        float finalWidth1 = width;
+                        GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth1, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
+                    }
+                    StencilUtils.renderStencil(
+                            () -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE),
+                            () -> {
+                                RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), fadeColor);
+                                RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, fadeColor);
+                                RoundedUtils.drawRect(pos.x, pos.y + height - 12, finalWidth, 12, 0, fadeColor);
+
+                                mc.fontRendererObj.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - mc.fontRendererObj.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f, -1);
+
+                            }
+                    );
+                } else {
+                    if (glow.isToggled()) {
+                        float finalWidth1 = width;
+                        BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth1, height, 0, colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
+                    }
+                    if (blur.isToggled()) {
+                        float finalWidth1 = width;
+                        GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth1, height, 0, colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
+                    }
+                    RoundedUtils.drawRect(pos.x, pos.y, width, height, 0, fadeColor);
+                    RoundedUtils.drawRect(pos.x, pos.y, width, 12, 0, fadeColor);
+                    RoundedUtils.drawRect(pos.x, pos.y + height - 12, width, 12, 0, fadeColor);
+
+                    mc.fontRendererObj.drawString(objective.getDisplayName(), (int) ((pos.x + width / 2f) - mc.fontRendererObj.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f, -1);
+                }
+                int j = 0;
+
+                for(Score score1 : collection) {
+                    ++j;
+                    ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score1.getPlayerName());
+                    String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score1.getPlayerName());
+                    mc.fontRendererObj.drawString(s1, pos.x + 3.0F, pos.y + height - (9 * j), -1);
+                }
+            }
+        }
+    }
+
+    Vector2f getPos(ScaledResolution sc) {
+        return new Vector2f(
+                (sc.getScaledWidth() / 100f) * this.posX.getValue(),
+                (sc.getScaledHeight() / 100f) * this.posY.getValue()
+        );
+    }
+
+    void updateColors() {
+        fadeColor = color.isFade() ? ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed()) : color.getColor();
+    }
 }

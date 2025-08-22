@@ -43,11 +43,9 @@ public class TimerRange extends Module {
 
     BooleanSupplier renderBox = () -> (render.getMode().equalsIgnoreCase("Box") || render.getMode().equalsIgnoreCase("HitBox")) && renderRealPlayerPosition.isToggled();
 
-    final CheckBox fadeBoxColor = new CheckBox("Fade Color", this, renderBox);
-    final ColorSetting color1 = new ColorSetting("Color1", this, renderBox, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, () -> renderBox.getAsBoolean() && fadeBoxColor.isToggled(), 1f,1f,1f,1f);
-    final FloatSetting fadeSpeed = new FloatSetting("Fade Speed", this, () -> renderBox.getAsBoolean() && fadeBoxColor.isToggled(),0.1f, 20, 1, 0.1f);
-    final FloatSetting lineWidth = new FloatSetting("Line Width", this, () -> render.getMode().equalsIgnoreCase("HitBox") && renderRealPlayerPosition.isToggled(), 1f,5f,1f,0.1f);
+    final ColorSetting color = new ColorSetting("Color", this, renderBox);
+
+    FloatSetting lineWidth = new FloatSetting("Line Width", this, () -> renderRealPlayerPosition.isToggled() && renderBox.getAsBoolean(), 0, 5f, 1, 0.1f);
 
     Color fadeColor;
 
@@ -142,9 +140,9 @@ public class TimerRange extends Module {
     }
 
     private void updateColors() {
-        fadeColor = fadeBoxColor.isToggled() ?
-                ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
-                : color1.getColor();
+        fadeColor = color.isFade() ?
+                ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
+                : color.getColor();
     }
 
     private void renderHitBox(AxisAlignedBB bb, Color color, float lineWidth) {

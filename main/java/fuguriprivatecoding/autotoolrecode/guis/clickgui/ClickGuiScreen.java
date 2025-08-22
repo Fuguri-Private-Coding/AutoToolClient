@@ -98,9 +98,9 @@ public class ClickGuiScreen extends GuiScreen {
 		if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
 		int currentScroll = Mouse.getDWheel();
 
-		MAIN_COLOR = clickGui.fadeColor.isToggled() ?
-				ColorUtils.fadeColor(clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue())
-				: clickGui.color1.getColor();
+		MAIN_COLOR = clickGui.color.isFade() ?
+				ColorUtils.fadeColor(clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed())
+				: clickGui.color.getColor();
 
 		BACKGROUND_COLOR = new Color(0,0,0,clickGui.backgroundAlpha.getValue());
 
@@ -184,14 +184,14 @@ public class ClickGuiScreen extends GuiScreen {
 
 		if (shadows.isToggled() && shadows.module.get("ClickGui")) {
 			BloomRealUtils.addToDraw(() -> {
-				RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
-				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.y, 50, 2, 0, clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
-				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.y, 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
+				RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
+				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.y, 50, 2, 0, clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
+				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.y, 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
 			});
 		}
 		if (blur.isToggled() && blur.module.get("ClickGui")) {
 			GaussianBlurUtils.addToDraw(() -> {
-				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 100, sc.getScaledHeight() - guis.y, 200, 20, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
+				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 100, sc.getScaledHeight() - guis.y, 200, 20, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
 				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.black);
 			});
 		}
@@ -430,8 +430,8 @@ public class ClickGuiScreen extends GuiScreen {
 							CATEGORY_COLOR
 					);
 
-					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth
-					&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 1
+					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth - 5
+					&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 5
 					&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
 					&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
 						if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
@@ -479,8 +479,8 @@ public class ClickGuiScreen extends GuiScreen {
 							CATEGORY_COLOR
 					);
 
-					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth
-							&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 1
+					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth - 5
+							&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 5
 							&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
 							&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
 						if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
@@ -494,52 +494,136 @@ public class ClickGuiScreen extends GuiScreen {
 					}
 				}
 				if (setting instanceof ColorSetting colorSetting) {
-					if (Mouse.isButtonDown(0)) {
-						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
-						&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + 75
-						&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
-						&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 3) {
-							float deltaX = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth + 1);
-							colorSetting.setRed(deltaX / 75);
+					float startY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
+					float sliderX = background.x + verticalLineXOffset + 5 + settingWidth + 1;
+					float sliderWidth = 75;
+					float sliderHeight = 4;
+					float verticalSpacing = 3;
+					float previewSize = 12;
+
+					int currentOffset = 0;
+
+                    float fadeButtonY = startY + currentOffset;
+
+					fontRenderer.drawString(
+							String.valueOf(colorSetting.isFade()),
+                            sliderX,
+							fadeButtonY,
+							colorSetting.isFade() ? Color.GREEN.darker() : Color.RED
+					);
+
+					currentOffset += (int) (fontRenderer.FONT_HEIGHT + verticalSpacing);
+
+					Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.WHITE};
+					float[] values = {colorSetting.getRed(), colorSetting.getGreen(), colorSetting.getBlue(), colorSetting.getAlpha()};
+
+					for (int i = 0; i < 4; i++) {
+						float sliderY = startY + currentOffset;
+
+						if (Mouse.isButtonDown(0)) {
+							if (mouseX > sliderX && mouseX < sliderX + sliderWidth &&
+									mouseY > sliderY && mouseY < sliderY + sliderHeight) {
+								float deltaX = mouseX - sliderX;
+								switch (i) {
+									case 0: colorSetting.setRed(deltaX / sliderWidth); break;
+									case 1: colorSetting.setGreen(deltaX / sliderWidth); break;
+									case 2: colorSetting.setBlue(deltaX / sliderWidth); break;
+									case 3: colorSetting.setAlpha(deltaX / sliderWidth); break;
+								}
+							}
 						}
-						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
-								&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + 75
-								&& mouseY > background.y + 5 + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
-								&& mouseY < background.y + 5 + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 3) {
-							float deltaX = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth + 1);
-							colorSetting.setGreen(deltaX / 75);
-						}
-						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
-								&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + 75
-								&& mouseY > background.y + 10 + 2 + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
-								&& mouseY < background.y + 10 + 2 + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 3) {
-							float deltaX = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth + 1);
-							colorSetting.setBlue(deltaX / 75);
-						}
-						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
-								&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + 75
-								&& mouseY > background.y + 15 + 2 + 2 + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
-								&& mouseY < background.y + 15 + 2 + 2 + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 3) {
-							float deltaX = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth + 1);
-							colorSetting.setAlpha(deltaX / 75);
-						}
+
+						RoundedUtils.drawRect(sliderX, sliderY, sliderWidth, sliderHeight, 0.5f, BACKGROUND_COLOR);
+						RoundedUtils.drawRect(sliderX, sliderY, sliderWidth * values[i], sliderHeight, 0.5f, colors[i]);
+						currentOffset += (int) (sliderHeight + verticalSpacing);
 					}
-					RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f, 75, 4, 1.5f, BACKGROUND_COLOR);
-					RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f, 75 * colorSetting.getRed(), 4, 1.5f, Color.red);
 
-					RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 5 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 2, 75, 4, 1.5f, BACKGROUND_COLOR);
-					RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 5 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 2, 75 * colorSetting.getGreen(), 4, 1.5f, Color.green);
+					float mainPreviewY = startY + currentOffset;
+					RoundedUtils.drawRect(sliderX - previewSize * 2 - 5 - 1, mainPreviewY - previewSize * 2 - 3 - 1, previewSize * 2 + 2, previewSize * 2 + 2, 0f, BACKGROUND_COLOR);
+					RoundedUtils.drawRect(sliderX - previewSize * 2 - 5, mainPreviewY - previewSize * 2 - 3, previewSize * 2, previewSize * 2, 0f, colorSetting.getColor());
 
-					RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 10 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 2 + 2, 75, 4, 1.5f, BACKGROUND_COLOR);
-					RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 10 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 2 + 2, 75 * colorSetting.getBlue(), 4, 1.5f, Color.blue);
+					currentOffset += (int) verticalSpacing;
 
-					RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 15 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 2 + 2 + 2, 75, 4, 1.5f, BACKGROUND_COLOR);
-					RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 15 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 2 + 2 + 2, 75 * colorSetting.getAlpha(), 4, 1.5f, Color.white);
+					if (colorSetting.isFade()) {
+						float[] fadeValues = {colorSetting.getFadeRed(), colorSetting.getFadeGreen(),
+								colorSetting.getFadeBlue(), colorSetting.getFadeAlpha()};
 
-					RoundedUtils.drawRect(background.x + 80 + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 - 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 3, 22, 22, 1.5f, BACKGROUND_COLOR);
-					RoundedUtils.drawRect(background.x + 80 + 1 + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 - 1 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 3, 20, 20, 1.5f, colorSetting.getColor());
-					offset += 20;
-					settingsTotalHeight += 20;
+						for (int i = 0; i < 4; i++) {
+							float sliderY = startY + currentOffset;
+
+							if (Mouse.isButtonDown(0)) {
+								if (mouseX > sliderX && mouseX < sliderX + sliderWidth &&
+										mouseY > sliderY && mouseY < sliderY + sliderHeight) {
+									float deltaX = mouseX - sliderX;
+									switch (i) {
+										case 0: colorSetting.setFadeRed(deltaX / sliderWidth); break;
+										case 1: colorSetting.setFadeGreen(deltaX / sliderWidth); break;
+										case 2: colorSetting.setFadeBlue(deltaX / sliderWidth); break;
+										case 3: colorSetting.setFadeAlpha(deltaX / sliderWidth); break;
+									}
+								}
+							}
+
+							RoundedUtils.drawRect(sliderX, sliderY, sliderWidth, sliderHeight, 0.5f, BACKGROUND_COLOR);
+							RoundedUtils.drawRect(sliderX, sliderY, sliderWidth * fadeValues[i], sliderHeight, 0.5f, new Color(colors[i].getRed(), colors[i].getGreen(), colors[i].getBlue(), 255));
+
+							currentOffset += (int) (sliderHeight + verticalSpacing);
+						}
+
+						float fadePreviewY = startY + currentOffset;
+						RoundedUtils.drawRect(sliderX - previewSize * 2 - 5 - 1, fadePreviewY - previewSize * 2 - 3 - 1, previewSize * 2 + 2f, previewSize * 2 + 2f, 0f, BACKGROUND_COLOR);
+						RoundedUtils.drawRect(sliderX - previewSize * 2 - 5, fadePreviewY - previewSize * 2 - 3, previewSize * 2, previewSize * 2, 2f, colorSetting.getFadeColor());
+
+						float mixedPreviewX = sliderX + previewSize * 2 + 5;
+						RoundedUtils.drawRect(mixedPreviewX + previewSize * 4 + 5 - 1.5f, fadePreviewY - previewSize * 3 - 7.5f - 1.5f, previewSize * 2 + 2f, previewSize * 2 + 2.5f, 0f, BACKGROUND_COLOR);
+						RenderUtils.drawMixedRoundedRect(mixedPreviewX + previewSize * 4 + 5, fadePreviewY - previewSize * 3 - 7.5f, previewSize * 2, previewSize * 2, 0f, colorSetting.getColor(), colorSetting.getFadeColor(), colorSetting.getSpeed());
+
+						float controlsY = startY + currentOffset - 40;
+						float controlWidth = 50;
+						float controlHeight = 4;
+
+						float mixedPreviewAbsoluteX = mixedPreviewX + previewSize * 4 + 5;
+
+						float controlsX = mixedPreviewAbsoluteX + previewSize * 2 + 10;
+
+                        RoundedUtils.drawRect(controlsX, controlsY, controlWidth, controlHeight, 0.5f, BACKGROUND_COLOR);
+						RoundedUtils.drawRect(controlsX, controlsY, controlWidth * (colorSetting.getOffset() / 20f), controlHeight, 0.5f, new Color(220, 180, 255));
+
+						if (mouseX > controlsX && mouseX < controlsX + controlWidth &&
+								mouseY > controlsY && mouseY < controlsY + controlHeight) {
+							if (Mouse.isButtonDown(0)) {
+								float deltaX = mouseX - controlsX;
+								colorSetting.setOffset(Math.round(deltaX / controlWidth * 20));
+							}
+							if (currentScroll != 0 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+								float newOffset = colorSetting.getOffset() + (currentScroll > 0 ? 1 : -1);
+								colorSetting.setOffset(Math.max(0, Math.min(20, newOffset)));
+							}
+						}
+
+						fontRenderer.drawString("O: " + (int)colorSetting.getOffset(), controlsX + controlWidth + 5, controlsY - 1, new Color(220, 180, 255));
+
+                        RoundedUtils.drawRect(controlsX, controlsY + 10, controlWidth, controlHeight, 0.5f, BACKGROUND_COLOR);
+						RoundedUtils.drawRect(controlsX, controlsY + 10, controlWidth * (colorSetting.getSpeed() / 20f), controlHeight, 0.5f, new Color(255, 220, 180));
+
+						if (mouseX > controlsX && mouseX < controlsX + controlWidth &&
+								mouseY > controlsY + 10 && mouseY < controlsY + controlHeight + 10) {
+							if (Mouse.isButtonDown(0)) {
+								float deltaX = mouseX - controlsX;
+								colorSetting.setSpeed(Math.round(deltaX / controlWidth * 20));
+							}
+							if (currentScroll != 0 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+								float newSpeed = colorSetting.getSpeed() + (currentScroll > 0 ? 1 : -1);
+								colorSetting.setSpeed(Math.max(0, Math.min(20, newSpeed)));
+							}
+						}
+
+						fontRenderer.drawString("S: " + (int)colorSetting.getSpeed(), controlsX + controlWidth + 5, controlsY - 1 + 10, new Color(255, 220, 180));
+
+					}
+
+					offset += currentOffset;
+					settingsTotalHeight += currentOffset;
 				}
 				if (setting instanceof KeyBind keyBind) {
 					fontRenderer.drawString(
@@ -887,7 +971,31 @@ public class ClickGuiScreen extends GuiScreen {
 						activeKeyBind = keyBind;
 					}
 				}
-				if (setting instanceof ColorSetting) offset += 20;
+				if (setting instanceof ColorSetting colorSetting) {
+					float startY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
+					int currentOffset = 0;
+
+					float fadeButtonY = startY + currentOffset;
+
+					if (Mouse.isButtonDown(0)) {
+						float fadeButtonX = background.x + verticalLineXOffset + 5 + settingWidth + 1;
+						if (mouseX > fadeButtonX && mouseX < fadeButtonX + fontRenderer.getStringWidth(String.valueOf(colorSetting.isFade())) &&
+								mouseY > fadeButtonY && mouseY < fadeButtonY + fontRenderer.FONT_HEIGHT) {
+							colorSetting.setFade(!colorSetting.isFade());
+						}
+					}
+
+					currentOffset += fontRenderer.FONT_HEIGHT + 3;
+
+					currentOffset += (4 + 3) * 4;
+
+					if (colorSetting.isFade()) {
+						currentOffset += (4 + 3) * 4; // 4 fade слайдера
+					}
+
+					offset += currentOffset + 3;
+					settingsTotalHeight += currentOffset + 3;
+				}
 				offset += 14;
 			}
 		}

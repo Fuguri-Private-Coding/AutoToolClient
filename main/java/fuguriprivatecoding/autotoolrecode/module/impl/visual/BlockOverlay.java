@@ -23,10 +23,7 @@ import java.awt.*;
 @ModuleInfo(name = "BlockOverlay", category = Category.VISUAL, description = "Выделяет блок на который вы смотрите.")
 public class BlockOverlay extends Module {
 
-    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
-    final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, fadeBoxColor::isToggled, 1f,1f,1f,1f);
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled,0.1f, 20, 1, 0.1f);
+    final ColorSetting color = new ColorSetting("Color", this);
 
     Glow shadows;
     Blur blur;
@@ -41,9 +38,9 @@ public class BlockOverlay extends Module {
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (event instanceof DrawBlockHighlightEvent) {
 
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
-                    : color1.getColor();
+            fadeColor = color.isFade() ?
+                    ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
+                    : color.getColor();
 
 
             MovingObjectPosition renderRayCast = mc.objectMouseOver;

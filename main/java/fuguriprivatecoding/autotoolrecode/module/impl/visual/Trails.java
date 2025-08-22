@@ -32,11 +32,7 @@ public class Trails extends Module {
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, 1f, 10f, 1f, 0.1f) {};
     final CheckBox onlyThirdPerson = new CheckBox("OnlyThirdPerson", this, false);
 
-    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
-    final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, fadeBoxColor::isToggled, 1f,1f,1f,1f);
-    final FloatSetting fadeOffset = new FloatSetting("FadeOffset", this, fadeBoxColor::isToggled,0f, 50, 1, 0.1f);
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled,0.1f, 20, 1, 0.1f);
+    public final ColorSetting color = new ColorSetting("Color", this);
 
     Glow shadows;
     Color fadeColor;
@@ -71,14 +67,14 @@ public class Trails extends Module {
                         GL11.glColor4f(1,1,1,1);
                         BloomUtils.addToDraw(() -> renderSingleLine(Color.white, Color.white));
                     }
-                    renderSingleLine(color1.getColor(), color2.getColor());
+                    renderSingleLine(color.getColor(), color.getFadeColor());
                 }
                 case "PlayerLine" -> {
                     if (shadows.isToggled() && shadows.module.get("Trails")) {
                         GL11.glColor4f(1,1,1,1);
                         BloomUtils.addToDraw(() -> renderPlayerLine(Color.white, Color.white));
                     }
-                    renderPlayerLine(color1.getColor(), color2.getColor());
+                    renderPlayerLine(color.getColor(), color.getFadeColor());
                 }
             }
             ColorUtils.resetColor();
@@ -92,8 +88,8 @@ public class Trails extends Module {
     private void renderSingleLine(Color color1, Color color2) {
         GL11.glBegin(GL11.GL_LINE_STRIP);
         bottomList.forEach(p -> {
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.mixColor(color1, color2, bottomList.indexOf(p), fadeOffset.getValue(), fadeSpeed.getValue())
+            fadeColor = color.isFade() ?
+                    ColorUtils.mixColor(color1, color2, bottomList.indexOf(p), color.getOffset(), color.getSpeed())
                     : color1;
 
             Vec3 pos = p.getFirst();
@@ -106,8 +102,8 @@ public class Trails extends Module {
     private void renderPlayerLine(Color color1, Color color2) {
         GL11.glBegin(GL11.GL_LINE_STRIP);
         bottomList.forEach(p -> {
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.mixColor(color1, color2, bottomList.indexOf(p), fadeOffset.getValue(), fadeSpeed.getValue())
+            fadeColor = color.isFade() ?
+                    ColorUtils.mixColor(color1, color2, bottomList.indexOf(p), color.getOffset(), color.getSpeed())
                     : color1;
 
             Vec3 pos = p.getFirst();
@@ -118,8 +114,8 @@ public class Trails extends Module {
 
         GL11.glBegin(GL11.GL_LINE_STRIP);
         topList.forEach(p -> {
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.mixColor(color1, color2, topList.indexOf(p), fadeOffset.getValue(), fadeSpeed.getValue())
+            fadeColor = color.isFade() ?
+                    ColorUtils.mixColor(color1, color2, topList.indexOf(p), color.getOffset(), color.getSpeed())
                     : color1;
 
             Vec3 pos = p.getFirst();
@@ -132,8 +128,8 @@ public class Trails extends Module {
         GL11.glBegin(GL11.GL_QUAD_STRIP);
 
         for (Doubles<Vec3, Long> bottomVec : bottomList) {
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.mixColor(color1, color2, bottomList.indexOf(bottomVec), fadeOffset.getValue(), fadeSpeed.getValue())
+            fadeColor = color.isFade() ?
+                    ColorUtils.mixColor(color1, color2, bottomList.indexOf(bottomVec), color.getOffset(), color.getSpeed())
                     : color1;
 
             RenderUtils.glColor(fadeColor, 0.6f * (1 - (float) (System.currentTimeMillis() - bottomVec.getSecond()) / (lifeTime.getValue())));

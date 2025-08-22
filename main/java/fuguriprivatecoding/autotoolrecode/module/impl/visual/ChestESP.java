@@ -23,10 +23,7 @@ import java.awt.*;
 @ModuleInfo(name = "ChestESP", category = Category.VISUAL, description = "Показывает где находятся сундуки.")
 public class ChestESP extends Module {
 
-    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
-    final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, fadeBoxColor::isToggled, 1f,1f,1f,1f);
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled,0.1f, 20, 1, 0.1f);
+    final ColorSetting color = new ColorSetting("Color", this);
 
     final CheckBox enderChest = new CheckBox("ShowEnderChest", this);
 
@@ -40,9 +37,9 @@ public class ChestESP extends Module {
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (event instanceof Render3DEvent) {
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
-                    : color1.getColor();
+            fadeColor = color.isFade() ?
+                    ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
+                    : color.getColor();
 
             RenderUtils.start3D();
             for (TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {

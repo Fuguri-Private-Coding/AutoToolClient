@@ -79,10 +79,7 @@ public class BackTrack extends Module {
 
     BooleanSupplier renderBox = () -> (render.getMode().equalsIgnoreCase("Box") || render.getMode().equalsIgnoreCase("HitBox"));
 
-    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this, renderBox);
-    final ColorSetting color1 = new ColorSetting("Color1", this, renderBox, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, () -> renderBox.getAsBoolean() && fadeBoxColor.isToggled(), 1f,1f,1f,1f);
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> renderBox.getAsBoolean() && fadeBoxColor.isToggled(),0.1f, 20, 1, 0.1f);
+    final ColorSetting color = new ColorSetting("Color", this, renderBox);
 
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, () -> render.getMode().equalsIgnoreCase("HitBox"), 1f,5f,1f,0.1f);
 
@@ -221,9 +218,9 @@ public class BackTrack extends Module {
     }
 
     private void updateColors() {
-        fadeColor = fadeBoxColor.isToggled() ?
-                ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
-                : color1.getColor();
+        fadeColor = color.isFade() ?
+                ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
+                : color.getColor();
     }
 
     private void renderHitBox(AxisAlignedBB bb, Color color, float lineWidth) {

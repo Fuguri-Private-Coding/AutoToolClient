@@ -31,10 +31,7 @@ public class NameTags extends Module {
 
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, 0f,5f,1f,0.1f);
 
-    CheckBox bgFade = new CheckBox("Background Fade", this, false);
-    ColorSetting bgColor1 = new ColorSetting("Background Color1", this, 0,0,0,0.5f);
-    ColorSetting bgColor2 = new ColorSetting("Background Color2", this,() -> bgFade.isToggled(), 0,0,0,1);
-    FloatSetting bgSpeed = new FloatSetting("Background Speed", this,() -> bgFade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting color = new ColorSetting("Color", this);
 
     MurderMystery murderDetector;
     MidClick midClick;
@@ -65,10 +62,10 @@ public class NameTags extends Module {
     }
 
     private void updateColors() {
-        backgroundFadeColor = bgFade.isToggled()
+        backgroundFadeColor = color.isFade()
                 ? ColorUtils.fadeColor(
-                        bgColor1.getColor(), bgColor2.getColor(), bgSpeed.getValue()) :
-                        bgColor1.getColor();
+                color.getColor(), color.getFadeColor(), color.getSpeed()) :
+                color.getColor();
     }
 
     public void updateText(Entity entity) {

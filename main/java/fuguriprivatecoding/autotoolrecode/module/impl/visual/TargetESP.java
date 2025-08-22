@@ -34,12 +34,7 @@ public class TargetESP extends Module {
     final FloatSetting length = new FloatSetting("Length", this, 0.2f, 2.5f, 0.6f, 0.1f) {};
     final FloatSetting radius = new FloatSetting("Radius", this, 0.1f, 2f, 0.7f, 0.1f) {};
 
-    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
-    final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, fadeBoxColor::isToggled, 1f,1f,1f,1f);
-    final FloatSetting fadeOffset = new FloatSetting("FadeOffset", this, fadeBoxColor::isToggled,0f, 20, 1, 0.1f);
-
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled, 0.1f, 20, 1, 0.1f);
+    public final ColorSetting color = new ColorSetting("Color", this);
 
     private final List<Sigma2> poses = new ArrayList<>();
 
@@ -55,14 +50,14 @@ public class TargetESP extends Module {
                     if (shadows.isToggled() && shadows.module.get("TargetESP")) {
                         BloomUtils.addToDraw(() -> renderSigma(Color.white, Color.white));
                     }
-                    renderSigma(color1.getColor(), color2.getColor());
+                    renderSigma(color.getColor(), color.getFadeColor());
                 }
 
                 case "Sigma2" -> {
                     if (shadows.isToggled() && shadows.module.get("TargetESP")) {
                         BloomUtils.addToDraw(() -> renderSigma2(Color.white, Color.white));
                     }
-                    renderSigma2(color1.getColor(), color2.getColor());
+                    renderSigma2(color.getColor(), color.getFadeColor());
                 }
             }
         }
@@ -97,8 +92,8 @@ public class TargetESP extends Module {
             double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
 
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue())
+            fadeColor = color.isFade() ?
+                    ColorUtils.mixColor(color1, color2,i, color.getOffset(), color.getSpeed())
                     : color1;
 
             ColorUtils.glColor(fadeColor);
@@ -115,8 +110,8 @@ public class TargetESP extends Module {
             double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
             double y1 = y + (animationTranslate + 1) / 2 * target.height;
 
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue())
+            fadeColor = color.isFade() ?
+                    ColorUtils.mixColor(color1, color2,i, color.getOffset(), color.getSpeed())
                     : color1;
 
             ColorUtils.glColor(fadeColor, 1.0f);
@@ -164,8 +159,8 @@ public class TargetESP extends Module {
             double x1 = x + sin(i * Math.PI / 180) * radius.getValue();
             double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
 
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue())
+            fadeColor = color.isFade() ?
+                    ColorUtils.mixColor(color1, color2,i, color.getOffset(), color.getSpeed())
                     : color1;
 
             RenderUtils.glColor(fadeColor, 0f);
@@ -183,8 +178,8 @@ public class TargetESP extends Module {
             double x1 = x + sin(i * Math.PI / 180) * radius.getValue();
             double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
 
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.mixColor(color1, color2,i, fadeOffset.getValue(), fadeSpeed.getValue())
+            fadeColor = color.isFade() ?
+                    ColorUtils.mixColor(color1, color2,i, color.getOffset(), color.getSpeed())
                     : color1;
 
             RenderUtils.glColor(fadeColor, 1f);

@@ -26,10 +26,7 @@ public class Dot extends Module {
     final FloatSetting size = new FloatSetting("Size", this, 0.1f, 1f, 0.5f, 0.1f) {};
     final CheckBox onlyChangeRotationModules = new CheckBox("OnlyChangeRotationModules", this, true);
 
-    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
-    final ColorSetting color1 = new ColorSetting("Color1", this, 1f,1f,1f,1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, fadeBoxColor::isToggled, 1f,1f,1f,1f);
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled,0.1f, 20, 1, 0.1f);
+    public final ColorSetting color = new ColorSetting("Color", this);
 
     Glow shadows;
     Vec3 prevPos = Vec3.ZERO;
@@ -44,9 +41,9 @@ public class Dot extends Module {
         if (event instanceof Render3DEvent) {
             Vec3 smooth = prevPos.add(pos.subtract(prevPos).multiple(mc.timer.renderPartialTicks));
 
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
-                    : color1.getColor();
+            fadeColor = color.isFade() ?
+                    ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
+                    : color.getColor();
 
             if (shadows.isToggled() && shadows.module.get("Dot")) BloomUtils.addToDraw(() -> RenderUtils.drawDot(smooth, size.getValue() / 10, Color.white));
             RenderUtils.drawDot(smooth, size.getValue() / 10, fadeColor);

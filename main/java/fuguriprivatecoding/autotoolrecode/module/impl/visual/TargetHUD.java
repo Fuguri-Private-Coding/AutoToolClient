@@ -30,26 +30,15 @@ public class TargetHUD extends Module {
 
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, -5f,5f,0f,0.1f);
 
-    CheckBox fade = new CheckBox("Text Fade", this, () -> render.get("Name"), false);
-    ColorSetting color1 = new ColorSetting("Text Color1", this, () -> render.get("Name"), 1,1,1,1);
-    ColorSetting color2 = new ColorSetting("Text Color2", this,() -> render.get("Name") && fade.isToggled(), 0,0,0,1);
-    FloatSetting speed = new FloatSetting("Text Speed", this,() -> render.get("Name") && fade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting textColor = new ColorSetting("Text Color", this);
+
     CheckBox shadow = new CheckBox("Text Shadow", this, () -> render.get("Name"), true);
 
-    CheckBox bgFade = new CheckBox("Background Fade", this, () -> render.get("Background"), false);
-    ColorSetting bgColor1 = new ColorSetting("Background Color1", this, () -> render.get("Background"), 0,0,0,1);
-    ColorSetting bgColor2 = new ColorSetting("Background Color2", this,() -> render.get("Background") && bgFade.isToggled(), 0,0,0,1);
-    FloatSetting bgSpeed = new FloatSetting("Background Speed", this,() -> render.get("Background") && bgFade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting bgColor = new ColorSetting("Background Color", this);
 
-    CheckBox healthFade = new CheckBox("Health Fade", this, () -> render.get("Health"), false);
-    ColorSetting healthColor1 = new ColorSetting("Health Color1", this, () -> render.get("Health"), 1,0,0,1);
-    ColorSetting healthColor2 = new ColorSetting("Health Color2", this,() -> render.get("Health") && healthFade.isToggled(), 0,0,0,1);
-    FloatSetting healthSpeed = new FloatSetting("Health Speed", this,() -> render.get("Health") && healthFade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting healthColor = new ColorSetting("Health Color", this);
 
-    CheckBox healthBackFade = new CheckBox("Health Back Fade", this, () -> render.get("Health"), false);
-    ColorSetting healthBackColor1 = new ColorSetting("Health Back Color1", this, () -> render.get("Health"), 0,0,0,1);
-    ColorSetting healthBackColor2 = new ColorSetting("Health Back Color2", this,() -> render.get("Health") && healthBackFade.isToggled(), 0,0,0,1);
-    FloatSetting healthBackSpeed = new FloatSetting("Health Back Speed", this,() -> render.get("Health") && healthBackFade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting healthBackColor = new ColorSetting("Health Back Color", this);
 
     CheckBox headRound = new CheckBox("Rounded Head", this, () -> render.get("Head"), true);
     FloatSetting headRoundFactor = new FloatSetting("Head Round Factor", this, () -> render.get("Head"), 0f,50f,10f,0.1f);
@@ -95,29 +84,29 @@ public class TargetHUD extends Module {
 
     private void updateColors() {
         if (render.get("Health")) {
-            healthFadeColor = healthFade.isToggled()
+            healthFadeColor = healthColor.isFade()
                     ? ColorUtils.fadeColor(
-                    healthColor1.getColor(), healthColor2.getColor(),
-                    healthSpeed.getValue()) : healthColor1.getColor();
+                    healthColor.getColor(), healthColor.getFadeColor(),
+                    healthColor.getSpeed()) : healthColor.getColor();
 
-            healthBackFadeColor = healthBackFade.isToggled()
+            healthBackFadeColor = healthBackColor.isFade()
                     ? ColorUtils.fadeColor(
-                    healthBackColor1.getColor(), healthBackColor2.getColor(),
-                    healthBackSpeed.getValue()) : healthBackColor1.getColor();
+                    healthBackColor.getColor(), healthBackColor.getFadeColor(),
+                    healthBackColor.getSpeed()) : healthBackColor.getColor();
         }
 
         if (render.get("Background")) {
-            backgroundFadeColor = bgFade.isToggled()
+            backgroundFadeColor = bgColor.isFade()
                     ? ColorUtils.fadeColor(
-                    bgColor1.getColor(), bgColor2.getColor(),
-                    bgSpeed.getValue()) : bgColor1.getColor();
+                    bgColor.getColor(), bgColor.getFadeColor(),
+                    bgColor.getSpeed()) : bgColor.getColor();
         }
 
         if (render.get("Name")) {
-            textNameFadeColor = fade.isToggled()
+            textNameFadeColor = textColor.isFade()
                     ? ColorUtils.fadeColor(
-                    color1.getColor(), color2.getColor(),
-                    speed.getValue()) : color1.getColor();
+                    textColor.getColor(), textColor.getFadeColor(),
+                    textColor.getSpeed()) : textColor.getColor();
         }
     }
 

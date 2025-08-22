@@ -39,24 +39,15 @@ public class DynamicIsland extends Module {
     FloatSetting width = new FloatSetting("Width", this, 0f,50f,10f,0.1f);
     FloatSetting animationSpeed = new FloatSetting("Animation Speed", this, 0f,50f,15f,0.1f);
 
-    CheckBox textFade = new CheckBox("Text Fade", this, false);
-    ColorSetting textColor1 = new ColorSetting("Text Color1", this, 1,1,1,1);
-    ColorSetting textColor2 = new ColorSetting("Text Color2", this,() -> textFade.isToggled(), 0,0,0,1);
-    FloatSetting textSpeed = new FloatSetting("Text Speed", this,() -> textFade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting textColor = new ColorSetting("Text Color", this);
 
     FloatSetting bgRadius = new FloatSetting("Background Radius", this,0f, 20, 7.5f, 0.1f);
-    CheckBox bgFade = new CheckBox("Background Fade", this, false);
-    ColorSetting bgColor1 = new ColorSetting("Background Color1", this, 0,0,0,1);
-    ColorSetting bgColor2 = new ColorSetting("Background Color2", this,() -> bgFade.isToggled(), 0,0,0,1);
-    FloatSetting bgSpeed = new FloatSetting("Background Speed", this,() -> bgFade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting bgColor = new ColorSetting("Background Color", this);
 
     CheckBox glow = new CheckBox("Glow", this, true);
     CheckBox blur = new CheckBox("Blur", this, true);
 
-    CheckBox bgFadeShadow = new CheckBox("Background Fade Shadow", this, () -> glow.isToggled(), false);
-    ColorSetting bgColor1Shadow = new ColorSetting("Background Color1 Shadow", this, () -> glow.isToggled(), 0,0,0,1);
-    ColorSetting bgColor2Shadow = new ColorSetting("Background Color2 Shadow", this,() -> glow.isToggled() && bgFadeShadow.isToggled(), 0,0,0,1);
-    FloatSetting bgSpeedShadow = new FloatSetting("Background Speed Shadow", this,() -> glow.isToggled() && bgFadeShadow.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting bgColorShadow = new ColorSetting("Background Shadow Color", this, () -> glow.isToggled());
 
     Color fadeTextColor;
     Color fadeBackgroundColor;
@@ -137,7 +128,7 @@ public class DynamicIsland extends Module {
             StencilUtils.renderStencil(
                     () -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, currentHeight.y, radius.x, Color.BLACK, Color.BLACK, 1f),
                     () -> {
-                        RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, currentHeight.y, radius.x, fadeBackgroundColor, fadeBackgroundColor, bgSpeed.getValue());
+                        RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, currentHeight.y, radius.x, fadeBackgroundColor, fadeBackgroundColor, bgColor.getSpeed());
 
                         font.drawString(name, (screenSize.x / 2f - font.getStringWidth(name) / 2f), 10 + needY.y,fadeTextColor);
                         font.drawString(bps, (screenSize.x / 2f - font.getStringWidth(bps) / 2f), 25 + needY.y,fadeTextColor);
@@ -148,11 +139,11 @@ public class DynamicIsland extends Module {
             );
 
             if (glow.isToggled()) {
-                BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, height, radius.x, bgColor1Shadow.getColor(), bgColor2Shadow.getColor(), bgSpeedShadow.getValue()));
+                BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, height, radius.x, bgColorShadow.getColor(), bgColorShadow.getFadeColor(), bgColorShadow.getSpeed()));
             }
 
             if (blur.isToggled()) {
-                GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, height, radius.x, Color.WHITE, Color.WHITE, bgSpeedShadow.getValue()));
+                GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, height, radius.x, Color.WHITE, Color.WHITE, bgColorShadow.getSpeed()));
             }
         }
     }
@@ -168,11 +159,11 @@ public class DynamicIsland extends Module {
     }
 
     private void updateColors() {
-        fadeTextColor = textFade.isToggled() ? ColorUtils.fadeColor(
-                textColor1.getColor(), textColor2.getColor(), textSpeed.getValue()) : textColor1.getColor();
+        fadeTextColor = textColor.isFade() ? ColorUtils.fadeColor(
+                textColor.getColor(), textColor.getFadeColor(), textColor.getSpeed()) : textColor.getColor();
 
-        fadeBackgroundColor = bgFade.isToggled() ? ColorUtils.fadeColor(
-                bgColor1.getColor(), bgColor2.getColor(), bgSpeed.getValue()) : bgColor1.getColor();
+        fadeBackgroundColor = bgColor.isFade() ? ColorUtils.fadeColor(
+                bgColor.getColor(), bgColor.getFadeColor(), bgColor.getSpeed()) : bgColor.getColor();
     }
 
     public void resetNeedY(float y, float yOffset) {

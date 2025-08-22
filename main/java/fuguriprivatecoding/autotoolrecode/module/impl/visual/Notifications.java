@@ -12,6 +12,8 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -22,6 +24,7 @@ import org.joml.Vector4f;
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "Notifications", category = Category.VISUAL)
 public class Notifications extends Module {
@@ -41,33 +44,26 @@ public class Notifications extends Module {
 
     IntegerSetting displayTime = new IntegerSetting("Display Time", this, 500,5000,1500);
 
-    CheckBox textFade = new CheckBox("Text Fade", this, false);
-    ColorSetting textColor1 = new ColorSetting("Text Color1", this, 1,1,1,1);
-    ColorSetting textColor2 = new ColorSetting("Text Color2", this,() -> textFade.isToggled(), 0,0,0,1);
-    FloatSetting textSpeed = new FloatSetting("Text Speed", this,() -> textFade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting textColor = new ColorSetting("Text Color", this);
 
-    CheckBox textDisableFade = new CheckBox("Text Disable Fade", this, false);
-    ColorSetting textDisableColor1 = new ColorSetting("Text Disable Color1", this, 1,1,1,1);
-    ColorSetting textDisableColor2 = new ColorSetting("Text Disable Color2", this,() -> textDisableFade.isToggled(), 0,0,0,1);
-    FloatSetting textDisableSpeed = new FloatSetting("Text Disable Speed", this,() -> textDisableFade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting textDisableColor = new ColorSetting("Text Disable Color", this);
 
-    CheckBox textEnableFade = new CheckBox("Text Enable Fade", this, false);
-    ColorSetting textEnableColor1 = new ColorSetting("Text Enable Color1", this, 1,1,1,1);
-    ColorSetting textEnableColor2 = new ColorSetting("Text Enable Color2", this,() -> textEnableFade.isToggled(), 0,0,0,1);
-    FloatSetting textEnableSpeed = new FloatSetting("Text Enable Speed", this,() -> textEnableFade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting textEnableColor = new ColorSetting("Text Enable Color", this);
 
-    CheckBox bgFade = new CheckBox("Background Fade", this, false);
-    ColorSetting bgColor1 = new ColorSetting("Background Color1", this, 0,0,0,1);
-    ColorSetting bgColor2 = new ColorSetting("Background Color2", this,() -> bgFade.isToggled(), 0,0,0,1);
-    FloatSetting bgSpeed = new FloatSetting("Background Speed", this,() -> bgFade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting bgColor = new ColorSetting("Background Color", this);
+
     IntegerSetting bgRadius = new IntegerSetting("Background Radius", this, 1,50,10);
+
+    public CheckBox glow = new CheckBox("Glow", this);
+    public CheckBox blur = new CheckBox("Blur", this);
+
+    BooleanSupplier shadow = () -> glow.isToggled();
+
+    public final ColorSetting bgColorShadow = new ColorSetting("Background Shadow Color", this, shadow);
 
     CheckBox line = new CheckBox("Line",this, true);
     FloatSetting lineSize = new FloatSetting("Line Size", this,() -> line.isToggled(),0f, 10, 1, 0.1f);
-    CheckBox lineFade = new CheckBox("Line Fade", this, () -> line.isToggled(), false);
-    ColorSetting lineColor1 = new ColorSetting("Line Color1", this,() -> line.isToggled(), 0,0,0,1);
-    ColorSetting lineColor2 = new ColorSetting("Line Color2", this,() -> line.isToggled() && lineFade.isToggled(), 0,0,0,1);
-    FloatSetting lineSpeed = new FloatSetting("Line Speed", this,() -> line.isToggled() && lineFade.isToggled(),0.1f, 20, 1, 0.1f);
+    public final ColorSetting lineColor = new ColorSetting("Line Color", this);
 
     ClientFontRenderer font = Client.INST.getFonts().fonts.get("JetBrains");
 
@@ -75,10 +71,7 @@ public class Notifications extends Module {
     public final List<Notification> notificationList = new CopyOnWriteArrayList<>();
     private final StopWatch timer = new StopWatch();
 
-    Color bgColor, lineColor, textColor, textDisableColor, textEnableColor;
-
-    private Glow glow;
-    private Blur blur;
+    Color bgColors, lineColors, textColors, textDisableColors, textEnableColors;
 
     public Notifications() {
         instance = this;
@@ -92,8 +85,6 @@ public class Notifications extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (!font.name.equalsIgnoreCase(fonts.getMode())) font = Client.INST.getFonts().fonts.get(fonts.getMode());
-        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
-        if (glow == null) glow = Client.INST.getModuleManager().getModule(Glow.class);
         if (event instanceof Render2DEvent e) {
             renderNotifications(e.getSc().getScaledWidth(), e.getSc().getScaledHeight());
         }
@@ -192,48 +183,48 @@ public class Notifications extends Module {
     }
 
     private void updateColors() {
-        bgColor = bgFade.isToggled() ?
-                ColorUtils.fadeColor(bgColor1.getColor(), bgColor2.getColor(), bgSpeed.getValue())
-                : bgColor1.getColor();
-        if (line.isToggled()) lineColor = lineFade.isToggled() ?
-                ColorUtils.fadeColor(lineColor1.getColor(), lineColor2.getColor(), lineSpeed.getValue())
-                : lineColor1.getColor();
-        textColor = textFade.isToggled() ?
-                ColorUtils.fadeColor(textColor1.getColor(), textColor2.getColor(), textSpeed.getValue())
-                : textColor1.getColor();
-        textDisableColor = textDisableFade.isToggled() ?
-                ColorUtils.fadeColor(textDisableColor1.getColor(), textDisableColor2.getColor(), textDisableSpeed.getValue())
-                : textDisableColor1.getColor();
-        textEnableColor = textEnableFade.isToggled() ?
-                ColorUtils.fadeColor(textEnableColor1.getColor(), textEnableColor2.getColor(), textEnableSpeed.getValue())
-                : textEnableColor1.getColor();
+        bgColors = bgColor.isFade() ?
+                ColorUtils.fadeColor(bgColor.getColor(), bgColor.getFadeColor(), bgColor.getSpeed())
+                : bgColor.getColor();
+        if (line.isToggled()) lineColors = lineColor.isFade() ?
+                ColorUtils.fadeColor(lineColor.getColor(), lineColor.getFadeColor(), lineColor.getSpeed())
+                : lineColor.getColor();
+        textColors = textColor.isFade() ?
+                ColorUtils.fadeColor(textColor.getColor(), textColor.getFadeColor(), textColor.getSpeed())
+                : textColor.getColor();
+        textDisableColors = textDisableColor.isFade() ?
+                ColorUtils.fadeColor(textDisableColor.getColor(), textDisableColor.getFadeColor(), textDisableColor.getSpeed())
+                : textDisableColor.getColor();
+        textEnableColors = textEnableColor.isFade() ?
+                ColorUtils.fadeColor(textEnableColor.getColor(), textEnableColor.getFadeColor(), textEnableColor.getSpeed())
+                : textEnableColor.getColor();
     }
 
     private void drawNotification(Notification notification, Animation2D animation, float width, float height, int displayTime) {
-        if (glow.isToggled() && glow.module.get("Notifications")) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(animation.x, animation.y, width, height, bgRadius.getValue(), Color.WHITE));
+        if (glow.isToggled()) {
+            BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(animation.x, animation.y, width, height, bgRadius.getValue(), bgColorShadow.getColor(), bgColorShadow.getFadeColor(), bgColorShadow.getSpeed()));
         }
 
-        if (blur.isToggled() && blur.module.get("Notifications")) {
+        if (blur.isToggled()) {
             GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(animation.x, animation.y, width, height, bgRadius.getValue(), Color.WHITE));
         }
 
-        RoundedUtils.drawRect(animation.x, animation.y, width, height, bgRadius.getValue(), bgColor);
+        RoundedUtils.drawRect(animation.x, animation.y, width, height, bgRadius.getValue(), bgColors);
 
         String text = notification.getModuleName() + ":";
         String toggleText = notification.isToggle() ? " enabled" : " disabled";
         font.drawString(text, animation.x + 8, animation.y + 2 + height / 2f - font.FONT_HEIGHT / 2f,
-                textColor);
+                textColors);
 
         font.drawString(toggleText,animation.x + 8 + font.getStringWidth(text), animation.y + 2 + height / 2f - font.FONT_HEIGHT / 2f,
-                (notification.isToggle() ? textEnableColor : textDisableColor));
+                (notification.isToggle() ? textEnableColors : textDisableColors));
 
         if (line.isToggled()) {
             float progress = (displayTime - (System.currentTimeMillis() - notification.getLastMS())) / (float)displayTime;
 
             StencilUtils.renderStencil(
-                    () -> RoundedUtils.drawRect(animation.x, animation.y, width, height, bgRadius.getValue(), bgColor),
-                    () -> RoundedUtils.drawRect(animation.x, animation.y + height - lineSize.getValue(), width * progress, 1 + lineSize.getValue(), 1, lineColor)
+                    () -> RoundedUtils.drawRect(animation.x, animation.y, width, height, bgRadius.getValue(), bgColors),
+                    () -> RoundedUtils.drawRect(animation.x, animation.y + height - lineSize.getValue(), width * progress, 1 + lineSize.getValue(), 1, lineColors)
             );
         }
     }

@@ -75,9 +75,9 @@ public class ConsoleGuiScreen extends GuiScreen {
         if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
         if (clientSettings == null) clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
 
-        mainColor = clickGui.fadeColor.isToggled() ?
-                ColorUtils.fadeColor(clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue())
-                : clickGui.color1.getColor();
+        mainColor = clickGui.color.isFade() ?
+                ColorUtils.fadeColor(clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed())
+                : clickGui.color.getColor();
 
 
         boolean consoleScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + (fullScreen ? 20 : 2) + 15 && mouseY < background.y + sizeBackground.y + (fullScreen ? 20 : 2);
@@ -132,7 +132,7 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         if (shadows.isToggled() && shadows.module.get("ConsoleGui")) {
             BloomRealUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color1.getColor(), clickGui.color2.getColor(), clickGui.fadeSpeed.getValue());
+                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
             });
         }
         if (blur.isToggled() && blur.module.get("ConsoleGui")) {

@@ -34,10 +34,7 @@ public class BedESP extends Module {
     final IntegerSetting range = new IntegerSetting("Range", this, 2, 256, 64);
     final IntegerSetting rate = new IntegerSetting("Rate", this, 1, 30, 5);
 
-    final CheckBox fadeBoxColor = new CheckBox("FadeColor", this);
-    final ColorSetting color1 = new ColorSetting("Color1", this, 1f, 1f, 1f, 1f);
-    final ColorSetting color2 = new ColorSetting("Color2", this, fadeBoxColor::isToggled, 1f, 1f, 1f, 1f);
-    final FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, fadeBoxColor::isToggled, 0.1f, 20, 1, 0.1f);
+    final ColorSetting color = new ColorSetting("Color", this);
 
     private final List<BlockPos[]> beds = new ArrayList<>();
     private long lastCheck = 0;
@@ -69,9 +66,9 @@ public class BedESP extends Module {
         if (event instanceof Render3DEvent) {
             if (beds.isEmpty()) return;
 
-            fadeColor = fadeBoxColor.isToggled() ?
-                    ColorUtils.fadeColor(color1.getColor(), color2.getColor(), fadeSpeed.getValue())
-                    : color1.getColor();
+            fadeColor = color.isFade() ?
+                    ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
+                    : color.getColor();
 
 
             RenderUtils.start3D();
