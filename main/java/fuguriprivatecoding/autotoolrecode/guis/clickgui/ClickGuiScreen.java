@@ -191,7 +191,7 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 		if (blur.isToggled() && blur.module.get("ClickGui")) {
 			GaussianBlurUtils.addToDraw(() -> {
-				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 100, sc.getScaledHeight() - guis.y, 200, 20, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
+				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.y, 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
 				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.black);
 			});
 		}

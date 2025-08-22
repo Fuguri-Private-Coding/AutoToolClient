@@ -145,7 +145,7 @@ public class ArrayList extends Module {
 
         if (line.isToggled()) {
             fadeLineColor = lineColor.isFade() ? ColorUtils.mixColor(
-                    bgColorShadow.getColor(), lineColor.getFadeColor(), moduleList.indexOf(module),
+                    lineColor.getColor(), lineColor.getFadeColor(), moduleList.indexOf(module),
                     lineColor.getOffset(), lineColor.getSpeed()) : lineColor.getColor();
         }
     }
