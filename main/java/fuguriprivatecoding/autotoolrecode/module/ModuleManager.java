@@ -30,6 +30,7 @@ public class ModuleManager {
 				new BridgeAssist(),
 				new Trajectory(),
 				new Hat(),
+				new Regen(),
 				new Blur(),
 				new TEZD(),
 				new Dot(),
