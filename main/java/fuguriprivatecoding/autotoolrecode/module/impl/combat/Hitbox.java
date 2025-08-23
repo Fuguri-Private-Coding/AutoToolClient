@@ -1,0 +1,22 @@
+package fuguriprivatecoding.autotoolrecode.module.impl.combat;
+
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.Category;
+import fuguriprivatecoding.autotoolrecode.module.Module;
+import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
+
+@ModuleInfo(name = "HitBox", category = Category.COMBAT)
+public class Hitbox extends Module {
+    public final FloatSetting expand = new FloatSetting("Expand", this, 0.1f, 1, 0.15f, 0.01f);
+
+    public static double getExpand() {
+        Hitbox hitbox = Client.INST.getModuleManager().getModule("HitBox");
+
+        if (hitbox == null) {
+            return 0;
+        }
+
+        return hitbox.expand.getValue();
+    }
+}
