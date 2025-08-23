@@ -35,7 +35,7 @@ public class DynamicIsland extends Module {
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, 0, 100, 5, 0.1f);
 
     FloatSetting width = new FloatSetting("Width", this, 0f, 50f, 10f, 0.1f);
-    FloatSetting animationSpeed = new FloatSetting("Animation Speed", this, 0f, 50f, 15f, 0.1f);
+    FloatSetting animationSpeed = new FloatSetting("Animation Speed", this, 0f, 10f, 5f, 0.1f);
 
     public final ColorSetting textColor = new ColorSetting("Text Color", this);
 
