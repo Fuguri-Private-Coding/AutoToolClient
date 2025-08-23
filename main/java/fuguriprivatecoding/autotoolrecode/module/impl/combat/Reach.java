@@ -13,7 +13,7 @@ public class Reach extends Module {
     public static double getAddRange() {
         Reach reach = Client.INST.getModuleManager().getModule("Reach");
 
-        if (reach == null) {
+        if (reach == null || !reach.isToggled()) {
             return 0;
         }
 
