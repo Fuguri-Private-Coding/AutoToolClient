@@ -18,9 +18,18 @@ public class ColorUtils {
         return new Color(redPart, greenPart, bluePart, alphaPart);
     }
 
+    public static Color interpolateColor(Color start, Color end, float progress) {
+        progress = Math.max(0, Math.min(1, progress));
+
+        int red = (int) (start.getRed() + (end.getRed() - start.getRed()) * progress);
+        int green = (int) (start.getGreen() + (end.getGreen() - start.getGreen()) * progress);
+        int blue = (int) (start.getBlue() + (end.getBlue() - start.getBlue()) * progress);
+        int alpha = (int) (start.getAlpha() + (end.getAlpha() - start.getAlpha()) * progress);
+
+        return new Color(red, green, blue, alpha);
+    }
+
     public static Color mix(int c1, int c2, double size, double max) {
-        int f3 = c1 >> 24 & 255;
-        int f4 = c1 >> 24 & 255;
         Color col1 = new Color(c1);
         Color col2 = new Color(c2);
         int diffR = (int)((double)col1.getRed() - (double)(col1.getRed() - col2.getRed()) / max * size);

@@ -102,7 +102,7 @@ public class ClientIRC extends ListenerAdapter {
     }
 
     public static void setDiscordProfile(String userId) {
-        if (jda == null) return;
+        if (jda == null || userId.equalsIgnoreCase("") || userId.equalsIgnoreCase("null")) return;
 
         jda.getGuilds().forEach(guild -> guild.retrieveMemberById(userId).queue(member -> {
             if (member != null) {
@@ -120,7 +120,7 @@ public class ClientIRC extends ListenerAdapter {
                     }
                 }, error -> System.out.println("Could not retrieve profile: " + error));
             }
-        }, error -> System.out.println("Member not found in guild " + guild.getName())));
+        }, _ -> System.out.println("Member not found in guild " + guild.getName())));
     }
 
     public void sendIRCMessage(String text) {

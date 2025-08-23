@@ -13,11 +13,15 @@ import java.util.function.BooleanSupplier;
 public class IntegerSetting extends Setting {
 	public int min, max, value;
 
+	private float animatedValue;
+	private final float animationSpeed = 0.2f;
+
 	public IntegerSetting(String name, SettingAble parent, int min, int max, int value) {
 		super(name, parent);
 		this.min = min;
 		this.max = max;
 		this.value = value;
+		this.animatedValue = value;
 	}
 
 	public IntegerSetting(String name, SettingAble parent, BooleanSupplier visible, int min, int max, int value) {
@@ -25,6 +29,7 @@ public class IntegerSetting extends Setting {
 		this.min = min;
 		this.max = max;
 		this.value = value;
+		this.animatedValue = value;
 	}
 
 	public void setValue(int value) {
@@ -33,5 +38,19 @@ public class IntegerSetting extends Setting {
 
 	public float normalize() {
 		return (float) (value - min) / (max - min);
+	}
+
+	public float getAnimatedNormalize() {
+		return (animatedValue - min) / (max - min);
+	}
+
+	public void updateAnimation() {
+		animatedValue += (value - animatedValue) * animationSpeed;
+
+		if (Math.abs(value - animatedValue) < 0.1f) {
+			animatedValue = value;
+		}
+
+		animatedValue = Math.max(min, Math.min(max, animatedValue));
 	}
 }

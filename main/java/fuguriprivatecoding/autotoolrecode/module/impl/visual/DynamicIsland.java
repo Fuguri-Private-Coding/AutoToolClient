@@ -10,18 +10,17 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.connection.BackTrack;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Animation;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
@@ -31,17 +30,16 @@ public class DynamicIsland extends Module {
 
     Mode fonts = new Mode("Fonts", this)
             .addModes("MuseoSans", "Roboto", "JetBrains", "SFPro")
-            .setMode("MuseoSans")
-            ;
+            .setMode("MuseoSans");
 
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, 0, 100, 5, 0.1f);
 
-    FloatSetting width = new FloatSetting("Width", this, 0f,50f,10f,0.1f);
-    FloatSetting animationSpeed = new FloatSetting("Animation Speed", this, 0f,50f,15f,0.1f);
+    FloatSetting width = new FloatSetting("Width", this, 0f, 50f, 10f, 0.1f);
+    FloatSetting animationSpeed = new FloatSetting("Animation Speed", this, 0f, 50f, 15f, 0.1f);
 
     public final ColorSetting textColor = new ColorSetting("Text Color", this);
 
-    FloatSetting bgRadius = new FloatSetting("Background Radius", this,0f, 20, 7.5f, 0.1f);
+    FloatSetting bgRadius = new FloatSetting("Background Radius", this, 0f, 20, 7.5f, 0.1f);
     public final ColorSetting bgColor = new ColorSetting("Background Color", this);
 
     CheckBox glow = new CheckBox("Glow", this, true);
@@ -52,13 +50,10 @@ public class DynamicIsland extends Module {
     Color fadeTextColor;
     Color fadeBackgroundColor;
 
-    Animation2D currentWidth = new Animation2D();
-    Animation2D currentHeight = new Animation2D();
-    Animation2D size = new Animation2D();
-    Animation2D needY = new Animation2D();
-    Animation radius = new Animation();
-
-    float prevY;
+    EasingAnimation currentWidth = new EasingAnimation();
+    EasingAnimation currentHeight = new EasingAnimation();
+    EasingAnimation needY = new EasingAnimation();
+    EasingAnimation radiusAnim = new EasingAnimation();
 
     String currentText;
 
@@ -71,7 +66,7 @@ public class DynamicIsland extends Module {
             updateColors();
 
             float height = 15;
-            float yOffset = this.yOffset.getValue();
+            float yOffsetValue = this.yOffset.getValue();
 
             EntityLivingBase ent = Client.INST.getCombatManager().getTarget();
             BackTrack backTrack = Client.INST.getModuleManager().getModule(BackTrack.class);
@@ -83,26 +78,25 @@ public class DynamicIsland extends Module {
             String scaffold = "Block Left - Undefined";
             String backtrack = "Distance - Undefined";
 
-            currentHeight.endY = height;
-
+            currentHeight.setEnd(height);
             currentText = name;
-            needY.endY = yOffset;
+            needY.setEnd(yOffsetValue);
 
             if (MoveUtils.isMoving()) {
                 currentText = bps;
-                resetNeedY(15, yOffset);
+                resetNeedY(15, yOffsetValue);
             }
 
             if (ent != null) {
                 target = "Current Target - " + ent.getName();
                 currentText = target;
-                resetNeedY(30, yOffset);
+                resetNeedY(30, yOffsetValue);
             }
 
             if (scaffOld.getBlockCount() > 0 && scaffOld.isToggled()) {
                 scaffold = "Blocks Left - " + scaffOld.getBlockCount();
                 currentText = scaffold;
-                resetNeedY(45, yOffset);
+                resetNeedY(45, yOffsetValue);
             }
 
             if (backTrack.isToggled() && backTrack.packetBuffer.size() > 10 && ent != null) {
@@ -114,10 +108,10 @@ public class DynamicIsland extends Module {
 
                 backtrack = "Distance - " + String.format("%.1f", DistanceUtils.getDistance(realBox));
                 currentText = backtrack;
-                resetNeedY(60, yOffset);
+                resetNeedY(60, yOffsetValue);
             }
 
-            currentWidth.endX = (float) (width.getValue() + font.getStringWidth(currentText));
+            currentWidth.setEnd((float) (width.getValue() + font.getStringWidth(currentText)));
 
             updateAnimations();
 
@@ -126,36 +120,58 @@ public class DynamicIsland extends Module {
             String finalBacktrack = backtrack;
 
             StencilUtils.renderStencil(
-                    () -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, currentHeight.y, radius.x, Color.BLACK, Color.BLACK, 1f),
+                    () -> RenderUtils.drawMixedRoundedRect(
+                            screenSize.x / 2f - currentWidth.getValue() / 2f,
+                            4.5f + yOffsetValue,
+                            currentWidth.getValue(),
+                            currentHeight.getValue(),
+                            radiusAnim.getValue(),
+                            Color.BLACK,
+                            Color.BLACK,
+                            1f
+                    ),
                     () -> {
-                        RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, currentHeight.y, radius.x, fadeBackgroundColor, fadeBackgroundColor, bgColor.getSpeed());
+                        RenderUtils.drawMixedRoundedRect(
+                                screenSize.x / 2f - currentWidth.getValue() / 2f,
+                                4.5f + yOffsetValue,
+                                currentWidth.getValue(),
+                                currentHeight.getValue(),
+                                radiusAnim.getValue(),
+                                fadeBackgroundColor,
+                                fadeBackgroundColor,
+                                bgColor.getSpeed()
+                        );
 
-                        font.drawString(name, (screenSize.x / 2f - font.getStringWidth(name) / 2f), 10 + needY.y,fadeTextColor);
-                        font.drawString(bps, (screenSize.x / 2f - font.getStringWidth(bps) / 2f), 25 + needY.y,fadeTextColor);
-                        font.drawString(finalTarget, (screenSize.x / 2f - font.getStringWidth(finalTarget) / 2f), 40 + needY.y, fadeTextColor);
-                        font.drawString(finalScaffold, (screenSize.x / 2f - font.getStringWidth(finalScaffold) / 2f), 55 + needY.y, fadeTextColor);
-                        font.drawString(finalBacktrack, (screenSize.x / 2f - font.getStringWidth(finalBacktrack) / 2f), 70 + needY.y, fadeTextColor);
+                        font.drawString(name, (screenSize.x / 2f - font.getStringWidth(name) / 2f), 10 + needY.getValue(), fadeTextColor);
+                        font.drawString(bps, (screenSize.x / 2f - font.getStringWidth(bps) / 2f), 25 + needY.getValue(), fadeTextColor);
+                        font.drawString(finalTarget, (screenSize.x / 2f - font.getStringWidth(finalTarget) / 2f), 40 + needY.getValue(), fadeTextColor);
+                        font.drawString(finalScaffold, (screenSize.x / 2f - font.getStringWidth(finalScaffold) / 2f), 55 + needY.getValue(), fadeTextColor);
+                        font.drawString(finalBacktrack, (screenSize.x / 2f - font.getStringWidth(finalBacktrack) / 2f), 70 + needY.getValue(), fadeTextColor);
                     }
             );
 
             if (glow.isToggled()) {
-                BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, height, radius.x, bgColorShadow.getColor(), bgColorShadow.getFadeColor(), bgColorShadow.getSpeed()));
+                BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, 4.5f + yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), bgColorShadow.getColor(), bgColorShadow.getFadeColor(), bgColorShadow.getSpeed()));
             }
 
             if (blur.isToggled()) {
-                GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.x / 2f, 4.5f + yOffset, currentWidth.x, height, radius.x, Color.WHITE, Color.WHITE, bgColorShadow.getSpeed()));
+                GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, 4.5f + yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), Color.WHITE, Color.WHITE, bgColorShadow.getSpeed()));
             }
         }
     }
 
     private void updateAnimations() {
-        currentWidth.update(animationSpeed.getValue());
-        size.update(animationSpeed.getValue());
-        needY.update(animationSpeed.getValue());
-        currentHeight.update(animationSpeed.getValue());
-        radius.update(animationSpeed.getValue());
+        Easing widthEasingFunc = Easing.EASE_OUT_BACK;
+        Easing heightEasingFunc = Easing.EASE_OUT_BACK;
+        Easing positionEasingFunc = Easing.EASE_OUT_BACK;
+        Easing radiusEasingFunc = Easing.EASE_OUT_BACK;
 
-        radius.endX = bgRadius.getValue();
+        currentWidth.update(animationSpeed.getValue(), widthEasingFunc);
+        currentHeight.update(animationSpeed.getValue(), heightEasingFunc);
+        needY.update(animationSpeed.getValue(), positionEasingFunc);
+        radiusAnim.update(animationSpeed.getValue(), radiusEasingFunc);
+
+        radiusAnim.setEnd(bgRadius.getValue());
     }
 
     private void updateColors() {
@@ -166,8 +182,7 @@ public class DynamicIsland extends Module {
                 bgColor.getColor(), bgColor.getFadeColor(), bgColor.getSpeed()) : bgColor.getColor();
     }
 
-    public void resetNeedY(float y, float yOffset) {
-        needY.endY = yOffset;
-        needY.endY -= y;
+    public void resetNeedY(float y, float yOffsetValue) {
+        needY.setEnd(yOffsetValue - y);
     }
 }

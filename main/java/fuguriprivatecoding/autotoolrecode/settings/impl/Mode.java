@@ -1,28 +1,45 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 @Getter
+@Setter
 public class Mode extends Setting {
 
     String mode;
-    @Setter List<String> modes = new ArrayList<>();
+    List<String> modes = new ArrayList<>();
+
+    private final Map<String, Float> modeProgress = new HashMap<>();
+    private final float animationSpeed = 0.15f;
+    private Color selectedColor = new Color(76, 175, 80); // Зеленый для выбранного
+    private Color unselectedColor = new Color(150, 150, 150); // Серый для невыбранного
 
     public Mode(String name, SettingAble parent) {
         super(name, parent);
+        initAnimation();
     }
 
     public Mode(String name, SettingAble parent, BooleanSupplier visible) {
         super(name, parent);
         this.setVisible(visible);
+        initAnimation();
+    }
+
+    private void initAnimation() {
+        for (String mode : modes) {
+            modeProgress.put(mode, mode.equals(this.mode) ? 1.0f : 0.0f);
+        }
     }
 
     public Mode setMode(String mode) {
@@ -34,14 +51,37 @@ public class Mode extends Setting {
         return this;
     }
 
-    public Mode addMode(String mode) {
+    public void addMode(String mode) {
         modes.add(mode);
-        return this;
+        modeProgress.put(mode, mode.equals(this.mode) ? 1.0f : 0.0f);
     }
 
     public Mode addModes(String... modes) {
-        this.modes.addAll(List.of(modes));
+        for (String m : modes) {
+            this.modes.add(m);
+            modeProgress.put(m, m.equals(this.mode) ? 1.0f : 0.0f);
+        }
         return this;
+    }
+
+    public void updateAnimation() {
+        for (String mode : modes) {
+            float targetProgress = mode.equals(this.mode) ? 1.0f : 0.0f;
+            float currentProgress = modeProgress.getOrDefault(mode, 0.0f);
+
+            float newProgress = currentProgress + (targetProgress - currentProgress) * animationSpeed;
+
+            if (Math.abs(newProgress - targetProgress) < 0.01f) {
+                newProgress = targetProgress;
+            }
+
+            modeProgress.put(mode, newProgress);
+        }
+    }
+
+    public Color getModeColor(String mode) {
+        float progress = modeProgress.getOrDefault(mode, 0.0f);
+        return ColorUtils.interpolateColor(unselectedColor, selectedColor, progress);
     }
 
     public boolean is(String mode) {

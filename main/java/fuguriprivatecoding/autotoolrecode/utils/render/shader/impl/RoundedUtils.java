@@ -19,7 +19,7 @@ public class RoundedUtils implements Imports {
         program.start();
         Uniform.uniform2f(id, "u_size", width, height);
         Uniform.uniform4f(id, "u_radius", radius1, radius2, radius3, radius4);
-        Uniform.uniform1f(id, "u_smooth", 0f);
+        Uniform.uniform1f(id, "u_smooth", 1f);
         Uniform.uniform4f(id, "u_color", color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, color.getAlpha() / 255.0F);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

@@ -3,8 +3,8 @@ package fuguriprivatecoding.autotoolrecode.settings.impl;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
+import org.lwjgl.util.vector.Vector4f;
 
 import java.awt.*;
 import java.util.function.BooleanSupplier;
@@ -17,7 +17,11 @@ public class ColorSetting extends Setting {
     float fadeRed, fadeGreen, fadeBlue, fadeAlpha;
     float offset;
     float speed;
-    boolean fade;
+    boolean fade, hide;
+
+    private Vector4f currentRadius = new Vector4f(1, 5, 5, 1);
+    private Vector4f targetRadius = new Vector4f(1, 5, 5, 1);
+    private final float animationSpeed = 0.15f;
 
     public ColorSetting(String name, SettingAble parent, float red, float green, float blue, float alpha) {
         super(name, parent);
@@ -32,6 +36,7 @@ public class ColorSetting extends Setting {
         this.offset = 0.5f;
         this.speed = 1.0f;
         this.fade = false;
+        this.hide = false;
     }
 
     public ColorSetting(String name, SettingAble parent, BooleanSupplier visible) {
@@ -47,6 +52,7 @@ public class ColorSetting extends Setting {
         this.offset = 0.5f;
         this.speed = 1.0f;
         this.fade = false;
+        this.hide = false;
     }
 
     public ColorSetting(String name, SettingAble parent) {
@@ -62,6 +68,7 @@ public class ColorSetting extends Setting {
         this.offset = 0.5f;
         this.speed = 1.0f;
         this.fade = false;
+        this.hide = false;
     }
 
     public ColorSetting(String name, SettingAble parent, BooleanSupplier visible, float red, float green, float blue, float alpha) {
@@ -77,6 +84,7 @@ public class ColorSetting extends Setting {
         this.offset = 0.5f;
         this.speed = 1.0f;
         this.fade = false;
+        this.hide = false;
     }
 
     public ColorSetting(String name, SettingAble parent, float red, float green, float blue, float alpha,
@@ -94,6 +102,7 @@ public class ColorSetting extends Setting {
         this.offset = offset;
         this.speed = speed;
         this.fade = fade;
+        this.hide = false;
     }
 
     public ColorSetting(String name, SettingAble parent, BooleanSupplier visible, float red, float green, float blue, float alpha,
@@ -111,6 +120,7 @@ public class ColorSetting extends Setting {
         this.offset = offset;
         this.speed = speed;
         this.fade = fade;
+        this.hide = false;
     }
 
     public Color getColor() {
@@ -170,6 +180,21 @@ public class ColorSetting extends Setting {
 
     public int getFadeAlphaInt() {
         return (int)(fadeAlpha * 255);
+    }
+
+    public void updateAnimation() {
+        currentRadius.x += (targetRadius.x - currentRadius.x) * animationSpeed;
+        currentRadius.y += (targetRadius.y - currentRadius.y) * animationSpeed;
+        currentRadius.z += (targetRadius.z - currentRadius.z) * animationSpeed;
+        currentRadius.w += (targetRadius.w - currentRadius.w) * animationSpeed;
+    }
+
+    public void setTargetRadius(boolean isHide) {
+        targetRadius = isHide ? new Vector4f(1,5,5,1) : new Vector4f(5,1,1,5);
+    }
+
+    public Vector4f getAnimatedRadius() {
+        return currentRadius;
     }
 
     public void setColor(Color color) {

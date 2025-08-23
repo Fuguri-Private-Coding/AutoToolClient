@@ -70,9 +70,59 @@ public class Scaffold extends Module {
             .setMode("GodBridge")
             ;
 
-
     BooleanSupplier tellyVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge");
     BooleanSupplier godVisible = () -> rotMode.getMode().equalsIgnoreCase("GodBridge");
+
+    IntegerSetting minClutchYawSpeed = new IntegerSetting("Min Clutch Yaw Speed", this, godVisible, 1, 180, 30) {
+        @Override
+        public int getValue() {
+            if (maxClutchYawSpeed.value < value) { value = maxClutchYawSpeed.value; }
+            return super.getValue();
+        }
+    };
+    IntegerSetting maxClutchYawSpeed = new IntegerSetting("Max Clutch Yaw Speed", this, godVisible, 1, 180, 30) {
+        @Override
+        public int getValue() {
+            if (minClutchYawSpeed.value > value) { value = minClutchYawSpeed.value; }
+            return super.getValue();
+        }
+    };
+    IntegerSetting minClutchPitchSpeed = new IntegerSetting("Min Clutch Pitch Speed", this, godVisible, 1, 180, 15) {
+        @Override
+        public int getValue() {
+            if (maxClutchPitchSpeed.value < value) { value = maxClutchPitchSpeed.value; }
+            return super.getValue();
+        }
+    };
+    IntegerSetting maxClutchPitchSpeed = new IntegerSetting("Max Clutch Pitch Speed", this, godVisible, 1, 180, 15) {
+        @Override
+        public int getValue() {
+            if (minClutchPitchSpeed.value > value) { value = minClutchPitchSpeed.value; }
+            return super.getValue();
+        }
+    };
+
+    FloatSetting minPitchCorrectionSearch = new FloatSetting("Min Pitch Correction Search", this, godVisible, 0, 90, 81, 0.1f) {
+        @Override
+        public float getValue() {
+            if (maxPitchCorrectionSearch.value < value) { value = maxPitchCorrectionSearch.value; }
+            return super.getValue();
+        }
+    };
+    FloatSetting maxPitchCorrectionSearch = new FloatSetting("Max Pitch Correction Search", this, godVisible, 0, 90, 81, 0.1f) {
+        @Override
+        public float getValue() {
+            if (minPitchCorrectionSearch.value > value) { value = minPitchCorrectionSearch.value; }
+            return super.getValue();
+        }
+    };
+
+    FloatSetting stepPitchCorrection = new FloatSetting("Step Pitch Correction", this, godVisible, 0, 10, 0.8f, 0.01f);
+
+    Mode pitchSelection = new Mode("Pitch Selection", this)
+            .addModes("Highest", "Nearest", "Lowest", "Mid")
+            .setMode("Nearest")
+            ;
 
     CheckBox noSwing = new CheckBox("No Swing", this);
     CheckBox serverSwing = new CheckBox("Server Swing", this, noSwing::isToggled, true);
@@ -219,24 +269,12 @@ public class Scaffold extends Module {
     }
 
     boolean getSafeValue() {
-        if (sameY.isToggled()) {
-            return jumpTicks > 12;
-        } else {
-            if (jumpTicks > 10) {
-                return true;
-            } else if (jumpTicks > 6) {
-                return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.5f, mc.thePlayer.posZ)) &&
-                        mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.2f, mc.thePlayer.posZ)) &&
-                        mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0f, mc.thePlayer.posZ)) &&
-                        mc.thePlayer.jumpTicks == 0;
-            }
-
-            if (mc.thePlayer.hurtResistantTime > 10 && mc.thePlayer.hurtTime == 0) {
-                return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.2f, mc.thePlayer.posZ));
-            } else {
-                return mc.thePlayer.hurtTime > 0;
-            }
+        if (mc.thePlayer.hurtResistantTime > 10 && mc.thePlayer.hurtTime == 0) {
+            return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.2f, mc.thePlayer.posZ));
+        } else if (mc.thePlayer.hurtTime > 0) {
+            return true;
         }
+        return jumpTicks > 12;
     }
 
     private void updateValues() {
@@ -337,8 +375,8 @@ public class Scaffold extends Module {
         } else {
             if (getSafeValue()) {
                 delta = delta.limit(
-                        RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
-                        RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
+                        RandomUtils.nextInt(minClutchYawSpeed.getValue(), maxClutchYawSpeed.getValue()),
+                        RandomUtils.nextInt(minClutchPitchSpeed.getValue(), maxClutchPitchSpeed.getValue())
                 );
             } else {
                 delta = delta.limit(
@@ -373,10 +411,11 @@ public class Scaffold extends Module {
     private float getPitch(float yaw) {
         Map<Float, MovingObjectPosition> positionHashMap = new HashMap<>();
 
-        float maxPitch = rotMode.getMode().equalsIgnoreCase("TellyBridge") ? 85 : 81;
+        float maxPitch = rotMode.getMode().equalsIgnoreCase("TellyBridge") ? 85 : maxPitchCorrectionSearch.getValue();
+        float minPitch = rotMode.getMode().equalsIgnoreCase("TellyBridge") ? 45 : minPitchCorrectionSearch.getValue();
 
-        float step = 0.8f;
-        for (float i = 45; i < maxPitch; i += step) {
+        float step = stepPitchCorrection.getValue();
+        for (float i = minPitch; i < maxPitch; i += step) {
             MovingObjectPosition mouses = RayCastUtils.rayCast(3, 4.5, new Rot(yaw, i));
             if (mouses == null || mouses.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
                     || positionHashMap.containsValue(mouses)
@@ -385,7 +424,13 @@ public class Scaffold extends Module {
         }
 
         if (positionHashMap.isEmpty()) {
-            return lastPitch;
+            return switch (pitchSelection.getMode()) {
+                case "Nearest" -> lastPitch;
+                case "Lowest" -> 80;
+                case "Highest" -> 76;
+                case "Mid" -> 78;
+                default -> Rot.getServerRotation().getPitch();
+            };
         }
 
         List<Float> pitches = new ArrayList<>(positionHashMap.keySet());
@@ -396,7 +441,9 @@ public class Scaffold extends Module {
         }
 
         if (rotMode.getMode().equalsIgnoreCase("TellyBridge")) mouse = positionHashMap.get(pitches.getFirst());
-        lastPitch = pitches.getFirst();
+        if (pitchSelection.getMode().equalsIgnoreCase("Nearest")) {
+            lastPitch = pitches.getFirst();
+        }
         return pitches.getFirst();
     }
 

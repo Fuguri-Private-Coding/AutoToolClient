@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Notifications;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ public class Module implements Imports, SettingAble {
 	@Getter @Setter boolean hide = annotation.hide();
 	@Getter @Setter boolean loadFromConfig = annotation.loadFromConfig();
 	@Getter String description = annotation.description();
+	@Getter EasingAnimation animation = new EasingAnimation(-50);
 	@Getter @Setter long hoverStartTime;
 	@Getter @Setter boolean isHovered;
 
@@ -41,10 +43,12 @@ public class Module implements Imports, SettingAble {
 		if (toggled) {
 			playSound(volume);
 			Client.INST.getEventManager().register(this);
+			animation.setEnd(0);
 			onEnable();
 		} else {
 			playSound(volume);
 			Client.INST.getEventManager().unregister(this);
+			animation.setEnd(-50);
 			onDisable();
 		}
 	}

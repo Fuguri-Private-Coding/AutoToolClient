@@ -14,6 +14,9 @@ public class CheckBox extends Setting {
 
 	boolean toggled;
 
+	private float toggleProgress = 0f;
+	private final float animationSpeed = 0.15f;
+
 	public CheckBox(String name, SettingAble parent) {
 		super(name, parent);
 		toggled = false;
@@ -33,5 +36,14 @@ public class CheckBox extends Setting {
 		super(name, parent, visible);
 		this.setVisible(visible);
 		this.toggled = toggled;
+	}
+
+	public void updateToggleAnimation() {
+		float target = toggled ? 1f : 0f;
+		toggleProgress += (target - toggleProgress) * animationSpeed;
+
+		if (Math.abs(toggleProgress - target) < 0.01f) {
+			toggleProgress = target;
+		}
 	}
 }

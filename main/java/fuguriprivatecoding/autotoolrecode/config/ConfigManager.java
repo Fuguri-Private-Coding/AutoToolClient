@@ -312,6 +312,7 @@ public class ConfigManager implements Imports {
                                         case "Fade" -> set.setFade(entry1.getValue().getAsBoolean());
                                         case "FadeSpeed" -> set.setSpeed(entry1.getValue().getAsFloat());
                                         case "FadeOffset" -> set.setOffset(entry1.getValue().getAsFloat());
+                                        case "Hide" -> set.setHide(entry1.getValue().getAsBoolean());
                                     }
                                 }
                             }
@@ -388,6 +389,7 @@ public class ConfigManager implements Imports {
                                         case "Fade" -> set.setFade(entry1.getValue().getAsBoolean());
                                         case "FadeSpeed" -> set.setSpeed(entry1.getValue().getAsFloat());
                                         case "FadeOffset" -> set.setOffset(entry1.getValue().getAsFloat());
+                                        case "Hide" -> set.setHide(entry1.getValue().getAsBoolean());
                                     }
                                 }
                             }
@@ -450,6 +452,7 @@ public class ConfigManager implements Imports {
                         colorSettingObject.addProperty("Fade", set.isFade());
                         colorSettingObject.addProperty("FadeSpeed", set.getSpeed());
                         colorSettingObject.addProperty("FadeOffset", set.getOffset());
+                        colorSettingObject.addProperty("Hide", set.isHide());
                         moduleObject.add(set.getName(), colorSettingObject);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + setting);
@@ -500,6 +503,7 @@ public class ConfigManager implements Imports {
                     colorSettingObject.addProperty("Fade", set.isFade());
                     colorSettingObject.addProperty("FadeSpeed", set.getSpeed());
                     colorSettingObject.addProperty("FadeOffset", set.getOffset());
+                    colorSettingObject.addProperty("Hide", set.isHide());
                     moduleObject.add(set.getName(), colorSettingObject);
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + setting);
@@ -560,6 +564,7 @@ public class ConfigManager implements Imports {
                                     case "Fade" -> set.setFade(entry1.getValue().getAsBoolean());
                                     case "FadeSpeed" -> set.setSpeed(entry1.getValue().getAsFloat());
                                     case "FadeOffset" -> set.setOffset(entry1.getValue().getAsFloat());
+                                    case "Hide" -> set.setHide(entry1.getValue().getAsBoolean());
                                 }
                             }
                         }
@@ -612,6 +617,7 @@ public class ConfigManager implements Imports {
                         colorSettingObject.addProperty("Fade", set.isFade());
                         colorSettingObject.addProperty("FadeSpeed", set.getSpeed());
                         colorSettingObject.addProperty("FadeOffset", set.getOffset());
+                        colorSettingObject.addProperty("Hide", set.isHide());
                         moduleObject.add(set.getName(), colorSettingObject);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + setting);

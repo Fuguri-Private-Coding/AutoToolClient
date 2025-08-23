@@ -12,6 +12,8 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.legit.*;
 import lombok.Getter;
+import net.optifine.entity.model.anim.ModelUpdater;
+
 import java.util.List;
 
 @Getter
@@ -131,6 +133,6 @@ public class ModuleManager {
     }
 
 	public List<Module> getEnabledModules() {
-		return modules.stream().filter(Module::isToggled).filter(m -> !m.isHide()).collect(Collectors.toList());
+		return modules.stream().filter(module -> !module.isHide() && module.isToggled() || (!module.isHide() && !module.toggled && module.animation.isAnimating())).toList();
 	}
 }
