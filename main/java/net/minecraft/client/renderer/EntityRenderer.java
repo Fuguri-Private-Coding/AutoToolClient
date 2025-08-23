@@ -14,6 +14,8 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
@@ -368,17 +370,16 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         if (entity != null && this.mc.theWorld != null) {
             this.mc.mcProfiler.startSection("pick");
             this.mc.pointedEntity = null;
-            double d0 = (double) this.mc.playerController.getBlockReachDistance();
+            double d0 = this.mc.playerController.getBlockReachDistance() + Reach.getAddRange();
             this.mc.objectMouseOver = entity.rayTrace(d0, partialTicks);
             double d1 = d0;
             Vec3 vec3 = entity.getPositionEyes(partialTicks);
             boolean flag = false;
-            int i = 3;
 
             if (this.mc.playerController.extendedReach()) {
                 d0 = 6.0D;
                 d1 = 6.0D;
-            } else if (d0 > 3.0D) {
+            } else if (d0 > 3.0D + Reach.getAddRange()) {
                 flag = true;
             }
 
@@ -394,10 +395,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             List<Entity> list = this.mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec31.xCoord * d0, vec31.yCoord * d0, vec31.zCoord * d0).expand((double) f, (double) f, (double) f), Predicates.and(EntitySelectors.NOT_SPECTATING, Entity::canBeCollidedWith));
             double d2 = d1;
 
-            for (int j = 0; j < list.size(); ++j) {
-                Entity entity1 = (Entity) list.get(j);
-                float f1 = entity1.getCollisionBorderSize();
-                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand((double) f1, (double) f1, (double) f1);
+            for (Entity entity1 : list) {
+                float f1 = (float) (entity1.getCollisionBorderSize() + Hitbox.getExpand());
+                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand(f1, f1, f1);
                 MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
 
                 if (axisalignedbb.isVecInside(vec3)) {
@@ -413,7 +413,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                         boolean flag1 = false;
 
                         if (Reflector.ForgeEntity_canRiderInteract.exists()) {
-                            flag1 = Reflector.callBoolean(entity1, Reflector.ForgeEntity_canRiderInteract, new Object[0]);
+                            flag1 = Reflector.callBoolean(entity1, Reflector.ForgeEntity_canRiderInteract);
                         }
 
                         if (!flag1 && entity1 == entity.ridingEntity) {
@@ -430,9 +430,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 }
             }
 
-            if (pointedEntity != null && flag && vec3.distanceTo(vec33) > 3.0D) {
+            if (pointedEntity != null && flag && vec3.distanceTo(vec33) > 3.0D + Reach.getAddRange()) {
                 pointedEntity = null;
-                this.mc.objectMouseOver = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, vec33, (EnumFacing) null, new BlockPos(vec33));
+                this.mc.objectMouseOver = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, vec33, null, new BlockPos(vec33));
             }
 
             if (pointedEntity != null && (d2 < d1 || this.mc.objectMouseOver == null)) {
@@ -625,7 +625,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     if (movingobjectposition != null) {
                         double d7 = movingobjectposition.hitVec.distanceTo(new Vec3(d0, d1, d2));
 
-                        if (d7 < d3 && (!customCamera.isToggled() || (customCamera.isToggled() && !customCamera.cameraClip.isToggled()))) {
+                        if (d7 < d3 && (!customCamera.isToggled() || !customCamera.cameraClip.isToggled())) {
                             d3 = d7;
                         }
                     }

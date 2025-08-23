@@ -31,6 +31,8 @@ public class ModuleManager {
 				new Trajectory(),
 				new Hat(),
 				new Regen(),
+				new Reach(),
+				new Hitbox(),
 				new Blur(),
 				new TEZD(),
 				new Dot(),
