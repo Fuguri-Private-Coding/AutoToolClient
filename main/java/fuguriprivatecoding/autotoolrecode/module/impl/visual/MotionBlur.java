@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 @ModuleInfo(name = "MotionBlur", category = Category.VISUAL, description = "Размытие экрана при движение камерой.")
 public class MotionBlur extends Module {
 
-    public IntegerSetting blurAmount = new IntegerSetting("BlurAmount", this, 1, 9, 7);
+    public IntegerSetting blurAmount = new IntegerSetting("BlurAmount", this, 1, 100, 70);
 
     @Override
     public void onEnable() {
@@ -30,7 +30,7 @@ public class MotionBlur extends Module {
             try {
                 if (mc.entityRenderer.getShaderGroup() == null) mc.entityRenderer.loadShader(new ResourceLocation("minecraft", "shaders/post/motion_blur.json"));
 
-                float uniform = 1f - blurAmount.getValue() / 10f;
+                float uniform = 1f - blurAmount.getValue() / 100f;
 
                 mc.entityRenderer.getShaderGroup().listShaders.getFirst().getShaderManager().getShaderUniform("Phosphor").set(uniform, 0f, 0f);
             } catch (Exception ignored) {}
