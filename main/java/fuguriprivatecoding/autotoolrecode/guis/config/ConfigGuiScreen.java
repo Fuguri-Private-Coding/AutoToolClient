@@ -85,7 +85,7 @@ public class ConfigGuiScreen extends GuiScreen {
 
         boolean configScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
 
-        if (configScroll) scroll -= Mouse.getDWheel() / 120 * 10;
+        if (configScroll) scroll -= ClientSettings.getScroll();
 
         float consoleVisibleHeight = sizeBackground.y - 55;
         float maxScroll = Math.max(totalHeight - consoleVisibleHeight, 0);
@@ -137,13 +137,13 @@ public class ConfigGuiScreen extends GuiScreen {
 
         if (shadows.isToggled() && shadows.module.get("ConfigGui")) {
             BloomRealUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
+                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
 
         if (blur.isToggled() && blur.module.get("ConfigGui")) {
             GaussianBlurUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
+                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
 
@@ -212,6 +212,7 @@ public class ConfigGuiScreen extends GuiScreen {
 
         if (moving) {
             pos.translate(mouseX - lastMouse.x, mouseY - lastMouse.y);
+            background.translatePos(mouseX - lastMouse.x, mouseY - lastMouse.y);
             lastMouse.set(mouseX, mouseY);
         }
     }

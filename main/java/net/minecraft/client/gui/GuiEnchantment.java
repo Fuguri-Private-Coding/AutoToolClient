@@ -90,7 +90,7 @@ public class GuiEnchantment extends GuiContainer
         GlStateManager.pushMatrix();
         GlStateManager.loadIdentity();
         ScaledResolution scaledresolution = new ScaledResolution(this.mc);
-        GlStateManager.viewport((scaledresolution.getScaledWidth() - 320) / 2 * scaledresolution.getScaleFactor(), (scaledresolution.getScaledHeight() - 240) / 2 * scaledresolution.getScaleFactor(), 320 * scaledresolution.getScaleFactor(), 240 * scaledresolution.getScaleFactor());
+        GlStateManager.viewport((int) ((scaledresolution.getScaledWidth() - 320) / 2 * scaledresolution.getScaleFactor()), (int) ((scaledresolution.getScaledHeight() - 240) / 2 * scaledresolution.getScaleFactor()), (int) (320 * scaledresolution.getScaleFactor()), (int) (240 * scaledresolution.getScaleFactor()));
         GlStateManager.translate(-0.34F, 0.23F, 0.0F);
         Project.gluPerspective(90.0F, 1.3333334F, 9.0F, 80.0F);
         float f = 1.0F;

@@ -35,7 +35,7 @@ public class DynamicIsland extends Module {
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, 0, 100, 5, 0.1f);
 
     FloatSetting width = new FloatSetting("Width", this, 0f, 50f, 10f, 0.1f);
-    FloatSetting animationSpeed = new FloatSetting("Animation Speed", this, 0f, 10f, 5f, 0.1f);
+    FloatSetting animationSpeed = new FloatSetting("Animation Speed", this, 0f, 5f, 2f, 0.1f);
 
     public final ColorSetting textColor = new ColorSetting("Text Color", this);
 
@@ -161,10 +161,10 @@ public class DynamicIsland extends Module {
     }
 
     private void updateAnimations() {
-        Easing widthEasingFunc = Easing.EASE_OUT_BACK;
-        Easing heightEasingFunc = Easing.EASE_OUT_BACK;
-        Easing positionEasingFunc = Easing.EASE_OUT_BACK;
-        Easing radiusEasingFunc = Easing.EASE_OUT_BACK;
+        Easing widthEasingFunc = Easing.OUT_BACK;
+        Easing heightEasingFunc = Easing.OUT_BACK;
+        Easing positionEasingFunc = Easing.OUT_BACK;
+        Easing radiusEasingFunc = Easing.OUT_BACK;
 
         currentWidth.update(animationSpeed.getValue(), widthEasingFunc);
         currentHeight.update(animationSpeed.getValue(), heightEasingFunc);

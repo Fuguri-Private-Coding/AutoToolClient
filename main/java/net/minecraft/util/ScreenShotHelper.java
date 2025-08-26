@@ -42,13 +42,13 @@ public class ScreenShotHelper
             Minecraft minecraft = Minecraft.getMinecraft();
             int i = Config.getGameSettings().guiScale;
             ScaledResolution scaledresolution = new ScaledResolution(minecraft);
-            int j = scaledresolution.getScaleFactor();
+            float j = scaledresolution.getScaleFactor();
             int k = Config.getScreenshotSize();
             boolean flag = OpenGlHelper.isFramebufferEnabled() && k > 1;
 
             if (flag)
             {
-                Config.getGameSettings().guiScale = j * k;
+                Config.getGameSettings().guiScale = (int) (j * k);
                 resize(width * k, height * k);
                 GlStateManager.pushMatrix();
                 GlStateManager.clear(16640);

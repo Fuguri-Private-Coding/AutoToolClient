@@ -20,7 +20,7 @@ public class ScissorUtils implements Imports {
             return;
         }
 
-        final int scaleFactor = scaledResolution.getScaleFactor();
+        final float scaleFactor = scaledResolution.getScaleFactor();
         final int scaledWidth = scaledResolution.getScaledWidth();
         final int scaledHeight = scaledResolution.getScaledHeight();
 
@@ -40,11 +40,11 @@ public class ScissorUtils implements Imports {
         }
 
         if (scissorX + scissorWidth > scaledWidth * scaleFactor) {
-            scissorWidth = scaledWidth * scaleFactor - scissorX;
+            scissorWidth = (int) (scaledWidth * scaleFactor - scissorX);
         }
 
         if (scissorY + scissorHeight > scaledHeight * scaleFactor) {
-            scissorHeight = scaledHeight * scaleFactor - scissorY;
+            scissorHeight = (int) (scaledHeight * scaleFactor - scissorY);
         }
 
         if (scissorWidth > 0 && scissorHeight > 0) {

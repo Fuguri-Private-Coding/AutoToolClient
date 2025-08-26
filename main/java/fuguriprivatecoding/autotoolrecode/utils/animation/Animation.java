@@ -4,34 +4,34 @@ import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 
 public class Animation {
 
-    public float x, endX;
+    public float value, endValue;
     final StopWatch stopWatch;
 
     public Animation() {
-        endX = x = 0;
+        endValue = value = 0;
         stopWatch = new StopWatch();
     }
 
-    public Animation(float x, float endX) {
-        this.x = x;
-        this.endX = endX;
+    public Animation(float value, float endX) {
+        this.value = value;
+        this.endValue = endX;
         stopWatch = new StopWatch();
     }
 
-    public void translateEndPos(float endX) {
-        this.endX += endX;
+    public void translateEndPos(float endValue) {
+        this.endValue += endValue;
     }
 
-    public void translatePos(float x) {
-        this.x += x;
+    public void translatePos(float value) {
+        this.value += value;
     }
 
-    public void setEndPos(float endX) {
-        this.endX = endX;
+    public void setEndPos(float endValue) {
+        this.endValue = endValue;
     }
 
     public void setPos(float x) {
-        this.x = x;
+        this.value = x;
     }
 
     public void update(float smooth) {
@@ -39,13 +39,13 @@ public class Animation {
         smooth *= stopWatch.reachedMS();
 
         float delta = getDelta();
-        x += delta * Math.min(smooth, 1);
+        value += delta * Math.min(smooth, 1);
 
         stopWatch.reset();
     }
 
     public float getDelta() {
-        return endX - x;
+        return endValue - value;
     }
 
     public void reset() {

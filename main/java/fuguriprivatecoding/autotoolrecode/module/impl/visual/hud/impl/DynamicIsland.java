@@ -1,9 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual.hud.impl;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.hud.HUDElement;
-import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
@@ -12,19 +10,11 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.Animation;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.ScaledResolution;
 import org.joml.Vector2f;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 public class DynamicIsland extends HUDElement implements Imports {
 
@@ -103,12 +93,12 @@ public class DynamicIsland extends HUDElement implements Imports {
         currentSize.update(10f);
         radius.update(10f);
 
-        radius.endX = 5f;
+        radius.endValue = 5f;
 
         currentSize.endY = 10;
 //        currentSize.endX = (float) font.getStringWidth(currentText) + 8;
 
-        RoundedUtils.drawCenteredRect(absoluteX, absoluteY, currentSize.x, currentSize.y, radius.x, Color.BLACK);
+        RoundedUtils.drawCenteredRect(absoluteX, absoluteY, currentSize.x, currentSize.y, radius.value, Color.BLACK);
 
 //        font.drawCenteredString(currentText, absoluteX, absoluteY + 2.5f, Color.WHITE);
     }

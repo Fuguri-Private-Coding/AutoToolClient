@@ -8,17 +8,16 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -34,28 +33,39 @@ public class TargetESP extends Module {
     final FloatSetting length = new FloatSetting("Length", this, 0.2f, 2.5f, 0.6f, 0.1f) {};
     final FloatSetting radius = new FloatSetting("Radius", this, 0.1f, 2f, 0.7f, 0.1f) {};
 
+    CheckBox glow = new CheckBox("Glow", this);
+    CheckBox blur = new CheckBox("BLur", this);
+
     public final ColorSetting color = new ColorSetting("Color", this);
+
+    public final ColorSetting colorShadow = new ColorSetting("Shadow Color", this, glow::isToggled);
 
     private final List<Sigma2> poses = new ArrayList<>();
 
-    Glow shadows;
     Color fadeColor;
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (event instanceof Render3DEvent) {
             switch (mode.getMode()) {
                 case "Sigma" -> {
-                    if (shadows.isToggled() && shadows.module.get("TargetESP")) {
-                        BloomUtils.addToDraw(() -> renderSigma(Color.white, Color.white));
+                    if (glow.isToggled()) {
+                        BloomRealUtils.addToDraw(() -> renderSigma(colorShadow.getColor(), colorShadow.getFadeColor()));
+                    }
+
+                    if (blur.isToggled()) {
+                        GaussianBlurUtils.addToDraw(() -> renderSigma(Color.white, Color.white));
                     }
                     renderSigma(color.getColor(), color.getFadeColor());
                 }
 
                 case "Sigma2" -> {
-                    if (shadows.isToggled() && shadows.module.get("TargetESP")) {
-                        BloomUtils.addToDraw(() -> renderSigma2(Color.white, Color.white));
+                    if (glow.isToggled()) {
+                        BloomRealUtils.addToDraw(() -> renderSigma2(colorShadow.getColor(), colorShadow.getFadeColor()));
+                    }
+
+                    if (blur.isToggled()) {
+                        GaussianBlurUtils.addToDraw(() -> renderSigma2(Color.white, Color.white));
                     }
                     renderSigma2(color.getColor(), color.getFadeColor());
                 }

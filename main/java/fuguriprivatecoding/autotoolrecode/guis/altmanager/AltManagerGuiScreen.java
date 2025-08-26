@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.alt.Account;
 import fuguriprivatecoding.autotoolrecode.alt.Auth;
 import fuguriprivatecoding.autotoolrecode.alt.MicrosoftAuthCallback;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
@@ -19,22 +20,15 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.Session;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
 public class AltManagerGuiScreen extends GuiScreen {
 
     AltManagerGuiText altManagerGuiText;
-
-    private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
-    private static final Random random = new Random();
 
     public ArrayList<Account> accounts = new ArrayList<>();
 
@@ -69,9 +63,8 @@ public class AltManagerGuiScreen extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         ScaledResolution sc = new ScaledResolution(mc);
-        int currentScroll = Mouse.getDWheel();
 
-        scroll -= currentScroll / 120 * 15;
+        scroll -= ClientSettings.getScroll();
 
         ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
 
@@ -180,7 +173,7 @@ public class AltManagerGuiScreen extends GuiScreen {
             case 3 -> {
                 final MicrosoftAuthCallback callback = new MicrosoftAuthCallback();
 
-                CompletableFuture<Account> future = callback.start((s, o) -> updateStatus(s));
+                CompletableFuture<Account> future = callback.start((s, _) -> updateStatus(s));
 
                 Sys.openURL(MicrosoftAuthCallback.url);
 
@@ -262,14 +255,5 @@ public class AltManagerGuiScreen extends GuiScreen {
             Client.INST.getConfigManager().saveAccounts();
             selectedAccount = null;
         }
-    }
-
-    public String getClipBoard() {
-        try {
-            return (String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-        } catch (HeadlessException | UnsupportedFlavorException | IOException e) {
-            System.out.println(e.getMessage());
-        }
-        return "";
     }
 }

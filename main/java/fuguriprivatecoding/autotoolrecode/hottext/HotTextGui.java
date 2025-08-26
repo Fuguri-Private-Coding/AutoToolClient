@@ -85,7 +85,7 @@ public class HotTextGui extends GuiScreen {
                 : clickGui.color.getColor();
 
         boolean hotScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
-        if (hotScroll) scroll -= Mouse.getDWheel() / 120 * 10;
+        if (hotScroll) scroll -= ClientSettings.getScroll();
 
         float hotKeysVisibleHeight = sizeBackground.y - 55;
         float maxScroll = Math.max(0, totalHeight - hotKeysVisibleHeight);
@@ -132,13 +132,14 @@ public class HotTextGui extends GuiScreen {
 
         if (shadows.isToggled() && shadows.module.get("HotKeyGui")) {
             BloomRealUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
+                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
 
         if (blur.isToggled() && blur.module.get("HotKeyGui")) {
             GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), shadows.color.getColor()));
         }
+
         RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
@@ -205,6 +206,7 @@ public class HotTextGui extends GuiScreen {
 
         if (moving) {
             pos.translate(mouseX - lastMouse.x, mouseY - lastMouse.y);
+            background.translatePos(mouseX - lastMouse.x, mouseY - lastMouse.y);
             lastMouse.set(mouseX, mouseY);
         }
     }

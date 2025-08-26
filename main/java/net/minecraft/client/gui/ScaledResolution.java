@@ -1,17 +1,19 @@
 package net.minecraft.client.gui;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.MathHelper;
 
 @Getter
+@Setter
 public class ScaledResolution
 {
     final double scaledWidthD;
     final double scaledHeightD;
-    int scaledWidth;
-    int scaledHeight;
-    int scaleFactor;
+    public int scaledWidth;
+    public int scaledHeight;
+    public float scaleFactor;
 
     public ScaledResolution(Minecraft p_i46445_1_) {
         this.scaledWidth = p_i46445_1_.displayWidth;

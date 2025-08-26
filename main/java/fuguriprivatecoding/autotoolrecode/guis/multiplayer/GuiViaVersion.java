@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.guis.multiplayer;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
@@ -31,9 +32,8 @@ public class GuiViaVersion extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         ScaledResolution sc = new ScaledResolution(mc);
-        int currentScroll = Mouse.getDWheel();
 
-        scroll += currentScroll / 120 * 20;
+        scroll -= ClientSettings.getScroll();
 
         float versionVisibleHeight = sc.getScaledHeight() - 45;
         float maxScroll = Math.max(scrollTotalHeight - versionVisibleHeight, 0);

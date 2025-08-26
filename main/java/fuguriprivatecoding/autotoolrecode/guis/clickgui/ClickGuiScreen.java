@@ -64,9 +64,6 @@ public class ClickGuiScreen extends GuiScreen {
 	Category clickedCategory;
 	Module clickedModule;
 
-	Glow shadows;
-	Blur blur;
-
 	boolean resizing, moving, binding, closing, showConsoleAfterClose, showConfigAfterClose, showHotKeysAfterClose;
 
 	int settingsScroll, settingsTotalHeight, modulesScroll, modulesTotalHeight;
@@ -98,8 +95,6 @@ public class ClickGuiScreen extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
-		if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
 		int currentScroll = Mouse.getDWheel();
 
 		MAIN_COLOR = clickGui.color.isFade() ?
@@ -110,9 +105,9 @@ public class ClickGuiScreen extends GuiScreen {
 
         if (closing) {
 			moduleLine.setEnd(0);
-			moduleLine.update(5, Easing.EASE_OUT_BACK);
+			moduleLine.update(5, Easing.OUT_BACK);
 			guis.setEnd(0);
-			guis.update(3, Easing.EASE_OUT_BACK);
+			guis.update(3, Easing.OUT_BACK);
             if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
 				closing = false;
 				clickedModule = null;
@@ -168,6 +163,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		if (moving) {
 			pos.translate(mouseX - lastMouse.x, mouseY - lastMouse.y);
+			background.translatePos(mouseX - lastMouse.x, mouseY - lastMouse.y);
 			lastMouse.set(mouseX, mouseY);
 		}
 
@@ -184,20 +180,21 @@ public class ClickGuiScreen extends GuiScreen {
 		background.update(15f);
 		sizeBackground.update(15f);
 		modulesScrolls.update(15f);
-		settingsScrolls.update(15f / 4, Easing.EASE_OUT_BACK);
+		settingsScrolls.update(15f / 4, Easing.OUT_BACK);
 
 		ScaledResolution sc = new ScaledResolution(mc);
 
-		if (shadows.isToggled() && shadows.module.get("ClickGui")) {
+		if (clickGui.glow.isToggled()) {
 			BloomRealUtils.addToDraw(() -> {
-				RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
-				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.getValue(), 50, 2, 0, clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
-				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
+				RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.getValue(), 50, 2, 0, clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
 			});
 		}
-		if (blur.isToggled() && blur.module.get("ClickGui")) {
+
+		if (clickGui.blur.isToggled()) {
 			GaussianBlurUtils.addToDraw(() -> {
-				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
+				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
 				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.black);
 			});
 		}
@@ -238,7 +235,10 @@ public class ClickGuiScreen extends GuiScreen {
 		boolean moduleScroll = mouseX > background.x && mouseX < background.x + widthsModule && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
 
 		if (settingScroll) {
-			if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) settingsScroll -= currentScroll / 120 * 10;
+			if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				int scrollValue = currentScroll / 120 * clientSettings.scroll.getValue();
+				settingsScroll -= clientSettings.invertScroll.isToggled() ? -scrollValue : scrollValue;
+			}
 
 			float settingsVisibleHeight = sizeBackground.y - (2 + 2 + fontRendererObj.FONT_HEIGHT + 10 + 5);
 			float maxScroll = Math.max(settingsTotalHeight - settingsVisibleHeight,0);
@@ -248,7 +248,10 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 
 		if (moduleScroll) {
-			if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) modulesScroll -= currentScroll / 120 * 10;
+			if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				int scrollValue = currentScroll / 120 * clientSettings.scroll.getValue();
+				modulesScroll -= clientSettings.invertScroll.isToggled() ? -scrollValue : scrollValue;
+			}
 
 			float moduleVisibleHeight = sizeBackground.y - 18;
 			float maxScroll = Math.max(modulesTotalHeight - moduleVisibleHeight, 0);
@@ -758,7 +761,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		ScissorUtils.disableScissor();
 
-		boolean sidePanel = mouseY > sc.getScaledHeight() - 25 && mouseY < sc.getScaledHeight();
+		boolean sidePanel = mouseY > sc.getScaledHeight() - 25 && mouseY < sc.getScaledHeight() && mouseX > sc.getScaledWidth() / 2f - 50 && mouseX < sc.getScaledWidth() / 2f - 50 + 100;
 
 		if (sidePanel) {
 			guis.setEnd(25);
@@ -792,7 +795,7 @@ public class ClickGuiScreen extends GuiScreen {
 		if (hotKey) ColorUtils.glColor(MAIN_COLOR); else ColorUtils.glColor(Color.WHITE);
 		RenderUtils.drawImage(hotKeys, (int) (sc.getScaledWidth() / 2f - 50 + 75), (int) (sc.getScaledHeight() - guis.getValue() + 3), 15, 15, true);
 
-		Easing positionEasingFunc = Easing.EASE_IN_OUT_BACK;
+		Easing positionEasingFunc = Easing.IN_OUT_BACK;
 
 		guis.update(clickGui.animationSpeed.getValue() / 5, positionEasingFunc);
 		moduleLine.update(clickGui.animationSpeed.getValue() / 4, positionEasingFunc);
@@ -807,17 +810,9 @@ public class ClickGuiScreen extends GuiScreen {
 		boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean collapse = mouseX > background.x + 25 && mouseX < background.x + 25 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
-		boolean console = mouseX > sc.getScaledWidth() / 2f - 50 + 10 &&
-				mouseX < sc.getScaledWidth() / 2f - 50 + 10 + 15 &&
-				mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
-
-		boolean config = mouseX > sc.getScaledWidth() / 2f - 50 + 43 &&
-				mouseX < sc.getScaledWidth() / 2f - 50 + 43 + 15 &&
-				mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
-
-		boolean hotKeys = mouseX > sc.getScaledWidth() / 2f - 50 + 75 &&
-				mouseX < sc.getScaledWidth() / 2f - 50 + 75 + 15 &&
-				mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
+		boolean console = mouseX > sc.getScaledWidth() / 2f - 50 + 10 && mouseX < sc.getScaledWidth() / 2f - 50 + 10 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
+		boolean config = mouseX > sc.getScaledWidth() / 2f - 50 + 43 && mouseX < sc.getScaledWidth() / 2f - 50 + 43 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
+		boolean hotKeys = mouseX > sc.getScaledWidth() / 2f - 50 + 75 && mouseX < sc.getScaledWidth() / 2f - 50 + 75 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
 
 		if (Mouse.isButtonDown(0)) {
 			if (quit) {
@@ -944,7 +939,7 @@ public class ClickGuiScreen extends GuiScreen {
 					case 1 -> {
 						if (selectedModule == null || !selectedModule.equals(module)) {
 							settingsScrolls.setEnd(-400);
-							settingsScrolls.update(clickGui.animationSpeed.getValue() / 5, Easing.EASE_OUT_BACK);
+							settingsScrolls.update(clickGui.animationSpeed.getValue() / 5, Easing.OUT_BACK);
 							settingsScroll = 0;
 							selectedModule = module;
 						} else {
@@ -969,6 +964,7 @@ public class ClickGuiScreen extends GuiScreen {
 					case 0 -> {
 						selectedCategory = category;
 						selectedModule = null;
+						modulesScroll = 0;
 					}
 
 					case 1 -> {

@@ -8,8 +8,11 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Animation;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Animation3D;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -17,6 +20,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
+import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.*;
 
@@ -31,19 +35,18 @@ public class TargetHUD extends Module {
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, -5f,5f,0f,0.1f);
 
     public final ColorSetting textColor = new ColorSetting("Text Color", this);
-
     CheckBox shadow = new CheckBox("Text Shadow", this, () -> render.get("Name"), true);
 
     public final ColorSetting bgColor = new ColorSetting("Background Color", this);
 
     public final ColorSetting healthColor = new ColorSetting("Health Color", this);
-
     public final ColorSetting healthBackColor = new ColorSetting("Health Back Color", this);
 
     CheckBox headRound = new CheckBox("Rounded Head", this, () -> render.get("Head"), true);
     FloatSetting headRoundFactor = new FloatSetting("Head Round Factor", this, () -> render.get("Head"), 0f,50f,10f,0.1f);
 
-    private final IntegerSetting scale = new IntegerSetting("Scale", this, 1, 10, 5);
+    private final FloatSetting scale = new FloatSetting("Scale", this, 0.5f, 3f, 1.5f, 0.05f);
+    private final FloatSetting smoothPositionSpeed = new FloatSetting("SmoothPositionSpeed", this, 1f, 20f, 1.5f, 0.05f);
 
     private final Animation2D healthAnimation = new Animation2D();
     private Glow shadows;
@@ -52,6 +55,9 @@ public class TargetHUD extends Module {
     Color backgroundFadeColor;
     Color healthFadeColor;
     Color healthBackFadeColor;
+
+    Animation scaleAnim = new Animation();
+    Animation3D posAnim = new Animation3D();
 
     private static final float TEXTURE_WIDTH = 400f;
     private static final float TEXTURE_HEIGHT = 150f;
@@ -66,13 +72,19 @@ public class TargetHUD extends Module {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (event instanceof Render3DEvent && mc.currentScreen == null) {
             EntityLivingBase target = Client.INST.getCombatManager().getTarget();
-            if (target == null || target.getName() == null || target.getSkin() == null) return;
+
+            if (target == null || target.getName() == null || target.getSkin() == null) {
+                return;
+            }
 
             updateColors();
 
             Vec3 pos = calculateEntityPosition(target);
 
-            setupRendering(pos, target.height, yOffset.getValue());
+            posAnim.setEndPos(pos);
+            posAnim.update(smoothPositionSpeed.getValue());
+
+            setupRendering(new Vec3(posAnim.x, posAnim.y, posAnim.z), target, target.height, yOffset.getValue());
 
             try {
                 renderHUD(target);
@@ -118,14 +130,21 @@ public class TargetHUD extends Module {
         );
     }
 
-    private void setupRendering(Vec3 pos, float height, float offset) {
+    private void setupRendering(Vec3 pos, EntityLivingBase entity, float height, float offset) {
         glPushMatrix();
         glTranslatef((float)pos.xCoord, (float)pos.yCoord + height / 2f + offset, (float)pos.zCoord);
         glNormal3f(0.0f, 1.0f, 0.0f);
         glRotatef(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f);
         glRotatef(mc.renderManager.playerViewX, 1.0f, 0.0f, 0.0f);
 
-        double scaleFactor = this.scale.getValue() / 1000D;
+        float distance = mc.thePlayer.getDistanceToEntity(entity);
+        float scale = Math.min(distance, 3) * Math.max(distance, 3) ;
+        scale /= 1000f;
+
+        scaleAnim.endValue = scale * this.scale.getValue();
+        scaleAnim.update(10);
+
+        double scaleFactor = scaleAnim.value;
         glScaled(-scaleFactor, -scaleFactor, scaleFactor);
 
         glDisable(GL_DEPTH_TEST);

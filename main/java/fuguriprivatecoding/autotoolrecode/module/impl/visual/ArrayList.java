@@ -69,17 +69,16 @@ public class ArrayList extends Module {
 
             sort(moduleList, font);
 
-            double yOffset = yPosOffset.getValue();
+            float yOffset = yPosOffset.getValue();
             double xOffset = xPosOffset.getValue();
             for (Module module : moduleList) {
                 updateColors(moduleList, module);
 
-                module.getAnimation().update(animationSpeed.getValue(), Easing.EASE_OUT_BACK);
+                module.getAnimation().update(animationSpeed.getValue(), Easing.OUT_BACK);
 
-                double yFinalOffset = yOffset;
                 switch (pos.getMode()) {
-                    case "Right Up" -> renderRightUp(xOffset + module.getAnimation().getValue(), yFinalOffset, module, sc, fadeBackgroundColor, fadeLineColor, fadeTextColor);
-                    case "Left Up" -> renderLeftUp(xOffset + module.getAnimation().getValue(), yFinalOffset, module, fadeBackgroundColor, fadeLineColor, fadeTextColor);
+                    case "Right Up" -> renderRightUp(xOffset + module.getAnimation().getValue(), yOffset, module, sc, fadeBackgroundColor, fadeLineColor, fadeTextColor);
+                    case "Left Up" -> renderLeftUp(xOffset + module.getAnimation().getValue(), yOffset, module, fadeBackgroundColor, fadeLineColor, fadeTextColor);
                 }
                 yOffset += verticalSpacing.getValue();
             }

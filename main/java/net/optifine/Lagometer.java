@@ -156,8 +156,8 @@ public class Lagometer
                 int i1 = (int)(100.0F + f1 * 55.0F);
                 int j1 = (int)(10.0F + f1 * 10.0F);
                 int k1 = l2 << 16 | i1 << 8 | j1;
-                int l1 = 512 / scaledResolution.getScaleFactor() + 2;
-                int i2 = mc.displayHeight / scaledResolution.getScaleFactor() - 8;
+                float l1 = 512 / scaledResolution.getScaleFactor() + 2;
+                float i2 = mc.displayHeight / scaledResolution.getScaleFactor() - 8;
                 GuiIngame guiingame = mc.ingameGUI;
                 GuiIngame.drawRect(l1 - 1, i2 - 1, l1 + 50, i2 + 10, -1605349296);
                 mc.fontRendererObj.drawString(" " + MemoryMonitor.getAllocationRateMb() + " MB/s", l1, i2, k1);

@@ -63,7 +63,7 @@ public class LoadingScreenRenderer implements IProgressUpdate
 
             if (OpenGlHelper.isFramebufferEnabled())
             {
-                int i = this.scaledResolution.getScaleFactor();
+                float i = this.scaledResolution.getScaleFactor();
                 GlStateManager.ortho(0.0D, (double)(this.scaledResolution.getScaledWidth() * i), (double)(this.scaledResolution.getScaledHeight() * i), 0.0D, 100.0D, 300.0D);
             }
             else
@@ -113,7 +113,7 @@ public class LoadingScreenRenderer implements IProgressUpdate
             {
                 this.systemTime = i;
                 ScaledResolution scaledresolution = new ScaledResolution(this.mc);
-                int j = scaledresolution.getScaleFactor();
+                float j = scaledresolution.getScaleFactor();
                 int k = scaledresolution.getScaledWidth();
                 int l = scaledresolution.getScaledHeight();
 
@@ -203,7 +203,7 @@ public class LoadingScreenRenderer implements IProgressUpdate
 
                 if (OpenGlHelper.isFramebufferEnabled())
                 {
-                    this.framebuffer.framebufferRender(k * j, l * j);
+                    this.framebuffer.framebufferRender((int) (k * j), (int) (l * j));
                 }
 
                 this.mc.updateDisplay();

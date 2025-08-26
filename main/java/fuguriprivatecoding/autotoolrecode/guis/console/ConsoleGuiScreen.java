@@ -82,7 +82,7 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         boolean consoleScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + (fullScreen ? 20 : 2) + 15 && mouseY < background.y + sizeBackground.y + (fullScreen ? 20 : 2);
 
-        if (consoleScroll) scroll -= Mouse.getDWheel() / 120 * 10;
+        if (consoleScroll) scroll -= ClientSettings.getScroll();
 
         float consoleVisibleHeight = sizeBackground.y - 35;
         float maxScroll = Math.max(0, totalHeight - consoleVisibleHeight);
@@ -132,7 +132,7 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         if (shadows.isToggled() && shadows.module.get("ConsoleGui")) {
             BloomRealUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed());
+                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
         if (blur.isToggled() && blur.module.get("ConsoleGui")) {
@@ -140,6 +140,7 @@ public class ConsoleGuiScreen extends GuiScreen {
                 RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, Color.BLACK.getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
             });
         }
+
         RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
         ScissorUtils.enableScissor();
@@ -181,6 +182,7 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         if (moving) {
             pos.translate(mouseX - lastMouse.x, mouseY - lastMouse.y);
+            background.translatePos(mouseX - lastMouse.x, mouseY - lastMouse.y);
             lastMouse.set(mouseX, mouseY);
         }
     }

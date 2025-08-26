@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
+import com.sun.jna.platform.RasterRangesUtils;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.deeplearn.rotation.AIRotationSmooth;
 import fuguriprivatecoding.autotoolrecode.event.Event;
@@ -30,6 +31,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import java.io.File;
+import java.util.Random;
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, description = "Автоматически целится и бьет противника.")
@@ -149,7 +151,7 @@ public class KillAura extends Module {
     }
 
     Rot startTest = new Rot();
-    Interpolation interpolation = new Interpolation(Easing.EASE_IN_OUT_BACK, 200);
+    Interpolation interpolation = new Interpolation(Easing.IN_OUT_BACK, 200);
 
     @EventTarget
     public void onEvent(Event event) {
@@ -184,9 +186,8 @@ public class KillAura extends Module {
                 if (needRotation == null) return;
 
                 interpolation.setDuration(rotationDuration.getValue());
-                interpolation.setEasing(Easing.EASE_IN_OUT_BACK);
+                interpolation.setEasing(Easing.IN_OUT_BACK);
 
-//                interpolation.setEasing(Easing.EASE_IN_OUT_CIRC);
                 if (interpolation.getRaw() == 1) {
                     startTest = needRotation.copy();
                     interpolation.reset();
@@ -264,12 +265,6 @@ public class KillAura extends Module {
                     case "Target" -> MoveUtils.moveFix(e, RotUtils.getRotationToPoint(target.getPositionVector()).getYaw());
                 }
             }
-//            if (event instanceof Render2DEvent) {
-//                RoundedUtils.drawRect(400, 200, 10 + 100, 12, 6, Color.BLACK);
-//                RoundedUtils.drawRect(400, 200, 10 + (float) interpolation.getRaw() * 100, 12, 6, Color.WHITE);
-//                RoundedUtils.drawRect(400, 215, 10 + 100, 12, 6, Color.BLACK);
-//                RoundedUtils.drawRect(400, 215, 10 + (float) interpolation.get() * 100, 12, 6, Color.RED);
-//            }
         }
     }
 

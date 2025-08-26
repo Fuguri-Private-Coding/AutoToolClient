@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.settings.impl;
 
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.doubles.Doubles;

@@ -191,10 +191,10 @@ public class GuiNewChat extends Gui {
             return null;
         } else {
             ScaledResolution scaledresolution = new ScaledResolution(this.mc);
-            int i = scaledresolution.getScaleFactor();
+            float i = scaledresolution.getScaleFactor();
             float f = this.getChatScale();
-            int j = mouseX / i - 3;
-            int k = mouseY / i - 27;
+            int j = (int) (mouseX / i - 3);
+            int k = (int) (mouseY / i - 27);
             j = MathHelper.floor_float((float) j / f);
             k = MathHelper.floor_float((float) k / f);
 

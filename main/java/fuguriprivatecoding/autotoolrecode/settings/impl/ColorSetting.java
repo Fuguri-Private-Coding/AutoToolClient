@@ -87,9 +87,7 @@ public class ColorSetting extends Setting {
         this.hide = false;
     }
 
-    public ColorSetting(String name, SettingAble parent, float red, float green, float blue, float alpha,
-                        float fadeRed, float fadeGreen, float fadeBlue, float fadeAlpha,
-                        float offset, float speed, boolean fade) {
+    public ColorSetting(String name, SettingAble parent, float red, float green, float blue, float alpha, float fadeRed, float fadeGreen, float fadeBlue, float fadeAlpha, float offset, float speed, boolean fade) {
         super(name, parent);
         this.red = red;
         this.green = green;
@@ -105,9 +103,7 @@ public class ColorSetting extends Setting {
         this.hide = false;
     }
 
-    public ColorSetting(String name, SettingAble parent, BooleanSupplier visible, float red, float green, float blue, float alpha,
-                        float fadeRed, float fadeGreen, float fadeBlue, float fadeAlpha,
-                        float offset, float speed, boolean fade) {
+    public ColorSetting(String name, SettingAble parent, BooleanSupplier visible, float red, float green, float blue, float alpha, float fadeRed, float fadeGreen, float fadeBlue, float fadeAlpha, float offset, float speed, boolean fade) {
         super(name, parent, visible);
         this.red = red;
         this.green = green;
@@ -128,22 +124,8 @@ public class ColorSetting extends Setting {
     }
 
     public Color getFadeColor() {
-        return new Color(fadeRed, fadeGreen, fadeBlue, fadeAlpha);
-    }
-
-    public Color getCurrentColor(float progress) {
-        if (!fade) return getColor();
-
-        float currentRed = red + (fadeRed - red) * progress;
-        float currentGreen = green + (fadeGreen - green) * progress;
-        float currentBlue = blue + (fadeBlue - blue) * progress;
-        float currentAlpha = alpha + (fadeAlpha - alpha) * progress;
-
-        return new Color(currentRed, currentGreen, currentBlue, currentAlpha);
-    }
-
-    public Color getCurrentColor() {
-        return getCurrentColor(offset);
+        if (isFade()) return new Color(fadeRed, fadeGreen, fadeBlue, fadeAlpha);
+        return new Color(red, green, blue, alpha);
     }
 
     public void toggleFade() {

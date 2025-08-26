@@ -1175,7 +1175,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     });
                     crashreportcategory.addCrashSectionCallable("Screen size", new Callable<String>() {
                         public String call() throws Exception {
-                            return String.format("Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d", scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), Integer.valueOf(EntityRenderer.this.mc.displayWidth), Integer.valueOf(EntityRenderer.this.mc.displayHeight), Integer.valueOf(scaledresolution.getScaleFactor()));
+                            return String.format("Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d", scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), Integer.valueOf(EntityRenderer.this.mc.displayWidth), Integer.valueOf(EntityRenderer.this.mc.displayHeight), Integer.valueOf((int) scaledresolution.getScaleFactor()));
                         }
                     });
                     throw new ReportedException(crashreport);

@@ -13,7 +13,11 @@ public class ClickGui extends Module {
 	public FloatSetting animationSpeed = new FloatSetting("AnimationSpeed", this, 1, 20, 10, 0.5f) {};
 	public IntegerSetting backgroundAlpha = new IntegerSetting("BackgroundAlpha", this, 0, 255, 100);
 
+	public final CheckBox glow = new CheckBox("Glow", this);
+	public final CheckBox blur = new CheckBox("Blur", this);
+
 	public final ColorSetting color = new ColorSetting("Color", this);
+	public final ColorSetting colorShadow = new ColorSetting("Color Shadow", this);
 
 	@Override
 	public void onEnable() {

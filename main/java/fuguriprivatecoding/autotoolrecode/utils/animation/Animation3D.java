@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.animation;
 
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
+import net.minecraft.util.Vec3;
 import org.lwjgl.util.vector.Vector3f;
 
 public class Animation3D {
@@ -32,6 +33,12 @@ public class Animation3D {
         z += delta.z * smooth;
 
         stopWatch.reset();
+    }
+
+    public void setEndPos(Vec3 pos) {
+        endX = pos.xCoord;
+        endY = pos.yCoord;
+        endZ = pos.zCoord;
     }
 
     public Vector3f getDelta() {

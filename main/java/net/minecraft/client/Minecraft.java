@@ -713,8 +713,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     private void drawSplashScreen(TextureManager textureManagerInstance) {
         ScaledResolution scaledresolution = new ScaledResolution(this);
-        int i = scaledresolution.getScaleFactor();
-        Framebuffer framebuffer = new Framebuffer(scaledresolution.getScaledWidth() * i, scaledresolution.getScaledHeight() * i, true);
+        float i = scaledresolution.getScaleFactor();
+        Framebuffer framebuffer = new Framebuffer((int) (scaledresolution.getScaledWidth() * i), (int) (scaledresolution.getScaledHeight() * i), true);
         framebuffer.bindFramebuffer(false);
         GlStateManager.matrixMode(5889);
         GlStateManager.loadIdentity();
@@ -749,7 +749,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         framebuffer.unbindFramebuffer();
-        framebuffer.framebufferRender(scaledresolution.getScaledWidth() * i, scaledresolution.getScaledHeight() * i);
+        framebuffer.framebufferRender((int) (scaledresolution.getScaledWidth() * i), (int) (scaledresolution.getScaledHeight() * i));
         GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(516, 0.1F);
         this.updateDisplay();
