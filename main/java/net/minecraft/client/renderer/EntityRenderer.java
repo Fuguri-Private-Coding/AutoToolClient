@@ -475,9 +475,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             float f = 70.0F;
 
             if (useFOVSetting) {
-                f = this.mc.gameSettings.fovSetting;
+                FovModifier fovModifier = Client.INST.getModuleManager().getModule(FovModifier.class);
+                f = fovModifier.isToggled() ? fovModifier.fov.getValue() : this.mc.gameSettings.fovSetting;
 
-                if (Config.isDynamicFov()) {
+                if ((fovModifier.isToggled() && fovModifier.dynamicFov.isToggled()) || (Config.isDynamicFov() && !fovModifier.isToggled())) {
                     f *= this.fovModifierHandPrev + (this.fovModifierHand - this.fovModifierHandPrev) * partialTicks;
                 }
             }

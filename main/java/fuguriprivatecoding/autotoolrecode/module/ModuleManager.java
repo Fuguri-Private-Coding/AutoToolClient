@@ -12,7 +12,6 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.legit.*;
 import lombok.Getter;
-import net.optifine.entity.model.anim.ModelUpdater;
 
 import java.util.List;
 
@@ -29,7 +28,9 @@ public class ModuleManager {
 		register(
 				new AutoSoup(),
 				new KillAura(),
+                new AutoWater(),
 				new BridgeAssist(),
+                new FovModifier(),
 				new Trajectory(),
 				new Hat(),
 				new Regen(),
@@ -100,7 +101,7 @@ public class ModuleManager {
 				new ModelTrainer(),
 				new KeepSprint(),
 				new AutoLeave(),
-				new KillEffects(),
+				new Effects(),
 				new GuiMove(),
 				new FindHoles(),
 				new ClientSettings(),

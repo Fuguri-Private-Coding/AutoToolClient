@@ -12,15 +12,22 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 
-@ModuleInfo(name = "KillEffects", category = Category.VISUAL, description = "Показывает еффекты и воспроизводит звук при убийстве противника.")
-public class KillEffects extends Module {
+@ModuleInfo(name = "Effects", category = Category.VISUAL, description = "Показывает еффекты и воспроизводит звук при убийстве противника.")
+public class Effects extends Module {
+
+    CheckBox attackEffect = new CheckBox("Attack Effect", this, true);
+
+    MultiMode attackEffects = new MultiMode("Attack Effects",this, () -> attackEffect.isToggled())
+            .addModes("Sharpness", "Critical")
+            ;
+
+    IntegerSetting attackMultiplier = new IntegerSetting("Attack Multiplier", this, attackEffect::isToggled, 1, 5, 2);
 
     CheckBox effect = new CheckBox("Effect", this);
 
@@ -47,7 +54,7 @@ public class KillEffects extends Module {
     Vec3 targetPos;
     int effectHandle;
 
-    public KillEffects() {
+    public Effects() {
         effectEmber = Loader.loadEffect("killEffects/Ember.efkefc", 0.2f);
         effectSacred = Loader.loadEffect("killEffects/Sacred.efkefc", 0.2f);
         effectLightning = Loader.loadEffect("killEffects/lightning/lightning.efkefc", 0.2f);
@@ -58,6 +65,21 @@ public class KillEffects extends Module {
         if (event instanceof AttackEvent e) {
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
             if (!rayCast.isFriend()) target = e.getHittingEntity();
+
+            if (e.getHittingEntity() instanceof EntityPlayer entityPlayer) {
+                if (attackEffect.isToggled()) {
+                    if (attackEffects.get("Sharpness")) {
+                        for (int i = 0; i < attackMultiplier.getValue(); i++) {
+                            mc.thePlayer.onEnchantmentCritical(entityPlayer);
+                        }
+                    }
+                    if (attackEffects.get("Critical")) {
+                        for (int i = 0; i < attackMultiplier.getValue(); i++) {
+                            mc.thePlayer.onCriticalHit(entityPlayer);
+                        }
+                    }
+                }
+            }
         }
         if (event instanceof TickEvent) {
             if (target != null) {
