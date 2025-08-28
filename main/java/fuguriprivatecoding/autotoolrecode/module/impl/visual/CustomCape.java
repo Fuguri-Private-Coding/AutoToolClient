@@ -40,13 +40,13 @@ public class CustomCape extends Module {
         }
 
         if (capeDirectory.listFiles() != null && Arrays.stream(capeDirectory.listFiles()).toList().isEmpty()) {
-            downloadCapesConfigs();
+            downloadCapes();
         }
 
         updateCape();
     }
 
-    private void downloadCapesConfigs() {
+    private void downloadCapes() {
         try {
             MessageChannel capesChannel = Client.INST.getIrc().getClientCapesChannel();
 
