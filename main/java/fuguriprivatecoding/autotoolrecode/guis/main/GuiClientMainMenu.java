@@ -24,7 +24,9 @@ public class GuiClientMainMenu extends GuiScreen {
     ResourceLocation exitLogo = new ResourceLocation("minecraft", "hackclient/mainmenu/exit.png");
 
     private InputStream avatarStream;
+    private InputStream bannerStream;
     private ResourceLocation avatarTexture;
+    private ResourceLocation bannerTexture;
 
     private boolean initialized = false;
 
@@ -62,8 +64,16 @@ public class GuiClientMainMenu extends GuiScreen {
         Color profileColor = ClientIRC.profile.getProfileColor() != null ? ClientIRC.profile.getProfileColor() : Color.black;
         Color serverRoleColor = ClientIRC.profile.getServerRoleColor() != null ? ClientIRC.profile.getServerRoleColor() : Color.black;
 
-        RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 101, sc.getScaledHeight() / 2f - 31, 202, 52, 1f, transpent, serverRoleColor, 2f);
-        RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 101, sc.getScaledHeight() / 2f - 31, 202, 52, 5f, transpent.getRGB(), serverRoleColor.getRGB(), profileColor.getRGB());
+        if (bannerTexture != null) {
+            RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 101, sc.getScaledHeight() / 2f - 31, 202, 52, 5f, transpent.getRGB(), serverRoleColor.getRGB(), profileColor.getRGB());
+            StencilUtils.renderStencil(
+                    () -> RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 100, sc.getScaledHeight() / 2f - 30, 200, 50, 1f, Color.BLACK),
+                    () -> ResourceUtils.drawDiscord(bannerTexture, (int) (sc.getScaledWidth() / 2f - 100), (int) (sc.getScaledHeight() / 2f - 30), 200, 50)
+            );
+        } else {
+            RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 101, sc.getScaledHeight() / 2f - 31, 202, 52, 1f, transpent, serverRoleColor, 2f);
+            RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 101, sc.getScaledHeight() / 2f - 31, 202, 52, 5f, transpent.getRGB(), serverRoleColor.getRGB(), profileColor.getRGB());
+        }
 
         if (avatarTexture != null) {
             StencilUtils.renderStencil(
@@ -71,6 +81,7 @@ public class GuiClientMainMenu extends GuiScreen {
                     () -> ResourceUtils.drawDiscord(avatarTexture, sc.getScaledWidth() / 2 - 95, sc.getScaledHeight() / 2 - 25, 40, 40)
             );
         }
+
         RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 95, sc.getScaledHeight() / 2f - 25, 40, 40, 20f, new Color(0,0,0,0).getRGB(), profileColor.getRGB(), serverRoleColor.getRGB());
         if (ClientIRC.profile.getUserName() != null) font.drawString(ClientIRC.profile.getUserName(), sc.getScaledWidth() / 2f - 45, sc.getScaledHeight() / 2f - 10f + 2, Color.WHITE, true);
     }
@@ -86,7 +97,15 @@ public class GuiClientMainMenu extends GuiScreen {
             avatarTexture = ResourceUtils.loadTextureFromStream(avatarStream, "discord_avatar");
         }
 
-        initialized = avatarTexture != null;
+        if (bannerStream == null && ClientIRC.profile.getBanner() != null) {
+            bannerStream = ClientIRC.profile.getBanner();
+        }
+
+        if (bannerStream != null && bannerTexture == null) {
+            bannerTexture = ResourceUtils.loadTextureFromStream(bannerStream, "discord_banner");
+        }
+
+        initialized = ClientIRC.profile.getAvatar() != null ? avatarTexture != null : ClientIRC.profile.getBanner() != null && bannerTexture != null;
     }
 
     @Override

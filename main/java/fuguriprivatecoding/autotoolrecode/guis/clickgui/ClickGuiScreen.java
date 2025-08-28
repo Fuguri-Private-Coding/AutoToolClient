@@ -237,7 +237,7 @@ public class ClickGuiScreen extends GuiScreen {
 		if (settingScroll) {
 			if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				int scrollValue = currentScroll / 120 * clientSettings.scroll.getValue();
-				settingsScroll -= clientSettings.invertScroll.isToggled() ? -scrollValue : scrollValue;
+				settingsScroll -= scrollValue;
 			}
 
 			float settingsVisibleHeight = sizeBackground.y - (2 + 2 + fontRendererObj.FONT_HEIGHT + 10 + 5);
@@ -250,7 +250,7 @@ public class ClickGuiScreen extends GuiScreen {
 		if (moduleScroll) {
 			if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				int scrollValue = currentScroll / 120 * clientSettings.scroll.getValue();
-				modulesScroll -= clientSettings.invertScroll.isToggled() ? -scrollValue : scrollValue;
+				modulesScroll -= scrollValue;
 			}
 
 			float moduleVisibleHeight = sizeBackground.y - 18;

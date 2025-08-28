@@ -14,14 +14,12 @@ public class ClientSettings extends Module {
 
     public FloatSetting toggleModuleVolume = new FloatSetting("ToggleModuleVolume", this, 0.1f, 1, 1, 0.1f) {};
     public FloatSetting backgroundRadius = new FloatSetting("BackgroundGuiRadius", this, 0.5f, 7, 7, 0.1f) {};
-    public CheckBox invertScroll = new CheckBox("InvertScroll", this, false);
-    public IntegerSetting scroll = new IntegerSetting("ScrollStep", this, 5, 50, 10);
+    public IntegerSetting scroll = new IntegerSetting("ScrollStep", this, -50, 50, 10);
 
     public static int getScroll() {
         ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
         int currentScroll = Mouse.getDWheel();
-        int scrollValue = currentScroll / 120 * clientSettings.scroll.getValue();
 
-        return clientSettings.invertScroll.isToggled() ? -scrollValue : scrollValue;
+        return currentScroll / 120 * clientSettings.scroll.getValue();
     }
 }

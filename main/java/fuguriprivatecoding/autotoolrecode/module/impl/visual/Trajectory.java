@@ -191,7 +191,7 @@ public class Trajectory extends Module {
                             fadeColor.getRed() / 255.0F,
                             fadeColor.getGreen() / 255.0F,
                             fadeColor.getBlue() / 255.0F,
-                            0.7F
+                            fadeColor.getAlpha() / 255f
                     );
                     GL11.glLineWidth(lineWidth.getValue() / 2.0F);
                     Tessellator tessellator = Tessellator.getInstance();
@@ -214,7 +214,7 @@ public class Trajectory extends Module {
                                 fadeColor.getRed() / 255.0F,
                                 fadeColor.getGreen() / 255.0F,
                                 fadeColor.getBlue() / 255.0F,
-                                0.3F
+                                fadeColor.getAlpha() / 255f
                         );
                         Vec3 hitVec = m.hitVec;
                         EnumFacing enumFacing1 = m.sideHit;

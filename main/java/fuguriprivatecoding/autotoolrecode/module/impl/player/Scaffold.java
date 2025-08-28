@@ -117,7 +117,7 @@ public class Scaffold extends Module {
         }
     };
 
-    FloatSetting stepPitchCorrection = new FloatSetting("Step Pitch Correction", this, godVisible, 0, 10, 0.8f, 0.01f);
+    FloatSetting stepPitchCorrection = new FloatSetting("Step Pitch Correction", this, godVisible, 0.3f, 10, 0.8f, 0.01f);
 
     Mode pitchSelection = new Mode("Pitch Selection", this)
             .addModes("Highest", "Nearest", "Lowest", "Mid")
