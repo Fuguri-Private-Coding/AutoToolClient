@@ -483,8 +483,11 @@ public class Scaffold extends Module {
 
     private RotationData findClosestRotation(List<RotationData> rotations) {
         rotations.sort(Comparator.comparingDouble(data -> {
-            Rot currentRotation = Rot.getServerRotation();
-            return MathHelper.wrapDegree(currentRotation.getYaw() - data.rotation.getYaw());
+            float yawDiff = Rot.getServerRotation().getYaw() - data.rotation.getYaw();
+//            float pitchDiff = Rot.getLastReported().getPitch() - data.rotation.getPitch();
+            double distanceDiff = DistanceUtils.getDistance(data.hitPos);
+
+            return MathHelper.wrapDegree(yawDiff) + distanceDiff;
         }));
 
         int topCandidates = Math.min(100, rotations.size());
