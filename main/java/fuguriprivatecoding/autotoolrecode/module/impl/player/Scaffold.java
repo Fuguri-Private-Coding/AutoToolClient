@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
@@ -269,12 +270,7 @@ public class Scaffold extends Module {
     }
 
     boolean getSafeValue() {
-        if (mc.thePlayer.hurtResistantTime > 10 && mc.thePlayer.hurtTime == 0) {
-            return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.2f, mc.thePlayer.posZ));
-        } else if (mc.thePlayer.hurtTime > 0) {
-            return true;
-        }
-        return jumpTicks > 12;
+        return mc.thePlayer.hurtResistantTime > 0 || jumpTicks > 12;
     }
 
     private void updateValues() {
@@ -311,7 +307,7 @@ public class Scaffold extends Module {
     }
 
     void legitPlace() {
-        MovingObjectPosition mouseOver = RayCastUtils.rayCast(4.5, 4.5, Rot.getServerRotation());
+        MovingObjectPosition mouseOver = RayCastUtils.rayCast(6, 4.5f, Rot.getServerRotation());
 
         if (mouse.sideHit == mouseOver.sideHit
                 && mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
@@ -416,7 +412,7 @@ public class Scaffold extends Module {
 
         float step = stepPitchCorrection.getValue();
         for (float i = minPitch; i < maxPitch; i += step) {
-            MovingObjectPosition mouses = RayCastUtils.rayCast(3, 4.5, new Rot(yaw, i));
+            MovingObjectPosition mouses = RayCastUtils.rayCast(4.5, 6, new Rot(yaw, i));
             if (mouses == null || mouses.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
                     || positionHashMap.containsValue(mouses)
                     || mouses.sideHit == EnumFacing.DOWN) continue;
@@ -453,12 +449,11 @@ public class Scaffold extends Module {
 
         for (float yaw = -180; yaw < 180; yaw += step) {
             float pitch = getPitch(yaw);
-            MovingObjectPosition hit = RayCastUtils.rayCast(3, 4.5, new Rot(yaw, pitch));
+            MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 6, new Rot(yaw, pitch));
 
             if (hit == null
                     || hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                    || hit.sideHit == EnumFacing.DOWN
-                    || hit.sideHit == EnumFacing.UP) {
+                    || hit.sideHit == EnumFacing.DOWN || hit.sideHit == EnumFacing.UP) {
                 continue;
             }
 
@@ -473,37 +468,22 @@ public class Scaffold extends Module {
             return lastRotation;
         }
 
-        RotationData closest = findClosestRotation(validRotations);
+        validRotations.sort(Comparator.comparingDouble(data -> MathHelper.wrapDegree(Rot.getServerRotation().getYaw() - data.rotation.getYaw()) + Rot.getServerRotation().getPitch() - data.rotation.getPitch()));
+
+        validRotations.sort(Comparator.comparingDouble(data -> {
+
+            return DistanceUtils.getDistance(data.hitPos);
+        }));
+
+        closest = validRotations.getFirst();
+
+
         lastRotation = closest.rotation;
         mouse = closest.mouse;
         return lastRotation;
     }
 
     RotationData closest;
-
-    private RotationData findClosestRotation(List<RotationData> rotations) {
-        rotations.sort(Comparator.comparingDouble(data -> {
-            float yawDiff = Rot.getServerRotation().getYaw() - data.rotation.getYaw();
-//            float pitchDiff = Rot.getLastReported().getPitch() - data.rotation.getPitch();
-            double distanceDiff = DistanceUtils.getDistance(data.hitPos);
-
-            return MathHelper.wrapDegree(yawDiff) + distanceDiff;
-        }));
-
-        int topCandidates = Math.min(100, rotations.size());
-        double minDistance = Double.MAX_VALUE;
-
-        for (int i = 0; i < topCandidates; i++) {
-            RotationData data = rotations.get(i);
-            double dist = DistanceUtils.getDistance(data.hitPos);
-            if (dist < minDistance) {
-                minDistance = dist;
-                closest = data;
-            }
-        }
-
-        return closest;
-    }
 
     public int getBlockCount() {
         int blockCount = 0;
