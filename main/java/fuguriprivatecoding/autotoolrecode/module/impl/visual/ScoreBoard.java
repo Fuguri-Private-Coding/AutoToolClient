@@ -94,7 +94,6 @@ public class ScoreBoard extends Module {
                             () -> {
                                 RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), fadeColor);
                                 RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, fadeColor);
-                                RoundedUtils.drawRect(pos.x, pos.y + height - 12, finalWidth, 12, 0, fadeColor);
 
                                 mc.fontRendererObj.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - mc.fontRendererObj.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f, -1);
 
@@ -111,13 +110,12 @@ public class ScoreBoard extends Module {
                     }
                     RoundedUtils.drawRect(pos.x, pos.y, width, height, 0, fadeColor);
                     RoundedUtils.drawRect(pos.x, pos.y, width, 12, 0, fadeColor);
-                    RoundedUtils.drawRect(pos.x, pos.y + height - 12, width, 12, 0, fadeColor);
 
                     mc.fontRendererObj.drawString(objective.getDisplayName(), (int) ((pos.x + width / 2f) - mc.fontRendererObj.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f, -1);
                 }
                 int j = 0;
 
-                for(Score score1 : collection) {
+                for (Score score1 : collection) {
                     ++j;
                     ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score1.getPlayerName());
                     String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score1.getPlayerName());
