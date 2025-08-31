@@ -13,13 +13,21 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public class RenderUtils implements Imports {
+
+    public static final FloatBuffer MODEL_MATRIX_BUFFER = BufferUtils.createFloatBuffer(16);
+    public static final FloatBuffer PROJECTION_MATRIX_BUFFER = BufferUtils.createFloatBuffer(16);
+    public static final IntBuffer VIEWPORT_BUFFER = BufferUtils.createIntBuffer(16);
+    public static final FloatBuffer SCREEN_COORDS_BUFFER = BufferUtils.createFloatBuffer(3);
 
     public static void start3D() {
         GlStateManager.disableTexture2D();

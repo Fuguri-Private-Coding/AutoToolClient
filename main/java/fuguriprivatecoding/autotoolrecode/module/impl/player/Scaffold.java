@@ -468,12 +468,20 @@ public class Scaffold extends Module {
             return lastRotation;
         }
 
-        validRotations.sort(Comparator.comparingDouble(data -> MathHelper.wrapDegree(Rot.getServerRotation().getYaw() - data.rotation.getYaw()) + Rot.getServerRotation().getPitch() - data.rotation.getPitch()));
+        validRotations.sort(Comparator.comparingDouble(data -> {
+
+            return DistanceUtils.getDistance(data.hitPos);
+        }));
+
+        validRotations.sort(Comparator.comparingDouble(data -> MathHelper.wrapDegree(Rot.getServerRotation().getYaw() - data.rotation.getYaw())));
+
 
         validRotations.sort(Comparator.comparingDouble(data -> {
 
             return DistanceUtils.getDistance(data.hitPos);
         }));
+
+
 
         closest = validRotations.getFirst();
 

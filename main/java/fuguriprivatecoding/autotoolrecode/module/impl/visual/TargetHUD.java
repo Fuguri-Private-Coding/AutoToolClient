@@ -3,24 +3,26 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.managers.CombatManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Animation;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Animation3D;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.projection.Convertors;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import net.dv8tion.jda.api.entities.Entitlement;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.Vec3;
-import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.*;
 
@@ -29,198 +31,151 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "TargetHUD", category = Category.VISUAL, description = "Показывает информацию о противнике.")
 public class TargetHUD extends Module {
 
-    private final MultiMode render = new MultiMode("Render", this)
-            .addModes("Health","Name","Background","Head");
+    MultiMode render = new MultiMode("Render",this)
+            .addModes("Health", "Background", "Head", "Name");
 
-    FloatSetting yOffset = new FloatSetting("Y-Offset", this, -5f,5f,0f,0.1f);
+    CheckBox follow = new CheckBox("Follow", this);
 
-    public final ColorSetting textColor = new ColorSetting("Text Color", this);
-    CheckBox shadow = new CheckBox("Text Shadow", this, () -> render.get("Name"), true);
+    IntegerSetting xPos = new IntegerSetting("X-Pos", this, () -> !follow.isToggled(),0, 100, 0);
+    IntegerSetting yPos = new IntegerSetting("Y-Pos", this, () -> !follow.isToggled(),0, 100, 0);
 
-    public final ColorSetting bgColor = new ColorSetting("Background Color", this);
+    FloatSetting width = new FloatSetting("Width", this, 0f,200,10f,0.1f);
+    FloatSetting height = new FloatSetting("Height", this, 0f,200f,10f,0.1f);
 
-    public final ColorSetting healthColor = new ColorSetting("Health Color", this);
-    public final ColorSetting healthBackColor = new ColorSetting("Health Back Color", this);
+    public final ColorSetting textColor = new ColorSetting("Text Color", this, () -> render.get("Name"));
+    public final ColorSetting bgColor = new ColorSetting("Background Color", this, () -> render.get("Background"));
 
-    CheckBox headRound = new CheckBox("Rounded Head", this, () -> render.get("Head"), true);
-    FloatSetting headRoundFactor = new FloatSetting("Head Round Factor", this, () -> render.get("Head"), 0f,50f,10f,0.1f);
+    FloatSetting bgRadius = new FloatSetting("Background Radius", this, 0f,200f,10f,0.1f);
+
+    public final ColorSetting healthColor = new ColorSetting("Health Color", this, () -> render.get("Health"));
+
+    FloatSetting headRadius = new FloatSetting("Head Radius", this, () -> render.get("Head"), 0f,50f,10f,0.1f);
 
     private final FloatSetting scale = new FloatSetting("Scale", this, 0.5f, 3f, 1.5f, 0.05f);
-    private final FloatSetting smoothPositionSpeed = new FloatSetting("SmoothPositionSpeed", this, 1f, 20f, 1.5f, 0.05f);
 
-    private final Animation2D healthAnimation = new Animation2D();
-    private Glow shadows;
+    CheckBox glow = new CheckBox("Glow", this);
+    CheckBox blur = new CheckBox("Blur", this);
 
-    Color textNameFadeColor;
-    Color backgroundFadeColor;
-    Color healthFadeColor;
-    Color healthBackFadeColor;
+    public final ColorSetting bgShadowColor = new ColorSetting("Background Glow Color", this, () -> glow.isToggled());
 
-    Animation scaleAnim = new Animation();
-    Animation3D posAnim = new Animation3D();
+    EntityLivingBase target;
 
-    private static final float TEXTURE_WIDTH = 400f;
-    private static final float TEXTURE_HEIGHT = 150f;
-    private static final float HEAD_SIZE = 125f;
-    private static final float PADDING = 20f;
-    private static final float HEALTH_BAR_HEIGHT = 50f;
-    private static final float CORNER_RADIUS = 20f;
-    private static final float TEXT_SCALE = 3f;
+    EasingAnimation currentScale = new EasingAnimation();
+    EasingAnimation healthAnimation = new EasingAnimation();
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
-        if (event instanceof Render3DEvent && mc.currentScreen == null) {
-            EntityLivingBase target = Client.INST.getCombatManager().getTarget();
+        if (mc.currentScreen != null) return;
+        if (event instanceof Render2DEvent e) {
+            CombatManager combatManager = Client.INST.getCombatManager();
+            EntityLivingBase currentTarget = combatManager.getTarget();
 
-            if (target == null || target.getName() == null || target.getSkin() == null) {
-                return;
+            if (target == null && currentTarget != null) {
+                target = currentTarget;
+                currentScale.setEnd(1);
+            } else if (target != null) {
+                if (currentTarget == null) {
+                    currentScale.setEnd(0);
+                    if (!currentScale.isAnimating()) target = null;
+                } else {
+                    target = currentTarget;
+                    currentScale.setEnd(1f);
+                }
             }
 
-            updateColors();
+            if (target.getSkin() == null || target.getName() == null || target == null) return;
 
-            Vec3 pos = calculateEntityPosition(target);
+            currentScale.update(5f, Easing.LINEAR);
 
-            posAnim.setEndPos(pos);
-            posAnim.update(smoothPositionSpeed.getValue());
+            if (follow.isToggled()) {
+                EntityRenderer entityRenderer = mc.entityRenderer;
 
-            setupRendering(new Vec3(posAnim.x, posAnim.y, posAnim.z), target, target.height, yOffset.getValue());
+                entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
+                float[] pos = Convertors.convert2D(
+                        (float) (target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX),
+                        (float) (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY) + target.height / 2f,
+                        (float) (target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ), mc.gameSettings.guiScale);
+                entityRenderer.setupOverlayRendering();
 
-            try {
-                renderHUD(target);
-            } finally {
-                cleanupRendering();
+                if (pos == null) return;
+
+                glScaled(this.scale.getValue(), this.scale.getValue(), 1);
+
+                float currentWidth = width.getValue() * currentScale.getValue();
+                float currentHeight = height.getValue() * currentScale.getValue();
+
+                float animX = (width.getValue() / 2f) * currentScale.getValue();
+                float animY = (height.getValue() / 2f) * currentScale.getValue();
+
+                float posX = pos[0] - animX;
+                float posY = pos[1] - animY;
+
+                ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+
+                renderHUD(posX, posY, currentWidth, currentHeight, bgRadius.getValue() * currentScale.getValue(), font, target);
+            } else {
+                double scale = this.scale.getValue() * currentScale.getValue();
+                glScaled(scale, scale, 1);
+                float posX = (e.getSc().getScaledWidth() / 100f) * xPos.getValue() / currentScale.getValue() - width.getValue() / 2f;
+                float posY = (e.getSc().getScaledHeight() / 100f) * yPos.getValue() / currentScale.getValue() - height.getValue() / 2f;
+
+                ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+
+                renderHUD(posX, posY,  width.getValue(), height.getValue(), bgRadius.getValue(), font, target);
             }
+            glScaled(1f,1f,1f);
         }
     }
 
-    private void updateColors() {
-        if (render.get("Health")) {
-            healthFadeColor = healthColor.isFade()
-                    ? ColorUtils.fadeColor(
-                    healthColor.getColor(), healthColor.getFadeColor(),
-                    healthColor.getSpeed()) : healthColor.getColor();
+    private void renderHUD(float posX, float posY, float width, float height, float radius, ClientFontRenderer font, EntityLivingBase target) {
+        StencilUtils.renderStencil(
+        () -> RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius,Color.BLACK, Color.BLACK, bgColor.getSpeed()),
+            () -> {
+                if (render.get("Background")) {
+                    Color bgFadeColor = ColorUtils.fadeColor(bgColor.getColor(), bgColor.getFadeColor(), textColor.getSpeed());
 
-            healthBackFadeColor = healthBackColor.isFade()
-                    ? ColorUtils.fadeColor(
-                    healthBackColor.getColor(), healthBackColor.getFadeColor(),
-                    healthBackColor.getSpeed()) : healthBackColor.getColor();
-        }
+                    RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius,bgFadeColor, bgFadeColor, bgColor.getSpeed());
+                }
 
-        if (render.get("Background")) {
-            backgroundFadeColor = bgColor.isFade()
-                    ? ColorUtils.fadeColor(
-                    bgColor.getColor(), bgColor.getFadeColor(),
-                    bgColor.getSpeed()) : bgColor.getColor();
-        }
+                if (render.get("Name")) {
+                    font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, ColorUtils.fadeColor(textColor.getColor(), textColor.getFadeColor(), textColor.getSpeed()));
+                }
 
-        if (render.get("Name")) {
-            textNameFadeColor = textColor.isFade()
-                    ? ColorUtils.fadeColor(
-                    textColor.getColor(), textColor.getFadeColor(),
-                    textColor.getSpeed()) : textColor.getColor();
-        }
-    }
+                if (render.get("Health")) {
+                    float maxHealth = target.getMaxHealth();
+                    float currentHealth = target.getHealth();
+                    float healthPercentage = currentHealth / maxHealth;
+                    float maxHealthBarWidth = width - height - 5;
+                    float targetHealthWidth = maxHealthBarWidth * healthPercentage;
 
-    private Vec3 calculateEntityPosition(EntityLivingBase target) {
-        return new Vec3(
-                target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX,
-                target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY,
-                target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ
-        );
-    }
+                    if (healthAnimation.getEnd() != targetHealthWidth) {
+                        healthAnimation.setEnd(targetHealthWidth);
+                    }
+                    healthAnimation.update(5, Easing.LINEAR);
 
-    private void setupRendering(Vec3 pos, EntityLivingBase entity, float height, float offset) {
-        glPushMatrix();
-        glTranslatef((float)pos.xCoord, (float)pos.yCoord + height / 2f + offset, (float)pos.zCoord);
-        glNormal3f(0.0f, 1.0f, 0.0f);
-        glRotatef(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f);
-        glRotatef(mc.renderManager.playerViewX, 1.0f, 0.0f, 0.0f);
+                    float animatedHealthWidth = healthAnimation.getValue();
+                    RenderUtils.drawMixedRoundedRect(posX + height, posY + height / 2f + 2, animatedHealthWidth, 10, 5, healthColor.getColor(), healthColor.getFadeColor(), 180,0,0,90, healthColor.getSpeed());
+                }
 
-        float distance = mc.thePlayer.getDistanceToEntity(entity);
-        float scale = Math.min(distance, 3) * Math.max(distance, 3) ;
-        scale /= 1000f;
-
-        scaleAnim.endValue = scale * this.scale.getValue();
-        scaleAnim.update(10);
-
-        double scaleFactor = scaleAnim.value;
-        glScaled(-scaleFactor, -scaleFactor, scaleFactor);
-
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
-
-    private void renderHUD(EntityLivingBase target) {
-        float hurtTime = target.hurtTime / 10f;
-        float maxHealth = target.getMaxHealth();
-        float currentHealth = target.getHealth();
-        float healthPercentage = currentHealth / maxHealth;
-
-        if (shadows != null && shadows.isToggled() && shadows.module.get("TargetHUD") && render.get("Background")) {
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(-TEXTURE_WIDTH / 2f, -TEXTURE_HEIGHT / 2f, TEXTURE_WIDTH, TEXTURE_HEIGHT, CORNER_RADIUS, Color.WHITE));
-        }
-
-        if (render.get("Background")) RoundedUtils.drawRect(-TEXTURE_WIDTH / 2f, -TEXTURE_HEIGHT / 2f, TEXTURE_WIDTH, TEXTURE_HEIGHT, CORNER_RADIUS, backgroundFadeColor);
-
-        if (target instanceof EntityPlayer && render.get("Head")) renderPlayerHead((EntityPlayer)target, hurtTime, headRoundFactor.getValue(), headRound.isToggled());
-        if (render.get("Name")) renderPlayerName(target);
-
-        if (render.get("Health")) {
-            updateHealthAnimation(healthPercentage);
-            renderHealthBar();
-        }
-    }
-
-    private void updateHealthAnimation(float healthPercentage) {
-        float maxHealthBarWidth = TEXTURE_WIDTH - 150f - 7.5f * 2;
-        float targetHealthWidth = maxHealthBarWidth * healthPercentage;
-
-        if (healthAnimation.endX != targetHealthWidth) {
-            healthAnimation.endX = targetHealthWidth;
-            healthAnimation.reset();
-        }
-        healthAnimation.update(20f);
-    }
-
-    private void renderPlayerHead(EntityPlayer player, float hurtTime, float roundFactor, boolean round) {
-        if (roundFactor > 0 && round) {
-            StencilUtils.renderStencil(
-                    () -> RoundedUtils.drawRect((-TEXTURE_WIDTH / 2f + PADDING), (-TEXTURE_HEIGHT / 2f + PADDING), HEAD_SIZE, (TEXTURE_HEIGHT - 2 * PADDING), roundFactor, Color.white),
+                if (render.get("Head") && target instanceof EntityPlayer) {
+                    StencilUtils.renderStencil(
+                    () ->  RenderUtils.drawMixedRoundedRect((int) (posX + 5), (int) (posY + 5), (int) (height - 10), (int) (height - 10), headRadius.getValue() * currentScale.getValue(),Color.WHITE, Color.WHITE, bgColor.getSpeed()),
                     () -> {
+                        int hurtTime = target.hurtTime;
+
                         glColor4f(1f, 1f - hurtTime, 1f - hurtTime, 1f);
-                        RenderUtils.quickDrawHead(player.getSkin(), (int) (-TEXTURE_WIDTH / 2f + PADDING), (int) (-TEXTURE_HEIGHT / 2f + PADDING), (int) HEAD_SIZE, (int) (TEXTURE_HEIGHT - 2 * PADDING));
+                        RenderUtils.quickDrawHead(target.getSkin(), (int) (posX + 5), (int) (posY + 5), (int) (height - 10), (int) (height - 10));
                     });
-        } else {
-            glColor4f(1f, 1f - hurtTime, 1f - hurtTime, 1f);
-            RenderUtils.quickDrawHead(player.getSkin(), (int) (-TEXTURE_WIDTH / 2f + PADDING), (int) (-TEXTURE_HEIGHT / 2f + PADDING), (int) HEAD_SIZE, (int) (TEXTURE_HEIGHT - 2 * PADDING));
+                }
+            }
+        );
+
+        if (glow.isToggled()) {
+            BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius,bgShadowColor.getColor(), bgShadowColor.getFadeColor(), bgShadowColor.getSpeed()));
         }
-    }
 
-    private void renderPlayerName(EntityLivingBase target) {
-        float textYOffset = -TEXTURE_HEIGHT / 2f + 30f;
-        glPushMatrix();
-        glScalef(TEXT_SCALE,TEXT_SCALE,TEXT_SCALE);
-        mc.fontRendererObj.drawString(target.getName(), (int)((-TEXTURE_WIDTH / 2f + 135f + PADDING) + 200 / TEXT_SCALE - mc.fontRendererObj.getStringWidth(target.getName()) / 2f), (int)(textYOffset / TEXT_SCALE), textNameFadeColor.getRGB(), shadow.isToggled());
-        glPopMatrix();
-    }
-
-    private void renderHealthBar() {
-        float maxHealthBarWidth = TEXTURE_WIDTH - 150f - 7.5f * 2;
-        float animatedHealthWidth = healthAnimation.x;
-
-        Color healthColor = healthFadeColor;
-        Color healthBackground = healthBackFadeColor;
-
-        RoundedUtils.drawRect(-TEXTURE_WIDTH / 2f + 150f + 5f, -TEXTURE_HEIGHT / 2f + TEXTURE_HEIGHT / 2f, maxHealthBarWidth, HEALTH_BAR_HEIGHT, CORNER_RADIUS, healthBackground);
-        RoundedUtils.drawRect(-TEXTURE_WIDTH / 2f + 150f + 5f, -TEXTURE_HEIGHT / 2f + TEXTURE_HEIGHT / 2f, animatedHealthWidth, HEALTH_BAR_HEIGHT, CORNER_RADIUS, healthColor);
-    }
-
-    private void cleanupRendering() {
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
-        glPopMatrix();
-        ColorUtils.resetColor();
+        if (blur.isToggled()) {
+            GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius, Color.BLACK, Color.BLACK, bgColor.getSpeed()));
+        }
     }
 }

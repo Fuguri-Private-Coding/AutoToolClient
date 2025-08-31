@@ -215,9 +215,17 @@ public class RenderManager
 
     public void setRenderPosition(double renderPosXIn, double renderPosYIn, double renderPosZIn)
     {
-        this.renderPosX = renderPosXIn;
-        this.renderPosY = renderPosYIn;
-        this.renderPosZ = renderPosZIn;
+        renderPosX = renderPosXIn;
+        renderPosY = renderPosYIn;
+        renderPosZ = renderPosZIn;
+    }
+
+    public Vec3 getRenderPosition() {
+        return new Vec3(renderPosX, renderPosY, renderPosZ);
+    }
+
+    public Vec3 getPlayerViewVector() {
+        return new Vec3(viewerPosX, viewerPosY, viewerPosZ);
     }
 
     public <T extends Entity> Render<T> getEntityClassRenderObject(Class <? extends Entity > entityClass)

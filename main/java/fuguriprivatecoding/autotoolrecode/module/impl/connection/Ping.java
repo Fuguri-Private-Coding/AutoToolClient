@@ -49,6 +49,26 @@ public class Ping extends Module {
         }
     };
 
+    Mode delayIncreaseType = new Mode("DelayIncreaseType", this)
+            .addModes("Smooth", "Instant").setMode("Instant");
+
+    BooleanSupplier smoothVisible = () -> delayIncreaseType.getMode().equalsIgnoreCase("Smooth");
+
+    IntegerSetting minAddingDelayPerTick = new IntegerSetting("MinAddingDelayPerTick", this, smoothVisible, 1,1000,100) {
+        @Override
+        public int getValue() {
+            if (maxAddingDelayPerTick.value < value) { value = maxAddingDelayPerTick.value; }
+            return super.getValue();
+        }
+    };
+    IntegerSetting maxAddingDelayPerTick = new IntegerSetting("MaxAddingDelayPerTick", this, smoothVisible, 1,1000,100) {
+        @Override
+        public int getValue() {
+            if (minAddingDelayPerTick.value > value) { value = minAddingDelayPerTick.value; }
+            return super.getValue();
+        }
+    };
+
     private final MultiMode actions = new MultiMode("ActionsToReset", this)
             .add("Attack", true)
             .add("Damage")
@@ -181,6 +201,8 @@ public class Ping extends Module {
                 if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) reset(damageTimeCondition.getValue());
                 if (actions.get("UsingItem") && mc.thePlayer.isUsingItem()) reset(usingItemTimeCondition.getValue());
 
+                if (currentTime - lastResetTime > delayBeforeNextLag && delayIncreaseType.getMode().equalsIgnoreCase("Smooth") && delay != maxDelay.getValue()) updateDelay(RandomUtils.nextInt(minAddingDelayPerTick.getValue(), maxAddingDelayPerTick.getValue()));
+
                 lastPos = currentPos;
                 if (posBuffer.isEmpty()) {
                     currentPos = mc.thePlayer.getPositionVector();
@@ -263,7 +285,15 @@ public class Ping extends Module {
         resetAllPackets();
         lastResetTime = System.currentTimeMillis();
         delayBeforeNextLag = time;
-        delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
+        if (delayIncreaseType.getMode().equalsIgnoreCase("Smooth")) delay = 0;
+        if (delayIncreaseType.getMode().equalsIgnoreCase("Instant")) delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
+    }
+
+    private void updateDelay(int addDelay) {
+        delay += addDelay;
+        if (delay > maxDelay.getValue()) {
+            delay = maxDelay.getValue();
+        }
     }
 
     private record PacketWithTime(Packet packet, long time) {}
