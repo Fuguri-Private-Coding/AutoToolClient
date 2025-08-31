@@ -123,7 +123,7 @@ public class RenderUtils implements Imports {
         GL11.glColor4f((float) (n >> 16 & 0xFF) / 255.0f, (float) (n >> 8 & 0xFF) / 255.0f, (float) (n & 0xFF) / 255.0f, (float) (n >> 24 & 0xFF) / 255.0f);
     }
 
-    public static void quickDrawHead(ResourceLocation skin, int x, int y, int width, int height) {
+    public static void quickDrawHead(ResourceLocation skin, float x, float y, float width, float height) {
         mc.getTextureManager().bindTexture(skin);
         Gui.drawScaledCustomSizeModalRect(x, y, 8f, 8f, 8, 8, width, height, 64f, 64f);
         Gui.drawScaledCustomSizeModalRect(x, y, 40f, 8f, 8, 8, width, height, 64f, 64f);

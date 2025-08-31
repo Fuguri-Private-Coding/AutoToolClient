@@ -412,7 +412,7 @@ public class Scaffold extends Module {
 
         float step = stepPitchCorrection.getValue();
         for (float i = minPitch; i < maxPitch; i += step) {
-            MovingObjectPosition mouses = RayCastUtils.rayCast(4.5, 6, new Rot(yaw, i));
+            MovingObjectPosition mouses = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, i));
             if (mouses == null || mouses.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
                     || positionHashMap.containsValue(mouses)
                     || mouses.sideHit == EnumFacing.DOWN) continue;
@@ -449,7 +449,7 @@ public class Scaffold extends Module {
 
         for (float yaw = -180; yaw < 180; yaw += step) {
             float pitch = getPitch(yaw);
-            MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 6, new Rot(yaw, pitch));
+            MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, pitch));
 
             if (hit == null
                     || hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK

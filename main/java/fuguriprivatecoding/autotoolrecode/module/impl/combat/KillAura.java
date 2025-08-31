@@ -30,8 +30,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import org.joml.Random;
+
 import java.io.File;
-import java.util.Random;
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, description = "Автоматически целится и бьет противника.")
@@ -209,6 +210,13 @@ public class KillAura extends Module {
 
                 switch (smoothMode.getMode()) {
                     case "Linear" -> {
+                        Rot rot = new Rot(
+                                needRotation.getYaw() - RandomUtils.nextFloat(-2, 2),
+                                needRotation.getPitch() - RandomUtils.nextFloat(-2, 2)
+                        );
+
+                        delta = RotUtils.getDelta(lr, rot);
+
                         delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
                         delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
                     }

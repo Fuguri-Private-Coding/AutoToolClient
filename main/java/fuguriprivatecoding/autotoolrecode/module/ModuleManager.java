@@ -109,7 +109,9 @@ public class ModuleManager {
 				new IRC(),
 				new Ambience(),
 				new TargetHUD(),
-				new Scaffold()
+				new Scaffold(),
+                new HighJump(),
+                new LongJump()
 		);
 	}
 

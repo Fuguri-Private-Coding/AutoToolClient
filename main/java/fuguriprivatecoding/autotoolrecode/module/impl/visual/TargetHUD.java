@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.managers.CombatManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -17,9 +18,7 @@ import fuguriprivatecoding.autotoolrecode.utils.projection.Convertors;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
-import net.dv8tion.jda.api.entities.Entitlement;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,11 +35,10 @@ public class TargetHUD extends Module {
 
     CheckBox follow = new CheckBox("Follow", this);
 
+    FloatSetting yOffset = new FloatSetting("Y-Offset", this, follow::isToggled, -2,2,0,0.1f);
+
     IntegerSetting xPos = new IntegerSetting("X-Pos", this, () -> !follow.isToggled(),0, 100, 0);
     IntegerSetting yPos = new IntegerSetting("Y-Pos", this, () -> !follow.isToggled(),0, 100, 0);
-
-    FloatSetting width = new FloatSetting("Width", this, 0f,200,10f,0.1f);
-    FloatSetting height = new FloatSetting("Height", this, 0f,200f,10f,0.1f);
 
     public final ColorSetting textColor = new ColorSetting("Text Color", this, () -> render.get("Name"));
     public final ColorSetting bgColor = new ColorSetting("Background Color", this, () -> render.get("Background"));
@@ -66,7 +64,8 @@ public class TargetHUD extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (mc.currentScreen != null) return;
-        if (event instanceof Render2DEvent e) {
+
+        if (event instanceof TickEvent) {
             CombatManager combatManager = Client.INST.getCombatManager();
             EntityLivingBase currentTarget = combatManager.getTarget();
 
@@ -82,10 +81,15 @@ public class TargetHUD extends Module {
                     currentScale.setEnd(1f);
                 }
             }
+        }
 
-            if (target.getSkin() == null || target.getName() == null || target == null) return;
+        if (target == null || target.getSkin() == null || target.getName() == null) return;
 
+        if (event instanceof Render2DEvent e) {
             currentScale.update(5f, Easing.LINEAR);
+
+            float width = 120;
+            float height = 40;
 
             if (follow.isToggled()) {
                 EntityRenderer entityRenderer = mc.entityRenderer;
@@ -93,37 +97,41 @@ public class TargetHUD extends Module {
                 entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
                 float[] pos = Convertors.convert2D(
                         (float) (target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX),
-                        (float) (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY) + target.height / 2f,
+                     (float) (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY) + target.height / 2f + yOffset.getValue(),
                         (float) (target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ), mc.gameSettings.guiScale);
                 entityRenderer.setupOverlayRendering();
 
-                if (pos == null) return;
+                if (pos == null || pos[2] > 1) return;
 
-                glScaled(this.scale.getValue(), this.scale.getValue(), 1);
+                pos[0] /= scale.getValue();
+                pos[1] /= scale.getValue();
 
-                float currentWidth = width.getValue() * currentScale.getValue();
-                float currentHeight = height.getValue() * currentScale.getValue();
+                float currentWidth = width * currentScale.getValue();
+                float currentHeight = height * currentScale.getValue();
 
-                float animX = (width.getValue() / 2f) * currentScale.getValue();
-                float animY = (height.getValue() / 2f) * currentScale.getValue();
+                float animX = (width / 2f) * currentScale.getValue();
+                float animY = (height / 2f) * currentScale.getValue();
 
                 float posX = pos[0] - animX;
                 float posY = pos[1] - animY;
 
                 ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
 
+                glScaled(this.scale.getValue(), this.scale.getValue(), 1);
                 renderHUD(posX, posY, currentWidth, currentHeight, bgRadius.getValue() * currentScale.getValue(), font, target);
+                glScaled(1f / this.scale.getValue(),1f / this.scale.getValue(),1f);
             } else {
-                double scale = this.scale.getValue() * currentScale.getValue();
-                glScaled(scale, scale, 1);
-                float posX = (e.getSc().getScaledWidth() / 100f) * xPos.getValue() / currentScale.getValue() - width.getValue() / 2f;
-                float posY = (e.getSc().getScaledHeight() / 100f) * yPos.getValue() / currentScale.getValue() - height.getValue() / 2f;
+                float posX = (e.getSc().getScaledWidth() / 100f) * xPos.getValue() / currentScale.getValue() - width / 2f;
+                float posY = (e.getSc().getScaledHeight() / 100f) * yPos.getValue() / currentScale.getValue() - height / 2f;
 
                 ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
 
-                renderHUD(posX, posY,  width.getValue(), height.getValue(), bgRadius.getValue(), font, target);
+                double scale = this.scale.getValue() * currentScale.getValue();
+
+                glScaled(scale, scale, 1f);
+                renderHUD(posX, posY,  width, height, bgRadius.getValue(), font, target);
+                glScaled(1f / scale,1f / scale,1f);
             }
-            glScaled(1f,1f,1f);
         }
     }
 
@@ -154,17 +162,18 @@ public class TargetHUD extends Module {
                     healthAnimation.update(5, Easing.LINEAR);
 
                     float animatedHealthWidth = healthAnimation.getValue();
+                    RenderUtils.drawMixedRoundedRect(posX + height, posY + height / 2f + 2, maxHealthBarWidth, 10, 5, bgColor.getColor(),bgColor.getColor(), 180,0,0,90, bgColor.getSpeed());
                     RenderUtils.drawMixedRoundedRect(posX + height, posY + height / 2f + 2, animatedHealthWidth, 10, 5, healthColor.getColor(), healthColor.getFadeColor(), 180,0,0,90, healthColor.getSpeed());
                 }
 
                 if (render.get("Head") && target instanceof EntityPlayer) {
-                    StencilUtils.renderStencil(
-                    () ->  RenderUtils.drawMixedRoundedRect((int) (posX + 5), (int) (posY + 5), (int) (height - 10), (int) (height - 10), headRadius.getValue() * currentScale.getValue(),Color.WHITE, Color.WHITE, bgColor.getSpeed()),
-                    () -> {
-                        int hurtTime = target.hurtTime;
+                    int hurtTime = target.hurtTime / 2;
 
+                    StencilUtils.renderStencil(
+                    () ->  RenderUtils.drawMixedRoundedRect(posX + 5, posY + 5, (height - 10 - hurtTime) * currentScale.getValue(), (height - 10 - hurtTime) * currentScale.getValue(), headRadius.getValue() * currentScale.getValue(),Color.WHITE, Color.WHITE, bgColor.getSpeed()),
+                    () -> {
                         glColor4f(1f, 1f - hurtTime, 1f - hurtTime, 1f);
-                        RenderUtils.quickDrawHead(target.getSkin(), (int) (posX + 5), (int) (posY + 5), (int) (height - 10), (int) (height - 10));
+                        RenderUtils.quickDrawHead(target.getSkin(), posX + 5 + hurtTime / 2f, posY + 5 + hurtTime / 2f, (height - 10 - hurtTime) * currentScale.getValue(), (height - 10 - hurtTime) * currentScale.getValue());
                     });
                 }
             }

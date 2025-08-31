@@ -3,24 +3,13 @@ package fuguriprivatecoding.autotoolrecode.module.impl.move;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.UpdateEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
-import net.minecraft.item.*;
-import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 
-@ModuleInfo(name = "NoSlow", category = Category.MOVE, description = "Позволяет вам ходить без замедления при использовании предмета.")
-public class NoSlow extends Module {
-
-    Mode mode = new Mode("Mode", this)
-            .addModes("Intave")
-            .setMode("Intave")
-            ;
+@ModuleInfo(name = "HighJump", category = Category.MOVE)
+public class HighJump extends Module {
 
     int stage = 0;
 
@@ -31,6 +20,14 @@ public class NoSlow extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-
+        if (event instanceof MotionEvent e) {
+            if(stage == 0) e.setOnGround(false);
+        }
+        if (event instanceof UpdateEvent) {
+            if(stage == 0) {
+                mc.thePlayer.motionY = 1;
+                stage++;
+            }
+        }
     }
 }
