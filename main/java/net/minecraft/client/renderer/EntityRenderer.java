@@ -639,7 +639,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
                 GlStateManager.rotate(entity.rotationPitch - f2, 1.0F, 0.0F, 0.0F);
                 GlStateManager.rotate(entity.rotationYaw - f1, 0.0F, 1.0F, 0.0F);
-                GlStateManager.translate(customCamera.isToggled() ? -customCamera.translate.getValue() : 0f, 0F, (float) (-d3));
+                GlStateManager.translate(customCamera.isToggled() && customCamera.gta5.isToggled() ? -customCamera.translate.getValue() : 0f, 0F, (float) (-d3));
                 GlStateManager.rotate(f1 - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
                 GlStateManager.rotate(f2 - entity.rotationPitch, 1.0F, 0.0F, 0.0F);
             }
