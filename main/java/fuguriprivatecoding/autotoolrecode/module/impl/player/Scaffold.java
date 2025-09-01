@@ -175,6 +175,7 @@ public class Scaffold extends Module {
             Blocks.wall_banner, Blocks.deadbush, Blocks.slime_block, Blocks.acacia_fence_gate, Blocks.birch_fence_gate, Blocks.dark_oak_fence_gate,
             Blocks.jungle_fence_gate, Blocks.spruce_fence_gate, Blocks.oak_fence_gate);
 
+
     private MovingObjectPosition mouse;
 
     Rot rotation;
@@ -202,12 +203,12 @@ public class Scaffold extends Module {
             legitPlace();
         }
 
-        if (event instanceof Render3DEvent && findBlocks() != null && render.isToggled()) {
+        if (event instanceof Render3DEvent && mouse.getBlockPos() != null && render.isToggled()) {
             Color fadeColor = color.isFade() ? ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed()) : color.getColor();
 
             RenderUtils.start3D();
             if (shadows.isToggled() && shadows.module.get("Scaffold")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(mouse.getBlockPos(), fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f));
-            RenderUtils.drawBlockESP(findBlocks(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
+            RenderUtils.drawBlockESP(mouse.getBlockPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
             ColorUtils.resetColor();
             RenderUtils.stop3D();
         }
@@ -345,7 +346,7 @@ public class Scaffold extends Module {
             if (getTellyValue()) {
                 rotation = new Rot(MathHelper.wrapDegree(yaw + 180), 80);
             } else {
-                rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
+                rotation = getBestRotation();
             }
         } else {
             if (getSafeValue()) {
@@ -437,7 +438,6 @@ public class Scaffold extends Module {
             mouse = positionHashMap.get(pitches.getFirst());
         }
 
-        if (rotMode.getMode().equalsIgnoreCase("TellyBridge")) mouse = positionHashMap.get(pitches.getFirst());
         if (pitchSelection.getMode().equalsIgnoreCase("Nearest")) {
             lastPitch = pitches.getFirst();
         }
@@ -482,7 +482,7 @@ public class Scaffold extends Module {
 
             if (hit == null
                     || hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                    || hit.sideHit == EnumFacing.DOWN || hit.sideHit == EnumFacing.UP) {
+                    || hit.sideHit == EnumFacing.DOWN) {
                 continue;
             }
 
@@ -499,17 +499,16 @@ public class Scaffold extends Module {
 
         validRotations.sort(Comparator.comparingDouble(data -> {
             double yawDiff = MathHelper.wrapDegree(Rot.getServerRotation().getYaw() - data.rotation.getYaw());
-            double pitchDiff = Math.abs(Rot.getServerRotation().getPitch() - data.rotation.getPitch());
+            double pitchDiff = Rot.getServerRotation().getPitch() - data.rotation.getPitch();
 
-            return yawDiff + pitchDiff + DistanceUtils.getDistance(data.hitPos);
+            return Math.hypot(yawDiff, pitchDiff) + mc.thePlayer.getPositionVector().distanceTo(data.hitPos) * 20;
         }));
 
-        validRotations.sort(Comparator.comparingDouble(data -> {
-            return DistanceUtils.getDistance(data.hitPos);
-        }));
+//        validRotations.sort(Comparator.comparingDouble(data -> {
+//            return 0;
+//        }));
 
         closest = validRotations.getFirst();
-
 
         lastRotation = closest.rotation;
         mouse = closest.mouse;
