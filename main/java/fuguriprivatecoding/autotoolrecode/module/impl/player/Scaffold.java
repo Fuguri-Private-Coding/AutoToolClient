@@ -22,6 +22,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.block.*;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -201,12 +202,12 @@ public class Scaffold extends Module {
             legitPlace();
         }
 
-        if (event instanceof Render3DEvent && mouse.getBlockPos() != null && render.isToggled()) {
+        if (event instanceof Render3DEvent && findBlocks() != null && render.isToggled()) {
             Color fadeColor = color.isFade() ? ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed()) : color.getColor();
 
             RenderUtils.start3D();
             if (shadows.isToggled() && shadows.module.get("Scaffold")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(mouse.getBlockPos(), fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f));
-            RenderUtils.drawBlockESP(mouse.getBlockPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
+            RenderUtils.drawBlockESP(findBlocks(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
             ColorUtils.resetColor();
             RenderUtils.stop3D();
         }
@@ -443,6 +444,34 @@ public class Scaffold extends Module {
         return pitches.getFirst();
     }
 
+    public BlockPos findBlocks() {
+
+        List<BlockPos> blockPosList = new ArrayList<>();
+
+        for (int y = 4; y >= -4; --y) {
+            for (int x = -4; x <= 4; ++x) {
+                for (int z = -4; z <= 4; ++z) {
+                    BlockPos pos = new BlockPos(
+                            mc.thePlayer.posX + x,
+                            mc.thePlayer.posY + y,
+                            mc.thePlayer.posZ + z
+                    );
+                    IBlockState state = mc.theWorld.getBlockState(pos);
+                    if (state.getBlock() instanceof BlockAir) continue;
+
+                    blockPosList.add(pos);
+                }
+            }
+        }
+
+        Vec3 playerPos = mc.thePlayer.getPositionVector();
+
+//        blockPosList.sort();
+
+        return blockPosList.getFirst();
+
+    }
+
     private Rot getBestRotation() {
         float step = 2f;
         List<RotationData> validRotations = new ArrayList<>();
@@ -469,19 +498,15 @@ public class Scaffold extends Module {
         }
 
         validRotations.sort(Comparator.comparingDouble(data -> {
+            double yawDiff = MathHelper.wrapDegree(Rot.getServerRotation().getYaw() - data.rotation.getYaw());
+            double pitchDiff = Math.abs(Rot.getServerRotation().getPitch() - data.rotation.getPitch());
 
-            return DistanceUtils.getDistance(data.hitPos);
+            return yawDiff + pitchDiff + DistanceUtils.getDistance(data.hitPos);
         }));
-
-        validRotations.sort(Comparator.comparingDouble(data -> MathHelper.wrapDegree(Rot.getServerRotation().getYaw() - data.rotation.getYaw())));
-
 
         validRotations.sort(Comparator.comparingDouble(data -> {
-
             return DistanceUtils.getDistance(data.hitPos);
         }));
-
-
 
         closest = validRotations.getFirst();
 

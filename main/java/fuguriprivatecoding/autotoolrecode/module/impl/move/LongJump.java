@@ -54,7 +54,7 @@ public class LongJump extends Module {
                         MoveUtil.limit2speed(0.4899 + RandomUtils.nextDouble(0.00003, 0.00007));
                     }
                 }
-                mc.thePlayer.motionY += 0.0034999;
+                mc.thePlayer.motionY += 0.0034;
                 if(!bool0 && MathUtils.distance(vec0.xCoord, vec0.zCoord, mc.thePlayer.posX, mc.thePlayer.posZ) <= 2.79 && MoveUtil.getSpeed() < 0.27) MoveUtil.limit2speed(0.199);
                 if(stage >= 2 && MathUtils.distance(vec0.xCoord, vec0.zCoord, mc.thePlayer.posX, mc.thePlayer.posZ) >= 2.71 && !bool2) {
                     double strafe = 0.999;

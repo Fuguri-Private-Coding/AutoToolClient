@@ -215,15 +215,10 @@ public class InventoryUtils implements Imports {
 
     public static int getToolType(final ItemStack stack) {
         final ItemTool tool = (ItemTool) stack.getItem();
-        if (tool instanceof ItemPickaxe) {
-            return 0;
-        }
-        if (tool instanceof ItemAxe) {
-            return 1;
-        }
-        if (tool instanceof ItemSpade) {
-            return 2;
-        }
+        if (tool instanceof ItemPickaxe) return 0;
+        if (tool instanceof ItemAxe) return 1;
+        if (tool instanceof ItemSpade) return 2;
+
         return -1;
     }
 
