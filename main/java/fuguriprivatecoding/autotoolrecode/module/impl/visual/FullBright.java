@@ -27,6 +27,7 @@ public class FullBright extends Module {
 
     @Override
     public void onEnable() {
+        if (mc.thePlayer == null) return;
         switch (mode.getMode()) {
             case "NightVision" -> mc.thePlayer.addPotionEffect(new PotionEffect(Potion.nightVision.id, Integer.MAX_VALUE, 255, false, false));
             case "Gamma" -> mc.gameSettings.gammaSetting = 10000;

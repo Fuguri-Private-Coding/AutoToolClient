@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
@@ -22,20 +23,7 @@ public class AutoClicker extends Module {
     final StopWatch stopWatch;
     int delay;
 
-    final FloatSetting minCps = new FloatSetting("MinCps", this, 0.0f, 25.0f, 13.0f, 0.1f) {
-        @Override
-        public float getValue() {
-            if (maxCps.value < value) { value = maxCps.value; }
-            return super.getValue();
-        }
-    };
-    final FloatSetting maxCps = new FloatSetting("MaxCps", this, 0.0f, 25.0f, 17.0f, 0.1f) {
-        @Override
-        public float getValue() {
-            if (minCps.value > value) { value = minCps.value; }
-            return super.getValue();
-        }
-    };
+    DoubleSlider CPS = new DoubleSlider("CPS", this, 1,80,20,1f);
 
     final CheckBox allowBreakBlock = new CheckBox("AllowBreakBlock", this, true);
 
@@ -52,7 +40,7 @@ public class AutoClicker extends Module {
             if (stopWatch.reachedMS(delay)) {
                 stopWatch.reset();
                 Client.INST.getClickManager().addClick();
-                delay = Math.round(1000f / RandomUtils.nextFloat(minCps.getValue(), maxCps.getValue()));
+                delay = Math.round(1000f / CPS.getRandomizedIntValue());
             }
         }
     }

@@ -312,7 +312,16 @@ public class ConfigManager implements Imports {
                                     }
                                 }
                             }
-                            default -> throw new IllegalStateException("Unexpected value: " + setting);
+                            case DoubleSlider set -> {
+                                JsonObject jsonObject = settingElement.getAsJsonObject();
+                                for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                                    switch (entry1.getKey()) {
+                                        case "Min" -> set.setMinValue(entry1.getValue().getAsFloat());
+                                        case "Max" -> set.setMaxValue(entry1.getValue().getAsFloat());
+                                    }
+                                }
+                            }
+                            default -> {}
                         }
                     }
                 }
@@ -389,7 +398,16 @@ public class ConfigManager implements Imports {
                                     }
                                 }
                             }
-                            default -> throw new IllegalStateException("Unexpected value: " + setting);
+                            case DoubleSlider set -> {
+                                JsonObject jsonObject = settingElement.getAsJsonObject();
+                                for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                                    switch (entry1.getKey()) {
+                                        case "Min" -> set.setMinValue(entry1.getValue().getAsFloat());
+                                        case "Max" -> set.setMaxValue(entry1.getValue().getAsFloat());
+                                    }
+                                }
+                            }
+                            default -> {}
                         }
                     }
                 }
@@ -451,7 +469,13 @@ public class ConfigManager implements Imports {
                         colorSettingObject.addProperty("Hide", set.isHide());
                         moduleObject.add(set.getName(), colorSettingObject);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + setting);
+                    case DoubleSlider set -> {
+                        JsonObject DoubleSlider = new JsonObject();
+                        DoubleSlider.addProperty("Min", set.minValue);
+                        DoubleSlider.addProperty("Max", set.maxValue);
+                        moduleObject.add(set.getName(), DoubleSlider);
+                    }
+                    default -> {}
                 }
             }
             mainObject.add(module.getName(), moduleObject);
@@ -502,7 +526,13 @@ public class ConfigManager implements Imports {
                     colorSettingObject.addProperty("Hide", set.isHide());
                     moduleObject.add(set.getName(), colorSettingObject);
                 }
-                default -> throw new IllegalStateException("Unexpected value: " + setting);
+                case DoubleSlider set -> {
+                    JsonObject DoubleSlider = new JsonObject();
+                    DoubleSlider.addProperty("Min", set.minValue);
+                    DoubleSlider.addProperty("Max", set.maxValue);
+                    moduleObject.add(set.getName(), DoubleSlider);
+                }
+                default -> {}
             }
         }
         mainObject.add(module.getName(), moduleObject);
@@ -564,7 +594,16 @@ public class ConfigManager implements Imports {
                                 }
                             }
                         }
-                        default -> throw new IllegalStateException("Unexpected value: " + setting);
+                        case DoubleSlider set -> {
+                            JsonObject jsonObject = settingElement.getAsJsonObject();
+                            for (Map.Entry<String, JsonElement> entry1 : jsonObject.entrySet()) {
+                                switch (entry1.getKey()) {
+                                    case "Min" -> set.setMinValue(entry1.getValue().getAsFloat());
+                                    case "Max" -> set.setMaxValue(entry1.getValue().getAsFloat());
+                                }
+                            }
+                        }
+                        default -> {}
                     }
                 }
             }
@@ -616,7 +655,13 @@ public class ConfigManager implements Imports {
                         colorSettingObject.addProperty("Hide", set.isHide());
                         moduleObject.add(set.getName(), colorSettingObject);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + setting);
+                    case DoubleSlider set -> {
+                        JsonObject DoubleSlider = new JsonObject();
+                        DoubleSlider.addProperty("Min", set.minValue);
+                        DoubleSlider.addProperty("Max", set.maxValue);
+                        moduleObject.add(set.getName(), DoubleSlider);
+                    }
+                    default -> {}
                 }
             }
             mainObject.add(module.getName(), moduleObject);

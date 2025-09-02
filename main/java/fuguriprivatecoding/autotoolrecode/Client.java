@@ -146,6 +146,8 @@ public enum Client implements Imports {
 
 		new PositionResolverComponent();
 
+        new PlayerManager();
+
 		ViaMCP.create();
 		ViaMCP.INSTANCE.initAsyncSlider();
 

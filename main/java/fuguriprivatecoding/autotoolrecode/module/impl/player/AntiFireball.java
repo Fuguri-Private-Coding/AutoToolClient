@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
@@ -33,34 +34,8 @@ public class AntiFireball extends Module {
     final IntegerSetting horizontalHitBoxSize = new IntegerSetting("HorizontalHitBoxSize", this, rotateVisible, 1, 100, 100);
     final IntegerSetting verticalHitBoxSize = new IntegerSetting("VerticalHitBoxSize", this, rotateVisible, 1, 100, 100);
 
-    final IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this,rotateVisible, 0, 180, 90) {
-        @Override
-        public int getValue() {
-            if (maxYawSpeed.value < value) { value = maxYawSpeed.value; }
-            return value;
-        }
-    };
-    final IntegerSetting maxYawSpeed = new IntegerSetting("MaxYawSpeed", this,rotateVisible, 0, 180, 30) {
-        @Override
-        public int getValue() {
-            if (minYawSpeed.value > value) { value = minYawSpeed.value; }
-            return value;
-        }
-    };
-    final IntegerSetting minPitchSpeed = new IntegerSetting("MinPitchSpeed", this,rotateVisible, 0, 180, 90) {
-        @Override
-        public int getValue() {
-            if (maxPitchSpeed.value < value) { value = maxPitchSpeed.value; }
-            return value;
-        }
-    };
-    final IntegerSetting maxPitchSpeed = new IntegerSetting("MaxPitchSpeed", this,rotateVisible, 0, 180, 30) {
-        @Override
-        public int getValue() {
-            if (minPitchSpeed.value > value) { value = minPitchSpeed.value; }
-            return value;
-        }
-    };
+    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
+    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
 
     final FloatSetting smooth = new FloatSetting("Smooth", this,rotateVisible, 1f,5f,2f, 0.1f);
 
@@ -97,8 +72,8 @@ public class AntiFireball extends Module {
                     Rot delta = RotUtils.getDelta(lr, needRotation);
 
                     Rot speed = new Rot(
-                            RandomUtils.nextFloat(minYawSpeed.getValue(), maxYawSpeed.getValue()),
-                            RandomUtils.nextFloat(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
+                            yawSpeed.getRandomizedIntValue(),
+                            pitchSpeed.getRandomizedIntValue()
                     );
 
                     RotUtils.limitDelta(delta, speed);

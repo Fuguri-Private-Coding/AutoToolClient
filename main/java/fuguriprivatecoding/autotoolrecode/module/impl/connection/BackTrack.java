@@ -38,35 +38,8 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "BackTrack", category = Category.CONNECTION, description = "Абьюз интернета для увеличения дистанции удара.")
 public class BackTrack extends Module {
 
-    final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 5000, 200) {
-        @Override
-        public int getValue() {
-            if (maxDelay.value < value) { value = maxDelay.value; }
-            return super.getValue();
-        }
-    };
-    final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 0, 5000, 200) {
-        @Override
-        public int getValue() {
-            if (minDelay.value > value) { value = minDelay.value; }
-            return super.getValue();
-        }
-    };
-
-    final FloatSetting minDistance = new FloatSetting("MinDistance", this, 0.0f, 3.0f, 3.0f, 0.1f) {
-        @Override
-        public float getValue() {
-            if (maxDistance.value < value) { value = maxDistance.value; }
-            return super.getValue();
-        }
-    };
-    final FloatSetting maxDistance = new FloatSetting("MaxDistance", this, 3.0f, 12.0f, 6.0f, 0.1f) {
-        @Override
-        public float getValue() {
-            if (minDistance.value > value) { value = minDistance.value; }
-            return super.getValue();
-        }
-    };
+    DoubleSlider delay = new DoubleSlider("Delay", this, 0,5000,200,1);
+    DoubleSlider distance = new DoubleSlider("Distance", this, 0,12,12,0.1f);
 
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenBackTracks", this, 0, 20, 0) ;
     final CheckBox onlyWhenNeed = new CheckBox("OnlyWhenNeed", this, true);
@@ -91,7 +64,7 @@ public class BackTrack extends Module {
     public final List<TimedVar<Packet>> packetBuffer = new CopyOnWriteArrayList<>();
 
     private EntityLivingBase target;
-    private long delay = 90;
+    private long delays = 90;
 
     private int delayBetweenBackTracks;
 
@@ -170,7 +143,7 @@ public class BackTrack extends Module {
                 double threshold = 0;
 
                 boolean improve = distanceToFake + threshold >= distanceToReal;
-                boolean distance = distanceToReal > maxDistance.getValue() || distanceToFake > 3 || distanceToReal < minDistance.getValue();
+                boolean distance = distanceToReal > this.distance.getMaxValue() || distanceToFake > 3 || distanceToReal < this.distance.getMinValue();
 
                 boolean need = onlyWhenNeed.isToggled() && target.hurtTime > maxHurtTimeWhenWorking.getValue();
 
@@ -178,7 +151,7 @@ public class BackTrack extends Module {
                     handle(true);
 
                     delayBetweenBackTracks = delayBetweenTicks.getValue();
-                    delay = RandomUtils.nextLong(minDelay.getValue(), maxDelay.getValue());
+                    delays = delay.getRandomizedIntValue();
 
                     if (renderOnlyIfWorking.isToggled()) return;
                 }
@@ -245,7 +218,7 @@ public class BackTrack extends Module {
         if (packetBuffer.isEmpty()) return;
 
         packetBuffer.removeIf(packet -> {
-            if (System.currentTimeMillis() - packet.getTime() >= delay || clear) {
+            if (System.currentTimeMillis() - packet.getTime() >= delays || clear) {
                 try {
                     packet.getVar().processPacket(mc.getNetHandler().getNetworkManager().getNetHandler());
                 } catch (Exception ignored) {}

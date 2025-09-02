@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
-import com.sun.jna.platform.RasterRangesUtils;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.deeplearn.rotation.AIRotationSmooth;
 import fuguriprivatecoding.autotoolrecode.event.Event;
@@ -30,8 +29,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
-import org.joml.Random;
-
 import java.io.File;
 import java.util.function.BooleanSupplier;
 
@@ -57,34 +54,8 @@ public class KillAura extends Module {
     final IntegerSetting horizontalHitBoxSize = new IntegerSetting("HorizontalHitBoxSize", this, hitBoxSizeVisible, 1, 100, 100);
     final IntegerSetting verticalHitBoxSize = new IntegerSetting("VerticalHitBoxSize", this, hitBoxSizeVisible, 1, 100, 100);
 
-    final IntegerSetting minYawSpeed = new IntegerSetting("MinYawSpeed", this, 0, 180, 90) {
-        @Override
-        public int getValue() {
-            if (maxYawSpeed.value < value) { value = maxYawSpeed.value; }
-            return value;
-        }
-    };
-    final IntegerSetting maxYawSpeed = new IntegerSetting("MaxYawSpeed", this, 0, 180, 30) {
-        @Override
-        public int getValue() {
-            if (minYawSpeed.value > value) { value = minYawSpeed.value; }
-            return value;
-        }
-    };
-    final IntegerSetting minPitchSpeed = new IntegerSetting("MinPitchSpeed", this, 0, 180, 90) {
-        @Override
-        public int getValue() {
-            if (maxPitchSpeed.value < value) { value = maxPitchSpeed.value; }
-            return value;
-        }
-    };
-    final IntegerSetting maxPitchSpeed = new IntegerSetting("MaxPitchSpeed", this, 0, 180, 30) {
-        @Override
-        public int getValue() {
-            if (minPitchSpeed.value > value) { value = minPitchSpeed.value; }
-            return value;
-        }
-    };
+    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
+    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
 
     final CheckBox gcd = new CheckBox("GCD (FIX)", this);
 
@@ -113,20 +84,7 @@ public class KillAura extends Module {
 
     final CheckBox lockView = new CheckBox("LockView", this);
 
-    final IntegerSetting minCPS = new IntegerSetting("MinCPS", this, 1, 40, 17) {
-        @Override
-        public int getValue() {
-            if (maxCPS.value < value) { value = maxCPS.value; }
-            return value;
-        }
-    };
-    final IntegerSetting maxCPS = new IntegerSetting("MaxCPS", this, 1, 40, 17) {
-        @Override
-        public int getValue() {
-            if (minCPS.value > value) { value = minCPS.value; }
-            return value;
-        }
-    };
+    DoubleSlider CPS = new DoubleSlider("CPS", this, 1,80, 16,1);
 
     final Mode moveFix = new Mode("MoveFix", this)
             .addModes("OFF", "Legit", "Silent", "Target")
@@ -165,7 +123,7 @@ public class KillAura extends Module {
             if (clickTimer.reachedMS(delay)) {
                 clickTimer.reset();
                 Client.INST.getClickManager().addClick();
-                delay = Math.round(1000f / RandomUtils.nextFloat(minCPS.getValue(), maxCPS.getValue()));
+                delay = Math.round(1000f / CPS.getRandomizedIntValue());
             }
         }
 
@@ -202,8 +160,8 @@ public class KillAura extends Module {
                 Rot delta = RotUtils.getDelta(lr, needRotation);
 
                 Rot speed = new Rot(
-                        RandomUtils.nextFloat(minYawSpeed.getValue(), maxYawSpeed.getValue()),
-                        RandomUtils.nextFloat(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
+                        yawSpeed.getRandomizedIntValue(),
+                        pitchSpeed.getRandomizedIntValue()
                 );
 
                 RotUtils.limitDelta(delta, speed);

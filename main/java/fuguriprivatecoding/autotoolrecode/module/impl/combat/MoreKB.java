@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.SprintEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -27,36 +28,8 @@ public class MoreKB extends Module {
             .addModes("WTap", "LegitFast")
             .setMode("LegitFast");
 
-
-    final IntegerSetting minDelay = new IntegerSetting("Min Delay After Hit", this, 0, 10, 3) {
-        @Override
-        public int getValue() {
-            if (maxDelay.value < value) { value = maxDelay.value; }
-            return super.getValue();
-        }
-    };
-    final IntegerSetting maxDelay = new IntegerSetting("Max Delay After Hit", this, 0, 10, 3) {
-        @Override
-        public int getValue() {
-            if (minDelay.value > value) { value = minDelay.value; }
-            return super.getValue();
-        }
-    };
-
-    final IntegerSetting minReset = new IntegerSetting("Min Reset Duration", this, 1, 5, 1) {
-        @Override
-        public int getValue() {
-            if (maxReset.value < value) { value = maxReset.value; }
-            return super.getValue();
-        }
-    };
-    final IntegerSetting maxReset = new IntegerSetting("Max Reset Duration", this, 1, 5, 1) {
-        @Override
-        public int getValue() {
-            if (minReset.value > value) { value = minReset.value; }
-            return super.getValue();
-        }
-    };
+    DoubleSlider delayTicks = new DoubleSlider("DelayTicks", this, 0,20,2,1);
+    DoubleSlider resetTicks = new DoubleSlider("ResetTicks", this, 1,20,2,1);
 
     final MultiMode dontResetWhile = new MultiMode("Don't Reset While", this)
             .addModes("Target Eating", "Has KnockBack Enchantment", "Target is Burning", "Target is Leaving")
@@ -71,8 +44,8 @@ public class MoreKB extends Module {
         if (event instanceof TickEvent) {
             EntityLivingBase target = Client.INST.getCombatManager().getTargetOrSelectedEntity();
             if (target != null && target.hurtTime == 10 && !dontReset(target)) {
-                delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
-                reset = RandomUtils.nextInt(minReset.getValue(), maxReset.getValue());
+                delay = delayTicks.getRandomizedIntValue();
+                reset = resetTicks.getRandomizedIntValue();
             }
         }
 

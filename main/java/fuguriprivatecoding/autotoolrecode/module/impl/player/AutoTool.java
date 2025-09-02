@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
@@ -17,9 +18,7 @@ import net.minecraft.util.MovingObjectPosition;
 @ModuleInfo(name = "AutoTool", category = Category.PLAYER, description = "Автоматически берет инструмент в руку в зависимости от блока.")
 public class AutoTool extends Module {
 
-    IntegerSetting minSwitchDelayTick = new IntegerSetting("MinSwitchDelayTick", this, 0,5,0);
-    IntegerSetting maxSwitchDelayTick = new IntegerSetting("MaxSwitchDelayTick", this, 0,5,2);
-
+    DoubleSlider switchDelayTick = new DoubleSlider("SwitchDelayTick", this, 0,20,0,1);
     boolean flag;
 
     int delay;
@@ -52,7 +51,7 @@ public class AutoTool extends Module {
             flag = true;
             final BlockPos block = mouse.getBlockPos();
             mc.thePlayer.inventory.currentItem = getBestSlot(mc.theWorld.getBlockState(block).getBlock());
-            delay = RandomUtils.nextInt(minSwitchDelayTick.getValue(),maxSwitchDelayTick.getValue());
+            delay = switchDelayTick.getRandomizedIntValue();
             timer.reset();
         }
     }

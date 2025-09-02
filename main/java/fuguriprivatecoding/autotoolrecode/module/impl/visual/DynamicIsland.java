@@ -157,7 +157,7 @@ public class DynamicIsland extends Module {
         currentHeight.update(animationSpeed.getValue(), Easing.LINEAR);
         needY.update(animationSpeed.getValue(), Easing.LINEAR);
         radiusAnim.update(animationSpeed.getValue(), Easing.LINEAR);
-        textAlpha.update(7, Easing.LINEAR);
+        textAlpha.update(3, Easing.LINEAR);
 
         radiusAnim.setEnd(bgRadius.getValue());
     }

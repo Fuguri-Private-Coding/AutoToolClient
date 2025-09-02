@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
@@ -18,20 +19,7 @@ import org.lwjgl.input.Mouse;
 @ModuleInfo(name = "FastPlace", category = Category.PLAYER, description = "Позволяет быстрее ставить блоки.")
 public class FastPlace extends Module {
 
-    IntegerSetting minCps = new IntegerSetting("MinCps", this, 1, 40, 7) {
-        @Override
-        public int getValue() {
-            if (maxCps.value < value) { value = maxCps.value; }
-            return super.getValue();
-        }
-    };
-    IntegerSetting maxCps = new IntegerSetting("MaxCps", this, 0, 40, 11) {
-        @Override
-        public int getValue() {
-            if (minCps.value > value) { value = minCps.value; }
-            return super.getValue();
-        }
-    };
+    DoubleSlider CPS = new DoubleSlider("CPS", this, 1,80,20,1f);
 
     StopWatch stopWatch;
     long delay;
@@ -50,7 +38,7 @@ public class FastPlace extends Module {
                 if (needClick && mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mc.objectMouseOver.getBlockPos(), mc.objectMouseOver.sideHit, mc.objectMouseOver.hitVec)) {
                     mc.thePlayer.swingItem();
                     mc.getItemRenderer().resetEquippedProgress();
-                    delay = (long) (1000D / RandomUtils.nextDouble(minCps.getValue(), maxCps.getValue()));
+                    delay = (long) (1000D / CPS.getRandomizedIntValue());
                     stopWatch.reset();
                 }
             }

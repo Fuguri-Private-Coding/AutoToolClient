@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtils;
@@ -26,38 +27,14 @@ import net.minecraft.util.DamageSource;
 @ModuleInfo(name = "InvManager", category = Category.PLAYER, description = "Автоматически сортирует ваш инвентарь и выкидывает мусор.")
 public class InvManager extends Module {
 
-    private final IntegerSetting minStartDelay = new IntegerSetting("MinStartDelay", this, 0, 500, 50) {
-        @Override
-        public int getValue() {
-            if (maxStartDelay.value < value) { value = maxStartDelay.value; }
-            return value;
-        }
-    };
-    private final IntegerSetting maxStartDelay = new IntegerSetting("MaxStartDelay", this, 0, 500, 50) {
-        @Override
-        public int getValue() {
-            if (minStartDelay.value > value) { value = minStartDelay.value; }
-            return value;
-        }
-    };
+    DoubleSlider startDelay = new DoubleSlider("StartDelay", this, 0,500,200,1);
 
-    private final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 500, 50) {
-        @Override
-        public int getValue() {
-            if (maxDelay.value < value) { value = maxDelay.value; }
-            return value;
-        }
-    };
-    private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 0, 500, 50) {
-        @Override
-        public int getValue() {
-            if (minDelay.value > value) { value = minDelay.value; }
-            return value;
-        }
-    };
+
+    DoubleSlider delay = new DoubleSlider("Delay", this, 0,500,200,1);
+
 
     private final CheckBox spoof = new CheckBox("Spoof", this);
-    private final CheckBox stopWalkingIfSpoof = new CheckBox("StopWalkingIfSpoof", this);
+    private final CheckBox stopWalkingIfSpoof = new CheckBox("StopSpoofIfWalking", this);
 
 //    private final Mode firstSlot = new Mode("FirstSlot", this)
 //            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
@@ -124,7 +101,7 @@ public class InvManager extends Module {
                 if (MoveUtils.isMoving()) return;
             }
 
-            if (!startTimer.reachedMS(RandomUtils.nextInt(minStartDelay.getValue(), maxStartDelay.getValue()))) return;
+            if (!startTimer.reachedMS(startDelay.getRandomizedIntValue())) return;
 
             this.moved = false;
 
@@ -408,7 +385,7 @@ public class InvManager extends Module {
 
             mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, this.slot(slot), 1, 4, mc.thePlayer);
 
-            this.nextClick = Math.round(RandomUtils.nextDouble(minDelay.getValue(), maxDelay.getValue()));
+            this.nextClick = delay.getRandomizedIntValue();
             this.stopwatch.reset();
             this.moved = true;
         }
@@ -419,7 +396,7 @@ public class InvManager extends Module {
 
             mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, this.slot(slot), this.slot(destination), 2, mc.thePlayer);
 
-            this.nextClick = Math.round(RandomUtils.nextDouble(minDelay.getValue(), maxDelay.getValue()));
+            this.nextClick = delay.getRandomizedIntValue();
             this.stopwatch.reset();
             this.moved = true;
         }
@@ -430,7 +407,7 @@ public class InvManager extends Module {
 
             mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, this.slot(slot), 0, 1, mc.thePlayer);
 
-            this.nextClick = Math.round(RandomUtils.nextDouble(minDelay.getValue(), maxDelay.getValue()));
+            this.nextClick = delay.getRandomizedIntValue();
             this.stopwatch.reset();
             this.moved = true;
         }

@@ -34,40 +34,14 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "Ping", category = Category.CONNECTION, description = "Абьюз интернета для получение преимущевства.")
 public class Ping extends Module {
 
-    private final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 50, 1000, 400) {
-        @Override
-        public int getValue() {
-            if (maxDelay.value < value) { value = maxDelay.value; }
-            return super.getValue();
-        }
-    };
-    private final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 50, 1000, 400) {
-        @Override
-        public int getValue() {
-            if (minDelay.value > value) { value = minDelay.value; }
-            return super.getValue();
-        }
-    };
+    DoubleSlider delay = new DoubleSlider("Delay", this, 0,5000,200,1);
 
     Mode delayIncreaseType = new Mode("DelayIncreaseType", this)
             .addModes("Smooth", "Instant").setMode("Instant");
 
     BooleanSupplier smoothVisible = () -> delayIncreaseType.getMode().equalsIgnoreCase("Smooth");
 
-    IntegerSetting minAddingDelayPerTick = new IntegerSetting("MinAddingDelayPerTick", this, smoothVisible, 1,1000,100) {
-        @Override
-        public int getValue() {
-            if (maxAddingDelayPerTick.value < value) { value = maxAddingDelayPerTick.value; }
-            return super.getValue();
-        }
-    };
-    IntegerSetting maxAddingDelayPerTick = new IntegerSetting("MaxAddingDelayPerTick", this, smoothVisible, 1,1000,100) {
-        @Override
-        public int getValue() {
-            if (minAddingDelayPerTick.value > value) { value = minAddingDelayPerTick.value; }
-            return super.getValue();
-        }
-    };
+    DoubleSlider addingDelayPerTick = new DoubleSlider("AddingDelayPerTick", this, smoothVisible, 0,100,20,1);
 
     private final MultiMode actions = new MultiMode("ActionsToReset", this)
             .add("Attack", true)
@@ -102,7 +76,7 @@ public class Ping extends Module {
 
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f,5f,1f,0.1f);
 
-    private int delay = 50;
+    private int delays = 50;
     private long lastResetTime, delayBeforeNextLag;
     private final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
     private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
@@ -201,7 +175,7 @@ public class Ping extends Module {
                 if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) reset(damageTimeCondition.getValue());
                 if (actions.get("UsingItem") && mc.thePlayer.isUsingItem()) reset(usingItemTimeCondition.getValue());
 
-                if (currentTime - lastResetTime > delayBeforeNextLag && delayIncreaseType.getMode().equalsIgnoreCase("Smooth") && delay != maxDelay.getValue()) updateDelay(RandomUtils.nextInt(minAddingDelayPerTick.getValue(), maxAddingDelayPerTick.getValue()));
+                if (currentTime - lastResetTime > delayBeforeNextLag && delayIncreaseType.getMode().equalsIgnoreCase("Smooth") && delays != delay.getMaxValue()) updateDelay(addingDelayPerTick.getRandomizedIntValue());
 
                 lastPos = currentPos;
                 if (posBuffer.isEmpty()) {
@@ -266,13 +240,13 @@ public class Ping extends Module {
 
     private void handlePackets() {
         buffer.removeIf(packetWithTime -> {
-           if (System.currentTimeMillis() - packetWithTime.time() >= delay) {
+           if (System.currentTimeMillis() - packetWithTime.time() >= delays) {
                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetWithTime.packet());
                return true;
            }
            return false;
         });
-        posBuffer.removeIf(pos -> System.currentTimeMillis() - pos.time() >= delay);
+        posBuffer.removeIf(pos -> System.currentTimeMillis() - pos.time() >= delays);
     }
 
     private void resetAllPackets() {
@@ -285,14 +259,14 @@ public class Ping extends Module {
         resetAllPackets();
         lastResetTime = System.currentTimeMillis();
         delayBeforeNextLag = time;
-        if (delayIncreaseType.getMode().equalsIgnoreCase("Smooth")) delay = 0;
-        if (delayIncreaseType.getMode().equalsIgnoreCase("Instant")) delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
+        if (delayIncreaseType.getMode().equalsIgnoreCase("Smooth")) delays = 0;
+        if (delayIncreaseType.getMode().equalsIgnoreCase("Instant")) delays = delay.getRandomizedIntValue();
     }
 
     private void updateDelay(int addDelay) {
-        delay += addDelay;
-        if (delay > maxDelay.getValue()) {
-            delay = maxDelay.getValue();
+        delays += addDelay;
+        if (delays > delay.getMaxValue()) {
+            delays = (int) delay.getMaxValue();
         }
     }
 

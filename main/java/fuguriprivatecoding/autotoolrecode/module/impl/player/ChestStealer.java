@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
@@ -8,8 +7,8 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -20,20 +19,8 @@ import net.minecraft.inventory.Slot;
 public class ChestStealer extends Module {
 
     final IntegerSetting startDelay = new IntegerSetting("StartDelay", this, 0, 1000, 250);
-    final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, 0, 500, 50) {
-        @Override
-        public int getValue() {
-            if (maxDelay.value < value) { value = maxDelay.value; }
-            return value;
-        }
-    };
-    final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, 0, 500, 50) {
-        @Override
-        public int getValue() {
-            if (minDelay.value > value) { value = minDelay.value; }
-            return value;
-        }
-    };
+
+    DoubleSlider delay = new DoubleSlider("Delay", this, 0,500,200,1);
 
     final CheckBox checkName = new CheckBox("CheckName", this, true);
     final CheckBox randomSlots = new CheckBox("RandomSlots", this, true);
@@ -41,7 +28,7 @@ public class ChestStealer extends Module {
     final StopWatch delayStopWatch;
     final StopWatch startDelayStopWatch;
 
-    int delay;
+    int delays;
 
     public ChestStealer() {
         delayStopWatch = new StopWatch();
@@ -56,9 +43,9 @@ public class ChestStealer extends Module {
                     return;
                 }
 
-                delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
+                delays = delay.getRandomizedIntValue();
 
-                if (!delayStopWatch.reachedMS(delay) || !startDelayStopWatch.reachedMS(startDelay.getValue())) return;
+                if (!delayStopWatch.reachedMS(delays) || !startDelayStopWatch.reachedMS(startDelay.getValue())) return;
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
                 final int nextSlot = updatePos(container, randomSlots.isToggled());

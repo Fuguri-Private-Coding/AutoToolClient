@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import net.minecraft.util.BlockPos;
 
@@ -16,13 +17,13 @@ public class BridgeAssist extends Module {
     FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, 0f,0.1f,0.05f, 0.01f);
     CheckBox sneakIfPressed = new CheckBox("SneakIfPressed", this);
     CheckBox pitchCheck = new CheckBox("PitchCheck", this);
-    FloatSetting minPitch = new FloatSetting("MinPitch", this, pitchCheck::isToggled, 0f,90f,50f, 0.1f);
-    FloatSetting maxPitch = new FloatSetting("MaxPitch", this, pitchCheck::isToggled, 0f,90f,90f, 0.1f);
+
+    DoubleSlider pitch = new DoubleSlider("Pitch",this, pitchCheck::isToggled, 0,90, 90,0.1f);
 
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof MoveButtonEvent e) {
-            if (pitchCheck.isToggled() && (mc.thePlayer.rotationPitch < minPitch.getValue() || mc.thePlayer.rotationPitch > maxPitch.getValue())) return;
+            if (pitchCheck.isToggled() && (mc.thePlayer.rotationPitch < pitch.getMinValue() || mc.thePlayer.rotationPitch > pitch.getMaxValue())) return;
             if (mc.thePlayer.capabilities.isFlying) return;
             BlockPos pos = getBlockPos(edgeOffset.getValue());
             if (sneakIfPressed.isToggled() && e.isSneak() && !mc.theWorld.isAirBlock(pos)) {

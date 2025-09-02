@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
+import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
@@ -24,20 +25,7 @@ public class Velocity extends Module {
             .setMode("Vanilla");
 
     final IntegerSetting chance = new IntegerSetting("Chance", this, () -> mode.getMode().equalsIgnoreCase("Jump"), 0,100,80);
-    final IntegerSetting minDelay = new IntegerSetting("MinDelay", this, () -> mode.getMode().equalsIgnoreCase("Jump"), 0,500,80) {
-        @Override
-        public int getValue() {
-            if (maxDelay.value < value) { value = maxDelay.value; }
-            return super.getValue();
-        }
-    };
-    final IntegerSetting maxDelay = new IntegerSetting("MaxDelay", this, () -> mode.getMode().equalsIgnoreCase("Jump"), 0,500,80) {
-        @Override
-        public int getValue() {
-            if (minDelay.value > value) { value = minDelay.value; }
-            return super.getValue();
-        }
-    };
+    DoubleSlider jumpDelay = new DoubleSlider("JumpDelay", this, 0, 500,80,1);
 
     final FloatSetting XZ = new FloatSetting("XZ", this,() -> mode.getMode().equalsIgnoreCase("Vanilla"), -1, 1, 0, 0.1f);
     final FloatSetting Y = new FloatSetting("Y", this,() -> mode.getMode().equalsIgnoreCase("Vanilla"), 0, 1, 1, 0.1f);
@@ -86,7 +74,7 @@ public class Velocity extends Module {
             case "Jump" -> {
                 if (event instanceof MoveButtonEvent e) {
                     if (mc.thePlayer.hurtTime == 10 && mc.thePlayer.hurtTime != lastHurtTime && rand.nextInt(100) <= chance.getValue()) {
-                        delay = RandomUtils.nextInt(minDelay.getValue(), maxDelay.getValue());
+                        delay = jumpDelay.getRandomizedIntValue();
                         gotHit = true;
                         timer.reset();
                     }

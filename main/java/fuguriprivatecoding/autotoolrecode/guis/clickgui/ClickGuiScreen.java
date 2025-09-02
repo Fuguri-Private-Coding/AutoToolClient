@@ -7,9 +7,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
@@ -544,6 +542,130 @@ public class ClickGuiScreen extends GuiScreen {
 						}
 					}
 				}
+                if (setting instanceof DoubleSlider doubleSlider) {
+                    doubleSlider.updateAnimations();
+
+                    double animatedFilledFactorMin = doubleSlider.getAnimatedNormalizeMin();
+                    double animatedFilledFactorMax = doubleSlider.getAnimatedNormalizeMax();
+                    final float length = 75;
+                    final float minSliderLength = (float) (animatedFilledFactorMin * length);
+                    final float maxSliderLength = (float) (animatedFilledFactorMax * length);
+
+                    float minSliderY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10 + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
+                    float maxSliderY = minSliderY + 12;
+
+                    fontRenderer.drawString(
+                            "Min:",
+                            background.x + verticalLineXOffset + 5 + 1,
+                            background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10,
+                            CATEGORY_COLOR
+                    );
+
+                    RoundedUtils.drawRect(
+                            background.x + verticalLineXOffset + 5 + 20 + 1,
+                            minSliderY,
+                            length,
+                            4,
+                            1.5f,
+                            BACKGROUND_COLOR
+                    );
+
+                    RoundedUtils.drawRect(
+                            background.x + verticalLineXOffset + 5 + 20 + 1,
+                            minSliderY,
+                            minSliderLength,
+                            4,
+                            1.5f,
+                            MAIN_COLOR
+                    );
+
+                    RoundedUtils.drawRect(
+                            background.x + verticalLineXOffset + 5 + 20 + 1 + minSliderLength - 2,
+                            minSliderY - 1,
+                            6,
+                            6,
+                            3f,
+                            Color.WHITE
+                    );
+
+                    fontRenderer.drawString(
+                            String.format("%.2f", doubleSlider.getMinValue()),
+                            background.x + verticalLineXOffset + 5 + 20 + 1 + length + 6,
+                            background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10,
+                            CATEGORY_COLOR
+                    );
+
+                    fontRenderer.drawString(
+                            "Max:",
+                            background.x + verticalLineXOffset + 5 + 1,
+                            background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10 + 12,
+                            CATEGORY_COLOR
+                    );
+
+                    RoundedUtils.drawRect(
+                            background.x + verticalLineXOffset + 5 + 20 + 1,
+                            maxSliderY,
+                            length,
+                            4,
+                            1.5f,
+                            BACKGROUND_COLOR
+                    );
+
+                    RoundedUtils.drawRect(
+                            background.x + verticalLineXOffset + 5 + 20 + 1,
+                            maxSliderY,
+                            maxSliderLength,
+                            4,
+                            1.5f,
+                            MAIN_COLOR
+                    );
+
+                    RoundedUtils.drawRect(
+                            background.x + verticalLineXOffset + 5 + 20 + 1 + maxSliderLength - 2,
+                            maxSliderY - 1,
+                            6,
+                            6,
+                            3f,
+                            Color.WHITE
+                    );
+
+                    fontRenderer.drawString(
+                            String.format("%.2f", doubleSlider.getMaxValue()),
+                            background.x + verticalLineXOffset + 5 + 20 + 1 + length + 6,
+                            background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10 + 12,
+                            CATEGORY_COLOR
+                    );
+
+                    if (mouseX > background.x + verticalLineXOffset + 5 + 20 + 1 - 5
+                            && mouseX < background.x + verticalLineXOffset + 5 + 20 + 1 + length + 5
+                            && mouseY > minSliderY - 2
+                            && mouseY < minSliderY + 6) {
+                        if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+                            doubleSlider.setMinValue(doubleSlider.getMinValue() + Math.signum(currentScroll) * doubleSlider.getStep());
+                        } else if (Mouse.isButtonDown(0)) {
+                            float mx = mouseX - (background.x + verticalLineXOffset + 5 + 20 + 1);
+                            float p = mx / length;
+                            double normalize = doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p;
+                            doubleSlider.setMinValue(normalize);
+                        }
+                    }
+
+                    if (mouseX > background.x + verticalLineXOffset + 5 + 20 + 1 - 5
+                            && mouseX < background.x + verticalLineXOffset + 5 + 20 + 1 + length + 5
+                            && mouseY > maxSliderY - 2
+                            && mouseY < maxSliderY + 6) {
+                        if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+                            doubleSlider.setMaxValue(doubleSlider.getMaxValue() + Math.signum(currentScroll) * doubleSlider.getStep());
+                        } else if (Mouse.isButtonDown(0)) {
+                            float mx = mouseX - (background.x + verticalLineXOffset + 5 + 20 + 1);
+                            float p = mx / length;
+                            double normalize = doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p;
+                            doubleSlider.setMaxValue(normalize);
+                        }
+                    }
+
+                    offset += 25;
+                }
 				if (setting instanceof ColorSetting colorSetting) {
 					float startY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
 					float sliderX = background.x + verticalLineXOffset + 5 + 32.5f + 1;
@@ -1035,6 +1157,7 @@ public class ClickGuiScreen extends GuiScreen {
 					}
 					offset += yOffset;
 				}
+                if (setting instanceof DoubleSlider) offset += 25;
 				if (setting instanceof CheckBox booleanSetting) {
 					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth + 1
 							&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + 1 + fontRenderer.getStringWidth(String.valueOf(booleanSetting.isToggled()))

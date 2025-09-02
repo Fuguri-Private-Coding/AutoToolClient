@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.managers.PlayerManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -34,88 +35,30 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "Scaffold", category = Category.PLAYER)
 public class Scaffold extends Module {
 
-    IntegerSetting minYawSpeed = new IntegerSetting("Min Yaw Speed", this, 1, 180, 30) {
-        @Override
-        public int getValue() {
-            if (maxYawSpeed.value < value) { value = maxYawSpeed.value; }
-            return super.getValue();
-        }
-    };
-    IntegerSetting maxYawSpeed = new IntegerSetting("Max Yaw Speed", this, 1, 180, 30) {
-        @Override
-        public int getValue() {
-            if (minYawSpeed.value > value) { value = minYawSpeed.value; }
-            return super.getValue();
-        }
-    };
-    IntegerSetting minPitchSpeed = new IntegerSetting("Min Pitch Speed", this, 1, 180, 15) {
-        @Override
-        public int getValue() {
-            if (maxPitchSpeed.value < value) { value = maxPitchSpeed.value; }
-            return super.getValue();
-        }
-    };
-    IntegerSetting maxPitchSpeed = new IntegerSetting("Max Pitch Speed", this, 1, 180, 15) {
-        @Override
-        public int getValue() {
-            if (minPitchSpeed.value > value) { value = minPitchSpeed.value; }
-            return super.getValue();
-        }
-    };
+    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
+    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
 
     Mode rotMode = new Mode("Rotation Mode", this)
-            .addModes("TellyBridge", "GodBridge")
-            .setMode("GodBridge")
-            ;
+            .addModes("TellyBridge", "GodBridge", "Normal")
+            .setMode("GodBridge");
 
     BooleanSupplier tellyVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge");
     BooleanSupplier godVisible = () -> rotMode.getMode().equalsIgnoreCase("GodBridge");
 
-    IntegerSetting minClutchYawSpeed = new IntegerSetting("Min Clutch Yaw Speed", this, godVisible, 1, 180, 30) {
-        @Override
-        public int getValue() {
-            if (maxClutchYawSpeed.value < value) { value = maxClutchYawSpeed.value; }
-            return super.getValue();
-        }
-    };
-    IntegerSetting maxClutchYawSpeed = new IntegerSetting("Max Clutch Yaw Speed", this, godVisible, 1, 180, 30) {
-        @Override
-        public int getValue() {
-            if (minClutchYawSpeed.value > value) { value = minClutchYawSpeed.value; }
-            return super.getValue();
-        }
-    };
-    IntegerSetting minClutchPitchSpeed = new IntegerSetting("Min Clutch Pitch Speed", this, godVisible, 1, 180, 15) {
-        @Override
-        public int getValue() {
-            if (maxClutchPitchSpeed.value < value) { value = maxClutchPitchSpeed.value; }
-            return super.getValue();
-        }
-    };
-    IntegerSetting maxClutchPitchSpeed = new IntegerSetting("Max Clutch Pitch Speed", this, godVisible, 1, 180, 15) {
-        @Override
-        public int getValue() {
-            if (minClutchPitchSpeed.value > value) { value = minClutchPitchSpeed.value; }
-            return super.getValue();
-        }
-    };
+    BooleanSupplier tellyGodVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("GodBridge");
+    BooleanSupplier tellyGodNormalVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("GodBridge") || rotMode.getMode().equalsIgnoreCase("Normal");
 
-    FloatSetting minPitchCorrectionSearch = new FloatSetting("Min Pitch Correction Search", this, godVisible, 0, 90, 81, 0.1f) {
-        @Override
-        public float getValue() {
-            if (maxPitchCorrectionSearch.value < value) { value = maxPitchCorrectionSearch.value; }
-            return super.getValue();
-        }
-    };
-    FloatSetting maxPitchCorrectionSearch = new FloatSetting("Max Pitch Correction Search", this, godVisible, 0, 90, 81, 0.1f) {
-        @Override
-        public float getValue() {
-            if (minPitchCorrectionSearch.value > value) { value = minPitchCorrectionSearch.value; }
-            return super.getValue();
-        }
-    };
+    DoubleSlider yawClutchSpeed = new DoubleSlider("Yaw Clutch Speed", this, godVisible, 0,180,90,1);
+    DoubleSlider pitchClutchSpeed = new DoubleSlider("Pitch Clutch Speed", this, godVisible, 0,180,90,1);
 
-    FloatSetting stepPitchCorrection = new FloatSetting("Step Pitch Correction", this, godVisible, 0.3f, 10, 0.8f, 0.01f);
+    DoubleSlider yawForwardTellySpeed = new DoubleSlider("Yaw Forward Telly Speed", this, tellyVisible, 0,180,90,1);
+    DoubleSlider pitchForwardTellySpeed = new DoubleSlider("Pitch Forward Telly Speed", this, tellyVisible, 0,180,90,1);
+
+    DoubleSlider pitchCorrectionSearch = new DoubleSlider("Pitch Correction Search", this, tellyGodNormalVisible, 0,90,90,0.1f);
+
+    FloatSetting stepPitchCorrection = new FloatSetting("Step Pitch Correction", this, tellyGodNormalVisible, 0.3f, 10, 0.8f, 0.01f);
+
+    IntegerSetting sortingDistanceStrength = new IntegerSetting("Sorting Distance Strength", this, tellyGodNormalVisible, 0,100,2);
 
     Mode pitchSelection = new Mode("Pitch Selection", this)
             .addModes("Highest", "Nearest", "Lowest", "Mid")
@@ -126,20 +69,7 @@ public class Scaffold extends Module {
     CheckBox serverSwing = new CheckBox("Server Swing", this, noSwing::isToggled, true);
 
     final CheckBox speedTelly = new CheckBox("Speed Telly", this, tellyVisible, true);
-    IntegerSetting minTellyTicks = new IntegerSetting("Min Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 4, 12, 5) {
-        @Override
-        public int getValue() {
-            if (maxTellyTicks.value < value) { value = maxTellyTicks.value; }
-            return super.getValue();
-        }
-    };
-    IntegerSetting maxTellyTicks = new IntegerSetting("Max Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 4, 12, 5) {
-        @Override
-        public int getValue() {
-            if (minTellyTicks.value > value) { value = minTellyTicks.value; }
-            return super.getValue();
-        }
-    };
+    DoubleSlider tellyTicks = new DoubleSlider("Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 0,12,5,1);
 
     final CheckBox ninjaBridge = new CheckBox("Ninja Bridge", this, godVisible, true);
     final FloatSetting edgeOffset = new FloatSetting("Edge Offset", this, () -> godVisible.getAsBoolean() && ninjaBridge.isToggled(), 0f,0.1f,0.05f, 0.01f);
@@ -155,7 +85,8 @@ public class Scaffold extends Module {
     final CheckBox render = new CheckBox("Render", this, true);
     final ColorSetting color = new ColorSetting("Color", this);
 
-    private final List<Block> blacklistedBlocks = Arrays.asList(Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava, Blocks.wooden_slab, Blocks.chest, Blocks.flowing_lava,
+    private final List<Block> blacklistedBlocks = Arrays.asList(
+            Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava, Blocks.wooden_slab, Blocks.chest, Blocks.flowing_lava,
             Blocks.enchanting_table, Blocks.carpet, Blocks.glass_pane, Blocks.skull, Blocks.stained_glass_pane, Blocks.iron_bars, Blocks.snow_layer, Blocks.ice, Blocks.packed_ice,
             Blocks.coal_ore, Blocks.diamond_ore, Blocks.emerald_ore, Blocks.trapped_chest, Blocks.torch, Blocks.anvil,
             Blocks.noteblock, Blocks.jukebox, Blocks.tnt, Blocks.gold_ore, Blocks.iron_ore, Blocks.lapis_ore, Blocks.lit_redstone_ore, Blocks.quartz_ore, Blocks.redstone_ore,
@@ -165,22 +96,22 @@ public class Scaffold extends Module {
             Blocks.dispenser, Blocks.noteblock, Blocks.dropper, Blocks.crafting_table, Blocks.pumpkin, Blocks.sapling, Blocks.cobblestone_wall,
             Blocks.oak_fence, Blocks.activator_rail, Blocks.detector_rail, Blocks.golden_rail, Blocks.redstone_torch, Blocks.acacia_stairs,
             Blocks.birch_stairs, Blocks.brick_stairs, Blocks.dark_oak_stairs, Blocks.jungle_stairs, Blocks.nether_brick_stairs, Blocks.oak_stairs,
-            Blocks.quartz_stairs, Blocks.red_sandstone_stairs, Blocks.sandstone_stairs, Blocks.spruce_stairs, Blocks.stone_brick_stairs, Blocks.stone_stairs, Blocks.double_wooden_slab, Blocks.stone_slab, Blocks.double_stone_slab, Blocks.stone_slab2, Blocks.double_stone_slab2,
+            Blocks.quartz_stairs, Blocks.red_sandstone_stairs, Blocks.sandstone_stairs, Blocks.spruce_stairs, Blocks.stone_brick_stairs,
+            Blocks.stone_stairs, Blocks.double_wooden_slab, Blocks.stone_slab, Blocks.double_stone_slab, Blocks.stone_slab2, Blocks.double_stone_slab2,
             Blocks.web, Blocks.gravel, Blocks.daylight_detector_inverted, Blocks.daylight_detector, Blocks.soul_sand, Blocks.piston, Blocks.piston_extension,
             Blocks.piston_head, Blocks.sticky_piston, Blocks.iron_trapdoor, Blocks.ender_chest, Blocks.end_portal, Blocks.end_portal_frame, Blocks.standing_banner,
             Blocks.wall_banner, Blocks.deadbush, Blocks.slime_block, Blocks.acacia_fence_gate, Blocks.birch_fence_gate, Blocks.dark_oak_fence_gate,
-            Blocks.jungle_fence_gate, Blocks.spruce_fence_gate, Blocks.oak_fence_gate);
-
+            Blocks.jungle_fence_gate, Blocks.spruce_fence_gate, Blocks.oak_fence_gate
+    );
 
     private MovingObjectPosition mouse;
 
-    Rot rotation;
+    Rot rotation, lastRotation;
 
     double lastDelta = 0;
     float lastPitch = 80;
-    Rot lastRotation;
 
-    int jumpTicks, blocksLeft;
+    int blocksLeft;
 
     Glow shadows;
 
@@ -194,7 +125,6 @@ public class Scaffold extends Module {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
 
         if (event instanceof TickEvent) {
-            updateValues();
             rotate();
             legitPlace();
         }
@@ -268,19 +198,10 @@ public class Scaffold extends Module {
     }
 
     boolean getSafeValue() {
-        return mc.thePlayer.hurtResistantTime > 0 || jumpTicks > 12;
-    }
-
-    private void updateValues() {
-        if (!mc.thePlayer.onGround) {
-            jumpTicks++;
-        } else {
-            jumpTicks = 0;
-        }
+        return mc.thePlayer.hurtResistantTime > 0 || PlayerManager.airTicks > 12;
     }
 
     private void resetValues() {
-        jumpTicks = 0;
         blocksLeft = 0;
         mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
     }
@@ -330,7 +251,7 @@ public class Scaffold extends Module {
     }
 
     void rotate() {
-        float yawStep = rotMode.getMode().equalsIgnoreCase("TellyBridge") ? 0.1f : 45f;
+        float yawStep = 45f;
 
         float yaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), yawStep);
 
@@ -338,47 +259,29 @@ public class Scaffold extends Module {
             yaw += yawStep;
         }
 
-        if (rotMode.getMode().equalsIgnoreCase("TellyBridge")) {
-            if (getTellyValue()) {
-                rotation = new Rot(MathHelper.wrapDegree(yaw + 180), 80);
-            } else {
-                rotation = getBestRotation();
+        switch (rotMode.getMode()) {
+            case "TellyBridge" -> {
+                if (getTellyValue()) {
+                    rotation = new Rot(MathHelper.wrapDegree(mc.thePlayer.rotationYaw), 80);
+                } else {
+                    rotation = getBestRotation();
+                }
             }
-        } else {
-            if (getSafeValue()) {
-                rotation = getBestRotation();
-            } else {
-                rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
+
+            case "GodBridge" -> {
+                if (getSafeValue()) {
+                    rotation = getBestRotation();
+                } else {
+                    rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
+                }
             }
+
+            case "Normal" -> rotation = getBestRotation();
         }
 
         Delta delta = RotUtils.getDelta(Rot.getServerRotation(), rotation);
 
-        if (rotMode.getMode().equalsIgnoreCase("TellyBridge")) {
-            if (getTellyValue()) {
-                delta = delta.limit(
-                        RandomUtils.nextInt(180, 180),
-                        RandomUtils.nextInt(180, 180)
-                );
-            } else {
-                delta = delta.limit(
-                        RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
-                        RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
-                );
-            }
-        } else {
-            if (getSafeValue()) {
-                delta = delta.limit(
-                        RandomUtils.nextInt(minClutchYawSpeed.getValue(), maxClutchYawSpeed.getValue()),
-                        RandomUtils.nextInt(minClutchPitchSpeed.getValue(), maxClutchPitchSpeed.getValue())
-                );
-            } else {
-                delta = delta.limit(
-                        RandomUtils.nextInt(minYawSpeed.getValue(), maxYawSpeed.getValue()),
-                        RandomUtils.nextInt(minPitchSpeed.getValue(), maxPitchSpeed.getValue())
-                );
-            }
-        }
+        delta = getDeltaSpeed(delta);
 
         delta = RotUtils.fixDelta(delta);
 
@@ -394,19 +297,43 @@ public class Scaffold extends Module {
 
     boolean getTellyValue() {
         if (MoveUtils.isMoving()) {
-            if (mc.gameSettings.keyBindJump.isKeyDown()) {
-                return mc.thePlayer.onGround || mc.thePlayer.jumpTicks > RandomUtils.nextInt(minTellyTicks.getValue(), maxTellyTicks.getValue());
-            }
+            if (mc.gameSettings.keyBindJump.isKeyDown()) return mc.thePlayer.onGround || mc.thePlayer.jumpTicks > tellyTicks.getRandomizedIntValue();
             return !mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ));
         }
         return false;
     }
 
+    Delta getDeltaSpeed(Delta delta) {
+        switch (rotMode.getMode()) {
+            case "TellyBridge" -> {
+                if (getTellyValue()) {
+                    return delta.limit(yawForwardTellySpeed.getRandomizedIntValue(), pitchForwardTellySpeed.getRandomizedIntValue());
+                } else {
+                    return delta.limit(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
+                }
+            }
+
+            case "GodBridge" -> {
+                if (getSafeValue()) {
+                    return delta.limit(yawClutchSpeed.getRandomizedIntValue(), pitchClutchSpeed.getRandomizedIntValue());
+                } else {
+                    return delta.limit(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
+                }
+            }
+
+            case "Normal" -> {
+                return delta.limit(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
+            }
+        }
+
+        return delta;
+    }
+
     private float getPitch(float yaw) {
         Map<Float, MovingObjectPosition> positionHashMap = new HashMap<>();
 
-        float maxPitch = rotMode.getMode().equalsIgnoreCase("TellyBridge") ? 85 : maxPitchCorrectionSearch.getValue();
-        float minPitch = rotMode.getMode().equalsIgnoreCase("TellyBridge") ? 45 : minPitchCorrectionSearch.getValue();
+        float maxPitch = (float) pitchCorrectionSearch.getMaxValue();
+        float minPitch = (float) pitchCorrectionSearch.getMinValue();
 
         float step = stepPitchCorrection.getValue();
         for (float i = minPitch; i < maxPitch; i += step) {
@@ -469,12 +396,8 @@ public class Scaffold extends Module {
             double yawDiff = MathHelper.wrapDegree(Rot.getServerRotation().getYaw() - data.rotation.getYaw());
             double pitchDiff = Rot.getServerRotation().getPitch() - data.rotation.getPitch();
 
-            return Math.hypot(yawDiff, pitchDiff) + mc.thePlayer.getPositionVector().distanceTo(data.hitPos) * 200000;
+            return Math.hypot(yawDiff, pitchDiff) + mc.thePlayer.getPositionVector().distanceTo(data.hitPos) * (sortingDistanceStrength.getValue() * 10);
         }));
-
-//        validRotations.sort(Comparator.comparingDouble(data -> {
-//            return 0;
-//        }));
 
         closest = validRotations.getFirst();
 

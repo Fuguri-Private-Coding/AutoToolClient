@@ -30,20 +30,7 @@ public class Blink extends Module {
 
     private final CheckBox pulseBlink = new CheckBox("PulseBlink", this);
 
-    private final IntegerSetting minResetDelay = new IntegerSetting("MinResetDelay", this, pulseBlink::isToggled, 50, 1000, 400) {
-        @Override
-        public int getValue() {
-            if (maxResetDelay.value < value) { value = maxResetDelay.value; }
-            return super.getValue();
-        }
-    };
-    private final IntegerSetting maxResetDelay = new IntegerSetting("MaxResetDelay", this, pulseBlink::isToggled, 50, 1000, 400) {
-        @Override
-        public int getValue() {
-            if (minResetDelay.value > value) { value = minResetDelay.value; }
-            return super.getValue();
-        }
-    };
+    DoubleSlider resetDelay = new DoubleSlider("ResetDelay", this, pulseBlink::isToggled, 0,5000,200,1);
 
     private final Mode renderModes = new Mode("RenderMode", this)
             .addModes("Player", "HitBox", "OFF")
@@ -61,7 +48,7 @@ public class Blink extends Module {
     private final StopWatch timer = new StopWatch();
 
     private Vec3 currentPos, lastPos;
-    private int resetDelay;
+    private int resetDelays;
 
     @Override
     public void onDisable() {
@@ -74,7 +61,7 @@ public class Blink extends Module {
         if (mc.isIntegratedServerRunning()) return;
         if (event instanceof PacketEvent e && e.getDirection() == PacketDirection.OUTGOING && !e.isCanceled() && Utils.isWorldLoaded()) {
             Packet packet = e.getPacket();
-            if (timer.reachedMS(resetDelay) && pulseBlink.isToggled()) {
+            if (timer.reachedMS(resetDelays) && pulseBlink.isToggled()) {
                 reset();
                 return;
             }
@@ -135,7 +122,7 @@ public class Blink extends Module {
     private void reset() {
         buffer.forEach(packet -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet));
         buffer.clear();
-        resetDelay = RandomUtils.nextInt(minResetDelay.getValue(), maxResetDelay.getValue());
+        resetDelays = resetDelay.getRandomizedIntValue();
         positions.clear();
         timer.reset();
     }
