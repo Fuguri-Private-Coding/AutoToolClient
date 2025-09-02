@@ -2,9 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.MoveEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.UpdateEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -31,6 +29,20 @@ public class NoSlow extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
+        if (mc.thePlayer.inventory.getCurrentItem() == null) return;
+        if (mc.thePlayer.motionX == 0.0 && mc.thePlayer.motionZ == 0.0) return;
 
+        if (event instanceof MotionEvent) {
+            if (mc.thePlayer.getHeldItem().getItem() == null
+                    || !(mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemFood) || !mc.thePlayer.isUsingItem()) {
+                return;
+            }
+
+            switch (mode.getMode()) {
+                case "Intave" -> {
+                    mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP));
+                }
+            }
+        }
     }
 }

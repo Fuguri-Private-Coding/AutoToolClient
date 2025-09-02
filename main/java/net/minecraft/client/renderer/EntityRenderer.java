@@ -17,7 +17,9 @@ import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Animation;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -180,6 +182,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private float avgServerTickDiff = 0.0F;
     private ShaderGroup[] fxaaShaders = new ShaderGroup[10];
     private boolean loadVisibleChunks = false;
+
+    Animation cameraY = new Animation();
+    Animation cameraX = new Animation();
+    Animation cameraZ = new Animation();
     private Framebuffer framebuffer = new Framebuffer(1, 1, false);
 
     Glow shadows;
@@ -600,12 +606,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 float f1 = entity.rotationYaw;
                 float f2 = entity.rotationPitch;
 
-
-//                if (entity == mc.thePlayer && freeLook.isToggled()) {
-//                    f1 = freeLook.rotYaw;
-//                    f2 = freeLook.rotPitch;
-//                }
-
                 if (this.mc.gameSettings.thirdPersonView == 2) {
                     f2 += 180.0F;
                 }
@@ -636,10 +636,18 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
                 }
 
+                if (customCamera.smoothCamera.isToggled() && customCamera.isToggled()) {
+                    cameraX.update(customCamera.xAnimationSmooth.getValue());
+                    cameraX.setEndPos(mc.thePlayer.moveStrafing / 2f);
+                    cameraY.update(customCamera.yAnimationSmooth.getValue());
+                    cameraY.setEndPos((float) (mc.thePlayer.motionY / 0.5f));
+                    cameraZ.update(customCamera.zAnimationSmooth.getValue());
+                    cameraZ.setEndPos(mc.thePlayer.moveForward / 2f);
+                }
 
                 GlStateManager.rotate(entity.rotationPitch - f2, 1.0F, 0.0F, 0.0F);
                 GlStateManager.rotate(entity.rotationYaw - f1, 0.0F, 1.0F, 0.0F);
-                GlStateManager.translate(customCamera.isToggled() && customCamera.gta5.isToggled() ? -customCamera.translate.getValue() : 0f, 0F, (float) (-d3));
+                GlStateManager.translate(customCamera.isToggled() && customCamera.smoothCamera.isToggled() ? -cameraX.value : 0f, customCamera.isToggled() && customCamera.smoothCamera.isToggled() ? cameraY.value : 0f, (float) (-d3) + (customCamera.isToggled() && customCamera.smoothCamera.isToggled() ? -cameraZ.value : 0f));
                 GlStateManager.rotate(f1 - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
                 GlStateManager.rotate(f2 - entity.rotationPitch, 1.0F, 0.0F, 0.0F);
             }

@@ -270,12 +270,18 @@ public class ClickGuiScreen extends GuiScreen {
 		List<Module> moduleList = Client.INST.getModuleManager().getModulesByCategory(selectedCategory);
 
 		for (Module module : moduleList) {
-			fontRenderer.drawString(
+            float toggleProgress = module.getToggleProgress();
+            Color toggleColor = ColorUtils.interpolateColor(CATEGORY_COLOR, MAIN_COLOR, toggleProgress);
+
+            fontRenderer.drawString(
 					module.getName() + (!module.isHide() ? " ✓" : " ×"),
 					background.x + 4,
 					background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 2,
-					module.isToggled() ? MAIN_COLOR : CATEGORY_COLOR
+					toggleColor
 			);
+
+            module.updateToggleAnimation();
+
 			offset += fontRenderer.FONT_HEIGHT + 2;
 			modulesTotalHeight += fontRenderer.FONT_HEIGHT + 2;
 			if (module == selectedModule) moduleLine.setEnd(background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset);

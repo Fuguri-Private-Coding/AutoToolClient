@@ -29,8 +29,9 @@ public class Module implements Imports, SettingAble {
 	@Getter EasingAnimation animation = new EasingAnimation(-50);
 	@Getter @Setter long hoverStartTime;
 	@Getter @Setter boolean isHovered;
+    @Getter private float toggleProgress = 0f;
 
-	public Module() {
+    public Module() {
 		settings = new ArrayList<>();
 		setToggled(annotation.toggled());
 	}
@@ -58,6 +59,16 @@ public class Module implements Imports, SettingAble {
 		if (toggled) Client.INST.getSoundsManager().getEnableSound().asyncPlay(volume);else Client.INST.getSoundsManager().getDisableSound().asyncPlay(volume);
 		Notifications.instance.addNotification(name,toggled);
 	}
+
+    public void updateToggleAnimation() {
+        float target = toggled ? 1f : 0f;
+        float animationSpeed = 0.15f;
+        toggleProgress += (target - toggleProgress) * animationSpeed;
+
+        if (Math.abs(toggleProgress - target) < 0.01f) {
+            toggleProgress = target;
+        }
+    }
 
 	public boolean toggled() {
         return toggled;

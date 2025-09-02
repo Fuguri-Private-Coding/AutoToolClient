@@ -23,6 +23,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.util.vector.Vector2f;
+
 import java.awt.*;
 
 @ModuleInfo(name = "DynamicIsland", category = Category.VISUAL)
@@ -54,8 +55,13 @@ public class DynamicIsland extends Module {
     EasingAnimation currentHeight = new EasingAnimation();
     EasingAnimation needY = new EasingAnimation();
     EasingAnimation radiusAnim = new EasingAnimation();
+    EasingAnimation textAlpha = new EasingAnimation();
 
-    String currentText;
+    String currentText, currentWidthText;
+
+    public DynamicIsland() {
+        currentText = "AutoTool";
+    }
 
     @EventTarget
     public void onEvent(Event event) {
@@ -73,30 +79,25 @@ public class DynamicIsland extends Module {
             Scaffold scaffOld = Client.INST.getModuleManager().getModule(Scaffold.class);
 
             String name = Client.INST.getFullName();
-            String bps = String.format("%.3f", mc.thePlayer.getBps(false));
-            String target = "Current Target - Undefined";
-            String scaffold = "Block Left - Undefined";
-            String backtrack = "Distance - Undefined";
+            String target, backtrack, scaffold, bps = "";
 
             currentHeight.setEnd(height);
-            currentText = name;
+            updateText(name);
             needY.setEnd(yOffsetValue);
 
             if (MoveUtils.isMoving()) {
-                currentText = bps;
-                resetNeedY(15, yOffsetValue);
+                bps = "BPS - " + String.format("%.3f", mc.thePlayer.getBps(false));
+                updateText(bps);
             }
 
             if (ent != null) {
                 target = "Current Target - " + ent.getName();
-                currentText = target;
-                resetNeedY(30, yOffsetValue);
+                updateText(target);
             }
 
             if (scaffOld.getBlockCount() > 0 && scaffOld.isToggled()) {
                 scaffold = "Blocks Left - " + scaffOld.getBlockCount();
-                currentText = scaffold;
-                resetNeedY(45, yOffsetValue);
+                updateText(scaffold);
             }
 
             if (backTrack.isToggled() && backTrack.packetBuffer.size() > 10 && ent != null) {
@@ -107,17 +108,12 @@ public class DynamicIsland extends Module {
                 );
 
                 backtrack = "Distance - " + String.format("%.1f", DistanceUtils.getDistance(realBox));
-                currentText = backtrack;
-                resetNeedY(60, yOffsetValue);
+                updateText(backtrack);
             }
 
-            currentWidth.setEnd((float) (width.getValue() + font.getStringWidth(currentText)));
+            currentWidth.setEnd((float) (width.getValue() + font.getStringWidth(currentWidthText.equalsIgnoreCase(bps) ? "BPS - 00000" : currentWidthText)));
 
             updateAnimations();
-
-            String finalTarget = target;
-            String finalScaffold = scaffold;
-            String finalBacktrack = backtrack;
 
             StencilUtils.renderStencil(
                     () -> RenderUtils.drawMixedRoundedRect(
@@ -142,11 +138,7 @@ public class DynamicIsland extends Module {
                                 bgColor.getSpeed()
                         );
 
-                        font.drawString(name, (screenSize.x / 2f - font.getStringWidth(name) / 2f), 10 + needY.getValue(), fadeTextColor);
-                        font.drawString(bps, (screenSize.x / 2f - font.getStringWidth(bps) / 2f), 25 + needY.getValue(), fadeTextColor);
-                        font.drawString(finalTarget, (screenSize.x / 2f - font.getStringWidth(finalTarget) / 2f), 40 + needY.getValue(), fadeTextColor);
-                        font.drawString(finalScaffold, (screenSize.x / 2f - font.getStringWidth(finalScaffold) / 2f), 55 + needY.getValue(), fadeTextColor);
-                        font.drawString(finalBacktrack, (screenSize.x / 2f - font.getStringWidth(finalBacktrack) / 2f), 70 + needY.getValue(), fadeTextColor);
+                        font.drawString(currentText, (screenSize.x / 2f - font.getStringWidth(currentText) / 2f), 10 + needY.getValue(), new Color(fadeTextColor.getRed() / 255f,fadeTextColor.getGreen() / 255f,fadeTextColor.getBlue() / 255f, textAlpha.getValue()));
                     }
             );
 
@@ -161,15 +153,11 @@ public class DynamicIsland extends Module {
     }
 
     private void updateAnimations() {
-        Easing widthEasingFunc = Easing.OUT_BACK;
-        Easing heightEasingFunc = Easing.OUT_BACK;
-        Easing positionEasingFunc = Easing.OUT_BACK;
-        Easing radiusEasingFunc = Easing.OUT_BACK;
-
-        currentWidth.update(animationSpeed.getValue(), widthEasingFunc);
-        currentHeight.update(animationSpeed.getValue(), heightEasingFunc);
-        needY.update(animationSpeed.getValue(), positionEasingFunc);
-        radiusAnim.update(animationSpeed.getValue(), radiusEasingFunc);
+        currentWidth.update(animationSpeed.getValue(), Easing.LINEAR);
+        currentHeight.update(animationSpeed.getValue(), Easing.LINEAR);
+        needY.update(animationSpeed.getValue(), Easing.LINEAR);
+        radiusAnim.update(animationSpeed.getValue(), Easing.LINEAR);
+        textAlpha.update(7, Easing.LINEAR);
 
         radiusAnim.setEnd(bgRadius.getValue());
     }
@@ -182,7 +170,18 @@ public class DynamicIsland extends Module {
                 bgColor.getColor(), bgColor.getFadeColor(), bgColor.getSpeed()) : bgColor.getColor();
     }
 
-    public void resetNeedY(float y, float yOffsetValue) {
-        needY.setEnd(yOffsetValue - y);
+    public void updateText(String text) {
+        currentWidthText = text;
+        if (!text.startsWith(currentText.substring(0,3))) {
+            textAlpha.setEnd(0);
+        } else {
+            currentText = text;
+        }
+
+        if (textAlpha.getValue() == 0) currentText = text;
+
+        if (!currentWidth.isAnimating()) {
+            textAlpha.setEnd(1);
+        }
     }
 }

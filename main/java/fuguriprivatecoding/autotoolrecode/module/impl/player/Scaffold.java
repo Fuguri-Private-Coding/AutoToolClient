@@ -9,9 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
@@ -22,14 +20,12 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.block.*;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
 import org.lwjgl.input.Mouse;
-
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -444,34 +440,6 @@ public class Scaffold extends Module {
         return pitches.getFirst();
     }
 
-    public BlockPos findBlocks() {
-
-        List<BlockPos> blockPosList = new ArrayList<>();
-
-        for (int y = 4; y >= -4; --y) {
-            for (int x = -4; x <= 4; ++x) {
-                for (int z = -4; z <= 4; ++z) {
-                    BlockPos pos = new BlockPos(
-                            mc.thePlayer.posX + x,
-                            mc.thePlayer.posY + y,
-                            mc.thePlayer.posZ + z
-                    );
-                    IBlockState state = mc.theWorld.getBlockState(pos);
-                    if (state.getBlock() instanceof BlockAir) continue;
-
-                    blockPosList.add(pos);
-                }
-            }
-        }
-
-        Vec3 playerPos = mc.thePlayer.getPositionVector();
-
-//        blockPosList.sort();
-
-        return blockPosList.getFirst();
-
-    }
-
     private Rot getBestRotation() {
         float step = 2f;
         List<RotationData> validRotations = new ArrayList<>();
@@ -501,7 +469,7 @@ public class Scaffold extends Module {
             double yawDiff = MathHelper.wrapDegree(Rot.getServerRotation().getYaw() - data.rotation.getYaw());
             double pitchDiff = Rot.getServerRotation().getPitch() - data.rotation.getPitch();
 
-            return Math.hypot(yawDiff, pitchDiff) + mc.thePlayer.getPositionVector().distanceTo(data.hitPos) * 20;
+            return Math.hypot(yawDiff, pitchDiff) + mc.thePlayer.getPositionVector().distanceTo(data.hitPos) * 200000;
         }));
 
 //        validRotations.sort(Comparator.comparingDouble(data -> {

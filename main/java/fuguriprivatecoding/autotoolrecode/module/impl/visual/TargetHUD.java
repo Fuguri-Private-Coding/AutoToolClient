@@ -156,10 +156,9 @@ public class TargetHUD extends Module {
                     float maxHealthBarWidth = width - height - 5;
                     float targetHealthWidth = maxHealthBarWidth * healthPercentage;
 
-                    if (healthAnimation.getEnd() != targetHealthWidth) {
-                        healthAnimation.setEnd(targetHealthWidth);
-                    }
-                    healthAnimation.update(5, Easing.LINEAR);
+                    if (healthAnimation.getEnd() != targetHealthWidth) healthAnimation.setEnd(targetHealthWidth);
+
+                    healthAnimation.update(7, Easing.LINEAR);
 
                     float animatedHealthWidth = healthAnimation.getValue();
                     RenderUtils.drawMixedRoundedRect(posX + height, posY + height / 2f + 2, maxHealthBarWidth, 10, 5, bgColor.getColor(),bgColor.getColor(), 180,0,0,90, bgColor.getSpeed());
@@ -170,7 +169,7 @@ public class TargetHUD extends Module {
                     int hurtTime = target.hurtTime / 2;
 
                     StencilUtils.renderStencil(
-                    () ->  RenderUtils.drawMixedRoundedRect(posX + 5, posY + 5, (height - 10 - hurtTime) * currentScale.getValue(), (height - 10 - hurtTime) * currentScale.getValue(), headRadius.getValue() * currentScale.getValue(),Color.WHITE, Color.WHITE, bgColor.getSpeed()),
+                    () -> RenderUtils.drawMixedRoundedRect(posX + 5 + hurtTime / 2f, posY + 5 + hurtTime / 2f, (height - 10 - hurtTime) * currentScale.getValue(), (height - 10 - hurtTime) * currentScale.getValue(), headRadius.getValue() * currentScale.getValue(),Color.WHITE, Color.WHITE, bgColor.getSpeed()),
                     () -> {
                         glColor4f(1f, 1f - hurtTime, 1f - hurtTime, 1f);
                         RenderUtils.quickDrawHead(target.getSkin(), posX + 5 + hurtTime / 2f, posY + 5 + hurtTime / 2f, (height - 10 - hurtTime) * currentScale.getValue(), (height - 10 - hurtTime) * currentScale.getValue());
