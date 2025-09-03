@@ -153,11 +153,11 @@ public class DynamicIsland extends Module {
     }
 
     private void updateAnimations() {
-        currentWidth.update(animationSpeed.getValue(), Easing.LINEAR);
-        currentHeight.update(animationSpeed.getValue(), Easing.LINEAR);
-        needY.update(animationSpeed.getValue(), Easing.LINEAR);
-        radiusAnim.update(animationSpeed.getValue(), Easing.LINEAR);
-        textAlpha.update(3, Easing.LINEAR);
+        currentWidth.update(animationSpeed.getValue(), Easing.IN_OUT_BACK);
+        currentHeight.update(animationSpeed.getValue(), Easing.IN_OUT_BACK);
+        needY.update(animationSpeed.getValue(), Easing.IN_OUT_BACK);
+        radiusAnim.update(animationSpeed.getValue(), Easing.IN_OUT_BACK);
+        textAlpha.update(7, Easing.LINEAR);
 
         radiusAnim.setEnd(bgRadius.getValue());
     }
@@ -180,7 +180,7 @@ public class DynamicIsland extends Module {
 
         if (textAlpha.getValue() == 0) currentText = text;
 
-        if (!currentWidth.isAnimating()) {
+        if (currentWidth.getProgress() > 0.5f) {
             textAlpha.setEnd(1);
         }
     }

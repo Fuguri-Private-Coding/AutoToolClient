@@ -556,13 +556,13 @@ public class ClickGuiScreen extends GuiScreen {
 
                     fontRenderer.drawString(
                             "Min:",
-                            background.x + verticalLineXOffset + 5 + 1,
+                            background.x + verticalLineXOffset + 5 + 5 + 1,
                             background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10,
                             CATEGORY_COLOR
                     );
 
                     RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 20 + 1,
+                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1,
                             minSliderY,
                             length,
                             4,
@@ -571,7 +571,7 @@ public class ClickGuiScreen extends GuiScreen {
                     );
 
                     RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 20 + 1,
+                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1,
                             minSliderY,
                             minSliderLength,
                             4,
@@ -580,7 +580,7 @@ public class ClickGuiScreen extends GuiScreen {
                     );
 
                     RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 20 + 1 + minSliderLength - 2,
+                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + minSliderLength - 2,
                             minSliderY - 1,
                             6,
                             6,
@@ -590,20 +590,20 @@ public class ClickGuiScreen extends GuiScreen {
 
                     fontRenderer.drawString(
                             String.format("%.2f", doubleSlider.getMinValue()),
-                            background.x + verticalLineXOffset + 5 + 20 + 1 + length + 6,
+                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 6,
                             background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10,
                             CATEGORY_COLOR
                     );
 
                     fontRenderer.drawString(
                             "Max:",
-                            background.x + verticalLineXOffset + 5 + 1,
+                            background.x + verticalLineXOffset + 5 + 5 + 1,
                             background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10 + 12,
                             CATEGORY_COLOR
                     );
 
                     RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 20 + 1,
+                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1,
                             maxSliderY,
                             length,
                             4,
@@ -612,7 +612,7 @@ public class ClickGuiScreen extends GuiScreen {
                     );
 
                     RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 20 + 1,
+                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1,
                             maxSliderY,
                             maxSliderLength,
                             4,
@@ -621,7 +621,7 @@ public class ClickGuiScreen extends GuiScreen {
                     );
 
                     RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 20 + 1 + maxSliderLength - 2,
+                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + maxSliderLength - 2,
                             maxSliderY - 1,
                             6,
                             6,
@@ -631,33 +631,33 @@ public class ClickGuiScreen extends GuiScreen {
 
                     fontRenderer.drawString(
                             String.format("%.2f", doubleSlider.getMaxValue()),
-                            background.x + verticalLineXOffset + 5 + 20 + 1 + length + 6,
+                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 6,
                             background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10 + 12,
                             CATEGORY_COLOR
                     );
 
-                    if (mouseX > background.x + verticalLineXOffset + 5 + 20 + 1 - 5
-                            && mouseX < background.x + verticalLineXOffset + 5 + 20 + 1 + length + 5
+                    if (mouseX > background.x + verticalLineXOffset + 5 + 5 + 20 + 1 - 5
+                            && mouseX < background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 5
                             && mouseY > minSliderY - 2
                             && mouseY < minSliderY + 6) {
                         if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
                             doubleSlider.setMinValue(doubleSlider.getMinValue() + Math.signum(currentScroll) * doubleSlider.getStep());
                         } else if (Mouse.isButtonDown(0)) {
-                            float mx = mouseX - (background.x + verticalLineXOffset + 5 + 20 + 1);
+                            float mx = mouseX - (background.x + verticalLineXOffset + 5 + 5 + 20 + 1);
                             float p = mx / length;
                             double normalize = doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p;
                             doubleSlider.setMinValue(normalize);
                         }
                     }
 
-                    if (mouseX > background.x + verticalLineXOffset + 5 + 20 + 1 - 5
-                            && mouseX < background.x + verticalLineXOffset + 5 + 20 + 1 + length + 5
+                    if (mouseX > background.x + verticalLineXOffset + 5 + 5 + 20 + 1 - 5
+                            && mouseX < background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 5
                             && mouseY > maxSliderY - 2
                             && mouseY < maxSliderY + 6) {
                         if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
                             doubleSlider.setMaxValue(doubleSlider.getMaxValue() + Math.signum(currentScroll) * doubleSlider.getStep());
                         } else if (Mouse.isButtonDown(0)) {
-                            float mx = mouseX - (background.x + verticalLineXOffset + 5 + 20 + 1);
+                            float mx = mouseX - (background.x + verticalLineXOffset + 5 + 5 + 20 + 1);
                             float p = mx / length;
                             double normalize = doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p;
                             doubleSlider.setMaxValue(normalize);
@@ -665,10 +665,11 @@ public class ClickGuiScreen extends GuiScreen {
                     }
 
                     offset += 25;
+                    settingsTotalHeight += 25;
                 }
 				if (setting instanceof ColorSetting colorSetting) {
 					float startY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
-					float sliderX = background.x + verticalLineXOffset + 5 + 32.5f + 1;
+					float sliderX = background.x + verticalLineXOffset + 5 + 32.5f + 4;
 					float sliderWidth = 75;
 					float sliderHeight = 4;
 					float verticalSpacing = 3;
@@ -678,7 +679,7 @@ public class ClickGuiScreen extends GuiScreen {
 
                     float fadeButtonY = startY + currentOffset;
 
-					float triangleX = background.x + verticalLineXOffset + 5 + settingWidth + 1;
+					float triangleX = background.x + verticalLineXOffset + 5 + settingWidth + 4;
 					float triangleY = fadeButtonY - 1;
 
 					Color color = new Color(colorSetting.getRed(), colorSetting.getGreen(), colorSetting.getBlue(), 1f);
@@ -704,14 +705,14 @@ public class ClickGuiScreen extends GuiScreen {
 					} else {
 						fontRenderer.drawString(
 								"Fade: ",
-								background.x + verticalLineXOffset + 5 + 3,
+								background.x + verticalLineXOffset + 5 + 5,
 								fadeButtonY + 12,
 								Color.WHITE
 						);
 
 						fontRenderer.drawString(
 								String.valueOf(colorSetting.isFade()),
-								background.x + verticalLineXOffset + 5 + 3 + fontRenderer.getStringWidth("Fade: "),
+								background.x + verticalLineXOffset + 5 + 5 + fontRenderer.getStringWidth("Fade: "),
 								fadeButtonY + 12,
 								colorSetting.isFade() ? Color.GREEN.darker() : Color.RED
 						);
@@ -1177,14 +1178,14 @@ public class ClickGuiScreen extends GuiScreen {
 				if (setting instanceof ColorSetting colorSetting) {
 					float startY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
 					int currentOffset = 0;
-					float triangleX = background.x + verticalLineXOffset + settingWidth + 3;
+					float triangleX = background.x + verticalLineXOffset + settingWidth + 7;
 
 					float fadeButtonY = startY + currentOffset;
 
 					if (Mouse.isButtonDown(0)) {
-						float fadeButtonX = background.x + verticalLineXOffset + 5 + 3;
+						float fadeButtonX = background.x + verticalLineXOffset + 5 + 5;
 						if (!colorSetting.isHide() && mouseX > fadeButtonX + fontRenderer.getStringWidth("Fade: ") && mouseX < fadeButtonX + fontRenderer.getStringWidth("Fade: ") + fontRenderer.getStringWidth(String.valueOf(colorSetting.isFade())) &&
-								mouseY > fadeButtonY + 12 && mouseY < fadeButtonY + 12 + fontRenderer.FONT_HEIGHT) {
+								mouseY > fadeButtonY + 10 && mouseY < fadeButtonY + 10 + fontRenderer.FONT_HEIGHT) {
 							colorSetting.setFade(!colorSetting.isFade());
 						}
 						if (mouseX > triangleX && mouseX < triangleX + 10 && mouseY > fadeButtonY - 2 && mouseY < fadeButtonY + 8) {

@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 public class PlayerManager implements Imports {
 
     public static int airTicks;
+    public static int groundTicks;
 
     public PlayerManager() {
         Client.INST.getEventManager().register(this);
@@ -18,14 +19,16 @@ public class PlayerManager implements Imports {
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (event instanceof TickEvent) {
-            updateAirTicks();
+            update();
         }
     }
 
-    private void updateAirTicks() {
+    private void update() {
         if (!mc.thePlayer.onGround) {
             airTicks++;
+            groundTicks = 0;
         } else {
+            groundTicks++;
             airTicks = 0;
         }
     }
