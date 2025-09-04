@@ -262,7 +262,7 @@ public class Scaffold extends Module {
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (getTellyValue()) {
-                    rotation = new Rot(MathHelper.wrapDegree(mc.thePlayer.rotationYaw), 80);
+                    rotation = new Rot(MoveUtils.getDir(), 90);
                 } else {
                     rotation = getBestRotation();
                 }
@@ -340,7 +340,7 @@ public class Scaffold extends Module {
             MovingObjectPosition mouses = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, i));
             if (mouses == null || mouses.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
                     || positionHashMap.containsValue(mouses)
-                    || mouses.sideHit == EnumFacing.DOWN) continue;
+                    || mouses.sideHit == EnumFacing.DOWN || (!mc.theWorld.isAirBlock(getDirectionalBlockPos(-10)) && mouses.sideHit != EnumFacing.UP)) continue;
             positionHashMap.put(i, mouses);
         }
 

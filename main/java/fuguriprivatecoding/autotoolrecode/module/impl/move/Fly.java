@@ -25,8 +25,8 @@ public class Fly extends Module {
 
     int jumps, boostTicks;
     boolean boosting;
-
     @Override
+
     public void onDisable() {
         boosting = false;
         boostTicks = 0;

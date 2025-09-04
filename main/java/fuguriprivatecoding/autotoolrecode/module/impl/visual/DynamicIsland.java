@@ -118,7 +118,7 @@ public class DynamicIsland extends Module {
             StencilUtils.renderStencil(
                     () -> RenderUtils.drawMixedRoundedRect(
                             screenSize.x / 2f - currentWidth.getValue() / 2f,
-                            4.5f + yOffsetValue,
+                            yOffsetValue,
                             currentWidth.getValue(),
                             currentHeight.getValue(),
                             radiusAnim.getValue(),
@@ -129,7 +129,7 @@ public class DynamicIsland extends Module {
                     () -> {
                         RenderUtils.drawMixedRoundedRect(
                                 screenSize.x / 2f - currentWidth.getValue() / 2f,
-                                4.5f + yOffsetValue,
+                                yOffsetValue,
                                 currentWidth.getValue(),
                                 currentHeight.getValue(),
                                 radiusAnim.getValue(),
@@ -138,25 +138,25 @@ public class DynamicIsland extends Module {
                                 bgColor.getSpeed()
                         );
 
-                        font.drawString(currentText, (screenSize.x / 2f - font.getStringWidth(currentText) / 2f), 10 + needY.getValue(), new Color(fadeTextColor.getRed() / 255f,fadeTextColor.getGreen() / 255f,fadeTextColor.getBlue() / 255f, textAlpha.getValue()));
+                        font.drawString(currentText, (screenSize.x / 2f - font.getStringWidth(currentText) / 2f), 5.5f + needY.getValue(), new Color(fadeTextColor.getRed() / 255f,fadeTextColor.getGreen() / 255f,fadeTextColor.getBlue() / 255f, textAlpha.getValue()));
                     }
             );
 
             if (glow.isToggled()) {
-                BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, 4.5f + yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), bgColorShadow.getColor(), bgColorShadow.getFadeColor(), bgColorShadow.getSpeed()));
+                BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), bgColorShadow.getColor(), bgColorShadow.getFadeColor(), bgColorShadow.getSpeed()));
             }
 
             if (blur.isToggled()) {
-                GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, 4.5f + yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), Color.WHITE, Color.WHITE, bgColorShadow.getSpeed()));
+                GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), Color.WHITE, Color.WHITE, bgColorShadow.getSpeed()));
             }
         }
     }
 
     private void updateAnimations() {
-        currentWidth.update(animationSpeed.getValue(), Easing.IN_OUT_BACK);
-        currentHeight.update(animationSpeed.getValue(), Easing.IN_OUT_BACK);
-        needY.update(animationSpeed.getValue(), Easing.IN_OUT_BACK);
-        radiusAnim.update(animationSpeed.getValue(), Easing.IN_OUT_BACK);
+        currentWidth.update(animationSpeed.getValue(), Easing.LINEAR);
+        currentHeight.update(animationSpeed.getValue(), Easing.LINEAR);
+        needY.update(animationSpeed.getValue(), Easing.LINEAR);
+        radiusAnim.update(animationSpeed.getValue(), Easing.LINEAR);
         textAlpha.update(7, Easing.LINEAR);
 
         radiusAnim.setEnd(bgRadius.getValue());

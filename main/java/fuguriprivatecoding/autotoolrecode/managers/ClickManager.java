@@ -31,6 +31,11 @@ public class ClickManager implements Imports {
         if (clickSettings == null) clickSettings = Client.INST.getModuleManager().getModule(ClickSettings.class);
 
         if (event instanceof TickEvent tickEvent && !tickEvent.isCanceled()) {
+
+            if (clickSettings.simulateDoubleClick.isToggled() && clicks > 0) {
+                clicks += Math.random() <= 0.5 ? 1 : -1;
+            }
+
             int iters = clicks;
             clicks = 0;
 

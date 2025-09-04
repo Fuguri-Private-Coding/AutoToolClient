@@ -140,6 +140,10 @@ public class MathHelper implements Imports
         return value < (double)i ? i - 1 : i;
     }
 
+    public static float lerp(float delta, float start, float end) {
+        return start + delta * (end - start);
+    }
+
     public static double func_181159_b(double p_181159_0_, double p_181159_2_)
     {
         double d0 = p_181159_2_ * p_181159_2_ + p_181159_0_ * p_181159_0_;

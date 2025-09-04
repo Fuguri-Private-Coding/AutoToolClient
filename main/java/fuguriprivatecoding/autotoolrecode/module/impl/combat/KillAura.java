@@ -29,6 +29,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+
 import java.io.File;
 import java.util.function.BooleanSupplier;
 
@@ -63,7 +64,15 @@ public class KillAura extends Module {
             .addModes("Linear", "AIModel")
             .setMode("Linear");
 
-    final IntegerSetting rotationDuration = new IntegerSetting("Rotation Duration", this, 1, 2000, 600);
+    BooleanSupplier linearVisible = () -> smoothMode.getMode().equalsIgnoreCase("Linear");
+
+    DoubleSlider mixDelta = new DoubleSlider("Mix Delta", this, 0,1,0.7, 0.1f);
+
+    CheckBox reactionTimeWithAnimation = new CheckBox("Reaction Time With Animation", this, linearVisible, false);
+    final IntegerSetting rotationDuration = new IntegerSetting("Rotation Duration", this, () -> linearVisible.getAsBoolean() && reactionTimeWithAnimation.isToggled(), 1, 2000, 600);
+
+    CheckBox basicRandomize = new CheckBox("Basic Randomize", this, linearVisible, false);
+    FloatSetting randomizeStrength = new FloatSetting("Randomize Strength", this, () -> basicRandomize.isToggled() && linearVisible.getAsBoolean(), 0, 20,5,0.1f);
 
     final FloatSetting linearSmoothStrength = new FloatSetting(
             "LinearSmoothStrength", this,
@@ -92,6 +101,8 @@ public class KillAura extends Module {
 
     final StopWatch clickTimer = new StopWatch();
     private long delay;
+
+    Rot lastDelta = new Rot();
 
     public KillAura() {
         updateModels();
@@ -144,19 +155,6 @@ public class KillAura extends Module {
 
                 if (needRotation == null) return;
 
-                interpolation.setDuration(rotationDuration.getValue());
-                interpolation.setEasing(Easing.IN_OUT_BACK);
-
-                if (interpolation.getRaw() == 1) {
-                    startTest = needRotation.copy();
-                    interpolation.reset();
-                }
-
-                needRotation = new Rot(
-                        startTest.getYaw() + MathHelper.wrapDegree(needRotation.getYaw() - startTest.getYaw()) * (float) interpolation.get(),
-                        startTest.getPitch() + (needRotation.getPitch() - startTest.getPitch()) * (float) interpolation.get()
-                );
-
                 Rot delta = RotUtils.getDelta(lr, needRotation);
 
                 Rot speed = new Rot(
@@ -168,12 +166,29 @@ public class KillAura extends Module {
 
                 switch (smoothMode.getMode()) {
                     case "Linear" -> {
-                        Rot rot = new Rot(
-                                needRotation.getYaw() - RandomUtils.nextFloat(-2, 2),
-                                needRotation.getPitch() - RandomUtils.nextFloat(-2, 2)
-                        );
+                        if (reactionTimeWithAnimation.isToggled()) {
+                            interpolation.setDuration(rotationDuration.getValue());
+                            interpolation.setEasing(Easing.IN_OUT_BACK);
 
-                        delta = RotUtils.getDelta(lr, rot);
+                            if (interpolation.getRaw() == 1) {
+                                startTest = needRotation.copy();
+                                interpolation.reset();
+                            }
+
+                            needRotation = new Rot(
+                                    startTest.getYaw() + MathHelper.wrapDegree(needRotation.getYaw() - startTest.getYaw()) * (float) interpolation.get(),
+                                    startTest.getPitch() + (needRotation.getPitch() - startTest.getPitch()) * (float) interpolation.get()
+                            );
+                        }
+
+                        if (basicRandomize.isToggled()) {
+                            Rot rot = new Rot(
+                                    needRotation.getYaw() - RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
+                                    needRotation.getPitch() - RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
+                            );
+
+                            delta = RotUtils.getDelta(lr, rot);
+                        }
 
                         delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
                         delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
@@ -199,6 +214,17 @@ public class KillAura extends Module {
                 }
 
                 RotUtils.limitDelta(delta, speed);
+
+                if (Client.INST.getProfile().getRole().equalsIgnoreCase("Owner")) {
+                    delta.setYaw(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
+                    delta.setPitch(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
+
+                    lastDelta = new Rot(
+                            delta.getYaw(),
+                            delta.getPitch()
+                    );
+                }
+
                 if (gcd.isToggled()) delta = RotUtils.fixDelta(delta);
                 lr = lr.add(delta);
                 lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));

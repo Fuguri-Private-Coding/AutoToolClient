@@ -1,9 +1,13 @@
 package fuguriprivatecoding.autotoolrecode.utils.math;
 
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Vec3;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class MathUtils {
+public class MathUtils implements Imports {
 
     public static double round(double value, double step) {
         return Math.round(value / step) * step;
@@ -27,4 +31,59 @@ public class MathUtils {
         double y = y1 - y2;
         return Math.sqrt(x * x + y * y);
     }
+
+    public static float interpolate(float current, float target) {
+        return interpolate(current, target, mc.timer.renderPartialTicks);
+    }
+
+    public static float interpolate(float current, float target, float multiple) {
+        if (multiple == mc.timer.renderPartialTicks) {
+            return current + (target - current) * multiple;
+        }
+
+        return current;
+    }
+
+    public static double interpolate(double current, double target) {
+        return interpolate(current, target, mc.timer.renderPartialTicks);
+    }
+
+    public static double interpolate(double current, double target, float multiple) {
+        return interpolate((float) current, (float) target, multiple);
+    }
+
+    public static Vec3 interpolate(Vec3 current, Vec3 target) {
+        return interpolate(current, target, mc.timer.renderPartialTicks);
+    }
+
+    public static Vec3 interpolate(Vec3 current, Vec3 target, float multiple) {
+        if (multiple == mc.timer.renderPartialTicks) {
+            return new Vec3(
+                    interpolate(current.xCoord, target.xCoord, multiple),
+                    interpolate(current.yCoord, target.yCoord, multiple),
+                    interpolate(current.zCoord, target.zCoord, multiple));
+        }
+
+        return current;
+    }
+
+    public static AxisAlignedBB interpolate(AxisAlignedBB current, AxisAlignedBB target) {
+        return interpolate(current, target, mc.timer.renderPartialTicks);
+    }
+
+    public static AxisAlignedBB interpolate(AxisAlignedBB current, AxisAlignedBB target, float multiple) {
+        if (multiple == mc.timer.renderPartialTicks) {
+            return new AxisAlignedBB(
+                    interpolate(current.minX, target.minX, multiple),
+                    interpolate(current.minY, target.minY, multiple),
+                    interpolate(current.minZ, target.minZ, multiple),
+                    interpolate(current.maxX, target.maxX, multiple),
+                    interpolate(current.maxY, target.maxY, multiple),
+                    interpolate(current.maxZ, target.maxZ, multiple)
+            );
+        }
+
+        return current;
+    }
+
 }

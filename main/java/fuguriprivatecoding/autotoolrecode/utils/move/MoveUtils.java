@@ -54,7 +54,7 @@ public class MoveUtils implements Imports {
             rotationYaw += 360.0f;
         }
 
-        return (float) Math.toRadians(rotationYaw);
+        return (float) rotationYaw;
     }
 
     public static float getYawFromKeybind() {
