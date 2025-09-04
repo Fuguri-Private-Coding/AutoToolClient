@@ -340,7 +340,7 @@ public class Scaffold extends Module {
             MovingObjectPosition mouses = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, i));
             if (mouses == null || mouses.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
                     || positionHashMap.containsValue(mouses)
-                    || mouses.sideHit == EnumFacing.DOWN || (!mc.theWorld.isAirBlock(getDirectionalBlockPos(-10)) && mouses.sideHit != EnumFacing.UP)) continue;
+                    || mouses.sideHit == EnumFacing.DOWN) continue;
             positionHashMap.put(i, mouses);
         }
 

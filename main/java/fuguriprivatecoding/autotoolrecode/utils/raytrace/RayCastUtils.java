@@ -123,7 +123,13 @@ public class RayCastUtils implements Imports {
         return raycastEntityFromPos(pos, range, Rot.getServerRotation().getYaw(), Rot.getServerRotation().getPitch(), entityFilter);
     }
 
+
+
     public static MovingObjectPosition rayCast(Vec3 eyesPosition, final double entityRange, final double blockRange, Rot rotation) {
+        return rayCast(eyesPosition, entityRange, blockRange, rotation, 1.0f);
+    }
+
+    public static MovingObjectPosition rayCast(Vec3 eyesPosition, final double entityRange, final double blockRange, Rot rotation, float partialTicks) {
         if (mc.theWorld == null || mc.getRenderViewEntity() == null) { return null; }
 
         double blockReachDistance = blockRange;
@@ -131,7 +137,7 @@ public class RayCastUtils implements Imports {
 
         final Entity renderViewEntity = mc.getRenderViewEntity();
 
-        MovingObjectPosition mouse = renderViewEntity.rayTrace(blockReachDistance, mc.timer.renderPartialTicks, rotation);
+        MovingObjectPosition mouse = renderViewEntity.rayTrace(blockReachDistance, partialTicks, rotation);
 
         Vec3 hittingVector = null;
         final float yawCos = MathHelper.cos(-rotation.getYaw() * 0.017453292F - (float) Math.PI);

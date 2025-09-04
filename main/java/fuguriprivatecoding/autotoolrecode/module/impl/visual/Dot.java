@@ -41,7 +41,7 @@ public class Dot extends Module {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (!Rot.isChanged() && onlyChangeRotationModules.isToggled()) { return; }
         if (event instanceof Render3DEvent) {
-            MovingObjectPosition mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks),6,6, prevPos.add(pos.subtract(prevPos).multiplier(mc.timer.renderPartialTicks)));
+            MovingObjectPosition mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks),6,6, prevPos.add(pos.subtract(prevPos).multiplier(mc.timer.renderPartialTicks)), mc.timer.renderPartialTicks);
 
             if (mouse != null) {
                 Vec3 smooth = mouse.hitVec;
