@@ -11,22 +11,17 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class Profile implements Serializable {
     private String username;
-    private String role;
+    private Role role;
 
     @Override
     public String toString() {
-        return "[" + username + "] [" + role + "]";
+        return username + " [" + role.name().toLowerCase() + "]";
     }
 
-    public String getColored() {
-        String coloredRole = role;
-
-        switch (role) {
-            case "Owner" -> coloredRole = "§4Owner§f";
-            case "test" -> coloredRole = "§atest§f";
-            case "User" -> coloredRole = "§1User§f";
-        }
-
-        return "§f[§6" + username + "§f] [" + coloredRole + "§f]";
+    /**
+     * @return Строка с цветом текста
+     */
+    public String toColoredString() {
+        return username + " §7[" + role.getColorPrefix() + role.name().toLowerCase() + "§7]";
     }
 }
