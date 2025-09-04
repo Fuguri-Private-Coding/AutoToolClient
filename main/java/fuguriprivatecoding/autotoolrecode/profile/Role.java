@@ -9,10 +9,10 @@ public enum Role {
     // луф когда новую роль добавлять будешь НЕ забудь пофиксить левелы
     // потому что если не сделать этого то все взорваться может
     NONE(0, "null", "тут сам поставь типо везде знак параграфа и цвет через кодовое значение и потом в рендере сам укажи ок да"),
-    USER(1, "User", ""),
-    TESTER(2, "Tester", ""),
-    MODERATOR(3, "Moderator", ""),
-    OWNER(4, "Owner", "");
+    USER(1, "User", "§9"),
+    TESTER(2, "Tester", "§2"),
+    MODERATOR(3, "Moderator", "§c"),
+    OWNER(4, "Owner", "§4");
 
     private final int level;
     private final String name;

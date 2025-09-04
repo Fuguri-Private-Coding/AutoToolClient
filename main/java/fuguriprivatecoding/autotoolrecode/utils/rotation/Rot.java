@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import org.lwjgl.util.vector.Vector2f;
@@ -70,6 +71,10 @@ public class Rot {
 	public Rot subtract(Rot rotation) {
 		return subtract(rotation.yaw, rotation.pitch);
 	}
+
+    public Rot multiplier(float multiplier) {
+        return new Rot(yaw * multiplier, pitch * multiplier);
+    }
 
 	public Rot copy() {
 		return new Rot(

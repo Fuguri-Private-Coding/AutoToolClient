@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
+import fuguriprivatecoding.autotoolrecode.profile.Role;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.util.ArrayList;
@@ -47,9 +48,9 @@ public class IRC extends Module {
                         String clientName = args[1].replace("[", "").replace("]", "");
                         String role = args[2].replace("[", "").replace("]", "");
 
-                        if (usersOnline.containsKey(ign) && usersOnline.containsValue(new Profile(clientName, role))) continue;
+                        if (usersOnline.containsKey(ign) && usersOnline.containsValue(new Profile(clientName, Role.fromRoleName(role)))) continue;
 
-                        usersOnline.put(ign, new Profile(clientName, role));
+                        usersOnline.put(ign, new Profile(clientName, Role.fromRoleName(role)));
                     }
                 }
             }).start();

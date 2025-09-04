@@ -131,7 +131,7 @@ public class RayCastUtils implements Imports {
 
         final Entity renderViewEntity = mc.getRenderViewEntity();
 
-        MovingObjectPosition mouse = renderViewEntity.rayTrace(blockReachDistance, 1f, rotation);
+        MovingObjectPosition mouse = renderViewEntity.rayTrace(blockReachDistance, mc.timer.renderPartialTicks, rotation);
 
         Vec3 hittingVector = null;
         final float yawCos = MathHelper.cos(-rotation.getYaw() * 0.017453292F - (float) Math.PI);

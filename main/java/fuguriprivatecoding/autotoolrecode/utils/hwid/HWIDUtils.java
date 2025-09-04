@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.utils.hwid;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
+import fuguriprivatecoding.autotoolrecode.profile.Role;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.security.MessageDigest;
@@ -39,7 +40,7 @@ public class HWIDUtils {
         for (Message message : Client.INST.getIrc().getHwidChannel().getIterableHistory().stream().toList()) {
             String[] args = message.getContentRaw().split(":");
             if (hwid.equalsIgnoreCase(args[0])) {
-                Client.INST.setProfile(new Profile(args[1], args[2]));
+                Client.INST.setProfile(new Profile(args[1], Role.fromRoleName(args[2])));
                 return true;
             }
         }

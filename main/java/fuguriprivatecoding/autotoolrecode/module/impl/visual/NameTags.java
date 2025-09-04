@@ -76,7 +76,7 @@ public class NameTags extends Module {
         detectiveText = detective ? "§6[Detective]§6 " : "";
         murderText = murder ? "§4[Murder]§4 " : "";
         friendText = friend ? "§2[Friend]§a " : "";
-        userText = user ? IRC.usersOnline.get(entity.getName()).getColored() + " " : "";
+        userText = user ? IRC.usersOnline.get(entity.getName()).toColoredString() + " " : "";
         text = userText + friendText + murderText + detectiveText + entity.getDisplayName().getFormattedText();
     }
 

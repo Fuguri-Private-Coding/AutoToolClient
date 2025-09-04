@@ -50,7 +50,7 @@ public class GuiPlayerTabOverlay extends Gui
         String friend = friendManager.isFriend(networkPlayerInfoIn.getGameProfile().getName(), midClick.reverseFriends.isToggled()) ? "§2[Friend]§9 " : "";
         String murder = murderDetector.isToggled() && murderDetector.murders.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§4[Murder]§4 " : "";
         String detective = murderDetector.isToggled() && murderDetector.detectives.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§6[Detective]§6 " : "";
-        String user = IRC.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()) != null ? IRC.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()).getColored() + " " : "";
+        String user = IRC.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()) != null ? IRC.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()).toColoredString() + " " : "";
         String name = networkPlayerInfoIn.getDisplayName() != null ? networkPlayerInfoIn.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(networkPlayerInfoIn.getPlayerTeam(), networkPlayerInfoIn.getGameProfile().getName());
 
         return user + friend + murder + detective + name;

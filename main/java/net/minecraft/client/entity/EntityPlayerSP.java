@@ -204,7 +204,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
                 this.lastReportedPitch = event.getPitch();
             }
 
-            new MotionEventPost().call();
+            new MotionEventPost(event.getX(), event.getY(), event.getZ(), event.getYaw(), event.getPitch(), event.isOnGround()).call();
         }
     }
 

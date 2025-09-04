@@ -37,6 +37,9 @@ public class ArrayList extends Module {
 
     FloatSetting animationSpeed = new FloatSetting("Animation Speed", this, 0,10,3,0.1f);
 
+    CheckBox suffix = new CheckBox("Suffix",this, false);
+    ColorSetting suffixColor = new ColorSetting("Suffix Color", this, suffix::isToggled);
+
     final ColorSetting textColor = new ColorSetting("Text Color", this);
     FloatSetting textYOffset = new FloatSetting("Text Y-Offset", this,-5f, 5, 0, 0.01f);
     CheckBox shadow = new CheckBox("Text Shadow", this, true);
@@ -74,7 +77,7 @@ public class ArrayList extends Module {
             for (Module module : moduleList) {
                 updateColors(moduleList, module);
 
-                module.getAnimation().update(animationSpeed.getValue(), Easing.OUT_BACK);
+                module.getAnimation().update(animationSpeed.getValue(), Easing.LINEAR);
 
                 switch (pos.getMode()) {
                     case "Right Up" -> renderRightUp(xOffset + module.getAnimation().getValue(), yOffset, module, sc, fadeBackgroundColor, fadeLineColor, fadeTextColor);
@@ -87,12 +90,15 @@ public class ArrayList extends Module {
 
     private void renderRightUp(double xOffset, double yOffset, Module module, ScaledResolution sc, Color fadeBackgroundColor, Color fadeLineColor, Color fadeTextColor) {
         String moduleText = module.getName();
+
+        boolean suffixCondition = suffix.isToggled() && !"".equals(module.getSuffix());
+
         if (glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> {
                 if (background.isToggled()) {
-                    Gui.drawRect((int) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText) - 4f), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset), (float) yOffset, fadeBackgroundShadowColor.getRGB());
+                    Gui.drawRect((int) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText + (suffixCondition ?  " - " + module.getSuffix() : "")) - 4f), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset), (float) yOffset, fadeBackgroundShadowColor.getRGB());
                 } else {
-                    font.drawString(moduleText, (float) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText) - 1.75f), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, fadeTextColor, shadow.isToggled());
+                    font.drawString(moduleText, (float) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText + (suffixCondition ?  " - " + module.getSuffix() : "")) - 1.75f), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, fadeTextColor, shadow.isToggled());
                 }
                 if (line.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset + 2), (float) yOffset, fadeBackgroundShadowColor.getRGB());
             });
@@ -104,17 +110,23 @@ public class ArrayList extends Module {
                 if (line.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset + 2), (float) yOffset, Color.WHITE.getRGB());
             });
         }
-        if (background.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText) - 4f), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset), (float) yOffset, fadeBackgroundColor.getRGB());
-        font.drawString(moduleText, (float) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText) - 1.75f), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, fadeTextColor, shadow.isToggled());
+        if (background.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText + (suffixCondition ?  " - " + module.getSuffix() : "")) - 4f), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset), (float) yOffset, fadeBackgroundColor.getRGB());
+        if (suffixCondition) {
+            font.drawString(" - " + module.getSuffix(), (float) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(" - " + module.getSuffix()) - 1.75f), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, suffixColor.getFadedColor(), shadow.isToggled());
+        }
+        font.drawString(moduleText, (float) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText + (suffixCondition ?  " - " + module.getSuffix() : "")) - 1.75f), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, fadeTextColor, shadow.isToggled());
         if (line.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset + 2), (float) yOffset, fadeLineColor.getRGB());
     }
 
     private void renderLeftUp(double xOffset, double yOffset, Module module, Color fadeBackgroundColor, Color fadeLineColor, Color fadeTextColor) {
         String moduleText = module.getName();
+
+        boolean suffixCondition = suffix.isToggled() && !"".equals(module.getSuffix());
+
         if (glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> {
                 if (background.isToggled()) {
-                    Gui.drawRect((int) xOffset, (int) ((float) yOffset + verticalSpacing.getValue()), (int) ((float) font.getStringWidth(moduleText) + 4 + xOffset), (float) yOffset, fadeBackgroundShadowColor.getRGB());
+                    Gui.drawRect((int) xOffset, (int) ((float) yOffset + verticalSpacing.getValue()), (int) ((float) font.getStringWidth(moduleText + (suffixCondition ? " - " + module.getSuffix() : "")) + 4 + xOffset), (float) yOffset, fadeBackgroundShadowColor.getRGB());
                 } else {
                     font.drawString(moduleText, (float) (2.5f + xOffset), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, Color.WHITE, shadow.isToggled());
                 }
@@ -123,11 +135,14 @@ public class ArrayList extends Module {
         }
         if (blur.isToggled()) {
             GaussianBlurUtils.addToDraw(() -> {
-                if (background.isToggled()) Gui.drawRect((int) xOffset, (int) ((float) yOffset + verticalSpacing.getValue()), (int) ((float) font.getStringWidth(moduleText) + 4 + xOffset), (float) yOffset, Color.WHITE.getRGB());
+                if (background.isToggled()) Gui.drawRect((int) xOffset, (int) ((float) yOffset + verticalSpacing.getValue()), (int) ((float) font.getStringWidth(moduleText + (suffixCondition ? " - " + module.getSuffix() : "")) + 4 + xOffset), (float) yOffset, Color.WHITE.getRGB());
                 if (line.isToggled()) Gui.drawRect((int) (xOffset - 2), (int) ((float) yOffset + verticalSpacing.getValue()), (int) xOffset, (float) yOffset, Color.WHITE.getRGB());
             });
         }
-        if (background.isToggled()) Gui.drawRect((int) xOffset, (int) ((float) yOffset + verticalSpacing.getValue()), (int) ((float) font.getStringWidth(moduleText) + 4 + xOffset), (float) yOffset, fadeBackgroundColor.getRGB());
+        if (background.isToggled()) Gui.drawRect((int) xOffset, (int) ((float) yOffset + verticalSpacing.getValue()), (int) ((float) font.getStringWidth(moduleText + (suffixCondition ? " - " + module.getSuffix() : "")) + 4 + xOffset), (float) yOffset, fadeBackgroundColor.getRGB());
+        if (suffixCondition) {
+            font.drawString(" - " + module.getSuffix(), (float) (2.5f + xOffset + font.getStringWidth(moduleText)), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, suffixColor.getFadedColor(), shadow.isToggled());
+        }
         font.drawString(moduleText, (float) (2.5f + xOffset), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, fadeTextColor, shadow.isToggled());
         if (line.isToggled()) Gui.drawRect((int) (xOffset - 2), (int) ((float) yOffset + verticalSpacing.getValue()), (int) xOffset, (float) yOffset, fadeLineColor.getRGB());
     }
@@ -156,8 +171,11 @@ public class ArrayList extends Module {
 
     void sort(final List<Module> toSort, final ClientFontRenderer fontToCalcWidth) {
         toSort.sort( (m1, m2) -> {
-            final double width1 = fontToCalcWidth.getStringWidth(m1.getName());
-            final double width2 = fontToCalcWidth.getStringWidth(m2.getName());
+            boolean suffixConditionm1 = suffix.isToggled() && !"".equals(m1.getSuffix());
+            boolean suffixConditionm2 = suffix.isToggled() && !"".equals(m2.getSuffix());
+
+            final double width1 = fontToCalcWidth.getStringWidth(m1.getName() + (suffixConditionm1 ? " - " + m1.getSuffix() : ""));
+            final double width2 = fontToCalcWidth.getStringWidth(m2.getName() + (suffixConditionm2 ? " - " + m2.getSuffix() : ""));
 
             return Double.compare(width2, width1);
         });

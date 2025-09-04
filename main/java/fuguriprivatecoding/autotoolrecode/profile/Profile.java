@@ -15,13 +15,13 @@ public class Profile implements Serializable {
 
     @Override
     public String toString() {
-        return username + " [" + role.name().toLowerCase() + "]";
+        return username + " [" + role.name() + "]";
     }
 
     /**
      * @return Строка с цветом текста
      */
     public String toColoredString() {
-        return username + " §7[" + role.getColorPrefix() + role.name().toLowerCase() + "§7]";
+        return username + " §7[" + role.getColorPrefix() + role.name() + "§7]";
     }
 }

@@ -1,5 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import com.viaversion.viaversion.util.ChatColorUtil;
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
 import lombok.Setter;
@@ -121,6 +123,11 @@ public class ColorSetting extends Setting {
 
     public Color getColor() {
         return new Color(red, green, blue, alpha);
+    }
+
+    public Color getFadedColor() {
+        if (isFade())  return ColorUtils.fadeColor(getColor(), getFadeColor(), getSpeed());
+        return ColorUtils.fadeColor(getColor(), getColor(), getSpeed());
     }
 
     public Color getFadeColor() {

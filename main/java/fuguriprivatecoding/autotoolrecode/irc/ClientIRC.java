@@ -98,7 +98,7 @@ public class ClientIRC extends ListenerAdapter {
         if (Client.INST.isStarting()) return;
         if (event.getChannel() == chatChannel) {
             String message = event.getMessage().getContentRaw();
-            message = message.replaceAll(Client.INST.getProfile().toString(), Client.INST.getProfile().getColored());
+            message = message.replaceAll(Client.INST.getProfile().toString(), Client.INST.getProfile().toColoredString());
             Client.INST.getConsole().history.add("§f[§2IRC§f] " + message);
         }
     }

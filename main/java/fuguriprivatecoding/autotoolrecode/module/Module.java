@@ -49,7 +49,7 @@ public class Module implements Imports, SettingAble {
 		} else {
 			playSound(volume);
 			Client.INST.getEventManager().unregister(this);
-			animation.setEnd(-50);
+			animation.setEnd(!"".equals(getSuffix()) ? -100 : -180);
 			onDisable();
 		}
 	}

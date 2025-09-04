@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
+import fuguriprivatecoding.autotoolrecode.profile.Role;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.managers.CombatManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -66,7 +67,7 @@ public class KillAura extends Module {
 
     BooleanSupplier linearVisible = () -> smoothMode.getMode().equalsIgnoreCase("Linear");
 
-    DoubleSlider mixDelta = new DoubleSlider("Mix Delta", this, () -> Client.INST.getProfile().getRole().equalsIgnoreCase("Owner"), 0,1,0.7, 0.1f);
+    DoubleSlider mixDelta = new DoubleSlider("Mix Delta", this, () -> Client.INST.getProfile().getRole().isHigherThenOrEquals(Role.TESTER), 0,1,0.7, 0.1f);
 
     CheckBox reactionTimeWithAnimation = new CheckBox("Reaction Time With Animation", this, linearVisible, false);
     final IntegerSetting rotationDuration = new IntegerSetting("Rotation Duration", this, () -> linearVisible.getAsBoolean() && reactionTimeWithAnimation.isToggled(), 1, 2000, 600);
@@ -215,7 +216,7 @@ public class KillAura extends Module {
 
                 RotUtils.limitDelta(delta, speed);
 
-                if (Client.INST.getProfile().getRole().equalsIgnoreCase("Owner")) {
+                if (Client.INST.getProfile().getRole().isHigherThenOrEquals(Role.TESTER)) {
                     delta.setYaw(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
                     delta.setPitch(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
 

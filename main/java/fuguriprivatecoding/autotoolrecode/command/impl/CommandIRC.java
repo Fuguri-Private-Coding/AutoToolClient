@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.command.impl;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.command.Command;
 import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
+import fuguriprivatecoding.autotoolrecode.profile.Role;
 
 public class CommandIRC extends Command {
 
@@ -20,7 +21,7 @@ public class CommandIRC extends Command {
         if (args[0].equalsIgnoreCase("irc")) {
             ClientIRC irc = Client.INST.getIrc();
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(Client.INST.getProfile().getColored()).append(" ");
+            stringBuilder.append(Client.INST.getProfile().toColoredString()).append(Client.INST.getProfile().getRole().isHigherThenOrEquals(Role.MODERATOR) ? "§4" : "§r").append(" ");
             for (String arg : args) {
                 if (arg.equalsIgnoreCase(args[0])) continue;
                 stringBuilder.append(arg).append(" ");
@@ -28,7 +29,7 @@ public class CommandIRC extends Command {
             irc.sendIRCMessage(stringBuilder.toString());
         }
 
-        if (args[0].equalsIgnoreCase("bc") && Client.INST.getProfile().getRole().equalsIgnoreCase("Owner")) {
+        if (args[0].equalsIgnoreCase("bc") && Client.INST.getProfile().getRole().isEquals(Role.OWNER)) {
             ClientIRC irc = Client.INST.getIrc();
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("§f[§7Server§f]§f").append(" ");
