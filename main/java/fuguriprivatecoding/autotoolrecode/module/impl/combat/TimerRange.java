@@ -33,6 +33,8 @@ public class TimerRange extends Module {
     IntegerSetting maxTargetHurtTime = new IntegerSetting("Max Target Hurt Time", this, 0, 10, 0);
     FloatSetting partialTicks = new FloatSetting("Partial Ticks", this, 0, 2.5f, 1, 0.1f);
 
+    IntegerSetting additionalTicks = new IntegerSetting("Additional Ticks", this, 0,5,1);
+
     FloatSetting minDistanceToSkipTick = new FloatSetting("Min Distance To Skip Tick", this, 2.5f, 6, 3, 0.1f);
 
     CheckBox renderRealPlayerPosition = new CheckBox("Render Real Player Position", this);
@@ -107,6 +109,7 @@ public class TimerRange extends Module {
                 try {
                     mc.runTick();
                     balance++;
+                    if (i == teleportTicks - 1) balance += additionalTicks.getValue();
                     if (RayCastUtils.rayCast(3.0, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                         click = true;
                         break;

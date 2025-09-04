@@ -6,9 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Role {
-    // луф когда новую роль добавлять будешь НЕ забудь пофиксить левелы
-    // потому что если не сделать этого то все взорваться может
-    NONE(0, "null", "тут сам поставь типо везде знак параграфа и цвет через кодовое значение и потом в рендере сам укажи ок да"),
+
+    NONE(0, "null", ""),
     USER(1, "User", "§9"),
     TESTER(2, "Tester", "§2"),
     MODERATOR(3, "Moderator", "§c"),
