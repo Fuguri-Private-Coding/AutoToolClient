@@ -66,7 +66,7 @@ public class KillAura extends Module {
 
     BooleanSupplier linearVisible = () -> smoothMode.getMode().equalsIgnoreCase("Linear");
 
-    DoubleSlider mixDelta = new DoubleSlider("Mix Delta", this, 0,1,0.7, 0.1f);
+    DoubleSlider mixDelta = new DoubleSlider("Mix Delta", this, () -> Client.INST.getProfile().getRole().equalsIgnoreCase("Owner"), 0,1,0.7, 0.1f);
 
     CheckBox reactionTimeWithAnimation = new CheckBox("Reaction Time With Animation", this, linearVisible, false);
     final IntegerSetting rotationDuration = new IntegerSetting("Rotation Duration", this, () -> linearVisible.getAsBoolean() && reactionTimeWithAnimation.isToggled(), 1, 2000, 600);
