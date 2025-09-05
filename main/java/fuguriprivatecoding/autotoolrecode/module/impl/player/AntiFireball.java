@@ -13,7 +13,6 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
-import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
@@ -34,12 +33,12 @@ public class AntiFireball extends Module {
     final IntegerSetting horizontalHitBoxSize = new IntegerSetting("HorizontalHitBoxSize", this, rotateVisible, 1, 100, 100);
     final IntegerSetting verticalHitBoxSize = new IntegerSetting("VerticalHitBoxSize", this, rotateVisible, 1, 100, 100);
 
-    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
-    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
+    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, rotateVisible, 0, 180, 90, 1);
+    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, rotateVisible, 0, 180, 90, 1);
 
-    final FloatSetting smooth = new FloatSetting("Smooth", this,rotateVisible, 1f,5f,2f, 0.1f);
+    final FloatSetting smooth = new FloatSetting("Smooth", this, rotateVisible, 1f, 5f, 2f, 0.1f);
 
-    final CheckBox lockView = new CheckBox("LockView", this,rotateVisible, false);
+    final CheckBox lockView = new CheckBox("LockView", this, rotateVisible, false);
 
     final IntegerSetting delay = new IntegerSetting("Delay", this, 0, 500, 0);
     final FloatSetting distance = new FloatSetting("Distance", this, 3f, 12f, 4.5f, 0.1f);
@@ -47,87 +46,91 @@ public class AntiFireball extends Module {
 
     final StopWatch stopWatch = new StopWatch();
 
-    public boolean rotating = false;
+    public EntityFireball target;
 
     @EventTarget
     public void onEvent(Event event) {
-        if (mc.thePlayer.ticksExisted < 40
-                || (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()
-                && rotate.isToggled())) return;
+        if (mc.thePlayer.ticksExisted < 40 || (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && rotate.isToggled()))
+            return;
 
-        if (rotate.isToggled()) {
+        if (event instanceof TickEvent) {
+            if (target != null && target.hurtResistantTime > 0) target = null;
+
             for (Entity target : mc.theWorld.loadedEntityList) {
                 if (!(target instanceof EntityFireball entityFireball) || entityFireball.shootingEntity == mc.thePlayer || DistanceUtils.getDistance(target) > distance.getValue() + 3.5f) {
-                    rotating = false;
                     continue;
                 }
 
-                Rot lr = Rot.getServerRotation().copy();
-                if (event instanceof MotionEvent e) {
-                    e.setYaw(lr.getYaw());
-                    e.setPitch(lr.getPitch());
-                    AxisAlignedBB box = getHitBox(entityFireball);
-
-                    Rot needRotation = RotUtils.getBestRotation(box.expand(0.1f, 0.1f, 0.1f));
-                    Rot delta = RotUtils.getDelta(lr, needRotation);
-
-                    Rot speed = new Rot(
-                            yawSpeed.getRandomizedIntValue(),
-                            pitchSpeed.getRandomizedIntValue()
-                    );
-
-                    RotUtils.limitDelta(delta, speed);
-
-                    delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / smooth.getValue()));
-                    delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / smooth.getValue()));
-
-                    delta = RotUtils.fixDelta(delta);
-                    lr = lr.add(delta);
-                    lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
-                    Rot.setServerRotation(lr);
-
-                    if (lockView.isToggled()) {
-                        mc.thePlayer.rotationYaw = Rot.getServerRotation().getYaw();
-                        mc.thePlayer.rotationPitch = Rot.getServerRotation().getPitch();
-                    }
-
-                    rotating = true;
-                }
-
-                if (event instanceof LookEvent e) {
-                    e.setYaw(lr.getYaw());
-                    e.setPitch(lr.getPitch());
-                }
-
-                if (event instanceof ChangeHeadRotationEvent e) {
-                    e.setYaw(lr.getYaw());
-                    e.setPitch(lr.getPitch());
-                }
-
-                if (event instanceof UpdateBodyRotationEvent e) {
-                    e.setYaw(lr.getYaw());
-                }
-
-                if (event instanceof MoveFlyingEvent e) e.setYaw(lr.getYaw());
-                if (event instanceof JumpEvent e) e.setYaw(lr.getYaw());
-
-                if (event instanceof MoveEvent e) {
-                    MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
-                }
+                this.target = entityFireball;
+                if (debug.isToggled()) ClientUtils.chatLog("Fireball detected.");
             }
         }
 
-        if (event instanceof TickEvent) {
-            for (Entity entity : mc.theWorld.loadedEntityList) {
-                if (!(entity instanceof EntityFireball entityFireball) || entityFireball.shootingEntity == mc.thePlayer || DistanceUtils.getDistance(entity) > distance.getValue() || !stopWatch.reachedMS(delay.getValue()))
-                    continue;
-                if (rotate.isToggled()) {
-                    mc.clickMouse();
-                } else {
-                    mc.playerController.attackEntity(mc.thePlayer, entity);
+        if (rotate.isToggled()) {
+            if (target == null) return;
+
+            Rot lr = Rot.getServerRotation().copy();
+            if (event instanceof MotionEvent e) {
+                e.setYaw(lr.getYaw());
+                e.setPitch(lr.getPitch());
+                AxisAlignedBB box = getHitBox(target);
+
+                Rot needRotation = RotUtils.getBestRotation(box.expand(0.1f, 0.1f, 0.1f));
+                Rot delta = RotUtils.getDelta(lr, needRotation);
+
+                Rot speed = new Rot(
+                        yawSpeed.getRandomizedIntValue(),
+                        pitchSpeed.getRandomizedIntValue()
+                );
+
+                RotUtils.limitDelta(delta, speed);
+
+                delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / smooth.getValue()));
+                delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / smooth.getValue()));
+
+                delta = RotUtils.fixDelta(delta);
+                lr = lr.add(delta);
+                lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
+                Rot.setServerRotation(lr);
+
+                if (lockView.isToggled()) {
+                    mc.thePlayer.rotationYaw = Rot.getServerRotation().getYaw();
+                    mc.thePlayer.rotationPitch = Rot.getServerRotation().getPitch();
                 }
-                stopWatch.reset();
-                if (debug.isToggled()) ClientUtils.chatLog("Fireball detected.");
+            }
+
+            if (event instanceof LookEvent e) {
+                e.setYaw(lr.getYaw());
+                e.setPitch(lr.getPitch());
+            }
+
+            if (event instanceof ChangeHeadRotationEvent e) {
+                e.setYaw(lr.getYaw());
+                e.setPitch(lr.getPitch());
+            }
+
+            if (event instanceof UpdateBodyRotationEvent e) {
+                e.setYaw(lr.getYaw());
+            }
+
+            if (event instanceof MoveFlyingEvent e) e.setYaw(lr.getYaw());
+            if (event instanceof JumpEvent e) e.setYaw(lr.getYaw());
+
+            if (event instanceof MoveEvent e) {
+                MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
+            }
+
+            if (event instanceof TickEvent) {
+                if (target == null) return;
+
+                if (stopWatch.reachedMS(delay.getValue())) {
+                    if (rotate.isToggled()) {
+                        mc.clickMouse();
+                    } else {
+                        mc.playerController.attackEntity(mc.thePlayer, target);
+                    }
+                    stopWatch.reset();
+                }
             }
         }
     }

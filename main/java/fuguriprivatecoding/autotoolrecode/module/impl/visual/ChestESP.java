@@ -27,7 +27,6 @@ public class ChestESP extends Module {
 
     final CheckBox enderChest = new CheckBox("ShowEnderChest", this);
 
-    Color fadeColor;
     Glow shadows;
     Blur blur;
 
@@ -37,21 +36,17 @@ public class ChestESP extends Module {
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (event instanceof Render3DEvent) {
-            fadeColor = color.isFade() ?
-                    ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
-                    : color.getColor();
-
             RenderUtils.start3D();
             for (TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {
                 if (tileEntity instanceof TileEntityChest) {
-                    if (shadows.isToggled() && shadows.module.get("ChestESP")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), 1,1,1,1));
-                    if (blur.isToggled() && blur.module.get("ChestESP")) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), 1,1,1,1));
-                    RenderUtils.drawBlockESP(tileEntity.getPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
+                    if (shadows.isToggled() && shadows.module.get("ChestESP")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), Color.WHITE));
+                    if (blur.isToggled() && blur.module.get("ChestESP")) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), Color.WHITE));
+                    RenderUtils.drawBlockESP(tileEntity.getPos(), color.getFadedFloatColor());
                     ColorUtils.resetColor();
                 } else if (tileEntity instanceof TileEntityEnderChest && enderChest.isToggled()) {
-                    if (shadows.isToggled() && shadows.module.get("ChestESP")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), 1,1,1,1));
-                    if (blur.isToggled() && blur.module.get("ChestESP")) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), 1,1,1,1));
-                    RenderUtils.drawBlockESP(tileEntity.getPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
+                    if (shadows.isToggled() && shadows.module.get("ChestESP")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), Color.WHITE));
+                    if (blur.isToggled() && blur.module.get("ChestESP")) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), Color.WHITE));
+                    RenderUtils.drawBlockESP(tileEntity.getPos(), color.getFadedFloatColor());
                     ColorUtils.resetColor();
                 }
             }

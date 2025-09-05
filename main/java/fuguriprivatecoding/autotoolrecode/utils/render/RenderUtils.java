@@ -158,6 +158,10 @@ public class RenderUtils implements Imports {
         GlStateManager.translate(x, y, z);
     }
 
+    public static void drawBlockESP(BlockPos blockPos, Color color) {
+        drawBlockESP(blockPos, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+    }
+
     public static void drawBlockESP(BlockPos blockPos, float red, float green, float blue, float alpha) {
         glColor4f(red,green,blue,alpha);
         double x = blockPos.getX() - mc.getRenderManager().viewerPosX;

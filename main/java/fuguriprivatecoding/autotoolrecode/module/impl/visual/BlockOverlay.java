@@ -27,28 +27,19 @@ public class BlockOverlay extends Module {
 
     Glow shadows;
     Blur blur;
-    Color fadeColor;
 
     @EventTarget
     public void onEvent(Event event) {
-        if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) {
-            return;
-        }
+        if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) return;
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (event instanceof DrawBlockHighlightEvent) {
-
-            fadeColor = color.isFade() ?
-                    ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
-                    : color.getColor();
-
-
             MovingObjectPosition renderRayCast = mc.objectMouseOver;
             if (renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 RenderUtils.start3D();
                 if (shadows.isToggled() && shadows.module.get("BlockOverlay")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), 1,1,1,1));
                 if (blur.isToggled() && blur.module.get("BlockOverlay")) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), 1,1,1,1));
-                RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
+                RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), color.getFadedFloatColor());
                 GlStateManager.resetColor();
                 RenderUtils.stop3D();
             }

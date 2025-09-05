@@ -48,9 +48,6 @@ public class DynamicIsland extends Module {
 
     public final ColorSetting bgColorShadow = new ColorSetting("Background Shadow Color", this, () -> glow.isToggled());
 
-    Color fadeTextColor;
-    Color fadeBackgroundColor;
-
     EasingAnimation currentWidth = new EasingAnimation();
     EasingAnimation currentHeight = new EasingAnimation();
     EasingAnimation needY = new EasingAnimation();
@@ -68,8 +65,6 @@ public class DynamicIsland extends Module {
         if (event instanceof Render2DEvent e) {
             ClientFontRenderer font = Client.INST.getFonts().fonts.get(fonts.getMode());
             Vector2f screenSize = new Vector2f(e.getSc().getScaledWidth(), e.getSc().getScaledHeight());
-
-            updateColors();
 
             float height = 15;
             float yOffsetValue = this.yOffset.getValue();
@@ -133,12 +128,12 @@ public class DynamicIsland extends Module {
                                 currentWidth.getValue(),
                                 currentHeight.getValue(),
                                 radiusAnim.getValue(),
-                                fadeBackgroundColor,
-                                fadeBackgroundColor,
+                                bgColor.getFadedColor(),
+                                bgColor.getFadedColor(),
                                 bgColor.getSpeed()
                         );
 
-                        font.drawString(currentText, (screenSize.x / 2f - font.getStringWidth(currentText) / 2f), 5.5f + needY.getValue(), new Color(fadeTextColor.getRed() / 255f,fadeTextColor.getGreen() / 255f,fadeTextColor.getBlue() / 255f, textAlpha.getValue()));
+                        font.drawString(currentText, (screenSize.x / 2f - font.getStringWidth(currentText) / 2f), 5.5f + needY.getValue(), new Color(textColor.getFadedColor().getRed() / 255f,textColor.getFadedColor().getGreen() / 255f,textColor.getFadedColor().getBlue() / 255f, textAlpha.getValue()));
                     }
             );
 
@@ -162,14 +157,6 @@ public class DynamicIsland extends Module {
         radiusAnim.setEnd(bgRadius.getValue());
     }
 
-    private void updateColors() {
-        fadeTextColor = textColor.isFade() ? ColorUtils.fadeColor(
-                textColor.getColor(), textColor.getFadeColor(), textColor.getSpeed()) : textColor.getColor();
-
-        fadeBackgroundColor = bgColor.isFade() ? ColorUtils.fadeColor(
-                bgColor.getColor(), bgColor.getFadeColor(), bgColor.getSpeed()) : bgColor.getColor();
-    }
-
     public void updateText(String text) {
         currentWidthText = text;
         if (!text.startsWith(currentText.substring(0,3))) {
@@ -180,7 +167,7 @@ public class DynamicIsland extends Module {
 
         if (textAlpha.getValue() == 0) currentText = text;
 
-        if (currentWidth.getProgress() > 0.5f) {
+        if (!currentWidth.isAnimating()) {
             textAlpha.setEnd(1);
         }
     }

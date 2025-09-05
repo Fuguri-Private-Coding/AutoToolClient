@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.projection.Convertors;
@@ -22,6 +21,8 @@ import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.*;
 
@@ -61,26 +62,14 @@ public class TargetHUD extends Module {
     EasingAnimation currentScale = new EasingAnimation();
     EasingAnimation healthAnimation = new EasingAnimation();
 
+    Vector2f pos = new Vector2f();
+
     @EventTarget
     public void onEvent(Event event) {
         if (mc.currentScreen != null) return;
 
         if (event instanceof TickEvent) {
-            CombatManager combatManager = Client.INST.getCombatManager();
-            EntityLivingBase currentTarget = combatManager.getTarget();
-
-            if (target == null && currentTarget != null) {
-                target = currentTarget;
-                currentScale.setEnd(1);
-            } else if (target != null) {
-                if (currentTarget == null) {
-                    currentScale.setEnd(0);
-                    if (!currentScale.isAnimating()) target = null;
-                } else {
-                    target = currentTarget;
-                    currentScale.setEnd(1f);
-                }
-            }
+            updateTarget();
         }
 
         if (target == null || target.getSkin() == null || target.getName() == null) return;
@@ -95,16 +84,16 @@ public class TargetHUD extends Module {
                 EntityRenderer entityRenderer = mc.entityRenderer;
 
                 entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
-                float[] pos = Convertors.convert2D(
+                Vector3f positions = Convertors.convert2D(
                         (float) (target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX),
-                     (float) (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY) + target.height / 2f + yOffset.getValue(),
+                        (float) (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY) + target.height / 2f + yOffset.getValue(),
                         (float) (target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ), mc.gameSettings.guiScale);
                 entityRenderer.setupOverlayRendering();
 
-                if (pos == null || pos[2] > 1) return;
+                if (positions == null || positions.z > 1) return;
 
-                pos[0] /= scale.getValue();
-                pos[1] /= scale.getValue();
+                positions.x /= scale.getValue();
+                positions.y /= scale.getValue();
 
                 float currentWidth = width * currentScale.getValue();
                 float currentHeight = height * currentScale.getValue();
@@ -112,24 +101,26 @@ public class TargetHUD extends Module {
                 float animX = (width / 2f) * currentScale.getValue();
                 float animY = (height / 2f) * currentScale.getValue();
 
-                float posX = pos[0] - animX;
-                float posY = pos[1] - animY;
+                pos.setX(positions.x - animX);
+                pos.setX(positions.y - animY);
 
                 ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
 
                 glScaled(this.scale.getValue(), this.scale.getValue(), 1);
-                renderHUD(posX, posY, currentWidth, currentHeight, bgRadius.getValue() * currentScale.getValue(), font, target);
+                renderHUD(pos.x, pos.y, currentWidth, currentHeight, bgRadius.getValue() * currentScale.getValue(), font, target);
                 glScaled(1f / this.scale.getValue(),1f / this.scale.getValue(),1f);
             } else {
-                float posX = (e.getSc().getScaledWidth() / 100f) * xPos.getValue() / currentScale.getValue() - width / 2f;
-                float posY = (e.getSc().getScaledHeight() / 100f) * yPos.getValue() / currentScale.getValue() - height / 2f;
+                pos.set(
+                        (e.getSc().getScaledWidth() / 100f) * xPos.getValue() / currentScale.getValue() - width / 2f,
+                        (e.getSc().getScaledHeight() / 100f) * yPos.getValue() / currentScale.getValue() - height / 2f
+                );
 
                 ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
 
                 double scale = this.scale.getValue() * currentScale.getValue();
 
                 glScaled(scale, scale, 1f);
-                renderHUD(posX, posY,  width, height, bgRadius.getValue(), font, target);
+                renderHUD(pos.x, pos.y,  width, height, bgRadius.getValue(), font, target);
                 glScaled(1f / scale,1f / scale,1f);
             }
         }
@@ -140,13 +131,11 @@ public class TargetHUD extends Module {
         () -> RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius,Color.BLACK, Color.BLACK, bgColor.getSpeed()),
             () -> {
                 if (render.get("Background")) {
-                    Color bgFadeColor = ColorUtils.fadeColor(bgColor.getColor(), bgColor.getFadeColor(), textColor.getSpeed());
-
-                    RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius,bgFadeColor, bgFadeColor, bgColor.getSpeed());
+                    RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius, bgColor.getFadedColor(), bgColor.getFadedColor(), bgColor.getSpeed());
                 }
 
                 if (render.get("Name")) {
-                    font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, ColorUtils.fadeColor(textColor.getColor(), textColor.getFadeColor(), textColor.getSpeed()));
+                    font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, textColor.getFadedColor());
                 }
 
                 if (render.get("Health")) {
@@ -161,7 +150,8 @@ public class TargetHUD extends Module {
                     healthAnimation.update(7, Easing.LINEAR);
 
                     float animatedHealthWidth = healthAnimation.getValue();
-                    RenderUtils.drawMixedRoundedRect(posX + height, posY + height / 2f + 2, maxHealthBarWidth, 10, 5, bgColor.getColor(),bgColor.getColor(), 180,0,0,90, bgColor.getSpeed());
+
+                    RenderUtils.drawMixedRoundedRect(posX + height, posY + height / 2f + 2, maxHealthBarWidth, 10, 5, bgColor.getColor(),bgColor.getColor(), bgColor.getSpeed());
                     RenderUtils.drawMixedRoundedRect(posX + height, posY + height / 2f + 2, animatedHealthWidth, 10, 5, healthColor.getColor(), healthColor.getFadeColor(), 180,0,0,90, healthColor.getSpeed());
                 }
 
@@ -184,6 +174,24 @@ public class TargetHUD extends Module {
 
         if (blur.isToggled()) {
             GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius, Color.BLACK, Color.BLACK, bgColor.getSpeed()));
+        }
+    }
+
+    private void updateTarget() {
+        CombatManager combatManager = Client.INST.getCombatManager();
+        EntityLivingBase currentTarget = combatManager.getTarget();
+
+        if (target == null && currentTarget != null) {
+            target = currentTarget;
+            currentScale.setEnd(1);
+        } else if (target != null) {
+            if (currentTarget == null) {
+                currentScale.setEnd(0);
+                if (!currentScale.isAnimating()) target = null;
+            } else {
+                target = currentTarget;
+                currentScale.setEnd(1f);
+            }
         }
     }
 }

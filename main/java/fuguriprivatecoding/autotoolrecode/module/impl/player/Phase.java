@@ -8,12 +8,6 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.BlockPos;
@@ -21,18 +15,12 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.WorldSettings;
 import org.lwjgl.input.Mouse;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BooleanSupplier;
-
 @ModuleInfo(name = "Phase", category = Category.PLAYER, description = "Позволяет ходить через стены.")
 public class Phase extends Module {
 
     CheckBox sneak = new CheckBox("Sneak", this, true);
     CheckBox clipDown = new CheckBox("Clip", this, true);
     IntegerSetting packetCount = new IntegerSetting("Packet count", this, () -> clipDown.isToggled(), 1, 20, 1);
-
-    CheckBox includeUp = new CheckBox("IncludeUp", this, true);
 
     private BlockPos currentBreakingBlock;
     private long lastBreakTime;
@@ -80,24 +68,22 @@ public class Phase extends Module {
         }
 
         if (event instanceof TickEvent && mc.objectMouseOver != null) {
-            EntityPlayerSP player = mc.thePlayer;
-            PlayerControllerMP controller = mc.playerController;
             BlockPos newBreakingBlock = mc.objectMouseOver.getBlockPos();
 
-            if (newBreakingBlock == null) return;
-            if (currentBreakingBlock != null && System.currentTimeMillis() - lastBreakTime > 500L) resetBreaking();
-            if (!Mouse.isButtonDown(0)) return;
-            if (!clipDown.isToggled()) return;
-            if (newBreakingBlock.getY() >= player.posY) return;
-            if (!newBreakingBlock.equals(currentBreakingBlock)) resetBreaking();
+            if (newBreakingBlock == null || !Mouse.isButtonDown(0) || !clipDown.isToggled() || newBreakingBlock.getY() >= mc.thePlayer.posY) return;
+            if (currentBreakingBlock != null && System.currentTimeMillis() - lastBreakTime > 500L || !newBreakingBlock.equals(currentBreakingBlock)) resetBreaking();
 
             currentBreakingBlock = newBreakingBlock;
             lastBreakTime = System.currentTimeMillis();
             EnumFacing sideHit = mc.objectMouseOver.sideHit;
 
-            player.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, currentBreakingBlock, sideHit));
-            for (int i = 0; i < packetCount.getValue(); i++) player.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(player.posX, player.posY, player.posZ, true));
-            if (controller.curBlockDamageMP > 0.77F) controller.curBlockDamageMP = 1.0f;
+            mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, currentBreakingBlock, sideHit));
+
+            for (int i = 0; i < packetCount.getValue(); i++) {
+                mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
+            }
+
+            if (mc.playerController.curBlockDamageMP > 0.77F) mc.playerController.curBlockDamageMP = 1.0f;
         }
     }
 }

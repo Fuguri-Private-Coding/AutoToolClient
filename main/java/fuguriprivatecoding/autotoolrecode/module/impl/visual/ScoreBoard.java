@@ -49,15 +49,11 @@ public class ScoreBoard extends Module {
 
     public final ColorSetting colorShadow = new ColorSetting("Shadow Color", this, shadow);
 
-    Color fadeColor;
-
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof ScoreboardRenderEvent e) e.cancel();
         if (event instanceof Render2DEvent) {
             if (remove.isToggled()) return;
-
-            updateColors();
 
             ScaledResolution sc = new ScaledResolution(mc);
 
@@ -79,37 +75,27 @@ public class ScoreBoard extends Module {
 
                 int height = collection.size() * 9 + 16;
 
+                float finalWidth = width;
                 if (roundedRect.isToggled()) {
-                    float finalWidth = width;
 
-                    if (glow.isToggled()) {
-                        BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
-                    }
-                    if (blur.isToggled()) {
-                        float finalWidth1 = width;
-                        GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth1, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
-                    }
+                    if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
+                    if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
+
                     StencilUtils.renderStencil(
                             () -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE),
                             () -> {
-                                RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), fadeColor);
-                                RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, fadeColor);
+                                RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), color.getFadedColor());
+                                RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, color.getFadedColor());
 
                                 mc.fontRendererObj.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - mc.fontRendererObj.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f, -1);
-
                             }
                     );
                 } else {
-                    if (glow.isToggled()) {
-                        float finalWidth1 = width;
-                        BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth1, height, 0, colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
-                    }
-                    if (blur.isToggled()) {
-                        float finalWidth1 = width;
-                        GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth1, height, 0, colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
-                    }
-                    RoundedUtils.drawRect(pos.x, pos.y, width, height, 0, fadeColor);
-                    RoundedUtils.drawRect(pos.x, pos.y, width, 12, 0, fadeColor);
+                    if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, 0, colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
+                    if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, 0, colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
+
+                    RoundedUtils.drawRect(pos.x, pos.y, width, height, 0, color.getFadedColor());
+                    RoundedUtils.drawRect(pos.x, pos.y, width, 12, 0, color.getFadedColor());
 
                     mc.fontRendererObj.drawString(objective.getDisplayName(), (int) ((pos.x + width / 2f) - mc.fontRendererObj.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f, -1);
                 }
@@ -130,9 +116,5 @@ public class ScoreBoard extends Module {
                 (sc.getScaledWidth() / 100f) * this.posX.getValue(),
                 (sc.getScaledHeight() / 100f) * this.posY.getValue()
         );
-    }
-
-    void updateColors() {
-        fadeColor = color.isFade() ? ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed()) : color.getColor();
     }
 }

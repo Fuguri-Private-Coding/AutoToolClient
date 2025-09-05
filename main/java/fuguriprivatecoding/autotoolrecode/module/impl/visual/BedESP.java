@@ -42,7 +42,6 @@ public class BedESP extends Module {
     Glow shadows;
     Blur blur;
     Thread update;
-    Color fadeColor;
 
     @Override
     public void onDisable() {
@@ -66,16 +65,11 @@ public class BedESP extends Module {
         if (event instanceof Render3DEvent) {
             if (beds.isEmpty()) return;
 
-            fadeColor = color.isFade() ?
-                    ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
-                    : color.getColor();
-
-
             RenderUtils.start3D();
             for (BlockPos[] bed : beds) {
                 if (shadows.isToggled() && shadows.module.get("BedESP")) BloomUtils.addToDraw(() -> renderBed(bed, Color.white));
                 if (blur.isToggled() && blur.module.get("BedESP")) GaussianBlurUtils.addToDraw(() -> renderBed(bed, Color.white));
-                renderBed(bed, fadeColor);
+                renderBed(bed, color.getFadedColor());
             }
             RenderUtils.stop3D();
         }

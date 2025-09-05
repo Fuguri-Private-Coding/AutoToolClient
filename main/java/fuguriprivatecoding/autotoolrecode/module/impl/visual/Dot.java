@@ -34,7 +34,6 @@ public class Dot extends Module {
     Glow shadows;
     Rot prevPos = new Rot();
     Rot pos = new Rot();
-    Color fadeColor;
 
     @EventTarget
     public void onEvent(Event event) {
@@ -46,12 +45,8 @@ public class Dot extends Module {
             if (mouse != null) {
                 Vec3 smooth = mouse.hitVec;
 
-                fadeColor = color.isFade() ?
-                        ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
-                        : color.getColor();
-
                 if (shadows.isToggled() && shadows.module.get("Dot")) BloomUtils.addToDraw(() -> RenderUtils.drawDot(smooth, size.getValue() / 10, Color.white));
-                RenderUtils.drawDot(smooth, size.getValue() / 10, fadeColor);
+                RenderUtils.drawDot(smooth, size.getValue() / 10, color.getFadedColor());
             }
         }
         if (event instanceof MotionEventPost e) {

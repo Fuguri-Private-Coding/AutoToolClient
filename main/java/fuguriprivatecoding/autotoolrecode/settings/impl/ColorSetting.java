@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
-import com.viaversion.viaversion.util.ChatColorUtil;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
@@ -126,8 +125,23 @@ public class ColorSetting extends Setting {
     }
 
     public Color getFadedColor() {
-        if (isFade())  return ColorUtils.fadeColor(getColor(), getFadeColor(), getSpeed());
+        if (isFade()) return ColorUtils.fadeColor(getColor(), getFadeColor(), getSpeed());
         return ColorUtils.fadeColor(getColor(), getColor(), getSpeed());
+    }
+
+    public Color getFadedFloatColor() {
+        Color mixedColor = isFade() ? ColorUtils.fadeColor(getColor(), getFadeColor(), getSpeed()) : ColorUtils.fadeColor(getColor(), getColor(), getSpeed());
+        return new Color(mixedColor.getRed() / 255f, mixedColor.getGreen() / 255f, mixedColor.getBlue() / 255f, mixedColor.getAlpha() / 255f);
+    }
+
+    public Color getMixedColor(int i) {
+        if (isFade()) return ColorUtils.mixColor(getColor(), getFadeColor(), i, getOffset(), getSpeed());
+        return ColorUtils.mixColor(getColor(), getColor(), i, getOffset(), getSpeed());
+    }
+
+    public Color getMixedFloatColor(int i) {
+        Color mixedColor = isFade() ? ColorUtils.mixColor(getColor(), getFadeColor(), i, getOffset(), getSpeed()) : ColorUtils.mixColor(getColor(), getColor(), i, getOffset(), getSpeed());
+        return new Color(mixedColor.getRed() / 255f, mixedColor.getGreen() / 255f, mixedColor.getBlue() / 255f, mixedColor.getAlpha() / 255f);
     }
 
     public Color getFadeColor() {

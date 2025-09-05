@@ -28,11 +28,8 @@ public class RotationHandler extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (
-                (Client.INST.getCombatManager().getTarget() == null
-                || DistanceUtils.getDistance(Client.INST.getCombatManager().getTarget()) > Client.INST.getModuleManager().getModule(KillAura.class).rotateDistance.getValue())
-                        && !Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && !Client.INST.getModuleManager().getModule(AntiFireball.class).rotating
-        ) {
+        boolean handle = (Client.INST.getCombatManager().getTarget() == null || DistanceUtils.getDistance(Client.INST.getCombatManager().getTarget()) > Client.INST.getModuleManager().getModule(KillAura.class).rotateDistance.getValue()) && !Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && Client.INST.getModuleManager().getModule(AntiFireball.class).target == null;
+        if (handle) {
             if (Rot.isChanged()) {
                 if (event instanceof MotionEvent motionEvent) {
                     Rot rot = Rot.getServerRotation().copy();

@@ -37,8 +37,6 @@ public class NameTags extends Module {
     MidClick midClick;
     Glow shadows;
 
-    Color backgroundFadeColor;
-
     String detectiveText, murderText, friendText, userText, text;
 
     @EventTarget
@@ -47,7 +45,6 @@ public class NameTags extends Module {
         if (murderDetector == null) murderDetector = Client.INST.getModuleManager().getModule(MurderMystery.class);
         if (midClick == null) midClick = Client.INST.getModuleManager().getModule(MidClick.class);
         if (event instanceof Render3DEvent) {
-            updateColors();
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
                 if (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) continue;
                 updateText(entity);
@@ -59,13 +56,6 @@ public class NameTags extends Module {
                 RenderUtils.stop3DNameTag();
             }
         }
-    }
-
-    private void updateColors() {
-        backgroundFadeColor = color.isFade()
-                ? ColorUtils.fadeColor(
-                color.getColor(), color.getFadeColor(), color.getSpeed()) :
-                color.getColor();
     }
 
     public void updateText(Entity entity) {
@@ -92,7 +82,7 @@ public class NameTags extends Module {
         float offset = mc.fontRendererObj.FONT_HEIGHT - 8f;
         float stringWidth = mc.fontRendererObj.getStringWidth(text) / 2f;
         if (shadows.isToggled() && shadows.module.get("NameTags")) BloomUtils.addToDraw(() -> Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, -1));
-        Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, backgroundFadeColor.getRGB());
+        Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, color.getFadedColor().getRGB());
         mc.fontRendererObj.drawString(text, -stringWidth, offset, -1, true);
     }
 
