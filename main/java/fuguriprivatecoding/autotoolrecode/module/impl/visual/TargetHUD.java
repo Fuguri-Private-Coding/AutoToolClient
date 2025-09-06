@@ -22,8 +22,6 @@ import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-
 import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -75,40 +73,36 @@ public class TargetHUD extends Module {
         if (target == null || target.getSkin() == null || target.getName() == null) return;
 
         if (event instanceof Render2DEvent e) {
-            currentScale.update(5f, Easing.LINEAR);
+            currentScale.update(5f, Easing.IN_OUT_QUINT);
 
             float width = 120;
             float height = 40;
 
             if (follow.isToggled()) {
+                ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
                 EntityRenderer entityRenderer = mc.entityRenderer;
 
                 entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
-                Vector3f positions = Convertors.convert2D(
+                float[] positions = Convertors.convert2D(
                         (float) (target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX),
                         (float) (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY) + target.height / 2f + yOffset.getValue(),
                         (float) (target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ), mc.gameSettings.guiScale);
                 entityRenderer.setupOverlayRendering();
 
-                if (positions == null || positions.z > 1) return;
+                if (positions == null || positions[2] > 1) return;
 
-                positions.x /= scale.getValue();
-                positions.y /= scale.getValue();
+                positions[0] /= scale.getValue();
+                positions[1] /= scale.getValue();
 
                 float currentWidth = width * currentScale.getValue();
                 float currentHeight = height * currentScale.getValue();
 
-                float animX = (width / 2f) * currentScale.getValue();
-                float animY = (height / 2f) * currentScale.getValue();
+                pos.set(
+                        positions[0] - ((width / 2f) * currentScale.getValue()),
+                        positions[1] - ((height / 2f) * currentScale.getValue())
+                );
 
-                pos.setX(positions.x - animX);
-                pos.setX(positions.y - animY);
-
-                ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
-
-                glScaled(this.scale.getValue(), this.scale.getValue(), 1);
-                renderHUD(pos.x, pos.y, currentWidth, currentHeight, bgRadius.getValue() * currentScale.getValue(), font, target);
-                glScaled(1f / this.scale.getValue(),1f / this.scale.getValue(),1f);
+                renderHUD(pos.x, pos.y, currentWidth, currentHeight, bgRadius.getValue() * currentScale.getValue(), font, target, this.scale.getValue());
             } else {
                 pos.set(
                         (e.getSc().getScaledWidth() / 100f) * xPos.getValue() / currentScale.getValue() - width / 2f,
@@ -119,24 +113,18 @@ public class TargetHUD extends Module {
 
                 double scale = this.scale.getValue() * currentScale.getValue();
 
-                glScaled(scale, scale, 1f);
-                renderHUD(pos.x, pos.y,  width, height, bgRadius.getValue(), font, target);
-                glScaled(1f / scale,1f / scale,1f);
+                renderHUD(pos.x, pos.y, width, height, bgRadius.getValue(), font, target, scale);
             }
         }
     }
 
-    private void renderHUD(float posX, float posY, float width, float height, float radius, ClientFontRenderer font, EntityLivingBase target) {
+    private void renderHUD(float posX, float posY, float width, float height, float radius, ClientFontRenderer font, EntityLivingBase target, double scaleFactor) {
+        glScaled(scaleFactor, scaleFactor, 1);
         StencilUtils.renderStencil(
         () -> RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius,Color.BLACK, Color.BLACK, bgColor.getSpeed()),
             () -> {
-                if (render.get("Background")) {
-                    RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius, bgColor.getFadedColor(), bgColor.getFadedColor(), bgColor.getSpeed());
-                }
-
-                if (render.get("Name")) {
-                    font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, textColor.getFadedColor());
-                }
+                if (render.get("Background")) RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius, bgColor.getFadedColor(), bgColor.getFadedColor(), bgColor.getSpeed());
+                if (render.get("Name")) font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, textColor.getFadedColor());
 
                 if (render.get("Health")) {
                     float maxHealth = target.getMaxHealth();
@@ -159,7 +147,7 @@ public class TargetHUD extends Module {
                     int hurtTime = target.hurtTime / 2;
 
                     StencilUtils.renderStencil(
-                    () -> RenderUtils.drawMixedRoundedRect(posX + 5 + hurtTime / 2f, posY + 5 + hurtTime / 2f, (height - 10 - hurtTime) * currentScale.getValue(), (height - 10 - hurtTime) * currentScale.getValue(), headRadius.getValue() * currentScale.getValue(),Color.WHITE, Color.WHITE, bgColor.getSpeed()),
+                    () -> RenderUtils.drawMixedRoundedRect(posX + 5 + hurtTime / 2f, posY + 5 + hurtTime / 2f, (height - 10 - hurtTime) * currentScale.getValue(), (height - 10 - hurtTime) * currentScale.getValue(), headRadius.getValue() * currentScale.getValue(), Color.WHITE, Color.WHITE, bgColor.getSpeed()),
                     () -> {
                         glColor4f(1f, 1f - hurtTime, 1f - hurtTime, 1f);
                         RenderUtils.quickDrawHead(target.getSkin(), posX + 5 + hurtTime / 2f, posY + 5 + hurtTime / 2f, (height - 10 - hurtTime) * currentScale.getValue(), (height - 10 - hurtTime) * currentScale.getValue());
@@ -168,13 +156,10 @@ public class TargetHUD extends Module {
             }
         );
 
-        if (glow.isToggled()) {
-            BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius,bgShadowColor.getColor(), bgShadowColor.getFadeColor(), bgShadowColor.getSpeed()));
-        }
+        if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius,bgShadowColor.getColor(), bgShadowColor.getFadeColor(), bgShadowColor.getSpeed()));
+        if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius, Color.BLACK, Color.BLACK, bgColor.getSpeed()));
 
-        if (blur.isToggled()) {
-            GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(posX,posY,width,height,radius, Color.BLACK, Color.BLACK, bgColor.getSpeed()));
-        }
+        glScaled(1f / scaleFactor,1f / scaleFactor,1f);
     }
 
     private void updateTarget() {

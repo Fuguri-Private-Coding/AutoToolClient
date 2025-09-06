@@ -25,7 +25,7 @@ public class Velocity extends Module {
             .setMode("Vanilla");
 
     final IntegerSetting chance = new IntegerSetting("Chance", this, () -> mode.getMode().equalsIgnoreCase("Jump"), 0,100,80);
-    DoubleSlider jumpDelay = new DoubleSlider("JumpDelay", this, 0, 500,80,1);
+    DoubleSlider jumpDelay = new DoubleSlider("JumpDelay", this, () -> mode.getMode().equalsIgnoreCase("Jump"), 0, 500,80,1);
 
     final FloatSetting XZ = new FloatSetting("XZ", this,() -> mode.getMode().equalsIgnoreCase("Vanilla"), -1, 1, 0, 0.1f);
     final FloatSetting Y = new FloatSetting("Y", this,() -> mode.getMode().equalsIgnoreCase("Vanilla"), 0, 1, 1, 0.1f);

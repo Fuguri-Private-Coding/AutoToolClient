@@ -54,7 +54,7 @@ public class AntiFireball extends Module {
             return;
 
         if (event instanceof TickEvent) {
-            if (target != null && target.hurtResistantTime > 0) target = null;
+            if (target != null && (target.hurtResistantTime > 0 || target.isDead || !mc.theWorld.getLoadedEntityList().contains(target) || DistanceUtils.getDistance(target) > distance.getValue() + 3.5f)) target = null;
 
             for (Entity target : mc.theWorld.loadedEntityList) {
                 if (!(target instanceof EntityFireball entityFireball) || entityFireball.shootingEntity == mc.thePlayer || DistanceUtils.getDistance(target) > distance.getValue() + 3.5f) {

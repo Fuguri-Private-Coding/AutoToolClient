@@ -118,7 +118,7 @@ public class ArrayList extends Module {
                 if (line.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset + 2), (float) yOffset, Color.WHITE.getRGB());
             });
         }
-        if (background.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText + (suffixCondition ?  " - " + module.getSuffix() : "")) - 4f), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset), (float) yOffset, fadeBackgroundColor.getRGB());
+        if (background.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText + (suffixCondition ?  " - " + module.getSuffix() : "")) - 4f), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset), (float) yOffset, bgColor.getMixedColor(moduleList.indexOf(module)).getRGB());
         if (suffixCondition) {
             font.drawString(" - " + module.getSuffix(), (float) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(" - " + module.getSuffix()) - 1.75f), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, suffixColor.getFadedColor(), shadow.isToggled());
         }
@@ -147,7 +147,7 @@ public class ArrayList extends Module {
                 if (line.isToggled()) Gui.drawRect((int) (xOffset - 2), (int) ((float) yOffset + verticalSpacing.getValue()), (int) xOffset, (float) yOffset, Color.WHITE.getRGB());
             });
         }
-        if (background.isToggled()) Gui.drawRect((int) xOffset, (int) ((float) yOffset + verticalSpacing.getValue()), (int) ((float) font.getStringWidth(moduleText + (suffixCondition ? " - " + module.getSuffix() : "")) + 4 + xOffset), (float) yOffset, fadeBackgroundColor.getRGB());
+        if (background.isToggled()) Gui.drawRect((int) xOffset, (int) ((float) yOffset + verticalSpacing.getValue()), (int) ((float) font.getStringWidth(moduleText + (suffixCondition ? " - " + module.getSuffix() : "")) + 4 + xOffset), (float) yOffset, bgColor.getMixedColor(moduleList.indexOf(module)).getRGB());
         if (suffixCondition) {
             font.drawString(" - " + module.getSuffix(), (float) (2.5f + xOffset + font.getStringWidth(moduleText)), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, suffixColor.getFadedColor(), shadow.isToggled());
         }

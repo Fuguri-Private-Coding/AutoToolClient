@@ -74,7 +74,7 @@ public class DynamicIsland extends Module {
             Scaffold scaffOld = Client.INST.getModuleManager().getModule(Scaffold.class);
 
             String name = Client.INST.getFullName();
-            String target, backtrack, scaffold, bps = "";
+            String target, backtrack = "", scaffold = "", bps = "";
 
             currentHeight.setEnd(height);
             updateText(name);
@@ -106,7 +106,7 @@ public class DynamicIsland extends Module {
                 updateText(backtrack);
             }
 
-            currentWidth.setEnd((float) (width.getValue() + font.getStringWidth(currentWidthText.equalsIgnoreCase(bps) ? "BPS - 00000" : currentWidthText)));
+            currentWidth.setEnd((float) (width.getValue() + font.getStringWidth(currentWidthText.equalsIgnoreCase(bps) ? "BPS - 00000" : currentWidthText.equalsIgnoreCase(scaffold) ? "Blocks Left - 255" : currentWidthText.equalsIgnoreCase(backtrack) ? "Distance - 12" : currentWidthText)));
 
             updateAnimations();
 
@@ -137,13 +137,8 @@ public class DynamicIsland extends Module {
                     }
             );
 
-            if (glow.isToggled()) {
-                BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), bgColorShadow.getColor(), bgColorShadow.getFadeColor(), bgColorShadow.getSpeed()));
-            }
-
-            if (blur.isToggled()) {
-                GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), Color.WHITE, Color.WHITE, bgColorShadow.getSpeed()));
-            }
+            if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), bgColorShadow.getColor(), bgColorShadow.getFadeColor(), bgColorShadow.getSpeed()));
+            if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), Color.WHITE, Color.WHITE, bgColorShadow.getSpeed()));
         }
     }
 
