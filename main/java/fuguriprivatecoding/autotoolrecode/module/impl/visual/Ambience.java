@@ -27,10 +27,7 @@ public class Ambience extends Module {
 
     BooleanSupplier snow = () -> weather.getMode().equals("Snow");
 
-    public CheckBox fadeColor = new CheckBox("FadeColor", this, snow);
-    public ColorSetting color1 = new ColorSetting("Color1", this, snow,1f, 1f, 1f, 1f);
-    public ColorSetting color2 = new ColorSetting("Color2", this, () -> snow.getAsBoolean() && fadeColor.isToggled(), 1f, 1f, 1f, 1f);
-    public FloatSetting fadeSpeed = new FloatSetting("FadeSpeed", this, () -> snow.getAsBoolean() && fadeColor.isToggled(), 0.1f, 20, 1, 0.1f);
+    public ColorSetting color = new ColorSetting("Color", this, snow,1f, 1f, 1f, 1f);
 
     @Override
     public void onDisable() {

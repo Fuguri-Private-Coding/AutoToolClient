@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -10,11 +9,10 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtil;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtils;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.ItemUtil;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
-import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -381,7 +379,7 @@ public class InvManager extends Module {
     
 
     private void throwItem(final int slot) {
-        if ((!this.moved || this.nextClick <= 0) && !InventoryUtils.selector(slot)) {
+        if ((!this.moved || this.nextClick <= 0) && !InventoryUtil.selector(slot)) {
 
             mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, this.slot(slot), 1, 4, mc.thePlayer);
 
@@ -392,7 +390,7 @@ public class InvManager extends Module {
     }
 
     private void moveItem(final int slot, final int destination) {
-        if ((!this.moved || this.nextClick <= 0) && !InventoryUtils.selector(slot)) {
+        if ((!this.moved || this.nextClick <= 0) && !InventoryUtil.selector(slot)) {
 
             mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, this.slot(slot), this.slot(destination), 2, mc.thePlayer);
 
@@ -403,7 +401,7 @@ public class InvManager extends Module {
     }
 
     private void equipItem(final int slot) {
-        if ((!this.moved || this.nextClick <= 0) && !InventoryUtils.selector(slot)) {
+        if ((!this.moved || this.nextClick <= 0) && !InventoryUtil.selector(slot)) {
 
             mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, this.slot(slot), 0, 1, mc.thePlayer);
 

@@ -15,11 +15,6 @@ import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
-import net.minecraft.util.EnumFacing;
 import org.apache.commons.lang3.Range;
 
 @ModuleInfo(name = "AutoSoup", category = Category.COMBAT, description = "Автоматический хил супами")

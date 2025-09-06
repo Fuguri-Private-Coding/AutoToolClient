@@ -27,7 +27,7 @@ public abstract class GuiContainer extends GuiScreen
     public Container inventorySlots;
     protected int guiLeft;
     protected int guiTop;
-    private Slot theSlot;
+    public Slot theSlot;
     private Slot clickedSlot;
     private boolean isRightMouseClick;
     private ItemStack draggedStack;

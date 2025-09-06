@@ -10,10 +10,8 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.gui.Gui;
@@ -21,8 +19,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
-
-import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 

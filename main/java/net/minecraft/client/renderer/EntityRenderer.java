@@ -1828,11 +1828,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                                 ResourceLocation texture = TEXTURE_SNOW_HEAVY;
 
                                 if (ambience.isToggled()) {
-                                    if (ambience.fadeColor.isToggled()) {
-                                        color = ColorUtils.fadeColor(ambience.color1.getColor(), ambience.color2.getColor(), ambience.fadeSpeed.getValue());
-                                    } else {
-                                        color = ambience.color1.getColor();
-                                    }
+                                    color = ambience.color.getFadedColor();
                                 }
 
                                 if (j1 != 1) {
