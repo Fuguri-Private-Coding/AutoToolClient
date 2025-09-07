@@ -23,16 +23,29 @@ public class ChestStealer extends Module {
 
     final IntegerSetting startDelay = new IntegerSetting("StartDelay", this, 0, 1000, 250);
     DoubleSlider delay = new DoubleSlider("Delay", this, 0,500,200,1);
+
+    final CheckBox autoClose = new CheckBox("AutoClose", this, true);
+    DoubleSlider closeDelay = new DoubleSlider("CloseDelay", this, autoClose::isToggled, 0,500,200,1);
+
+    final CheckBox fail = new CheckBox("Fail", this);
+    final IntegerSetting failChance = new IntegerSetting("FailChance", this, fail::isToggled, 0, 100, 30);
+
     final CheckBox checkName = new CheckBox("CheckName", this, true);
 
     final StopWatch delayStopWatch;
     final StopWatch startDelayStopWatch;
+    final StopWatch closeDelayStopWatch;
 
-    int delays;
+    List<Integer> availableSlots;
+
+    int removeSlot = -1;
+
+    boolean checkedContainer = false;
 
     public ChestStealer() {
         delayStopWatch = new StopWatch();
         startDelayStopWatch = new StopWatch();
+        closeDelayStopWatch = new StopWatch();
     }
 
     private final String[] list = new String[]{"mode", "delivery", "menu", "selector", "game", "gui", "server", "inventory", "play", "teleporter",
@@ -51,28 +64,42 @@ public class ChestStealer extends Module {
                     }
                 }
 
-                delays = delay.getRandomizedIntValue();
-
                 if (!startDelayStopWatch.reachedMS(startDelay.getValue())) return;
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
-                List<Integer> nextSlot = updatePos(container);
+                if (!checkedContainer) availableSlots = updateAvailableSlots(container);
 
-                if (nextSlot == null) return;
+                if (availableSlots == null) return;
 
-                for (Integer i : nextSlot) {
-                    if (delayStopWatch.reachedMS(delays)) {
-                        mc.playerController.windowClick(container.windowId, i, 0, 1, mc.thePlayer);
+                for (Integer i : availableSlots) {
+                    if (delayStopWatch.reachedMS(delay.getRandomizedIntValue())) {
+                        int failSlot = Math.random() <= failChance.getValue() / 100.0 && fail.isToggled() ? 1 : 0;
+
+                        guiChest.activeSlot = mc.thePlayer.openContainer.getSlot(i);
+
+                        mc.playerController.windowClick(container.windowId, i + failSlot, 0, 1, mc.thePlayer);
                         delayStopWatch.reset();
+                        if (delay.getRandomizedIntValue() != 0) availableSlots.remove(i);
+                    }
+                }
+
+                if (autoClose.isToggled()) {
+                    if (InventoryUtils.isInventoryFull() || InventoryUtils.isInventoryEmpty(container.getLowerChestInventory()) || availableSlots.isEmpty()) {
+                        if (closeDelayStopWatch.reachedMS(closeDelay.getRandomizedIntValue())) {
+                            mc.thePlayer.closeScreen();
+                        }
+                    } else {
+                        closeDelayStopWatch.reset();
                     }
                 }
             } else {
+                checkedContainer = false;
                 startDelayStopWatch.reset();
             }
         }
     }
 
-    List<Integer> updatePos(ContainerChest container) {
+    List<Integer> updateAvailableSlots(ContainerChest container) {
         List<Integer> available = new ArrayList<>();
 
         for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
@@ -82,6 +109,7 @@ public class ChestStealer extends Module {
             }
         }
 
+        checkedContainer = true;
         return available;
     }
 }

@@ -30,45 +30,8 @@ public class InvManager extends Module {
 
     DoubleSlider delay = new DoubleSlider("Delay", this, 0,500,200,1);
 
-
     private final CheckBox spoof = new CheckBox("Spoof", this);
     private final CheckBox stopWalkingIfSpoof = new CheckBox("StopSpoofIfWalking", this);
-
-//    private final Mode firstSlot = new Mode("FirstSlot", this)
-//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
-//            .setMode("Sword");
-//
-//    private final Mode secondSlot = new Mode("SecondSlot", this)
-//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
-//            .setMode("Sword");
-//
-//    private final Mode threeSlot = new Mode("ThreeSlot", this)
-//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
-//            .setMode("Sword");
-//
-//    private final Mode fourSlot = new Mode("FourSlot", this)
-//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
-//            .setMode("Sword");
-//
-//    private final Mode fiveSlot = new Mode("FiveSlot", this)
-//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
-//            .setMode("Sword");
-//
-//    private final Mode sixSlot = new Mode("SixSlot", this)
-//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
-//            .setMode("Sword");
-//
-//    private final Mode sevenSlot = new Mode("SevenSlot", this)
-//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
-//            .setMode("Sword");
-//
-//    private final Mode eightSlot = new Mode("EightSlot", this)
-//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
-//            .setMode("Sword");
-//
-//    private final Mode nineSlot = new Mode("NineSlot", this)
-//            .addModes("Sword", "Pickaxe", "Axe", "Shovel", "Block", "Potion", "Food", "Pearl")
-//            .setMode("Sword");
 
     private final IntegerSetting swordSlot = new IntegerSetting("Sword Slot", this, 1, 9, 1);
     private final IntegerSetting pickaxeSlot = new IntegerSetting("Pickaxe Slot", this,1, 9, 1);
@@ -368,15 +331,6 @@ public class InvManager extends Module {
             }
         }
     }
-
-//    private int getItemToMove(String item, int slot) {
-//        switch (item) {
-//            case "Sword" -> {
-//
-//            }
-//        }
-//    }
-    
 
     private void throwItem(final int slot) {
         if ((!this.moved || this.nextClick <= 0) && !InventoryUtil.selector(slot)) {

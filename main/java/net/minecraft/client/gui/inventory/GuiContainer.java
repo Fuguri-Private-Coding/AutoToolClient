@@ -25,6 +25,8 @@ public abstract class GuiContainer extends GuiScreen
     protected int xSize = 176;
     protected int ySize = 166;
     public Container inventorySlots;
+
+    public Slot activeSlot;
     protected int guiLeft;
     protected int guiTop;
     public Slot theSlot;
@@ -91,7 +93,7 @@ public abstract class GuiContainer extends GuiScreen
             Slot slot = (Slot)this.inventorySlots.inventorySlots.get(i1);
             this.drawSlot(slot);
 
-            if (this.isMouseOverSlot(slot, mouseX, mouseY) && slot.canBeHovered())
+            if (this.isMouseOverSlot(slot, mouseX, mouseY) && slot.canBeHovered() || slot.equals(activeSlot))
             {
                 this.theSlot = slot;
                 GlStateManager.disableLighting();
