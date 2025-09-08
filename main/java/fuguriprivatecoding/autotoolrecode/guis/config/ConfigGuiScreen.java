@@ -24,6 +24,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.Util;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
 import java.io.File;
@@ -69,6 +70,19 @@ public class ConfigGuiScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         mainColor = clickGui.color.getFadedColor();
+
+        float scale = clientSettings.scale.getValue();
+
+        ScaledResolution sc = new ScaledResolution(mc);
+
+        sc.setScaleFactor(sc.scaleFactor *= scale);
+        sc.scaledWidth /= scale;
+        sc.scaledHeight /= scale;
+
+        mouseX /= scale;
+        mouseY /= scale;
+
+        GL11.glScaled(scale,scale,1f);
 
         boolean configScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
 
@@ -117,24 +131,24 @@ public class ConfigGuiScreen extends GuiScreen {
 
         if (clickGui.glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+                RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
 
         if (clickGui.blur.isToggled()) {
             GaussianBlurUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+                RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
 
-        RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
+        RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
+        ScissorUtils.scissor(sc, background.x, background.y, sizeBackground.x, sizeBackground.y);
 
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
 
-        font.drawCenteredString(name, background.x + sizeBackground.x / 2f / 2 - 5, background.y + 3.5f + 2, Color.white);
+        font.drawCenteredString(name, background.x + sizeBackground.x / 2f - 5, background.y + 3.5f + 2, Color.white);
 
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
@@ -168,7 +182,7 @@ public class ConfigGuiScreen extends GuiScreen {
         }
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15f, sizeBackground.x, sizeBackground.y - 15);
+        ScissorUtils.scissor(sc, background.x, background.y + 15f, sizeBackground.x, sizeBackground.y - 15);
 
         float offset = 0;
         float yOffset = scrolls.y;
@@ -198,11 +212,19 @@ public class ConfigGuiScreen extends GuiScreen {
             background.translatePos(mouseX - lastMouse.x, mouseY - lastMouse.y);
             lastMouse.set(mouseX, mouseY);
         }
+        GL11.glScaled(1f / scale, 1f / scale,1f);
     }
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (creatingConfig) textField.textboxKeyTyped(typedChar, keyCode);
+        ScaledResolution sc = new ScaledResolution(mc);
+
+        float scale = clientSettings.scale.getValue();
+
+        sc.setScaleFactor(sc.scaleFactor *= scale);
+        sc.scaledWidth /= scale;
+        sc.scaledHeight /= scale;
 
         if (keyCode == 1 && creatingConfig) {
             textField.setText("");
@@ -212,7 +234,6 @@ public class ConfigGuiScreen extends GuiScreen {
         }
 
         if (keyCode == 1 && !closing) {
-            ScaledResolution sc = new ScaledResolution(mc);
             lastPos.set(pos);
             lastSize.set(size);
             closing = true;
@@ -236,6 +257,15 @@ public class ConfigGuiScreen extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         ScaledResolution sc = new ScaledResolution(mc);
+
+        float scale = clientSettings.scale.getValue();
+
+        sc.setScaleFactor(sc.scaleFactor *= scale);
+        sc.scaledWidth /= scale;
+        sc.scaledHeight /= scale;
+
+        mouseX /= scale;
+        mouseY /= scale;
 
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;

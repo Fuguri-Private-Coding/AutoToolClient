@@ -22,15 +22,14 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.doubles.Doubles;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
-
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
@@ -93,6 +92,13 @@ public class ClickGuiScreen extends GuiScreen {
 		MAIN_COLOR = clickGui.color.getFadedColor();
 		BACKGROUND_COLOR = new Color(0,0,0,clickGui.backgroundAlpha.getValue());
 
+		float scale = clientSettings.scale.getValue();
+
+		mouseX /= scale;
+		mouseY /= scale;
+
+		GL11.glScaled(scale,scale,1f);
+
 		if (closing) {
 			animateCloseTransition();
 			if (isCloseAnimationComplete()) completeCloseOperation();
@@ -151,11 +157,15 @@ public class ClickGuiScreen extends GuiScreen {
 
 		ScaledResolution sc = new ScaledResolution(mc);
 
+		sc.setScaleFactor(sc.scaleFactor *= scale);
+		sc.scaledWidth /= scale;
+		sc.scaledHeight /= scale;
+
 		if (clickGui.glow.isToggled()) {
 			BloomRealUtils.addToDraw(() -> {
-				RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+				RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
 				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.getValue(), 50, 2, 0, clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
-				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+				if (guis.getValue() > 0) RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
 			});
 		}
 
@@ -166,12 +176,12 @@ public class ClickGuiScreen extends GuiScreen {
 			});
 		}
 
-		RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
+		RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
 		ScissorUtils.enableScissor();
-		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
+		ScissorUtils.scissor(sc, background.x, background.y, sizeBackground.x, sizeBackground.y);
 
-		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, HEADER_COLOR);
+		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
 		RoundedUtils.drawRect(background.x + sizeBackground.x - 5, background.y + sizeBackground.y - 5, 5, 5, 0f, 4f,0f,clientSettings.backgroundRadius.getValue() / 1.25f, Color.BLACK);
 
 		fontRenderer.drawString(name, background.x + 35, background.y + 4 + 1, CATEGORY_COLOR);
@@ -232,7 +242,7 @@ public class ClickGuiScreen extends GuiScreen {
 		modulesTotalHeight = 0;
 
 		ScissorUtils.enableScissor();
-		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, widthsModule + 5, sizeBackground.y - 15);
+		ScissorUtils.scissor(sc, background.x, background.y + 15, widthsModule + 5, sizeBackground.y - 15);
 
 		List<Module> moduleList = Client.INST.getModuleManager().getModulesByCategory(selectedCategory);
 
@@ -253,7 +263,7 @@ public class ClickGuiScreen extends GuiScreen {
 		ScissorUtils.disableScissor();
 
 		ScissorUtils.enableScissor();
-		ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
+		ScissorUtils.scissor(sc, background.x, background.y, sizeBackground.x, sizeBackground.y);
 
 		offset = 0;
 		for (Category category : Category.values()) {
@@ -272,7 +282,7 @@ public class ClickGuiScreen extends GuiScreen {
 			fontRenderer.drawString("LoadFromConfig: " + selectedModule.isLoadFromConfig(), background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()) - fontRenderer.getStringWidth("LoadFromConfig: " + selectedModule.isLoadFromConfig()) - 5, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, CATEGORY_COLOR);
 
 			ScissorUtils.enableScissor();
-			ScissorUtils.scissor(new ScaledResolution(mc), background.x + verticalLineXOffset, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5, sizeBackground.x - verticalLineXOffset - 5, sizeBackground.y - (2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5));
+			ScissorUtils.scissor(sc, background.x + verticalLineXOffset, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5, sizeBackground.x - verticalLineXOffset - 5, sizeBackground.y - (2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5));
 			for (Setting setting : selectedModule.getSettings()) {
 				if (!setting.isVisible()) continue;
 
@@ -680,8 +690,8 @@ public class ClickGuiScreen extends GuiScreen {
 					long hoverTime = System.currentTimeMillis() - module.getHoverStartTime();
 					if (hoverTime >= 500) {
 						float descriptionWidth = (float) fontRenderer.getStringWidth(module.getDescription());
-						RenderUtils.drawRoundedOutLineRectangle(mouseX, mouseY, descriptionWidth + 6, 14, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR.getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
-						fontRenderer.drawString(module.getDescription(), mouseX + 3 + 2, mouseY + 3 + 2, Color.WHITE, true);
+						RenderUtils.drawRoundedOutLineRectangle(mouseX, mouseY - 8, descriptionWidth + 6, 14, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR.getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
+						fontRenderer.drawString(module.getDescription(), mouseX + 3 + 2, mouseY + 2 - 5, Color.WHITE, true);
 					}
 				}
 			} else {
@@ -729,12 +739,22 @@ public class ClickGuiScreen extends GuiScreen {
 		guis.update(clickGui.animationSpeed.getValue() / 5, Easing.IN_OUT_BACK);
 		moduleLine.update(clickGui.animationSpeed.getValue() / 4, Easing.IN_OUT_BACK);
 		settingLine.update(clickGui.animationSpeed.getValue());
+		GL11.glScaled(1f / scale, 1f / scale,1f);
 	}
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		ScaledResolution sc = new ScaledResolution(Minecraft.getMinecraft());
+		ScaledResolution sc = new ScaledResolution(mc);
 		ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("MuseoSans");
+
+		float scale = clientSettings.scale.getValue();
+
+		sc.setScaleFactor(sc.scaleFactor *= scale);
+		sc.scaledWidth /= scale;
+		sc.scaledHeight /= scale;
+
+		mouseX /= scale;
+		mouseY /= scale;
 
 		boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
@@ -768,7 +788,7 @@ public class ClickGuiScreen extends GuiScreen {
 				lastSize.set(size);
 				closing = true;
 				size.set(0, 0);
-				pos.set(-sizeBackground.x - 10, lastPos.y);
+				pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
 			}
 
 			if (config) {
@@ -786,7 +806,7 @@ public class ClickGuiScreen extends GuiScreen {
 				lastSize.set(size);
 				closing = true;
 				size.set(0, 0);
-				pos.set(sc.getScaledWidth() + sizeBackground.x, lastPos.y);
+				pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
 			}
 		}
 
@@ -1021,6 +1041,14 @@ public class ClickGuiScreen extends GuiScreen {
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		if (selectedModule == null) binding = false;
 
+		ScaledResolution sc = new ScaledResolution(mc);
+
+		float scale = clientSettings.scale.getValue();
+
+		sc.setScaleFactor(sc.scaleFactor *= scale);
+		sc.scaledWidth /= scale;
+		sc.scaledHeight /= scale;
+
 		if (binding) {
 			binding = false;
 			if (keyCode == Keyboard.KEY_ESCAPE) {
@@ -1040,7 +1068,6 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 
 		if (keyCode == Keyboard.KEY_ESCAPE && !closing) {
-			ScaledResolution sc = new ScaledResolution(mc);
 			lastPos.set(pos);
 			lastSize.set(size);
 			closing = true;

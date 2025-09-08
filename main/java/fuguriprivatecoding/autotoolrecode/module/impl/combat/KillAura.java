@@ -119,9 +119,6 @@ public class KillAura extends Module {
         startTest = new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
     }
 
-    EasingAnimation animX = new EasingAnimation();
-    EasingAnimation animY = new EasingAnimation();
-
     @Override
     public void onDisable() {
         Client.INST.getCombatManager().setTarget(null);

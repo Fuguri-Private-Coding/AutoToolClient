@@ -16,6 +16,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
 import java.io.IOException;
@@ -70,6 +71,19 @@ public class ConsoleGuiScreen extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
         if (clientSettings == null) clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
+
+        ScaledResolution sc = new ScaledResolution(mc);
+
+        float scale = clientSettings.scale.getValue();
+
+        sc.setScaleFactor(sc.scaleFactor *= scale);
+        sc.scaledWidth /= scale;
+        sc.scaledHeight /= scale;
+
+        mouseX /= scale;
+        mouseY /= scale;
+
+        GL11.glScaled(scale, scale, 1f);
 
         mainColor = clickGui.color.getFadedColor();
 
@@ -127,20 +141,20 @@ public class ConsoleGuiScreen extends GuiScreen {
 
         if (clickGui.glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+                RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
 
         if (clickGui.blur.isToggled()) {
             GaussianBlurUtils.addToDraw(() -> {
-                RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, Color.BLACK.getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
+                RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.BLACK.getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
             });
         }
 
-        RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
+        RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
+        ScissorUtils.scissor(sc, background.x, background.y, sizeBackground.x, sizeBackground.y);
 
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
 
@@ -167,7 +181,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         totalHeight = 0;
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - 33);
+        ScissorUtils.scissor(sc, background.x, background.y + 15, sizeBackground.x, sizeBackground.y - 33);
 
         for (String s : history.reversed()) {
             font.drawString(s, background.x + 4, background.y + sizeBackground.y - 28 + 2 - offset, Color.WHITE, false);
@@ -182,6 +196,7 @@ public class ConsoleGuiScreen extends GuiScreen {
             background.translatePos(mouseX - lastMouse.x, mouseY - lastMouse.y);
             lastMouse.set(mouseX, mouseY);
         }
+        GL11.glScaled(1f / scale, 1f / scale, 1f);
     }
 
     public void log(String msg) {
@@ -192,8 +207,16 @@ public class ConsoleGuiScreen extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         String username = System.getProperty("user.name");
+
+        ScaledResolution sc = new ScaledResolution(mc);
+
+        float scale = clientSettings.scale.getValue();
+
+        sc.setScaleFactor(sc.scaleFactor *= scale);
+        sc.scaledWidth /= scale;
+        sc.scaledHeight /= scale;
+
         if (keyCode == 1 && !closing) {
-            ScaledResolution sc = new ScaledResolution(mc);
             lastPos.set(pos);
             lastSize.set(size);
             closing = true;
@@ -216,6 +239,14 @@ public class ConsoleGuiScreen extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         ScaledResolution sc = new ScaledResolution(mc);
+
+        float scale = clientSettings.scale.getValue();
+
+        sc.scaledWidth /= scale;
+        sc.scaledHeight /= scale;
+
+        mouseX /= scale;
+        mouseY /= scale;
 
         ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
 

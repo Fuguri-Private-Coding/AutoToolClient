@@ -24,6 +24,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
@@ -89,6 +90,19 @@ public class HotTextGui extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         mainColor = clickGui.color.getFadedColor();
 
+        ScaledResolution sc = new ScaledResolution(mc);
+
+        float scale = clientSettings.scale.getValue();
+
+        sc.setScaleFactor(sc.scaleFactor *= scale);
+        sc.scaledWidth /= scale;
+        sc.scaledHeight /= scale;
+
+        mouseX /= scale;
+        mouseY /= scale;
+
+        GL11.glScaled(scale, scale, 1f);
+
         boolean hotScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
         if (hotScroll) scroll -= ClientSettings.getScroll();
 
@@ -139,7 +153,7 @@ public class HotTextGui extends GuiScreen {
 
         if (clickGui.glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+                RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
 
@@ -147,12 +161,12 @@ public class HotTextGui extends GuiScreen {
             GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.WHITE));
         }
 
-        RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
+        RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y, sizeBackground.x, sizeBackground.y);
+        ScissorUtils.scissor(sc, background.x, background.y, sizeBackground.x, sizeBackground.y);
 
         font.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 3.5f + 2, Color.WHITE);
 
@@ -177,7 +191,7 @@ public class HotTextGui extends GuiScreen {
         ScissorUtils.disableScissor();
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - 15);
+        ScissorUtils.scissor(sc, background.x, background.y + 15, sizeBackground.x, sizeBackground.y - 15);
 
         float offset = 0;
         float yOffset = scrolls.y;
@@ -216,6 +230,7 @@ public class HotTextGui extends GuiScreen {
             background.translatePos(mouseX - lastMouse.x, mouseY - lastMouse.y);
             lastMouse.set(mouseX, mouseY);
         }
+        GL11.glScaled(1f / scale, 1f / scale, 1f);
     }
 
     @Override
@@ -223,6 +238,14 @@ public class HotTextGui extends GuiScreen {
         if (creatingHotKey) textField.textboxKeyTyped(typedChar, keyCode);
         if (changingText) changeTextField.textboxKeyTyped(typedChar, keyCode);
         if (selectedHotText == null) binding = false;
+
+        ScaledResolution sc = new ScaledResolution(mc);
+
+        float scale = clientSettings.scale.getValue();
+
+        sc.setScaleFactor(sc.scaleFactor *= scale);
+        sc.scaledWidth /= scale;
+        sc.scaledHeight /= scale;
 
         if (binding) {
             binding = false;
@@ -234,7 +257,6 @@ public class HotTextGui extends GuiScreen {
         }
 
         if (keyCode == 1 && !closing && !creatingHotKey && !changingText) {
-            ScaledResolution sc = new ScaledResolution(mc);
             Client.INST.getConfigManager().saveHotKeys();
             Client.INST.getHotTextManager().updateHotKeys();
             lastPos.set(pos);
@@ -262,7 +284,16 @@ public class HotTextGui extends GuiScreen {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        float scale = clientSettings.scale.getValue();
+
         ScaledResolution sc = new ScaledResolution(mc);
+
+        sc.setScaleFactor(sc.scaleFactor *= scale);
+        sc.scaledWidth /= scale;
+        sc.scaledHeight /= scale;
+
+        mouseX /= scale;
+        mouseY /= scale;
 
         if (mouseX > 5 && mouseX < 20 && mouseY > 5 && mouseY < 20) {
             if (creatingHotKey) {

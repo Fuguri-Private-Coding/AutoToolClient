@@ -9,8 +9,8 @@ import net.minecraft.util.MathHelper;
 @Setter
 public class ScaledResolution
 {
-    final double scaledWidthD;
-    final double scaledHeightD;
+    public double scaledWidthD;
+    public double scaledHeightD;
     public int scaledWidth;
     public int scaledHeight;
     public float scaleFactor;

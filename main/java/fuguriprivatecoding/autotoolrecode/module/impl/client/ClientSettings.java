@@ -15,6 +15,7 @@ public class ClientSettings extends Module {
     public FloatSetting toggleModuleVolume = new FloatSetting("ToggleModuleVolume", this, 0.1f, 1, 1, 0.1f) {};
     public FloatSetting backgroundRadius = new FloatSetting("BackgroundGuiRadius", this, 0.5f, 7, 7, 0.1f) {};
     public IntegerSetting scroll = new IntegerSetting("ScrollStep", this, -50, 50, 10);
+    public FloatSetting scale = new FloatSetting("Scale", this, 0.5f, 2, 1, 0.01f) {};
 
     public static int getScroll() {
         ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
