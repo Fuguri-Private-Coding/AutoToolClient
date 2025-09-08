@@ -70,7 +70,7 @@ public class KillAura extends Module {
 
     BooleanSupplier linearVisible = () -> smoothMode.getMode().equalsIgnoreCase("Linear");
 
-    DoubleSlider mixDelta = new DoubleSlider("Mix Delta", this, () -> Client.INST.getProfile().getRole().isHigherThenOrEquals(Role.TESTER), 0,1,0.7, 0.1f);
+    DoubleSlider mixDelta = new DoubleSlider("Mix Delta", this, 0,1,0.7, 0.1f);
 
     CheckBox reactionTimeWithAnimation = new CheckBox("Reaction Time With Animation", this, linearVisible, false);
     final IntegerSetting rotationDuration = new IntegerSetting("Rotation Duration", this, () -> linearVisible.getAsBoolean() && reactionTimeWithAnimation.isToggled(), 1, 2000, 600);
@@ -150,10 +150,11 @@ public class KillAura extends Module {
                 e.setPitch(lr.getPitch());
                 AxisAlignedBB box = getHitBox(target);
                 Rot needRotation = switch (hitVec.getMode()) {
-                    case "Best" -> RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f));
+                    case "Best" -> RotUtils.getBestRotation(box.expand(0.1f, 0.1f, 0.1f));
                     case "Nearest" -> RotUtils.getNearestRotations(lr, box);
                     case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
-                    case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
+                    case "Body" ->
+                            RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
                     default -> throw new IllegalStateException("Unexpected value: " + hitVec.getMode());
                 };
 
@@ -170,7 +171,7 @@ public class KillAura extends Module {
 
                 switch (smoothMode.getMode()) {
                     case "Linear" -> {
-                        if (reactionTimeWithAnimation.isToggled() && RayCastUtils.rayCast(3,3,Rot.getServerRotation()).typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
+                        if (reactionTimeWithAnimation.isToggled() && RayCastUtils.rayCast(3, 3, Rot.getServerRotation()).typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
                             interpolation.setDuration(rotationDuration.getValue());
                             interpolation.setEasing(Easing.IN_OUT_BACK);
 
@@ -221,15 +222,10 @@ public class KillAura extends Module {
 
                 RotUtils.limitDelta(delta, speed);
 
-                if (Client.INST.getProfile().getRole().isHigherThenOrEquals(Role.TESTER)) {
-                    delta.setYaw(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
-                    delta.setPitch(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
+                delta.setYaw(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
+                delta.setPitch(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
 
-                    lastDelta = new Rot(
-                            delta.getYaw(),
-                            delta.getPitch()
-                    );
-                }
+                lastDelta = new Rot(delta.getYaw(), delta.getPitch());
 
                 if (gcd.isToggled()) delta = RotUtils.fixDelta(delta);
                 lr = lr.add(delta);

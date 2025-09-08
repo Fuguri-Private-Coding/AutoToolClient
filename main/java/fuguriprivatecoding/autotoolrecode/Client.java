@@ -99,7 +99,7 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(4, 3, 2);
+		version = new ClientVersion(4, 4, 0);
 
 		Display.setTitle(getFullName());
 
