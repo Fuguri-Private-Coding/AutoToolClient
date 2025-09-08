@@ -62,7 +62,7 @@ public class InvManager extends Module {
                 if (MoveUtils.isMoving()) return;
             }
 
-            if (!startTimer.reachedMS(startDelay.getRandomizedIntValue())) return;
+            if (!startTimer.reachedMS(startDelay.getRandomizedIntValue()) || !stopwatch.reachedMS(delay.getRandomizedIntValue())) return;
 
             this.moved = false;
 

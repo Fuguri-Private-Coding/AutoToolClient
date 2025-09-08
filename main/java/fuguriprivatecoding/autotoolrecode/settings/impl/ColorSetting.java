@@ -193,7 +193,7 @@ public class ColorSetting extends Setting {
     }
 
     public void setTargetRadius(boolean isHide) {
-        targetRadius = isHide ? new Vector4f(1,5,5,1) : new Vector4f(5,1,1,5);
+        targetRadius = isHide ? new Vector4f(5,1,1,5) : new Vector4f(1,5,5,1);
     }
 
     public Vector4f getAnimatedRadius() {

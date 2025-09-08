@@ -40,37 +40,30 @@ import static java.lang.Math.*;
 public class ClickGuiScreen extends GuiScreen {
 
 	int delay = 10;
+	boolean resizing, moving, binding, closing;
+	boolean showConsoleAfterClose, showConfigAfterClose, showHotKeysAfterClose;
+	int settingsScroll, settingsTotalHeight, modulesScroll, modulesTotalHeight;
 
 	Vector2f pos, size, lastMouse, lastSize, lastPos, clickedCategoryPos, clickedModulePos;
 
 	ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
-	
 	ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
 
-	Color BACKGROUND_COLOR = new Color(0,0,0, clickGui.backgroundAlpha.getValue());
-	public Color MAIN_COLOR = new Color(255, 255, 209, 255);
-	Color HEADER_COLOR = new Color(15, 15, 15, 255);
-	Color CATEGORY_COLOR = new Color(255, 255, 255, 255);
-
-	int MAIN_COLOR_INT = MAIN_COLOR.getRGB();
+	Color BACKGROUND_COLOR;
+	Color MAIN_COLOR = new Color(255, 255, 209, 255);
+	final Color HEADER_COLOR = new Color(15, 15, 15, 255);
+	final Color CATEGORY_COLOR = new Color(255, 255, 255, 255);
 
 	KeyBind activeKeyBind;
-
 	Category selectedCategory = Category.COMBAT;
 	Module selectedModule = null;
-
 	Category clickedCategory;
 	Module clickedModule;
 
-	boolean resizing, moving, binding, closing, showConsoleAfterClose, showConfigAfterClose, showHotKeysAfterClose;
-
-	int settingsScroll, settingsTotalHeight, modulesScroll, modulesTotalHeight;
-
 	final Animation2D settingLine, background, sizeBackground, modulesScrolls;
-
-	EasingAnimation guis = new EasingAnimation();
-	EasingAnimation moduleLine = new EasingAnimation();
-	EasingAnimation settingsScrolls = new EasingAnimation();
+	final EasingAnimation guis = new EasingAnimation();
+	final EasingAnimation moduleLine = new EasingAnimation();
+	final EasingAnimation settingsScrolls = new EasingAnimation();
 
 	public ClickGuiScreen() {
 		lastMouse = new Vector2f(0, 0);
@@ -85,6 +78,8 @@ public class ClickGuiScreen extends GuiScreen {
 		size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
 		pos = new Vector2f(50f, 50f);
 
+		BACKGROUND_COLOR = new Color(0, 0, 0, clickGui.backgroundAlpha.getValue());
+
 		sizeBackground = new Animation2D();
 		background = new Animation2D();
 		settingLine = new Animation2D();
@@ -95,40 +90,16 @@ public class ClickGuiScreen extends GuiScreen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		int currentScroll = Mouse.getDWheel();
 
-		MAIN_COLOR = clickGui.color.isFade() ?
-				ColorUtils.fadeColor(clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed())
-				: clickGui.color.getColor();
-
+		MAIN_COLOR = clickGui.color.getFadedColor();
 		BACKGROUND_COLOR = new Color(0,0,0,clickGui.backgroundAlpha.getValue());
 
-        if (closing) {
-			moduleLine.setEnd(0);
-			moduleLine.update(5, Easing.OUT_BACK);
-			guis.setEnd(0);
-			guis.update(3, Easing.OUT_BACK);
-            if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
-				closing = false;
-				clickedModule = null;
-				clickedCategory = null;
-                mc.currentScreen.onGuiClosed();
-				mc.displayGuiScreen(null);
-				if (showConsoleAfterClose) {
-					mc.currentScreen = null;
-					mc.displayGuiScreen(Client.INST.getConsole());
-					showConsoleAfterClose = false;
-				}
-				if (showConfigAfterClose) {
-					mc.currentScreen = null;
-					mc.displayGuiScreen(Client.INST.getConfigGuiScreen());
-					showConfigAfterClose = false;
-				}
-				if (showHotKeysAfterClose) {
-					mc.currentScreen = null;
-					mc.displayGuiScreen(Client.INST.getHotTextGui());
-					showHotKeysAfterClose = false;
-				}
-            }
-        }
+		if (closing) {
+			animateCloseTransition();
+			if (isCloseAnimationComplete()) completeCloseOperation();
+
+			mouseX = 0;
+			mouseY = 0;
+		}
 
 		String name = switch (delay) {
 			case 0, 1, 2 -> "AutoTool_";
@@ -142,12 +113,11 @@ public class ClickGuiScreen extends GuiScreen {
 			case 20 -> "_";
 			default -> "§k" + "AutoTool".substring(0, min(delay - 20, 8));
 		};
-
-		MAIN_COLOR_INT = MAIN_COLOR.getRGB();
+		final ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("MuseoSans");
 
 		Client.INST.getModuleManager().getModules().sort((o1, o2) -> {
-			int width1 = mc.fontRendererObj.getStringWidth(o1.getName());
-			int width2 = mc.fontRendererObj.getStringWidth(o2.getName());
+			int width1 = (int) fontRenderer.getStringWidth(o1.getName());
+			int width2 = (int) fontRenderer.getStringWidth(o2.getName());
 
 			return Integer.compare(width2, width1);
 		});
@@ -165,7 +135,6 @@ public class ClickGuiScreen extends GuiScreen {
 			lastMouse.set(mouseX, mouseY);
 		}
 
-		final ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("MuseoSans");
 		final float clientNameWidth = (float) fontRenderer.getStringWidth(Client.INST.getName());
 
 		modulesScrolls.endY	= modulesScroll;
@@ -239,7 +208,7 @@ public class ClickGuiScreen extends GuiScreen {
 			}
 
 			float settingsVisibleHeight = sizeBackground.y - (2 + 2 + fontRendererObj.FONT_HEIGHT + 10 + 5);
-			float maxScroll = Math.max(settingsTotalHeight - settingsVisibleHeight,0);
+			float maxScroll = max(settingsTotalHeight - settingsVisibleHeight,0);
 
 			if (settingsScroll > 0) settingsScroll = 0;
 			if (settingsScroll < -maxScroll) settingsScroll = (int) -maxScroll;
@@ -252,7 +221,7 @@ public class ClickGuiScreen extends GuiScreen {
 			}
 
 			float moduleVisibleHeight = sizeBackground.y - 18;
-			float maxScroll = Math.max(modulesTotalHeight - moduleVisibleHeight, 0);
+			float maxScroll = max(modulesTotalHeight - moduleVisibleHeight, 0);
 
 			if (modulesScroll > 0) modulesScroll = 0;
 			if (modulesScroll < -maxScroll) modulesScroll = (int) -maxScroll;
@@ -271,12 +240,7 @@ public class ClickGuiScreen extends GuiScreen {
             float toggleProgress = module.getToggleProgress();
             Color toggleColor = ColorUtils.interpolateColor(CATEGORY_COLOR, MAIN_COLOR, toggleProgress);
 
-            fontRenderer.drawString(
-					module.getName() + (!module.isHide() ? " ✓" : " ×"),
-					background.x + 4,
-					background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 2,
-					toggleColor
-			);
+            fontRenderer.drawString(module.getName() + (!module.isHide() ? " ✓" : " ×"), background.x + 4, background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 2, toggleColor);
 
             module.updateToggleAnimation();
 
@@ -293,12 +257,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		offset = 0;
 		for (Category category : Category.values()) {
-			fontRenderer.drawString(
-					category.name,
-					background.x + verticalLineXOffset + 5 + 5 + offset,
-					background.y + 4 + 1,
-					category == selectedCategory ? MAIN_COLOR : CATEGORY_COLOR
-			);
+			fontRenderer.drawString(category.name, background.x + verticalLineXOffset + 5 + 5 + offset, background.y + 4 + 1, category == selectedCategory ? MAIN_COLOR : CATEGORY_COLOR);
 			offset += (float) (fontRenderer.getStringWidth(category.name) + 5);
 		}
 
@@ -308,450 +267,242 @@ public class ClickGuiScreen extends GuiScreen {
 
 		settingsTotalHeight = 0;
 		if (selectedModule != null) {
-			fontRenderer.drawString(
-					"Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())),
-					background.x + verticalLineXOffset + 5,
-					background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6,
-						CATEGORY_COLOR
-			);
-			fontRenderer.drawString(
-					"Hide: " + selectedModule.isHide(),
-					background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()),
-					background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6,
-						CATEGORY_COLOR
-			);
-			fontRenderer.drawString(
-					"LoadFromConfig: " + selectedModule.isLoadFromConfig(),
-					background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()) - fontRenderer.getStringWidth("LoadFromConfig: " + selectedModule.isLoadFromConfig()) - 5,
-					background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6,
-					CATEGORY_COLOR
-			);
+			fontRenderer.drawString("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())), background.x + verticalLineXOffset + 5, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, CATEGORY_COLOR);
+			fontRenderer.drawString("Hide: " + selectedModule.isHide(), background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()), background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, CATEGORY_COLOR);
+			fontRenderer.drawString("LoadFromConfig: " + selectedModule.isLoadFromConfig(), background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()) - fontRenderer.getStringWidth("LoadFromConfig: " + selectedModule.isLoadFromConfig()) - 5, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, CATEGORY_COLOR);
+
 			ScissorUtils.enableScissor();
-			ScissorUtils.scissor(new ScaledResolution(mc), background.x + verticalLineXOffset + 5, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5, sizeBackground.x - verticalLineXOffset - 5, sizeBackground.y - (2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5));
+			ScissorUtils.scissor(new ScaledResolution(mc), background.x + verticalLineXOffset, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5, sizeBackground.x - verticalLineXOffset - 5, sizeBackground.y - (2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5));
 			for (Setting setting : selectedModule.getSettings()) {
 				if (!setting.isVisible()) continue;
 
                 float settingWidth = (float) fontRenderer.getStringWidth(setting.getName() + " ");
-				fontRenderer.drawString(
-						setting.getName() + " ",
-						background.x + verticalLineXOffset + 5,
-						background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset - 0.5f,
-						CATEGORY_COLOR
-				);
-				if (setting instanceof MultiMode multiBooleanSetting) {
-					float xOffset = 0;
-					float yOffset = 0;
-					int length = multiBooleanSetting.getValues().size();
+				fontRenderer.drawString(setting.getName() + " ", background.x + verticalLineXOffset + 5, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset - 0.5f, CATEGORY_COLOR);
 
-					multiBooleanSetting.updateAnimation();
+				switch (setting) {
+					case MultiMode multiMode -> {
+						float xOffset = 0;
+						float yOffset = 0;
+						int length = multiMode.getValues().size();
 
-					for (Doubles<String, Boolean> value : multiBooleanSetting.getValues()) {
-						String mode = value.getFirst();
-						boolean notLast = value != multiBooleanSetting.getValues().get(length - 1);
+						multiMode.updateAnimation();
 
-						if (background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= background.x + sizeBackground.x - 10) {
-							xOffset = 0;
-							yOffset += 11;
-						}
+						for (Doubles<String, Boolean> value : multiMode.getValues()) {
+							String mode = value.getFirst();
+							boolean notLast = value != multiMode.getValues().get(length - 1);
 
-						multiBooleanSetting.setUnselectedColor(Color.WHITE);
-						multiBooleanSetting.setSelectedColor(MAIN_COLOR);
-
-						Color modeColor = multiBooleanSetting.getModeColor(value);
-
-						fontRenderer.drawString(
-								mode,
-								background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset,
-								background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
-								modeColor
-						);
-
-						if (notLast) {
-							fontRenderer.drawString(
-									",",
-									background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode),
-									background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
-									CATEGORY_COLOR
-							);
-						}
-						xOffset += (float) (fontRenderer.getStringWidth(mode) + 5);
-					}
-					offset += yOffset;
-					settingsTotalHeight += (int) yOffset;
-				}
-				if (setting instanceof Mode modeSetting) {
-					float xOffset = 0;
-					float yOffset = 0;
-
-					modeSetting.updateAnimation();
-
-					for (String mode : modeSetting.getModes()) {
-						int length = modeSetting.getModes().size();
-						boolean notLast = !mode.equals(modeSetting.getModes().get(length - 1));
-
-						if (background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= background.x + sizeBackground.x - 10) {
-							xOffset = 0;
-							yOffset += 11;
-						}
-
-						modeSetting.setUnselectedColor(Color.WHITE);
-						modeSetting.setSelectedColor(MAIN_COLOR);
-
-						Color modeColor = modeSetting.getModeColor(mode);
-
-						fontRenderer.drawString(
-								mode,
-								background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset,
-								background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
-								modeColor
-						);
-
-						if (notLast) {
-							fontRenderer.drawString(
-									",",
-									background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode),
-									background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset,
-									Color.WHITE
-							);
-						}
-						xOffset += (float) (fontRenderer.getStringWidth(mode) + 5);
-					}
-					offset += yOffset;
-					settingsTotalHeight += (int) yOffset;
-				}
-				if (setting instanceof CheckBox booleanSetting) {
-					float toggleProgress = booleanSetting.getToggleProgress();
-					Color toggleColor = ColorUtils.interpolateColor(Color.RED, Color.GREEN.darker(), toggleProgress);
-
-					fontRenderer.drawString(
-							String.valueOf(booleanSetting.isToggled()),
-							background.x + verticalLineXOffset + 5 + settingWidth + 1,
-							background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
-							toggleColor
-					);
-
-					booleanSetting.updateToggleAnimation();
-				}
-				if (setting instanceof IntegerSetting integerSetting) {
-					integerSetting.updateAnimation();
-
-					float animatedFilledFactor = integerSetting.getAnimatedNormalize();
-					final float length = 75;
-					final float sliderLength = animatedFilledFactor * length;
-
-					RoundedUtils.drawRect(
-							background.x + verticalLineXOffset + 5 + settingWidth + 1,
-							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
-							length,
-							4,
-							1.5f,
-							BACKGROUND_COLOR
-					);
-
-					RoundedUtils.drawRect(
-							background.x + verticalLineXOffset + 5 + settingWidth + 1,
-							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
-							sliderLength,
-							4,
-							1.5f,
-							MAIN_COLOR
-					);
-
-					RoundedUtils.drawRect(
-							background.x + verticalLineXOffset + 5 + settingWidth + 1 + sliderLength - 2,
-							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 3.5f,
-							6,
-							6,
-							3f,
-							Color.WHITE
-					);
-
-					fontRenderer.drawString(
-							String.valueOf(integerSetting.getValue()),
-							background.x + verticalLineXOffset + 5 + settingWidth + 1 + length + 6,
-							background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
-							CATEGORY_COLOR
-					);
-
-					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth - 5
-							&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 5
-							&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
-							&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
-						if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-							integerSetting.setValue((int) (integerSetting.getValue() + signum(currentScroll)));
-						} else if (Mouse.isButtonDown(0)) {
-							float mx = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth);
-							float p = mx / length;
-							float normalize = integerSetting.getMin() + (integerSetting.getMax() - integerSetting.getMin()) * p;
-							integerSetting.setValue(round(normalize));
-						}
-					}
-				}
-				if (setting instanceof FloatSetting floatSetting) {
-					floatSetting.updateAnimation();
-
-					float animatedFilledFactor = floatSetting.getAnimatedNormalize();
-					final float length = 75;
-					final float sliderLength = animatedFilledFactor * length;
-
-					RoundedUtils.drawRect(
-							background.x + verticalLineXOffset + 5 + settingWidth + 1,
-							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
-							length,
-							4,
-							1.5f,
-							BACKGROUND_COLOR
-					);
-
-					RoundedUtils.drawRect(
-							background.x + verticalLineXOffset + 5 + settingWidth + 1,
-							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f,
-							sliderLength,
-							4,
-							1.5f,
-							MAIN_COLOR
-					);
-
-					RoundedUtils.drawRect(
-							background.x + verticalLineXOffset + 5 + settingWidth + 1 + sliderLength - 2,
-							background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 3.5f,
-							6,
-							6,
-							3f,
-							Color.WHITE
-					);
-
-					fontRenderer.drawString(
-							String.format("%.2f", floatSetting.getValue()),
-							background.x + verticalLineXOffset + 5 + settingWidth + 1 + length + 6,
-							background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
-							CATEGORY_COLOR
-					);
-
-					if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth - 5
-							&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 5
-							&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
-							&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
-						if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-							floatSetting.setValue(floatSetting.getValue() + Math.signum(currentScroll) * floatSetting.getStep());
-						} else if (Mouse.isButtonDown(0)) {
-							float mx = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth);
-							float p = mx / length;
-							float normalize = floatSetting.getMin() + (floatSetting.getMax() - floatSetting.getMin()) * p;
-							floatSetting.setValue(normalize);
-						}
-					}
-				}
-                if (setting instanceof DoubleSlider doubleSlider) {
-                    doubleSlider.updateAnimations();
-
-                    double animatedFilledFactorMin = doubleSlider.getAnimatedNormalizeMin();
-                    double animatedFilledFactorMax = doubleSlider.getAnimatedNormalizeMax();
-                    final float length = 75;
-                    final float minSliderLength = (float) (animatedFilledFactorMin * length);
-                    final float maxSliderLength = (float) (animatedFilledFactorMax * length);
-
-                    float minSliderY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10 + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
-                    float maxSliderY = minSliderY + 12;
-
-                    fontRenderer.drawString(
-                            "Min:",
-                            background.x + verticalLineXOffset + 5 + 5 + 1,
-                            background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10,
-                            CATEGORY_COLOR
-                    );
-
-                    RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1,
-                            minSliderY,
-                            length,
-                            4,
-                            1.5f,
-                            BACKGROUND_COLOR
-                    );
-
-                    RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1,
-                            minSliderY,
-                            minSliderLength,
-                            4,
-                            1.5f,
-                            MAIN_COLOR
-                    );
-
-                    RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + minSliderLength - 2,
-                            minSliderY - 1,
-                            6,
-                            6,
-                            3f,
-                            Color.WHITE
-                    );
-
-                    fontRenderer.drawString(
-                            String.format("%.2f", doubleSlider.getMinValue()),
-                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 6,
-                            background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10,
-                            CATEGORY_COLOR
-                    );
-
-                    fontRenderer.drawString(
-                            "Max:",
-                            background.x + verticalLineXOffset + 5 + 5 + 1,
-                            background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10 + 12,
-                            CATEGORY_COLOR
-                    );
-
-                    RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1,
-                            maxSliderY,
-                            length,
-                            4,
-                            1.5f,
-                            BACKGROUND_COLOR
-                    );
-
-                    RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1,
-                            maxSliderY,
-                            maxSliderLength,
-                            4,
-                            1.5f,
-                            MAIN_COLOR
-                    );
-
-                    RoundedUtils.drawRect(
-                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + maxSliderLength - 2,
-                            maxSliderY - 1,
-                            6,
-                            6,
-                            3f,
-                            Color.WHITE
-                    );
-
-                    fontRenderer.drawString(
-                            String.format("%.2f", doubleSlider.getMaxValue()),
-                            background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 6,
-                            background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10 + 12,
-                            CATEGORY_COLOR
-                    );
-
-                    if (mouseX > background.x + verticalLineXOffset + 5 + 5 + 20 + 1 - 5
-                            && mouseX < background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 5
-                            && mouseY > minSliderY - 2
-                            && mouseY < minSliderY + 6) {
-                        if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-                            doubleSlider.setMinValue(doubleSlider.getMinValue() + Math.signum(currentScroll) * doubleSlider.getStep());
-                        } else if (Mouse.isButtonDown(0)) {
-                            float mx = mouseX - (background.x + verticalLineXOffset + 5 + 5 + 20 + 1);
-                            float p = mx / length;
-                            double normalize = doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p;
-                            doubleSlider.setMinValue(normalize);
-                        }
-                    }
-
-                    if (mouseX > background.x + verticalLineXOffset + 5 + 5 + 20 + 1 - 5
-                            && mouseX < background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 5
-                            && mouseY > maxSliderY - 2
-                            && mouseY < maxSliderY + 6) {
-                        if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-                            doubleSlider.setMaxValue(doubleSlider.getMaxValue() + Math.signum(currentScroll) * doubleSlider.getStep());
-                        } else if (Mouse.isButtonDown(0)) {
-                            float mx = mouseX - (background.x + verticalLineXOffset + 5 + 5 + 20 + 1);
-                            float p = mx / length;
-                            double normalize = doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p;
-                            doubleSlider.setMaxValue(normalize);
-                        }
-                    }
-
-                    offset += 25;
-                    settingsTotalHeight += 25;
-                }
-				if (setting instanceof ColorSetting colorSetting) {
-					float startY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
-					float sliderX = background.x + verticalLineXOffset + 5 + 32.5f + 4;
-					float sliderWidth = 75;
-					float sliderHeight = 4;
-					float verticalSpacing = 3;
-					float previewSize = 12;
-
-					int currentOffset = 0;
-
-                    float fadeButtonY = startY + currentOffset;
-
-					float triangleX = background.x + verticalLineXOffset + 5 + settingWidth + 4;
-					float triangleY = fadeButtonY - 1;
-
-					Color color = new Color(colorSetting.getRed(), colorSetting.getGreen(), colorSetting.getBlue(), 1f);
-					Color fadeColor = new Color(colorSetting.getFadeRed(), colorSetting.getFadeGreen(), colorSetting.getFadeBlue(), 1f);
-
-					colorSetting.setTargetRadius(colorSetting.isHide());
-					colorSetting.updateAnimation();
-
-					Vector4f triangleRadius = colorSetting.getAnimatedRadius();
-					RoundedUtils.drawRect(
-							triangleX,
-							triangleY,
-							6,
-							6,
-							triangleRadius.x, triangleRadius.y, triangleRadius.z, triangleRadius.w,
-							colorSetting.isFade() ? ColorUtils.fadeColor(color, fadeColor, colorSetting.getSpeed()) : color
-					);
-
-					if (colorSetting.isHide()) {
-						offset += 14;
-						settingsTotalHeight += 14;
-						continue;
-					} else {
-						fontRenderer.drawString(
-								"Fade: ",
-								background.x + verticalLineXOffset + 5 + 5,
-								fadeButtonY + 12,
-								Color.WHITE
-						);
-
-						fontRenderer.drawString(
-								String.valueOf(colorSetting.isFade()),
-								background.x + verticalLineXOffset + 5 + 5 + fontRenderer.getStringWidth("Fade: "),
-								fadeButtonY + 12,
-								colorSetting.isFade() ? Color.GREEN.darker() : Color.RED
-						);
-
-						currentOffset += (int) (fontRenderer.FONT_HEIGHT + verticalSpacing) + 10;
-
-						Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.WHITE};
-						float[] values = {colorSetting.getRed(), colorSetting.getGreen(), colorSetting.getBlue(), colorSetting.getAlpha()};
-
-						for (int i = 0; i < 4; i++) {
-							float sliderY = startY + currentOffset;
-
-							if (Mouse.isButtonDown(0)) {
-								if (mouseX > sliderX && mouseX < sliderX + sliderWidth &&
-										mouseY > sliderY && mouseY < sliderY + sliderHeight) {
-									float deltaX = mouseX - sliderX;
-									switch (i) {
-										case 0: colorSetting.setRed(deltaX / sliderWidth); break;
-										case 1: colorSetting.setGreen(deltaX / sliderWidth); break;
-										case 2: colorSetting.setBlue(deltaX / sliderWidth); break;
-										case 3: colorSetting.setAlpha(deltaX / sliderWidth); break;
-									}
-								}
+							if (background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= background.x + sizeBackground.x - 10) {
+								xOffset = 0;
+								yOffset += 11;
 							}
 
-							RoundedUtils.drawRect(sliderX, sliderY, sliderWidth, sliderHeight, 0.5f, BACKGROUND_COLOR);
-							RoundedUtils.drawRect(sliderX, sliderY, sliderWidth * values[i], sliderHeight, 0.5f, colors[i]);
-							currentOffset += (int) (sliderHeight + verticalSpacing);
+							multiMode.setUnselectedColor(Color.WHITE);
+							multiMode.setSelectedColor(MAIN_COLOR);
+
+							Color modeColor = multiMode.getModeColor(value);
+
+							fontRenderer.drawString(mode, background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset, modeColor);
+
+							if (notLast) {
+								fontRenderer.drawString(",", background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode), background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset, CATEGORY_COLOR);
+							}
+							xOffset += (float) (fontRenderer.getStringWidth(mode) + 5);
+						}
+						offset += yOffset;
+						settingsTotalHeight += (int) yOffset;
+					}
+
+					case Mode modeSetting -> {
+						float xOffset = 0;
+						float yOffset = 0;
+
+						modeSetting.updateAnimation();
+
+						for (String mode : modeSetting.getModes()) {
+							int length = modeSetting.getModes().size();
+							boolean notLast = !mode.equals(modeSetting.getModes().get(length - 1));
+
+							if (background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode) >= background.x + sizeBackground.x - 10) {
+								xOffset = 0;
+								yOffset += 11;
+							}
+
+							modeSetting.setUnselectedColor(Color.WHITE);
+							modeSetting.setSelectedColor(MAIN_COLOR);
+
+							Color modeColor = modeSetting.getModeColor(mode);
+
+							fontRenderer.drawString(mode, background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset, modeColor);
+
+							if (notLast) {
+								fontRenderer.drawString(",", background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode), background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset, Color.WHITE);
+							}
+							xOffset += (float) (fontRenderer.getStringWidth(mode) + 5);
+						}
+						offset += yOffset;
+						settingsTotalHeight += (int) yOffset;
+					}
+
+					case CheckBox checkBox -> {
+						float toggleProgress = checkBox.getToggleProgress();
+						Color toggleColor = ColorUtils.interpolateColor(Color.RED, Color.GREEN.darker(), toggleProgress);
+
+						fontRenderer.drawString(
+								String.valueOf(checkBox.isToggled()),
+								background.x + verticalLineXOffset + 5 + settingWidth + 1,
+								background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+								toggleColor
+						);
+
+						checkBox.updateToggleAnimation();
+					}
+
+					case IntegerSetting integerSetting -> {
+						integerSetting.updateAnimation();
+
+						float animatedFilledFactor = integerSetting.getAnimatedNormalize();
+						final float length = 75;
+						final float sliderLength = animatedFilledFactor * length;
+
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f, length, 4, 1.5f, BACKGROUND_COLOR);
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f, sliderLength, 4, 1.5f, MAIN_COLOR);
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1 + sliderLength - 2, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 3.5f, 6, 6, 3f, Color.WHITE);
+						fontRenderer.drawString(String.valueOf(integerSetting.getValue()), background.x + verticalLineXOffset + 5 + settingWidth + 1 + length + 6, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset, CATEGORY_COLOR);
+
+						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth - 5
+								&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 5
+								&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
+								&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
+							if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+								integerSetting.setValue((int) (integerSetting.getValue() + signum(currentScroll)));
+							} else if (Mouse.isButtonDown(0)) {
+								float mx = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth);
+								float p = mx / length;
+								float normalize = integerSetting.getMin() + (integerSetting.getMax() - integerSetting.getMin()) * p;
+								integerSetting.setValue(round(normalize));
+							}
+						}
+					}
+
+					case FloatSetting floatSetting -> {
+						floatSetting.updateAnimation();
+
+						float animatedFilledFactor = floatSetting.getAnimatedNormalize();
+						final float length = 75;
+						final float sliderLength = animatedFilledFactor * length;
+
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f, length, 4, 1.5f, BACKGROUND_COLOR);
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f, sliderLength, 4, 1.5f, MAIN_COLOR);
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + settingWidth + 1 + sliderLength - 2, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 3.5f, 6, 6, 3f, Color.WHITE);
+						fontRenderer.drawString(String.format("%.2f", floatSetting.getValue()), background.x + verticalLineXOffset + 5 + settingWidth + 1 + length + 6, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset, CATEGORY_COLOR);
+
+						if (mouseX > background.x + verticalLineXOffset + 5 + settingWidth - 5
+								&& mouseX < background.x + verticalLineXOffset + 5 + settingWidth + length + 5
+								&& mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f
+								&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f + 4) {
+							if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+								floatSetting.setValue(floatSetting.getValue() + signum(currentScroll) * floatSetting.getStep());
+							} else if (Mouse.isButtonDown(0)) {
+								float mx = mouseX - (background.x + verticalLineXOffset + 5 + settingWidth);
+								float p = mx / length;
+								float normalize = floatSetting.getMin() + (floatSetting.getMax() - floatSetting.getMin()) * p;
+								floatSetting.setValue(normalize);
+							}
+						}
+					}
+
+					case DoubleSlider doubleSlider -> {
+						doubleSlider.updateAnimations();
+
+						double animatedFilledFactorMin = doubleSlider.getAnimatedNormalizeMin();
+						double animatedFilledFactorMax = doubleSlider.getAnimatedNormalizeMax();
+						final float length = 75;
+						final float minSliderLength = (float) (animatedFilledFactorMin * length);
+						final float maxSliderLength = (float) (animatedFilledFactorMax * length);
+
+						float minSliderY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10 + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
+						float maxSliderY = minSliderY + 12;
+
+						fontRenderer.drawString("Min:", background.x + verticalLineXOffset + 5 + 5 + 1, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10, CATEGORY_COLOR);
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + 5 + 20 + 1, minSliderY, length, 4, 1.5f, BACKGROUND_COLOR);
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + 5 + 20 + 1, minSliderY, minSliderLength, 4, 1.5f, MAIN_COLOR);
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + minSliderLength - 2, minSliderY - 1, 6, 6, 3f, Color.WHITE);
+						fontRenderer.drawString(String.format("%.2f", doubleSlider.getMinValue()), background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 6, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10, CATEGORY_COLOR);
+
+						fontRenderer.drawString("Max:", background.x + verticalLineXOffset + 5 + 5 + 1, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10 + 12, CATEGORY_COLOR);
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + 5 + 20 + 1, maxSliderY, length, 4, 1.5f, BACKGROUND_COLOR);
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + 5 + 20 + 1, maxSliderY, maxSliderLength, 4, 1.5f, MAIN_COLOR);
+						RoundedUtils.drawRect(background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + maxSliderLength - 2, maxSliderY - 1, 6, 6, 3f, Color.WHITE);
+						fontRenderer.drawString(String.format("%.2f", doubleSlider.getMaxValue()), background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 6, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + 10 + 12, CATEGORY_COLOR);
+
+						if (mouseX > background.x + verticalLineXOffset + 5 + 5 + 20 + 1 - 5
+								&& mouseX < background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 5
+								&& mouseY > minSliderY - 2
+								&& mouseY < minSliderY + 6) {
+							if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+								doubleSlider.setMinValue(doubleSlider.getMinValue() + signum(currentScroll) * doubleSlider.getStep());
+							} else if (Mouse.isButtonDown(0)) {
+								float mx = mouseX - (background.x + verticalLineXOffset + 5 + 5 + 20 + 1);
+								float p = mx / length;
+								double normalize = doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p;
+								doubleSlider.setMinValue(normalize);
+							}
 						}
 
-						float mainPreviewY = startY + currentOffset;
-						RoundedUtils.drawRect(sliderX - previewSize * 2 - 5 - 1, mainPreviewY - previewSize * 2 - 3 - 1, previewSize * 2 + 2, previewSize * 2 + 2, 0f, BACKGROUND_COLOR);
-						RoundedUtils.drawRect(sliderX - previewSize * 2 - 5, mainPreviewY - previewSize * 2 - 3, previewSize * 2, previewSize * 2, 0f, colorSetting.getColor());
+						if (mouseX > background.x + verticalLineXOffset + 5 + 5 + 20 + 1 - 5
+								&& mouseX < background.x + verticalLineXOffset + 5 + 5 + 20 + 1 + length + 5
+								&& mouseY > maxSliderY - 2
+								&& mouseY < maxSliderY + 6) {
+							if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+								doubleSlider.setMaxValue(doubleSlider.getMaxValue() + signum(currentScroll) * doubleSlider.getStep());
+							} else if (Mouse.isButtonDown(0)) {
+								float mx = mouseX - (background.x + verticalLineXOffset + 5 + 5 + 20 + 1);
+								float p = mx / length;
+								double normalize = doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p;
+								doubleSlider.setMaxValue(normalize);
+							}
+						}
 
-						currentOffset += (int) verticalSpacing;
+						offset += 25;
+						settingsTotalHeight += 25;
+					}
 
-						if (colorSetting.isFade()) {
-							float[] fadeValues = {colorSetting.getFadeRed(), colorSetting.getFadeGreen(),
-									colorSetting.getFadeBlue(), colorSetting.getFadeAlpha()};
+					case ColorSetting colorSetting -> {
+						float startY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
+						float sliderX = background.x + verticalLineXOffset + 5 + 32.5f + 4;
+						float sliderWidth = 75;
+						float sliderHeight = 4;
+						float verticalSpacing = 3;
+						float previewSize = 12;
+
+						int currentOffset = 0;
+
+						float fadeButtonY = startY + currentOffset;
+
+						float triangleX = background.x + verticalLineXOffset + 5 + settingWidth + 4;
+						float triangleY = fadeButtonY - 1;
+
+						Color color = new Color(colorSetting.getRed(), colorSetting.getGreen(), colorSetting.getBlue(), 1f);
+						Color fadeColor = new Color(colorSetting.getFadeRed(), colorSetting.getFadeGreen(), colorSetting.getFadeBlue(), 1f);
+
+						colorSetting.setTargetRadius(colorSetting.isHide());
+						colorSetting.updateAnimation();
+
+						Vector4f triangleRadius = colorSetting.getAnimatedRadius();
+						RoundedUtils.drawRect(triangleX, triangleY, 6, 6, triangleRadius.x, triangleRadius.y, triangleRadius.z, triangleRadius.w, colorSetting.isFade() ? ColorUtils.fadeColor(color, fadeColor, colorSetting.getSpeed()) : color);
+
+						if (colorSetting.isHide()) {
+							offset += 14;
+							settingsTotalHeight += 14;
+							continue;
+						} else {
+							fontRenderer.drawString("Fade: ", background.x + verticalLineXOffset + 5 + 5, fadeButtonY + 12, Color.WHITE);
+							fontRenderer.drawString(String.valueOf(colorSetting.isFade()), background.x + verticalLineXOffset + 5 + 5 + fontRenderer.getStringWidth("Fade: "), fadeButtonY + 12, colorSetting.isFade() ? Color.GREEN.darker() : Color.RED);
+
+							currentOffset += (int) (fontRenderer.FONT_HEIGHT + verticalSpacing) + 10;
+
+							Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.WHITE};
+							float[] values = {colorSetting.getRed(), colorSetting.getGreen(), colorSetting.getBlue(), colorSetting.getAlpha()};
 
 							for (int i = 0; i < 4; i++) {
 								float sliderY = startY + currentOffset;
@@ -761,85 +512,113 @@ public class ClickGuiScreen extends GuiScreen {
 											mouseY > sliderY && mouseY < sliderY + sliderHeight) {
 										float deltaX = mouseX - sliderX;
 										switch (i) {
-											case 0: colorSetting.setFadeRed(deltaX / sliderWidth); break;
-											case 1: colorSetting.setFadeGreen(deltaX / sliderWidth); break;
-											case 2: colorSetting.setFadeBlue(deltaX / sliderWidth); break;
-											case 3: colorSetting.setFadeAlpha(deltaX / sliderWidth); break;
+											case 0: colorSetting.setRed(deltaX / sliderWidth); break;
+											case 1: colorSetting.setGreen(deltaX / sliderWidth); break;
+											case 2: colorSetting.setBlue(deltaX / sliderWidth); break;
+											case 3: colorSetting.setAlpha(deltaX / sliderWidth); break;
 										}
 									}
 								}
 
 								RoundedUtils.drawRect(sliderX, sliderY, sliderWidth, sliderHeight, 0.5f, BACKGROUND_COLOR);
-								RoundedUtils.drawRect(sliderX, sliderY, sliderWidth * fadeValues[i], sliderHeight, 0.5f, new Color(colors[i].getRed(), colors[i].getGreen(), colors[i].getBlue(), 255));
-
+								RoundedUtils.drawRect(sliderX, sliderY, sliderWidth * values[i], sliderHeight, 0.5f, colors[i]);
 								currentOffset += (int) (sliderHeight + verticalSpacing);
 							}
 
-							float fadePreviewY = startY + currentOffset;
-							RoundedUtils.drawRect(sliderX - previewSize * 2 - 5 - 1, fadePreviewY - previewSize * 2 - 3 - 1, previewSize * 2 + 2f, previewSize * 2 + 2f, 0f, BACKGROUND_COLOR);
-							RoundedUtils.drawRect(sliderX - previewSize * 2 - 5, fadePreviewY - previewSize * 2 - 3, previewSize * 2, previewSize * 2, 2f, colorSetting.getFadeColor());
+							float mainPreviewY = startY + currentOffset;
+							RoundedUtils.drawRect(sliderX - previewSize * 2 - 5 - 1, mainPreviewY - previewSize * 2 - 3 - 1, previewSize * 2 + 2, previewSize * 2 + 2, 0f, BACKGROUND_COLOR);
+							RoundedUtils.drawRect(sliderX - previewSize * 2 - 5, mainPreviewY - previewSize * 2 - 3, previewSize * 2, previewSize * 2, 0f, colorSetting.getColor());
 
-							float mixedPreviewX = sliderX + previewSize * 2 + 5;
-							RoundedUtils.drawRect(mixedPreviewX + previewSize * 4 + 5 - 1.5f, fadePreviewY - previewSize * 3 - 7.5f - 1.5f, previewSize * 2 + 2f, previewSize * 2 + 2.5f, 0f, BACKGROUND_COLOR);
+							currentOffset += (int) verticalSpacing;
 
-							for (int i = 0; i < 23; i++) {
-								RoundedUtils.drawRect(mixedPreviewX + previewSize * 4 + 5 + i, fadePreviewY - previewSize * 3 - 7.5f, 1, previewSize * 2, 0f, ColorUtils.mixColor(colorSetting.getColor(), colorSetting.getFadeColor(), i, colorSetting.getOffset(), colorSetting.getSpeed()));
+							if (colorSetting.isFade()) {
+								float[] fadeValues = {colorSetting.getFadeRed(), colorSetting.getFadeGreen(),
+										colorSetting.getFadeBlue(), colorSetting.getFadeAlpha()};
+
+								for (int i = 0; i < 4; i++) {
+									float sliderY = startY + currentOffset;
+
+									if (Mouse.isButtonDown(0)) {
+										if (mouseX > sliderX && mouseX < sliderX + sliderWidth &&
+												mouseY > sliderY && mouseY < sliderY + sliderHeight) {
+											float deltaX = mouseX - sliderX;
+											switch (i) {
+												case 0: colorSetting.setFadeRed(deltaX / sliderWidth); break;
+												case 1: colorSetting.setFadeGreen(deltaX / sliderWidth); break;
+												case 2: colorSetting.setFadeBlue(deltaX / sliderWidth); break;
+												case 3: colorSetting.setFadeAlpha(deltaX / sliderWidth); break;
+											}
+										}
+									}
+
+									RoundedUtils.drawRect(sliderX, sliderY, sliderWidth, sliderHeight, 0.5f, BACKGROUND_COLOR);
+									RoundedUtils.drawRect(sliderX, sliderY, sliderWidth * fadeValues[i], sliderHeight, 0.5f, new Color(colors[i].getRed(), colors[i].getGreen(), colors[i].getBlue(), 255));
+
+									currentOffset += (int) (sliderHeight + verticalSpacing);
+								}
+
+								float fadePreviewY = startY + currentOffset;
+								RoundedUtils.drawRect(sliderX - previewSize * 2 - 5 - 1, fadePreviewY - previewSize * 2 - 3 - 1, previewSize * 2 + 2f, previewSize * 2 + 2f, 0f, BACKGROUND_COLOR);
+								RoundedUtils.drawRect(sliderX - previewSize * 2 - 5, fadePreviewY - previewSize * 2 - 3, previewSize * 2, previewSize * 2, 2f, colorSetting.getFadeColor());
+
+								float mixedPreviewX = sliderX + previewSize * 2 + 5;
+								RoundedUtils.drawRect(mixedPreviewX + previewSize * 4 + 5 - 1.5f, fadePreviewY - previewSize * 3 - 7.5f - 1.5f, previewSize * 2 + 2f, previewSize * 2 + 2.5f, 0f, BACKGROUND_COLOR);
+
+								for (int i = 0; i < 23; i++) {
+									RoundedUtils.drawRect(mixedPreviewX + previewSize * 4 + 5 + i, fadePreviewY - previewSize * 3 - 7.5f, 1, previewSize * 2, 0f, ColorUtils.mixColor(colorSetting.getColor(), colorSetting.getFadeColor(), i, colorSetting.getOffset(), colorSetting.getSpeed()));
+								}
+
+								float controlsY = startY + currentOffset - 40;
+								float controlWidth = 50;
+								float controlHeight = 4;
+
+								float mixedPreviewAbsoluteX = mixedPreviewX + previewSize * 4 + 5;
+
+								float controlsX = mixedPreviewAbsoluteX + previewSize * 2 + 10;
+
+								RoundedUtils.drawRect(controlsX, controlsY, controlWidth, controlHeight, 0.5f, BACKGROUND_COLOR);
+								RoundedUtils.drawRect(controlsX, controlsY, controlWidth * (colorSetting.getOffset() / 20f), controlHeight, 0.5f, new Color(220, 180, 255));
+
+								if (mouseX > controlsX && mouseX < controlsX + controlWidth &&
+										mouseY > controlsY && mouseY < controlsY + controlHeight) {
+									if (Mouse.isButtonDown(0)) {
+										float deltaX = mouseX - controlsX;
+										colorSetting.setOffset(round(deltaX / controlWidth * 20));
+									}
+									if (currentScroll != 0 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+										float newOffset = colorSetting.getOffset() + (currentScroll > 0 ? 1 : -1);
+										colorSetting.setOffset(max(0, min(20, newOffset)));
+									}
+								}
+
+								fontRenderer.drawString("Offset: " + (int)colorSetting.getOffset(), controlsX + controlWidth + 5, controlsY, new Color(220, 180, 255));
+
+								RoundedUtils.drawRect(controlsX, controlsY + 10, controlWidth, controlHeight, 0.5f, BACKGROUND_COLOR);
+								RoundedUtils.drawRect(controlsX, controlsY + 10, controlWidth * (colorSetting.getSpeed() / 20f), controlHeight, 0.5f, new Color(255, 220, 180));
+
+								if (mouseX > controlsX && mouseX < controlsX + controlWidth &&
+										mouseY > controlsY + 10 && mouseY < controlsY + controlHeight + 10) {
+									if (Mouse.isButtonDown(0)) {
+										float deltaX = mouseX - controlsX;
+										colorSetting.setSpeed(round(deltaX / controlWidth * 20));
+									}
+									if (currentScroll != 0 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+										float newSpeed = colorSetting.getSpeed() + (currentScroll > 0 ? 1 : -1);
+										colorSetting.setSpeed(max(0, min(20, newSpeed)));
+									}
+								}
+
+								fontRenderer.drawString("Speed: " + (int)colorSetting.getSpeed(), controlsX + controlWidth + 5, controlsY + 10, new Color(255, 220, 180));
 							}
-
-							float controlsY = startY + currentOffset - 40;
-							float controlWidth = 50;
-							float controlHeight = 4;
-
-							float mixedPreviewAbsoluteX = mixedPreviewX + previewSize * 4 + 5;
-
-							float controlsX = mixedPreviewAbsoluteX + previewSize * 2 + 10;
-
-							RoundedUtils.drawRect(controlsX, controlsY, controlWidth, controlHeight, 0.5f, BACKGROUND_COLOR);
-							RoundedUtils.drawRect(controlsX, controlsY, controlWidth * (colorSetting.getOffset() / 20f), controlHeight, 0.5f, new Color(220, 180, 255));
-
-							if (mouseX > controlsX && mouseX < controlsX + controlWidth &&
-									mouseY > controlsY && mouseY < controlsY + controlHeight) {
-								if (Mouse.isButtonDown(0)) {
-									float deltaX = mouseX - controlsX;
-									colorSetting.setOffset(Math.round(deltaX / controlWidth * 20));
-								}
-								if (currentScroll != 0 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-									float newOffset = colorSetting.getOffset() + (currentScroll > 0 ? 1 : -1);
-									colorSetting.setOffset(Math.max(0, Math.min(20, newOffset)));
-								}
-							}
-
-							fontRenderer.drawString("Offset: " + (int)colorSetting.getOffset(), controlsX + controlWidth + 5, controlsY, new Color(220, 180, 255));
-
-							RoundedUtils.drawRect(controlsX, controlsY + 10, controlWidth, controlHeight, 0.5f, BACKGROUND_COLOR);
-							RoundedUtils.drawRect(controlsX, controlsY + 10, controlWidth * (colorSetting.getSpeed() / 20f), controlHeight, 0.5f, new Color(255, 220, 180));
-
-							if (mouseX > controlsX && mouseX < controlsX + controlWidth &&
-									mouseY > controlsY + 10 && mouseY < controlsY + controlHeight + 10) {
-								if (Mouse.isButtonDown(0)) {
-									float deltaX = mouseX - controlsX;
-									colorSetting.setSpeed(Math.round(deltaX / controlWidth * 20));
-								}
-								if (currentScroll != 0 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-									float newSpeed = colorSetting.getSpeed() + (currentScroll > 0 ? 1 : -1);
-									colorSetting.setSpeed(Math.max(0, Math.min(20, newSpeed)));
-								}
-							}
-
-							fontRenderer.drawString("Speed: " + (int)colorSetting.getSpeed(), controlsX + controlWidth + 5, controlsY + 10, new Color(255, 220, 180));
-
 						}
+
+						offset += colorSetting.isHide() ? 14 : currentOffset - 8;
+						settingsTotalHeight += colorSetting.isHide() ? 14 : currentOffset - 8;
 					}
 
-					offset += colorSetting.isHide() ? 14 : currentOffset;
-					settingsTotalHeight += colorSetting.isHide() ? 14 :  currentOffset;
-				}
-				if (setting instanceof KeyBind keyBind) {
-					fontRenderer.drawString(
-							activeKeyBind == keyBind ? "▬" : Keyboard.getKeyName(keyBind.getKey()),
-							background.x + verticalLineXOffset + 5 + settingWidth + 1,
-							background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset, MAIN_COLOR
-					);
+					case KeyBind keyBind -> fontRenderer.drawString(activeKeyBind == keyBind ? "▬" : Keyboard.getKeyName(keyBind.getKey()), background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset, MAIN_COLOR);
+
+					default -> {}
 				}
 				offset += 14;
 				settingsTotalHeight += 14;
@@ -848,28 +627,51 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 
 		if (clickedCategory != null) {
-			RenderUtils.drawRoundedOutLineRectangle(clickedCategoryPos.x, clickedCategoryPos.y, 100, 43, 2 / 1.4f, Color.BLACK.getRGB(), MAIN_COLOR.getRGB(), Color.BLACK.getRGB());
-			fontRenderer.drawString("HideCategory", clickedCategoryPos.x + 3, clickedCategoryPos.y + 3 + 2, Color.WHITE, true);
-			fontRenderer.drawString("LoadFromConfig", clickedCategoryPos.x + 3, clickedCategoryPos.y + 13 + 2, Color.WHITE, true);
-			fontRenderer.drawString("Import", clickedCategoryPos.x + 3, clickedCategoryPos.y + 23 + 2, Color.WHITE, true);
-			fontRenderer.drawString("Export", clickedCategoryPos.x + 3, clickedCategoryPos.y + 33 + 2, Color.WHITE, true);
+			final float menuX = clickedCategoryPos.x;
+			final float menuY = clickedCategoryPos.y;
+			final float textX = menuX + 3;
+			final float textWidth = 75;
+			final float textOffset = 2;
+
+			final String[] categoryOptions = {"HideCategory", "LoadFromConfig", "Import", "Export"};
+			final float[] categoryYPositions = { menuY + 3, menuY + 13, menuY + 23, menuY + 33 };
+
+			boolean[] categoryClicks = new boolean[4];
+			for (int i = 0; i < 4; i++) {
+				double optionWidth = fontRenderer.getStringWidth(categoryOptions[i]);
+				float optionY = categoryYPositions[i];
+				categoryClicks[i] = mouseX > textX && mouseX < textX + optionWidth && mouseY > optionY && mouseY < optionY + fontRenderer.FONT_HEIGHT;
+			}
+			RenderUtils.drawRoundedOutLineRectangle(menuX, menuY, textWidth, 43, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR.getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
+			for (int i = 0; i < 4; i++) fontRenderer.drawString(categoryOptions[i], textX, categoryYPositions[i] + textOffset, categoryClicks[i] ? MAIN_COLOR : Color.WHITE);
 		}
 
 		if (clickedModule != null) {
-			RenderUtils.drawRoundedOutLineRectangle(clickedModulePos.x, clickedModulePos.y, 40, 33, 2 / 1.4f, Color.BLACK.getRGB(), MAIN_COLOR.getRGB(), Color.BLACK.getRGB());
-			fontRenderer.drawString("Import", clickedModulePos.x + 3, clickedModulePos.y + 3 + 2, Color.WHITE, true);
-			fontRenderer.drawString("Export", clickedModulePos.x + 3, clickedModulePos.y + 13 + 2, Color.WHITE, true);
-			fontRenderer.drawString("Hide", clickedModulePos.x + 3, clickedModulePos.y + 23 + 2, Color.WHITE, true);
+			final float menuX = clickedModulePos.x;
+			final float menuY = clickedModulePos.y;
+			final float textX = menuX + 3;
+			final float textWidth = 35;
+			final float textOffset = 2;
+
+			final String[] moduleOptions = {"Import", "Export", "Hide"};
+			final float[] moduleYPositions = { menuY + 3, menuY + 13, menuY + 23 };
+
+			boolean[] moduleClicks = new boolean[3];
+			for (int i = 0; i < 3; i++) {
+				double optionWidth = fontRenderer.getStringWidth(moduleOptions[i]);
+				float optionY = moduleYPositions[i];
+				moduleClicks[i] = mouseX > textX && mouseX < textX + optionWidth && mouseY > optionY && mouseY < optionY + fontRenderer.FONT_HEIGHT;
+			}
+			RenderUtils.drawRoundedOutLineRectangle(menuX, menuY, textWidth, 33, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR.getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
+			for (int i = 0; i < 3; i++) fontRenderer.drawString(moduleOptions[i], textX, moduleYPositions[i] + textOffset, moduleClicks[i] ? MAIN_COLOR : Color.WHITE);
 		}
 
 		float offsetModuleDesc = modulesScrolls.y;
 
-		FontRenderer fonts = mc.fontRendererObj;
-
 		for (Module module : moduleList) {
 			if (mouseX < background.x || mouseX > background.x + sizeBackground.x || mouseY < background.y + 15 || mouseY > background.y + sizeBackground.y) continue;
-			float moduleWidth = (float) fonts.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
-			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fonts.FONT_HEIGHT + 5 + offsetModuleDesc && mouseY < background.y + 3 + 2 + fonts.FONT_HEIGHT + 5 + offsetModuleDesc + 9;
+			float moduleWidth = (float) fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
+			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc + 9;
 			if (moduleCondition && !module.getDescription().equalsIgnoreCase("") && clickedModule == null) {
 				if (!module.isHovered()) {
 					module.setHoverStartTime(System.currentTimeMillis());
@@ -877,9 +679,9 @@ public class ClickGuiScreen extends GuiScreen {
 				} else {
 					long hoverTime = System.currentTimeMillis() - module.getHoverStartTime();
 					if (hoverTime >= 500) {
-						float descriptionWidth = (float) fonts.getStringWidth(module.getDescription());
-						RenderUtils.drawRoundedOutLineRectangle(mouseX, mouseY, descriptionWidth + 6, 14, 2f / 1.4f, Color.BLACK.getRGB(), MAIN_COLOR.getRGB(), Color.BLACK.getRGB());
-						mc.fontRendererObj.drawString(module.getDescription(), mouseX + 3, mouseY + 3, Color.WHITE.getRGB(), true);
+						float descriptionWidth = (float) fontRenderer.getStringWidth(module.getDescription());
+						RenderUtils.drawRoundedOutLineRectangle(mouseX, mouseY, descriptionWidth + 6, 14, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR.getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
+						fontRenderer.drawString(module.getDescription(), mouseX + 3 + 2, mouseY + 3 + 2, Color.WHITE, true);
 					}
 				}
 			} else {
@@ -892,42 +694,40 @@ public class ClickGuiScreen extends GuiScreen {
 
 		boolean sidePanel = mouseY > sc.getScaledHeight() - 25 && mouseY < sc.getScaledHeight() && mouseX > sc.getScaledWidth() / 2f - 50 && mouseX < sc.getScaledWidth() / 2f - 50 + 100;
 
-		if (sidePanel) {
-			guis.setEnd(25);
-		} else {
-			guis.setEnd(0);
-		}
+		guis.setEnd(sidePanel ? 25 : 0);
 
 		RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.getValue(), 50, 2, 0, Color.BLACK.getRGB(), Color.black.getRGB(), Color.BLACK.getRGB());
 		RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue() * 2.5f, BACKGROUND_COLOR.getRGB(), Color.black.getRGB(),Color.black.getRGB());
 
-		boolean console = mouseX > sc.getScaledWidth() / 2f - 50 + 10 &&
-				mouseX < sc.getScaledWidth() / 2f - 50 + 10 + 15 &&
-				mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
-
-		boolean config = mouseX > sc.getScaledWidth() / 2f - 50 + 43 &&
-				mouseX < sc.getScaledWidth() / 2f - 50 + 43 + 15 &&
-				mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
-
-		boolean hotKey = mouseX > sc.getScaledWidth() / 2f - 50 + 75 &&
-				mouseX < sc.getScaledWidth() / 2f - 50 + 75 + 15 &&
-				mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
+		boolean console = mouseX > sc.getScaledWidth() / 2f - 50 + 10 && mouseX < sc.getScaledWidth() / 2f - 50 + 10 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
+		boolean config = mouseX > sc.getScaledWidth() / 2f - 50 + 43 && mouseX < sc.getScaledWidth() / 2f - 50 + 43 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
+		boolean hotKey = mouseX > sc.getScaledWidth() / 2f - 50 + 75 && mouseX < sc.getScaledWidth() / 2f - 50 + 75 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
 
 		ResourceLocation terminal = new ResourceLocation("minecraft", "hackclient/image/terminal.png");
 		ResourceLocation configs = new ResourceLocation("minecraft", "hackclient/image/configs.png");
 		ResourceLocation hotKeys = new ResourceLocation("minecraft", "hackclient/image/keyboard.png");
 
-		if (console) ColorUtils.glColor(MAIN_COLOR); else ColorUtils.glColor(Color.WHITE);
-		RenderUtils.drawImage(terminal, (int) (sc.getScaledWidth() / 2f - 50 + 10), (int) (sc.getScaledHeight() - guis.getValue() + 3), 15, 15, true);
-		if (config) ColorUtils.glColor(MAIN_COLOR); else ColorUtils.glColor(Color.WHITE);
-		RenderUtils.drawImage(configs, (int) (sc.getScaledWidth() / 2f - 50 + 43), (int) (sc.getScaledHeight() - guis.getValue() + 3), 15, 15, true);
-		if (hotKey) ColorUtils.glColor(MAIN_COLOR); else ColorUtils.glColor(Color.WHITE);
-		RenderUtils.drawImage(hotKeys, (int) (sc.getScaledWidth() / 2f - 50 + 75), (int) (sc.getScaledHeight() - guis.getValue() + 3), 15, 15, true);
+		final float panelCenterX = sc.getScaledWidth() / 2f;
+		final float panelY = sc.getScaledHeight() - guis.getValue();
+		final float panelStartX = panelCenterX - 50;
 
-		Easing positionEasingFunc = Easing.IN_OUT_BACK;
+		final float consoleX = panelStartX + 10;
+		final float configX = panelStartX + 43;
+		final float hotkeyX = panelStartX + 75;
+		final float iconY = panelY + 3;
+		final int iconSize = 15;
 
-		guis.update(clickGui.animationSpeed.getValue() / 5, positionEasingFunc);
-		moduleLine.update(clickGui.animationSpeed.getValue() / 4, positionEasingFunc);
+		ColorUtils.glColor(console ? MAIN_COLOR : Color.WHITE);
+		RenderUtils.drawImage(terminal, (int) consoleX, (int) iconY, iconSize, iconSize, true);
+
+		ColorUtils.glColor(config ? MAIN_COLOR : Color.WHITE);
+		RenderUtils.drawImage(configs, (int) configX, (int) iconY, iconSize, iconSize, true);
+
+		ColorUtils.glColor(hotKey ? MAIN_COLOR : Color.WHITE);
+		RenderUtils.drawImage(hotKeys, (int) hotkeyX, (int) iconY, iconSize, iconSize, true);
+
+		guis.update(clickGui.animationSpeed.getValue() / 5, Easing.IN_OUT_BACK);
+		moduleLine.update(clickGui.animationSpeed.getValue() / 4, Easing.IN_OUT_BACK);
 		settingLine.update(clickGui.animationSpeed.getValue());
 	}
 
@@ -1199,16 +999,12 @@ public class ClickGuiScreen extends GuiScreen {
 						continue;
 					} else {
 						currentOffset += fontRenderer.FONT_HEIGHT + 3 + 10;
-
 						currentOffset += (4 + 3) * 4;
-
-						if (colorSetting.isFade()) {
-							currentOffset += (4 + 3) * 4;
-						}
+						if (colorSetting.isFade()) currentOffset += (4 + 3) * 4;
 					}
 
-					offset += currentOffset + 3;
-					settingsTotalHeight += currentOffset + 3;
+					offset += currentOffset + 3 - 8;
+					settingsTotalHeight += currentOffset + 3 - 8;
 				}
 				offset += 14;
 			}
@@ -1251,6 +1047,46 @@ public class ClickGuiScreen extends GuiScreen {
 			size.set(0, 0);
 			pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
         }
+	}
+
+	private void animateCloseTransition() {
+		moduleLine.setEnd(0);
+		moduleLine.update(5, Easing.OUT_BACK);
+
+		guis.setEnd(0);
+		guis.update(3, Easing.OUT_BACK);
+	}
+
+	private boolean isCloseAnimationComplete() {
+		return Math.hypot(sizeBackground.x, sizeBackground.y) < 2;
+	}
+
+	private void completeCloseOperation() {
+		closing = false;
+		clickedModule = null;
+		clickedCategory = null;
+
+		mc.currentScreen.onGuiClosed();
+		mc.thePlayer.closeScreen();
+
+		handlePostCloseOperations();
+	}
+
+	private void handlePostCloseOperations() {
+		if (showConsoleAfterClose) {
+			mc.displayGuiScreen(Client.INST.getConsole());
+			showConsoleAfterClose = false;
+		}
+
+		if (showConfigAfterClose) {
+			mc.displayGuiScreen(Client.INST.getConfigGuiScreen());
+			showConfigAfterClose = false;
+		}
+
+		if (showHotKeysAfterClose) {
+			mc.displayGuiScreen(Client.INST.getHotTextGui());
+			showHotKeysAfterClose = false;
+		}
 	}
 
 	@Override

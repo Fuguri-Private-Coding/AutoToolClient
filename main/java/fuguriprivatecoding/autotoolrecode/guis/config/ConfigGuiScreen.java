@@ -8,15 +8,11 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiText;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
@@ -28,7 +24,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.Util;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
 import java.io.File;
@@ -39,21 +34,19 @@ import static java.lang.Math.min;
 
 public class ConfigGuiScreen extends GuiScreen {
 
+    ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
+    ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
+    private final AltManagerGuiText textField;
+
     Vector2f pos, size, lastMouse, lastSize, lastPos;
     boolean moving, closing, creatingConfig;
-    final Animation2D background, sizeBackground, scrolls;
-    ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);;
-    ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
     int delay = 10;
     int scroll, totalHeight;
     Config selectedConfig;
 
-    private final AltManagerGuiText textField;
+    final Animation2D background, sizeBackground, scrolls;
 
     Color mainColor;
-
-    Glow shadows;
-    Blur blur;
 
     public ConfigGuiScreen() {
         Client.INST.getEventManager().register(this);
@@ -62,11 +55,10 @@ public class ConfigGuiScreen extends GuiScreen {
 
         lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
         lastPos = new Vector2f(50f, 50f);
-
         size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
         pos = new Vector2f(50f, 50f);
-
         lastMouse = new Vector2f(0, 0);
+
         textField = new AltManagerGuiText(1, mc.fontRendererObj, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
 
         background = new Animation2D();
@@ -76,12 +68,7 @@ public class ConfigGuiScreen extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
-        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
-
-        mainColor = clickGui.color.isFade() ?
-                ColorUtils.fadeColor(clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed())
-                : clickGui.color.getColor();
+        mainColor = clickGui.color.getFadedColor();
 
         boolean configScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
 
@@ -94,7 +81,9 @@ public class ConfigGuiScreen extends GuiScreen {
         if (scroll < -maxScroll) scroll = (int) -maxScroll;
 
         if (closing) {
-            if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
+            boolean isAnimationComplete = Math.hypot(sizeBackground.x, sizeBackground.y) < 2;
+
+            if (isAnimationComplete) {
                 closing = false;
                 mc.displayGuiScreen(null);
                 mc.currentScreen = null;
@@ -116,15 +105,6 @@ public class ConfigGuiScreen extends GuiScreen {
 
         ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
 
-        double widthName = font.getStringWidth(name);
-        double widthCreate = font.getStringWidth("Create") / 2f;
-        double widthLoad = font.getStringWidth("Load") / 2f;
-        double widthDelete = font.getStringWidth("Delete") / 2f;
-        double widthSave = font.getStringWidth("Save") / 2f;
-        double widthFolder = font.getStringWidth("Folder") / 2f;
-        double widthRefresh = font.getStringWidth("Refresh") / 2f;
-        double widthOnlineDownload = font.getStringWidth("Online") / 2f;
-
         background.endX = pos.x;
         background.endY = pos.y;
         sizeBackground.endX = size.x;
@@ -135,13 +115,13 @@ public class ConfigGuiScreen extends GuiScreen {
         sizeBackground.update(15f);
         scrolls.update(15f);
 
-        if (shadows.isToggled() && shadows.module.get("ConfigGui")) {
+        if (clickGui.glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> {
                 RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
 
-        if (blur.isToggled() && blur.module.get("ConfigGui")) {
+        if (clickGui.blur.isToggled()) {
             GaussianBlurUtils.addToDraw(() -> {
                 RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
@@ -154,7 +134,7 @@ public class ConfigGuiScreen extends GuiScreen {
 
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
 
-        font.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 3.5f + 2, Color.white);
+        font.drawCenteredString(name, background.x + sizeBackground.x / 2f / 2 - 5, background.y + 3.5f + 2, Color.white);
 
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
@@ -168,9 +148,27 @@ public class ConfigGuiScreen extends GuiScreen {
         RoundedUtils.drawRect(background.x + 15, background.y + 4, 6.5f, 6.5f, 3f, Color.yellow);
         RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
 
+        final float buttonX = background.x + sizeBackground.x - 55;
+        final float startY = background.y + 20;
+        final float buttonWidth = 50;
+        final float buttonHeight = 15;
+        final float buttonSpacing = 20;
+        final float borderRadius = clientSettings.backgroundRadius.getValue() * 1.7f;
+        final int borderColor = Color.BLACK.getRGB();
+        final Color textColor = Color.WHITE;
+        final float textOffset = 3 + 2;
+        final float centerX = buttonX + buttonWidth / 2f;
+
+        final String[] buttonLabels = {"Create", "Load", "Save", "Delete", "Folder", "Refresh", "Online"};
+
+        for (int i = 0; i < buttonLabels.length; i++) {
+            float buttonY = startY + i * buttonSpacing;
+            RenderUtils.drawRoundedOutLineRectangle(buttonX, buttonY, buttonWidth, buttonHeight, borderRadius, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(), borderColor, borderColor);
+            font.drawCenteredString(buttonLabels[i], centerX, buttonY + textOffset, textColor);
+        }
+
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15f, sizeBackground.x, sizeBackground.y - 15);
-        int rectColor = new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB();
 
         float offset = 0;
         float yOffset = scrolls.y;
@@ -187,21 +185,6 @@ public class ConfigGuiScreen extends GuiScreen {
                 totalHeight += 35;
             }
         }
-
-        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        font.drawString("Create", background.x + sizeBackground.x - 55 + 25 - widthCreate, background.y + 20 + 3 + 2, Color.WHITE, true);
-        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        font.drawString("Load", background.x + sizeBackground.x - 55 + 25 - widthLoad, background.y + 20 + 20 + 3 + 2, Color.WHITE, true);
-        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        font.drawString("Save", background.x + sizeBackground.x - 55 + 25 - widthSave, background.y + 20 + 20 + 20 + 3 + 2, Color.WHITE, true);
-        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        font.drawString("Delete", background.x + sizeBackground.x - 55 + 25 - widthDelete, background.y + 20 + 20 + 20 + 20 + 3 + 2, Color.WHITE, true);
-        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        font.drawString("Folder", background.x + sizeBackground.x - 55 + 25 - widthFolder, background.y + 20 + 20 + 20 + 20 + 20 + 3 + 2, Color.WHITE, true);
-        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        font.drawString("Refresh", background.x + sizeBackground.x - 55 + 25 - widthRefresh, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 3 + 2, Color.WHITE, true);
-        RenderUtils.drawRoundedOutLineRectangle(background.x + sizeBackground.x - 55, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20, 50, 15, clientSettings.backgroundRadius.getValue() * 1.7f, rectColor, Color.BLACK.getRGB(),Color.BLACK.getRGB());
-        font.drawString("Online", background.x + sizeBackground.x - 55 + 25 - widthOnlineDownload, background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20 + 3 + 2, Color.WHITE, true);
 
         ScissorUtils.disableScissor();
 

@@ -1,6 +1,10 @@
 package fuguriprivatecoding.autotoolrecode;
 
 import Effekseer.render.RenderEffects;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
 import de.florianmichael.viamcp.ViaMCP;
 import Effekseer.installer.LoadNatives;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiScreen;
@@ -12,6 +16,8 @@ import fuguriprivatecoding.autotoolrecode.event.*;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.guis.clickgui.*;
 import fuguriprivatecoding.autotoolrecode.guis.console.*;
+import fuguriprivatecoding.autotoolrecode.guis.imgui.ClickGuiWindow;
+import fuguriprivatecoding.autotoolrecode.guis.imgui.ImGuiManager;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
 import fuguriprivatecoding.autotoolrecode.hottext.HotTextGui;
 import fuguriprivatecoding.autotoolrecode.hottext.HotTextManager;
@@ -39,6 +45,7 @@ import lombok.Setter;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 @Getter
 public enum Client implements Imports {
@@ -66,12 +73,12 @@ public enum Client implements Imports {
 	CommandManager commandManager;
 	ClickManager clickManager;
 	DeepLearningEngine deepLearningEngine;
+//	ImGuiManager imGuiManager;
 	HotTextManager hotTextManager;
 	ClickGuiScreen clickGui;
 	ConfigGuiScreen configGuiScreen;
 	AltManagerGuiScreen altManagerGui;
 	HotTextGui hotTextGui;
-	NewClickGuiScreen newClickGuiScreen;
 	GuiClientMainMenu mainMenu;
 	LoadNatives loadNatives;
 	RenderEffects renderEffects;
@@ -82,6 +89,8 @@ public enum Client implements Imports {
 	ClientIRC irc;
 
 	FontsRepository fonts;
+
+//	ClickGuiWindow clickGuiWindow;
 
 	boolean starting = false;
 
@@ -150,6 +159,10 @@ public enum Client implements Imports {
 
 		ViaMCP.create();
 		ViaMCP.INSTANCE.initAsyncSlider();
+//		imGuiManager = new ImGuiManager();
+//		imGuiManager.init();
+
+//		clickGuiWindow = new ClickGuiWindow();
 
 		clickGui = new ClickGuiScreen();
 
@@ -173,6 +186,7 @@ public enum Client implements Imports {
 		double elapsedNanos = System.nanoTime() - start;
 		console.log("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
 	}
+
 
 	private void updateClient() {
 		for (Message message : irc.getClientVersionChannel().getIterableHistory().stream().toList()) {

@@ -36,53 +36,58 @@ import static java.lang.Math.min;
 public class HotTextGui extends GuiScreen {
     public static final HotTextGui INST = new HotTextGui();
 
-    Vector2f pos, size, lastMouse, lastSize, lastPos;
     boolean moving, closing, creatingHotKey, binding, changingText;
     int scroll, totalHeight = 0;
-    final Animation2D background, sizeBackground, scrolls;
+    int delay = 30;
+
+    Vector2f pos, size, lastMouse, lastSize, lastPos;
 
     public List<HotText> hotKeys = new ArrayList<>();
+    HotText selectedHotText;
 
     private final AltManagerGuiText textField;
     private final AltManagerGuiText changeTextField;
 
-    HotText selectedHotText;
+    Color mainColor;
+    final Animation2D background, sizeBackground, scrolls;
+
+    ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
+    ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
 
     public HotTextGui() {
         Client.INST.getEventManager().register(this);
         mc = Minecraft.getMinecraft();
 
         ScaledResolution sc = new ScaledResolution(mc);
+        initializeScreenDimensions(sc);
 
-        lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
-        lastPos = new Vector2f(50f, 50f);
-        lastMouse = new Vector2f(0, 0);
-
-        size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
-        pos = new Vector2f(50f, 50f);
-        textField = new AltManagerGuiText(1, mc.fontRendererObj, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
-        changeTextField = new AltManagerGuiText(1, mc.fontRendererObj, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
+        textField = createTextField(sc, sc.getScaledHeight() / 2);
+        changeTextField = createTextField(sc, sc.getScaledHeight() / 2);
 
         scrolls = new Animation2D();
         background = new Animation2D();
         sizeBackground = new Animation2D();
     }
 
-    Glow shadows;
-    Blur blur;
-    ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
-    ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
-    Color mainColor;
-    int delay = 30;
+    private void initializeScreenDimensions(ScaledResolution resolution) {
+        int screenWidth = resolution.getScaledWidth();
+        int screenHeight = resolution.getScaledHeight();
+
+        lastSize = new Vector2f(screenWidth - 100, screenHeight - 100);
+        lastPos = new Vector2f(50f, 50f);
+        lastMouse = new Vector2f(0, 0);
+
+        size = new Vector2f(screenWidth - 100, screenHeight - 100);
+        pos = new Vector2f(50f, 50f);
+    }
+
+    private AltManagerGuiText createTextField(ScaledResolution resolution, int yPos) {
+        return new AltManagerGuiText(1, mc.fontRendererObj, resolution.getScaledWidth() / 2 - 50, yPos, 100, 20);
+    }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
-        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
-
-        mainColor = clickGui.color.isFade() ?
-                ColorUtils.fadeColor(clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed())
-                : clickGui.color.getColor();
+        mainColor = clickGui.color.getFadedColor();
 
         boolean hotScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
         if (hotScroll) scroll -= ClientSettings.getScroll();
@@ -107,7 +112,9 @@ public class HotTextGui extends GuiScreen {
         };
 
         if (closing) {
-            if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
+            boolean isAnimationComplete = Math.hypot(sizeBackground.x, sizeBackground.y) < 2;
+
+            if (isAnimationComplete) {
                 closing = false;
                 mc.displayGuiScreen(null);
                 mc.currentScreen = null;
@@ -130,14 +137,14 @@ public class HotTextGui extends GuiScreen {
         background.update(15f);
         sizeBackground.update(15f);
 
-        if (shadows.isToggled() && shadows.module.get("HotKeyGui")) {
+        if (clickGui.glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> {
                 RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
 
-        if (blur.isToggled() && blur.module.get("HotKeyGui")) {
-            GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), shadows.color.getColor()));
+        if (clickGui.blur.isToggled()) {
+            GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.WHITE));
         }
 
         RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());

@@ -21,7 +21,7 @@ import java.util.List;
 @ModuleInfo(name = "ChestStealer", category = Category.PLAYER, description = "Автоматически берет вещи из сундука.")
 public class ChestStealer extends Module {
 
-    final IntegerSetting startDelay = new IntegerSetting("StartDelay", this, 0, 1000, 250);
+    final DoubleSlider startDelay = new DoubleSlider("StartDelay", this, 0, 1000, 250, 1);
     DoubleSlider delay = new DoubleSlider("Delay", this, 0,500,200,1);
 
     final CheckBox autoClose = new CheckBox("AutoClose", this, true);
@@ -37,8 +37,6 @@ public class ChestStealer extends Module {
     final StopWatch closeDelayStopWatch;
 
     List<Integer> availableSlots;
-
-    int removeSlot = -1;
 
     boolean checkedContainer = false;
 
@@ -64,7 +62,7 @@ public class ChestStealer extends Module {
                     }
                 }
 
-                if (!startDelayStopWatch.reachedMS(startDelay.getValue())) return;
+                if (!startDelayStopWatch.reachedMS(startDelay.getRandomizedIntValue())) return;
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
                 if (!checkedContainer) availableSlots = updateAvailableSlots(container);
@@ -75,11 +73,11 @@ public class ChestStealer extends Module {
                     if (delayStopWatch.reachedMS(delay.getRandomizedIntValue())) {
                         int failSlot = Math.random() <= failChance.getValue() / 100.0 && fail.isToggled() ? 1 : 0;
 
-                        guiChest.activeSlot = mc.thePlayer.openContainer.getSlot(i);
+                        guiChest.activeSlot = mc.thePlayer.openContainer.getSlot(i + failSlot);
 
                         mc.playerController.windowClick(container.windowId, i + failSlot, 0, 1, mc.thePlayer);
                         delayStopWatch.reset();
-                        if (delay.getRandomizedIntValue() != 0) availableSlots.remove(i);
+                        if (delay.getRandomizedIntValue() != 0 && !container.getSlot(i).getHasStack()) availableSlots.remove(i);
                     }
                 }
 

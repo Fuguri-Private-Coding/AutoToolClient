@@ -12,11 +12,13 @@ import fuguriprivatecoding.autotoolrecode.managers.CombatManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Interpolation;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
@@ -29,6 +31,7 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 
 import java.io.File;
@@ -116,6 +119,9 @@ public class KillAura extends Module {
         startTest = new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
     }
 
+    EasingAnimation animX = new EasingAnimation();
+    EasingAnimation animY = new EasingAnimation();
+
     @Override
     public void onDisable() {
         Client.INST.getCombatManager().setTarget(null);
@@ -167,7 +173,7 @@ public class KillAura extends Module {
 
                 switch (smoothMode.getMode()) {
                     case "Linear" -> {
-                        if (reactionTimeWithAnimation.isToggled()) {
+                        if (reactionTimeWithAnimation.isToggled() && RayCastUtils.rayCast(3,3,Rot.getServerRotation()).typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
                             interpolation.setDuration(rotationDuration.getValue());
                             interpolation.setEasing(Easing.IN_OUT_BACK);
 
@@ -180,6 +186,8 @@ public class KillAura extends Module {
                                     startTest.getYaw() + MathHelper.wrapDegree(needRotation.getYaw() - startTest.getYaw()) * (float) interpolation.get(),
                                     startTest.getPitch() + (needRotation.getPitch() - startTest.getPitch()) * (float) interpolation.get()
                             );
+
+                            delta = RotUtils.getDelta(lr, needRotation);
                         }
 
                         if (basicRandomize.isToggled()) {

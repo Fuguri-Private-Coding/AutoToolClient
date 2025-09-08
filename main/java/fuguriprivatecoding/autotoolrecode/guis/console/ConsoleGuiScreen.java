@@ -5,10 +5,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
@@ -19,66 +16,62 @@ import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import static java.lang.Math.min;
 
 public class ConsoleGuiScreen extends GuiScreen {
 
-    Vector2f pos, size, lastMouse, lastSize, lastPos;
-
     boolean moving, closing;
     public boolean changed = false;
-    int scroll, totalHeight = 0;
     boolean fullScreen = false;
+    int scroll, totalHeight = 0;
+    int delay = 30;
+
+    Vector2f pos, size, lastMouse, lastSize, lastPos;
+
+    Color mainColor;
     final Animation2D background, sizeBackground, scrolls;
+
+    private final GuiTextField textField = new GuiTextField(0, null, 0, 0, 0, 0);
+    public final List<String> history = new CopyOnWriteArrayList<>();
+
+    ClickGui clickGui;
+    ClientSettings clientSettings;
 
     public ConsoleGuiScreen() {
         Client.INST.getEventManager().register(this);
         mc = Minecraft.getMinecraft();
 
         ScaledResolution sc = new ScaledResolution(mc);
-
-        lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
-        lastPos = new Vector2f(50f, 50f);
-        lastMouse = new Vector2f(0, 0);
-
-        size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
-        pos = new Vector2f(50f, 50f);
+        init(sc);
 
         scrolls = new Animation2D();
         background = new Animation2D();
         sizeBackground = new Animation2D();
     }
 
-    Glow shadows;
-    Blur blur;
-    ClickGui clickGui;
-    ClientSettings clientSettings;
+    private void init(ScaledResolution resolution) {
+        int screenWidth = resolution.getScaledWidth();
+        int screenHeight = resolution.getScaledHeight();
 
-    Color mainColor;
+        lastSize = new Vector2f(screenWidth - 100, screenHeight - 100);
+        lastPos = new Vector2f(50f, 50f);
+        lastMouse = new Vector2f(0, 0);
 
-    int delay = 30;
-
-    private final GuiTextField textField = new GuiTextField(0, null, 0,0,0,0);
-    public final List<String> history = new CopyOnWriteArrayList<>();
+        size = new Vector2f(screenWidth - 100, screenHeight - 100);
+        pos = new Vector2f(50f, 50f);
+    }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
-        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
         if (clientSettings == null) clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
 
-        mainColor = clickGui.color.isFade() ?
-                ColorUtils.fadeColor(clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed())
-                : clickGui.color.getColor();
-
+        mainColor = clickGui.color.getFadedColor();
 
         boolean consoleScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + (fullScreen ? 20 : 2) + 15 && mouseY < background.y + sizeBackground.y + (fullScreen ? 20 : 2);
 
@@ -92,7 +85,9 @@ public class ConsoleGuiScreen extends GuiScreen {
         if (scroll < -maxScroll) scroll = (int) -maxScroll;
 
         if (closing) {
-            if (Math.hypot(sizeBackground.x, sizeBackground.y) < 2) {
+            boolean isAnimationComplete = Math.hypot(sizeBackground.x, sizeBackground.y) < 2;
+
+            if (isAnimationComplete) {
                 closing = false;
                 mc.displayGuiScreen(null);
                 mc.currentScreen = null;
@@ -130,12 +125,13 @@ public class ConsoleGuiScreen extends GuiScreen {
         background.update(15f);
         sizeBackground.update(15f);
 
-        if (shadows.isToggled() && shadows.module.get("ConsoleGui")) {
+        if (clickGui.glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> {
                 RenderUtils.drawMixedRoundedRect(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
-        if (blur.isToggled() && blur.module.get("ConsoleGui")) {
+
+        if (clickGui.blur.isToggled()) {
             GaussianBlurUtils.addToDraw(() -> {
                 RenderUtils.drawRoundedOutLineRectangle(background.x - 0.5f, background.y - 0.5f, sizeBackground.x + 1, sizeBackground.y + 1, clientSettings.backgroundRadius.getValue() * 1.7f, Color.BLACK.getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
             });
@@ -151,7 +147,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         RoundedUtils.drawRect(background.x, background.y + sizeBackground.y - 18, sizeBackground.x, 18, clientSettings.backgroundRadius.getValue() / 1.25f, 0, 0, clientSettings.backgroundRadius.getValue() / 1.25f, new Color(0,0,0,255));
 
         font.drawString(name, background.x + sizeBackground.x / 2f - widthName / 2 - 5, background.y + 3.5f + 2, Color.WHITE);
-        mc.fontRendererObj.drawString(textField.getText() + (delay > 15 ? "" : "_"), background.x + 2 + 2, background.y + sizeBackground.y - 12.5f, Color.WHITE.getRGB());
+        font.drawString(textField.getText() + (delay > 15 ? "" : "_"), background.x + 2 + 2, background.y + sizeBackground.y - 12.5f + 1, Color.WHITE);
         font.drawString("Clear History", background.x + sizeBackground.x - 5 - width, background.y + 3.5f + 2, Color.WHITE);
 
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
@@ -167,17 +163,18 @@ public class ConsoleGuiScreen extends GuiScreen {
         RoundedUtils.drawRect(background.x + 25, background.y + 4, 6.5f, 6.5f, 3f, Color.green);
         ScissorUtils.disableScissor();
 
-        ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - 33);
-
         float offset = scrolls.y;
         totalHeight = 0;
 
+        ScissorUtils.enableScissor();
+        ScissorUtils.scissor(new ScaledResolution(mc), background.x, background.y + 15, sizeBackground.x, sizeBackground.y - 33);
+
         for (String s : history.reversed()) {
-            mc.fontRendererObj.drawString(s, background.x + 4, background.y + sizeBackground.y - 28 - offset, -1);
+            font.drawString(s, background.x + 4, background.y + sizeBackground.y - 28 + 2 - offset, Color.WHITE, false);
             totalHeight += 10;
             offset += 10;
         }
+
         ScissorUtils.disableScissor();
 
         if (moving) {

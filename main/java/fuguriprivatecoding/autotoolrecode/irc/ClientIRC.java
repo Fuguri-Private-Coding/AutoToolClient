@@ -42,8 +42,7 @@ public class ClientIRC extends ListenerAdapter {
                         {
                             {
                                 {
-                                    token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GWZvER.shF_rSJG9yPypoRALEyRsmF-uEnUp5cPQxbyFw";
-
+                                    token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GGhvgp.juE97JuncYJRgH-Rzca0OV2a8ieMd2g6XzV1IA";
                                 }
                                 jda = JDABuilder.createDefault(token)
                                         .enableIntents(

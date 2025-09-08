@@ -531,12 +531,12 @@ public class RenderUtils implements Imports {
         drawImage(image, x,y,width,height,false);
     }
 
-    public static void drawImage(ResourceLocation image, int x, int y, int width, int height, boolean dontResetColor) {
+    public static void drawImage(ResourceLocation image, int x, int y, int width, int height, boolean resetColor) {
         GlStateManager.disableDepth();
         GlStateManager.enableBlend();
         GlStateManager.depthMask(false);
         GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-        if (!dontResetColor) ColorUtils.resetColor();
+        if (!resetColor) ColorUtils.resetColor();
         mc.getTextureManager().bindTexture(image);
         Gui.drawModalRectWithCustomSizedTexture(
                 x, y, 0f, 0f, width, height, width, height
@@ -544,7 +544,7 @@ public class RenderUtils implements Imports {
         GlStateManager.depthMask(true);
         GlStateManager.disableBlend();
         GlStateManager.enableDepth();
-        if (dontResetColor) ColorUtils.resetColor();
+        if (resetColor) ColorUtils.resetColor();
     }
 
     public static void stop2D() {

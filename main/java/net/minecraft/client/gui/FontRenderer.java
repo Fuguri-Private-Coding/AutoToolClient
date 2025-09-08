@@ -994,4 +994,5 @@ public class FontRenderer implements IResourceManagerReloadListener
     {
         return Minecraft.getMinecraft().getResourceManager().getResource(p_getResourceInputStream_1_).getInputStream();
     }
+
 }
