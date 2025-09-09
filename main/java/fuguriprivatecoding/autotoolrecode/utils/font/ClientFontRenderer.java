@@ -147,7 +147,7 @@ public class ClientFontRenderer implements Imports {
 
             if (positionX + charData.width >= imgSize) {
                 positionX = 0;
-                positionY += charHeight;
+                positionY += charHeight + 2;
                 charHeight = 0;
             }
 

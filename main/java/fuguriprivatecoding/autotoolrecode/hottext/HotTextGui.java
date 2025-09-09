@@ -135,7 +135,7 @@ public class HotTextGui extends GuiScreen {
             }
         }
 
-        ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+        ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
 
         double widthName = font.getStringWidth(name);
         double widthCreate = font.getStringWidth("Create") / 2f;

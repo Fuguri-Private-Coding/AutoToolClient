@@ -30,8 +30,7 @@ import java.util.function.BooleanSupplier;
 public class Notifications extends Module {
 
     Mode fonts = new Mode("Fonts", this)
-            .addModes("MuseoSans", "Roboto", "JetBrains")
-            .setMode("MuseoSans");
+            .setMode("SFProRounded");
 
     Mode position = new Mode("Position", this)
             .addModes("Top-Left", "Top-Right", "Bottom-Left", "Bottom-Right")
@@ -74,6 +73,9 @@ public class Notifications extends Module {
     Color bgColors, lineColors, textColors, textDisableColors, textEnableColors;
 
     public Notifications() {
+        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
+            fonts.addMode(fontName);
+        });
         instance = this;
     }
 
@@ -213,10 +215,10 @@ public class Notifications extends Module {
 
         String text = notification.getModuleName() + ":";
         String toggleText = notification.isToggle() ? " enabled" : " disabled";
-        font.drawString(text, animation.x + 8, animation.y + 2 + height / 2f - font.FONT_HEIGHT / 2f,
+        font.drawString(text, animation.x + width / 2f - font.getStringWidth(text + toggleText) / 2f, animation.y + 2 + 1 + height / 2f - font.FONT_HEIGHT / 2f,
                 textColors);
 
-        font.drawString(toggleText,animation.x + 8 + font.getStringWidth(text), animation.y + 2 + height / 2f - font.FONT_HEIGHT / 2f,
+        font.drawString(toggleText,animation.x + width / 2f - font.getStringWidth(text + toggleText) / 2f + font.getStringWidth(text), animation.y + 2 + 1 + height / 2f - font.FONT_HEIGHT / 2f,
                 (notification.isToggle() ? textEnableColors : textDisableColors));
 
         if (line.isToggled()) {

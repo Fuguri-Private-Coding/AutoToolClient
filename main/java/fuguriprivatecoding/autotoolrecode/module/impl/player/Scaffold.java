@@ -124,6 +124,14 @@ public class Scaffold extends Module {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
 
         if (event instanceof TickEvent) {
+            int slot = findBlock();
+
+            if (slot == -1) { return; }
+
+            if (mc.thePlayer.inventory.currentItem != slot) {
+                mc.thePlayer.inventory.currentItem = slot;
+            }
+
             rotate();
             legitPlace();
         }
@@ -153,13 +161,6 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof LegitClickTimingEvent) {
-            int slot = findBlock();
-
-            if (slot == -1) { return; }
-
-            if (mc.thePlayer.inventory.currentItem != slot) {
-                mc.thePlayer.inventory.currentItem = slot;
-            }
         }
 
         if (event instanceof JumpEvent e) e.setYaw(Rot.getServerRotation().getYaw());

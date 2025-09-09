@@ -119,7 +119,7 @@ public class ClickGuiScreen extends GuiScreen {
 			case 20 -> "_";
 			default -> "§k" + "AutoTool".substring(0, min(delay - 20, 8));
 		};
-		final ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("MuseoSans");
+		final ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFProRounded");
 
 		Client.INST.getModuleManager().getModules().sort((o1, o2) -> {
 			int width1 = (int) fontRenderer.getStringWidth(o1.getName());
@@ -745,7 +745,7 @@ public class ClickGuiScreen extends GuiScreen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		ScaledResolution sc = new ScaledResolution(mc);
-		ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("MuseoSans");
+		ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get(clickGui.fonts.getMode());
 
 		float scale = clientSettings.scale.getValue();
 

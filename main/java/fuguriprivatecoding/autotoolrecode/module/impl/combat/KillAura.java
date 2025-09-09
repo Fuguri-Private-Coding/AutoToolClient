@@ -6,13 +6,11 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
-import fuguriprivatecoding.autotoolrecode.profile.Role;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.managers.CombatManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Interpolation;
@@ -33,7 +31,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
-
 import java.io.File;
 import java.util.function.BooleanSupplier;
 
@@ -153,8 +150,7 @@ public class KillAura extends Module {
                     case "Best" -> RotUtils.getBestRotation(box.expand(0.1f, 0.1f, 0.1f));
                     case "Nearest" -> RotUtils.getNearestRotations(lr, box);
                     case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
-                    case "Body" ->
-                            RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
+                    case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
                     default -> throw new IllegalStateException("Unexpected value: " + hitVec.getMode());
                 };
 
@@ -323,7 +319,7 @@ public class KillAura extends Module {
                 case "Switch" -> {
                     if (DistanceUtils.getDistance(entity) > 3) {
                         value = DistanceUtils.getDistance(entity);
-                    } else if (DistanceUtils.getDistance(entity) < 3) {
+                    } else if (DistanceUtils.getDistance(entity) <= 3) {
                         value = ent.hurtTime;
                     }
                 }

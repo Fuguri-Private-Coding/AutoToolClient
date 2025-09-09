@@ -31,8 +31,7 @@ import java.awt.*;
 public class DynamicIsland extends Module {
 
     Mode fonts = new Mode("Fonts", this)
-            .addModes("MuseoSans", "Roboto", "JetBrains", "SFPro")
-            .setMode("MuseoSans");
+            .setMode("SFProRounded");
 
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, 0, 100, 5, 0.1f);
 
@@ -58,6 +57,9 @@ public class DynamicIsland extends Module {
     String currentText, currentWidthText;
 
     public DynamicIsland() {
+        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
+            fonts.addMode(fontName);
+        });
         currentText = "AutoTool";
     }
 

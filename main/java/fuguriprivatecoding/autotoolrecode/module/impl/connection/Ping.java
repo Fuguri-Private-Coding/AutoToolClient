@@ -34,7 +34,7 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "Ping", category = Category.CONNECTION, description = "Абьюз интернета для получение преимущевства.")
 public class Ping extends Module {
 
-    DoubleSlider delay = new DoubleSlider("Delay", this, 0,5000,200,1);
+    DoubleSlider delay = new DoubleSlider("Delay", this, 0,1000,200,1);
 
     Mode delayIncreaseType = new Mode("DelayIncreaseType", this)
             .addModes("Smooth", "Instant").setMode("Instant");

@@ -124,7 +124,7 @@ public class ConsoleGuiScreen extends GuiScreen {
             default -> "§k" + "Console_".substring(0, min(delay - 20, 8));
         };
 
-        ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+        ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
 
         double widthName = font.getStringWidth(name);
         double width = font.getStringWidth("Clear History");
@@ -248,7 +248,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         mouseX /= scale;
         mouseY /= scale;
 
-        ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+        ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
 
         double width = font.getStringWidth("Clear History");
 

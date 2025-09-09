@@ -12,6 +12,8 @@ import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.gui.Gui;
@@ -25,6 +27,10 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "NameTags", category = Category.VISUAL, description = "Отображение никнейма игроков.")
 public class NameTags extends Module {
 
+    Mode fonts = new Mode("Fonts", this)
+            .setMode("SFProRounded")
+            ;
+
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, 0f,5f,1f,0.1f);
 
     public final ColorSetting color = new ColorSetting("Color", this);
@@ -34,6 +40,12 @@ public class NameTags extends Module {
     Glow shadows;
 
     String detectiveText, murderText, friendText, userText, text;
+
+    public NameTags() {
+        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
+            fonts.addMode(fontName);
+        });
+    }
 
     @EventTarget
     public void onEvent(Event event) {
@@ -75,11 +87,11 @@ public class NameTags extends Module {
     }
 
     public void render() {
-        float offset = mc.fontRendererObj.FONT_HEIGHT - 8f;
-        float stringWidth = mc.fontRendererObj.getStringWidth(text) / 2f;
+        float offset = 9 - 8f;
+        float stringWidth = (float) (Client.INST.getFonts().fonts.get(fonts.getMode()).getStringWidth(text) / 2f);
         if (shadows.isToggled() && shadows.module.get("NameTags")) BloomUtils.addToDraw(() -> Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, -1));
-        Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, color.getFadedColor().getRGB());
-        mc.fontRendererObj.drawString(text, -stringWidth, offset, -1, true);
+        Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + Client.INST.getFonts().fonts.get(fonts.getMode()).FONT_HEIGHT + 4, color.getFadedColor().getRGB());
+        Client.INST.getFonts().fonts.get(fonts.getMode()).drawString(text, -stringWidth, offset + 2, -1, false);
     }
 
     private void setRendering(Entity entity, Vec3 pos, Runnable render) {

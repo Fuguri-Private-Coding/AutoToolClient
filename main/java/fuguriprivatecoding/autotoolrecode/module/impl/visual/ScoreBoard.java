@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
@@ -7,11 +8,8 @@ import fuguriprivatecoding.autotoolrecode.event.events.ScoreboardRenderEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
@@ -32,6 +30,10 @@ public class ScoreBoard extends Module {
 
     public CheckBox remove = new CheckBox("Remove", this, true);
 
+    Mode fonts = new Mode("Fonts", this, () -> !remove.isToggled())
+            .setMode("SFProRounded")
+            ;
+
     BooleanSupplier visible = () -> !remove.isToggled();
 
     public IntegerSetting posX = new IntegerSetting("Pos-X", this, visible, 0,100,0);
@@ -49,11 +51,19 @@ public class ScoreBoard extends Module {
 
     public final ColorSetting colorShadow = new ColorSetting("Shadow Color", this, shadow);
 
+    public ScoreBoard() {
+        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
+            fonts.addMode(fontName);
+        });
+    }
+
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof ScoreboardRenderEvent e) e.cancel();
         if (event instanceof Render2DEvent) {
             if (remove.isToggled()) return;
+
+            ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get(fonts.getMode());
 
             ScaledResolution sc = new ScaledResolution(mc);
 
@@ -68,8 +78,8 @@ public class ScoreBoard extends Module {
                 for(Score score2 : collection) {
                     ScorePlayerTeam scoreplayerteam2 = scoreboard.getPlayersTeam(score2.getPlayerName());
                     String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam2, score2.getPlayerName());
-                    if (width < mc.fontRendererObj.getStringWidth(s1)) {
-                        width = mc.fontRendererObj.getStringWidth(s1 + "    ");
+                    if (width < fontRenderer.getStringWidth(s1)) {
+                        width = (float) fontRenderer.getStringWidth(s1 + "    ");
                     }
                 }
 
@@ -87,7 +97,7 @@ public class ScoreBoard extends Module {
                                 RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), color.getFadedColor());
                                 RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, color.getFadedColor());
 
-                                mc.fontRendererObj.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - mc.fontRendererObj.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f, -1);
+                                fontRenderer.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - fontRenderer.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f + 2, Color.WHITE);
                             }
                     );
                 } else {
@@ -97,7 +107,7 @@ public class ScoreBoard extends Module {
                     RoundedUtils.drawRect(pos.x, pos.y, width, height, 0, color.getFadedColor());
                     RoundedUtils.drawRect(pos.x, pos.y, width, 12, 0, color.getFadedColor());
 
-                    mc.fontRendererObj.drawString(objective.getDisplayName(), (int) ((pos.x + width / 2f) - mc.fontRendererObj.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f, -1);
+                    fontRenderer.drawString(objective.getDisplayName(), (int) ((pos.x + width / 2f) - fontRenderer.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f + 2, Color.WHITE);
                 }
                 int j = 0;
 
@@ -105,7 +115,7 @@ public class ScoreBoard extends Module {
                     ++j;
                     ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score1.getPlayerName());
                     String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score1.getPlayerName());
-                    mc.fontRendererObj.drawString(s1, pos.x + 3.0F, pos.y + height - (9 * j), -1);
+                    fontRenderer.drawString(s1, pos.x + 3.0F, pos.y + height - (9 * j) + 2, Color.WHITE);
                 }
             }
         }

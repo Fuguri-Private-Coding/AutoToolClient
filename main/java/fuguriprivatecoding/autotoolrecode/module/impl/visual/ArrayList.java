@@ -25,8 +25,7 @@ public class ArrayList extends Module {
     IntegerSetting xPosOffset = new IntegerSetting("X-Pos Offset", this,0, 100, 0);
 
     Mode fonts = new Mode("Fonts", this)
-            .addModes("MuseoSans", "Roboto", "JetBrains", "SFPro")
-            .setMode("MuseoSans")
+            .setMode("SFProRounded")
             ;
 
     Mode pos = new Mode("Positions",this)
@@ -56,6 +55,12 @@ public class ArrayList extends Module {
     final ColorSetting lineColor = new ColorSetting("Line Color", this, () -> line.isToggled());
 
     ClientFontRenderer font = Client.INST.getFonts().fonts.get("JetBrains");
+
+    public ArrayList() {
+        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
+            fonts.addMode(fontName);
+        });
+    }
 
     @EventTarget
     public void onEvent(Event event) {

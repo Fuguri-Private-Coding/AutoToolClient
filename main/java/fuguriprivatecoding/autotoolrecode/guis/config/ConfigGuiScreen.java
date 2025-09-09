@@ -117,7 +117,7 @@ public class ConfigGuiScreen extends GuiScreen {
             default -> "§k" + "Config".substring(0, min(delay - 20, 6));
         };
 
-        ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+        ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
 
         background.endX = pos.x;
         background.endY = pos.y;

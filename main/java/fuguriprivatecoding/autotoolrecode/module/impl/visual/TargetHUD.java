@@ -32,6 +32,10 @@ public class TargetHUD extends Module {
     MultiMode render = new MultiMode("Render",this)
             .addModes("Health", "Background", "Head", "Name");
 
+    Mode fonts = new Mode("Fonts", this, () -> render.get("Name"))
+            .setMode("SFProRounded")
+            ;
+
     CheckBox follow = new CheckBox("Follow", this);
 
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, follow::isToggled, -2,2,0,0.1f);
@@ -62,6 +66,12 @@ public class TargetHUD extends Module {
 
     Vector2f pos = new Vector2f();
 
+    public TargetHUD() {
+        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
+            fonts.addMode(fontName);
+        });
+    }
+
     @EventTarget
     public void onEvent(Event event) {
         if (mc.currentScreen != null) return;
@@ -75,11 +85,12 @@ public class TargetHUD extends Module {
         if (event instanceof Render2DEvent e) {
             currentScale.update(5f, Easing.IN_OUT_QUINT);
 
+            ClientFontRenderer font = Client.INST.getFonts().fonts.get(fonts.getMode());
+
             float width = 120;
             float height = 40;
 
             if (follow.isToggled()) {
-                ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
                 EntityRenderer entityRenderer = mc.entityRenderer;
 
                 entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
@@ -108,8 +119,6 @@ public class TargetHUD extends Module {
                         (e.getSc().getScaledWidth() / 100f) * xPos.getValue() / currentScale.getValue() - width / 2f,
                         (e.getSc().getScaledHeight() / 100f) * yPos.getValue() / currentScale.getValue() - height / 2f
                 );
-
-                ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
 
                 double scale = this.scale.getValue() * currentScale.getValue();
 
