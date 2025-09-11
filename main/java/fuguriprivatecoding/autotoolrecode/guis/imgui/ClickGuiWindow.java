@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import imgui.ImGui;
 import imgui.type.ImInt;
+import org.lwjgl.input.Keyboard;
 
 import java.util.Arrays;
 
@@ -15,43 +16,69 @@ public class ClickGuiWindow extends ImGuiWindow {
         super("ClickGui");
     }
 
+    private Module featureListeningForKey;
     private Category selectedCategory = Category.COMBAT;
 
     @Override
     protected void renderContent() {
-        // Category select
-        String[] categoryNames = Arrays.stream(Category.values())
-                .map(category -> category.name().toLowerCase())
-                .toArray(String[]::new);
-        ImInt currentIndex = new ImInt(selectedCategory.ordinal());
-        if (ImGui.combo("Category", currentIndex, categoryNames)) {
-            selectedCategory = Category.values()[currentIndex.get()];
-        }
+        ImGui.getStyle().setWindowRounding(10);
+        ImGui.getStyle().setPopupRounding(10);
+        ImGui.getStyle().setTabRounding(10);
 
-        ImGui.separator();
-        for (Module feature : Client.INST.getModuleManager().getModules()) {
-            if (feature.getCategory() != selectedCategory) continue;
+        if (ImGui.begin(name)) {
+            String[] categoryNames = Arrays.stream(Category.values())
+                    .map(category -> category.name().toLowerCase())
+                    .toArray(String[]::new);
 
-            // Добавляем индикатор ON/OFF к названию для визуализации состояния
-            String displayName = feature.getName() + (feature.isToggled() ? " [ON]" : " [OFF]");
+            ImInt currentIndex = new ImInt(selectedCategory.ordinal());
+            if (ImGui.combo("Category", currentIndex, categoryNames)) {
+                selectedCategory = Category.values()[currentIndex.get()];
+            }
 
-            // Если раскрыто, показываем настройки (здесь добавьте ваш код для настроек модуля)
-            if (ImGui.collapsingHeader(displayName)) {
-                if (ImGui.checkbox("toggled", feature.isToggled())) {
-                    feature.toggle();
+            ImGui.separator();
+            for (Module feature : Client.INST.getModuleManager().getModules()) {
+                if (feature.getCategory() != selectedCategory) continue;
+                ImGui.pushID(feature.hashCode());
+
+                String displayName = feature.getName();
+
+                if (featureListeningForKey == feature) {
+                    displayName = "...";
+                    for (int i = 0; i < Keyboard.KEYBOARD_SIZE; i++) {
+                        if (ImGui.isKeyPressed(i)) {
+                            featureListeningForKey.setKey(i);
+                            featureListeningForKey = null;
+                            break;
+                        }
+                    }
                 }
-                for (Setting setting : feature.getSettings()) {
-                    if (!setting.isVisible()) {
-                        continue;
+
+                if (ImGui.checkbox("", feature.isToggled())) feature.toggle();
+                ImGui.sameLine();
+
+                boolean opened = ImGui.collapsingHeader(displayName);
+
+                if (ImGui.isItemHovered() && ImGui.isMouseClicked(2)) {
+                    featureListeningForKey = feature;
+                }
+
+                if (opened) {
+                    ImGui.pushID(feature.hashCode());
+                    ImGui.indent();
+
+                    for (Setting setting : feature.getSettings()) {
+                        if (setting.isVisible()) {
+                            setting.render();
+                        }
                     }
 
-//                    setting.render();
+                    ImGui.unindent();
+                    ImGui.popID();
                 }
-                // Пример: ImGui.sliderFloat("Some setting", ...);
-                // Или другие элементы ImGui для настроек, которые вы напишете сами
-                // ImGui.text("Settings for " + feature.getName());
-                // ...
+
+                ImGui.popID();
             }
         }
+        ImGui.end();
     }
 }

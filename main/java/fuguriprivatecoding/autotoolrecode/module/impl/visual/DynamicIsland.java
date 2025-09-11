@@ -57,9 +57,7 @@ public class DynamicIsland extends Module {
     String currentText, currentWidthText;
 
     public DynamicIsland() {
-        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
-            fonts.addMode(fontName);
-        });
+        Client.INST.getFonts().fonts.forEach((fontName, _) -> fonts.addMode(fontName));
         currentText = "AutoTool";
     }
 

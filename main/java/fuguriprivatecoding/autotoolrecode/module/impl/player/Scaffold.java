@@ -20,6 +20,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.block.*;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -124,6 +125,9 @@ public class Scaffold extends Module {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
 
         if (event instanceof TickEvent) {
+            rotate();
+            legitPlace();
+
             int slot = findBlock();
 
             if (slot == -1) { return; }
@@ -131,9 +135,6 @@ public class Scaffold extends Module {
             if (mc.thePlayer.inventory.currentItem != slot) {
                 mc.thePlayer.inventory.currentItem = slot;
             }
-
-            rotate();
-            legitPlace();
         }
 
         if (event instanceof Render3DEvent && mouse.getBlockPos() != null && render.isToggled()) {
@@ -158,9 +159,6 @@ public class Scaffold extends Module {
                     if (mc.theWorld.isAirBlock(pos)) e.setSneak(true);
                 }
             }
-        }
-
-        if (event instanceof LegitClickTimingEvent) {
         }
 
         if (event instanceof JumpEvent e) e.setYaw(Rot.getServerRotation().getYaw());
@@ -206,6 +204,34 @@ public class Scaffold extends Module {
         mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
     }
 
+    private BlockPos getBlockPos() {
+        List<BlockPos> posList = new ArrayList<>();
+
+        for (float y = 4.5f; y >= -4.5; --y) {
+            for (float x = -4.5f; x <= 4.5; ++x) {
+                for (float z = -4.5f; z <= 4.5; ++z) {
+                    BlockPos pos = new BlockPos(
+                            mc.thePlayer.posX + x,
+                            mc.thePlayer.posY + y,
+                            mc.thePlayer.posZ + z
+                    );
+
+                    IBlockState state = mc.theWorld.getBlockState(pos);
+
+                    if (state.getBlock() instanceof BlockAir || pos.getY() > mc.thePlayer.posY) continue;
+
+                    posList.add(pos);
+
+                    posList.sort(Comparator.comparingDouble(poses -> {
+                        return mc.thePlayer.getPositionVector().distanceTo(new Vec3(poses.getX() + 0.5, poses.getY() + 0.5, poses.getZ() + 0.5));
+                    }));
+
+                }
+            }
+        }
+        return posList.getFirst();
+    }
+
     private BlockPos getDirectionalBlockPos(float edgeOffset) {
         double x = mc.thePlayer.posX;
         double y = mc.thePlayer.posY - 0.7;
@@ -231,7 +257,7 @@ public class Scaffold extends Module {
         if (mouse.sideHit == mouseOver.sideHit
                 && mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
                 && getSameYValue(mouse) && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
-            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem(), mouseOver.getBlockPos(), mouse.sideHit, mouse.hitVec)) {
+            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
                 if (noSwing.isToggled()) {
                     if (serverSwing.isToggled()) mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
                 } else {
@@ -344,7 +370,17 @@ public class Scaffold extends Module {
             positionHashMap.put(i, mouses);
         }
 
-        if (positionHashMap.isEmpty()) {
+
+
+        List<Float> pitches = new ArrayList<>(positionHashMap.keySet());
+
+        pitches.sort(Comparator.comparingDouble(pitch -> Math.abs(Rot.getServerRotation().getPitch()) - pitch));
+        if (!getSafeValue() && rotMode.getMode().equalsIgnoreCase("GodBridge")) {
+            mouse = positionHashMap.get(pitches.getFirst());
+        }
+        List<MovingObjectPosition> mousesse = new ArrayList<>(positionHashMap.values());
+
+        if (mousesse.getFirst().sideHit == EnumFacing.UP) {
             return switch (pitchSelection.getMode()) {
                 case "Nearest" -> lastPitch;
                 case "Lowest" -> 80;
@@ -352,13 +388,6 @@ public class Scaffold extends Module {
                 case "Mid" -> 78;
                 default -> Rot.getServerRotation().getPitch();
             };
-        }
-
-        List<Float> pitches = new ArrayList<>(positionHashMap.keySet());
-
-        pitches.sort(Comparator.comparingDouble(pitch -> Math.abs(Rot.getServerRotation().getPitch()) - pitch));
-        if (!getSafeValue() && rotMode.getMode().equalsIgnoreCase("GodBridge")) {
-            mouse = positionHashMap.get(pitches.getFirst());
         }
 
         if (pitchSelection.getMode().equalsIgnoreCase("Nearest")) {

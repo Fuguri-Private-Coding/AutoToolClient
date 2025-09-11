@@ -1,19 +1,22 @@
 package fuguriprivatecoding.autotoolrecode.guis.imgui;
 
+import com.github.koxx12dev.fuckyou.ImGuiGL3;
+import com.github.koxx12dev.fuckyou.ImGuiLwjgl2;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.WinDef;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
+import fuguriprivatecoding.autotoolrecode.event.events.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import imgui.ImGui;
 import imgui.ImFont;
 import imgui.ImFontAtlas;
 import imgui.ImFontConfig;
-import imgui.gl3.ImGuiImplGl3;
-import imgui.glfw.ImGuiImplGlfw;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,21 +24,21 @@ import java.util.ArrayList;
 import java.util.List;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 
 public class ImGuiManager implements Imports {
-    private static ImGuiImplGlfw imGuiGlfw;
-    private static ImGuiImplGl3 imGuiGl3;
+    private static ImGuiLwjgl2 imGuiGlfw;
+    private static ImGuiGL3 imGuiGl3;
     private static final List<ImGuiWindow> windows = new ArrayList<>();
 
     public void init() {
-        long windowHandle = getMinecraftWindowHandle();
-
         ImGui.createContext();
 
-        imGuiGlfw = new ImGuiImplGlfw();
-        imGuiGl3 = new ImGuiImplGl3();
+        imGuiGlfw = new ImGuiLwjgl2();
+        imGuiGl3 = new ImGuiGL3();
 
-        imGuiGlfw.init(windowHandle, true);
+        imGuiGlfw.init();
         loadFonts();
         imGuiGl3.init("#version 150");
 
@@ -102,8 +105,7 @@ public class ImGuiManager implements Imports {
     }
 
     public static void render(ImGuiWindow imGuiWindow) {
-        imGuiGl3.newFrame();
-        imGuiGlfw.newFrame();
+        imGuiGlfw.newFrame(mc.displayWidth, mc.displayHeight, System.currentTimeMillis());
         ImGui.newFrame();
 
         imGuiWindow.renderContent();
@@ -131,7 +133,11 @@ public class ImGuiManager implements Imports {
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.thePlayer.ticksExisted < 100) return;
         if (event instanceof Render2DEvent) {
-            renderAll();
+            imGuiGlfw.scrollCallback(ClientSettings.getScroll());
+        }
+
+        if (event instanceof KeyEvent e) {
+            imGuiGlfw.charCallback(e.getKey());
         }
     }
 }

@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -45,5 +46,14 @@ public class CheckBox extends Setting {
 		if (Math.abs(toggleProgress - target) < 0.01f) {
 			toggleProgress = target;
 		}
+	}
+
+	@Override
+	public void render() {
+		ImGui.pushID(hashCode());
+		if (ImGui.checkbox(getName(), toggled)) {
+			toggled = !toggled;
+		}
+		ImGui.popID();
 	}
 }

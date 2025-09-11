@@ -745,7 +745,7 @@ public class ClickGuiScreen extends GuiScreen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		ScaledResolution sc = new ScaledResolution(mc);
-		ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get(clickGui.fonts.getMode());
+		ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFProRounded");
 
 		float scale = clientSettings.scale.getValue();
 

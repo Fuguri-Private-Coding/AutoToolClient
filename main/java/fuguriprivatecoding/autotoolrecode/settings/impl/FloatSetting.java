@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -56,5 +57,15 @@ public class FloatSetting extends Setting {
         }
 
         animatedValue = Math.max(min, Math.min(max, animatedValue));
+    }
+
+    @Override
+    public void render() {
+        ImGui.pushID(hashCode());
+        float[] v = new float[] {value};
+        if (ImGui.sliderFloat(getName(), v, min, max)) {
+            setValue(v[0]);
+        }
+        ImGui.popID();
     }
 }

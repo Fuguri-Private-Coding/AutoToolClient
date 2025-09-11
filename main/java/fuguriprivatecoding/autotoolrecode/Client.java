@@ -73,7 +73,6 @@ public enum Client implements Imports {
 	CommandManager commandManager;
 	ClickManager clickManager;
 	DeepLearningEngine deepLearningEngine;
-//	ImGuiManager imGuiManager;
 	HotTextManager hotTextManager;
 	ClickGuiScreen clickGui;
 	ConfigGuiScreen configGuiScreen;
@@ -90,7 +89,8 @@ public enum Client implements Imports {
 
 	FontsRepository fonts;
 
-//	ClickGuiWindow clickGuiWindow;
+	ClickGuiWindow clickGuiWindow;
+	ImGuiManager imGuiManager;
 
 	boolean starting = false;
 
@@ -162,7 +162,7 @@ public enum Client implements Imports {
 //		imGuiManager = new ImGuiManager();
 //		imGuiManager.init();
 
-//		clickGuiWindow = new ClickGuiWindow();
+		clickGuiWindow = new ClickGuiWindow();
 
 		clickGui = new ClickGuiScreen();
 
