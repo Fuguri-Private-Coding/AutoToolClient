@@ -22,15 +22,16 @@ import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AltManagerGuiScreen extends GuiScreen {
 
     AltManagerGuiText altManagerGuiText;
 
-    public ArrayList<Account> accounts = new ArrayList<>();
+    public List<Account> accounts = new CopyOnWriteArrayList<>();
 
     private long lastClickTime = 0;
     private Account lastClickedAccount = null;
