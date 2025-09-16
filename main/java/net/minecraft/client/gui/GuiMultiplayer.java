@@ -2,12 +2,9 @@ package net.minecraft.client.gui;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
-
-import de.florianmichael.viamcp.ViaMCP;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
