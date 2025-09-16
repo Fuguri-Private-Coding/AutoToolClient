@@ -46,7 +46,7 @@ public class Discord implements Imports {
 
         DiscordRPC.discordInitialize("1356982126746140713", handlers, true);
 
-        update("Starting Game...", "SOSAl!");
+        update("Starting Game...", "YOOO!");
         DiscordRPC.discordRunCallbacks();
     }
 

@@ -11,6 +11,7 @@ public class EasingAnimation {
     private float start;
     private float end;
     private float progress;
+    private long lastTime;
     
     public EasingAnimation() {
         this(0f);
@@ -24,8 +25,10 @@ public class EasingAnimation {
     }
     
     public void update(float speed, Easing easingFunction) {
+        long deltaTime = System.currentTimeMillis() - lastTime;
+        lastTime = System.currentTimeMillis();
         if (progress < 1f) {
-            progress += speed * 0.01f;
+            progress += speed * deltaTime / 1000;
             progress = Math.min(progress, 1f);
             
             float easedProgress = (float) easingFunction.get(progress);

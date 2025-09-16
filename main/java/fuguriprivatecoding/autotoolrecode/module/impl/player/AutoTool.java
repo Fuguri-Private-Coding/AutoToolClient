@@ -19,11 +19,12 @@ import net.minecraft.util.MovingObjectPosition;
 public class AutoTool extends Module {
 
     DoubleSlider switchDelayTick = new DoubleSlider("SwitchDelayTick", this, 0,20,0,1);
+    DoubleSlider backSwitchDelayTick = new DoubleSlider("BackSwitchDelayTick", this, 0,20,0,1);
+
     boolean flag;
 
-    int delay;
-
-    StopWatch timer = new StopWatch();
+    StopWatch switchTimer = new StopWatch();
+    StopWatch backSwitchTimer = new StopWatch();
 
     @Override
     public void onDisable() {
@@ -38,21 +39,23 @@ public class AutoTool extends Module {
 
         final MovingObjectPosition mouse = mc.objectMouseOver;
 
-        if (event instanceof LegitClickTimingEvent && timer.reachedMS(delay * 50L)) {
+        if (event instanceof LegitClickTimingEvent) {
             if (mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mouse.getBlockPos() == null || !mc.gameSettings.keyBindAttack.isKeyDown()) {
-                if (flag) {
+                if (flag && backSwitchTimer.reachedMS(backSwitchDelayTick.getRandomizedIntValue() * 50L)) {
                     flag = false;
                     switchBack();
-                    timer.reset();
+                    backSwitchTimer.reset();
                 }
                 return;
             }
 
-            flag = true;
-            final BlockPos block = mouse.getBlockPos();
-            mc.thePlayer.inventory.currentItem = getBestSlot(mc.theWorld.getBlockState(block).getBlock());
-            delay = switchDelayTick.getRandomizedIntValue();
-            timer.reset();
+            if (switchTimer.reachedMS(switchDelayTick.getRandomizedIntValue() * 50L)) {
+                flag = true;
+                backSwitchTimer.reset();
+                final BlockPos block = mouse.getBlockPos();
+                mc.thePlayer.inventory.currentItem = getBestSlot(mc.theWorld.getBlockState(block).getBlock());
+                switchTimer.reset();
+            }
         }
     }
 

@@ -1,128 +1,181 @@
 package fuguriprivatecoding.autotoolrecode.guis.multiplayer;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.event.events.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Animation;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-public class MultiPlayerGuiScreen extends GuiScreen {
+public class MultiPlayerGuiScreen extends GuiMultiplayer {
 
+    public MultiPlayerGuiScreen(GuiScreen parentScreen) {
+        super(parentScreen);
+    }
+
+    ServerData lastClickedServerListEntryNormal;
+    ServerData selectedServer;
+    long lastClickTime;
     int scroll, scrollTotalHeight;
 
-    Glow shadows;
+    EasingAnimation alphaAnim = new EasingAnimation();
 
-    ServerData selectedServer;
+    Animation scrollAnim = new Animation();
 
-    Animation2D scrolls;
-
-    public MultiPlayerGuiScreen() {
-        scrolls = new Animation2D();
-    }
+    List<GuiButton> guiButtonList = new ArrayList<>();
 
     @Override
     public void initGui() {
         super.initGui();
-        this.buttonList.add(new GuiClientButton(7, this.width / 2 - 154, this.height - 28, 70, 20, "Edit Server"));
-        this.buttonList.add(new GuiClientButton(2, this.width / 2 - 74, this.height - 28, 70, 20, "Delete Server"));
-        this.buttonList.add(new GuiClientButton(1, this.width / 2 - 154, this.height - 52, 100, 20, "Join Server"));
-        this.buttonList.add(new GuiClientButton(4, this.width / 2 - 50, this.height - 52, 100, 20, "Direct Connect"));
-        this.buttonList.add(new GuiClientButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, "Add"));
-        this.buttonList.add(new GuiClientButton(8, this.width / 2 + 4, this.height - 28, 70, 20, "Refresh"));
-        this.buttonList.add(new GuiClientButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, "Cancel"));
-        this.buttonList.add(new GuiClientButton(69, 5, 5, 90, 20, "Via Version"));
+        ScaledResolution sc = new ScaledResolution(mc);
+        buttonList.add(new GuiClientButton(50, (int) (sc.getScaledWidth() / 2f - 150), sc.getScaledHeight() - 35 + 2, 97, 25, "Add Server"));
+        buttonList.add(new GuiClientButton(51, (int) (sc.getScaledWidth() / 2f - 150 + 97 + 4.5), sc.getScaledHeight() - 35 + 2, 97, 25, "Direct Connect"));
+        buttonList.add(new GuiClientButton(52, (int) (sc.getScaledWidth() / 2f - 150 + 97 + 97 + 4.5 + 4.5), sc.getScaledHeight() - 35 + 2, 97, 25, "Delete"));
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         ScaledResolution sc = new ScaledResolution(mc);
+        alphaAnim.update(3f, Easing.IN_OUT_QUAD);
+        alphaAnim.setEnd(1f);
         int currentScroll = Mouse.getDWheel();
 
-        scroll -= currentScroll / 120 * 20;
+        scroll -= currentScroll / 120 * 25;
 
-        float versionVisibleHeight = sc.getScaledHeight() - 45;
-        float maxScroll = Math.max(scrollTotalHeight - versionVisibleHeight, 0);
+        float altVisibleHeight = sc.getScaledHeight() - 50;
+        float maxScroll = Math.max(scrollTotalHeight - altVisibleHeight, 0);
 
         if (scroll > 0) scroll = 0;
         if (scroll < -maxScroll) scroll = (int) -maxScroll;
 
-        scrolls.endY = scroll;
-        scrolls.update(15f);
+        scrollAnim.update(15f);
+        scrollAnim.setEndValue(scroll);
 
-        mc.getFramebuffer().framebufferClear();
+        ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFProRounded");
         BackgroundUtils.run();
-        mc.getFramebuffer().bindFramebuffer(true);
 
-        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 200, 40, 400, sc.getScaledHeight() - 100, 5f, new Color(15, 15, 15, 150));
+        AlphaUtils.startWrite();
+
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 150, 10, 300, sc.getScaledHeight() - 50, 10, new Color(0f, 0f, 0f, 0.7f));
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), sc.getScaledWidth() / 2f - 200, 40, 400, sc.getScaledHeight() - 100);
-
-        float offset = scrolls.y;
-
+        ScissorUtils.scissor(sc, sc.getScaledWidth() / 2f - 150, 10 + 1, 300, sc.getScaledHeight() - 50 - 2);
+        float offset = scrollAnim.value;
         scrollTotalHeight = 0;
+        for (ServerListEntryNormal serverListEntryNormal : serverListSelector.serverListInternet) {
+            RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 150 + 5, 15 + offset, 290, 50, 7, selectedServer != null && selectedServer.equals(serverListEntryNormal.getServerData()) ? new Color(0.2f, 0.2f, 0.2f, 0.7f) : new Color(0f , 0f, 0f, 0.7f));
+            float finalOffset = offset;
+            fontRenderer.drawString(serverListEntryNormal.getServerData().serverName + " (" + serverListEntryNormal.getServerData().serverIP + ")", sc.getScaledWidth() / 2f - 100 + 5 + 5, 15 + 5 + 2 + offset, Color.WHITE);
 
+            if (!serverListEntryNormal.getServerData().field_78841_f) {
+                ServerListEntryNormal.field_148302_b.submit(() -> {
+                    try {
+                        serverListEntryNormal.owner.getOldServerPinger().ping(serverListEntryNormal.server);
+                    } catch (UnknownHostException var2) {
+                        serverListEntryNormal.server.pingToServer = -1L;
+                        serverListEntryNormal.server.serverMOTD = EnumChatFormatting.DARK_RED + "Can't resolve hostname";
+                    } catch (Exception var3) {
+                        serverListEntryNormal.server.pingToServer = -1L;
+                        serverListEntryNormal.server.serverMOTD = EnumChatFormatting.DARK_RED + "Can't connect to server.";
+                    }
+                });
+            }
 
+            fontRenderer.drawString(Objects.requireNonNullElse(serverListEntryNormal.getServerData().serverMOTD, "Can't resolve youre izernet dalbaeb!"), sc.getScaledWidth() / 2f - 100 + 5 + 5, 15 + 5 + 16 + 5 + offset, Color.WHITE);
 
+            if (serverListEntryNormal.chotoservericonkaprepare != null) RenderUtils.drawImage(serverListEntryNormal.serverIcon,sc.getScaledWidth() / 2f - 150 + 5 + 5, 20 + finalOffset, 40, 40, true);
 
+            offset += 55;
+            scrollTotalHeight += 55;
+        }
+        ScissorUtils.disableScissor();
 
+        for (GuiButton guiButton : buttonList) {
+            guiButton.drawButton(mc, mouseX,mouseY);
+        }
+
+        AlphaUtils.endWrite();
+        AlphaUtils.draw(alphaAnim.getValue());
 
     }
-
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
-//        if (button.enabled) {
-//            GuiListExtended.IGuiListEntry guilistextended$iguilistentry = this.serverListSelector.func_148193_k() < 0 ? null : this.serverListSelector.getListEntry(this.serverListSelector.func_148193_k());
-//
-//            if (button.id == 2 && guilistextended$iguilistentry instanceof ServerListEntryNormal) {
-//                String s4 = ((ServerListEntryNormal) guilistextended$iguilistentry).getServerData().serverName;
-//
-//                if (s4 != null) {
-//                    this.deletingServer = true;
-//                    String s = I18n.format("selectServer.deleteQuestion", new Object[0]);
-//                    String s1 = "\'" + s4 + "\' " + I18n.format("selectServer.deleteWarning", new Object[0]);
-//                    String s2 = I18n.format("selectServer.deleteButton", new Object[0]);
-//                    String s3 = I18n.format("gui.cancel", new Object[0]);
-//                    GuiYesNo guiyesno = new GuiYesNo(this, s, s1, s2, s3, this.serverListSelector.func_148193_k());
-//                    this.mc.displayGuiScreen(guiyesno);
-//                }
-//            } else if (button.id == 1) {
-//                this.connectToSelected();
-//            } else if (button.id == 4) {
-//                this.directConnect = true;
-//                this.mc.displayGuiScreen(new GuiScreenServerList(this, this.selectedServer = new ServerData(I18n.format("selectServer.defaultName"), "", false)));
-//            } else if (button.id == 3) {
-//                this.addingServer = true;
-//                this.mc.displayGuiScreen(new GuiScreenAddServer(this, this.selectedServer = new ServerData(I18n.format("selectServer.defaultName"), "", false)));
-//            } else if (button.id == 7 && guilistextended$iguilistentry instanceof ServerListEntryNormal) {
-//                this.editingServer = true;
-//                ServerData serverdata = ((ServerListEntryNormal) guilistextended$iguilistentry).getServerData();
-//                this.selectedServer = new ServerData(serverdata.serverName, serverdata.serverIP, false);
-//                this.selectedServer.copyFrom(serverdata);
-//                this.mc.displayGuiScreen(new GuiScreenAddServer(this, this.selectedServer));
-//            } else if (button.id == 0) {
-//                this.mc.displayGuiScreen(new GuiClientMainMenu());
-//            } else if (button.id == 8) {
-//                this.refreshServerList();
-//            } else if (button.id == 69) {
-//                this.mc.displayGuiScreen(new GuiViaVersion());
-//            }
-//        }
+        switch (button.id) {
+            case 50 -> {//add server
+                this.mc.displayGuiScreen(new GuiScreenAddServer(this, this.selectedServer = new ServerData(I18n.format("selectServer.defaultName"), "", false)));
+            }
+
+            case 51 -> {//direct
+
+            }
+
+            case 52 -> {// delete
+
+            }
+        }
+
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+        ScaledResolution sc = new ScaledResolution(mc);
+
+        float offset = scrollAnim.value;
+        for (ServerListEntryNormal serverListEntryNormal : serverListSelector.serverListInternet) {
+            boolean hoverServerList = mouseX > sc.getScaledWidth() / 2f - 150 && mouseX < sc.getScaledWidth() / 2f - 150 + 300 && mouseY > 10 && mouseY < 10 + sc.getScaledHeight() - 50;
+            boolean hoverServer = mouseX > sc.getScaledWidth() / 2f - 150 + 5 && mouseX < sc.getScaledWidth() / 2f - 150 + 5 + 290 && mouseY > 15 + offset && mouseY < 15 + offset + 50;
+            if (hoverServer && hoverServerList) {
+                long currentTime = System.currentTimeMillis();
+
+                ServerData serverData = serverListEntryNormal.getServerData();
+
+                if (lastClickedServerListEntryNormal == serverData && (currentTime - lastClickTime) < 250) {
+                    connectToServer(serverData);
+                } else {
+                    toggleServer(serverData);
+                }
+
+                lastClickTime = currentTime;
+                lastClickedServerListEntryNormal = serverData;
+            }
+            offset += 55;
+        }
+
+    }
+
+    private void connectToServer(ServerData server) {
+        mc.displayGuiScreen(new GuiConnecting(this, this.mc, server));
+        new ServerJoinEvent(server).callNoWorldNoPlayer();
+    }
+
+    void toggleServer(ServerData data) {
+        if (selectedServer == data) selectedServer = null; else selectedServer = data;
+    }
+
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        alphaAnim.setEnd(0f);
     }
 }

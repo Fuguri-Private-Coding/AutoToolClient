@@ -6,7 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.matrix.MatrixUtils;
+import fuguriprivatecoding.autotoolrecode.utils.projection.MatrixUtils;
 import net.minecraft.client.gui.ScaledResolution;
 
 import static org.lwjgl.opengl.GL11.*;

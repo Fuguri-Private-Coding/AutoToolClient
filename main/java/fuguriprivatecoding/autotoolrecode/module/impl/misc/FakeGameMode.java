@@ -10,8 +10,9 @@ import net.minecraft.world.WorldSettings;
 public class FakeGameMode extends Module {
 
     Mode mode = new Mode("Mode", this)
-            .addModes("Survival", "Creative", "Spectator", "Adventure")
-            ;
+        .addModes("Survival", "Creative", "Spectator", "Adventure")
+        .setMode("Creative")
+        ;
 
     WorldSettings.GameType lastGameType;
 

@@ -19,13 +19,10 @@ import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
-import imgui.ImGui;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -640,11 +637,11 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
                 if (customCamera.smoothCamera.isToggled() && customCamera.isToggled()) {
                     cameraX.update(customCamera.xAnimationSmooth.getValue());
-                    cameraX.setEndPos(mc.thePlayer.moveStrafing / 2f);
+                    cameraX.setEndValue(mc.thePlayer.moveStrafing / 2f);
                     cameraY.update(customCamera.yAnimationSmooth.getValue());
-                    cameraY.setEndPos((float) (mc.thePlayer.motionY / 0.5f));
+                    cameraY.setEndValue((float) (mc.thePlayer.motionY / 0.5f));
                     cameraZ.update(customCamera.zAnimationSmooth.getValue());
-                    cameraZ.setEndPos(mc.thePlayer.moveForward / 2f);
+                    cameraZ.setEndValue(mc.thePlayer.moveForward / 2f);
                 }
 
                 GlStateManager.rotate(entity.rotationPitch - f2, 1.0F, 0.0F, 0.0F);

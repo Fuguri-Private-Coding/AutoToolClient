@@ -10,7 +10,6 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtil;
-import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtils;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.ItemUtil;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
@@ -26,7 +25,6 @@ import net.minecraft.util.DamageSource;
 public class InvManager extends Module {
 
     DoubleSlider startDelay = new DoubleSlider("StartDelay", this, 0,500,200,1);
-
 
     DoubleSlider delay = new DoubleSlider("Delay", this, 0,500,200,1);
 
@@ -179,7 +177,7 @@ public class InvManager extends Module {
                     }
                 }
 
-                if (item instanceof ItemPotion) {
+                if (item instanceof ItemPotion itemPotion) {
                     if (potion == -1) {
                         potion = i;
                     } else {
@@ -190,7 +188,6 @@ public class InvManager extends Module {
                         }
 
                         final ItemPotion currentItemPotion = (ItemPotion) currentStack.getItem();
-                        final ItemPotion itemPotion = (ItemPotion) item;
 
                         boolean foundCurrent = false;
 
@@ -218,7 +215,7 @@ public class InvManager extends Module {
                     }
                 }
 
-                if (item instanceof ItemFood) {
+                if (item instanceof ItemFood itemFood) {
                     if (food == -1) {
                         food = i;
                     } else {
@@ -229,7 +226,6 @@ public class InvManager extends Module {
                         }
 
                         final ItemFood currentItemFood = (ItemFood) currentStack.getItem();
-                        final ItemFood itemFood = (ItemFood) item;
 
                         if (itemFood.getSaturationModifier(stack) > currentItemFood.getSaturationModifier(currentStack)) {
                             food = i;

@@ -1,10 +1,13 @@
 package fuguriprivatecoding.autotoolrecode.utils.animation;
 
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
+import lombok.Setter;
 
 public class Animation {
 
-    public float value, endValue;
+    @Setter public float value;
+    @Setter public float endValue;
+
     final StopWatch stopWatch;
 
     public Animation() {
@@ -18,20 +21,12 @@ public class Animation {
         stopWatch = new StopWatch();
     }
 
-    public void translateEndPos(float endValue) {
+    public void translateEndValue(float endValue) {
         this.endValue += endValue;
     }
 
-    public void translatePos(float value) {
+    public void translateValue(float value) {
         this.value += value;
-    }
-
-    public void setEndPos(float endValue) {
-        this.endValue = endValue;
-    }
-
-    public void setPos(float x) {
-        this.value = x;
     }
 
     public void update(float smooth) {

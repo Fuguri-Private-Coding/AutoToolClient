@@ -25,7 +25,9 @@ public class BridgeAssist extends Module {
         if (event instanceof MoveButtonEvent e) {
             if (pitchCheck.isToggled() && (mc.thePlayer.rotationPitch < pitch.getMinValue() || mc.thePlayer.rotationPitch > pitch.getMaxValue())) return;
             if (mc.thePlayer.capabilities.isFlying) return;
+
             BlockPos pos = getBlockPos(edgeOffset.getValue());
+
             if (sneakIfPressed.isToggled() && e.isSneak() && !mc.theWorld.isAirBlock(pos)) {
                 e.setSneak(false);
             } else if (!sneakIfPressed.isToggled() && mc.theWorld.isAirBlock(pos)) {

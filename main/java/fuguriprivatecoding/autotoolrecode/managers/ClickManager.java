@@ -32,7 +32,7 @@ public class ClickManager implements Imports {
 
         if (event instanceof TickEvent tickEvent && !tickEvent.isCanceled()) {
 
-            if (clickSettings.simulateDoubleClick.isToggled() && clicks > 6) {
+            if (clickSettings.simulateDoubleClick.isToggled() && clicks > 5) {
                 clicks += Math.random() <= 0.5 ? 1 : -1;
             }
 

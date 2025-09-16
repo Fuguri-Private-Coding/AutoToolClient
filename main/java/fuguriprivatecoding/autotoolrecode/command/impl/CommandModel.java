@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.deeplearn.data.TrainingData;
 import fuguriprivatecoding.autotoolrecode.deeplearn.models.MinaraiModel;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.ModelTrainer;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 
 import java.io.File;
 
@@ -17,7 +18,7 @@ public class CommandModel extends Command {
     @Override
     public void execute(String[] args) {
         if (args.length < 2) {
-            console.log("Not enough arguments!");
+            addMessage("Not enough arguments!");
             super.usage();
             return;
         }
@@ -27,7 +28,7 @@ public class CommandModel extends Command {
                 var samples = TrainingData.parse(Client.INST.getModuleManager().getModule(ModelTrainer.class).getFolder());
 
                 if (samples.isEmpty()) {
-                    console.log("Not enough samples!");
+                    addMessage("Not enough samples!");
                     return;
                 }
 
@@ -49,7 +50,7 @@ public class CommandModel extends Command {
                     new File(Client.INST.getModelsDirectory(), model.getName() + "-0000").renameTo(new File(model.getName()));
                     Client.INST.getModuleManager().getModule(KillAura.class).updateModels();
                     Client.INST.getConsole().changed = false;
-                    console.log("Created model " + args[2] + " in " + (System.currentTimeMillis() - currentMS) / 1000D + " s.");
+                    addMessage("Created model " + args[2] + " in " + (System.currentTimeMillis() - currentMS) / 1000D + " s.");
                 }).start();
             }
         }

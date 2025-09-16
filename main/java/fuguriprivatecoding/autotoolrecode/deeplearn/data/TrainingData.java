@@ -13,11 +13,14 @@ import java.util.List;
 import com.google.gson.reflect.TypeToken;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import lombok.Getter;
 import net.minecraft.util.Vec3;
 import org.apache.commons.io.FilenameUtils;
 import org.lwjgl.util.vector.Vector2f;
 
+@Getter
 public class TrainingData {
+    // Getters
     @SerializedName(CURRENT_DIRECTION_VECTOR)
     private final Vec3 currentVector;
     @SerializedName(PREVIOUS_DIRECTION_VECTOR)
@@ -95,17 +98,6 @@ public class TrainingData {
     public float[] getAsOutput() {
         return new float[] {velocityDelta.x, velocityDelta.y};
     }
-
-    // Getters
-    public Vec3 getCurrentVector() { return currentVector; }
-    public Vec3 getPreviousVector() { return previousVector; }
-    public Vec3 getTargetVector() { return targetVector; }
-    public Vector2f getVelocityDelta() { return velocityDelta; }
-    public Vec3 getPlayerDiff() { return playerDiff; }
-    public Vec3 getTargetDiff() { return targetDiff; }
-    public float getDistance() { return distance; }
-    public int getHurtTime() { return hurtTime; }
-    public int getAge() { return age; }
 
     public static List<TrainingData> parse(File... files) {
         List<TrainingData> result = new ArrayList<>();

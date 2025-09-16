@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
@@ -10,15 +9,12 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtils;
 import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import org.lwjgl.util.vector.Vector2f;
-import java.util.ArrayList;
-import java.util.List;
 
 @ModuleInfo(name = "ChestStealer", category = Category.PLAYER, description = "Автоматически берет вещи из сундука.")
 public class ChestStealer extends Module {
@@ -28,9 +24,6 @@ public class ChestStealer extends Module {
 
     final CheckBox autoClose = new CheckBox("AutoClose", this, true);
     DoubleSlider closeDelay = new DoubleSlider("CloseDelay", this, autoClose::isToggled, 0,500,200,1);
-
-    final CheckBox fail = new CheckBox("Fail", this);
-    final IntegerSetting failChance = new IntegerSetting("FailChance", this, fail::isToggled, 0, 100, 30);
 
     final CheckBox checkName = new CheckBox("CheckName", this, true);
 
@@ -95,39 +88,6 @@ public class ChestStealer extends Module {
             }
         }
     }
-
-//    int updateAvailableSlots(ContainerChest container, Vector2f lastPos) {
-//        List<SlotPosition> slotPositions = new ArrayList<>();
-//
-//        for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
-//            if (InventoryUtils.isValid(container.getLowerChestInventory().getStackInSlot(i))) {
-//                final Slot slot = container.getSlot(i);
-//                if (slot.getHasStack()) {
-//                    slotPositions.add(new SlotPosition(i, slot.xDisplayPosition + 8, slot.yDisplayPosition + 8));
-//                }
-//            }
-//        }
-//
-//        if (slotPositions.isEmpty()) {
-//            return -1;
-//        }
-//
-//        SlotPosition closestSlot = slotPositions.getFirst();
-//        float minDistanceSq = Float.MAX_VALUE;
-//
-//        for (SlotPosition sp : slotPositions) {
-//            float dx = sp.x - lastPos.x;
-//            float dy = sp.y - lastPos.y;
-//            float distanceSq = dx * dx + dy * dy;
-//
-//            if (distanceSq < minDistanceSq) {
-//                minDistanceSq = distanceSq;
-//                closestSlot = sp;
-//            }
-//        }
-//
-//        return closestSlot.slotIndex;
-//            }
 
     int getClosestSlotIndex(ContainerChest container, Vector2f lastPos) {
         int closestSlotIndex = -1;

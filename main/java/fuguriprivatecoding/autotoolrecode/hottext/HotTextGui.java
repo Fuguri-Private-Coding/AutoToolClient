@@ -6,27 +6,21 @@ import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiText;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import fuguriprivatecoding.autotoolrecode.utils.scaling.ScaleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
-
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,16 +84,12 @@ public class HotTextGui extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         mainColor = clickGui.color.getFadedColor();
 
-        ScaledResolution sc = new ScaledResolution(mc);
-
         float scale = clientSettings.scale.getValue();
 
-        sc.setScaleFactor(sc.scaleFactor *= scale);
-        sc.scaledWidth /= scale;
-        sc.scaledHeight /= scale;
+        ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
-        mouseX /= scale;
-        mouseY /= scale;
+        mouseX = (int) (mouseX / scale);
+        mouseY = (int) (mouseY / scale);
 
         GL11.glScaled(scale, scale, 1f);
 
@@ -239,13 +229,9 @@ public class HotTextGui extends GuiScreen {
         if (changingText) changeTextField.textboxKeyTyped(typedChar, keyCode);
         if (selectedHotText == null) binding = false;
 
-        ScaledResolution sc = new ScaledResolution(mc);
-
         float scale = clientSettings.scale.getValue();
 
-        sc.setScaleFactor(sc.scaleFactor *= scale);
-        sc.scaledWidth /= scale;
-        sc.scaledHeight /= scale;
+        ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
         if (binding) {
             binding = false;
@@ -286,14 +272,10 @@ public class HotTextGui extends GuiScreen {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         float scale = clientSettings.scale.getValue();
 
-        ScaledResolution sc = new ScaledResolution(mc);
+        ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
-        sc.setScaleFactor(sc.scaleFactor *= scale);
-        sc.scaledWidth /= scale;
-        sc.scaledHeight /= scale;
-
-        mouseX /= scale;
-        mouseY /= scale;
+        mouseX = (int) (mouseX / scale);
+        mouseY = (int) (mouseY / scale);
 
         if (mouseX > 5 && mouseX < 20 && mouseY > 5 && mouseY < 20) {
             if (creatingHotKey) {

@@ -21,6 +21,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.doubles.Doubles;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.scaling.ScaleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -94,8 +95,8 @@ public class ClickGuiScreen extends GuiScreen {
 
 		float scale = clientSettings.scale.getValue();
 
-		mouseX /= scale;
-		mouseY /= scale;
+		mouseX = (int) (mouseX / scale);
+		mouseY = (int) (mouseY / scale);
 
 		GL11.glScaled(scale,scale,1f);
 
@@ -155,11 +156,7 @@ public class ClickGuiScreen extends GuiScreen {
 		modulesScrolls.update(15f);
 		settingsScrolls.update(15f / 4, Easing.OUT_BACK);
 
-		ScaledResolution sc = new ScaledResolution(mc);
-
-		sc.setScaleFactor(sc.scaleFactor *= scale);
-		sc.scaledWidth /= scale;
-		sc.scaledHeight /= scale;
+		ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
 		if (clickGui.glow.isToggled()) {
 			BloomRealUtils.addToDraw(() -> {
@@ -242,13 +239,13 @@ public class ClickGuiScreen extends GuiScreen {
 		modulesTotalHeight = 0;
 
 		ScissorUtils.enableScissor();
-		ScissorUtils.scissor(sc, background.x, background.y + 15, widthsModule + 5, sizeBackground.y - 15);
+		ScissorUtils.scissor(sc, background.x, background.y + 15 + 1, widthsModule + 5, sizeBackground.y - 15 - 5);
 
 		List<Module> moduleList = Client.INST.getModuleManager().getModulesByCategory(selectedCategory);
 
 		for (Module module : moduleList) {
             float toggleProgress = module.getToggleProgress();
-            Color toggleColor = ColorUtils.interpolateColor(CATEGORY_COLOR, MAIN_COLOR, toggleProgress);
+            Color toggleColor = ColorUtils.interpolateColor(CATEGORY_COLOR, clickGui.color.getMixedColor(moduleList.indexOf(module)), toggleProgress);
 
             fontRenderer.drawString(module.getName() + (!module.isHide() ? " ✓" : " ×"), background.x + 4, background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 2, toggleColor);
 
@@ -744,17 +741,14 @@ public class ClickGuiScreen extends GuiScreen {
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		ScaledResolution sc = new ScaledResolution(mc);
 		ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFProRounded");
 
 		float scale = clientSettings.scale.getValue();
 
-		sc.setScaleFactor(sc.scaleFactor *= scale);
-		sc.scaledWidth /= scale;
-		sc.scaledHeight /= scale;
+		ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
-		mouseX /= scale;
-		mouseY /= scale;
+		mouseX = (int) (mouseX / scale);
+		mouseY = (int) (mouseY / scale);
 
 		boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
@@ -1041,13 +1035,9 @@ public class ClickGuiScreen extends GuiScreen {
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		if (selectedModule == null) binding = false;
 
-		ScaledResolution sc = new ScaledResolution(mc);
-
 		float scale = clientSettings.scale.getValue();
 
-		sc.setScaleFactor(sc.scaleFactor *= scale);
-		sc.scaledWidth /= scale;
-		sc.scaledHeight /= scale;
+		ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
 		if (binding) {
 			binding = false;

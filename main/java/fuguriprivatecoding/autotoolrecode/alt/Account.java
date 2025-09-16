@@ -8,10 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 @Setter
 public class Account {
     String name;
-    String refreshToken;
-    String uuid;
-    String login;
-    String password;
+    String refreshToken, uuid;
+    String login, password;
 
     public Account(String name) {
         this.name = name;

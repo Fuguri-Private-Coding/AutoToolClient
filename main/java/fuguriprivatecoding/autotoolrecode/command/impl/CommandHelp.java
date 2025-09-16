@@ -20,13 +20,13 @@ public class CommandHelp extends Command {
         if (args[0].equalsIgnoreCase("help")) {
             CommandManager commandManager = Client.INST.getCommandManager();
             if (commandManager.commands.isEmpty()) {
-                console.log("Command List is empty.");
+                addMessage("Command List is empty.");
                 return;
             }
-            console.log("Command List:");
+            addMessage("Command List:");
             for (Command command : commandManager.commands) {
                 if (command.getName().equalsIgnoreCase("help")) return;
-                console.log(command.getName() + " -> " + command.getUsage());
+                addMessage(command.getName() + " -> " + command.getUsage());
             }
         }
     }

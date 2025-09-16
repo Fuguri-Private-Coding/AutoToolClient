@@ -69,10 +69,8 @@ public class Ambience extends Module {
 
     public float getFloatTemperature(BlockPos blockPos, BiomeGenBase biomeGenBase) {
         if (isToggled()) {
-            switch (this.weather.getMode()) {
-                case "Snow" -> {
-                    return 0.1F;
-                }
+            if (this.weather.getMode().equals("Snow")) {
+                return 0.1F;
             }
         }
 

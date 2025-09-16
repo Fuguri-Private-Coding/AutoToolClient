@@ -39,9 +39,9 @@ public class Auth {
             defaultTmf.init((KeyStore) null);
             List<X509TrustManager> managers = new ArrayList<>();
             managers.addAll(Arrays.stream(customTmf.getTrustManagers()).filter(tm -> tm instanceof X509TrustManager)
-                    .map(tm -> (X509TrustManager) tm).collect(Collectors.toList()));
+                    .map(tm -> (X509TrustManager) tm).toList());
             managers.addAll(Arrays.stream(defaultTmf.getTrustManagers()).filter(tm -> tm instanceof X509TrustManager)
-                    .map(tm -> (X509TrustManager) tm).collect(Collectors.toList()));
+                    .map(tm -> (X509TrustManager) tm).toList());
             TrustManager multiManager = new X509TrustManager() {
                 @Override
                 public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {

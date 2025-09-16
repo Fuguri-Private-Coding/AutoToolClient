@@ -25,15 +25,15 @@ import org.apache.logging.log4j.Logger;
 public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
 {
     private static final Logger logger = LogManager.getLogger();
-    private static final ThreadPoolExecutor field_148302_b = new ScheduledThreadPoolExecutor(5, (new ThreadFactoryBuilder()).setNameFormat("Server Pinger #%d").setDaemon(true).build());
-    private static final ResourceLocation UNKNOWN_SERVER = new ResourceLocation("textures/misc/unknown_server.png");
+    public static final ThreadPoolExecutor field_148302_b = new ScheduledThreadPoolExecutor(5, (new ThreadFactoryBuilder()).setNameFormat("Server Pinger #%d").setDaemon(true).build());
+    public static final ResourceLocation UNKNOWN_SERVER = new ResourceLocation("textures/misc/unknown_server.png");
     private static final ResourceLocation SERVER_SELECTION_BUTTONS = new ResourceLocation("textures/gui/server_selection.png");
-    private final GuiMultiplayer owner;
+    public final GuiMultiplayer owner;
     private final Minecraft mc;
-    private final ServerData server;
-    private final ResourceLocation serverIcon;
+    public final ServerData server;
+    public final ResourceLocation serverIcon;
     private String field_148299_g;
-    private DynamicTexture field_148305_h;
+    public DynamicTexture chotoservericonkaprepare;
     private long field_148298_f;
 
     protected ServerListEntryNormal(GuiMultiplayer p_i45048_1_, ServerData serverIn)
@@ -42,7 +42,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
         this.server = serverIn;
         this.mc = Minecraft.getMinecraft();
         this.serverIcon = new ResourceLocation("servers/" + serverIn.serverIP + "/icon");
-        this.field_148305_h = (DynamicTexture)this.mc.getTextureManager().getTexture(this.serverIcon);
+        this.chotoservericonkaprepare = (DynamicTexture)this.mc.getTextureManager().getTexture(this.serverIcon);
     }
 
     public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected)
@@ -161,7 +161,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
             this.owner.getServerList().saveServerList();
         }
 
-        if (this.field_148305_h != null)
+        if (this.chotoservericonkaprepare != null)
         {
             this.drawTextureAt(x, y, this.serverIcon);
         }
@@ -246,7 +246,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
         if (this.server.getBase64EncodedIconData() == null)
         {
             this.mc.getTextureManager().deleteTexture(this.serverIcon);
-            this.field_148305_h = null;
+            this.chotoservericonkaprepare = null;
         }
         else
         {
@@ -276,14 +276,14 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
                 return;
             }
 
-            if (this.field_148305_h == null)
+            if (this.chotoservericonkaprepare == null)
             {
-                this.field_148305_h = new DynamicTexture(bufferedimage.getWidth(), bufferedimage.getHeight());
-                this.mc.getTextureManager().loadTexture(this.serverIcon, this.field_148305_h);
+                this.chotoservericonkaprepare = new DynamicTexture(bufferedimage.getWidth(), bufferedimage.getHeight());
+                this.mc.getTextureManager().loadTexture(this.serverIcon, this.chotoservericonkaprepare);
             }
 
-            bufferedimage.getRGB(0, 0, bufferedimage.getWidth(), bufferedimage.getHeight(), this.field_148305_h.getTextureData(), 0, bufferedimage.getWidth());
-            this.field_148305_h.updateDynamicTexture();
+            bufferedimage.getRGB(0, 0, bufferedimage.getWidth(), bufferedimage.getHeight(), this.chotoservericonkaprepare.getTextureData(), 0, bufferedimage.getWidth());
+            this.chotoservericonkaprepare.updateDynamicTexture();
         }
     }
 

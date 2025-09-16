@@ -6,11 +6,12 @@ import fuguriprivatecoding.autotoolrecode.alt.Auth;
 import fuguriprivatecoding.autotoolrecode.alt.MicrosoftAuthCallback;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.Minecraft;
@@ -30,7 +31,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class AltManagerGuiScreen extends GuiScreen {
 
     AltManagerGuiText altManagerGuiText;
-
     public List<Account> accounts = new CopyOnWriteArrayList<>();
 
     private long lastClickTime = 0;
@@ -42,7 +42,7 @@ public class AltManagerGuiScreen extends GuiScreen {
 
     static String updatedText;
 
-    Glow shadows;
+    EasingAnimation alphaAnim = new EasingAnimation();
 
     public AltManagerGuiScreen() {
         mc = Minecraft.getMinecraft();
@@ -62,15 +62,14 @@ public class AltManagerGuiScreen extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         ScaledResolution sc = new ScaledResolution(mc);
 
         scroll -= ClientSettings.getScroll();
 
-        ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+        ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
 
         float altVisibleHeight = sc.getScaledHeight() - 25;
-        float maxScroll = Math.max(scrollTotalHeight - altVisibleHeight,0);
+        float maxScroll = Math.max(scrollTotalHeight - altVisibleHeight, 0);
 
         if (scroll > 0) scroll = 0;
         if (scroll < -maxScroll) scroll = (int) -maxScroll;
@@ -78,12 +77,14 @@ public class AltManagerGuiScreen extends GuiScreen {
         scrolls.endY = scroll;
         scrolls.update(15f);
 
-        mc.getFramebuffer().framebufferClear();
+
+        alphaAnim.update(3, Easing.IN_OUT_QUAD);
+        alphaAnim.setEnd(1f);
         BackgroundUtils.run();
-        mc.getFramebuffer().bindFramebuffer(true);
 
-        RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() - 265, 15, 250, sc.getScaledHeight() - 25, 5f, new Color(0, 0, 0, 150).getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
+        AlphaUtils.startWrite();
 
+        RoundedUtils.drawRect(sc.getScaledWidth() - 265, 15, 250, sc.getScaledHeight() - 25, 5f, new Color(0, 0, 0, 0.7f));
         if (updatedText != null) font.drawCenteredString(updatedText, sc.getScaledWidth() - 265 + 125, 5, Color.WHITE);
 
         float offset = scrolls.y;
@@ -94,7 +95,7 @@ public class AltManagerGuiScreen extends GuiScreen {
         ScissorUtils.scissor(new ScaledResolution(mc), sc.getScaledWidth() - 260, 15, 250, sc.getScaledHeight() - 25);
 
         for (Account account : accounts) {
-            RoundedUtils.drawRect(sc.getScaledWidth() - 260, 10 + 10 + offset, 250 - 10, 20, 4f, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? new Color(75,75,75,150) : new Color(0, 0, 0,150));
+            RoundedUtils.drawRect(sc.getScaledWidth() - 260, 10 + 10 + offset, 250 - 10, 20, 10, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? new Color(0.2f, 0.2f, 0.2f, 0.7f) : new Color(0, 0, 0, 0.7f));
             font.drawString(account.getName() + ((account.getUuid() != null) ? " | Microsoft." : " | Offline."), sc.getScaledWidth() - 250, 10 + 5 + 2 + 11f + offset, account.getName().equals(mc.getSession().getUsername()) ? Color.green : Color.WHITE);
             offset += 25;
             scrollTotalHeight += 25;
@@ -108,7 +109,16 @@ public class AltManagerGuiScreen extends GuiScreen {
         String currentUser = "Account: " + mc.getSession().getUsername();
 
         font.drawString(currentUser, 2.5f, 2.5f + 1, Color.WHITE);
-        super.drawScreen(mouseX,mouseY,partialTicks);
+        super.drawScreen(mouseX, mouseY, partialTicks);
+
+        AlphaUtils.endWrite();
+        AlphaUtils.draw(alphaAnim.getValue());
+    }
+
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        alphaAnim.setEnd(0);
     }
 
     public static void updateStatus(String status) {

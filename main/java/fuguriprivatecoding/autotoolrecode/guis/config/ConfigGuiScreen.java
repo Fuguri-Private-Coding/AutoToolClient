@@ -17,6 +17,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurU
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.scaling.ScaleUtils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.minecraft.client.Minecraft;
@@ -73,14 +74,10 @@ public class ConfigGuiScreen extends GuiScreen {
 
         float scale = clientSettings.scale.getValue();
 
-        ScaledResolution sc = new ScaledResolution(mc);
+        ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
-        sc.setScaleFactor(sc.scaleFactor *= scale);
-        sc.scaledWidth /= scale;
-        sc.scaledHeight /= scale;
-
-        mouseX /= scale;
-        mouseY /= scale;
+        mouseX = (int) (mouseX / scale);
+        mouseY = (int) (mouseY / scale);
 
         GL11.glScaled(scale,scale,1f);
 
@@ -218,13 +215,10 @@ public class ConfigGuiScreen extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (creatingConfig) textField.textboxKeyTyped(typedChar, keyCode);
-        ScaledResolution sc = new ScaledResolution(mc);
 
         float scale = clientSettings.scale.getValue();
 
-        sc.setScaleFactor(sc.scaleFactor *= scale);
-        sc.scaledWidth /= scale;
-        sc.scaledHeight /= scale;
+        ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
         if (keyCode == 1 && creatingConfig) {
             textField.setText("");
@@ -256,16 +250,12 @@ public class ConfigGuiScreen extends GuiScreen {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        ScaledResolution sc = new ScaledResolution(mc);
-
         float scale = clientSettings.scale.getValue();
 
-        sc.setScaleFactor(sc.scaleFactor *= scale);
-        sc.scaledWidth /= scale;
-        sc.scaledHeight /= scale;
+        ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
-        mouseX /= scale;
-        mouseY /= scale;
+        mouseX = (int) (mouseX / scale);
+        mouseY = (int) (mouseY / scale);
 
         boolean quit = mouseX > background.x + 5 && mouseX < background.x + 5 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
         boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;

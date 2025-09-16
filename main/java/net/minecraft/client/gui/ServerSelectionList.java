@@ -8,11 +8,11 @@ import net.minecraft.client.network.LanServerDetector;
 
 public class ServerSelectionList extends GuiListExtended
 {
-    private final GuiMultiplayer owner;
-    private final List<ServerListEntryNormal> serverListInternet = Lists.<ServerListEntryNormal>newArrayList();
-    private final List<ServerListEntryLanDetected> serverListLan = Lists.<ServerListEntryLanDetected>newArrayList();
-    private final GuiListExtended.IGuiListEntry lanScanEntry = new ServerListEntryLanScan();
-    private int selectedSlotIndex = -1;
+    public final GuiMultiplayer owner;
+    public final List<ServerListEntryNormal> serverListInternet = Lists.<ServerListEntryNormal>newArrayList();
+    public final List<ServerListEntryLanDetected> serverListLan = Lists.<ServerListEntryLanDetected>newArrayList();
+    public final GuiListExtended.IGuiListEntry lanScanEntry = new ServerListEntryLanScan();
+    public int selectedSlotIndex = -1;
 
     public ServerSelectionList(GuiMultiplayer ownerIn, Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn)
     {

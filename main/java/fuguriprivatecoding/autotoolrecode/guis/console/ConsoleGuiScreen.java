@@ -13,6 +13,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurU
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.scaling.ScaleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import org.lwjgl.input.Keyboard;
@@ -72,16 +73,12 @@ public class ConsoleGuiScreen extends GuiScreen {
         if (clickGui == null) clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
         if (clientSettings == null) clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
 
-        ScaledResolution sc = new ScaledResolution(mc);
-
         float scale = clientSettings.scale.getValue();
 
-        sc.setScaleFactor(sc.scaleFactor *= scale);
-        sc.scaledWidth /= scale;
-        sc.scaledHeight /= scale;
+        ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
-        mouseX /= scale;
-        mouseY /= scale;
+        mouseX = (int) (mouseX / scale);
+        mouseY = (int) (mouseY / scale);
 
         GL11.glScaled(scale, scale, 1f);
 
@@ -208,13 +205,9 @@ public class ConsoleGuiScreen extends GuiScreen {
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         String username = System.getProperty("user.name");
 
-        ScaledResolution sc = new ScaledResolution(mc);
-
         float scale = clientSettings.scale.getValue();
 
-        sc.setScaleFactor(sc.scaleFactor *= scale);
-        sc.scaledWidth /= scale;
-        sc.scaledHeight /= scale;
+        ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
         if (keyCode == 1 && !closing) {
             lastPos.set(pos);
@@ -238,15 +231,12 @@ public class ConsoleGuiScreen extends GuiScreen {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        ScaledResolution sc = new ScaledResolution(mc);
-
         float scale = clientSettings.scale.getValue();
 
-        sc.scaledWidth /= scale;
-        sc.scaledHeight /= scale;
+        ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
-        mouseX /= scale;
-        mouseY /= scale;
+        mouseX = (int) (mouseX / scale);
+        mouseY = (int) (mouseY / scale);
 
         ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
 

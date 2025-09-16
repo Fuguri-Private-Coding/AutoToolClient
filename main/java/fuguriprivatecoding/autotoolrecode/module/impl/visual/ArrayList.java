@@ -57,9 +57,7 @@ public class ArrayList extends Module {
     ClientFontRenderer font = Client.INST.getFonts().fonts.get("JetBrains");
 
     public ArrayList() {
-        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
-            fonts.addMode(fontName);
-        });
+        Client.INST.getFonts().fonts.forEach((fontName, _) -> fonts.addMode(fontName));
     }
 
     @EventTarget
@@ -74,23 +72,21 @@ public class ArrayList extends Module {
             float yOffset = yPosOffset.getValue();
             double xOffset = xPosOffset.getValue();
             for (Module module : moduleList) {
-                module.getAnimation().update(animationSpeed.getValue(), Easing.LINEAR);
+                module.getArrayListAnimation().update(animationSpeed.getValue(), Easing.IN_OUT_BACK);
 
                 switch (pos.getMode()) {
                     case "Right Up" ->
-                            renderRightUp(xOffset + module.getAnimation().getValue(), yOffset,
+                            renderRightUp(xOffset + module.getArrayListAnimation().getValue(), yOffset,
                                 module,
                                 sc,
-                                bgColor.getMixedColor(moduleList.indexOf(module)),
                                 lineColor.getMixedColor(moduleList.indexOf(module)),
                                 textColor.getMixedColor(moduleList.indexOf(module)),
                                 moduleList
                     );
 
                     case "Left Up" ->
-                        renderLeftUp(xOffset + module.getAnimation().getValue(), yOffset,
+                        renderLeftUp(xOffset + module.getArrayListAnimation().getValue(), yOffset,
                                 module,
-                                bgColor.getMixedColor(moduleList.indexOf(module)),
                                 lineColor.getMixedColor(moduleList.indexOf(module)),
                                 textColor.getMixedColor(moduleList.indexOf(module)),
                                 moduleList
@@ -101,63 +97,126 @@ public class ArrayList extends Module {
         }
     }
 
-    private void renderRightUp(double xOffset, double yOffset, Module module, ScaledResolution sc, Color fadeBackgroundColor, Color fadeLineColor, Color fadeTextColor, List<Module> moduleList) {
+    private void renderRightUp(double xOffset, double yOffset, Module module, ScaledResolution sc, Color fadeLineColor, Color fadeTextColor, List<Module> moduleList) {
         String moduleText = module.getName();
-
         boolean suffixCondition = suffix.isToggled() && !"".equals(module.getSuffix());
+
+        String fullText = moduleText + (suffixCondition ? " - " + module.getSuffix() : "");
+        float textWidth = (float) font.getStringWidth(fullText);
+
+        float backgroundStartX = (float) (sc.getScaledWidth() - xOffset - textWidth - 4f);
+        float backgroundEndX = (float) (sc.getScaledWidth() - xOffset);
+        float textX = backgroundStartX + 2.25f;
+
+        float backgroundHeight = verticalSpacing.getValue();
+        float textY = (float) (2.5f + yOffset + textYOffset.getValue() - 4.5f + backgroundHeight / 2f);
+
+        int moduleIndex = moduleList.indexOf(module);
+        Color bgShadowColor = bgColorShadow.getMixedColor(moduleIndex);
+        Color bgMainColor = bgColor.getMixedColor(moduleIndex);
 
         if (glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> {
                 if (background.isToggled()) {
-                    Gui.drawRect((int) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText + (suffixCondition ?  " - " + module.getSuffix() : "")) - 4f), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset), (float) yOffset, bgColorShadow.getMixedColor(moduleList.indexOf(module)).getRGB());
+                    Gui.drawRect((int) backgroundStartX, (int) (yOffset + backgroundHeight), (int) backgroundEndX, (int) yOffset, bgShadowColor.getRGB());
                 } else {
-                    font.drawString(moduleText, (float) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText + (suffixCondition ?  " - " + module.getSuffix() : "")) - 1.75f), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, fadeTextColor, shadow.isToggled());
+                    font.drawString(moduleText, textX, textY, fadeTextColor, shadow.isToggled());
                 }
-                if (line.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset + 2), (float) yOffset, bgColorShadow.getMixedColor(moduleList.indexOf(module)).getRGB());
+
+                if (line.isToggled()) {
+                    Gui.drawRect((int) backgroundEndX, (int) (yOffset + backgroundHeight), (int) (backgroundEndX + 2), (int) yOffset, bgShadowColor.getRGB());
+                }
             });
         }
 
         if (blur.isToggled()) {
             GaussianBlurUtils.addToDraw(() -> {
-                if (background.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText) - 4f), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset), (float) yOffset, Color.WHITE.getRGB());
-                if (line.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset + 2), (float) yOffset, Color.WHITE.getRGB());
+                if (background.isToggled()) {
+                    Gui.drawRect((int) backgroundStartX, (int) (yOffset + backgroundHeight), (int) backgroundEndX, (int) yOffset, Color.WHITE.getRGB());
+                }
+
+                if (line.isToggled()) {
+                    Gui.drawRect((int) backgroundEndX, (int) (yOffset + backgroundHeight), (int) (backgroundEndX + 2), (int) yOffset, Color.WHITE.getRGB());
+                }
             });
         }
-        if (background.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText + (suffixCondition ?  " - " + module.getSuffix() : "")) - 4f), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset), (float) yOffset, bgColor.getMixedColor(moduleList.indexOf(module)).getRGB());
-        if (suffixCondition) {
-            font.drawString(" - " + module.getSuffix(), (float) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(" - " + module.getSuffix()) - 1.75f), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, suffixColor.getFadedColor(), shadow.isToggled());
+
+        if (background.isToggled()) {
+            Gui.drawRect((int) backgroundStartX, (int) (yOffset + backgroundHeight), (int) backgroundEndX, (int) yOffset, bgMainColor.getRGB());
         }
-        font.drawString(moduleText, (float) (sc.getScaledWidth() - xOffset - (float) font.getStringWidth(moduleText + (suffixCondition ?  " - " + module.getSuffix() : "")) - 1.75f), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, fadeTextColor, shadow.isToggled());
-        if (line.isToggled()) Gui.drawRect((int) (sc.getScaledWidth() - xOffset), (int) (yOffset + verticalSpacing.getValue()), (int) (sc.getScaledWidth() - xOffset + 2), (float) yOffset, fadeLineColor.getRGB());
+
+        if (suffixCondition) {
+            String suffixText = " - " + module.getSuffix();
+            float suffixX = (float) (backgroundEndX - font.getStringWidth(suffixText) - 1.75f);
+            font.drawString(suffixText, suffixX, textY, suffixColor.getFadedColor(), shadow.isToggled());
+        }
+
+        font.drawString(moduleText, textX, textY, fadeTextColor, shadow.isToggled());
+
+        if (line.isToggled()) {
+            Gui.drawRect((int) backgroundEndX, (int) (yOffset + backgroundHeight),
+                (int) (backgroundEndX + 2), (int) yOffset, fadeLineColor.getRGB());
+        }
     }
 
-    private void renderLeftUp(double xOffset, double yOffset, Module module, Color fadeBackgroundColor, Color fadeLineColor, Color fadeTextColor, List<Module> moduleList) {
+    private void renderLeftUp(double xOffset, double yOffset, Module module, Color fadeLineColor, Color fadeTextColor, List<Module> moduleList) {
         String moduleText = module.getName();
-
         boolean suffixCondition = suffix.isToggled() && !"".equals(module.getSuffix());
+
+        String fullText = moduleText + (suffixCondition ? " - " + module.getSuffix() : "");
+        float textWidth = (float) font.getStringWidth(fullText);
+
+        float backgroundStartX = (float) xOffset;
+        float backgroundEndX = (float) (xOffset + textWidth + 4f);
+        float textX = (float) (xOffset + 2.5f);
+
+        float backgroundHeight = verticalSpacing.getValue();
+        float textY = (float) (2.5f + yOffset + textYOffset.getValue() - 4.5f + backgroundHeight / 2f);
+
+        int moduleIndex = moduleList.indexOf(module);
+        Color bgShadowColor = bgColorShadow.getMixedColor(moduleIndex);
+        Color bgMainColor = bgColor.getMixedColor(moduleIndex);
 
         if (glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> {
                 if (background.isToggled()) {
-                    Gui.drawRect((int) xOffset, (int) ((float) yOffset + verticalSpacing.getValue()), (int) ((float) font.getStringWidth(moduleText + (suffixCondition ? " - " + module.getSuffix() : "")) + 4 + xOffset), (float) yOffset, bgColorShadow.getMixedColor(moduleList.indexOf(module)).getRGB());
+                    Gui.drawRect((int) backgroundStartX, (int) (yOffset + backgroundHeight), (int) backgroundEndX, (int) yOffset, bgShadowColor.getRGB());
                 } else {
-                    font.drawString(moduleText, (float) (2.5f + xOffset), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, Color.WHITE, shadow.isToggled());
+                    font.drawString(moduleText, textX, textY, Color.WHITE, shadow.isToggled());
                 }
-                if (line.isToggled()) Gui.drawRect((int) (xOffset - 2), (int) ((float) yOffset + verticalSpacing.getValue()), (int) xOffset, (float) yOffset, bgColorShadow.getMixedColor(moduleList.indexOf(module)).getRGB());
+
+                if (line.isToggled()) {
+                    Gui.drawRect((int) (backgroundStartX - 2), (int) (yOffset + backgroundHeight), (int) backgroundStartX, (int) yOffset, bgShadowColor.getRGB());
+                }
             });
         }
+
         if (blur.isToggled()) {
             GaussianBlurUtils.addToDraw(() -> {
-                if (background.isToggled()) Gui.drawRect((int) xOffset, (int) ((float) yOffset + verticalSpacing.getValue()), (int) ((float) font.getStringWidth(moduleText + (suffixCondition ? " - " + module.getSuffix() : "")) + 4 + xOffset), (float) yOffset, Color.WHITE.getRGB());
-                if (line.isToggled()) Gui.drawRect((int) (xOffset - 2), (int) ((float) yOffset + verticalSpacing.getValue()), (int) xOffset, (float) yOffset, Color.WHITE.getRGB());
+                if (background.isToggled()) {
+                    Gui.drawRect((int) backgroundStartX, (int) (yOffset + backgroundHeight), (int) backgroundEndX, (int) yOffset, Color.WHITE.getRGB());
+                }
+
+                if (line.isToggled()) {
+                    Gui.drawRect((int) (backgroundStartX - 2), (int) (yOffset + backgroundHeight), (int) backgroundStartX, (int) yOffset, Color.WHITE.getRGB());
+                }
             });
         }
-        if (background.isToggled()) Gui.drawRect((int) xOffset, (int) ((float) yOffset + verticalSpacing.getValue()), (int) ((float) font.getStringWidth(moduleText + (suffixCondition ? " - " + module.getSuffix() : "")) + 4 + xOffset), (float) yOffset, bgColor.getMixedColor(moduleList.indexOf(module)).getRGB());
-        if (suffixCondition) {
-            font.drawString(" - " + module.getSuffix(), (float) (2.5f + xOffset + font.getStringWidth(moduleText)), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, suffixColor.getFadedColor(), shadow.isToggled());
+
+        if (background.isToggled()) {
+            Gui.drawRect((int) backgroundStartX, (int) (yOffset + backgroundHeight), (int) backgroundEndX, (int) yOffset, bgMainColor.getRGB());
         }
-        font.drawString(moduleText, (float) (2.5f + xOffset), (float) (2.5f + yOffset) + textYOffset.getValue() - 4.5f + verticalSpacing.getValue() / 2f, fadeTextColor, shadow.isToggled());
-        if (line.isToggled()) Gui.drawRect((int) (xOffset - 2), (int) ((float) yOffset + verticalSpacing.getValue()), (int) xOffset, (float) yOffset, fadeLineColor.getRGB());
+
+        if (suffixCondition) {
+            float suffixX = (float) (textX + font.getStringWidth(moduleText));
+            font.drawString(" - " + module.getSuffix(), suffixX, textY, suffixColor.getFadedColor(), shadow.isToggled());
+        }
+
+        font.drawString(moduleText, textX, textY, fadeTextColor, shadow.isToggled());
+
+        if (line.isToggled()) {
+            Gui.drawRect((int) (backgroundStartX - 2), (int) (yOffset + backgroundHeight), (int) backgroundStartX, (int) yOffset, fadeLineColor.getRGB());
+        }
     }
 
     void sort(final List<Module> toSort, final ClientFontRenderer fontToCalcWidth) {

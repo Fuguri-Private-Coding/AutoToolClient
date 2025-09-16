@@ -53,8 +53,8 @@ public class Animation2D {
 
     public Vector2f getDelta() {
         return new Vector2f(
-                (float) (endX - x),
-                (float) (endY - y)
+            endX - x,
+            endY - y
         );
     }
 

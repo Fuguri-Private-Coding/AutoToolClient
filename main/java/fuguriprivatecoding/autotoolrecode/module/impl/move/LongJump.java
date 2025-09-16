@@ -9,7 +9,6 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtil;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -50,30 +49,30 @@ public class LongJump extends Module {
                 if(mc.thePlayer.onGround && stage == 0) {
                     mc.thePlayer.jump();
                     if(!mc.thePlayer.isSprinting()) {
-                        MoveUtil.strafe2(0.5);
-                        MoveUtil.limit2speed(0.4899 + RandomUtils.nextDouble(0.00003, 0.00007));
+                        MoveUtils.strafe2(0.5);
+                        MoveUtils.limit2speed(0.4899 + RandomUtils.nextDouble(0.00003, 0.00007));
                     }
                 }
                 mc.thePlayer.motionY += 0.0034;
-                if(!bool0 && MathUtils.distance(vec0.xCoord, vec0.zCoord, mc.thePlayer.posX, mc.thePlayer.posZ) <= 2.79 && MoveUtil.getSpeed() < 0.27) MoveUtil.limit2speed(0.199);
+                if(!bool0 && MathUtils.distance(vec0.xCoord, vec0.zCoord, mc.thePlayer.posX, mc.thePlayer.posZ) <= 2.79 && MoveUtils.getSpeedNew() < 0.27) MoveUtils.limit2speed(0.199);
                 if(stage >= 2 && MathUtils.distance(vec0.xCoord, vec0.zCoord, mc.thePlayer.posX, mc.thePlayer.posZ) >= 2.71 && !bool2) {
                     double strafe = 0.999;
-                    PacketUtils.sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + MoveUtil.getXT() * strafe, mc.thePlayer.posY + 0.4233, mc.thePlayer.posZ + MoveUtil.getZT() * strafe, false));
+                    PacketUtils.sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + MoveUtils.getXT() * strafe, mc.thePlayer.posY + 0.4233, mc.thePlayer.posZ + MoveUtils.getZT() * strafe, false));
                     bool2 = true;
                 }
                 if(!bool2) stage++;
                 if(bool0) {
                     mc.thePlayer.motionY = (0.42);
                     double strafe = 2.7100000;
-                            if(MoveUtil.getSpeed() > 0.4) strafe = 3.7000;
-                            if(MoveUtil.getSpeed() > 0.5) strafe = 4.6200;
-                            if(MoveUtil.getSpeed() > 0.55) strafe = 4.9000;
-                            if(MoveUtil.getSpeed() > 0.6) strafe = 5.3000;
-                            if(MoveUtil.getSpeed() > 0.65) strafe = 5.8100;
-                            if(MoveUtil.getSpeed() > 0.8) strafe = 6.8000;
-                            if(MoveUtil.getSpeed() > 0.9) strafe = 7.8000;
-                            if(MoveUtil.getSpeed() > 1.0) strafe = 8.8000;
-                    MoveUtil.strafe2(strafe);
+                            if(MoveUtils.getSpeedNew() > 0.4) strafe = 3.7000;
+                            if(MoveUtils.getSpeedNew() > 0.5) strafe = 4.6200;
+                            if(MoveUtils.getSpeedNew() > 0.55) strafe = 4.9000;
+                            if(MoveUtils.getSpeedNew() > 0.6) strafe = 5.3000;
+                            if(MoveUtils.getSpeedNew() > 0.65) strafe = 5.8100;
+                            if(MoveUtils.getSpeedNew() > 0.8) strafe = 6.8000;
+                            if(MoveUtils.getSpeedNew() > 0.9) strafe = 7.8000;
+                            if(MoveUtils.getSpeedNew() > 1.0) strafe = 8.8000;
+                    MoveUtils.strafe2(strafe);
                     this.setToggled(false);
                 }
             }

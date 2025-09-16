@@ -23,10 +23,7 @@ public class ClickGui extends Module {
 	public final ColorSetting color = new ColorSetting("Color", this);
 	public final ColorSetting colorShadow = new ColorSetting("Color Shadow", this);
 
-	ImGuiScreen imGuiScreen = new ImGuiScreen();
-
-	public ClickGui() {
-	}
+//	ImGuiScreen imGuiScreen = new ImGuiScreen();
 
 	@Override
 	public void onEnable() {

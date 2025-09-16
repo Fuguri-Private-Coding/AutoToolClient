@@ -2,11 +2,23 @@ package net.minecraft.client.gui;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+
+import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
+import de.florianmichael.viamcp.ViaMCP;
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.ServerJoinEvent;
+import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
 import fuguriprivatecoding.autotoolrecode.guis.multiplayer.GuiViaVersion;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
@@ -18,23 +30,24 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 
 public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
-    private static final Logger logger = LogManager.getLogger();
-    private final OldServerPinger oldServerPinger = new OldServerPinger();
-    private GuiScreen parentScreen;
-    private ServerSelectionList serverListSelector;
-    private ServerList savedServerList;
-    private GuiButton btnEditServer;
-    private GuiButton btnSelectServer;
-    private GuiButton btnDeleteServer;
-    private boolean deletingServer;
-    private boolean addingServer;
-    private boolean editingServer;
-    private boolean directConnect;
-    private String hoveringText;
-    private ServerData selectedServer;
-    private LanServerDetector.LanServerList lanServerList;
-    private LanServerDetector.ThreadLanServerFind lanServerDetector;
-    private boolean initialized;
+    public static final Logger logger = LogManager.getLogger();
+    public final OldServerPinger oldServerPinger = new OldServerPinger();
+    public GuiScreen parentScreen;
+    public ServerSelectionList serverListSelector;
+    public ServerList savedServerList;
+    public GuiButton btnEditServer;
+    public GuiButton btnSelectServer;
+    public GuiButton btnDeleteServer;
+    public boolean deletingServer;
+    public boolean addingServer;
+    public boolean editingServer;
+    public boolean directConnect;
+    public String hoveringText;
+    public ServerData selectedServer;
+    public LanServerDetector.LanServerList lanServerList;
+    public LanServerDetector.ThreadLanServerFind lanServerDetector;
+    public boolean initialized;
+    EasingAnimation alphaAnim = new EasingAnimation();
 
     public GuiMultiplayer(GuiScreen parentScreen) {
         this.parentScreen = parentScreen;
@@ -72,22 +85,14 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
     }
 
     public void createButtons() {
-        this.buttonList.add(this.btnEditServer = new GuiButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit", new Object[0])));
-
-        this.buttonList.add(this.btnDeleteServer = new GuiButton(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete", new Object[0])));
-
-        this.buttonList.add(this.btnSelectServer = new GuiButton(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select", new Object[0])));
-
-        this.buttonList.add(new GuiButton(4, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("selectServer.direct", new Object[0])));
-
-        this.buttonList.add(new GuiButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add", new Object[0])));
-
-        this.buttonList.add(new GuiButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh", new Object[0])));
-
-        this.buttonList.add(new GuiButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel", new Object[0])));
-
-        this.buttonList.add(new GuiButton(69, 5, 5, 90, 20, "Version"));
-
+        this.buttonList.add(this.btnEditServer = new GuiClientButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit")));
+        this.buttonList.add(this.btnDeleteServer = new GuiClientButton(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete")));
+        this.buttonList.add(this.btnSelectServer = new GuiClientButton(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select")));
+        this.buttonList.add(new GuiClientButton(4, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("selectServer.direct")));
+        this.buttonList.add(new GuiClientButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add")));
+        this.buttonList.add(new GuiClientButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh")));
+        this.buttonList.add(new GuiClientButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel")));
+        this.buttonList.add(new GuiClientButton(69, 5, 5, 90, 20, "Version"));
         this.selectServer(this.serverListSelector.func_148193_k());
     }
 
@@ -105,6 +110,8 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
 
     public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
+
+        alphaAnim.setEnd(0f);
 
         if (this.lanServerDetector != null) {
             this.lanServerDetector.interrupt();
@@ -274,14 +281,29 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.hoveringText = null;
-        this.drawDefaultBackground();
-        this.serverListSelector.drawScreen(mouseX, mouseY, partialTicks);
-        this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.title", new Object[0]), this.width / 2, 20, 16777215);
+        BackgroundUtils.run();
+
+        alphaAnim.update(3f, Easing.IN_OUT_QUAD);
+        alphaAnim.setEnd(1f);
+
+        ScaledResolution sc = new ScaledResolution(mc);
+        ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFProRounded");
+        AlphaUtils.startWrite();
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 155, 30, 310, sc.getScaledHeight() - 87, 10, new Color(0,0,0,0.7f));
+        ScissorUtils.enableScissor();
+        ScissorUtils.scissor(new ScaledResolution(mc), 0, 35, sc.getScaledWidth(), sc.getScaledHeight() - 95);
+        this.serverListSelector.drawScreen(mouseX, mouseY, partialTicks, false);
+        ScissorUtils.disableScissor();
+
+        fontRenderer.drawCenteredString(I18n.format("multiplayer.title"), this.width / 2f, 15, Color.WHITE);
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         if (this.hoveringText != null) {
             this.drawHoveringText(Lists.newArrayList(Splitter.on("\n").split(this.hoveringText)), mouseX, mouseY);
         }
+
+        AlphaUtils.endWrite();
+        AlphaUtils.draw(alphaAnim.getValue());
     }
 
     public void connectToSelected() {

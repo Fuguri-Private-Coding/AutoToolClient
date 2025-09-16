@@ -190,7 +190,7 @@ import org.lwjgl.util.glu.GLU;
 
 public class Minecraft implements IThreadListener, IPlayerUsage {
     private static final Logger logger = LogManager.getLogger();
-    private static final ResourceLocation locationMojangPng = new ResourceLocation("minecraft", "hackclient/splashscreen/splash.png");
+    public static ResourceLocation locationMojangPng = new ResourceLocation("minecraft", "hackclient/splashscreen/splash.png");
     public static final boolean isRunningOnMac = Util.getOSType() == Util.EnumOS.OSX;
     public static byte[] memoryReserve = new byte[10485760];
     private static final List<DisplayMode> macDisplayModes = Lists.newArrayList(new DisplayMode[]{new DisplayMode(2560, 1600), new DisplayMode(2880, 1800)});
@@ -602,7 +602,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     }
 
     public void displayCrashReport(CrashReport crashReportIn) {
-        Client.INST.disconnect();
+        Client.INST.disconnectServer();
         File file1 = new File(getMinecraft().mcDataDir, "crash-reports");
         File file2 = new File(file1, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
         Bootstrap.printToSYSOUT(crashReportIn.getCompleteReport());
@@ -711,7 +711,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         this.displayHeight = displaymode.getHeight();
     }
 
-    private void drawSplashScreen(TextureManager textureManagerInstance) {
+    public void drawSplashScreen(TextureManager textureManagerInstance) {
         ScaledResolution scaledresolution = new ScaledResolution(this);
         float i = scaledresolution.getScaleFactor();
         Framebuffer framebuffer = new Framebuffer((int) (scaledresolution.getScaledWidth() * i), (int) (scaledresolution.getScaledHeight() * i), true);

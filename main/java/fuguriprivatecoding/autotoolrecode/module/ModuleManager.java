@@ -101,7 +101,6 @@ public class ModuleManager {
 				new AutoLeave(),
 				new Effects(),
 				new GuiMove(),
-				new FindHoles(),
 				new ClientSettings(),
 				new ScoreBoard(),
 				new IRC(),
@@ -136,6 +135,6 @@ public class ModuleManager {
     }
 
 	public List<Module> getEnabledModules() {
-		return modules.stream().filter(module -> !module.isHide() && module.isToggled() || (!module.isHide() && !module.toggled && module.animation.isAnimating())).toList();
+		return modules.stream().filter(module -> !module.isHide() && module.isToggled() || (!module.isHide() && !module.toggled && module.arrayListAnimation.isAnimating())).toList();
 	}
 }

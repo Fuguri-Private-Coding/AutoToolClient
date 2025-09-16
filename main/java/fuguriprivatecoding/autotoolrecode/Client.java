@@ -1,51 +1,43 @@
 package fuguriprivatecoding.autotoolrecode;
-
-import Effekseer.render.RenderEffects;
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
-import de.florianmichael.viamcp.ViaMCP;
-import Effekseer.installer.LoadNatives;
-import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiScreen;
-import fuguriprivatecoding.autotoolrecode.guis.config.ConfigGuiScreen;
-import fuguriprivatecoding.autotoolrecode.config.ConfigManager;
-import fuguriprivatecoding.autotoolrecode.command.CommandManager;
-import fuguriprivatecoding.autotoolrecode.deeplearn.DeepLearningEngine;
+import fuguriprivatecoding.autotoolrecode.guis.altmanager.*;
+import fuguriprivatecoding.autotoolrecode.guis.config.*;
+import fuguriprivatecoding.autotoolrecode.config.*;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
+import fuguriprivatecoding.autotoolrecode.utils.sound.*;
+import fuguriprivatecoding.autotoolrecode.command.*;
 import fuguriprivatecoding.autotoolrecode.event.*;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.guis.clickgui.*;
 import fuguriprivatecoding.autotoolrecode.guis.console.*;
-import fuguriprivatecoding.autotoolrecode.guis.imgui.ClickGuiWindow;
-import fuguriprivatecoding.autotoolrecode.guis.imgui.ImGuiManager;
-import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
-import fuguriprivatecoding.autotoolrecode.hottext.HotTextGui;
-import fuguriprivatecoding.autotoolrecode.hottext.HotTextManager;
-import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
+import fuguriprivatecoding.autotoolrecode.guis.imgui.*;
+import fuguriprivatecoding.autotoolrecode.guis.main.*;
+import fuguriprivatecoding.autotoolrecode.hottext.*;
+import fuguriprivatecoding.autotoolrecode.irc.*;
 import fuguriprivatecoding.autotoolrecode.managers.*;
-import fuguriprivatecoding.autotoolrecode.module.Module;
-import fuguriprivatecoding.autotoolrecode.module.ModuleManager;
-import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
+import fuguriprivatecoding.autotoolrecode.module.*;
 import fuguriprivatecoding.autotoolrecode.utils.font.*;
-import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
-import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
 import fuguriprivatecoding.autotoolrecode.utils.discord.*;
 import fuguriprivatecoding.autotoolrecode.utils.file.*;
-import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.packet.*;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
-import fuguriprivatecoding.autotoolrecode.utils.sound.SoundsManager;
 import fuguriprivatecoding.autotoolrecode.utils.version.ClientVersion;
+import fuguriprivatecoding.autotoolrecode.deeplearn.DeepLearningEngine;
+import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
+import fuguriprivatecoding.autotoolrecode.module.Module;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.lwjgl.opengl.Display;
+import Effekseer.render.RenderEffects;
+import de.florianmichael.viamcp.ViaMCP;
+import Effekseer.installer.LoadNatives;
 import lombok.Getter;
 import lombok.Setter;
-
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 @Getter
 public enum Client implements Imports {
@@ -59,7 +51,6 @@ public enum Client implements Imports {
 
 	File clientDirectory;
 	File modelsDirectory;
-
 	File soundsDirectory;
 
 	ConsoleGuiScreen console;
@@ -74,20 +65,21 @@ public enum Client implements Imports {
 	ClickManager clickManager;
 	DeepLearningEngine deepLearningEngine;
 	HotTextManager hotTextManager;
+
 	ClickGuiScreen clickGui;
 	ConfigGuiScreen configGuiScreen;
 	AltManagerGuiScreen altManagerGui;
 	HotTextGui hotTextGui;
 	GuiClientMainMenu mainMenu;
+
 	LoadNatives loadNatives;
 	RenderEffects renderEffects;
 	NameGenerator generator;
-	@Setter
-	Discord discord;
-	@Setter
-	ClientIRC irc;
 
-	FontsRepository fonts;
+	@Setter Discord discord;
+	@Setter ClientIRC irc;
+
+	Fonts fonts;
 
 	ClickGuiWindow clickGuiWindow;
 	ImGuiManager imGuiManager;
@@ -104,7 +96,7 @@ public enum Client implements Imports {
 		Display.setTitle(getFullName());
 
 		updateClient();
-		check();
+		connectClient();
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");
@@ -117,9 +109,10 @@ public enum Client implements Imports {
 
 		console = new ConsoleGuiScreen();
 
-		fonts = new FontsRepository();
+		fonts = new Fonts();
 
 		discord = new Discord();
+
 		combatManager = new CombatManager();
 		friendManager = new FriendManager();
 		soundsManager = new SoundsManager();
@@ -145,7 +138,9 @@ public enum Client implements Imports {
 		hotTextGui = new HotTextGui();
 		hotTextManager = new HotTextManager();
 
-		Client.INST.getConfigManager().loadHotKeys();
+		configManager.loadHotKeys();
+
+		Client.INST.getHotTextManager().updateHotKeys();
 
 		commandManager = new CommandManager();
 		clickManager = new ClickManager();
@@ -158,9 +153,6 @@ public enum Client implements Imports {
         new PlayerManager();
 
 		ViaMCP.create();
-		ViaMCP.INSTANCE.initAsyncSlider();
-//		imGuiManager = new ImGuiManager();
-//		imGuiManager.init();
 
 		clickGuiWindow = new ClickGuiWindow();
 
@@ -179,14 +171,11 @@ public enum Client implements Imports {
 
 		configManager.loadModulesFromConfig();
 
-		if (discord.getId() != null) ClientIRC.setDiscordProfile(Client.INST.getDiscord().getId());
-
 		starting = false;
 
 		double elapsedNanos = System.nanoTime() - start;
 		console.log("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
 	}
-
 
 	private void updateClient() {
 		for (Message message : irc.getClientVersionChannel().getIterableHistory().stream().toList()) {
@@ -212,26 +201,25 @@ public enum Client implements Imports {
 
 	@EventTarget
 	public void onEvent(Event event) {
-		if (event instanceof ServerJoinEvent && moduleManager.getModule(IRC.class).isToggled()) {
-			connect();
-		}
+		if (event instanceof ServerJoinEvent && moduleManager.getModule(IRC.class).isToggled()) connectServer();
+		if (event instanceof KeyEvent keyEvent) handleKeyEventForModules(keyEvent);
 		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
 			lastTime = System.currentTimeMillis();
 			new Thread(HWIDUtils::check).start();
 		}
-		if (event instanceof KeyEvent keyEvent) {
-			for (Module module : moduleManager.getModules()) {
-				if (module.getKey() == keyEvent.getKey()) {
-					module.toggle();
-				}
-			}
+	}
+
+	private void handleKeyEventForModules(KeyEvent keyEvent) {
+		for (Module module : moduleManager.getModules()) {
+			if (module.getKey() == keyEvent.getKey()) module.toggle();
 		}
 	}
 
-	public void check() {
-		irc.getOnlineChannel().sendMessage(
-				Client.INST.getProfile().toString() + " " + version.toString()
-		).queue(sendMessage -> ClientIRC.myOnlineID = sendMessage.getIdLong());
+	public void connectClient() {
+		MessageChannel onlineChannel = irc.getOnlineChannel();
+		String messageContent = Client.INST.getProfile().toString() + " " + version.toString();
+
+		onlineChannel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.myOnlineID = sendMessage.getIdLong());
 	}
 
 	public void disconnectClient() {
@@ -239,22 +227,37 @@ public enum Client implements Imports {
 		if (ClientIRC.myID != -1) irc.getServerChannel().deleteMessageById(ClientIRC.myID).queue();
 	}
 
-	public void disconnect() {
+	public void disconnectServer() {
 		if (ClientIRC.myID != -1) irc.getServerChannel().deleteMessageById(ClientIRC.myID).queue();
 	}
 
-	public void connect() {
+	public void connectServer() {
 		if (ClientIRC.myID != -1) {
-			Client.INST.getIrc().getServerChannel().deleteMessageById(ClientIRC.myID).queue(_ -> {
-				ClientIRC.myID = -1;
-				Client.INST.getIrc().getServerChannel().sendMessage(
-						mc.getSession().getUsername() + " " + Client.INST.getProfile()
-				).queue(sendMessage -> ClientIRC.myID = sendMessage.getIdLong());
-			});
+			updateExistingServerConnection();
 		} else {
-			Client.INST.getIrc().getServerChannel().sendMessage(
-					mc.getSession().getUsername() + " " + Client.INST.getProfile()
-			).queue(sendMessage -> ClientIRC.myID = sendMessage.getIdLong());
+			createNewServerConnection();
 		}
+	}
+
+	private void updateExistingServerConnection() {
+		MessageChannel serverChannel = Client.INST.getIrc().getServerChannel();
+
+		serverChannel.deleteMessageById(ClientIRC.myID).queue(_ -> {
+			ClientIRC.myID = -1;
+			sendServerConnectionMessage(serverChannel);
+		});
+	}
+
+	private void createNewServerConnection() {
+		MessageChannel serverChannel = Client.INST.getIrc().getServerChannel();
+		sendServerConnectionMessage(serverChannel);
+	}
+
+	private void sendServerConnectionMessage(MessageChannel channel) {
+		String username = mc.getSession().getUsername();
+		Profile profile = Client.INST.getProfile();
+		String messageContent = username + " " + profile;
+
+		channel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.myID = sendMessage.getIdLong());
 	}
 }

@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.utils.matrix;
+package fuguriprivatecoding.autotoolrecode.utils.projection;
 
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.Minecraft;

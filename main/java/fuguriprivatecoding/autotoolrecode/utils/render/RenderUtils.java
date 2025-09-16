@@ -13,21 +13,12 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-
 import java.awt.*;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public class RenderUtils implements Imports {
-
-    public static final FloatBuffer MODEL_MATRIX_BUFFER = BufferUtils.createFloatBuffer(16);
-    public static final FloatBuffer PROJECTION_MATRIX_BUFFER = BufferUtils.createFloatBuffer(16);
-    public static final IntBuffer VIEWPORT_BUFFER = BufferUtils.createIntBuffer(16);
-    public static final FloatBuffer SCREEN_COORDS_BUFFER = BufferUtils.createFloatBuffer(3);
 
     public static void start3D() {
         GlStateManager.disableTexture2D();
@@ -88,22 +79,22 @@ public class RenderUtils implements Imports {
             glColor(n7);
         }
         for (int n13 = 0; n13 <= 90; n13 += 3) {
-            final double n14 = (double) (n13 * 0.017453292f);
+            final double n14 = n13 * 0.017453292f;
             GL11.glVertex2d((double) (n + n5) + Math.sin(n14) * n5 * -1.0, (double) (n2 + n5) + Math.cos(n14) * n5 * -1.0);
         }
         for (int n15 = 90; n15 <= 180; n15 += 3) {
-            final double n16 = (double) (n15 * 0.017453292f);
+            final double n16 = n15 * 0.017453292f;
             GL11.glVertex2d((double) (n + n5) + Math.sin(n16) * n5 * -1.0, (double) (n4 - n5) + Math.cos(n16) * n5 * -1.0);
         }
         if (n8 != 0) {
             glColor(n8);
         }
         for (int n17 = 0; n17 <= 90; n17 += 3) {
-            final double n18 = (double) (n17 * 0.017453292f);
+            final double n18 = n17 * 0.017453292f;
             GL11.glVertex2d((double) (n3 - n5) + Math.sin(n18) * n5, (double) (n4 - n5) + Math.cos(n18) * n5);
         }
         for (int n19 = 90; n19 <= 180; n19 += 3) {
-            final double n20 = (double) (n19 * 0.017453292f);
+            final double n20 = n19 * 0.017453292f;
             GL11.glVertex2d((double) (n3 - n5) + Math.sin(n20) * n5, (double) (n2 + n5) + Math.cos(n20) * n5);
         }
         GL11.glEnd();
@@ -531,16 +522,14 @@ public class RenderUtils implements Imports {
         drawImage(image, x,y,width,height,false);
     }
 
-    public static void drawImage(ResourceLocation image, int x, int y, int width, int height, boolean resetColor) {
+    public static void drawImage(ResourceLocation image, float x, float y, float width, float height, boolean resetColor) {
         GlStateManager.disableDepth();
         GlStateManager.enableBlend();
         GlStateManager.depthMask(false);
         GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
         if (!resetColor) ColorUtils.resetColor();
         mc.getTextureManager().bindTexture(image);
-        Gui.drawModalRectWithCustomSizedTexture(
-                x, y, 0f, 0f, width, height, width, height
-        );
+        Gui.drawScaledCustomSizeModalRect(x, y, 0f, 0f, width, height, width, height, width, height);
         GlStateManager.depthMask(true);
         GlStateManager.disableBlend();
         GlStateManager.enableDepth();

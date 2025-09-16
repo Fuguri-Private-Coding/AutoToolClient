@@ -370,17 +370,7 @@ public class Scaffold extends Module {
             positionHashMap.put(i, mouses);
         }
 
-
-
-        List<Float> pitches = new ArrayList<>(positionHashMap.keySet());
-
-        pitches.sort(Comparator.comparingDouble(pitch -> Math.abs(Rot.getServerRotation().getPitch()) - pitch));
-        if (!getSafeValue() && rotMode.getMode().equalsIgnoreCase("GodBridge")) {
-            mouse = positionHashMap.get(pitches.getFirst());
-        }
-        List<MovingObjectPosition> mousesse = new ArrayList<>(positionHashMap.values());
-
-        if (mousesse.getFirst().sideHit == EnumFacing.UP) {
+        if (positionHashMap.isEmpty()) {
             return switch (pitchSelection.getMode()) {
                 case "Nearest" -> lastPitch;
                 case "Lowest" -> 80;
@@ -388,6 +378,13 @@ public class Scaffold extends Module {
                 case "Mid" -> 78;
                 default -> Rot.getServerRotation().getPitch();
             };
+        }
+
+        List<Float> pitches = new ArrayList<>(positionHashMap.keySet());
+
+        pitches.sort(Comparator.comparingDouble(pitch -> Math.abs(Rot.getServerRotation().getPitch()) - pitch));
+        if (!getSafeValue() && rotMode.getMode().equalsIgnoreCase("GodBridge")) {
+            mouse = positionHashMap.get(pitches.getFirst());
         }
 
         if (pitchSelection.getMode().equalsIgnoreCase("Nearest")) {

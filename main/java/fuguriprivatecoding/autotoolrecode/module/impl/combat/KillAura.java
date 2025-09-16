@@ -38,47 +38,47 @@ import java.util.function.BooleanSupplier;
 public class KillAura extends Module {
 
     final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 8, 6, 0.1f);
-    final FloatSetting rotateDistance = new FloatSetting("RotateDistance", this, 3,8,6,0.1f);
+    final FloatSetting rotateDistance = new FloatSetting("RotateDistance", this, 3, 8, 6, 0.1f);
     final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
 
     final MultiMode targets = new MultiMode("Targets", this)
-            .addModes("Players","Mobs","Animals","Villagers");
+        .addModes("Players", "Mobs", "Animals", "Villagers");
 
     final Mode sortType = new Mode("SortType", this)
-            .addModes("Distance", "FOV", "HurtTime", "Switch")
-            .setMode("FOV");
+        .addModes("Distance", "FOV", "HurtTime", "Switch")
+        .setMode("FOV");
 
     final Mode hitVec = new Mode("HitVec", this)
-            .addModes("Best", "Nearest", "Head", "Body")
-            .setMode("Best");
+        .addModes("Best", "Nearest", "Head", "Body")
+        .setMode("Best");
 
     final BooleanSupplier hitBoxSizeVisible = () -> hitVec.getMode().equalsIgnoreCase("Best") || hitVec.getMode().equalsIgnoreCase("Nearest");
     final IntegerSetting horizontalHitBoxSize = new IntegerSetting("HorizontalHitBoxSize", this, hitBoxSizeVisible, 1, 100, 100);
     final IntegerSetting verticalHitBoxSize = new IntegerSetting("VerticalHitBoxSize", this, hitBoxSizeVisible, 1, 100, 100);
 
-    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
-    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
+    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0, 180, 90, 1);
+    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0, 180, 90, 1);
 
     final CheckBox gcd = new CheckBox("GCD (FIX)", this);
 
     final Mode smoothMode = new Mode("SmoothMode", this)
-            .addModes("Linear", "AIModel")
-            .setMode("Linear");
+        .addModes("Linear", "AIModel")
+        .setMode("Linear");
 
     BooleanSupplier linearVisible = () -> smoothMode.getMode().equalsIgnoreCase("Linear");
 
-    DoubleSlider mixDelta = new DoubleSlider("Mix Delta", this, 0,1,0.7, 0.1f);
+    DoubleSlider mixDelta = new DoubleSlider("Mix Delta", this, 0, 1, 0.7, 0.1f);
 
     CheckBox reactionTimeWithAnimation = new CheckBox("Reaction Time With Animation", this, linearVisible, false);
     final IntegerSetting rotationDuration = new IntegerSetting("Rotation Duration", this, () -> linearVisible.getAsBoolean() && reactionTimeWithAnimation.isToggled(), 1, 2000, 600);
 
     CheckBox basicRandomize = new CheckBox("Basic Randomize", this, linearVisible, false);
-    FloatSetting randomizeStrength = new FloatSetting("Randomize Strength", this, () -> basicRandomize.isToggled() && linearVisible.getAsBoolean(), 0, 20,5,0.1f);
+    FloatSetting randomizeStrength = new FloatSetting("Randomize Strength", this, () -> basicRandomize.isToggled() && linearVisible.getAsBoolean(), 0, 20, 5, 0.1f);
 
     final FloatSetting linearSmoothStrength = new FloatSetting(
-            "LinearSmoothStrength", this,
-            () -> smoothMode.getMode().equalsIgnoreCase("Linear"),
-            1, 5, 1.5f, 0.1f
+        "LinearSmoothStrength", this,
+        () -> smoothMode.getMode().equalsIgnoreCase("Linear"),
+        1, 5, 1.5f, 0.1f
     );
 
     final BooleanSupplier modelVisible = () -> smoothMode.getMode().equalsIgnoreCase("AIModel");
@@ -94,11 +94,11 @@ public class KillAura extends Module {
 
     final CheckBox lockView = new CheckBox("LockView", this);
 
-    DoubleSlider CPS = new DoubleSlider("CPS", this, 1,80, 16,1);
+    DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
 
     final Mode moveFix = new Mode("MoveFix", this)
-            .addModes("OFF", "Legit", "Silent", "Target")
-            .setMode("Silent");
+        .addModes("OFF", "Legit", "Silent", "Target")
+        .setMode("Silent");
 
     final StopWatch clickTimer = new StopWatch();
     private long delay;
@@ -159,8 +159,8 @@ public class KillAura extends Module {
                 Rot delta = RotUtils.getDelta(lr, needRotation);
 
                 Rot speed = new Rot(
-                        yawSpeed.getRandomizedIntValue(),
-                        pitchSpeed.getRandomizedIntValue()
+                    yawSpeed.getRandomizedIntValue(),
+                    pitchSpeed.getRandomizedIntValue()
                 );
 
                 RotUtils.limitDelta(delta, speed);
@@ -177,8 +177,8 @@ public class KillAura extends Module {
                             }
 
                             needRotation = new Rot(
-                                    startTest.getYaw() + MathHelper.wrapDegree(needRotation.getYaw() - startTest.getYaw()) * (float) interpolation.get(),
-                                    startTest.getPitch() + (needRotation.getPitch() - startTest.getPitch()) * (float) interpolation.get()
+                                startTest.getYaw() + MathHelper.wrapDegree(needRotation.getYaw() - startTest.getYaw()) * (float) interpolation.get(),
+                                startTest.getPitch() + (needRotation.getPitch() - startTest.getPitch()) * (float) interpolation.get()
                             );
 
                             delta = RotUtils.getDelta(lr, needRotation);
@@ -186,8 +186,8 @@ public class KillAura extends Module {
 
                         if (basicRandomize.isToggled()) {
                             Rot rot = new Rot(
-                                    needRotation.getYaw() - RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
-                                    needRotation.getPitch() - RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
+                                needRotation.getYaw() - RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
+                                needRotation.getPitch() - RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
                             );
 
                             delta = RotUtils.getDelta(lr, rot);
@@ -206,9 +206,9 @@ public class KillAura extends Module {
                             Rot targetRot = lr.add(delta);
 
                             Rot aiRotation = AIRotationSmooth.compute(
-                                    lr, targetRot, target,
-                                    yawMultiplier.getValue(), pitchMultiplier.getValue(),
-                                    correction.isToggled(), yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
+                                lr, targetRot, target,
+                                yawMultiplier.getValue(), pitchMultiplier.getValue(),
+                                correction.isToggled(), yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
                             );
 
                             delta = RotUtils.getDelta(lr, aiRotation);
@@ -251,8 +251,10 @@ public class KillAura extends Module {
             }
             if (event instanceof MoveEvent e) {
                 switch (moveFix.getMode()) {
-                    case "Silent" -> MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
-                    case "Target" -> MoveUtils.moveFix(e, RotUtils.getRotationToPoint(target.getPositionVector()).getYaw());
+                    case "Silent" ->
+                        MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
+                    case "Target" ->
+                        MoveUtils.moveFix(e, RotUtils.getRotationToPoint(target.getPositionVector()).getYaw());
                 }
             }
         }
@@ -265,18 +267,18 @@ public class KillAura extends Module {
         double verticalPercent = verticalHitBoxSize.getValue() / 200d;
 
         Vec3 center = new Vec3(
-                (box.maxX + box.minX) / 2,
-                (box.maxY + box.minY) / 2,
-                (box.maxZ + box.minZ) / 2
+            (box.maxX + box.minX) / 2,
+            (box.maxY + box.minY) / 2,
+            (box.maxZ + box.minZ) / 2
         );
 
         box = new AxisAlignedBB(
-                center.xCoord - box.getLengthX() * horizontalPercent,
-                center.yCoord - box.getLengthY() * verticalPercent,
-                center.zCoord - box.getLengthZ() * horizontalPercent,
-                center.xCoord + box.getLengthX() * horizontalPercent,
-                center.yCoord + box.getLengthY() * verticalPercent,
-                center.zCoord + box.getLengthZ() * horizontalPercent
+            center.xCoord - box.getLengthX() * horizontalPercent,
+            center.yCoord - box.getLengthY() * verticalPercent,
+            center.zCoord - box.getLengthZ() * horizontalPercent,
+            center.xCoord + box.getLengthX() * horizontalPercent,
+            center.yCoord + box.getLengthY() * verticalPercent,
+            center.zCoord + box.getLengthZ() * horizontalPercent
         );
         return box;
     }
@@ -307,7 +309,8 @@ public class KillAura extends Module {
                 case EntityArmorStand _ -> {
                     continue;
                 }
-                default -> {}
+                default -> {
+                }
             }
 
             double value = Double.MAX_VALUE;

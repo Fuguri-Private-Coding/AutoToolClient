@@ -1,19 +1,18 @@
 package fuguriprivatecoding.autotoolrecode.guis.main;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
+import fuguriprivatecoding.autotoolrecode.guis.multiplayer.MultiPlayerGuiScreen;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
-import fuguriprivatecoding.autotoolrecode.utils.resource.ResourceUtils;
 import net.minecraft.client.gui.*;
 import net.minecraft.util.ResourceLocation;
+
 import java.awt.*;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class GuiClientMainMenu extends GuiScreen {
 
@@ -23,12 +22,7 @@ public class GuiClientMainMenu extends GuiScreen {
 
     ResourceLocation exitLogo = new ResourceLocation("minecraft", "hackclient/mainmenu/exit.png");
 
-    private InputStream avatarStream;
-    private InputStream bannerStream;
-    private ResourceLocation avatarTexture;
-    private ResourceLocation bannerTexture;
-
-    private boolean initialized = false;
+    EasingAnimation alphaAnim = new EasingAnimation();
 
     @Override
     public void initGui() {
@@ -37,75 +31,34 @@ public class GuiClientMainMenu extends GuiScreen {
         buttonList.add(new GuiClientButton(1, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25, "MultiPlayer"));
         buttonList.add(new GuiClientButton(2, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25 + 25, "MinecraftSetting"));
         buttonList.add(new GuiClientButton(3, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25 + 25 + 25, "AltManager"));
-        buttonList.add(new GuiClientButton(4, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25 + 25 + 25 + 25, "UpdateProfile"));
+//        buttonList.add(new GuiClientButton(4, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25 + 25 + 25 + 25, "Multiplayer2"));
         buttonList.add(new GuiClientImageButtom(5, sc.getScaledWidth() - 15 - 5, 5, 15,15, exitLogo));
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         final ScaledResolution sc = new ScaledResolution(mc);
-        final ClientFontRenderer font = Client.INST.getFonts().fonts.get("MuseoSans");
+        final ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
         final String userText = "Hello, " + Client.INST.getProfile().getUsername() + " welcome to AutoTool!";
+
+        alphaAnim.update(3, Easing.IN_OUT_QUAD);
+        alphaAnim.setEnd(1);
+
         BackgroundUtils.run();
 
-        if (initialized) {
-            font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f - 45 + 2, Color.WHITE);
-            renderDiscordProfile(sc, font);
-        } else if (ClientIRC.profile != null) {
-            updateImages();
-            font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f + 2, Color.WHITE);
-        }
+        AlphaUtils.startWrite();
 
+        font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f + 2, Color.WHITE);
         super.drawScreen(mouseX, mouseY, partialTicks);
+
+        AlphaUtils.endWrite();
+        AlphaUtils.draw(alphaAnim.getValue());
     }
 
-    private void renderDiscordProfile(ScaledResolution sc, ClientFontRenderer font) {
-        Color transpent = new Color(0,0,0,0);
-        Color profileColor = ClientIRC.profile.getProfileColor() != null ? ClientIRC.profile.getProfileColor() : Color.black;
-        Color serverRoleColor = ClientIRC.profile.getServerRoleColor() != null ? ClientIRC.profile.getServerRoleColor() : Color.black;
-
-        if (bannerTexture != null) {
-            RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 101, sc.getScaledHeight() / 2f - 31, 202, 52, 5f, transpent.getRGB(), serverRoleColor.getRGB(), profileColor.getRGB());
-            StencilUtils.renderStencil(
-                    () -> RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 100, sc.getScaledHeight() / 2f - 30, 200, 50, 1f, Color.BLACK),
-                    () -> ResourceUtils.drawDiscord(bannerTexture, (int) (sc.getScaledWidth() / 2f - 100), (int) (sc.getScaledHeight() / 2f - 30), 200, 50)
-            );
-        } else {
-            RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 101, sc.getScaledHeight() / 2f - 31, 202, 52, 1f, transpent, serverRoleColor, 2f);
-            RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 101, sc.getScaledHeight() / 2f - 31, 202, 52, 5f, transpent.getRGB(), serverRoleColor.getRGB(), profileColor.getRGB());
-        }
-
-        if (avatarTexture != null) {
-            StencilUtils.renderStencil(
-                    () -> RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 95, sc.getScaledHeight() / 2f - 25, 40, 40, 22f, new Color(0,0,0,255).getRGB(), serverRoleColor.getRGB(), profileColor.getRGB()),
-                    () -> ResourceUtils.drawDiscord(avatarTexture, sc.getScaledWidth() / 2 - 95, sc.getScaledHeight() / 2 - 25, 40, 40)
-            );
-        }
-
-        RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 95, sc.getScaledHeight() / 2f - 25, 40, 40, 20f, new Color(0,0,0,0).getRGB(), profileColor.getRGB(), serverRoleColor.getRGB());
-        if (ClientIRC.profile.getUserName() != null) font.drawString(ClientIRC.profile.getUserName(), sc.getScaledWidth() / 2f - 45, sc.getScaledHeight() / 2f - 10f + 2, Color.WHITE, true);
-    }
-
-    private void updateImages() {
-        if (ClientIRC.profile == null || initialized) return;
-
-        if (avatarStream == null && ClientIRC.profile.getAvatar() != null) {
-            avatarStream = ClientIRC.profile.getAvatar();
-        }
-
-        if (avatarStream != null && avatarTexture == null) {
-            avatarTexture = ResourceUtils.loadTextureFromStream(avatarStream, "discord_avatar");
-        }
-
-        if (bannerStream == null && ClientIRC.profile.getBanner() != null) {
-            bannerStream = ClientIRC.profile.getBanner();
-        }
-
-        if (bannerStream != null && bannerTexture == null) {
-            bannerTexture = ResourceUtils.loadTextureFromStream(bannerStream, "discord_banner");
-        }
-
-        initialized = ClientIRC.profile.getAvatar() != null ? avatarTexture != null : ClientIRC.profile.getBanner() != null && bannerTexture != null;
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        alphaAnim.setValue(0f);
     }
 
     @Override
@@ -118,7 +71,7 @@ public class GuiClientMainMenu extends GuiScreen {
             case 1 -> mc.displayGuiScreen(new GuiMultiplayer(this));
             case 2 -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
             case 3 -> mc.displayGuiScreen(Client.INST.getAltManagerGui());
-            case 4 -> ClientIRC.setDiscordProfile(Client.INST.getDiscord().getId());
+//            case 4 -> mc.displayGuiScreen(new MultiPlayerGuiScreen(this));
             case 5 -> mc.shutdownMinecraftApplet();
         }
     }

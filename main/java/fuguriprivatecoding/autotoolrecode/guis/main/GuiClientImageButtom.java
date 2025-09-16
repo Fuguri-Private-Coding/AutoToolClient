@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.guis.main;
 
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
@@ -29,7 +30,7 @@ public class GuiClientImageButtom extends GuiButton {
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
         hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 
-        RenderUtils.drawRoundedOutLineRectangle(xPosition, yPosition, width, height, 3.4f,new Color(0,0,0,150).getRGB(), Color.black.getRGB(), Color.black.getRGB());
+        RoundedUtils.drawRect(xPosition, yPosition, width, height, height / 2f, hovered ? new Color(0,0,0,0.5f) : new Color(0,0,0,0.7f));
         RenderUtils.drawImage(image, xPosition, yPosition, width, height);
     }                                       
 }                                           

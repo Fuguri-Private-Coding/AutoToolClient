@@ -22,11 +22,4 @@ public class ResourceUtils extends JFrame implements Imports {
             return null;
         }
     }
-
-    public static void drawDiscord(ResourceLocation texture, int x, int y, int width, int height) {
-        if (texture != null) {
-            mc.getTextureManager().bindTexture(texture);
-            Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
-        }
-    }
 }

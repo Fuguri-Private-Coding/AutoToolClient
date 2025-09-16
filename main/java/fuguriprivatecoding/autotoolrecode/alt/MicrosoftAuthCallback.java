@@ -67,28 +67,21 @@ public class MicrosoftAuthCallback implements Closeable {
     }
 
     private Account auth(BiConsumer<String, Object[]> progressHandler, String query) throws Exception {
-        AltManagerGuiScreen.updateStatus("Authenticating...");
         if (query == null) throw new NullPointerException("query=null");
         if (query.equals("error=access_denied&error_description=The user has denied access to the scope requested by the client application."))
             return null;
         if (!query.startsWith("code=")) throw new IllegalStateException("query=" + query);
-        AltManagerGuiScreen.updateStatus("Step: CodeToToken.");
         progressHandler.accept("Authentication... (%s)", new Object[]{"CodeToToken"});
         Map.Entry<String, String> authRefreshTokens = Auth.codeToToken(query.replace("code=", ""));
         String refreshToken = authRefreshTokens.getValue();
-        AltManagerGuiScreen.updateStatus("Step: AuthXBL.");
         progressHandler.accept("Authentication... (%s)", new Object[]{"AuthXBL"});
         String xblToken = Auth.authXBL(authRefreshTokens.getKey());
-        AltManagerGuiScreen.updateStatus("Step: AuthXSTS.");
         progressHandler.accept("Authentication... (%s)", new Object[]{"AuthXSTS"});
         Map.Entry<String, String> xstsTokenUserhash = Auth.authXSTS(xblToken);
-        AltManagerGuiScreen.updateStatus("Step: AuthMinecraft.");
         progressHandler.accept("Authentication... (%s)", new Object[]{"AuthMinecraft"});
         String accessToken = Auth.authMinecraft(xstsTokenUserhash.getValue(), xstsTokenUserhash.getKey());
-        AltManagerGuiScreen.updateStatus("Step: GetProfile.");
         progressHandler.accept("Authentication... (%s)", new Object[]{"GetProfile"});
         Map.Entry<UUID, String> profile = Auth.getProfile(accessToken);
-        AltManagerGuiScreen.updateStatus("Authenticated.");
         return new Account(profile.getValue(), refreshToken, profile.getKey().toString());
     }
 

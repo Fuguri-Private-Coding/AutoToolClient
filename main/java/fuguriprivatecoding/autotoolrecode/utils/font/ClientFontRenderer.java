@@ -213,10 +213,15 @@ public class ClientFontRenderer implements Imports {
 
         GL11.glBegin(GL11.GL_QUADS);
 
+        double startX = x;
         for (int i = 0; i < size; i++) {
             char character = text.charAt(i);
 
-            if (character == '§') {
+
+            if (character == '\n') {
+                x = startX;
+                y += FONT_HEIGHT * 4;
+            } else if (character == '§') {
                 if (i + 1 < size) {
                     i++;
                     char colorChar = text.charAt(i);

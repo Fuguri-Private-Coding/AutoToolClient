@@ -28,7 +28,7 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "Blink", category = Category.CONNECTION, description = "При включении вы зависаете от лица других, при выключении вас телепортирует туда куда вы пришли.")
 public class Blink extends Module {
 
-    private final CheckBox pulseBlink = new CheckBox("PulseBlink", this);
+    private final CheckBox pulseBlink = new CheckBox("Pulse", this);
 
     DoubleSlider resetDelay = new DoubleSlider("ResetDelay", this, pulseBlink::isToggled, 0,5000,200,1);
 

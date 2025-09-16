@@ -25,16 +25,16 @@ import java.util.function.BooleanSupplier;
 public class ESP extends Module {
 
     final MultiMode modes = new MultiMode("Modes", this)
-            .add("HitBox")
-            .add("Glow")
-            //.add("")
-            ;
+        .add("HitBox")
+        .add("Glow")
+        //.add("")
+        ;
 
     BooleanSupplier renderBox = () -> (modes.get("HitBox"));
 
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
 
-    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f,5f,1f,0.1f);
+    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f, 5f, 1f, 0.1f);
 
     Color fadeColor;
 
@@ -45,16 +45,18 @@ public class ESP extends Module {
                 RenderUtils.start3D();
                 GL11.glTranslated(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
                 for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
-                    if (playerEntity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) { continue; }
+                    if (playerEntity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) {
+                        continue;
+                    }
 
                     fadeColor = color.isFade() ?
-                            ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
-                            : color.getColor();
+                        ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
+                        : color.getColor();
 
                     Vec3 smoothPos = new Vec3(
-                            playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * mc.timer.renderPartialTicks,
-                            playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * mc.timer.renderPartialTicks,
-                            playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * mc.timer.renderPartialTicks
+                        playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * mc.timer.renderPartialTicks,
+                        playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * mc.timer.renderPartialTicks,
+                        playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * mc.timer.renderPartialTicks
                     );
 
                     Vec3 diff = smoothPos.subtract(playerEntity.getPositionVector());
@@ -69,7 +71,8 @@ public class ESP extends Module {
 
             if (modes.get("Glow")) {
                 for (final EntityPlayer player : mc.theWorld.playerEntities) {
-                    if (mc.getRenderManager() == null || (player == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || player.isDead) continue;
+                    if (mc.getRenderManager() == null || (player == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || player.isDead)
+                        continue;
                     BloomUtils.addToDraw(() -> mc.renderManager.renderEntitySimple(player, mc.timer.renderPartialTicks));
                 }
                 RenderHelper.disableStandardItemLighting();
