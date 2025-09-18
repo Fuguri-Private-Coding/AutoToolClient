@@ -141,7 +141,7 @@ public class ConfigGuiScreen extends GuiScreen {
         RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(sc, background.x, background.y, sizeBackground.x, sizeBackground.y);
+        ScissorUtils.scissor(sc, background.x, background.y - 1, sizeBackground.x + 2, sizeBackground.y);
 
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
 

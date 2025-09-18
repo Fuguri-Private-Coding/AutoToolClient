@@ -128,6 +128,10 @@ public class Scaffold extends Module {
             rotate();
             legitPlace();
 
+
+        }
+
+        if (event instanceof LegitClickTimingEvent) {
             int slot = findBlock();
 
             if (slot == -1) { return; }

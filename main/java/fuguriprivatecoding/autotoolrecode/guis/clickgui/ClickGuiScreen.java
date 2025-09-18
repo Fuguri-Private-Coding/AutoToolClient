@@ -175,7 +175,7 @@ public class ClickGuiScreen extends GuiScreen {
 		RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
 		ScissorUtils.enableScissor();
-		ScissorUtils.scissor(sc, background.x, background.y, sizeBackground.x, sizeBackground.y);
+		ScissorUtils.scissor(sc, background.x, background.y - 1, sizeBackground.x + 2, sizeBackground.y);
 
 		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
 		RoundedUtils.drawRect(background.x + sizeBackground.x - 5, background.y + sizeBackground.y - 5, 5, 5, 0f, 4f,0f,clientSettings.backgroundRadius.getValue() / 1.25f, Color.BLACK);
@@ -259,7 +259,7 @@ public class ClickGuiScreen extends GuiScreen {
 		ScissorUtils.disableScissor();
 
 		ScissorUtils.enableScissor();
-		ScissorUtils.scissor(sc, background.x, background.y, sizeBackground.x, sizeBackground.y);
+		ScissorUtils.scissor(sc, background.x, background.y, sizeBackground.x - 2, sizeBackground.y);
 
 		offset = 0;
 		for (Category category : Category.values()) {
@@ -273,12 +273,15 @@ public class ClickGuiScreen extends GuiScreen {
 
 		settingsTotalHeight = 0;
 		if (selectedModule != null) {
+			ScissorUtils.enableScissor();
+			ScissorUtils.scissor(sc, background.x + verticalLineXOffset + 4, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT, sizeBackground.x - verticalLineXOffset - 4, fontRenderer.FONT_HEIGHT + 2);
 			fontRenderer.drawString("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())), background.x + verticalLineXOffset + 5, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, CATEGORY_COLOR);
 			fontRenderer.drawString("Hide: " + selectedModule.isHide(), background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()), background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, CATEGORY_COLOR);
 			fontRenderer.drawString("LoadFromConfig: " + selectedModule.isLoadFromConfig(), background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()) - fontRenderer.getStringWidth("LoadFromConfig: " + selectedModule.isLoadFromConfig()) - 5, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, CATEGORY_COLOR);
+			ScissorUtils.disableScissor();
 
 			ScissorUtils.enableScissor();
-			ScissorUtils.scissor(sc, background.x + verticalLineXOffset, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5, sizeBackground.x - verticalLineXOffset - 5, sizeBackground.y - (2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5));
+			ScissorUtils.scissor(sc, background.x + verticalLineXOffset, background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5, sizeBackground.x - verticalLineXOffset - 5, sizeBackground.y - (2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 10 + 5));
 			for (Setting setting : selectedModule.getSettings()) {
 				if (!setting.isVisible()) continue;
 

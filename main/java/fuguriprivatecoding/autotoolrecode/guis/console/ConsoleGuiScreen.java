@@ -151,7 +151,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(sc, background.x, background.y, sizeBackground.x, sizeBackground.y);
+        ScissorUtils.scissor(sc, background.x, background.y - 1, sizeBackground.x + 2, sizeBackground.y);
 
         RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
 
@@ -178,7 +178,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         totalHeight = 0;
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(sc, background.x, background.y + 15, sizeBackground.x, sizeBackground.y - 33);
+        ScissorUtils.scissor(sc, background.x, background.y + 15, sizeBackground.x, sizeBackground.y - 35);
 
         for (String s : history.reversed()) {
             font.drawString(s, background.x + 4, background.y + sizeBackground.y - 28 + 2 - offset, Color.WHITE, false);
@@ -197,7 +197,7 @@ public class ConsoleGuiScreen extends GuiScreen {
     }
 
     public void log(String msg) {
-        history.add("C:\\System32:§3 " + msg);
+        history.add("AutoTool:§3 " + msg);
         System.out.println("[Console]: " + msg);
     }
 
