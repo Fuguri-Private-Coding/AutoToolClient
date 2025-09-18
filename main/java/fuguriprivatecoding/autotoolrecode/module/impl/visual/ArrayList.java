@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
@@ -72,7 +73,7 @@ public class ArrayList extends Module {
             float yOffset = yPosOffset.getValue();
             double xOffset = xPosOffset.getValue();
             for (Module module : moduleList) {
-                module.getArrayListAnimation().update(animationSpeed.getValue(), Easing.IN_OUT_BACK);
+                module.getArrayListAnimation().update(animationSpeed.getValue(), Easing.LINEAR);
 
                 switch (pos.getMode()) {
                     case "Right Up" ->

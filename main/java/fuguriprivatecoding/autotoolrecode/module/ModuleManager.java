@@ -135,6 +135,6 @@ public class ModuleManager {
     }
 
 	public List<Module> getEnabledModules() {
-		return modules.stream().filter(module -> !module.isHide() && module.isToggled() || (!module.isHide() && !module.toggled && module.arrayListAnimation.isAnimating())).toList();
+		return modules.stream().filter(module -> !module.isHide() && (module.isToggled() || (!module.toggled && module.arrayListAnimation.isAnimating()))).toList();
 	}
 }

@@ -51,7 +51,6 @@ public class ClickGuiScreen extends GuiScreen {
 
 	Color BACKGROUND_COLOR;
 	Color MAIN_COLOR = new Color(255, 255, 209, 255);
-	final Color HEADER_COLOR = new Color(15, 15, 15, 255);
 	final Color CATEGORY_COLOR = new Color(255, 255, 255, 255);
 
 	KeyBind activeKeyBind;

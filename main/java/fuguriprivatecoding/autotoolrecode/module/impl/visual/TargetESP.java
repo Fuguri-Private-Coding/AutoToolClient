@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
@@ -34,7 +33,6 @@ public class TargetESP extends Module {
     final FloatSetting radius = new FloatSetting("Radius", this, 0.1f, 2f, 0.7f, 0.1f) {};
 
     CheckBox glow = new CheckBox("Glow", this);
-    CheckBox blur = new CheckBox("BLur", this);
 
     public final ColorSetting color = new ColorSetting("Color", this);
 
@@ -52,20 +50,12 @@ public class TargetESP extends Module {
                     if (glow.isToggled()) {
                         BloomRealUtils.addToDraw(() -> renderSigma(colorShadow.getColor(), colorShadow.getFadeColor()));
                     }
-
-                    if (blur.isToggled()) {
-                        GaussianBlurUtils.addToDraw(() -> renderSigma(Color.white, Color.white));
-                    }
                     renderSigma(color.getColor(), color.getFadeColor());
                 }
 
                 case "Sigma2" -> {
                     if (glow.isToggled()) {
                         BloomRealUtils.addToDraw(() -> renderSigma2(colorShadow.getColor(), colorShadow.getFadeColor()));
-                    }
-
-                    if (blur.isToggled()) {
-                        GaussianBlurUtils.addToDraw(() -> renderSigma2(Color.white, Color.white));
                     }
                     renderSigma2(color.getColor(), color.getFadeColor());
                 }
@@ -112,7 +102,7 @@ public class TargetESP extends Module {
             glVertex3d(x1, y1 + animationTranslate * length.getValue(), z1);
         }
         glEnd();
-        glLineWidth(5f);
+        glLineWidth(2f);
         glBegin(GL_LINE_STRIP);
 
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
@@ -181,7 +171,7 @@ public class TargetESP extends Module {
 
         glEnd();
 
-        glLineWidth(5f);
+        glLineWidth(2f);
         glBegin(GL_LINE_STRIP);
 
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {

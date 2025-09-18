@@ -4,7 +4,6 @@ import Effekseer.swig.EffekseerBackendCore;
 import Effekseer.swig.EffekseerManagerCore;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;

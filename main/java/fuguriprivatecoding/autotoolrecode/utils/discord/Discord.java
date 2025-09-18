@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.discord;
 
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
-import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
@@ -27,10 +26,9 @@ public class Discord implements Imports {
 
     public boolean run = false;
 
-    ConsoleGuiScreen console;
+    ConsoleGuiScreen console = Client.INST.getConsole();
 
     public void init() {
-        if (console == null) console = Client.INST.getConsole();
         run = true;
         DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler(discordUser -> {
             console.log("§a[§9Discord§a]§e Connected to user " + discordUser.username + ".");

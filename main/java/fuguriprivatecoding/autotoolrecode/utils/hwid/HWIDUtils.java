@@ -37,7 +37,7 @@ public class HWIDUtils {
     }
 
     public static boolean isWhiteList(String hwid) {
-        for (Message message : Client.INST.getIrc().getHwidChannel().getIterableHistory().stream().toList()) {
+        for (Message message : Client.INST.getIrc().getKeyChannel().getIterableHistory().stream().toList()) {
             String[] args = message.getContentRaw().split(":");
             if (hwid.equalsIgnoreCase(args[0])) {
                 Client.INST.setProfile(new Profile(args[1], Role.fromRoleName(args[2])));

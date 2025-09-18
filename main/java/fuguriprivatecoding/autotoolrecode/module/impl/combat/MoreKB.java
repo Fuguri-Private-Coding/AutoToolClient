@@ -76,6 +76,7 @@ public class MoreKB extends Module {
         if (dontResetWhile.get("Target Eating") && target.isEating()) return true;
         if (dontResetWhile.get("Has KnockBack Enchantment") && hasKnockBackEnchantment(mc.thePlayer.inventory.getCurrentItem())) return true;
         if (dontResetWhile.get("Target is Burning") && target.isBurning()) return true;
+
         float targetMoveYaw = RotUtils.getRotationFromDiff(target.getPositionVector().subtract(target.getPrevPositionVector())).getYaw();
         float delta = MathHelper.wrapDegree(mc.thePlayer.rotationYaw - targetMoveYaw);
         return dontResetWhile.get("Target is Leaving") && delta <= maxDiff.getValue();

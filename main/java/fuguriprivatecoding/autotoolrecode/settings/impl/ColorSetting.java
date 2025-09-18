@@ -130,6 +130,18 @@ public class ColorSetting extends Setting {
         return ColorUtils.fadeColor(getColor(), getColor(), getSpeed());
     }
 
+    public Color getRainbowColor(int i) {
+        float alpha = ColorUtils.fadeColor(getColor(), isFade() ? getFadeColor() : getColor(), speed).getAlpha();
+
+        return ColorUtils.rainbow(speed, offset, i, alpha);
+    }
+
+    public Color getRainbowColor() {
+        float alpha = ColorUtils.fadeColor(getColor(), isFade() ? getFadeColor() : getColor(), speed).getAlpha();
+
+        return ColorUtils.rainbow(1f, alpha);
+    }
+
     public Color getFadedFloatColor() {
         Color mixedColor = isFade() ? ColorUtils.fadeColor(getColor(), getFadeColor(), getSpeed()) : ColorUtils.fadeColor(getColor(), getColor(), getSpeed());
         return new Color(mixedColor.getRed() / 255f, mixedColor.getGreen() / 255f, mixedColor.getBlue() / 255f, mixedColor.getAlpha() / 255f);

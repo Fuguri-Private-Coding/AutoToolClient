@@ -50,7 +50,7 @@ public class Module implements Imports, SettingAble {
 		} else {
 			playSound(volume);
 			Client.INST.getEventManager().unregister(this);
-			arrayListAnimation.setEnd(!"".equals(getSuffix()) ? -100 : -180);
+			arrayListAnimation.setEnd(-100);
 			onDisable();
 		}
 	}

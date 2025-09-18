@@ -13,19 +13,18 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
-@Getter
-@Setter
 public class ClientIRC extends ListenerAdapter {
 
-    public MessageChannel chatChannel, loginChannel, serverChannel, hwidChannel,
+    @Getter @Setter
+    public MessageChannel chatChannel, loginChannel, serverChannel, keyChannel,
         onlineChannel, changeLogChannel, onlineConfigsChannel, clientVersionChannel, clientCapesChannel;
 
-    public static long myID = -1;
-    public static long myOnlineID = -1;
+    @Getter @Setter
+    public static long MESSAGE_ID = -1, ONLINE_MESSAGE_ID = -1;
 
     String token;
 
-    static JDA jda;
+    JDA jda;
 
     public void init() {
         token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GGhvgp.juE97JuncYJRgH-Rzca0OV2a8ieMd2g6XzV1IA";
@@ -51,7 +50,7 @@ public class ClientIRC extends ListenerAdapter {
                 .addEventListeners(this)
                 .build();
         } catch (Exception e) {
-            System.out.println("Failed to connect to server.");
+            System.out.println("Failed setup intents.");
             System.exit(-1);
         }
 
@@ -61,7 +60,7 @@ public class ClientIRC extends ListenerAdapter {
             for (Guild guild : jda.getGuilds()) {
                 for (MessageChannel channel : guild.getTextChannels()) {
                     switch (channel.getName()) {
-                        case "hwid-list" -> setHwidChannel(channel);
+                        case "hwid-list" -> setKeyChannel(channel);
                         case "online-users" -> setOnlineChannel(channel);
                         case "change-log" -> setChangeLogChannel(channel);
                         case "online-configs" -> setOnlineConfigsChannel(channel);
@@ -75,6 +74,7 @@ public class ClientIRC extends ListenerAdapter {
             }
 
         } catch (InterruptedException e) {
+            System.out.println("Failed to connect to server.");
             System.exit(-1);
         }
     }

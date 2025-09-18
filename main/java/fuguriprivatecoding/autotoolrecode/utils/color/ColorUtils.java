@@ -83,6 +83,38 @@ public class ColorUtils {
         return new Color(redPart, greenPart, bluePart, alphaPart);
     }
 
+    public static Color rainbow(double speed, double offset, int i, float alpha) {
+        double time = System.currentTimeMillis() / 1000.0;
+        double angle = time * speed;
+        double staticOffset = i * offset * (Math.PI / 180);
+
+        float hue = (float) ((angle + staticOffset) % (2 * Math.PI) / (2 * Math.PI));
+        int rgb = Color.HSBtoRGB(hue, 1.0f, 1.0f);
+        Color currentColor = new Color(rgb);
+        return new Color(
+            currentColor.getRed() / 255F,
+            currentColor.getGreen() / 255F,
+            currentColor.getBlue() / 255F,
+            alpha
+        );
+    }
+
+    public static Color rainbow(float offset, float alpha) {
+        float hue = ((System.nanoTime() + offset * 1000) / 10000000000F) % 1;
+        int rgb = Color.HSBtoRGB(hue, 1F, 1F);
+        Color currentColor = new Color(rgb);
+        return new Color(
+            currentColor.getRed() / 255F,
+            currentColor.getGreen() / 255F,
+            currentColor.getBlue() / 255F,
+            alpha
+        );
+    }
+
+    public static Color rainbow() {
+        return rainbow(40, 1f);
+    }
+
     public void glColor(Color color) {
         GL11.glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
     }

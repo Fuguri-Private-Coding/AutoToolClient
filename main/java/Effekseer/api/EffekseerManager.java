@@ -1,6 +1,5 @@
 package Effekseer.api;
 
-import Effekseer.api.ParticleEmitter;
 import Effekseer.swig.EffekseerManagerCore;
 import org.joml.Matrix4f;
 

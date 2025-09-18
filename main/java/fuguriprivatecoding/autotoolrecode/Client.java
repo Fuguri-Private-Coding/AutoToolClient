@@ -38,6 +38,7 @@ import lombok.Setter;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @Getter
 public enum Client implements Imports {
@@ -83,6 +84,8 @@ public enum Client implements Imports {
 
 	ClickGuiWindow clickGuiWindow;
 	ImGuiManager imGuiManager;
+
+	List<Message> changeLogList;
 
 	boolean starting = false;
 
@@ -171,6 +174,8 @@ public enum Client implements Imports {
 
 		configManager.loadModulesFromConfig();
 
+//		new Thread(() -> changeLogList.addAll(irc.getChangeLogChannel().getIterableHistory().stream().toList())).start();
+
 		starting = false;
 
 		double elapsedNanos = System.nanoTime() - start;
@@ -219,20 +224,20 @@ public enum Client implements Imports {
 		MessageChannel onlineChannel = irc.getOnlineChannel();
 		String messageContent = Client.INST.getProfile().toString() + " " + version.toString();
 
-		onlineChannel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.myOnlineID = sendMessage.getIdLong());
+		onlineChannel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.ONLINE_MESSAGE_ID = sendMessage.getIdLong());
 	}
 
 	public void disconnectClient() {
-		if (ClientIRC.myOnlineID != -1) irc.getOnlineChannel().deleteMessageById(ClientIRC.myOnlineID).queue();
-		if (ClientIRC.myID != -1) irc.getServerChannel().deleteMessageById(ClientIRC.myID).queue();
+		if (ClientIRC.ONLINE_MESSAGE_ID != -1) irc.getOnlineChannel().deleteMessageById(ClientIRC.ONLINE_MESSAGE_ID).queue();
+		if (ClientIRC.MESSAGE_ID != -1) irc.getServerChannel().deleteMessageById(ClientIRC.MESSAGE_ID).queue();
 	}
 
 	public void disconnectServer() {
-		if (ClientIRC.myID != -1) irc.getServerChannel().deleteMessageById(ClientIRC.myID).queue();
+		if (ClientIRC.MESSAGE_ID != -1) irc.getServerChannel().deleteMessageById(ClientIRC.MESSAGE_ID).queue();
 	}
 
 	public void connectServer() {
-		if (ClientIRC.myID != -1) {
+		if (ClientIRC.MESSAGE_ID != -1) {
 			updateExistingServerConnection();
 		} else {
 			createNewServerConnection();
@@ -242,8 +247,8 @@ public enum Client implements Imports {
 	private void updateExistingServerConnection() {
 		MessageChannel serverChannel = Client.INST.getIrc().getServerChannel();
 
-		serverChannel.deleteMessageById(ClientIRC.myID).queue(_ -> {
-			ClientIRC.myID = -1;
+		serverChannel.deleteMessageById(ClientIRC.MESSAGE_ID).queue(_ -> {
+			ClientIRC.MESSAGE_ID = -1;
 			sendServerConnectionMessage(serverChannel);
 		});
 	}
@@ -258,6 +263,6 @@ public enum Client implements Imports {
 		Profile profile = Client.INST.getProfile();
 		String messageContent = username + " " + profile;
 
-		channel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.myID = sendMessage.getIdLong());
+		channel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.MESSAGE_ID = sendMessage.getIdLong());
 	}
 }

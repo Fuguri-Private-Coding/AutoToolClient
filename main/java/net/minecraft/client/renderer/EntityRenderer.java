@@ -113,7 +113,6 @@ import org.lwjgl.util.glu.Project;
 public class EntityRenderer implements IResourceManagerReloadListener {
     private static final Logger logger = LogManager.getLogger();
     private static final ResourceLocation locationRainPng = new ResourceLocation("textures/environment/rain.png");
-    private static final ResourceLocation locationSnowPng = new ResourceLocation("textures/environment/snow.png");
     public static boolean anaglyphEnable;
     public static int anaglyphField;
     private final Minecraft mc;
