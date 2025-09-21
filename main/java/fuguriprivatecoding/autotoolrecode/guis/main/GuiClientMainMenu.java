@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.guis.main;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.guis.multiplayer.MultiPlayerGuiScreen;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
@@ -31,7 +30,6 @@ public class GuiClientMainMenu extends GuiScreen {
         buttonList.add(new GuiClientButton(1, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25, "MultiPlayer"));
         buttonList.add(new GuiClientButton(2, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25 + 25, "MinecraftSetting"));
         buttonList.add(new GuiClientButton(3, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25 + 25 + 25, "AltManager"));
-//        buttonList.add(new GuiClientButton(4, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25 + 25 + 25 + 25, "Multiplayer2"));
         buttonList.add(new GuiClientImageButtom(5, sc.getScaledWidth() - 15 - 5, 5, 15,15, exitLogo));
     }
 
@@ -71,7 +69,6 @@ public class GuiClientMainMenu extends GuiScreen {
             case 1 -> mc.displayGuiScreen(new GuiMultiplayer(this));
             case 2 -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
             case 3 -> mc.displayGuiScreen(Client.INST.getAltManagerGui());
-//            case 4 -> mc.displayGuiScreen(new MultiPlayerGuiScreen(this));
             case 5 -> mc.shutdownMinecraftApplet();
         }
     }

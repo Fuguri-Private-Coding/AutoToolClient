@@ -23,6 +23,14 @@ public class EasingAnimation {
         this.end = initialValue;
         this.progress = 1f;
     }
+
+
+    public void reset() {
+        this.value = end;
+        this.start = end;
+        this.progress = 1f;
+        lastTime = 0;
+    }
     
     public void update(float speed, Easing easingFunction) {
         long deltaTime = System.currentTimeMillis() - lastTime;

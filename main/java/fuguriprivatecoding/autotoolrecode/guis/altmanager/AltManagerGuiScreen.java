@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
@@ -92,7 +93,7 @@ public class AltManagerGuiScreen extends GuiScreen {
         scrollTotalHeight = 0;
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), sc.getScaledWidth() - 260, 15, 250, sc.getScaledHeight() - 25);
+        ScissorUtils.scissor(new ScaledResolution(mc), sc.getScaledWidth() - 265, 15, 250, sc.getScaledHeight() - 25);
 
         for (Account account : accounts) {
             RoundedUtils.drawRect(sc.getScaledWidth() - 260, 10 + 10 + offset, 250 - 10, 20, 10, selectedAccount != null && account.getName().equals(selectedAccount.getName()) ? new Color(0.2f, 0.2f, 0.2f, 0.7f) : new Color(0, 0, 0, 0.7f));

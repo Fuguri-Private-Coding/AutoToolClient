@@ -33,7 +33,6 @@ public class TargetHUD extends Module {
             .addModes("Health", "Background", "Head", "Name");
 
     Mode fonts = new Mode("Fonts", this, () -> render.get("Name"))
-            .setMode("SFProRounded")
             ;
 
     CheckBox follow = new CheckBox("Follow", this);
@@ -67,9 +66,8 @@ public class TargetHUD extends Module {
     Vector2f pos = new Vector2f();
 
     public TargetHUD() {
-        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
-            fonts.addMode(fontName);
-        });
+        Client.INST.getFonts().fonts.forEach((fontName, _) -> fonts.addMode(fontName));
+        fonts.setMode("SFProRounded");
     }
 
     @EventTarget

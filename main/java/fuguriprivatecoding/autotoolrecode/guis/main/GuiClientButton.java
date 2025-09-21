@@ -28,7 +28,7 @@ public class GuiClientButton extends GuiButton {
 
         final ClientFontRenderer fonts = Client.INST.getFonts().fonts.get("SFProRounded");
 
-        RoundedUtils.drawRect(xPosition, yPosition, width, height, height / 2f, hovered ? new Color(0,0,0,0.5f) : new Color(0,0,0,0.7f));
+        RoundedUtils.drawRect(xPosition, yPosition, width, height, height / 2.5f, hovered ? new Color(0,0,0,0.5f) : new Color(0,0,0,0.7f));
 
         final Color color = Color.WHITE;
         fonts.drawString(displayString, xPosition + width / 2f - fonts.getStringWidth(displayString) / 2f, yPosition + 2 + (height - 8) / 2f, hovered ? color.darker() : color, true);

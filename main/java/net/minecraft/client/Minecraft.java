@@ -404,6 +404,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 new ResourceLocation("minecraft", "hackclient/image/logo32.png")
         );
 
+        Client.INST.init();
+
         if (this.gameSettings.language != null) {
             this.fontRendererObj.setUnicodeFlag(this.isUnicode());
             this.fontRendererObj.setBidiFlag(this.mcLanguageManager.isCurrentLanguageBidirectional());
@@ -480,8 +482,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         }
 
         this.renderGlobal.makeEntityOutlineShader();
-
-        Client.INST.init();
     }
 
     private void registerMetadataSerializers() {

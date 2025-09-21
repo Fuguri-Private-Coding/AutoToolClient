@@ -294,4 +294,29 @@ public class ColorSetting extends Setting {
             ImGui.popID();
         }
     }
+
+    private float currentOffsetY = 0f;
+    private float targetOffsetY = 0f;
+    private final float slideAnimationSpeed = 0.2f;
+    private boolean isSliding = false;
+
+    public void updateSlideAnimation() {
+        if (isSliding) {
+            currentOffsetY += (targetOffsetY - currentOffsetY) * slideAnimationSpeed;
+
+            if (Math.abs(targetOffsetY - currentOffsetY) < 0.5f) {
+                currentOffsetY = targetOffsetY;
+                isSliding = false;
+            }
+        }
+    }
+
+    public void setTargetSlideOffset(float offset) {
+        this.targetOffsetY = offset;
+        this.isSliding = true;
+    }
+
+    public float getSlideOffset() {
+        return currentOffsetY;
+    }
 }

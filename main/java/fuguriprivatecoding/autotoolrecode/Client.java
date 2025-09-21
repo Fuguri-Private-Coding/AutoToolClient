@@ -87,7 +87,7 @@ public enum Client implements Imports {
 
 	List<Message> changeLogList;
 
-	boolean starting = false;
+	boolean starting = true;
 
 	public void init() throws IOException {
 		long start = System.nanoTime();

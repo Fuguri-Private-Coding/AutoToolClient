@@ -6,6 +6,7 @@ import net.minecraft.util.Vec3;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Random;
 
 public class MathUtils implements Imports {
 
@@ -84,6 +85,12 @@ public class MathUtils implements Imports {
         }
 
         return current;
+    }
+
+    private static final Random random = new Random();
+
+    public static int rs() {
+        return random.nextBoolean() ? 1 : -1;
     }
 
 }

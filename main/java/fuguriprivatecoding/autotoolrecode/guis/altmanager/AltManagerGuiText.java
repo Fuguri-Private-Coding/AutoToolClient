@@ -22,7 +22,7 @@ public class AltManagerGuiText extends GuiTextField {
     public void drawTextBox() {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
 
-        RoundedUtils.drawRect(xPosition, yPosition, width, height, height / 2f,new Color(0,0,0,0.7f));
+        RoundedUtils.drawRect(xPosition, yPosition, width, height, height / 2.5f,new Color(0,0,0,0.7f));
 
         ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFProRounded");
 

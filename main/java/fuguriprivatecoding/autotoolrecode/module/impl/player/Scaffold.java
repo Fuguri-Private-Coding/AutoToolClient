@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
@@ -127,8 +128,6 @@ public class Scaffold extends Module {
         if (event instanceof TickEvent) {
             rotate();
             legitPlace();
-
-
         }
 
         if (event instanceof LegitClickTimingEvent) {
@@ -426,7 +425,7 @@ public class Scaffold extends Module {
             double yawDiff = MathHelper.wrapDegree(Rot.getServerRotation().getYaw() - data.rotation.getYaw());
             double pitchDiff = Rot.getServerRotation().getPitch() - data.rotation.getPitch();
 
-            return Math.hypot(yawDiff, pitchDiff) + mc.thePlayer.getPositionVector().distanceTo(data.hitPos) * (sortingDistanceStrength.getValue() * 10);
+            return Math.hypot(yawDiff, pitchDiff) + DistanceUtils.getDistance(data.hitPos) * (sortingDistanceStrength.getValue() * 10);
         }));
 
         closest = validRotations.getFirst();

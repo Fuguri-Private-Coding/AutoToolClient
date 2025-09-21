@@ -1264,7 +1264,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.mc.setRenderViewEntity(this.mc.thePlayer);
         }
 
-        this.getMouseOver(partialTicks);
+        this.getMouseOver(1f);
 
         if (Config.isShaders()) {
             Shaders.beginRender(this.mc, partialTicks, finishTimeNano);
