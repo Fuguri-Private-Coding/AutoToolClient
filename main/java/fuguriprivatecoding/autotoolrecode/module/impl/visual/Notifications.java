@@ -30,7 +30,7 @@ import java.util.function.BooleanSupplier;
 public class Notifications extends Module {
 
     Mode fonts = new Mode("Fonts", this)
-            .setMode("SFProRounded");
+            ;
 
     Mode position = new Mode("Position", this)
             .addModes("Top-Left", "Top-Right", "Bottom-Left", "Bottom-Right")
@@ -73,9 +73,8 @@ public class Notifications extends Module {
     Color bgColors, lineColors, textColors, textDisableColors, textEnableColors;
 
     public Notifications() {
-        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
-            fonts.addMode(fontName);
-        });
+        Client.INST.getFonts().fonts.forEach((fontName, _) -> fonts.addMode(fontName));
+        fonts.setMode("SFProRounded");
         instance = this;
     }
 

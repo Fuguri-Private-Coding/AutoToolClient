@@ -15,11 +15,6 @@ public class MotionBlur extends Module {
     public IntegerSetting blurAmount = new IntegerSetting("BlurAmount", this, 1, 100, 70);
 
     @Override
-    public void onEnable() {
-        mc.entityRenderer.loadShader(new ResourceLocation("minecraft", "shaders/post/motion_blur.json"));
-    }
-
-    @Override
     public void onDisable() {
         mc.entityRenderer.stopUseShader();
     }

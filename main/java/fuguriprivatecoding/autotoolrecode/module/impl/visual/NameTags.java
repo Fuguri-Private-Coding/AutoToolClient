@@ -28,7 +28,6 @@ import static org.lwjgl.opengl.GL11.*;
 public class NameTags extends Module {
 
     Mode fonts = new Mode("Fonts", this)
-            .setMode("SFProRounded")
             ;
 
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, 0f,5f,1f,0.1f);
@@ -42,9 +41,8 @@ public class NameTags extends Module {
     String detectiveText, murderText, friendText, userText, text;
 
     public NameTags() {
-        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
-            fonts.addMode(fontName);
-        });
+        Client.INST.getFonts().fonts.forEach((fontName, _) -> fonts.addMode(fontName));
+        fonts.setMode("SFProRounded");
     }
 
     @EventTarget

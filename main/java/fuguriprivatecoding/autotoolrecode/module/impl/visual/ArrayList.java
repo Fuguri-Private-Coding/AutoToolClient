@@ -25,9 +25,7 @@ public class ArrayList extends Module {
     IntegerSetting yPosOffset = new IntegerSetting("Y-Pos Offset", this,0, 100, 0);
     IntegerSetting xPosOffset = new IntegerSetting("X-Pos Offset", this,0, 100, 0);
 
-    Mode fonts = new Mode("Fonts", this)
-            .setMode("SFProRounded")
-            ;
+    Mode fonts = new Mode("Fonts", this);
 
     Mode pos = new Mode("Positions",this)
             .addModes("Left Up", "Right Up")
@@ -59,6 +57,7 @@ public class ArrayList extends Module {
 
     public ArrayList() {
         Client.INST.getFonts().fonts.forEach((fontName, _) -> fonts.addMode(fontName));
+        fonts.setMode("SFProRounded");
     }
 
     @EventTarget

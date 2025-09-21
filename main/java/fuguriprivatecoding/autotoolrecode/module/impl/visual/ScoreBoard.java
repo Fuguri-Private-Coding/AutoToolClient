@@ -31,7 +31,6 @@ public class ScoreBoard extends Module {
     public CheckBox remove = new CheckBox("Remove", this, true);
 
     Mode fonts = new Mode("Fonts", this, () -> !remove.isToggled())
-            .setMode("SFProRounded")
             ;
 
     BooleanSupplier visible = () -> !remove.isToggled();
@@ -52,9 +51,8 @@ public class ScoreBoard extends Module {
     public final ColorSetting colorShadow = new ColorSetting("Shadow Color", this, shadow);
 
     public ScoreBoard() {
-        Client.INST.getFonts().fonts.forEach((fontName, fontRenderer) -> {
-            fonts.addMode(fontName);
-        });
+        Client.INST.getFonts().fonts.forEach((fontName, _) -> fonts.addMode(fontName));
+        fonts.setMode("SFProRounded");
     }
 
     @EventTarget
