@@ -2,8 +2,6 @@ package fuguriprivatecoding.autotoolrecode.alt;
 
 import com.sun.net.httpserver.HttpServer;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiScreen;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.io.Closeable;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -68,8 +66,7 @@ public class MicrosoftAuthCallback implements Closeable {
 
     private Account auth(BiConsumer<String, Object[]> progressHandler, String query) throws Exception {
         if (query == null) throw new NullPointerException("query=null");
-        if (query.equals("error=access_denied&error_description=The user has denied access to the scope requested by the client application."))
-            return null;
+        if (query.equals("error=access_denied&error_description=The user has denied access to the scope requested by the client application.")) return null;
         if (!query.startsWith("code=")) throw new IllegalStateException("query=" + query);
         progressHandler.accept("Authentication... (%s)", new Object[]{"CodeToToken"});
         Map.Entry<String, String> authRefreshTokens = Auth.codeToToken(query.replace("code=", ""));

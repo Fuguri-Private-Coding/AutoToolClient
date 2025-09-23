@@ -8,12 +8,9 @@ import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.ClickSettings;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MovingObjectPosition;
 
 public class ClickManager implements Imports {
 
@@ -31,7 +28,6 @@ public class ClickManager implements Imports {
         if (clickSettings == null) clickSettings = Client.INST.getModuleManager().getModule(ClickSettings.class);
 
         if (event instanceof TickEvent tickEvent && !tickEvent.isCanceled()) {
-
             if (clickSettings.simulateDoubleClick.isToggled() && clicks > 5) {
                 clicks += Math.random() <= 0.5 ? 1 : -1;
             }

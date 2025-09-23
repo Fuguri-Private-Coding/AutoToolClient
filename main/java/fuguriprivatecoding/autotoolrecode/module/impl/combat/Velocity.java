@@ -12,8 +12,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import java.util.Random;
 

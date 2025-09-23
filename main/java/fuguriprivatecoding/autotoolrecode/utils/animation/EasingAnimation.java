@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.animation;
 
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,8 +12,7 @@ public class EasingAnimation {
     private float start;
     private float end;
     private float progress;
-    private long lastTime;
-    
+
     public EasingAnimation() {
         this(0f);
     }
@@ -24,19 +24,15 @@ public class EasingAnimation {
         this.progress = 1f;
     }
 
-
     public void reset() {
         this.value = end;
         this.start = end;
         this.progress = 1f;
-        lastTime = 0;
     }
     
     public void update(float speed, Easing easingFunction) {
-        long deltaTime = System.currentTimeMillis() - lastTime;
-        lastTime = System.currentTimeMillis();
         if (progress < 1f) {
-            progress += speed * deltaTime / 1000;
+            progress += speed * DeltaTracker.getMilli() / 1000;
             progress = Math.min(progress, 1f);
             
             float easedProgress = (float) easingFunction.get(progress);

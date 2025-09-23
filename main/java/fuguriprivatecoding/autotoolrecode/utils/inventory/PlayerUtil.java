@@ -1,8 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.utils.inventory;
 
+import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import lombok.experimental.UtilityClass;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import java.util.HashMap;
 
@@ -33,6 +36,38 @@ public class PlayerUtil implements Imports {
         return mc.theWorld.getBlockState(new BlockPos(x, y, z)).getBlock();
     }
 
+    public static int findTool(final BlockPos blockPos) {
+        float bestSpeed = 1;
+        int bestSlot = -1;
+
+        final IBlockState blockState = mc.theWorld.getBlockState(blockPos);
+
+        for (int i = 0; i < 9; i++) {
+            final ItemStack itemStack = mc.thePlayer.inventory.getStackInSlot(i);
+
+            if (itemStack == null) {
+                continue;
+            }
+
+            final float speed = itemStack.getStrVsBlock(blockState.getBlock());
+
+            if (speed > bestSpeed) {
+                bestSpeed = speed;
+                bestSlot = i;
+            }
+        }
+
+        return bestSlot;
+    }
+
+    public static Block getBlock(BlockPos blockPos) {
+        return mc.theWorld.getBlockState(blockPos).getBlock();
+    }
+
+    public static boolean isReplaceable(BlockPos blockPos) {
+        return getBlock(blockPos).isReplaceable(mc.theWorld, blockPos);
+    }
+
     /**
      * Gets a potions ranking
      *
@@ -61,6 +96,19 @@ public class PlayerUtil implements Imports {
         final double y = pos1.getY() - pos2.getY();
         final double z = pos1.getZ() - pos2.getZ();
         return x * x + y * y + z * z;
+    }
+
+    /**
+     * Gets the block relative to the player from the offset
+     *
+     * @return block relative to the player
+     */
+    public Block blockRelativeToPlayer(final double offsetX, final double offsetY, final double offsetZ) {
+        return mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(offsetX, offsetY, offsetZ)).getBlock();
+    }
+
+    public Block blockAheadOfPlayer(final double offsetXZ, final double offsetY) {
+        return blockRelativeToPlayer(-Math.sin(MoveUtils.direction()) * offsetXZ, offsetY, Math.cos(MoveUtils.direction()) * offsetXZ);
     }
 
     /**

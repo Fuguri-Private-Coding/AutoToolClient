@@ -6,7 +6,6 @@ import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;

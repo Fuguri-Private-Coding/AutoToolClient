@@ -16,7 +16,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
-import fuguriprivatecoding.autotoolrecode.utils.packet.TimedVar;
+import fuguriprivatecoding.autotoolrecode.utils.time.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.client.renderer.RenderHelper;

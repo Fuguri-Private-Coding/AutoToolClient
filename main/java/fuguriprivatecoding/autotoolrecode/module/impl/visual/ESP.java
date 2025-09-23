@@ -49,9 +49,7 @@ public class ESP extends Module {
                         continue;
                     }
 
-                    fadeColor = color.isFade() ?
-                        ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
-                        : color.getColor();
+                    fadeColor = color.getMixedColor(mc.theWorld.playerEntities.indexOf(playerEntity));
 
                     Vec3 smoothPos = new Vec3(
                         playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * mc.timer.renderPartialTicks,

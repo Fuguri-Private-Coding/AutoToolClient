@@ -13,7 +13,7 @@ import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtil;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.ItemUtil;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
-import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;

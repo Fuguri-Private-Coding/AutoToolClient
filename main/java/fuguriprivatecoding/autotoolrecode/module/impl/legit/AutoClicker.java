@@ -9,11 +9,9 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
-import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.input.Mouse;
 

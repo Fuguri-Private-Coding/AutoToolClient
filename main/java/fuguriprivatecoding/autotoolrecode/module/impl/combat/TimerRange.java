@@ -52,17 +52,18 @@ public class TimerRange extends Module {
     Color fadeColor;
 
     boolean teleporting, click = false;
-    int teleportTicks, balance, posRotIncrement = 0;
+    int teleportTicks, posRotIncrement = 0;
 
+    public static int balance = 0;
     Vec3 targetPos, pos;
 
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof RunGameLoopEvent && balance > 0) mc.timer.renderPartialTicks = partialTicks.getValue();
-        if (event instanceof LegitClickTimingEvent && click) {
-            mc.clickMouse();
-            click = false;
-        }
+//        if (event instanceof LegitClickTimingEvent && click) {
+//            mc.clickMouse();
+//            click = false;
+//        }
 
         if (teleporting) return;
 

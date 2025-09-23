@@ -19,7 +19,7 @@ import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
-import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
@@ -145,9 +145,10 @@ public class KillAura extends Module {
             if (event instanceof MotionEvent e) {
                 e.setYaw(lr.getYaw());
                 e.setPitch(lr.getPitch());
+
                 AxisAlignedBB box = getHitBox(target);
                 Rot needRotation = switch (hitVec.getMode()) {
-                    case "Best" -> RotUtils.getBestRotation(box);
+                    case "Best" -> RotUtils.getBestRotation(box.expand(0.1,0.1,0.1));
                     case "Nearest" -> RotUtils.getNearestRotations(lr, box);
                     case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
                     case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));

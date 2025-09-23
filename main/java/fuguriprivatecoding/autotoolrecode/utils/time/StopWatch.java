@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.utils.timer;
+package fuguriprivatecoding.autotoolrecode.utils.time;
 
 public class StopWatch {
 

@@ -186,7 +186,6 @@ public class Effects extends Module {
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_LINE_SMOOTH);
             glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             for (Particle particle : particleList) {
                 glPushMatrix();
@@ -211,8 +210,6 @@ public class Effects extends Module {
             }
 
             glDisable(GL_BLEND);
-            glDisable(GL_SRC_ALPHA);
-            glDisable(GL_ONE_MINUS_SRC_ALPHA);
             glDisable(GL_LINE_SMOOTH);
             glPopMatrix();
             glPopAttrib();

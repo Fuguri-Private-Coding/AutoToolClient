@@ -16,7 +16,7 @@ import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
-import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.util.AxisAlignedBB;

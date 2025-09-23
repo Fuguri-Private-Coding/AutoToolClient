@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.utils.packet;
+package fuguriprivatecoding.autotoolrecode.utils.time;
 
 public class TimeUtils {
     long lastTime;

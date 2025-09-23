@@ -57,8 +57,30 @@ public class MoveUtils implements Imports {
         return (float) rotationYaw;
     }
 
+    public static float getDirs() {
+        if (mc.gameSettings.keyBindForward.isKeyDown() && mc.gameSettings.keyBindLeft.isKeyDown()) {
+            yaw = 45f;
+        } else if (mc.gameSettings.keyBindForward.isKeyDown() && mc.gameSettings.keyBindRight.isKeyDown()) {
+            yaw = -45f;
+        } else if (mc.gameSettings.keyBindBack.isKeyDown() && mc.gameSettings.keyBindLeft.isKeyDown()) {
+            yaw = 135f;
+        } else if (mc.gameSettings.keyBindBack.isKeyDown() && mc.gameSettings.keyBindRight.isKeyDown()) {
+            yaw = -135f;
+        } else if (mc.gameSettings.keyBindBack.isKeyDown()) {
+            yaw = 180f;
+        } else if (mc.gameSettings.keyBindLeft.isKeyDown()) {
+            yaw = 90f;
+        } else if (mc.gameSettings.keyBindRight.isKeyDown()) {
+            yaw = -90f;
+        } else if (mc.gameSettings.keyBindForward.isKeyDown()) {
+            yaw = 0f;
+        }
+
+        return yaw;
+    }
+
     public static float getYawFromKeybind() {
-        return mc.thePlayer.rotationYaw - getDir();
+        return mc.thePlayer.rotationYaw - getDirs();
     }
 
     public static boolean isMovingStraight() {

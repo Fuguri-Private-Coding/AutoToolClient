@@ -1,4 +1,6 @@
-package fuguriprivatecoding.autotoolrecode.utils.packet;
+package fuguriprivatecoding.autotoolrecode.utils.time;
+
+import fuguriprivatecoding.autotoolrecode.utils.packet.Pair;
 
 public class TimedVar<T> {
     private final Pair<T, Long> pair;

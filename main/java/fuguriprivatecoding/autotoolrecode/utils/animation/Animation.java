@@ -1,6 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.animation;
 
-import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import lombok.Setter;
 
 public class Animation {

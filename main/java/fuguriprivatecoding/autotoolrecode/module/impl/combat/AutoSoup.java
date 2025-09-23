@@ -10,7 +10,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemSoup;

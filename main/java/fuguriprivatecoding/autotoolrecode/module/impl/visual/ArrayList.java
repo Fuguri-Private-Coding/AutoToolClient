@@ -75,22 +75,20 @@ public class ArrayList extends Module {
                 module.getArrayListAnimation().update(animationSpeed.getValue(), Easing.LINEAR);
 
                 switch (pos.getMode()) {
-                    case "Right Up" ->
-                            renderRightUp(xOffset + module.getArrayListAnimation().getValue(), yOffset,
-                                module,
-                                sc,
-                                lineColor.getMixedColor(moduleList.indexOf(module)),
-                                textColor.getMixedColor(moduleList.indexOf(module)),
-                                moduleList
+                    case "Right Up" -> renderRightUp(xOffset + module.getArrayListAnimation().getValue(), yOffset,
+                        module,
+                        sc,
+                        lineColor.getMixedColor(moduleList.indexOf(module)),
+                        textColor.getMixedColor(moduleList.indexOf(module)),
+                        moduleList
                     );
 
-                    case "Left Up" ->
-                        renderLeftUp(xOffset + module.getArrayListAnimation().getValue(), yOffset,
-                                module,
-                                lineColor.getMixedColor(moduleList.indexOf(module)),
-                                textColor.getMixedColor(moduleList.indexOf(module)),
-                                moduleList
-                        );
+                    case "Left Up" -> renderLeftUp(xOffset + module.getArrayListAnimation().getValue(), yOffset,
+                        module,
+                        lineColor.getMixedColor(moduleList.indexOf(module)),
+                        textColor.getMixedColor(moduleList.indexOf(module)),
+                        moduleList
+                    );
                 }
                 yOffset += verticalSpacing.getValue();
             }

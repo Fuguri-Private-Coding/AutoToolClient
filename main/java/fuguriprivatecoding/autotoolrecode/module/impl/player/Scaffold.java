@@ -281,12 +281,16 @@ public class Scaffold extends Module {
 
     void rotate() {
         float yawStep = 45f;
+        boolean isOnRightSide = false;
 
-        float yaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), yawStep);
+        float movingYaw = MoveUtils.isMoving() ? MoveUtils.getYawFromKeybind() - 180 : mc.thePlayer.rotationYaw - 180;
 
-        if (yaw / yawStep % 2 == 0) {
-            yaw += yawStep;
-        }
+        isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(movingYaw)) * 0.5) != Math.floor(mc.thePlayer.posX) ||
+            Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(movingYaw)) * 0.5) != Math.floor(mc.thePlayer.posZ);
+
+        float yaw = MoveUtils.isMovingStraight() ? (movingYaw + (isOnRightSide ? 45 : -45)) : movingYaw;
+
+        float yawr = Math.round(yaw / 45) * 45;
 
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
@@ -301,7 +305,7 @@ public class Scaffold extends Module {
                 if (getSafeValue()) {
                     rotation = getBestRotation();
                 } else {
-                    rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw)));
+                    rotation = new Rot(MathHelper.wrapDegree(yawr), getPitch(MathHelper.wrapDegree(yawr)));
                 }
             }
 

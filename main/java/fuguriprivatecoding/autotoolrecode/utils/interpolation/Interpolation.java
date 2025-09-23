@@ -1,6 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.interpolation;
 
-import fuguriprivatecoding.autotoolrecode.utils.timer.StopWatch;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import lombok.Getter;
 
 @Getter

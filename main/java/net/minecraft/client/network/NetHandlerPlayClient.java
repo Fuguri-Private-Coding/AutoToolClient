@@ -7,6 +7,8 @@ import com.mojang.authlib.GameProfile;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.event.events.TeleportEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
 import io.netty.buffer.Unpooled;
 import java.io.File;
 import java.io.IOException;
@@ -517,6 +519,26 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         double d2 = packetIn.getZ();
         float f = packetIn.getYaw();
         float f1 = packetIn.getPitch();
+
+        final TeleportEvent event = new TeleportEvent(
+            new C03PacketPlayer.C06PacketPlayerPosLook(entityplayer.posX, entityplayer.posY, entityplayer.posZ, entityplayer.rotationYaw, entityplayer.rotationPitch, false),
+            d0,
+            d1,
+            d2,
+            f,
+            f1
+        );
+
+        event.call();
+
+        if (event.isCanceled()) return;
+
+        d0 = event.getX();
+        d1 = event.getY();
+        d2 = event.getZ();
+        f = event.getYaw();
+        f1 = event.getPitch();
+
 
         if (packetIn.func_179834_f().contains(S08PacketPlayerPosLook.EnumFlags.X)) {
             d0 += entityplayer.posX;
