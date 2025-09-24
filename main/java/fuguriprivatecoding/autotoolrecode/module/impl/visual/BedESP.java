@@ -69,7 +69,7 @@ public class BedESP extends Module {
             for (BlockPos[] bed : beds) {
                 if (shadows.isToggled() && shadows.module.get("BedESP")) BloomUtils.addToDraw(() -> renderBed(bed, Color.white));
                 if (blur.isToggled() && blur.module.get("BedESP")) GaussianBlurUtils.addToDraw(() -> renderBed(bed, Color.white));
-                renderBed(bed, color.getFadedColor());
+                renderBed(bed, color.getFadedFloatColor());
             }
             RenderUtils.stop3D();
         }

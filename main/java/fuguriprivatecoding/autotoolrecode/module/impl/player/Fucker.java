@@ -9,17 +9,20 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.*;
+
+import java.awt.*;
 
 @ModuleInfo(name = "Fucker", category = Category.PLAYER)
 public class Fucker extends Module {
@@ -62,34 +65,50 @@ public class Fucker extends Module {
         }
 
         if (event instanceof TickEvent) {
-            rotate();
+            if (!handleRotate()) {
+                reset(true);
+                return;
+            }
+
+            searchBedPosition();
+
+            destroy();
         }
 
-        if (event instanceof MotionEvent e) {
-            e.setYaw(Rot.getServerRotation().getYaw());
-            e.setPitch(Rot.getServerRotation().getPitch());
+        if (event instanceof Render3DEvent && bedPos != null) {
+            RenderUtils.start3D();
+            RenderUtils.drawBlockESP(bedPos, new Color(1f * breakTicks / 10f,0,0,0.3f));
+            ColorUtils.resetColor();
+            RenderUtils.stop3D();
         }
 
-        if (event instanceof MoveEvent e) {
-            MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
-        }
+        if (bedPos != null && rotate) {
+            if (event instanceof MotionEvent e) {
+                e.setYaw(Rot.getServerRotation().getYaw());
+                e.setPitch(Rot.getServerRotation().getPitch());
+            }
 
-        if (event instanceof JumpEvent e) e.setYaw(Rot.getServerRotation().getYaw());
-        if (event instanceof UpdateBodyRotationEvent e) e.setYaw(Rot.getServerRotation().getYaw());
-        if (event instanceof MoveFlyingEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+            if (event instanceof MoveEvent e) {
+                MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
+            }
 
-        if (event instanceof LookEvent e) {
-            e.setYaw(Rot.getServerRotation().getYaw());
-            e.setPitch(Rot.getServerRotation().getPitch());
-        }
+            if (event instanceof JumpEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+            if (event instanceof UpdateBodyRotationEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+            if (event instanceof MoveFlyingEvent e) e.setYaw(Rot.getServerRotation().getYaw());
 
-        if (event instanceof ChangeHeadRotationEvent e) {
-            e.setYaw(Rot.getServerRotation().getYaw());
-            e.setPitch(Rot.getServerRotation().getPitch());
+            if (event instanceof LookEvent e) {
+                e.setYaw(Rot.getServerRotation().getYaw());
+                e.setPitch(Rot.getServerRotation().getPitch());
+            }
+
+            if (event instanceof ChangeHeadRotationEvent e) {
+                e.setYaw(Rot.getServerRotation().getYaw());
+                e.setPitch(Rot.getServerRotation().getPitch());
+            }
         }
     }
 
-    private void getBedPos() {
+    private void searchBedPosition() {
         if (home != null && mc.thePlayer.getDistanceSq(home.xCoord, home.yCoord, home.zCoord) < 35 * 35 && whiteListOwnBed.isToggled()) {
             return;
         }
@@ -159,14 +178,11 @@ public class Fucker extends Module {
         return block instanceof BlockBed;
     }
 
-    public void rotate() {
-        if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock) {
-            reset(true);
-            return;
-        }
+    public boolean handleRotate() {
+        return !Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && Client.INST.getCombatManager().getTarget() == null;
+    }
 
-        getBedPos();
-
+    public void destroy() {
         if (bedPos != null) {
             if (rotate) {
                 Rot.setServerRotation(RotUtils.getRotationToBlock(bedPos, getEnumFacing(bedPos)));
@@ -194,6 +210,11 @@ public class Fucker extends Module {
         }
 
         return EnumFacing.UP;
+    }
+
+    private int doAutoTool(BlockPos pos) {
+        if (PlayerUtil.findTool(pos) != -1) return PlayerUtil.findTool(pos);
+        return mc.thePlayer.inventory.currentItem;
     }
 
     private float getBreakTicks(BlockPos bp, int tool) {

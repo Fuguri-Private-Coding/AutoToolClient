@@ -142,9 +142,7 @@ public class KillAura extends Module {
         if (DistanceUtils.getDistance(target) < rotateDistance.getValue()) {
             Rot lr = Rot.getServerRotation().copy();
 
-            if (event instanceof MotionEvent e) {
-                e.setYaw(lr.getYaw());
-                e.setPitch(lr.getPitch());
+            if (event instanceof TickEvent) {
 
                 AxisAlignedBB box = getHitBox(target);
                 Rot needRotation = switch (hitVec.getMode()) {
@@ -228,6 +226,11 @@ public class KillAura extends Module {
                 lr = lr.add(delta);
                 lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
                 Rot.setServerRotation(lr);
+            }
+
+            if (event instanceof MotionEvent e) {
+                e.setYaw(lr.getYaw());
+                e.setPitch(lr.getPitch());
 
                 if (lockView.isToggled()) {
                     mc.thePlayer.rotationYaw = Rot.getServerRotation().getYaw();

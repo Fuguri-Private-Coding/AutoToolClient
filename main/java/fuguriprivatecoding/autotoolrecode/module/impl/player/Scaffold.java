@@ -12,7 +12,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
-import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
+import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -271,6 +271,24 @@ public class Scaffold extends Module {
         }
     }
 
+    public static EnumFacing getEnumFacing(BlockPos pos) {
+        Vec3 eyesPos = new Vec3(mc.thePlayer.posX, mc.thePlayer.posY + mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
+
+        if (pos.getY() > eyesPos.yCoord) {
+            if (PlayerUtil.isReplaceable(pos.add(0, -1, 0))) {
+                return EnumFacing.DOWN;
+            } else {
+                return mc.thePlayer.getHorizontalFacing().getOpposite();
+            }
+        }
+
+        if (!PlayerUtil.isReplaceable(pos.add(0, 1, 0))) {
+            return mc.thePlayer.getHorizontalFacing().getOpposite();
+        }
+
+        return EnumFacing.UP;
+    }
+
     boolean getSameYValue(MovingObjectPosition mouse) {
         if (sameY.isToggled()) {
             if (Mouse.isButtonDown(1)) return mouse.sideHit != EnumFacing.DOWN;
@@ -280,12 +298,9 @@ public class Scaffold extends Module {
     }
 
     void rotate() {
-        float yawStep = 45f;
-        boolean isOnRightSide = false;
-
         float movingYaw = MoveUtils.isMoving() ? MoveUtils.getYawFromKeybind() - 180 : mc.thePlayer.rotationYaw - 180;
 
-        isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(movingYaw)) * 0.5) != Math.floor(mc.thePlayer.posX) ||
+        boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(movingYaw)) * 0.5) != Math.floor(mc.thePlayer.posX) ||
             Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(movingYaw)) * 0.5) != Math.floor(mc.thePlayer.posZ);
 
         float yaw = MoveUtils.isMovingStraight() ? (movingYaw + (isOnRightSide ? 45 : -45)) : movingYaw;
