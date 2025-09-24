@@ -12,7 +12,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
-import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
+import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -60,11 +60,6 @@ public class Scaffold extends Module {
     FloatSetting stepPitchCorrection = new FloatSetting("Step Pitch Correction", this, tellyGodNormalVisible, 0.3f, 10, 0.8f, 0.01f);
 
     IntegerSetting sortingDistanceStrength = new IntegerSetting("Sorting Distance Strength", this, tellyGodNormalVisible, 0,100,2);
-
-    Mode pitchSelection = new Mode("Pitch Selection", this)
-            .addModes("Highest", "Nearest", "Lowest", "Mid")
-            .setMode("Nearest")
-            ;
 
     CheckBox noSwing = new CheckBox("No Swing", this);
     CheckBox serverSwing = new CheckBox("Server Swing", this, noSwing::isToggled, true);
@@ -225,9 +220,7 @@ public class Scaffold extends Module {
 
                     posList.add(pos);
 
-                    posList.sort(Comparator.comparingDouble(poses -> {
-                        return mc.thePlayer.getPositionVector().distanceTo(new Vec3(poses.getX() + 0.5, poses.getY() + 0.5, poses.getZ() + 0.5));
-                    }));
+                    posList.sort(Comparator.comparingDouble(poses -> mc.thePlayer.getPositionVector().distanceTo(new Vec3(poses.getX() + 0.5, poses.getY() + 0.5, poses.getZ() + 0.5))));
 
                 }
             }
@@ -271,24 +264,6 @@ public class Scaffold extends Module {
         }
     }
 
-    public static EnumFacing getEnumFacing(BlockPos pos) {
-        Vec3 eyesPos = new Vec3(mc.thePlayer.posX, mc.thePlayer.posY + mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
-
-        if (pos.getY() > eyesPos.yCoord) {
-            if (PlayerUtil.isReplaceable(pos.add(0, -1, 0))) {
-                return EnumFacing.DOWN;
-            } else {
-                return mc.thePlayer.getHorizontalFacing().getOpposite();
-            }
-        }
-
-        if (!PlayerUtil.isReplaceable(pos.add(0, 1, 0))) {
-            return mc.thePlayer.getHorizontalFacing().getOpposite();
-        }
-
-        return EnumFacing.UP;
-    }
-
     boolean getSameYValue(MovingObjectPosition mouse) {
         if (sameY.isToggled()) {
             if (Mouse.isButtonDown(1)) return mouse.sideHit != EnumFacing.DOWN;
@@ -298,15 +273,6 @@ public class Scaffold extends Module {
     }
 
     void rotate() {
-        float movingYaw = MoveUtils.isMoving() ? MoveUtils.getYawFromKeybind() - 180 : mc.thePlayer.rotationYaw - 180;
-
-        boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(movingYaw)) * 0.5) != Math.floor(mc.thePlayer.posX) ||
-            Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(movingYaw)) * 0.5) != Math.floor(mc.thePlayer.posZ);
-
-        float yaw = MoveUtils.isMovingStraight() ? (movingYaw + (isOnRightSide ? 45 : -45)) : movingYaw;
-
-        float yawr = Math.round(yaw / 45) * 45;
-
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (getTellyValue()) {
@@ -320,7 +286,22 @@ public class Scaffold extends Module {
                 if (getSafeValue()) {
                     rotation = getBestRotation();
                 } else {
-                    rotation = new Rot(MathHelper.wrapDegree(yawr), getPitch(MathHelper.wrapDegree(yawr)));
+                    float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), 45);
+
+                    boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.5) != Math.floor(mc.thePlayer.posX) ||
+                        Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(roundedYaw)) * 0.5) != Math.floor(mc.thePlayer.posZ);
+
+                    MovingObjectPosition rightRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw + 45, getPitch(roundedYaw + 45, false)));
+                    MovingObjectPosition leftRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw - 45, getPitch(roundedYaw - 45, false)));
+
+                    boolean isLeftRayCastSide = leftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK || rightRayCast.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK;
+                    boolean isRightRayCastSide = rightRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK || leftRayCast.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK;
+
+                    boolean moveDiagonally = MoveUtils.isMoveDiagonally(roundedYaw);
+
+                    float yaw = moveDiagonally ? roundedYaw : (roundedYaw + (isRightRayCastSide ? (isOnRightSide && !isLeftRayCastSide ? 45 : !isOnRightSide && isLeftRayCastSide ? -45 : 45) : -45));
+
+                    rotation = new Rot(MathHelper.wrapDegree(yaw), getPitch(MathHelper.wrapDegree(yaw), true));
                 }
             }
 
@@ -377,11 +358,11 @@ public class Scaffold extends Module {
         return delta;
     }
 
-    private float getPitch(float yaw) {
+    private float getPitch(float yaw, boolean handleMouse) {
         Map<Float, MovingObjectPosition> positionHashMap = new HashMap<>();
 
-        float maxPitch = (float) pitchCorrectionSearch.getMaxValue();
         float minPitch = (float) pitchCorrectionSearch.getMinValue();
+        float maxPitch = (float) pitchCorrectionSearch.getMaxValue();
 
         float step = stepPitchCorrection.getValue();
         for (float i = minPitch; i < maxPitch; i += step) {
@@ -393,25 +374,16 @@ public class Scaffold extends Module {
         }
 
         if (positionHashMap.isEmpty()) {
-            return switch (pitchSelection.getMode()) {
-                case "Nearest" -> lastPitch;
-                case "Lowest" -> 80;
-                case "Highest" -> 76;
-                case "Mid" -> 78;
-                default -> Rot.getServerRotation().getPitch();
-            };
+            return lastPitch;
         }
 
         List<Float> pitches = new ArrayList<>(positionHashMap.keySet());
 
         pitches.sort(Comparator.comparingDouble(pitch -> Math.abs(Rot.getServerRotation().getPitch()) - pitch));
-        if (!getSafeValue() && rotMode.getMode().equalsIgnoreCase("GodBridge")) {
-            mouse = positionHashMap.get(pitches.getFirst());
-        }
 
-        if (pitchSelection.getMode().equalsIgnoreCase("Nearest")) {
-            lastPitch = pitches.getFirst();
-        }
+        if (handleMouse) mouse = positionHashMap.get(pitches.getFirst());
+
+        lastPitch = pitches.getFirst();
         return pitches.getFirst();
     }
 
@@ -420,7 +392,7 @@ public class Scaffold extends Module {
         List<RotationData> validRotations = new ArrayList<>();
 
         for (float yaw = -180; yaw < 180; yaw += step) {
-            float pitch = getPitch(yaw);
+            float pitch = getPitch(yaw, false);
             MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, pitch));
 
             if (hit == null

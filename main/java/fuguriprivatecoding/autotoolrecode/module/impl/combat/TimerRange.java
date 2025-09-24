@@ -51,7 +51,7 @@ public class TimerRange extends Module {
 
     Color fadeColor;
 
-    boolean teleporting, click = false;
+    boolean teleporting = false;
     int teleportTicks, posRotIncrement = 0;
 
     public static int balance = 0;
@@ -60,10 +60,6 @@ public class TimerRange extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof RunGameLoopEvent && balance > 0) mc.timer.renderPartialTicks = partialTicks.getValue();
-//        if (event instanceof LegitClickTimingEvent && click) {
-//            mc.clickMouse();
-//            click = false;
-//        }
 
         if (teleporting) return;
 
@@ -112,7 +108,6 @@ public class TimerRange extends Module {
                     balance++;
                     if (i == teleportTicks - 1) balance += additionalTicks.getValue();
                     if (RayCastUtils.rayCast(3.0, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
-                        click = true;
                         break;
                     }
                 } catch (Exception ignored) {}
@@ -174,7 +169,7 @@ public class TimerRange extends Module {
                     (targetPos.yCoord - pos.yCoord) / posRotIncrement,
                     (targetPos.zCoord - pos.zCoord) / posRotIncrement
             );
-            pos.add(cashingPos);
+            pos = pos.add(cashingPos);
             posRotIncrement--;
         }
     }

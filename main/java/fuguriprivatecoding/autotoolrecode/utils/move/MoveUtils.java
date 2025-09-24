@@ -22,6 +22,10 @@ public class MoveUtils implements Imports {
 
     private static float yaw = 0;
 
+    public static boolean isMoveDiagonally(float yaw) {
+        return Math.round(yaw / 45f) % 2 != 0;
+    }
+
     public static float getDir() {
 
         float rotationYaw = mc.thePlayer.rotationYaw;
