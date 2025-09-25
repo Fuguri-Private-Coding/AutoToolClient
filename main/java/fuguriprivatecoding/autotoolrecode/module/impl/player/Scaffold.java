@@ -276,7 +276,7 @@ public class Scaffold extends Module {
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (getTellyValue()) {
-                    rotation = new Rot(MoveUtils.getDir(), 90);
+                    rotation = new Rot(MoveUtils.getDir(), 79);
                 } else {
                     rotation = getBestRotation();
                 }
@@ -288,8 +288,8 @@ public class Scaffold extends Module {
                 } else {
                     float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), 45);
 
-                    boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.5) != Math.floor(mc.thePlayer.posX) ||
-                        Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(roundedYaw)) * 0.5) != Math.floor(mc.thePlayer.posZ);
+                    boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.3) != Math.floor(mc.thePlayer.posX) ||
+                        Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(roundedYaw)) * 0.3) != Math.floor(mc.thePlayer.posZ);
 
                     MovingObjectPosition rightRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw + 45, getPitch(roundedYaw + 45, false)));
                     MovingObjectPosition leftRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw - 45, getPitch(roundedYaw - 45, false)));

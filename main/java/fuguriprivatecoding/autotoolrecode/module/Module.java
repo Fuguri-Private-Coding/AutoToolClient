@@ -30,7 +30,7 @@ public class Module implements Imports, SettingAble {
 	@Getter @Setter boolean isHovered;
 	@Getter private float toggleProgress = 0f;
 
-	@Getter EasingAnimation arrayListAnimation = new EasingAnimation(-50);
+	@Getter EasingAnimation arrayListAnimation = new EasingAnimation(-100);
 
     public Module() {
 		settings = new ArrayList<>();
