@@ -202,7 +202,7 @@ public class Effects extends Module {
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-                ResourceLocation image = new ResourceLocation("minecraft", "hackclient/image/" + customAttackEffects.getMode().toLowerCase() + ".png");
+                ResourceLocation image = new ResourceLocation("minecraft", "autotool/image/" + customAttackEffects.getMode().toLowerCase() + ".png");
 
                 ColorUtils.glColor(particleColor.getMixedColor(particleList.indexOf(particle)), 1f - (float) (System.currentTimeMillis() - particle.createdTime) / lifeTime.getValue());
                 RenderUtils.drawImage(image,-particleSize.getValue() / 2f,-particleSize.getValue() / 2f,particleSize.getValue(),particleSize.getValue(), true);

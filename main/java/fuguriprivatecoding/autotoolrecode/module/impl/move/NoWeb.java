@@ -17,7 +17,7 @@ import net.minecraft.util.EnumFacing;
 public class NoWeb extends Module {
 
     Mode mode = new Mode("Mode", this)
-            .addModes("Vanilla").setMode("TestPacket");
+            .addModes("Vanilla").setMode("Vanilla");
 
     @EventTarget
     public void onEvent(Event event) {

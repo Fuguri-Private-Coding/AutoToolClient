@@ -46,7 +46,7 @@ public class ImGuiManager implements Imports {
         try {
             InputStream is = Minecraft.getMinecraft()
                     .getResourceManager()
-                    .getResource(new ResourceLocation("minecraft", "hackclient/fonts/SFPro.ttf"))
+                    .getResource(new ResourceLocation("minecraft", "autotool/fonts/SFPro.ttf"))
                     .getInputStream();
 
             byte[] fontData = new byte[is.available()];

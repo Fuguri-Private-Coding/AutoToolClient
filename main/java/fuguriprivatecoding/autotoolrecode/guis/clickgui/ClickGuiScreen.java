@@ -59,10 +59,9 @@ public class ClickGuiScreen extends GuiScreen {
 	Category clickedCategory;
 	Module clickedModule;
 
-	final Animation2D settingLine, background, sizeBackground, modulesScrolls;
+	final Animation2D settingLine, background, sizeBackground, modulesScrolls, moduleLine, settingsScrolls;
+
 	final EasingAnimation guis = new EasingAnimation();
-	final EasingAnimation moduleLine = new EasingAnimation();
-	final EasingAnimation settingsScrolls = new EasingAnimation();
 
 	public ClickGuiScreen() {
 		lastMouse = new Vector2f(0, 0);
@@ -83,6 +82,8 @@ public class ClickGuiScreen extends GuiScreen {
 		background = new Animation2D();
 		settingLine = new Animation2D();
 		modulesScrolls = new Animation2D();
+		moduleLine = new Animation2D();
+		settingsScrolls = new Animation2D();
 	}
 
 	@Override
@@ -144,7 +145,7 @@ public class ClickGuiScreen extends GuiScreen {
 		final float clientNameWidth = (float) fontRenderer.getStringWidth(Client.INST.getName());
 
 		modulesScrolls.endY	= modulesScroll;
-		settingsScrolls.setEnd(settingsScroll);
+		settingsScrolls.endY = settingsScroll;
 		background.endX = pos.x;
 		background.endY = pos.y;
 		sizeBackground.endX = size.x;
@@ -153,7 +154,7 @@ public class ClickGuiScreen extends GuiScreen {
 		background.update(15f);
 		sizeBackground.update(15f);
 		modulesScrolls.update(15f);
-		settingsScrolls.update(15f / 4, Easing.OUT_BACK);
+		settingsScrolls.update(15f);
 
 		ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
@@ -252,10 +253,10 @@ public class ClickGuiScreen extends GuiScreen {
 
 			offset += fontRenderer.FONT_HEIGHT + 2;
 			modulesTotalHeight += fontRenderer.FONT_HEIGHT + 2;
-			if (module == selectedModule) moduleLine.setEnd(background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset);
+			if (module == selectedModule) moduleLine.endY = (background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset);
 		}
 
-		if (selectedModule != null) RoundedUtils.drawRect(background.x + 2, moduleLine.getValue() - 12 + 3, 0.05f, 6, 0, MAIN_COLOR);
+		if (selectedModule != null) RoundedUtils.drawRect(background.x + 2, moduleLine.y - 12 + 3, 0.05f, 6, 0, MAIN_COLOR);
 		ScissorUtils.disableScissor();
 
 		ScissorUtils.enableScissor();
@@ -269,7 +270,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		RoundedUtils.drawRect(background.x + verticalLineXOffset, background.y + 15, 0.05f, sizeBackground.y - 15, 0f, Color.BLACK);
 
-		offset = settingsScrolls.getValue();
+		offset = settingsScrolls.y;
 
 		settingsTotalHeight = 0;
 		if (selectedModule != null) {
@@ -712,9 +713,9 @@ public class ClickGuiScreen extends GuiScreen {
 		boolean config = mouseX > sc.getScaledWidth() / 2f - 50 + 43 && mouseX < sc.getScaledWidth() / 2f - 50 + 43 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
 		boolean hotKey = mouseX > sc.getScaledWidth() / 2f - 50 + 75 && mouseX < sc.getScaledWidth() / 2f - 50 + 75 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
 
-		ResourceLocation terminal = new ResourceLocation("minecraft", "hackclient/image/terminal.png");
-		ResourceLocation configs = new ResourceLocation("minecraft", "hackclient/image/configs.png");
-		ResourceLocation hotKeys = new ResourceLocation("minecraft", "hackclient/image/keyboard.png");
+		ResourceLocation terminal = new ResourceLocation("minecraft", "autotool/image/terminal.png");
+		ResourceLocation configs = new ResourceLocation("minecraft", "autotool/image/configs.png");
+		ResourceLocation hotKeys = new ResourceLocation("minecraft", "autotool/image/keyboard.png");
 
 		final float panelCenterX = sc.getScaledWidth() / 2f;
 		final float panelY = sc.getScaledHeight() - guis.getValue();
@@ -736,7 +737,7 @@ public class ClickGuiScreen extends GuiScreen {
 		RenderUtils.drawImage(hotKeys, (int) hotkeyX, (int) iconY, iconSize, iconSize, true);
 
 		guis.update(clickGui.animationSpeed.getValue() / 5, Easing.IN_OUT_BACK);
-		moduleLine.update(clickGui.animationSpeed.getValue() / 4, Easing.IN_OUT_BACK);
+		moduleLine.update(clickGui.animationSpeed.getValue());
 		settingLine.update(clickGui.animationSpeed.getValue());
 		GL11.glScaled(1f / scale, 1f / scale,1f);
 	}
@@ -883,8 +884,8 @@ public class ClickGuiScreen extends GuiScreen {
 					case 0 -> module.toggle();
 					case 1 -> {
 						if (selectedModule == null || !selectedModule.equals(module)) {
-							settingsScrolls.setEnd(-400);
-							settingsScrolls.update(clickGui.animationSpeed.getValue() / 5, Easing.OUT_BACK);
+							settingsScrolls.endY = (-400);
+							settingsScrolls.update(clickGui.animationSpeed.getValue());
 							settingsScroll = 0;
 							selectedModule = module;
 						} else {
@@ -921,7 +922,7 @@ public class ClickGuiScreen extends GuiScreen {
 			offset += (float) (fontRenderer.getStringWidth(category.name) + 5);
 		}
 
-		offset = settingsScrolls.getValue();
+		offset = settingsScrolls.y;
 		if (selectedModule != null) {
 			boolean bind = mouseX > background.x + verticalLineXOffset + 5 && mouseX < background.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey()))) && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9;
 			boolean hide = mouseX > background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()) && mouseX < background.x + sizeBackground.x - 5 && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9;
@@ -1069,8 +1070,8 @@ public class ClickGuiScreen extends GuiScreen {
 	}
 
 	private void animateCloseTransition() {
-		moduleLine.setEnd(0);
-		moduleLine.update(5, Easing.OUT_BACK);
+		moduleLine.endY = 0;
+		moduleLine.update(5);
 
 		guis.setEnd(0);
 		guis.update(3, Easing.OUT_BACK);

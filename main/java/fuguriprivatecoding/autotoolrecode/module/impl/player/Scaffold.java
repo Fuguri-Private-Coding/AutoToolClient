@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
@@ -8,7 +7,6 @@ import fuguriprivatecoding.autotoolrecode.managers.PlayerManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
@@ -16,7 +14,7 @@ import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
@@ -28,7 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
 import org.lwjgl.input.Mouse;
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -79,7 +76,11 @@ public class Scaffold extends Module {
     FloatSetting serverPitch = new FloatSetting("Server Pitch", this, () -> godVisible.getAsBoolean() && bypassServerPitch.isToggled(), 70, 85, 77,0.1f);
 
     final CheckBox render = new CheckBox("Render", this, true);
+
     final ColorSetting color = new ColorSetting("Color", this);
+
+    final CheckBox glow = new CheckBox("Glow", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this);
 
     private final List<Block> blacklistedBlocks = Arrays.asList(
             Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava, Blocks.wooden_slab, Blocks.chest, Blocks.flowing_lava,
@@ -109,8 +110,6 @@ public class Scaffold extends Module {
 
     int blocksLeft;
 
-    Glow shadows;
-
     @Override
     public void onDisable() {
         resetValues();
@@ -118,8 +117,6 @@ public class Scaffold extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
-
         if (event instanceof TickEvent) {
             rotate();
             legitPlace();
@@ -136,11 +133,11 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof Render3DEvent && mouse.getBlockPos() != null && render.isToggled()) {
-            Color fadeColor = color.isFade() ? ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed()) : color.getColor();
-
             RenderUtils.start3D();
-            if (shadows.isToggled() && shadows.module.get("Scaffold")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(mouse.getBlockPos(), fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), 1f));
-            RenderUtils.drawBlockESP(mouse.getBlockPos(), fadeColor.getRed() / 255f, fadeColor.getGreen() / 255f, fadeColor.getBlue() / 255f, fadeColor.getAlpha() / 255f);
+
+            if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(mouse.getBlockPos(), glowColor.getFadedFloatColor()));
+            RenderUtils.drawBlockESP(mouse.getBlockPos(), color.getFadedFloatColor());
+
             ColorUtils.resetColor();
             RenderUtils.stop3D();
         }
@@ -288,7 +285,7 @@ public class Scaffold extends Module {
                 } else {
                     float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(mc.thePlayer.rotationYaw + 180), 45);
 
-                    boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.3) != Math.floor(mc.thePlayer.posX) ||
+                    boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.6) != Math.floor(mc.thePlayer.posX) ||
                         Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(roundedYaw)) * 0.3) != Math.floor(mc.thePlayer.posZ);
 
                     MovingObjectPosition rightRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw + 45, getPitch(roundedYaw + 45, false)));

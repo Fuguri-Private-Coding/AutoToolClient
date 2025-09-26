@@ -10,35 +10,30 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MovingObjectPosition;
-
-import java.awt.*;
 
 @ModuleInfo(name = "BlockOverlay", category = Category.VISUAL, description = "Выделяет блок на который вы смотрите.")
 public class BlockOverlay extends Module {
 
     final ColorSetting color = new ColorSetting("Color", this);
 
-    Glow shadows;
-    Blur blur;
+    final CheckBox glow = new CheckBox("Glow", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this);
+    final CheckBox blur = new CheckBox("Blur", this);
 
     @EventTarget
     public void onEvent(Event event) {
         if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) return;
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
-        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (event instanceof DrawBlockHighlightEvent) {
             MovingObjectPosition renderRayCast = mc.objectMouseOver;
             if (renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 RenderUtils.start3D();
-                if (shadows.isToggled() && shadows.module.get("BlockOverlay")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), 1,1,1,1));
-                if (blur.isToggled() && blur.module.get("BlockOverlay")) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), 1,1,1,1));
+                if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), glowColor.getFadedFloatColor()));
+                if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), 1,1,1,1));
                 RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), color.getFadedFloatColor());
                 GlStateManager.resetColor();
                 RenderUtils.stop3D();

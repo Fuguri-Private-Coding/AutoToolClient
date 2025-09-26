@@ -20,11 +20,11 @@ public class SoundsManager {
         File neverLoseSoundFile = new File(directory, "neverlose.wav");
         File skeetSoundFile = new File(directory, "skeet.wav");
 
-        unpackIfNeeded(enableSoundFile, "assets/minecraft/hackclient/sounds/enable.wav");
-        unpackIfNeeded(disableSoundFile, "assets/minecraft/hackclient/sounds/disable.wav");
-        unpackIfNeeded(killedSoundFile, "assets/minecraft/hackclient/sounds/killed.wav");
-        unpackIfNeeded(neverLoseSoundFile, "assets/minecraft/hackclient/sounds/neverlose.wav");
-        unpackIfNeeded(skeetSoundFile, "assets/minecraft/hackclient/sounds/skeet.wav");
+        unpackIfNeeded(enableSoundFile, "assets/minecraft/autotool/sounds/enable.wav");
+        unpackIfNeeded(disableSoundFile, "assets/minecraft/autotool/sounds/disable.wav");
+        unpackIfNeeded(killedSoundFile, "assets/minecraft/autotool/sounds/killed.wav");
+        unpackIfNeeded(neverLoseSoundFile, "assets/minecraft/autotool/sounds/neverlose.wav");
+        unpackIfNeeded(skeetSoundFile, "assets/minecraft/autotool/sounds/skeet.wav");
 
         enableSound = new SoundPlayer(enableSoundFile);
         disableSound = new SoundPlayer(disableSoundFile);

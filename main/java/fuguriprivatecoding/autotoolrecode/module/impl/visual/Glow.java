@@ -9,11 +9,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 public class Glow extends Module {
 
     public MultiMode module = new MultiMode("Modules", this)
-        .addModes("ItemsFirstPerson", "Dot" ,"BreakIndicator", "CPSCounter", "BPSCounter",
-                "NameTags", "BlockOverlay", "Chat",
-                "Scaffold", "ChestESP", "BedESP", "WorldParticles",
-                "Weather", "TargetHUD", "BackTrack", "Ping"
-        );
+        .addModes("ItemsFirstPerson", "Chat", "Weather", "BackTrack", "Ping");
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 1, 35, 6);
     public FloatSetting brightness = new FloatSetting("Brightness", this, 0,3,1,0.1f);

@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
@@ -11,11 +10,9 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
@@ -34,14 +31,15 @@ public class BedESP extends Module {
 
     final IntegerSetting range = new IntegerSetting("Range", this, 2, 256, 64);
     final IntegerSetting rate = new IntegerSetting("Rate", this, 1, 30, 5);
-
     final ColorSetting color = new ColorSetting("Color", this);
+
+    final CheckBox glow = new CheckBox("Glow", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
+    final CheckBox blur = new CheckBox("Blur", this);
 
     private final List<BlockPos[]> beds = new ArrayList<>();
     private long lastCheck = 0;
 
-    Glow shadows;
-    Blur blur;
     Thread update;
 
     @Override
@@ -54,8 +52,6 @@ public class BedESP extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
-        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
         if (event instanceof WorldChangeEvent && !beds.isEmpty()) beds.clear();
         if (event instanceof TickEvent) {
             if (System.currentTimeMillis() - lastCheck < rate.getValue() * 100L) return;
@@ -68,8 +64,8 @@ public class BedESP extends Module {
 
             RenderUtils.start3D();
             for (BlockPos[] bed : beds) {
-                if (shadows.isToggled() && shadows.module.get("BedESP")) BloomUtils.addToDraw(() -> renderBed(bed, Color.white));
-                if (blur.isToggled() && blur.module.get("BedESP")) GaussianBlurUtils.addToDraw(() -> renderBed(bed, Color.white));
+                if (glow.isToggled()) BloomRealUtils.addToDraw(() -> renderBed(bed, glowColor.getFadedFloatColor()));
+                if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> renderBed(bed, Color.white));
                 renderBed(bed, color.getFadedFloatColor());
             }
             RenderUtils.stop3D();

@@ -17,7 +17,8 @@ public class ClientIRC extends ListenerAdapter {
 
     @Getter @Setter
     public MessageChannel chatChannel, loginChannel, serverChannel, keyChannel,
-        onlineChannel, changeLogChannel, onlineConfigsChannel, clientVersionChannel, clientCapesChannel;
+        onlineChannel, changeLogChannel, onlineConfigsChannel, clientVersionChannel,
+        clientCapesChannel, fontsChannel;
 
     @Getter @Setter
     public static long MESSAGE_ID = -1, ONLINE_MESSAGE_ID = -1;
@@ -69,12 +70,13 @@ public class ClientIRC extends ListenerAdapter {
                         case "login-log" -> setLoginChannel(channel);
                         case "irc-chat" -> setChatChannel(channel);
                         case "server-log" -> setServerChannel(channel);
+                        case "fonts" -> setFontsChannel(channel);
                     }
                 }
             }
 
         } catch (InterruptedException e) {
-            System.out.println("Failed to connect to server.");
+            System.out.println("Failed connect to server.");
             System.exit(-1);
         }
     }

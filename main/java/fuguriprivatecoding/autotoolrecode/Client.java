@@ -1,4 +1,5 @@
 package fuguriprivatecoding.autotoolrecode;
+
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.*;
 import fuguriprivatecoding.autotoolrecode.guis.config.*;
 import fuguriprivatecoding.autotoolrecode.config.*;
@@ -44,8 +45,8 @@ import java.util.List;
 public enum Client implements Imports {
 	INST;
 
-	String name;
-	ClientVersion version;
+	String name = "AutoTool";
+	final ClientVersion version = new ClientVersion(4, 4, 0);
 
 	@Setter
 	Profile profile;
@@ -94,7 +95,6 @@ public enum Client implements Imports {
 		starting = true;
 
 		name = "AutoTool";
-		version = new ClientVersion(4, 4, 0);
 
 		Display.setTitle(getFullName());
 
@@ -171,10 +171,7 @@ public enum Client implements Imports {
 		discord.startRPC();
 
 		configManager.loadConfig(configManager.getDefaultConfig());
-
 		configManager.loadModulesFromConfig();
-
-//		new Thread(() -> changeLogList.addAll(irc.getChangeLogChannel().getIterableHistory().stream().toList())).start();
 
 		starting = false;
 
@@ -185,7 +182,7 @@ public enum Client implements Imports {
 	private void updateClient() {
 		for (Message message : irc.getClientVersionChannel().getIterableHistory().stream().toList()) {
 			if (!message.getContentRaw().equalsIgnoreCase(version.toString())) {
-				JOptionPane.showMessageDialog(null, "Твоя версия клиента устарела: " + version.toString() + ", Пожалуйста обновите клиент до: " + message.getContentRaw());
+				JOptionPane.showMessageDialog(null, "Твоя версия клиента устарела: " + version + ", Пожалуйста обновите клиент до: " + message.getContentRaw());
 				System.exit(-1);
 			}
 		}
@@ -222,7 +219,7 @@ public enum Client implements Imports {
 
 	public void connectClient() {
 		MessageChannel onlineChannel = irc.getOnlineChannel();
-		String messageContent = Client.INST.getProfile().toString() + " " + version.toString();
+		String messageContent = Client.INST.getProfile().toString() + " " + version;
 
 		onlineChannel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.ONLINE_MESSAGE_ID = sendMessage.getIdLong());
 	}

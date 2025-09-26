@@ -10,10 +10,11 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
+import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -26,16 +27,16 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "NameTags", category = Category.VISUAL, description = "Отображение никнейма игроков.")
 public class NameTags extends Module {
 
-    Mode fonts = new Mode("Fonts", this)
-            ;
+    Mode fonts = new Mode("Fonts", this);
 
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, 0f,5f,1f,0.1f);
 
     public final ColorSetting color = new ColorSetting("Color", this);
+    final CheckBox glow = new CheckBox("Glow", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this);
 
     MurderMystery murderDetector;
     MidClick midClick;
-    Glow shadows;
 
     String detectiveText, murderText, friendText, userText, text;
 
@@ -46,7 +47,6 @@ public class NameTags extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (murderDetector == null) murderDetector = Client.INST.getModuleManager().getModule(MurderMystery.class);
         if (midClick == null) midClick = Client.INST.getModuleManager().getModule(MidClick.class);
         if (event instanceof Render3DEvent) {
@@ -86,9 +86,9 @@ public class NameTags extends Module {
     public void render() {
         float offset = 9 - 8f;
         float stringWidth = (float) (Client.INST.getFonts().fonts.get(fonts.getMode()).getStringWidth(text) / 2f);
-        if (shadows.isToggled() && shadows.module.get("NameTags")) BloomUtils.addToDraw(() -> Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + mc.fontRendererObj.FONT_HEIGHT + 4, -1));
         Gui.drawRect(-stringWidth - 2, offset - 3, (-stringWidth - 2) + (stringWidth * 2 + 4), offset - 3 + Client.INST.getFonts().fonts.get(fonts.getMode()).FONT_HEIGHT + 4, color.getFadedColor().getRGB());
         Client.INST.getFonts().fonts.get(fonts.getMode()).drawString(text, -stringWidth, offset + 2, -1, false);
+        if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(-stringWidth - 2, offset - 3, stringWidth * 2 + 4, mc.fontRendererObj.FONT_HEIGHT + 4, 0, glowColor.getColor(), glowColor.getFadeColor(), glowColor.getSpeed()));
     }
 
     private void setRendering(Entity entity, Vec3 pos, Runnable render) {

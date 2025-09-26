@@ -19,7 +19,7 @@ public class GuiClientMainMenu extends GuiScreen {
         this.mc = Imports.mc;
     }
 
-    ResourceLocation exitLogo = new ResourceLocation("minecraft", "hackclient/mainmenu/exit.png");
+    ResourceLocation exitLogo = new ResourceLocation("minecraft", "autotool/mainmenu/exit.png");
 
     EasingAnimation alphaAnim = new EasingAnimation();
 

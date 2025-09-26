@@ -27,6 +27,6 @@ public class ShaderManager {
 	}
 
 	private ResourceLocation getShaderSource(String name) {
-		return new ResourceLocation("minecraft","hackclient/shaders/" + name);
+		return new ResourceLocation("minecraft","autotool/shaders/" + name);
 	}
 }

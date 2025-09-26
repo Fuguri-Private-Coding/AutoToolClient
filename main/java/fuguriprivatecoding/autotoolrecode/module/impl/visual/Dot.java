@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MotionEventPost;
@@ -16,8 +15,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
-import java.awt.*;
 
 @ModuleInfo(name = "Dot", category = Category.VISUAL, description = "Показывает текущие измененные ротации.")
 public class Dot extends Module {
@@ -27,24 +24,23 @@ public class Dot extends Module {
 
     public final ColorSetting color = new ColorSetting("Color", this);
 
-    Glow shadows;
+    final CheckBox glow = new CheckBox("Glow", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this);
+
     Rot prevPos = new Rot();
     Rot pos = new Rot();
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         if (!Rot.isChanged() && onlyChangeRotationModules.isToggled()) { return; }
         if (event instanceof Render3DEvent) {
             MovingObjectPosition mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks),6,6, prevPos.add(pos.subtract(prevPos).multiplier(mc.timer.renderPartialTicks)), mc.timer.renderPartialTicks);
+            if (mouse == null) return;
 
-            if (mouse != null) {
-                Vec3 smooth = mouse.hitVec;
-
-                if (shadows.isToggled() && shadows.module.get("Dot")) BloomUtils.addToDraw(() -> RenderUtils.drawDot(smooth, size.getValue() / 10, Color.white));
-                RenderUtils.drawDot(smooth, size.getValue() / 10, color.getFadedColor());
-            }
+            if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, glowColor.getFadedColor()));
+            RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, color.getFadedColor());
         }
+
         if (event instanceof MotionEventPost e) {
             prevPos = new Rot(pos.getYaw(), pos.getPitch());
             pos = new Rot(e.getYaw(), e.getPitch());
