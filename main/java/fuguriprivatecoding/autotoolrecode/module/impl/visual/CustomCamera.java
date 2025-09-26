@@ -11,7 +11,7 @@ public class CustomCamera extends Module {
     public FloatSetting cameraDistance = new FloatSetting("CameraDistance",this, 1f, 5f, 1f, 0.1f) {};
     public CheckBox cameraClip = new CheckBox("CameraClip", this, true);
     public CheckBox smoothCamera = new CheckBox("SmoothCamera", this, true);
-    public FloatSetting yAnimationSmooth = new FloatSetting("yAnimationSmoothSpeed", this, 0, 50, 50, 0.1f);
-    public FloatSetting xAnimationSmooth = new FloatSetting("xAnimationSmoothSpeed", this, 0, 50, 50, 0.1f);
-    public FloatSetting zAnimationSmooth = new FloatSetting("zAnimationSmoothSpeed", this, 0, 50, 50, 0.1f);
+    public FloatSetting yAnimationSmooth = new FloatSetting("yAnimationSmoothSpeed", this, smoothCamera::isToggled, 0, 50, 50, 0.1f);
+    public FloatSetting xAnimationSmooth = new FloatSetting("xAnimationSmoothSpeed", this, smoothCamera::isToggled, 0, 50, 50, 0.1f);
+    public FloatSetting zAnimationSmooth = new FloatSetting("zAnimationSmoothSpeed", this, smoothCamera::isToggled, 0, 50, 50, 0.1f);
 }

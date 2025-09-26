@@ -9,11 +9,10 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
@@ -42,12 +41,12 @@ public class ChestESP extends Module {
                     if (shadows.isToggled() && shadows.module.get("ChestESP")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), Color.WHITE));
                     if (blur.isToggled() && blur.module.get("ChestESP")) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), Color.WHITE));
                     RenderUtils.drawBlockESP(tileEntity.getPos(), color.getFadedFloatColor());
-                    ColorUtils.resetColor();
+                    GlStateManager.resetColor();
                 } else if (tileEntity instanceof TileEntityEnderChest && enderChest.isToggled()) {
                     if (shadows.isToggled() && shadows.module.get("ChestESP")) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), Color.WHITE));
                     if (blur.isToggled() && blur.module.get("ChestESP")) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntity.getPos(), Color.WHITE));
                     RenderUtils.drawBlockESP(tileEntity.getPos(), color.getFadedFloatColor());
-                    ColorUtils.resetColor();
+                    GlStateManager.resetColor();
                 }
             }
             RenderUtils.stop3D();

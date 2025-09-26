@@ -529,10 +529,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     }
 
     private void hurtCameraEffect(float partialTicks) {
-        NoRender noRender = Client.INST.getModuleManager().getModule(NoRender.class);
-
-        if (noRender.isToggled() && noRender.HurtCam.isToggled()) return;
-
         if (this.mc.getRenderViewEntity() instanceof EntityLivingBase entitylivingbase) {
             float f = (float) entitylivingbase.hurtTime - partialTicks;
 
@@ -547,9 +543,11 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             f = f / (float) entitylivingbase.maxHurtTime;
             f = MathHelper.sin(f * f * f * f * (float) Math.PI);
-            float f2 = entitylivingbase.attackedAtYaw;
+            final HurtCamera hurtCamera = Client.INST.getModuleManager().getModule(HurtCamera.class);
+
+            final float f2 = hurtCamera.isToggled() ? 0 : entitylivingbase.attackedAtYaw;
             GlStateManager.rotate(-f2, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(-f * 14.0F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(-f * 14.0F, 0.0F, 0.0F, hurtCamera.isToggled() ? hurtCamera.strength.getValue() : 1.0F);
             GlStateManager.rotate(f2, 0.0F, 1.0F, 0.0F);
         }
     }

@@ -12,8 +12,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
 public class Blur extends Module {
 
     public MultiMode module = new MultiMode("Modules", this)
-            .addModes("ClickGui","ConsoleGui", "ConfigGui",
-                    "Scaffold", "ChestESP", "BedESP","BlockOverlay", "HotKeyGui", "ArrayList", "Notifications"
+            .addModes("ChestESP", "BedESP","BlockOverlay"
             );
 
     public IntegerSetting radius = new IntegerSetting("Radius", this, 6, 70, 6);

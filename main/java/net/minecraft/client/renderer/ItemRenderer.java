@@ -457,7 +457,7 @@ public class ItemRenderer {
     private void renderFireInFirstPerson(float partialTicks) {
         NoRender noRender = Client.INST.getModuleManager().getModule(NoRender.class);
 
-        if (noRender.isToggled() && noRender.Fire.isToggled()) return;
+        if (noRender.isToggled() && noRender.fire.isToggled()) return;
 
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();

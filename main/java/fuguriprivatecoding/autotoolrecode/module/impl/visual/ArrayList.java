@@ -40,6 +40,7 @@ public class ArrayList extends Module {
     FloatSetting textYOffset = new FloatSetting("Text Y-Offset", this,-5f, 5, 0, 0.01f);
     CheckBox shadow = new CheckBox("Text Shadow", this, true);
     IntegerSetting verticalSpacing = new IntegerSetting("Vertical Spacing", this, 1,25,0);
+    IntegerSetting horizontalSpacing = new IntegerSetting("Horizontal Spacing", this, -10,10,0);
 
     CheckBox glow = new CheckBox("Glow", this, false);
     CheckBox blur = new CheckBox("Blur", this, false);
@@ -103,9 +104,11 @@ public class ArrayList extends Module {
         String fullText = moduleText + (suffixCondition ? " - " + module.getSuffix() : "");
         float textWidth = (float) font.getStringWidth(fullText);
 
-        float backgroundStartX = (float) (sc.getScaledWidth() - xOffset - textWidth - 4f);
+        float increasingWidth = horizontalSpacing.getValue();
+
+        float backgroundStartX = (float) (sc.getScaledWidth() - xOffset - textWidth - 4f - increasingWidth);
         float backgroundEndX = (float) (sc.getScaledWidth() - xOffset);
-        float textX = backgroundStartX + 2.25f;
+        float textX = backgroundStartX + 2.25f + increasingWidth / 2f;
 
         float backgroundHeight = verticalSpacing.getValue();
         float textY = (float) (2.5f + yOffset + textYOffset.getValue() - 4.5f + backgroundHeight / 2f);
@@ -153,8 +156,7 @@ public class ArrayList extends Module {
         font.drawString(moduleText, textX, textY, fadeTextColor, shadow.isToggled());
 
         if (line.isToggled()) {
-            Gui.drawRect((int) backgroundEndX, (int) (yOffset + backgroundHeight),
-                (int) (backgroundEndX + 2), (int) yOffset, fadeLineColor.getRGB());
+            Gui.drawRect((int) backgroundEndX, (int) (yOffset + backgroundHeight), (int) (backgroundEndX + 2), (int) yOffset, fadeLineColor.getRGB());
         }
     }
 
@@ -165,9 +167,11 @@ public class ArrayList extends Module {
         String fullText = moduleText + (suffixCondition ? " - " + module.getSuffix() : "");
         float textWidth = (float) font.getStringWidth(fullText);
 
+        float increasingWidth = horizontalSpacing.getValue();
+
         float backgroundStartX = (float) xOffset;
-        float backgroundEndX = (float) (xOffset + textWidth + 4f);
-        float textX = (float) (xOffset + 2.5f);
+        float backgroundEndX = (float) (xOffset + textWidth + 4f + increasingWidth);
+        float textX = (float) (xOffset + 2.5f + increasingWidth / 2f);
 
         float backgroundHeight = verticalSpacing.getValue();
         float textY = (float) (2.5f + yOffset + textYOffset.getValue() - 4.5f + backgroundHeight / 2f);

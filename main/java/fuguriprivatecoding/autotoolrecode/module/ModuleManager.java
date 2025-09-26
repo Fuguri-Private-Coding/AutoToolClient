@@ -93,6 +93,7 @@ public class ModuleManager {
 			new CustomCape(),
 			new InvClicker(),
 			new Fucker(),
+			new HurtCamera(),
 			new CustomCamera(),
 			new BlockOverlay(),
 			new DynamicIsland(),

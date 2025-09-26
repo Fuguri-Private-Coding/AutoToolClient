@@ -50,16 +50,16 @@ public class NameTags extends Module {
         if (murderDetector == null) murderDetector = Client.INST.getModuleManager().getModule(MurderMystery.class);
         if (midClick == null) midClick = Client.INST.getModuleManager().getModule(MidClick.class);
         if (event instanceof Render3DEvent) {
+            RenderUtils.start3DNameTag();
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
                 if (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) continue;
                 updateText(entity);
 
                 Vec3 pos = calculateTranslatedPos(entity);
 
-                RenderUtils.start3DNameTag();
                 setRendering(entity, pos, this::render);
-                RenderUtils.stop3DNameTag();
             }
+            RenderUtils.stop3DNameTag();
         }
     }
 

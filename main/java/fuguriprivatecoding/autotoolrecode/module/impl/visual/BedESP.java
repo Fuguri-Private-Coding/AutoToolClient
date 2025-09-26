@@ -19,6 +19,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -132,6 +133,6 @@ public class BedESP extends Module {
             axisAlignedBB = new AxisAlignedBB(posX, posY, posZ, posX + 1.0, posY + 0.5625F, posZ + 2.0);
         }
         RenderUtils.drawBoundingBox(axisAlignedBB, color);
-        ColorUtils.resetColor();
+        GlStateManager.resetColor();
     }
 }

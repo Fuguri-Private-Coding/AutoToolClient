@@ -18,7 +18,7 @@ import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.util.vector.Vector2f;
@@ -96,9 +96,9 @@ public class DynamicIsland extends Module {
 
             if (backTrack.isToggled() && backTrack.packetBuffer.size() > 10 && ent != null) {
                 AxisAlignedBB realBox = ent.getEntityBoundingBox().offset(ent.nx - ent.posX, ent.ny - ent.posY, ent.nz - ent.posZ).expand(
-                        ent.getCollisionBorderSize(),
-                        ent.getCollisionBorderSize(),
-                        ent.getCollisionBorderSize()
+                    ent.getCollisionBorderSize(),
+                    ent.getCollisionBorderSize(),
+                    ent.getCollisionBorderSize()
                 );
 
                 backtrack = "Distance - " + String.format("%.1f", DistanceUtils.getDistance(realBox));
@@ -109,32 +109,16 @@ public class DynamicIsland extends Module {
 
             updateAnimations();
 
-            StencilUtils.renderStencil(
-                    () -> RenderUtils.drawMixedRoundedRect(
-                            screenSize.x / 2f - currentWidth.getValue() / 2f,
-                            yOffsetValue,
-                            currentWidth.getValue(),
-                            currentHeight.getValue(),
-                            radiusAnim.getValue(),
-                            Color.BLACK,
-                            Color.BLACK,
-                            1f
-                    ),
-                    () -> {
-                        RenderUtils.drawMixedRoundedRect(
-                                screenSize.x / 2f - currentWidth.getValue() / 2f,
-                                yOffsetValue,
-                                currentWidth.getValue(),
-                                currentHeight.getValue(),
-                                radiusAnim.getValue(),
-                                bgColor.getFadedColor(),
-                                bgColor.getFadedColor(),
-                                bgColor.getSpeed()
-                        );
-
-                        font.drawString(currentText, (screenSize.x / 2f - font.getStringWidth(currentText) / 2f), 5.5f + needY.getValue(), new Color(textColor.getFadedColor().getRed() / 255f,textColor.getFadedColor().getGreen() / 255f,textColor.getFadedColor().getBlue() / 255f, textAlpha.getValue()));
-                    }
+            RoundedUtils.drawRect(
+                screenSize.x / 2f - currentWidth.getValue() / 2f,
+                yOffsetValue,
+                currentWidth.getValue(),
+                currentHeight.getValue(),
+                radiusAnim.getValue(),
+                bgColor.getFadedColor()
             );
+
+            font.drawString(currentText, (screenSize.x / 2f - font.getStringWidth(currentText) / 2f), 5.5f + needY.getValue(), new Color(textColor.getFadedColor().getRed() / 255f, textColor.getFadedColor().getGreen() / 255f, textColor.getFadedColor().getBlue() / 255f, textAlpha.getValue()));
 
             if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), bgColorShadow.getColor(), bgColorShadow.getFadeColor(), bgColorShadow.getSpeed()));
             if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), Color.WHITE, Color.WHITE, bgColorShadow.getSpeed()));
@@ -153,6 +137,7 @@ public class DynamicIsland extends Module {
 
     public void updateText(String text) {
         currentWidthText = text;
+
         if (!text.startsWith(currentText.substring(0,3))) {
             textAlpha.setEnd(0);
         } else {
