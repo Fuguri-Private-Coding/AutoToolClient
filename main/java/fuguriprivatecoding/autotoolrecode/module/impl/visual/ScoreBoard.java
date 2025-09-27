@@ -14,12 +14,14 @@ import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtilss;
+import fuguriprivatecoding.autotoolrecode.utils.scaling.ScaleUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
 import java.util.Collection;
@@ -30,13 +32,14 @@ public class ScoreBoard extends Module {
 
     public CheckBox remove = new CheckBox("Remove", this, true);
 
-    Mode fonts = new Mode("Fonts", this, () -> !remove.isToggled())
-            ;
+    Mode fonts = new Mode("Fonts", this, () -> !remove.isToggled());
 
     BooleanSupplier visible = () -> !remove.isToggled();
 
     public IntegerSetting posX = new IntegerSetting("Pos-X", this, visible, 0,100,0);
     public IntegerSetting posY = new IntegerSetting("Pos-Y", this, visible, 0,100,0);
+
+    public FloatSetting scale = new FloatSetting("Scale", this, 0.1f, 2f, 1f, 0.1f);
 
     CheckBox roundedRect = new CheckBox("Rounded", this, visible);
     public FloatSetting roundFactor = new FloatSetting("Round Factor", this, () -> visible.getAsBoolean() && roundedRect.isToggled(),0, 10, 5, 0.1f);
@@ -63,7 +66,9 @@ public class ScoreBoard extends Module {
 
             ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get(fonts.getMode());
 
-            ScaledResolution sc = new ScaledResolution(mc);
+            ScaledResolution sc = ScaleUtils.getScaledResolution(scale.getValue());
+
+            GL11.glScaled(scale.getValue(), scale.getValue(), 1);
 
             Scoreboard scoreboard = mc.theWorld.getScoreboard();
             ScoreObjective objective = scoreboard.getObjectiveInDisplaySlot(1);
@@ -85,11 +90,10 @@ public class ScoreBoard extends Module {
 
                 float finalWidth = width;
                 if (roundedRect.isToggled()) {
-
                     if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
                     if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
 
-                    StencilUtils.renderStencil(
+                    StencilUtilss.renderStencil(
                             () -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE),
                             () -> {
                                 RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), color.getFadedColor());
@@ -116,6 +120,7 @@ public class ScoreBoard extends Module {
                     fontRenderer.drawString(s1, pos.x + 3.0F, pos.y + height - (9 * j) + 2, Color.WHITE);
                 }
             }
+            GL11.glScaled(1.0 / scale.getValue(), 1.0 / scale.getValue(), 1);
         }
     }
 

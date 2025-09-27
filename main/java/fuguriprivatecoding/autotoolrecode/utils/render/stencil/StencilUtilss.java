@@ -6,7 +6,7 @@ import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
 
-public class StencilUtils implements Imports {
+public class StencilUtilss implements Imports {
 
     public static void dispose() {
         GL11.glDisable(2960);

@@ -8,9 +8,12 @@ import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiText;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -45,6 +48,8 @@ public class HotTextGui extends GuiScreen {
 
     Color mainColor;
     final Animation2D background, sizeBackground, scrolls;
+
+    final EasingAnimation alpha = new EasingAnimation(0);
 
     ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
     ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
@@ -91,6 +96,8 @@ public class HotTextGui extends GuiScreen {
         mouseX = (int) (mouseX / scale);
         mouseY = (int) (mouseY / scale);
 
+        alpha.update(5, Easing.IN_OUT_QUAD);
+
         GL11.glScaled(scale, scale, 1f);
 
         boolean hotScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
@@ -116,7 +123,8 @@ public class HotTextGui extends GuiScreen {
         };
 
         if (closing) {
-            boolean isAnimationComplete = Math.hypot(sizeBackground.x, sizeBackground.y) < 2;
+            alpha.setEnd(0);
+            boolean isAnimationComplete = !alpha.isAnimating();
 
             if (isAnimationComplete) {
                 closing = false;
@@ -151,8 +159,9 @@ public class HotTextGui extends GuiScreen {
             GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.WHITE));
         }
 
-        RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
+        AlphaUtils.startWrite();
 
+        RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(sc, background.x, background.y - 1, sizeBackground.x + 2, sizeBackground.y);
@@ -221,6 +230,9 @@ public class HotTextGui extends GuiScreen {
             lastMouse.set(mouseX, mouseY);
         }
         GL11.glScaled(1f / scale, 1f / scale, 1f);
+
+        AlphaUtils.endWrite();
+        AlphaUtils.draw(alpha.getValue() * 1.2f);
     }
 
     @Override
@@ -228,10 +240,6 @@ public class HotTextGui extends GuiScreen {
         if (creatingHotKey) textField.textboxKeyTyped(typedChar, keyCode);
         if (changingText) changeTextField.textboxKeyTyped(typedChar, keyCode);
         if (selectedHotText == null) binding = false;
-
-        float scale = clientSettings.scale.getValue();
-
-        ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
         if (binding) {
             binding = false;
@@ -245,11 +253,7 @@ public class HotTextGui extends GuiScreen {
         if (keyCode == 1 && !closing && !creatingHotKey && !changingText) {
             Client.INST.getConfigManager().saveHotKeys();
             Client.INST.getHotTextManager().updateHotKeys();
-            lastPos.set(pos);
-            lastSize.set(size);
             closing = true;
-            size.set(0, 0);
-            pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
         }
 
         if (keyCode == Keyboard.KEY_RETURN && creatingHotKey && !textField.getText().isEmpty()) {
@@ -331,11 +335,7 @@ public class HotTextGui extends GuiScreen {
             if (quit) {
                 Client.INST.getConfigManager().saveHotKeys();
                 Client.INST.getHotTextManager().updateHotKeys();
-                lastPos.set(pos);
-                lastSize.set(size);
                 closing = true;
-                size.set(0, 0);
-                pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
             }
 
             if (fullscreen) {
@@ -376,10 +376,7 @@ public class HotTextGui extends GuiScreen {
     @Override
     public void initGui() {
         Client.INST.getConfigManager().loadHotKeys();
-        sizeBackground.reset();
-        background.reset();
-        pos.set(lastPos);
-        size.set(lastSize);
+        alpha.setEnd(1);
     }
 
     @EventTarget

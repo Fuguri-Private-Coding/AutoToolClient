@@ -29,6 +29,8 @@ public class Animations extends Module {
     FloatSetting Y = new FloatSetting("Y", this, -1f, 1f, 0f, 0.1f) {};
     FloatSetting Z = new FloatSetting("Z", this, -1f, 1f, 0f, 0.1f) {};
 
+    FloatSetting scale = new FloatSetting("Scale", this, 0.1f, 2f, 1f, 0.1f);
+
     public FloatSetting speed = new FloatSetting("Speed", this, 0.1f, 4f,1f,0.1f);
 
     public CheckBox always = new CheckBox("AlwaysBlocking", this, true);
@@ -36,6 +38,7 @@ public class Animations extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof RenderItemEvent renderItemEvent) {
+            GL11.glScaled(scale.getValue(), scale.getValue(), 1);
             GlStateManager.translate(X.getValue(), Y.getValue(), Z.getValue());
             ItemRenderer itemRenderer = mc.getItemRenderer();
             float animationProgression = renderItemEvent.getEquipProgress();
@@ -121,6 +124,7 @@ public class Animations extends Module {
                     GlStateManager.rotate(-convertedProgress * 135.0F / 4.0F, 1.0F, 1.0F, 0.0F);
                 }
             }
+            GL11.glScaled(1f / scale.getValue(), 1f / scale.getValue(), 1);
         }
     }
 }

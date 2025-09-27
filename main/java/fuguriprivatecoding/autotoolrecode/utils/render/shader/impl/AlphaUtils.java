@@ -22,7 +22,7 @@ public class AlphaUtils implements Imports {
     }
 
     public static void endWrite() {
-        GL13.glActiveTexture(GL13.GL_TEXTURE19);
+        GL13.glActiveTexture(GL13.GL_TEXTURE12);
         tempFBO.bindFramebufferTexture();
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
     }
@@ -39,7 +39,7 @@ public class AlphaUtils implements Imports {
 
         mc.getFramebuffer().bindFramebuffer(true);
         program.start();
-        Uniform.uniform1i(programID, "image", 19);
+        Uniform.uniform1i(programID, "image", 12);
         Uniform.uniform1f(programID, "alpha", alpha);
         Shader.drawQuad();
         Shader.stop();

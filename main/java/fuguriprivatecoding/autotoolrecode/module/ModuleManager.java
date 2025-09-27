@@ -45,6 +45,7 @@ public class ModuleManager {
 			new MoreKB(),
 			new Velocity(),
 			new MurderMystery(),
+			new Spider(),
 			new InvManager(),
 			new Trails(),
 			new ESP(),

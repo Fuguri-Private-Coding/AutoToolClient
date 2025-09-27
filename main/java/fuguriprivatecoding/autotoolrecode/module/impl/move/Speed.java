@@ -18,13 +18,13 @@ import net.minecraft.util.MathHelper;
 
 import static fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils.strafe;
 
-@ModuleInfo(name = "Speed", category = Category.MOVE, description = "Позволяет вам двигатся быстрее.")
+@ModuleInfo(name = "Speed", category = Category.MOVE, description = "Позволяет вам двигаться быстрее.")
 public class Speed extends Module {
 
 	int ticks;
 
 	Mode mode = new Mode("Mode", this)
-			.addModes("45Degree", "Vanilla")
+			.addModes("45Degree", "Vanilla", "FunnyMcSkyPvp")
 			.setMode("45Degree");
 
 	CheckBox resetMotion = new CheckBox("ResetMotionOnDisable", this, false);

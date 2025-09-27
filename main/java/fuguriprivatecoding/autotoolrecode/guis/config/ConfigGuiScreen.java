@@ -9,9 +9,12 @@ import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiText;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -48,6 +51,8 @@ public class ConfigGuiScreen extends GuiScreen {
 
     final Animation2D background, sizeBackground, scrolls;
 
+    final EasingAnimation alpha = new EasingAnimation(0);
+
     Color mainColor;
 
     public ConfigGuiScreen() {
@@ -76,6 +81,8 @@ public class ConfigGuiScreen extends GuiScreen {
 
         ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
+        alpha.update(5, Easing.IN_OUT_QUAD);
+
         mouseX = (int) (mouseX / scale);
         mouseY = (int) (mouseY / scale);
 
@@ -92,7 +99,8 @@ public class ConfigGuiScreen extends GuiScreen {
         if (scroll < -maxScroll) scroll = (int) -maxScroll;
 
         if (closing) {
-            boolean isAnimationComplete = Math.hypot(sizeBackground.x, sizeBackground.y) < 2;
+            alpha.setEnd(0);
+            boolean isAnimationComplete = !alpha.isAnimating();
 
             if (isAnimationComplete) {
                 closing = false;
@@ -137,6 +145,8 @@ public class ConfigGuiScreen extends GuiScreen {
                 RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
+
+        AlphaUtils.startWrite();
 
         RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
@@ -210,6 +220,9 @@ public class ConfigGuiScreen extends GuiScreen {
             lastMouse.set(mouseX, mouseY);
         }
         GL11.glScaled(1f / scale, 1f / scale,1f);
+
+        AlphaUtils.endWrite();
+        AlphaUtils.draw(alpha.getValue() * 1.2f);
     }
 
     @Override
@@ -228,11 +241,7 @@ public class ConfigGuiScreen extends GuiScreen {
         }
 
         if (keyCode == 1 && !closing) {
-            lastPos.set(pos);
-            lastSize.set(size);
             closing = true;
-            size.set(0, 0);
-            pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
         }
 
         if (keyCode == Keyboard.KEY_RETURN) {
@@ -289,11 +298,7 @@ public class ConfigGuiScreen extends GuiScreen {
             if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y) return;
 
             if (quit) {
-                lastPos.set(pos);
-                lastSize.set(size);
                 closing = true;
-                size.set(0, 0);
-                pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
             }
 
             if (fullscreen) {
@@ -399,10 +404,7 @@ public class ConfigGuiScreen extends GuiScreen {
 
     @Override
     public void initGui() {
-        sizeBackground.reset();
-        background.reset();
-        pos.set(lastPos);
-        size.set(lastSize);
+        alpha.setEnd(1);
     }
 
     @EventTarget

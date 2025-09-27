@@ -46,7 +46,7 @@ public enum Client implements Imports {
 	INST;
 
 	String name = "AutoTool";
-	final ClientVersion version = new ClientVersion(4, 5,0);
+	final ClientVersion version = new ClientVersion(4, 5,1);
 
 	@Setter
 	Profile profile;

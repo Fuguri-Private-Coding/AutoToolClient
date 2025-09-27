@@ -12,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.StencilUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import java.awt.*;
@@ -107,7 +108,9 @@ public class ArrayList extends Module {
         float increasingWidth = horizontalSpacing.getValue();
 
         float backgroundStartX = (float) (sc.getScaledWidth() - xOffset - textWidth - 4f - increasingWidth);
+        float backgroundStartXыыы = (float) (sc.getScaledWidth() - 6 - textWidth - 4f - increasingWidth);
         float backgroundEndX = (float) (sc.getScaledWidth() - xOffset);
+        float backgroundEndXыыы = (float) (sc.getScaledWidth() - 6);
         float textX = backgroundStartX + 2.25f + increasingWidth / 2f;
 
         float backgroundHeight = verticalSpacing.getValue();
@@ -147,13 +150,13 @@ public class ArrayList extends Module {
             Gui.drawRect((int) backgroundStartX, (int) (yOffset + backgroundHeight), (int) backgroundEndX, (int) yOffset, bgMainColor.getRGB());
         }
 
+        font.drawString(moduleText, textX, textY, fadeTextColor, shadow.isToggled());
+
         if (suffixCondition) {
             String suffixText = " - " + module.getSuffix();
             float suffixX = (float) (backgroundEndX - font.getStringWidth(suffixText) - 1.75f);
             font.drawString(suffixText, suffixX, textY, suffixColor.getFadedColor(), shadow.isToggled());
         }
-
-        font.drawString(moduleText, textX, textY, fadeTextColor, shadow.isToggled());
 
         if (line.isToggled()) {
             Gui.drawRect((int) backgroundEndX, (int) (yOffset + backgroundHeight), (int) (backgroundEndX + 2), (int) yOffset, fadeLineColor.getRGB());

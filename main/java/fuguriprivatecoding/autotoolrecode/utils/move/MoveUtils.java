@@ -256,4 +256,16 @@ public class MoveUtils implements Imports {
             strafe2(motion);
         }
     }
+
+    public static void stopMotion() {
+        mc.thePlayer.motionX = 0.0F;
+        mc.thePlayer.motionZ = 0.0F;
+    }
+
+    public static void keyBindStop() {
+        mc.gameSettings.keyBindForward.pressed = false;
+        mc.gameSettings.keyBindBack.pressed = false;
+        mc.gameSettings.keyBindLeft.pressed = false;
+        mc.gameSettings.keyBindRight.pressed = false;
+    }
 }

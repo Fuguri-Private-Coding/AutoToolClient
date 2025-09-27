@@ -11,10 +11,12 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -62,6 +64,7 @@ public class ClickGuiScreen extends GuiScreen {
 	final Animation2D settingLine, background, sizeBackground, modulesScrolls, moduleLine, settingsScrolls;
 
 	final EasingAnimation guis = new EasingAnimation();
+	final EasingAnimation alpha = new EasingAnimation(0);
 
 	public ClickGuiScreen() {
 		lastMouse = new Vector2f(0, 0);
@@ -94,6 +97,8 @@ public class ClickGuiScreen extends GuiScreen {
 		BACKGROUND_COLOR = new Color(0,0,0,clickGui.backgroundAlpha.getValue());
 
 		float scale = clientSettings.scale.getValue();
+
+		alpha.update(5, Easing.IN_OUT_QUAD);
 
 		mouseX = (int) (mouseX / scale);
 		mouseY = (int) (mouseY / scale);
@@ -158,6 +163,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
+
 		if (clickGui.glow.isToggled()) {
 			BloomRealUtils.addToDraw(() -> {
 				RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
@@ -172,6 +178,8 @@ public class ClickGuiScreen extends GuiScreen {
 				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.black);
 			});
 		}
+
+		AlphaUtils.startWrite();
 
 		RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
@@ -739,7 +747,11 @@ public class ClickGuiScreen extends GuiScreen {
 		guis.update(clickGui.animationSpeed.getValue() / 5, Easing.IN_OUT_BACK);
 		moduleLine.update(clickGui.animationSpeed.getValue());
 		settingLine.update(clickGui.animationSpeed.getValue());
+
 		GL11.glScaled(1f / scale, 1f / scale,1f);
+
+		AlphaUtils.endWrite();
+		AlphaUtils.draw(alpha.getValue() * 1.2f);
 	}
 
 	@Override
@@ -762,11 +774,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		if (Mouse.isButtonDown(0)) {
 			if (quit) {
-				lastPos.set(pos);
-				lastSize.set(size);
                 closing = true;
-				size.set(0, 0);
-				pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
 			}
 
 			if (fullscreen) {
@@ -781,29 +789,17 @@ public class ClickGuiScreen extends GuiScreen {
 
 			if (console) {
 				showConsoleAfterClose = true;
-				lastPos.set(pos);
-				lastSize.set(size);
 				closing = true;
-				size.set(0, 0);
-				pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
 			}
 
 			if (config) {
 				showConfigAfterClose = true;
-				lastPos.set(pos);
-				lastSize.set(size);
 				closing = true;
-				size.set(0, 0);
-				pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
 			}
 
 			if (hotKeys) {
 				showHotKeysAfterClose = true;
-				lastPos.set(pos);
-				lastSize.set(size);
 				closing = true;
-				size.set(0, 0);
-				pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
 			}
 		}
 
@@ -1061,11 +1057,7 @@ public class ClickGuiScreen extends GuiScreen {
 		}
 
 		if (keyCode == Keyboard.KEY_ESCAPE && !closing) {
-			lastPos.set(pos);
-			lastSize.set(size);
 			closing = true;
-			size.set(0, 0);
-			pos.set(sc.getScaledWidth() / 2f, sc.getScaledHeight() + 10);
         }
 	}
 
@@ -1073,12 +1065,14 @@ public class ClickGuiScreen extends GuiScreen {
 		moduleLine.endY = 0;
 		moduleLine.update(5);
 
+		alpha.setEnd(0);
+
 		guis.setEnd(0);
 		guis.update(3, Easing.OUT_BACK);
 	}
 
 	private boolean isCloseAnimationComplete() {
-		return Math.hypot(sizeBackground.x, sizeBackground.y) < 2;
+		return !alpha.isAnimating();
 	}
 
 	private void completeCloseOperation() {
@@ -1113,15 +1107,13 @@ public class ClickGuiScreen extends GuiScreen {
 	public void onGuiClosed() {
 		Client.INST.getEventManager().unregister(this);
 		Client.INST.getConfigManager().saveAsync(Client.INST.getConfigManager().getDefaultConfig());
+		alpha.setValue(0f);
 	}
 
 	@Override
 	public void initGui() {
 		Client.INST.getEventManager().register(this);
-		sizeBackground.reset();
-		background.reset();
-		pos.set(lastPos);
-		size.set(lastSize);
+		alpha.setEnd(1f);
 	}
 
 	@EventTarget

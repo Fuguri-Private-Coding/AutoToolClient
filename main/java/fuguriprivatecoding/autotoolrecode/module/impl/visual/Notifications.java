@@ -16,7 +16,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtilss;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import org.joml.Vector4f;
 
@@ -222,7 +222,7 @@ public class Notifications extends Module {
         if (line.isToggled()) {
             float progress = (displayTime - (System.currentTimeMillis() - notification.getLastMS())) / (float)displayTime;
 
-            StencilUtils.renderStencil(
+            StencilUtilss.renderStencil(
                     () -> RoundedUtils.drawRect(animation.x, animation.y, width, height, bgRadius.getValue(), bgColors),
                     () -> RoundedUtils.drawRect(animation.x, animation.y + height - lineSize.getValue(), width * progress, 1 + lineSize.getValue(), 1, lineColors)
             );

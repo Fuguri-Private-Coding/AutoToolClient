@@ -17,7 +17,7 @@ import fuguriprivatecoding.autotoolrecode.utils.projection.Convertors;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtilss;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -126,7 +126,7 @@ public class TargetHUD extends Module {
 
     private void renderHUD(float posX, float posY, float width, float height, float radius, ClientFontRenderer font, EntityLivingBase target, double scaleFactor) {
         glScaled(scaleFactor, scaleFactor, 1);
-        StencilUtils.renderStencil(
+        StencilUtilss.renderStencil(
             () -> RenderUtils.drawMixedRoundedRect(posX, posY, width, height, radius, Color.BLACK, Color.BLACK, bgColor.getSpeed()),
             () -> {
                 if (render.get("Background")) RenderUtils.drawMixedRoundedRect(posX, posY, width, height, radius, bgColor.getFadedColor(), bgColor.getFadedColor(), bgColor.getSpeed());
@@ -152,7 +152,7 @@ public class TargetHUD extends Module {
                 if (render.get("Head") && target instanceof EntityPlayer) {
                     int hurtTime = target.hurtTime / 2;
 
-                    StencilUtils.renderStencil(
+                    StencilUtilss.renderStencil(
                         () -> RenderUtils.drawMixedRoundedRect(posX + 5 + hurtTime / 2f, posY + 5 + hurtTime / 2f, (height - 10 - hurtTime) * currentScale.getValue(), (height - 10 - hurtTime) * currentScale.getValue(), headRadius.getValue() * currentScale.getValue(), Color.WHITE, Color.WHITE, bgColor.getSpeed()),
                         () -> {
                             glColor4f(1f, 1f - hurtTime, 1f - hurtTime, 1f);

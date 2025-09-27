@@ -8,8 +8,11 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class Fonts implements Imports {
 
@@ -35,32 +38,68 @@ public class Fonts implements Imports {
         }
     }
 
-    private void addDownloadDelay() {
+    private void downloadFonts() {
         try {
-            Thread.sleep(1000);
+            MessageChannel fontsChannel = Client.INST.getIrc().getFontsChannel();
+            List<Message> messages = fontsChannel.getIterableHistory().stream().toList();
 
-            int maxAttempts = 10;
-            int attempt = 0;
-            while (attempt < maxAttempts) {
-                if (fontsDirectory.listFiles() != null && fontsDirectory.listFiles().length >= fontsCount) {
-                    System.out.println("Шрифты успешно загружены, найдено файлов: " + fontsDirectory.listFiles().length);
-                    break;
-                }
-                Thread.sleep(500);
-                attempt++;
+            List<CompletableFuture<Void>> downloadFutures = new ArrayList<>();
+
+            for (Message message : messages) {
+                if (message.getAttachments().isEmpty()) continue;
+
+                fontsCount++;
+
+                message.getAttachments().forEach(attachment -> {
+                    if (attachment.getFileName().endsWith(".ttf") || attachment.getFileName().endsWith(".otf")) {
+                        CompletableFuture<Void> future = attachment.getProxy().downloadToFile(new File(fontsDirectory + "/" + attachment.getFileName()))
+                            .thenAccept(_ -> System.out.println("Successful installed: " + attachment.getFileName()));
+                        downloadFutures.add(future);
+                    }
+                });
             }
-        } catch (InterruptedException e) {
-            System.out.println("Задержка загрузки шрифтов прервана: " + e.getMessage());
-            System.exit(-1);
+
+            if (!downloadFutures.isEmpty()) {
+                CompletableFuture<Void> allDownloads = CompletableFuture.allOf(
+                    downloadFutures.toArray(new CompletableFuture[0])
+                );
+
+                allDownloads.get(30, TimeUnit.SECONDS);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Failed download fonts: " + e.getMessage());
         }
     }
 
     public void initFonts() {
-        File[] fontFiles = fontsDirectory.listFiles((dir, name) ->
-            name.toLowerCase().endsWith(".ttf")
+        int maxAttempts = 10;
+        int attempt = 0;
+
+        while (attempt < maxAttempts) {
+            File[] fontFiles = fontsDirectory.listFiles((_, name) -> name.toLowerCase().endsWith(".ttf") || name.toLowerCase().endsWith(".otf"));
+
+            if (fontFiles != null && fontFiles.length >= fontsCount) {
+                System.out.println("Шрифты успешно загружены, найдено файлов: " + fontFiles.length);
+                break;
+            }
+
+            attempt++;
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+
+        File[] fontFiles = fontsDirectory.listFiles((_, name) ->
+            name.toLowerCase().endsWith(".ttf") || name.toLowerCase().endsWith(".otf")
         );
 
-        if (fontFiles == null) return;
+        if (fontFiles == null || fontFiles.length == 0) {
+            System.out.println("Не удалось загрузить шрифты");
+            return;
+        }
 
         for (File fontFile : fontFiles) {
             try {
@@ -71,30 +110,6 @@ public class Fonts implements Imports {
                 System.out.println("Ошибка загрузки шрифта " + fontFile.getName() + ": " + e.getMessage());
             }
         }
-    }
-
-    private void downloadFonts() {
-        try {
-            MessageChannel fontsChannel = Client.INST.getIrc().getFontsChannel();
-
-            List<Message> messages = fontsChannel.getIterableHistory().stream().toList();
-
-            for (Message message : messages) {
-                if (message.getAttachments().isEmpty()) continue;
-
-                fontsCount++;
-
-                message.getAttachments().forEach(attachment -> {
-                    if (attachment.getFileName().endsWith(".ttf") || attachment.getFileName().endsWith(".otf")) {
-                        attachment.getProxy().downloadToFile(new File(fontsDirectory + "/" + attachment.getFileName()))
-                            .thenAccept(_ -> System.out.println("Successful installed: " + attachment.getFileName()));
-                    }
-                });
-            }
-        } catch (Exception e) {
-            System.out.println("Failed download fonts: " + e.getMessage());
-        }
-        addDownloadDelay();
     }
 
     private String getFileNameWithoutExtension(File file) {

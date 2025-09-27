@@ -19,8 +19,13 @@ import org.lwjgl.input.Mouse;
 public class Phase extends Module {
 
     CheckBox sneak = new CheckBox("Sneak", this, true);
-    CheckBox clipDown = new CheckBox("Clip", this, true);
-    IntegerSetting packetCount = new IntegerSetting("Packet count", this, () -> clipDown.isToggled(), 1, 20, 1);
+
+    CheckBox intaveClip = new CheckBox("IntaveClip", this, true);
+    IntegerSetting packetCount = new IntegerSetting("PacketCount", this, () -> intaveClip.isToggled(), 1, 20, 1);
+
+    CheckBox fasterXZ = new CheckBox("FasterXZ", this, false);
+    CheckBox moveUpDown = new CheckBox("MoveUpDown", this);
+    IntegerSetting yMoveSpeed = new IntegerSetting("MoveUpDownSpeed", this, () -> moveUpDown.isToggled(), 0, 100, 6);
 
     private BlockPos currentBreakingBlock;
     private long lastBreakTime;
@@ -52,8 +57,41 @@ public class Phase extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof UpdateEvent) {
+            double ySpeed = yMoveSpeed.getValue() / 100.0;
             if (mc.thePlayer.noClip) {
-                mc.thePlayer.motionY = 0.0;
+
+                if (moveUpDown.isToggled()) {
+                    if (mc.gameSettings.keyBindJump.isKeyDown()) {
+                        mc.thePlayer.motionY = ySpeed;
+                    } else if (mc.gameSettings.keyBindSneak.isKeyDown()) {
+                        mc.thePlayer.motionY = -ySpeed;
+                    } else {
+                        mc.thePlayer.motionY = 0.0;
+                    }
+                }
+
+                if (fasterXZ.isToggled() && !mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox()).isEmpty()) {
+                    double forward = mc.thePlayer.movementInput.moveForward;
+                    double strafe = mc.thePlayer.movementInput.moveStrafe;
+                    float yaw = mc.thePlayer.rotationYaw;
+                    if (forward != 0.0 || strafe != 0.0) {
+                        double mx = -Math.sin(Math.toRadians(yaw)) * forward + Math.cos(Math.toRadians(yaw)) * strafe;
+                        double mz = Math.cos(Math.toRadians(yaw)) * forward + Math.sin(Math.toRadians(yaw)) * strafe;
+                        double motion = Math.sqrt(mx * mx + mz * mz);
+                        if (motion > 0) {
+                            mx = (mx / motion) * 0.7 * 0.2873;
+                            mz = (mz / motion) * 0.7 * 0.2873;
+                            mc.thePlayer.motionX = mx;
+                            mc.thePlayer.motionZ = mz;
+                        } else {
+                            mc.thePlayer.motionX = 0.0;
+                            mc.thePlayer.motionZ = 0.0;
+                        }
+                    } else {
+                        mc.thePlayer.motionX = 0.0;
+                        mc.thePlayer.motionZ = 0.0;
+                    }
+                }
             } else {
                 mc.thePlayer.motionY = 0.0;
                 mc.thePlayer.onGround = true;
@@ -69,21 +107,19 @@ public class Phase extends Module {
 
         if (event instanceof TickEvent && mc.objectMouseOver != null) {
             BlockPos newBreakingBlock = mc.objectMouseOver.getBlockPos();
-
-            if (newBreakingBlock == null || !Mouse.isButtonDown(0) || !clipDown.isToggled() || newBreakingBlock.getY() >= mc.thePlayer.posY) return;
+            if (newBreakingBlock == null || !Mouse.isButtonDown(0) || !intaveClip.isToggled() || newBreakingBlock.getY() >= mc.thePlayer.posY) return;
             if (currentBreakingBlock != null && System.currentTimeMillis() - lastBreakTime > 500L || !newBreakingBlock.equals(currentBreakingBlock)) resetBreaking();
 
             currentBreakingBlock = newBreakingBlock;
             lastBreakTime = System.currentTimeMillis();
+
             EnumFacing sideHit = mc.objectMouseOver.sideHit;
-
             mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, currentBreakingBlock, sideHit));
+            for (int i = 0; i < packetCount.getValue(); ++i) mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
 
-            for (int i = 0; i < packetCount.getValue(); i++) {
-                mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
+            if (mc.playerController.curBlockDamageMP > 0.77f) {
+                mc.playerController.curBlockDamageMP = 1.0f;
             }
-
-            if (mc.playerController.curBlockDamageMP > 0.77F) mc.playerController.curBlockDamageMP = 1.0f;
         }
     }
 }
