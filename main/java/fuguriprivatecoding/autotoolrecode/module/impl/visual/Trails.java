@@ -27,7 +27,7 @@ public class Trails extends Module {
 
     public final ColorSetting color = new ColorSetting("Color", this);
     final CheckBox glow = new CheckBox("Glow", this, false);
-    public final ColorSetting glowColor = new ColorSetting("GlowColor", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
 
     final List<Doubles<Vec3, Long>> bottomList;
 

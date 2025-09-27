@@ -25,7 +25,7 @@ public class Dot extends Module {
     public final ColorSetting color = new ColorSetting("Color", this);
 
     final CheckBox glow = new CheckBox("Glow", this);
-    final ColorSetting glowColor = new ColorSetting("GlowColor", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
 
     Rot prevPos = new Rot();
     Rot pos = new Rot();

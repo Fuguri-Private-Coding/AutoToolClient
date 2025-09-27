@@ -22,7 +22,7 @@ public class BlockOverlay extends Module {
     final ColorSetting color = new ColorSetting("Color", this);
 
     final CheckBox glow = new CheckBox("Glow", this);
-    final ColorSetting glowColor = new ColorSetting("GlowColor", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
     final CheckBox blur = new CheckBox("Blur", this);
 
     @EventTarget

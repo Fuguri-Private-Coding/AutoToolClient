@@ -26,7 +26,7 @@ public class ChestESP extends Module {
     final CheckBox enderChest = new CheckBox("ShowEnderChest", this);
 
     final CheckBox glow = new CheckBox("Glow", this);
-    final ColorSetting glowColor = new ColorSetting("GlowColor", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
     final CheckBox blur = new CheckBox("Blur", this);
 
     @EventTarget
