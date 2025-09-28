@@ -74,7 +74,7 @@ public class AltManagerGuiScreen extends GuiScreen {
         ScaledResolution sc = new ScaledResolution(mc);
         int currentScroll = Mouse.getDWheel();
 
-        scroll -= currentScroll / 120 * 50;
+        scroll += currentScroll / 120 * 50;
 
         ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
 
