@@ -49,6 +49,7 @@ public class ModuleManager {
 			new Spider(),
 			new InvManager(),
 			new Trails(),
+			new CustomCrosshair(),
 			new ESP(),
 			new BackTrack(),
 			new RotationHandler(),

@@ -10,6 +10,7 @@ import java.util.Random;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.ScoreboardRenderEvent;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCrosshair;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.block.material.Material;
@@ -134,19 +135,11 @@ public class GuiIngame extends Gui {
         this.mc.getTextureManager().bindTexture(icons);
         GlStateManager.enableBlend();
 
-
-
-
-/// ////прицел скачать
-        if (this.showCrosshair()) {
+        if (this.showCrosshair() && !Client.INST.getModuleManager().getModule(CustomCrosshair.class).isToggled()) {
             GlStateManager.tryBlendFuncSeparate(775, 769, 1, 0);
             GlStateManager.enableAlpha();
             this.drawTexturedModalRect(i / 2 - 7, j / 2 - 7, 0, 0, 16, 16);
         }
-
-
-
-
 
         GlStateManager.enableAlpha();
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
