@@ -88,7 +88,7 @@ public class NameGenerator {
     }
 
     private String getPopularSuffix() {
-        String[] popularSuffixes = {"YT", "Pro", "X", "Z", "GG", "HD", "FX", "TTV", "UA", "DE","RU","YO", "XD"};
+        String[] popularSuffixes = {"YT", "Pro", "X", "Z", "GG", "HD", "FX", "TTV", "UA", "DE","RU","YO", "XD", "YTPro"};
         return popularSuffixes[random.nextInt(popularSuffixes.length)];
     }
 }

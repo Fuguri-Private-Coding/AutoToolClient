@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.alt;
 
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,10 @@ import lombok.Setter;
 public class Account {
     String name;
     String refreshToken, uuid;
+
+    boolean deleting;
+
+    EasingAnimation anim = new EasingAnimation(0);
 
     public Account(String name) {
         this.name = name;

@@ -9,7 +9,6 @@ import fuguriprivatecoding.autotoolrecode.guis.console.ConsoleGuiScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
@@ -32,12 +31,26 @@ public class NoGuiClose extends Module {
     }
 
     private boolean guiClosed(GuiScreen currentScreen) {
-        if (modes.get("ClickGui") && currentScreen instanceof ClickGuiScreen) {
-            return true;
-        } else if (modes.get("ConfigGui") && currentScreen instanceof ConfigGuiScreen) {
-            return true;
-        } else if (modes.get("ConsoleGui") && currentScreen instanceof ConsoleGuiScreen) {
-            return true;
-        } else return modes.get("ChatGui") && currentScreen instanceof GuiChat;
+        switch (currentScreen) {
+            case ClickGuiScreen _ -> {
+                if (modes.get("ClickGui")) return true;
+            }
+
+
+            case ConfigGuiScreen _ -> {
+                if (modes.get("ConfigGui")) return true;
+            }
+
+            case ConsoleGuiScreen _ -> {
+                if (modes.get("ConsoleGui")) return true;
+            }
+
+            case GuiChat _ -> {
+                if (modes.get("ChatGui")) return true;
+            }
+
+            default -> {}
+        }
+        return false;
     }
 }

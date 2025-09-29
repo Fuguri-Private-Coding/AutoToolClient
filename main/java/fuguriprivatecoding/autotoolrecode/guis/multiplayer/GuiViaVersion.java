@@ -37,7 +37,7 @@ public class GuiViaVersion extends GuiScreen {
         ScaledResolution sc = new ScaledResolution(mc);
         int currentScroll = Mouse.getDWheel();
 
-        scroll -= currentScroll / 120 * 50;
+        scroll += currentScroll / 120 * 50;
 
         float versionVisibleHeight = sc.getScaledHeight() - 70;
         float maxScroll = Math.max(scrollTotalHeight - versionVisibleHeight, 0);
@@ -78,7 +78,7 @@ public class GuiViaVersion extends GuiScreen {
 
         float scrollbarWidth = 5;
         float scrollbarX = sc.getScaledWidth() / 2f + 210;
-        float scrollbarTrackHeight = versionVisibleHeight - 15;
+        float scrollbarTrackHeight = versionVisibleHeight - 5;
         float scrollbarY = 35;
 
         float thumbHeight = Math.max((versionVisibleHeight / scrollTotalHeight) * scrollbarTrackHeight, 10f);

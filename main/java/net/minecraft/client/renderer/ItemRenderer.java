@@ -1,5 +1,6 @@
 package net.minecraft.client.renderer;
 
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomItemPos;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.Client;
@@ -304,6 +305,15 @@ public class ItemRenderer {
             this.rotateWithPlayerRotations((EntityPlayerSP) abstractclientplayer, partialTicks);
             GlStateManager.enableRescaleNormal();
             GlStateManager.pushMatrix();
+
+            CustomItemPos customItemPos = Client.INST.getModuleManager().getModule(CustomItemPos.class);
+
+            if (customItemPos.isToggled()) {
+                GL11.glTranslatef(customItemPos.x.getValue(), customItemPos.y.getValue(), customItemPos.z.getValue());
+                GL11.glRotatef(customItemPos.rotateX.getValue(), 1,0,0);
+                GL11.glRotatef(customItemPos.rotateY.getValue(), 0,1,0);
+                GL11.glRotatef(customItemPos.rotateZ.getValue(), 0,0,1);
+            }
 
             if (this.itemToRender != null) {
                 EnumAction enumaction = this.itemToRender.getItemUseAction();

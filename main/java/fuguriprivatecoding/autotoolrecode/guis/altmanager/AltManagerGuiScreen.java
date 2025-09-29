@@ -67,6 +67,7 @@ public class AltManagerGuiScreen extends GuiScreen {
         buttonList.add(new GuiClientButton(2, 75, sc.getScaledHeight() - 50, 100, 20, "Delete"));
         buttonList.add(new GuiClientButton(3, 75, sc.getScaledHeight() - 25, 100, 20, "Microsoft"));
         alphaAnim.setValue(0);
+        altManagerGuiText.setMaxStringLength(16);
     }
 
     @Override
@@ -93,6 +94,8 @@ public class AltManagerGuiScreen extends GuiScreen {
         BackgroundUtils.run();
 
         AlphaUtils.startWrite();
+        
+        accounts.removeIf(account -> account.isDeleting() && account.getAnim().getValue() == 0);
 
         RoundedUtils.drawRect(sc.getScaledWidth() - 285, 15, 250, sc.getScaledHeight() - 30, 7.5f, new Color(0, 0, 0, 0.7f));
         if (updatedText != null) font.drawCenteredString(updatedText, sc.getScaledWidth() - 285 + 125, 5, Color.WHITE);
@@ -108,20 +111,30 @@ public class AltManagerGuiScreen extends GuiScreen {
             boolean removeHover = mouseX > sc.getScaledWidth() - 60 && mouseX < sc.getScaledWidth() - 60 + 15 && mouseY > 20 + 2.5f + offset && mouseY < 20 + 2.5f + offset + 15;
             boolean isMicrosoftAccount = account.getUuid() != null;
 
-            RoundedUtils.drawRect(sc.getScaledWidth() - 280, 10 + 10 + offset, 250 - 10, 20, 10, clickedAccount ? new Color(0.2f, 0.2f, 0.2f, 0.7f) : new Color(0, 0, 0, 0.7f));
-            font.drawString(account.getName() + (isMicrosoftAccount ? " | Microsoft." : " | Offline."), sc.getScaledWidth() - 270, 10 + 5 + 2 + 11f + offset, equalsAccount ? Color.green : Color.WHITE);
+            Color selectedRectColor = clickedAccount ? new Color(0.2f,0.2f,0.2f,0.7f * account.getAnim().getValue()) : new Color(0, 0, 0, 0.7f * account.getAnim().getValue());
+            Color selectedTextColor = equalsAccount ? new Color(0,1f,0, account.getAnim().getValue()) : new Color(1, 1, 1, account.getAnim().getValue());
 
-            ColorUtils.glColor(removeHover ? Color.RED : Color.WHITE);
-            RenderUtils.drawImage(removeLogo, sc.getScaledWidth() - 60, 20 + 2.5f + offset, 15, 15, true);
-            offset += 25;
-            scrollTotalHeight += 25;
+            Color hoveredRemoveColor = removeHover ? new Color(1,0,0,account.getAnim().getValue()) : new Color(1f,1f,1f,account.getAnim().getValue());
+
+            if (!account.isDeleting()) account.getAnim().setEnd(1);
+
+            account.getAnim().update(4, Easing.OUT_CUBIC);
+
+            RoundedUtils.drawRect(sc.getScaledWidth() - 280, 10 + 10 + offset - ((1 - account.getAnim().getValue()) * 5), 250 - 10, 20, 10, selectedRectColor);
+            font.drawString(account.getName() + (isMicrosoftAccount ? " | Microsoft." : " | Offline."), sc.getScaledWidth() - 270, 10 + 5 + 2 + 11f + offset - ((1 - account.getAnim().getValue()) * 5), selectedTextColor);
+
+            ColorUtils.glColor(hoveredRemoveColor);
+            RenderUtils.drawImage(removeLogo, sc.getScaledWidth() - 60, 20 + 2.5f + offset - ((1 - account.getAnim().getValue()) * 5), 15, 15, true);
+
+            offset += 25 * account.getAnim().getValue();
+            scrollTotalHeight += (int) (25 * account.getAnim().getValue());
         }
 
         ScissorUtils.disableScissor();
 
         float scrollbarWidth = 5;
         float scrollbarX = sc.getScaledWidth() - 25;
-        float scrollbarTrackHeight = altVisibleHeight - 15;
+        float scrollbarTrackHeight = altVisibleHeight - 5;
         float scrollbarY = 20;
 
         float thumbHeight = Math.max((altVisibleHeight / scrollTotalHeight) * scrollbarTrackHeight, 10f);
@@ -176,7 +189,6 @@ public class AltManagerGuiScreen extends GuiScreen {
         }
 
         altManagerGuiText.drawTextBox();
-        altManagerGuiText.setMaxStringLength(16);
 
         String currentUser = "Account: " + mc.getSession().getUsername();
 
@@ -211,7 +223,7 @@ public class AltManagerGuiScreen extends GuiScreen {
                         updateStatus("Account exists logging account...");
                         mc.getSession().setUsername(accountName);
                         Account newAccount = new Account(accountName);
-                        accounts.add(newAccount);
+                        addAccount(newAccount);
                         selectedAccount = newAccount;
                         updateStatus("Successful added account: " + accountName + ".");
                     }
@@ -247,7 +259,7 @@ public class AltManagerGuiScreen extends GuiScreen {
 
             case 2 -> {
                 if (selectedAccount != null) {
-                    accounts.removeIf(acc -> acc == selectedAccount);
+                    removeAccount(selectedAccount);
                     updateStatus("Successful deleted account: " + selectedAccount.getName() + ".");
                     selectedAccount = null;
                 }
@@ -264,13 +276,24 @@ public class AltManagerGuiScreen extends GuiScreen {
                     if (error != null) {
                         updateStatus("Failed added account: " + error + ".");
                     } else {
-                        accounts.add(new Account(account.getName(), account.getRefreshToken(), account.getUuid()));
+                        addAccount(new Account(account.getName(), account.getRefreshToken(), account.getUuid()));
                         updateStatus("Successful added account: " + account.getName() + ".");
                         selectedAccount = account;
                     }
                 });
             }
         }
+    }
+    
+    private void addAccount(Account account) {
+        accounts.add(account);
+        account.getAnim().setEnd(1);
+        if (account == selectedAccount) selectedAccount = null;
+    }
+    
+    private void removeAccount(Account account) {
+        account.getAnim().setEnd(0);
+        account.setDeleting(true);
     }
 
     @Override
@@ -291,9 +314,8 @@ public class AltManagerGuiScreen extends GuiScreen {
             if (mouseButton == 0) {
                 if (removeAccount) {
                     if (account != null) {
-                        accounts.remove(account);
+                        removeAccount(account);
                         updateStatus("Successful deleted account: " + account.getName() + ".");
-                        if (account == selectedAccount) selectedAccount = null;
                     }
                     return;
                 }
@@ -333,7 +355,7 @@ public class AltManagerGuiScreen extends GuiScreen {
                     break;
                 }
             }
-            offset += 25;
+            if (!account.isDeleting()) offset += 25;
         }
     }
 
