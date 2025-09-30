@@ -188,18 +188,40 @@ public class ClickGuiPanel {
 
             if (openSettingsAnim.getValue() > 0) {
                 float totalSettingsHeight = 0;
+                float maxSettingWidth = backgroundWidth - xOffset * 2;
+
                 for (Setting setting : lastOpenedModule.getSettings()) {
                     float settingX = backgroundX + xOffset - (1 - openSettingsAnim.getValue()) * backgroundWidth;
                     float settingY = backgroundY + yOffset + totalSettingsHeight + settingsScrollAnim.getValue();
 
                     switch (setting) {
                         case FloatSetting floatSetting -> {
+                            RoundedUtils.drawRect(
+                                settingX, settingY, maxSettingWidth, 20, 5, panelColor
+                            );
                             fontRenderer.drawString(
-                                floatSetting.getName() + " " + floatSetting.getAnimatedValue(),
-                                settingX, settingY,
+                                floatSetting.getName(),
+                                settingX + 5, settingY + 5,
                                 Color.WHITE
                             );
-                            totalSettingsHeight += 20;
+                            fontRenderer.drawString(
+                                floatSetting.getAnimatedValue() + "",
+                                settingX + maxSettingWidth - fontRenderer.getStringWidth(floatSetting.getAnimatedValue() + "") - 5, settingY + 5,
+                                Color.WHITE
+                            );
+
+                            RoundedUtils.drawRect(
+                                settingX, settingY + 10 + 4,
+                                maxSettingWidth, 6,
+                                3, 0, 0, 3, panelColor
+                            );
+
+                            RoundedUtils.drawRect(
+                                settingX, settingY + 10 + 4,
+                                maxSettingWidth * floatSetting.getAnimatedNormalize(), 6,
+                                3, 0, 0, 3f, Color.WHITE
+                            );
+                            totalSettingsHeight += 25;
                         }
                         default -> {
                         }
