@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation;
 @Getter
 public class ShaderManager {
 
-	Shader rounded, background, bloom, gaussianBlur, bloomReal, alpha, stencil;
+	Shader rounded, background, bloom, gaussianBlur, bloomReal, alpha, stencil, font;
 
 	public ShaderManager() {
 		init();
@@ -20,6 +20,7 @@ public class ShaderManager {
 		bloomReal = new Shader(getShaderSource("bloomreal.glsl"), getShaderSource("vertex.txt"));
 
 		alpha = new Shader(getShaderSource("alpha.glsl"), getShaderSource("vertex.txt"));
+		font = new Shader(getShaderSource("font.glsl"), getShaderSource("vertex.txt"));
 
 		stencil = new Shader(getShaderSource("stencil.glsl"), getShaderSource("vertex.txt"));
 

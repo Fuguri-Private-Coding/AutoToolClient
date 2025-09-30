@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,8 +53,10 @@ public class DropDownClickGuiScreen extends GuiScreen {
 
         AlphaUtils.startWrite();
 
+        int currentScroll = Mouse.getDWheel();
+
         for (ClickGuiPanel panel : categoryPanels.reversed()) {
-            panel.render(openAnim.getValue(), mouseX, mouseY);
+            panel.render(openAnim.getValue(), mouseX, mouseY, currentScroll);
         }
 
         AlphaUtils.endWrite();

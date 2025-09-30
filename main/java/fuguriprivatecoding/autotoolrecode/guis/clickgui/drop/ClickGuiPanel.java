@@ -9,17 +9,22 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.msdf.MSDFFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.scaling.ScaleUtils;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
 import java.util.List;
+
+import static java.lang.Math.signum;
 
 public class ClickGuiPanel {
 
@@ -70,9 +75,10 @@ public class ClickGuiPanel {
 
     ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFPro");
 
-    public void render(float openAnimProgress, int mouseX, int mouseY) {
+    MSDFFontRenderer msdfFontRenderer = new MSDFFontRenderer("sfproregular");
+
+    public void render(float openAnimProgress, int mouseX, int mouseY, int currentScroll) {
         if (GuiUtils.isHovered(mouseX, mouseY, backgroundX, backgroundY, backgroundWidth, backgroundHeight)) {
-            int currentScroll = Mouse.getDWheel();
             settingsScroll += currentScroll / 120 * 25;
             modulesScroll += currentScroll / 120 * 25;
         }
@@ -87,10 +93,10 @@ public class ClickGuiPanel {
         }
 
         modulesScrollAnim.setEnd(modulesScroll);
-        modulesScrollAnim.update(5, Easing.OUT_CUBIC);
+        modulesScrollAnim.update(5, Easing.LINEAR);
 
         settingsScrollAnim.setEnd(settingsScroll);
-        settingsScrollAnim.update(5, Easing.OUT_CUBIC);
+        settingsScrollAnim.update(5, Easing.LINEAR);
 
         if (moving) {
             xPosAnim.setEnd(mouseX - moveOffset.x);
@@ -108,7 +114,6 @@ public class ClickGuiPanel {
         heightAnimNormalized.setEnd(opened ? 1 : 0);
         heightAnimNormalized.update(3, Easing.IN_OUT_CUBIC);
 
-
         openSettingsAnim.update(5, Easing.IN_OUT_CUBIC);
 
         float invertOpenAnimProgress = 1 - openAnimProgress;
@@ -125,7 +130,7 @@ public class ClickGuiPanel {
         backgroundY = yPosAnim.getValue() - invertOpenAnimProgress * 10 / 2;
 
         backgroundWidth = 100 + invertOpenAnimProgress * 10;
-        backgroundHeight = 20 + heightAnim.getValue() + invertOpenAnimProgress * 10;
+        backgroundHeight = 20 + openSettingsAnim.getValue() * 20 + heightAnim.getValue() + invertOpenAnimProgress * 10;
 
         float invertHeightAnim = 1 - heightAnimNormalized.getValue();
 
@@ -138,10 +143,12 @@ public class ClickGuiPanel {
 
         RoundedUtils.drawRect(
             backgroundX,backgroundY,
-            backgroundWidth, 20,
+            backgroundWidth, 20 + 15 * openSettingsAnim.getValue(),
             5 * invertHeightAnim, 5,5,5 * invertHeightAnim,
             panelColor.darker()
         );
+
+        yOffset = panelHeaderHeight + (15) * openSettingsAnim.getValue();
 
         fontRenderer.drawCenteredString(
             category.name,
@@ -154,8 +161,27 @@ public class ClickGuiPanel {
         ScissorUtils.scissor(
             sc,
             backgroundX, backgroundY + 24,
-            backgroundWidth, backgroundHeight - 26
+            backgroundWidth,backgroundHeight - 26
         );
+
+        float maxSettingWidth = backgroundWidth - xOffset * 2;
+
+        float nameX = backgroundX - (heightAnimNormalized.getValue() > 0 ? (1 - openSettingsAnim.getValue()) * backgroundWidth : 0);
+        float nameY = backgroundY + panelHeaderHeight * openSettingsAnim.getValue() + 1;
+
+        if (lastOpenedModule != null) {
+            fontRenderer.drawString(
+                lastOpenedModule.getName(),
+                nameX + 5 + 2, nameY,
+                Color.WHITE
+            );
+
+            ResourceLocation exitSettings = new ResourceLocation("minecraft", "autotool/mainmenu/exit.png");
+
+            if (GuiUtils.isHovered(mouseX, mouseY,(nameX + maxSettingWidth - 5), nameY - 6, 15,15)) ColorUtils.glColor(Color.RED);
+
+            RenderUtils.drawImage(exitSettings, (nameX + maxSettingWidth - 5), nameY - 6, 15,15,true);
+        }
 
         if (heightAnimNormalized.getValue() > 0) {
             totalElementsHeight = 0;
@@ -188,7 +214,16 @@ public class ClickGuiPanel {
 
             if (openSettingsAnim.getValue() > 0) {
                 float totalSettingsHeight = 0;
-                float maxSettingWidth = backgroundWidth - xOffset * 2;
+
+                ClientFontRenderer textFont = Client.INST.getFonts().fonts.get("SFProRegular");
+                ClientFontRenderer valueFont = Client.INST.getFonts().fonts.get("MuseoSans");
+
+                ScissorUtils.enableScissor();
+                ScissorUtils.scissor(
+                    sc,
+                    backgroundX, backgroundY + 20,
+                    backgroundWidth, backgroundHeight - 20
+                );
 
                 for (Setting setting : lastOpenedModule.getSettings()) {
                     float settingX = backgroundX + xOffset - (1 - openSettingsAnim.getValue()) * backgroundWidth;
@@ -197,36 +232,51 @@ public class ClickGuiPanel {
                     switch (setting) {
                         case FloatSetting floatSetting -> {
                             RoundedUtils.drawRect(
-                                settingX, settingY, maxSettingWidth, 20, 5, panelColor
+                                settingX, settingY, maxSettingWidth, 25, 5, panelColor
                             );
-                            fontRenderer.drawString(
+
+                            textFont.drawCenteredString(
                                 floatSetting.getName(),
-                                settingX + 5, settingY + 5,
-                                Color.WHITE
-                            );
-                            fontRenderer.drawString(
-                                floatSetting.getAnimatedValue() + "",
-                                settingX + maxSettingWidth - fontRenderer.getStringWidth(floatSetting.getAnimatedValue() + "") - 5, settingY + 5,
+                                settingX + maxSettingWidth / 2f + 1, settingY + 5,
                                 Color.WHITE
                             );
 
                             RoundedUtils.drawRect(
-                                settingX, settingY + 10 + 4,
+                                settingX, settingY + 15 + 5,
                                 maxSettingWidth, 6,
-                                3, 0, 0, 3, panelColor
+                                3,0,0,3, panelColor
                             );
 
                             RoundedUtils.drawRect(
-                                settingX, settingY + 10 + 4,
-                                maxSettingWidth * floatSetting.getAnimatedNormalize(), 6,
-                                3, 0, 0, 3f, Color.WHITE
+                                settingX, settingY + 15 + 5,
+                                maxSettingWidth * floatSetting.normalize(), 6,
+                                3,0,0,3, Color.WHITE
                             );
-                            totalSettingsHeight += 25;
+
+                            valueFont.drawCenteredString(
+                                String.format("%.2f", floatSetting.getValue()),
+                                settingX + maxSettingWidth / 2f,
+                                settingY + 5 + 8, Color.WHITE
+                            );
+
+                            if (GuiUtils.isHovered(mouseX, mouseY, settingX - 2, settingY + 15 + 5, maxSettingWidth + 4, 6)) {
+                                if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+                                    floatSetting.setValue(floatSetting.getValue() + signum(currentScroll) * floatSetting.getStep());
+                                } else if (Mouse.isButtonDown(0)) {
+                                    float mx = mouseX - settingX;
+                                    float p = mx / maxSettingWidth;
+                                    float normalize = floatSetting.getMin() + (floatSetting.getMax() - floatSetting.getMin()) * p;
+                                    floatSetting.setValue(normalize);
+                                }
+                            }
+
+                            totalSettingsHeight += 30;
                         }
-                        default -> {
-                        }
+                        default -> {}
                     }
                 }
+
+                ScissorUtils.disableScissor();
 
                 totalElementsHeight = totalSettingsHeight;
             }
@@ -250,6 +300,19 @@ public class ClickGuiPanel {
                     opened = !opened;
                     return true;
                 }
+            }
+        }
+
+        if (lastOpenedModule != null) {
+            float maxSettingWidth = backgroundWidth - xOffset * 2;
+
+            float nameX = backgroundX - (1 - openSettingsAnim.getValue()) * backgroundWidth;
+            float nameY = backgroundY + panelHeaderHeight * openSettingsAnim.getValue() + 1;
+
+            if (GuiUtils.isHovered(x,y,(nameX + maxSettingWidth - 5), nameY - 6, 15,15) && button == 0) {
+                openedModule = null;
+                openSettingsAnim.setEnd(0);
+                return true;
             }
         }
 
