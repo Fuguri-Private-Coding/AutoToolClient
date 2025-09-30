@@ -158,28 +158,30 @@ public class ClickGuiPanel {
         if (heightAnimNormalized.getValue() > 0) {
             totalElementsHeight = 0;
 
-            for (Module module : modules) {
-                float moduleX = backgroundX + xOffset + openSettingsAnim.getValue() * backgroundWidth;
-                float moduleY = backgroundY + yOffset + totalElementsHeight + modulesScrollAnim.getValue();
-                float moduleHeight = 20;
-                float moduleWidth = backgroundWidth - xOffset * 2;
+            if (openSettingsAnim.getValue() < 1) {
+                for (Module module : modules) {
+                    float moduleX = backgroundX + xOffset + openSettingsAnim.getValue() * backgroundWidth;
+                    float moduleY = backgroundY + yOffset + totalElementsHeight + modulesScrollAnim.getValue();
+                    float moduleHeight = 20;
+                    float moduleWidth = backgroundWidth - xOffset * 2;
 
-                boolean hovered = GuiUtils.isHovered(mouseX, mouseY, moduleX, moduleY, moduleWidth, moduleHeight);
+                    boolean hovered = GuiUtils.isHovered(mouseX, mouseY, moduleX, moduleY, moduleWidth, moduleHeight);
 
-                Color baseColor = new Color(0f, 0f, 0f, 0.7f);
+                    Color baseColor = new Color(0f, 0f, 0f, 0.7f);
 
-                if (hovered) {
-                    baseColor = new Color(baseColor.getRed() / 255f + 0.1f, baseColor.getGreen() / 255f + 0.1f, baseColor.getBlue() / 255f + 0.1f, 0.7f);
+                    if (hovered) {
+                        baseColor = new Color(baseColor.getRed() / 255f + 0.1f, baseColor.getGreen() / 255f + 0.1f, baseColor.getBlue() / 255f + 0.1f, 0.7f);
+                    }
+
+                    if (module.isToggled()) {
+                        baseColor = new Color(baseColor.getRed() / 255f + 0.2f, baseColor.getGreen() / 255f + 0.2f, baseColor.getBlue() / 255f + 0.2f, 0.7f);
+                    }
+
+                    RoundedUtils.drawRect(moduleX, moduleY, moduleWidth, moduleHeight, 5f, baseColor);
+                    fontRenderer.drawString(module.getName(), moduleX + 5, moduleY + 8, Color.WHITE);
+
+                    totalElementsHeight += 25;
                 }
-
-                if (module.isToggled()) {
-                    baseColor = new Color(baseColor.getRed() / 255f + 0.2f, baseColor.getGreen() / 255f + 0.2f, baseColor.getBlue() / 255f + 0.2f, 0.7f);
-                }
-
-                RoundedUtils.drawRect(moduleX, moduleY, moduleWidth, moduleHeight, 5f, baseColor);
-                fontRenderer.drawString(module.getName(), moduleX + 5, moduleY + 8, Color.WHITE);
-
-                totalElementsHeight += 25;
             }
 
             if (openSettingsAnim.getValue() > 0) {
