@@ -82,6 +82,8 @@ public class ClickGuiPanel {
 
         if (openSettingsAnim.getValue() == 0) {
             modulesScroll = (int) Math.clamp(modulesScroll, -maxScroll, 0);
+        } else if (openSettingsAnim.getValue() == 1) {
+            settingsScroll = (int) Math.clamp(settingsScroll, -maxScroll, 0);
         }
 
         modulesScrollAnim.setEnd(modulesScroll);
@@ -188,7 +190,7 @@ public class ClickGuiPanel {
                 float totalSettingsHeight = 0;
                 for (Setting setting : lastOpenedModule.getSettings()) {
                     float settingX = backgroundX + xOffset - (1 - openSettingsAnim.getValue()) * backgroundWidth;
-                    float settingY = backgroundY + yOffset + totalSettingsHeight + modulesScrollAnim.getValue();
+                    float settingY = backgroundY + yOffset + totalSettingsHeight + settingsScrollAnim.getValue();
 
                     switch (setting) {
                         case FloatSetting floatSetting -> {
@@ -233,27 +235,31 @@ public class ClickGuiPanel {
 
         float totalElementHeight = 0;
         for (Module module : modules) {
-            float moduleX = backgroundX + xOffset;
-            float moduleY = backgroundY + yOffset + totalElementHeight + modulesScrollAnim.getValue();
-            float moduleWidth = backgroundWidth - xOffset * 2;
-            float moduleHeight = 20;
+            if (openSettingsAnim.getValue() == 0) {
+                float moduleX = backgroundX + xOffset;
+                float moduleY = backgroundY + yOffset + totalElementHeight + modulesScrollAnim.getValue();
+                float moduleWidth = backgroundWidth - xOffset * 2;
+                float moduleHeight = 20;
 
-            boolean hovered = GuiUtils.isHovered(x, y, moduleX, moduleY, moduleWidth, moduleHeight);
+                boolean hovered = GuiUtils.isHovered(x, y, moduleX, moduleY, moduleWidth, moduleHeight);
 
-            if (hovered) {
-                switch (button) {
-                    case 0 -> module.toggle();
-                    case 1 -> {
-                        if (!module.getSettings().isEmpty()) {
-                            openedModule = module;
-                            lastOpenedModule = module;
-                            settingsScroll = 0;
-                            settingsScrollAnim.setValue(0);
-                            openSettingsAnim.setEnd(1);
+                if (hovered) {
+                    switch (button) {
+                        case 0 -> module.toggle();
+                        case 1 -> {
+                            if (!module.getSettings().isEmpty()) {
+                                openedModule = module;
+                                lastOpenedModule = module;
+                                settingsScroll = 0;
+                                settingsScrollAnim.setValue(0);
+                                openSettingsAnim.setEnd(1);
+                            }
                         }
                     }
+                    return true;
                 }
-                return true;
+            } else if (openSettingsAnim.getValue() == 1) {
+                // тут клики для настроек
             }
 
             totalElementHeight += 25;
