@@ -4,6 +4,8 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
+import fuguriprivatecoding.autotoolrecode.settings.Setting;
+import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
@@ -38,6 +40,7 @@ public class ClickGuiPanel {
     EasingAnimation yPosAnim = new EasingAnimation();
 
     EasingAnimation heightAnim = new EasingAnimation();
+    EasingAnimation heightAnimNormalized = new EasingAnimation();
 
     EasingAnimation openSettingsAnim = new EasingAnimation();
 
@@ -45,12 +48,11 @@ public class ClickGuiPanel {
 
     private float totalElementsHeight;
 
-    private float scrollTotalElementsHeight;
-
     private final Vector2f moveOffset = new Vector2f();
 
     EasingAnimation scrollAnim = new EasingAnimation();
 
+    int scrollBeforeOpenSettings;
     int scroll;
 
     float backgroundX;
@@ -68,17 +70,17 @@ public class ClickGuiPanel {
     ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFPro");
 
     public void render(float openAnimProgress, int mouseX, int mouseY) {
-        int currentScroll = Mouse.getDWheel();
-
-        scroll += currentScroll / 120 * 25;
+        if (GuiUtils.isHovered(mouseX, mouseY, backgroundX, backgroundY, backgroundWidth, backgroundHeight)) {
+            int currentScroll = Mouse.getDWheel();
+            scroll += currentScroll / 120 * 25;
+        }
 
         float altVisibleHeight = 250;
-        float maxScroll = Math.max(scrollTotalElementsHeight - altVisibleHeight, 0);
+        float maxScroll = Math.max(totalElementsHeight - altVisibleHeight, 0);
 
-        if (scroll > 0) scroll = 0;
-        if (scroll < -maxScroll) scroll = (int) -maxScroll;
+        scroll = (int) Math.clamp(scroll, -maxScroll, 0);
 
-        scrollAnim.update(8, Easing.IN_OUT_CUBIC);
+        scrollAnim.update(5, Easing.OUT_CUBIC);
         scrollAnim.setEnd(scroll);
 
         if (moving) {
@@ -88,11 +90,17 @@ public class ClickGuiPanel {
 
         ScaledResolution sc = ScaleUtils.getScaledResolution();
 
-        xPosAnim.update(5f, Easing.OUT_CUBIC);
-        yPosAnim.update(5f, Easing.OUT_CUBIC);
+        xPosAnim.update(8f, Easing.OUT_CUBIC);
+        yPosAnim.update(8f, Easing.OUT_CUBIC);
 
-        heightAnim.setEnd(opened ? 1 : 0);
+        heightAnim.setEnd(opened ? Math.min(totalElementsHeight, 250) : 0);
         heightAnim.update(3, Easing.IN_OUT_CUBIC);
+
+        heightAnimNormalized.setEnd(opened ? 1 : 0);
+        heightAnimNormalized.update(3, Easing.IN_OUT_CUBIC);
+
+
+        openSettingsAnim.update(5, Easing.IN_OUT_CUBIC);
 
         float invertOpenAnimProgress = 1 - openAnimProgress;
         float panelRadius = 5;
@@ -108,9 +116,9 @@ public class ClickGuiPanel {
         backgroundY = yPosAnim.getValue() - invertOpenAnimProgress * 10 / 2;
 
         backgroundWidth = 100 + invertOpenAnimProgress * 10;
-        backgroundHeight = 20 + heightAnim.getValue() * Math.min(totalElementsHeight, 255) + invertOpenAnimProgress * 10;
+        backgroundHeight = 20 + heightAnim.getValue() + invertOpenAnimProgress * 10;
 
-        float invertHeightAnim = 1 - heightAnim.getValue();
+        float invertHeightAnim = 1 - heightAnimNormalized.getValue();
 
         RoundedUtils.drawRect(
             backgroundX, backgroundY,
@@ -136,22 +144,22 @@ public class ClickGuiPanel {
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(
             sc,
-            backgroundX, backgroundY,
-            backgroundWidth, backgroundHeight
+            backgroundX, backgroundY + 20,
+            backgroundWidth, backgroundHeight - 20
         );
 
-        if (heightAnim.getValue() > 0) {
-            totalElementsHeight = scrollAnim.getValue();
-            scrollTotalElementsHeight = 0;
+        if (heightAnimNormalized.getValue() > 0) {
+            totalElementsHeight = 0;
+
             for (Module module : modules) {
-                float moduleX = backgroundX + xOffset;
-                float moduleY = backgroundY + yOffset + totalElementsHeight;
-                float moduleWidth = backgroundWidth - xOffset * 2;
+                float moduleX = backgroundX + xOffset + openSettingsAnim.getValue() * backgroundWidth;
+                float moduleY = backgroundY + yOffset + totalElementsHeight + scrollAnim.getValue();
                 float moduleHeight = 20;
+                float moduleWidth = backgroundWidth - xOffset * 2;
 
                 boolean hovered = GuiUtils.isHovered(mouseX, mouseY, moduleX, moduleY, moduleWidth, moduleHeight);
 
-                Color baseColor = new Color(0f,0f,0f,0.7f);
+                Color baseColor = new Color(0f, 0f, 0f, 0.7f);
 
                 if (hovered) {
                     baseColor = new Color(baseColor.getRed() / 255f + 0.1f, baseColor.getGreen() / 255f + 0.1f, baseColor.getBlue() / 255f + 0.1f, 0.7f);
@@ -162,13 +170,35 @@ public class ClickGuiPanel {
                 }
 
                 RoundedUtils.drawRect(moduleX, moduleY, moduleWidth, moduleHeight, 5f, baseColor);
-                fontRenderer.drawString(module.getName(),moduleX + 5, moduleY + 8, Color.WHITE);
+                fontRenderer.drawString(module.getName(), moduleX + 5, moduleY + 8, Color.WHITE);
 
                 totalElementsHeight += 25;
-                scrollTotalElementsHeight += 25;
             }
+
+            if (openSettingsAnim.getValue() > 0) {
+                float totalSettingsHeight = 0;
+                for (Setting setting : lastOpenedModule.getSettings()) {
+                    float settingX = backgroundX + xOffset + (1 - openSettingsAnim.getValue()) * backgroundWidth;
+                    float settingY = backgroundY + yOffset + totalSettingsHeight + scrollAnim.getValue();
+
+                    switch (setting) {
+                        case FloatSetting floatSetting -> {
+                            fontRenderer.drawString(
+                                floatSetting.getName() + " " + floatSetting.getAnimatedValue(),
+                                settingX, settingY,
+                                Color.WHITE
+                            );
+                            totalSettingsHeight += 20;
+                        }
+                        default -> {
+                        }
+                    }
+                }
+
+                totalElementsHeight = Math.max(totalElementsHeight, totalSettingsHeight);
+            }
+
             totalElementsHeight += 5;
-            scrollTotalElementsHeight += 5;
         }
 
         ScissorUtils.disableScissor();
@@ -195,7 +225,7 @@ public class ClickGuiPanel {
         float totalElementHeight = 0;
         for (Module module : modules) {
             float moduleX = backgroundX + xOffset;
-            float moduleY = backgroundY + yOffset + totalElementHeight;
+            float moduleY = backgroundY + yOffset + totalElementHeight + scrollAnim.getValue();
             float moduleWidth = backgroundWidth - xOffset * 2;
             float moduleHeight = 20;
 
@@ -205,10 +235,14 @@ public class ClickGuiPanel {
                 switch (button) {
                     case 0 -> module.toggle();
                     case 1 -> {
-                        openedModule = module;
-                        lastOpenedModule = module;
+                        if (!module.getSettings().isEmpty()) {
+                            openedModule = module;
+                            lastOpenedModule = module;
+                            scrollBeforeOpenSettings = (int) scrollAnim.getValue();
+                            scroll = 0;
+                            openSettingsAnim.setEnd(1);
+                        }
                     }
-
                 }
                 return true;
             }
@@ -229,6 +263,7 @@ public class ClickGuiPanel {
         if (key == Keyboard.KEY_ESCAPE) {
             boolean aa = openedModule != null;
             openedModule = null;
+            scroll = scrollBeforeOpenSettings;
             openSettingsAnim.setEnd(0);
             return aa;
         }

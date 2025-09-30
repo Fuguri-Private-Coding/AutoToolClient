@@ -33,8 +33,10 @@ public class Module implements Imports, SettingAble {
 	@Getter EasingAnimation arrayListAnimation = new EasingAnimation(-100);
 
 
+    /**
+     * 0 = закрыт, 1 = открыт
+     */
 	@Getter EasingAnimation heightAnim = new EasingAnimation();
-
 
     public Module() {
 		settings = new ArrayList<>();

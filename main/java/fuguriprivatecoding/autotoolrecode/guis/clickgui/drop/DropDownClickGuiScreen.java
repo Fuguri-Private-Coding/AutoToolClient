@@ -88,6 +88,12 @@ public class DropDownClickGuiScreen extends GuiScreen {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
+        for (ClickGuiPanel categoryPanel : categoryPanels) {
+            if (categoryPanel.keyTyped(typedChar, keyCode)) {
+                return;
+            }
+        }
+
         if (keyCode == Keyboard.KEY_ESCAPE) {
             closing = true;
             openAnim.setEnd(0);
