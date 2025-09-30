@@ -50,10 +50,11 @@ public class ClickGuiPanel {
 
     private final Vector2f moveOffset = new Vector2f();
 
-    EasingAnimation scrollAnim = new EasingAnimation();
+    EasingAnimation modulesScrollAnim = new EasingAnimation();
+    EasingAnimation settingsScrollAnim = new EasingAnimation();
 
-    int scrollBeforeOpenSettings;
-    int scroll;
+    int settingsScroll;
+    int modulesScroll;
 
     float backgroundX;
     float backgroundY;
@@ -72,16 +73,22 @@ public class ClickGuiPanel {
     public void render(float openAnimProgress, int mouseX, int mouseY) {
         if (GuiUtils.isHovered(mouseX, mouseY, backgroundX, backgroundY, backgroundWidth, backgroundHeight)) {
             int currentScroll = Mouse.getDWheel();
-            scroll += currentScroll / 120 * 25;
+            settingsScroll += currentScroll / 120 * 25;
+            modulesScroll += currentScroll / 120 * 25;
         }
 
-        float altVisibleHeight = 250;
+        float altVisibleHeight = 255;
         float maxScroll = Math.max(totalElementsHeight - altVisibleHeight, 0);
 
-        scroll = (int) Math.clamp(scroll, -maxScroll, 0);
+        if (openSettingsAnim.getValue() == 0) {
+            modulesScroll = (int) Math.clamp(modulesScroll, -maxScroll, 0);
+        }
 
-        scrollAnim.update(5, Easing.OUT_CUBIC);
-        scrollAnim.setEnd(scroll);
+        modulesScrollAnim.setEnd(modulesScroll);
+        modulesScrollAnim.update(5, Easing.OUT_CUBIC);
+
+        settingsScrollAnim.setEnd(settingsScroll);
+        settingsScrollAnim.update(5, Easing.OUT_CUBIC);
 
         if (moving) {
             xPosAnim.setEnd(mouseX - moveOffset.x);
@@ -93,7 +100,7 @@ public class ClickGuiPanel {
         xPosAnim.update(8f, Easing.OUT_CUBIC);
         yPosAnim.update(8f, Easing.OUT_CUBIC);
 
-        heightAnim.setEnd(opened ? Math.min(totalElementsHeight, 250) : 0);
+        heightAnim.setEnd(opened ? Math.min(totalElementsHeight, 255) : 0);
         heightAnim.update(3, Easing.IN_OUT_CUBIC);
 
         heightAnimNormalized.setEnd(opened ? 1 : 0);
@@ -144,8 +151,8 @@ public class ClickGuiPanel {
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(
             sc,
-            backgroundX, backgroundY + 20,
-            backgroundWidth, backgroundHeight - 20
+            backgroundX, backgroundY + 24,
+            backgroundWidth, backgroundHeight - 26
         );
 
         if (heightAnimNormalized.getValue() > 0) {
@@ -153,7 +160,7 @@ public class ClickGuiPanel {
 
             for (Module module : modules) {
                 float moduleX = backgroundX + xOffset + openSettingsAnim.getValue() * backgroundWidth;
-                float moduleY = backgroundY + yOffset + totalElementsHeight + scrollAnim.getValue();
+                float moduleY = backgroundY + yOffset + totalElementsHeight + modulesScrollAnim.getValue();
                 float moduleHeight = 20;
                 float moduleWidth = backgroundWidth - xOffset * 2;
 
@@ -178,8 +185,8 @@ public class ClickGuiPanel {
             if (openSettingsAnim.getValue() > 0) {
                 float totalSettingsHeight = 0;
                 for (Setting setting : lastOpenedModule.getSettings()) {
-                    float settingX = backgroundX + xOffset + (1 - openSettingsAnim.getValue()) * backgroundWidth;
-                    float settingY = backgroundY + yOffset + totalSettingsHeight + scrollAnim.getValue();
+                    float settingX = backgroundX + xOffset - (1 - openSettingsAnim.getValue()) * backgroundWidth;
+                    float settingY = backgroundY + yOffset + totalSettingsHeight + modulesScrollAnim.getValue();
 
                     switch (setting) {
                         case FloatSetting floatSetting -> {
@@ -195,7 +202,7 @@ public class ClickGuiPanel {
                     }
                 }
 
-                totalElementsHeight = Math.max(totalElementsHeight, totalSettingsHeight);
+                totalElementsHeight = totalSettingsHeight;
             }
 
             totalElementsHeight += 5;
@@ -225,7 +232,7 @@ public class ClickGuiPanel {
         float totalElementHeight = 0;
         for (Module module : modules) {
             float moduleX = backgroundX + xOffset;
-            float moduleY = backgroundY + yOffset + totalElementHeight + scrollAnim.getValue();
+            float moduleY = backgroundY + yOffset + totalElementHeight + modulesScrollAnim.getValue();
             float moduleWidth = backgroundWidth - xOffset * 2;
             float moduleHeight = 20;
 
@@ -238,8 +245,8 @@ public class ClickGuiPanel {
                         if (!module.getSettings().isEmpty()) {
                             openedModule = module;
                             lastOpenedModule = module;
-                            scrollBeforeOpenSettings = (int) scrollAnim.getValue();
-                            scroll = 0;
+                            settingsScroll = 0;
+                            settingsScrollAnim.setValue(0);
                             openSettingsAnim.setEnd(1);
                         }
                     }
@@ -263,7 +270,6 @@ public class ClickGuiPanel {
         if (key == Keyboard.KEY_ESCAPE) {
             boolean aa = openedModule != null;
             openedModule = null;
-            scroll = scrollBeforeOpenSettings;
             openSettingsAnim.setEnd(0);
             return aa;
         }
