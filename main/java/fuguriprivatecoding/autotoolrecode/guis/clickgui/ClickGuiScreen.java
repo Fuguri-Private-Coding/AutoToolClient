@@ -16,15 +16,13 @@ import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.doubles.Doubles;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.scaling.ScaleUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
@@ -56,6 +54,7 @@ public class ClickGuiScreen extends GuiScreen {
 	final Color CATEGORY_COLOR = new Color(255, 255, 255, 255);
 
 	KeyBind activeKeyBind;
+	StringSetting activeStringSetting;
 	Category selectedCategory = Category.COMBAT;
 	Module selectedModule = null;
 	Category clickedCategory;
@@ -636,6 +635,27 @@ public class ClickGuiScreen extends GuiScreen {
 
 					case KeyBind keyBind -> fontRenderer.drawString(activeKeyBind == keyBind ? "▬" : Keyboard.getKeyName(keyBind.getKey()), background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset, MAIN_COLOR);
 
+					case StringSetting stringSetting -> {
+
+						offset += 16;
+						settingsTotalHeight += 16;
+
+						RoundedUtils.drawRect(
+							background.x + verticalLineXOffset + 5 + 1,
+							background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset - 7,
+                            (float) (6 + fontRenderer.getStringWidth(stringSetting.getPreviewText())),
+							15,
+							7.5f,
+							BACKGROUND_COLOR
+						);
+
+						fontRenderer.drawString(stringSetting.getPreviewText(),
+							background.x + verticalLineXOffset + 5 + 1 + fontRenderer.getStringWidth(stringSetting.getPreviewText()) / 2f - fontRenderer.getStringWidth(stringSetting.getPreviewText()) / 2f + 3 + 1.5f,
+							background.y + 2 + 1 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
+							stringSetting.equals(activeStringSetting) ? MAIN_COLOR : Color.WHITE
+						);
+					}
+
 					default -> {}
 				}
 				offset += 14;
@@ -1019,6 +1039,30 @@ public class ClickGuiScreen extends GuiScreen {
 					offset += currentOffset + 3 - 8;
 					settingsTotalHeight += currentOffset + 3 - 8;
 				}
+				if (setting instanceof StringSetting stringSetting) {
+
+					offset += 16;
+
+					boolean activeSetting =
+						mouseX > background.x + verticalLineXOffset + 5 + 1 &&
+						mouseX < background.x + verticalLineXOffset + 5 + 1 + 6 + fontRenderer.getStringWidth(stringSetting.getPreviewText()) &&
+						mouseY > background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset - 7 &&
+						mouseY < background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset - 7 + 15;
+
+					if (mouseButton == 0) {
+						if (activeSetting) {
+							stringSetting.setActive(true);
+							activeStringSetting = stringSetting;
+						} else {
+							if (stringSetting.equals(activeStringSetting) && stringSetting.isActive()) {
+								stringSetting.setText(stringSetting.getTextField().getText());
+								stringSetting.setActive(false);
+							}
+							activeStringSetting = null;
+						}
+					}
+				}
+
 				offset += 14;
 			}
 		}
@@ -1034,9 +1078,25 @@ public class ClickGuiScreen extends GuiScreen {
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		if (selectedModule == null) binding = false;
 
-		float scale = clientSettings.scale.getValue();
+		if (selectedModule != null) {
+			for (Setting setting : selectedModule.getSettings()) {
+				if (!setting.isVisible())
+					continue;
 
-		ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
+				switch (setting) {
+					case StringSetting stringSetting -> {
+						if (activeStringSetting != null && stringSetting.isActive() && activeStringSetting.equals(stringSetting)) {
+							stringSetting.onKey(typedChar, keyCode);
+						}
+					}
+
+					default -> {}
+				}
+
+			}
+		}
+
+		if (activeStringSetting != null) return;
 
 		if (binding) {
 			binding = false;

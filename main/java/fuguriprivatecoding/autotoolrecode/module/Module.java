@@ -26,11 +26,15 @@ public class Module implements Imports, SettingAble {
 	@Getter @Setter boolean hide = annotation.hide();
 	@Getter @Setter boolean loadFromConfig = annotation.loadFromConfig();
 	@Getter String description = annotation.description();
+
 	@Getter @Setter long hoverStartTime;
 	@Getter @Setter boolean isHovered;
 	@Getter private float toggleProgress = 0f;
-
 	@Getter EasingAnimation arrayListAnimation = new EasingAnimation(-100);
+
+
+	@Getter EasingAnimation heightAnim = new EasingAnimation();
+
 
     public Module() {
 		settings = new ArrayList<>();

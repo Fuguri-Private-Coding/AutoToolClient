@@ -38,6 +38,10 @@ public class RenderUtils implements Imports {
         GlStateManager.disableBlend();
     }
 
+    public static void drawRoundedOutLineRectangle(float x, float y, float width, float height, float radius, Color bgColor, Color outLineColor1, Color outLineColor2) {
+        drawRoundedGradientOutlinedRectangle(x,y,x + width,y + height, radius, bgColor.getRGB(), outLineColor1.getRGB(), outLineColor2.getRGB());
+    }
+
     public static void drawRoundedOutLineRectangle(float x, float y, float width, float height, float radius, int bgColor, int outLineColor1, int outLineColor2) {
         drawRoundedGradientOutlinedRectangle(x,y,x + width,y + height, radius, bgColor, outLineColor1, outLineColor2);
     }

@@ -86,5 +86,5 @@ public class RotationHandler extends Module {
     }
 
     @Override
-    public boolean isToggled() { return true; }
+    public boolean isToggled() { return super.isToggled(); }
 }

@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode;
 
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.*;
+import fuguriprivatecoding.autotoolrecode.guis.clickgui.drop.DropDownClickGuiScreen;
 import fuguriprivatecoding.autotoolrecode.guis.config.*;
 import fuguriprivatecoding.autotoolrecode.config.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
@@ -69,6 +70,7 @@ public enum Client implements Imports {
 	HotTextManager hotTextManager;
 
 	ClickGuiScreen clickGui;
+	DropDownClickGuiScreen dropDown;
 	ConfigGuiScreen configGuiScreen;
 	AltManagerGuiScreen altManagerGui;
 	HotTextGui hotTextGui;
@@ -160,6 +162,8 @@ public enum Client implements Imports {
 		clickGuiWindow = new ClickGuiWindow();
 
 		clickGui = new ClickGuiScreen();
+
+		dropDown = new DropDownClickGuiScreen();
 
 		configGuiScreen = new ConfigGuiScreen();
 

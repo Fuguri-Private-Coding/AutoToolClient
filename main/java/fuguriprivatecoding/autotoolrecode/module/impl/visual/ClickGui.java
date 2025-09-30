@@ -31,7 +31,7 @@ public class ClickGui extends Module {
 //				mc.displayGuiScreen(imGuiScreen);
 //				ImGuiManager.addWindow(ImGuiScreen.clickGuiWindow);
 			}
-			case "JavaGui" -> mc.displayGuiScreen(Client.INST.getClickGui());
+			case "JavaGui" -> mc.displayGuiScreen(Client.INST.getDropDown());
 		}
 		toggle();
 	}
