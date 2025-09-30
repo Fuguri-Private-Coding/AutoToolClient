@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import imgui.ImGui;
 import lombok.Getter;
@@ -17,6 +18,8 @@ public class CheckBox extends Setting {
 
 	private float toggleProgress = 0f;
 	private final float animationSpeed = 0.15f;
+
+	EasingAnimation toggleAnimation = new EasingAnimation();
 
 	public CheckBox(String name, SettingAble parent) {
 		super(name, parent);

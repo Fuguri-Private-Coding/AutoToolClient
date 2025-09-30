@@ -70,8 +70,6 @@ public class DropDownClickGuiScreen extends GuiScreen {
                 break;
             }
         }
-
-        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
@@ -79,8 +77,6 @@ public class DropDownClickGuiScreen extends GuiScreen {
         for (ClickGuiPanel panel : categoryPanels) {
             panel.onMouseRelease(mouseX, mouseY, state);
         }
-
-        super.mouseReleased(mouseX, mouseY, state);
     }
 
     @Override
@@ -92,9 +88,7 @@ public class DropDownClickGuiScreen extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         for (ClickGuiPanel categoryPanel : categoryPanels) {
-            if (categoryPanel.keyTyped(typedChar, keyCode)) {
-                return;
-            }
+            if (categoryPanel.keyTyped(typedChar, keyCode)) return;
         }
 
         if (keyCode == Keyboard.KEY_ESCAPE) {
@@ -105,8 +99,4 @@ public class DropDownClickGuiScreen extends GuiScreen {
 
         super.keyTyped(typedChar, keyCode);
     }
-
-
-
-
 }
