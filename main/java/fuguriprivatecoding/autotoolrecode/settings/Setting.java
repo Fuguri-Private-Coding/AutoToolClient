@@ -1,11 +1,17 @@
 package fuguriprivatecoding.autotoolrecode.settings;
 
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import lombok.Getter;
+
 import java.util.function.BooleanSupplier;
 
 public class Setting implements ISetting {
 	final String name;
 	BooleanSupplier visible;
+
+	@Getter
+	EasingAnimation visibleAnim = new EasingAnimation();
 
 	public Setting(String name, SettingAble parent) {
 		this.name = name;

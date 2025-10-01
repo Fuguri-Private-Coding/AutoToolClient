@@ -99,10 +99,10 @@ public class ClickGuiPanel {
         }
 
         modulesScrollAnim.setEnd(modulesScroll);
-        modulesScrollAnim.update(5, Easing.LINEAR);
+        modulesScrollAnim.update(5, Easing.OUT_CUBIC);
 
         settingsScrollAnim.setEnd(settingsScroll);
-        settingsScrollAnim.update(5, Easing.LINEAR);
+        settingsScrollAnim.update(5, Easing.OUT_CUBIC);
 
         if (moving) {
             xPosAnim.setEnd(mouseX - moveOffset.x);
@@ -127,8 +127,6 @@ public class ClickGuiPanel {
 
         Color panelColor = new Color(0.1f,0.1f,0.1f, clickGui.backgroundAlpha.getValue() / 255f);
 
-        Color settingPanelColor = new Color(0.1f,0.1f,0.1f,clickGui.backgroundAlpha.getValue() / 255f * (openSettingsAnim.getValue()));
-
         Color[] panelOutLineColors = new Color[] {
             ColorUtils.fadeColor(clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed()),
             ColorUtils.fadeColor(clickGui.color.getFadeColor(), clickGui.color.getColor(), clickGui.color.getSpeed())
@@ -144,18 +142,11 @@ public class ClickGuiPanel {
 
         if (clickGui.glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(
-                    backgroundX, backgroundY,
-                    backgroundWidth, backgroundHeight,
+                RoundedUtils.drawRect(
+                    backgroundX + 1, backgroundY + 1,
+                    backgroundWidth - 2, backgroundHeight - 2,
                     panelRadius,
-                    clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed()
-                );
-
-                RenderUtils.drawMixedRoundedRect(
-                    backgroundX,backgroundY,
-                    backgroundWidth, 20 + 15 * openSettingsAnim.getValue(),
-                    panelRadius,
-                    clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed()
+                    clickGui.colorShadow.getFadedColor()
                 );
             });
         }
@@ -169,12 +160,6 @@ public class ClickGuiPanel {
                     Color.WHITE
                 );
 
-                RoundedUtils.drawRect(
-                    backgroundX,backgroundY,
-                    backgroundWidth, 20 + 15 * openSettingsAnim.getValue(),
-                    panelRadius * invertHeightAnim, panelRadius,panelRadius,panelRadius * invertHeightAnim,
-                    Color.WHITE
-                );
             });
         }
 
@@ -241,12 +226,14 @@ public class ClickGuiPanel {
                     Color baseColor = new Color(0f, 0f, 0f, clickGui.backgroundAlpha.getValue() / 255f);
 
                     if (hovered) {
-                        baseColor = new Color(baseColor.getRed() / 255f + 0.3f, baseColor.getGreen() / 255f + 0.3f, baseColor.getBlue() / 255f + 0.3f, clickGui.backgroundAlpha.getValue() / 255f);
+                        baseColor = new Color(baseColor.getRed() / 255f + 0.1f, baseColor.getGreen() / 255f + 0.1f, baseColor.getBlue() / 255f + 0.1f, clickGui.backgroundAlpha.getValue() / 255f);
                     }
 
-                    Color rectColor = module.isToggled() ? clickGui.color.getMixedColor(modules.indexOf(module)) : baseColor;
+                    if (module.isToggled()) {
+                        baseColor = new Color(baseColor.getRed() / 255f + 0.2f, baseColor.getGreen() / 255f + 0.2f, baseColor.getBlue() / 255f + 0.2f, clickGui.backgroundAlpha.getValue() / 255f);
+                    }
 
-                    RenderUtils.drawMixedRoundedRect(moduleX, moduleY, moduleWidth, moduleHeight, 5f, rectColor, baseColor, 90, 180, 270, 360, 5);
+                    RoundedUtils.drawRect(moduleX, moduleY, moduleWidth, moduleHeight, 5f, baseColor);
                     fontRenderer.drawString(module.getName(), moduleX + 5, moduleY + 8, Color.WHITE);
 
                     totalElementsHeight += 25;
@@ -258,15 +245,10 @@ public class ClickGuiPanel {
 
                 ClientFontRenderer textFont = Client.INST.getFonts().fonts.get("SFProRegular");
 
-                ScissorUtils.enableScissor();
-                ScissorUtils.scissor(
-                    sc,
-                    backgroundX, backgroundY + 40 + 1,
-                    backgroundWidth, backgroundHeight - 45
-                );
-
                 float rectX = backgroundX + xOffset;
                 float rectY = backgroundY + yOffset;
+
+                Color settingPanelColor = new Color(0.1f,0.1f,0.1f,clickGui.backgroundAlpha.getValue() / 255f * (openSettingsAnim.getValue()));
 
                 RoundedUtils.drawRect(
                     rectX, rectY,
@@ -275,17 +257,31 @@ public class ClickGuiPanel {
                     settingPanelColor
                 );
 
+                ScissorUtils.enableScissor();
+                ScissorUtils.scissor(
+                    sc,
+                    rectX, rectY,
+                    backgroundWidth - 10, backgroundHeight - yOffset - 5
+                );
+
                 for (Setting setting : lastOpenedModule.getSettings()) {
                     float settingX = backgroundX + xOffset - (1 - openSettingsAnim.getValue()) * backgroundWidth;
                     float settingY = backgroundY + yOffset + totalSettingsHeight + settingsScrollAnim.getValue();
 
-                    float settingNameWidth = (float) textFont.getStringWidth(setting.getName()) + 2;
-
                     Color clickGuiColor = clickGui.color.getMixedColor(lastOpenedModule.getSettings().indexOf(setting));
+                    String settingName = setting.getName().replaceAll(" ", "");
+                    float settingNameWidth = (float) textFont.getStringWidth(settingName) + 2;
+
+                    setting.getVisibleAnim().setEnd(setting.isVisible() ? 1 : 0);
+                    setting.getVisibleAnim().update(3f, Easing.IN_OUT_CUBIC);
+
+                    if (setting.getVisibleAnim().getValue() == 0) continue;
+
+                    float visibleProgress = setting.getVisibleAnim().getValue();
 
                     switch (setting) {
                         case FloatSetting floatSetting -> {
-                            textFont.drawString(setting.getName(), settingX + 5, settingY + 5, Color.WHITE);
+                            textFont.drawString(settingName, settingX + 5, settingY + 5, Color.WHITE);
 
                             float sliderX = settingX + 5 + settingNameWidth;
                             float sliderY = settingY + 5;
@@ -329,11 +325,11 @@ public class ClickGuiPanel {
                                 }
                             }
 
-                            totalSettingsHeight += 15;
+                            totalSettingsHeight += 15 * visibleProgress;
                         }
 
                         case IntegerSetting integerSetting -> {
-                            textFont.drawString(setting.getName(), settingX + 5, settingY + 5, Color.WHITE);
+                            textFont.drawString(settingName, settingX + 5, settingY + 5, Color.WHITE);
 
                             float sliderX = settingX + 5 + settingNameWidth;
                             float sliderY = settingY + 5;
@@ -378,11 +374,11 @@ public class ClickGuiPanel {
                             }
 
 
-                            totalSettingsHeight += 15;
+                            totalSettingsHeight += 15 * visibleProgress;
                         }
 
                         case CheckBox checkBox -> {
-                            textFont.drawString(setting.getName(), settingX + 5, settingY + 5, Color.WHITE);
+                            textFont.drawString(settingName, settingX + 5, settingY + 5, Color.WHITE);
 
                             checkBox.getToggleAnimation().update(4f, Easing.OUT_CUBIC);
 
@@ -412,7 +408,7 @@ public class ClickGuiPanel {
                                 Color.WHITE
                             );
 
-                            totalSettingsHeight += 15;
+                            totalSettingsHeight += 15 * visibleProgress;
                         }
 
                         default -> {}
@@ -496,17 +492,19 @@ public class ClickGuiPanel {
 
                     float settingNameWidth = (float) textFont.getStringWidth(setting.getName()) + 2;
 
+                    if (setting.getVisibleAnim().getValue() == 0) continue;
+
+                    float visibleProgress = setting.getVisibleAnim().getValue();
+
                     switch (setting) {
                         case FloatSetting _, IntegerSetting _ -> totalSettingsHeight += 15;
                         case CheckBox checkBox -> {
-                            if (GuiUtils.isHovered(x, y, settingX - 5 + maxSettingWidth - 20,
-                                settingY + 5,
-                                20, 6) && button == 0) {
+                            if (GuiUtils.isHovered(x, y, settingX - 5 + maxSettingWidth - 20, settingY + 5, 20, 6) && button == 0) {
                                 checkBox.setToggled(!checkBox.isToggled());
                                 return true;
                             }
 
-                            totalSettingsHeight += 15;
+                            totalSettingsHeight += 15 * visibleProgress;
                         }
 
                         default -> {}
