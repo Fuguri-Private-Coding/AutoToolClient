@@ -273,7 +273,7 @@ public class Scaffold extends Module {
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (getTellyValue()) {
-                    rotation = new Rot(MoveUtils.getDir(), 79);
+                    rotation = new Rot(MoveUtils.getDir(), lastRotation.getPitch());
                 } else {
                     rotation = getBestRotation();
                 }
@@ -378,9 +378,11 @@ public class Scaffold extends Module {
 
         pitches.sort(Comparator.comparingDouble(pitch -> Math.abs(Rot.getServerRotation().getPitch()) - pitch));
 
-        if (handleMouse) mouse = positionHashMap.get(pitches.getFirst());
+        if (handleMouse) {
+            mouse = positionHashMap.get(pitches.getFirst());
+            lastPitch = pitches.getFirst();
+        }
 
-        lastPitch = pitches.getFirst();
         return pitches.getFirst();
     }
 

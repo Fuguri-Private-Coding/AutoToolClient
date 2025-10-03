@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
-import fuguriprivatecoding.autotoolrecode.utils.font.msdf.MSDFFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -79,8 +78,6 @@ public class ClickGuiPanel {
 
     ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFPro");
 
-    MSDFFontRenderer msdfFontRenderer = new MSDFFontRenderer("sfproregular");
-
     public void render(float openAnimProgress, int mouseX, int mouseY, int currentScroll) {
         if (GuiUtils.isHovered(mouseX, mouseY, backgroundX, backgroundY, backgroundWidth, backgroundHeight)) {
             if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
@@ -114,8 +111,8 @@ public class ClickGuiPanel {
         xPosAnim.update(8f, Easing.OUT_CUBIC);
         yPosAnim.update(8f, Easing.OUT_CUBIC);
 
-        heightAnim.setEnd(opened ? Math.min(totalElementsHeight, 255) : 0);
         heightAnim.update(3, Easing.IN_OUT_CUBIC);
+        heightAnim.setEnd(opened ? Math.min(totalElementsHeight, 255) : 0);
 
         heightAnimNormalized.setEnd(opened ? 1 : 0);
         heightAnimNormalized.update(3, Easing.IN_OUT_CUBIC);
@@ -127,15 +124,10 @@ public class ClickGuiPanel {
 
         Color panelColor = new Color(0.1f,0.1f,0.1f, clickGui.backgroundAlpha.getValue() / 255f);
 
-        Color[] panelOutLineColors = new Color[] {
-            ColorUtils.fadeColor(clickGui.color.getColor(), clickGui.color.getFadeColor(), clickGui.color.getSpeed()),
-            ColorUtils.fadeColor(clickGui.color.getFadeColor(), clickGui.color.getColor(), clickGui.color.getSpeed())
-        };
-
         backgroundX = xPosAnim.getValue() - invertOpenAnimProgress * 10 / 2;
         backgroundY = yPosAnim.getValue() - invertOpenAnimProgress * 10 / 2;
 
-        backgroundWidth = (100 + invertOpenAnimProgress * 10) + (openSettingsAnim.getValue()) * 100;
+        backgroundWidth = (100 + invertOpenAnimProgress * 10) + (openSettingsAnim.getValue() * heightAnimNormalized.getValue()) * 100;
         backgroundHeight = 20 + openSettingsAnim.getValue() * 20 + heightAnim.getValue() + invertOpenAnimProgress * 10;
 
         float invertHeightAnim = 1 - heightAnimNormalized.getValue();
@@ -223,15 +215,7 @@ public class ClickGuiPanel {
 
                     boolean hovered = GuiUtils.isHovered(mouseX, mouseY, moduleX, moduleY, moduleWidth, moduleHeight);
 
-                    Color baseColor = new Color(0f, 0f, 0f, clickGui.backgroundAlpha.getValue() / 255f);
-
-                    if (hovered) {
-                        baseColor = new Color(baseColor.getRed() / 255f + 0.1f, baseColor.getGreen() / 255f + 0.1f, baseColor.getBlue() / 255f + 0.1f, clickGui.backgroundAlpha.getValue() / 255f);
-                    }
-
-                    if (module.isToggled()) {
-                        baseColor = new Color(baseColor.getRed() / 255f + 0.2f, baseColor.getGreen() / 255f + 0.2f, baseColor.getBlue() / 255f + 0.2f, clickGui.backgroundAlpha.getValue() / 255f);
-                    }
+                    Color baseColor = getBaseColor(module, hovered);
 
                     RoundedUtils.drawRect(moduleX, moduleY, moduleWidth, moduleHeight, 5f, baseColor);
                     fontRenderer.drawString(module.getName(), moduleX + 5, moduleY + 8, Color.WHITE);
@@ -424,7 +408,19 @@ public class ClickGuiPanel {
         }
 
         ScissorUtils.disableScissor();
+    }
 
+    private Color getBaseColor(Module module, boolean hovered) {
+        Color baseColor = new Color(0f, 0f, 0f, clickGui.backgroundAlpha.getValue() / 255f);
+
+        if (hovered) {
+            baseColor = new Color(baseColor.getRed() / 255f + 0.1f, baseColor.getGreen() / 255f + 0.1f, baseColor.getBlue() / 255f + 0.1f, clickGui.backgroundAlpha.getValue() / 255f);
+        }
+
+        if (module.isToggled()) {
+            baseColor = new Color(baseColor.getRed() / 255f + 0.2f, baseColor.getGreen() / 255f + 0.2f, baseColor.getBlue() / 255f + 0.2f, clickGui.backgroundAlpha.getValue() / 255f);
+        }
+        return baseColor;
     }
 
     public boolean onMouse(int x, int y, int button) {
