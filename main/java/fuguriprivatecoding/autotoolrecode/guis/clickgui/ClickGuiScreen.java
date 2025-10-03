@@ -13,7 +13,6 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
-import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.*;

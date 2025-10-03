@@ -4,7 +4,7 @@ public enum Category {
 	COMBAT("Combat"),
 	MOVE("Move"),
 	VISUAL("Visual"),
-	CONNECTION("Connection"),
+	CONNECTION("Connect"),
 	EXPLOIT("Exploit"),
 	LEGIT("Legit"),
 	PLAYER("Player"),
@@ -13,6 +13,7 @@ public enum Category {
 	;
 
 	public final String name;
+
 	Category(final String name) {
 		this.name = name;
 	}

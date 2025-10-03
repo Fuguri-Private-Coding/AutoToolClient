@@ -1,11 +1,20 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.scissor;
 
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.gui.ScaledResolution;
+
+import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
+@Getter
+@Setter
 public class ScissorUtils implements Imports {
+
+    private static boolean debugScissor;
 
     public static void enableScissor() {
         glEnable(GL_SCISSOR_TEST);
@@ -52,5 +61,7 @@ public class ScissorUtils implements Imports {
         } else {
             glScissor(0, 0, 0, 0);
         }
+
+        if (debugScissor) RoundedUtils.drawRect((float) x, (float) y, (float) width, (float) height,0, new Color(1f,1f,1f,0.3f));
     }
 }
