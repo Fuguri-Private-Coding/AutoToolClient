@@ -68,7 +68,6 @@ public class DoubleSlider extends Setting {
         return RandomUtils.nextDouble(minValue, maxValue);
     }
 
-
     public void updateAnimations() {
         animatedValueMin += (minValue - animatedValueMin) * animationSpeed;
 

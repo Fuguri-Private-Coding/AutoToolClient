@@ -17,12 +17,12 @@ import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PanelGuiScreen extends GuiScreen {
 
-    List<Panel> modulePanels = new ArrayList<>();
+    List<Panel> modulePanels = new CopyOnWriteArrayList<>();
 
     Category selectedCategory;
 
@@ -134,6 +134,8 @@ public class PanelGuiScreen extends GuiScreen {
 
         for (Panel panel : modulePanels) {
             panel.render(mouseX, mouseY, currentScroll);
+
+            modulePanels.removeIf(panel1 -> panel1.closed);
         }
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -180,7 +182,7 @@ public class PanelGuiScreen extends GuiScreen {
             if (GuiUtils.isHovered(mouseX, mouseY, moduleX, moduleY, moduleWidth, moduleHeight)) {
                 switch (mouseButton) {
                     case 0 -> module.toggle();
-                    case 1 -> modulePanels.add(new Panel(module));
+                    case 1 -> modulePanels.add(new Panel(module, moduleX, moduleY, moduleWidth));
                 }
             }
 

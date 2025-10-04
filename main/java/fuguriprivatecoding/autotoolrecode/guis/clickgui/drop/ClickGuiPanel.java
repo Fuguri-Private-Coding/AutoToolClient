@@ -5,9 +5,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
@@ -68,6 +66,8 @@ public class ClickGuiPanel {
     float backgroundY;
     float backgroundWidth;
     float backgroundHeight;
+
+    KeyBind selectedKeyBind;
 
     float panelHeaderHeight = 25;
 
@@ -294,7 +294,7 @@ public class ClickGuiPanel {
                             textFont.drawString(
                                 String.format("%.2f", floatSetting.getValue()),
                                 settingX - 1 + maxSettingWidth - fontRenderer.getStringWidth(String.format("%.2f", floatSetting.getValue())),
-                                settingY + 5, Color.WHITE
+                                settingY + 5 + 1, Color.WHITE
                             );
 
                             if (GuiUtils.isHovered(mouseX, mouseY, sliderX, sliderY, sliderWidth, sliderHeight)) {
@@ -310,6 +310,97 @@ public class ClickGuiPanel {
                             }
 
                             totalSettingsHeight += 15 * visibleProgress;
+                        }
+
+                        case DoubleSlider doubleSlider -> {
+                            textFont.drawString(settingName, settingX + 5, settingY + 5, Color.WHITE);
+
+                            doubleSlider.updateAnimations();
+
+                            float sliderX = settingX + 5 + 5;
+                            float sliderY = settingY + 5 + 10;
+                            float sliderWidth = maxSettingWidth / 2f - 15;
+                            float sliderHeight = 6;
+
+                            RoundedUtils.drawRect(
+                                sliderX, sliderY,
+                                sliderWidth, sliderHeight,
+                                3, settingPanelColor
+                            );
+
+                            RoundedUtils.drawRect(
+                                sliderX, sliderY,
+                                (float) (sliderWidth * doubleSlider.getAnimatedNormalizeMin()), sliderHeight,
+                                3, clickGuiColor
+                            );
+
+                            RoundedUtils.drawRect(
+                                (float) (sliderX + sliderWidth * doubleSlider.getAnimatedNormalizeMin() - 3), sliderY,
+                                6,6,
+                                3,
+                                Color.WHITE
+                            );
+
+                            textFont.drawString(
+                                String.format("%.2f", doubleSlider.getMinValue()),
+                                settingX - 1 + maxSettingWidth - fontRenderer.getStringWidth(String.format("%.2f", doubleSlider.getMinValue())),
+                                settingY + 5 + 11, Color.WHITE
+                            );
+
+                            if (GuiUtils.isHovered(mouseX, mouseY, sliderX, sliderY, sliderWidth, sliderHeight)) {
+                                if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+                                    doubleSlider.setMinValue(doubleSlider.getMinValue() + Math.signum(currentScroll) * doubleSlider.getStep());
+                                } else if (Mouse.isButtonDown(0)) {
+                                    float relativeX = mouseX - sliderX;
+                                    relativeX = Math.max(0, Math.min(relativeX, sliderWidth));
+                                    float p = relativeX / sliderWidth;
+                                    float value = (float) (doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p);
+                                    doubleSlider.setMinValue(value);
+                                }
+                            }
+
+                            float sliderXSecond = settingX + 5 + 5;
+                            float sliderYSecond = settingY + 5 + 20;
+
+                            RoundedUtils.drawRect(
+                                sliderXSecond, sliderYSecond,
+                                sliderWidth, sliderHeight,
+                                3, settingPanelColor
+                            );
+
+                            RoundedUtils.drawRect(
+                                sliderXSecond, sliderYSecond,
+                                (float) (sliderWidth * doubleSlider.getAnimatedNormalizeMax()), sliderHeight,
+                                3, clickGuiColor
+                            );
+
+                            RoundedUtils.drawRect(
+                                (float) (sliderXSecond + sliderWidth * doubleSlider.getAnimatedNormalizeMax() - 3), sliderYSecond,
+                                6,6,
+                                3,
+                                Color.WHITE
+                            );
+
+                            textFont.drawString(
+                                String.format("%.2f", doubleSlider.getMaxValue()),
+                                settingX - 1 + maxSettingWidth - fontRenderer.getStringWidth(String.format("%.2f", doubleSlider.getMaxValue())),
+                                settingY + 5 + 10 + 10 + 2, Color.WHITE
+                            );
+
+                            if (GuiUtils.isHovered(mouseX, mouseY, sliderXSecond, sliderYSecond, sliderWidth, sliderHeight)) {
+                                if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+                                    doubleSlider.setMaxValue(doubleSlider.getMaxValue() + Math.signum(currentScroll) * doubleSlider.getStep());
+                                } else if (Mouse.isButtonDown(0)) {
+                                    float relativeX = mouseX - sliderX;
+                                    relativeX = Math.max(0, Math.min(relativeX, sliderWidth));
+                                    float p = relativeX / sliderWidth;
+                                    float value = (float) (doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p);
+                                    doubleSlider.setMaxValue(value);
+                                }
+                            }
+
+
+                            totalSettingsHeight += 35;
                         }
 
                         case IntegerSetting integerSetting -> {
@@ -342,7 +433,7 @@ public class ClickGuiPanel {
                             textFont.drawString(
                                 String.valueOf(integerSetting.getValue()),
                                 settingX - 1 + maxSettingWidth - fontRenderer.getStringWidth(String.valueOf(integerSetting.getValue())),
-                                settingY + 5, Color.WHITE
+                                settingY + 5 + 1, Color.WHITE
                             );
 
                             if (GuiUtils.isHovered(mouseX, mouseY, sliderX, sliderY, sliderWidth, sliderHeight)) {
@@ -391,6 +482,17 @@ public class ClickGuiPanel {
                                 3,
                                 Color.WHITE
                             );
+
+                            totalSettingsHeight += 15 * visibleProgress;
+                        }
+
+                        case KeyBind keyBind -> {
+                            textFont.drawString(settingName + " = ", settingX + 5, settingY + 5, Color.WHITE);
+
+                            boolean selected = selectedKeyBind != null && selectedKeyBind.equals(keyBind);
+
+                            textFont.drawString(Keyboard.getKeyName(keyBind.getKey()), settingX + settingNameWidth + 11, settingY + 5, selected ? clickGuiColor : Color.WHITE);
+
 
                             totalSettingsHeight += 15 * visibleProgress;
                         }
@@ -503,6 +605,17 @@ public class ClickGuiPanel {
                             totalSettingsHeight += 15 * visibleProgress;
                         }
 
+                        case DoubleSlider _ -> totalSettingsHeight += 35;
+
+                        case KeyBind keyBind -> {
+
+                            if (GuiUtils.isHovered(x, y, settingX + settingNameWidth + 11, settingY + 5, (float) textFont.getStringWidth(Keyboard.getKeyName(keyBind.getKey())), textFont.FONT_HEIGHT) && button == 0) {
+                                selectedKeyBind = keyBind;
+                                return true;
+                            }
+                            totalSettingsHeight += 15;
+                        }
+
                         default -> {}
                     }
                 }
@@ -519,6 +632,17 @@ public class ClickGuiPanel {
     }
 
     public boolean keyTyped(char ch, int key) {
+        if (selectedKeyBind != null) {
+            if (key == Keyboard.KEY_ESCAPE) {
+                selectedKeyBind.setKey(Keyboard.KEY_NONE);
+            } else {
+                selectedKeyBind.setKey(key);
+            }
+
+            selectedKeyBind = null;
+            return true;
+        }
+
         if (key == Keyboard.KEY_ESCAPE) {
             boolean aa = openedModule != null;
             openedModule = null;
