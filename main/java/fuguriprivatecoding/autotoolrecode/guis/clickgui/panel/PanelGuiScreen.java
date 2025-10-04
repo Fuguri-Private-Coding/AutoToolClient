@@ -14,6 +14,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.scaling.ScaleUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,6 +38,12 @@ public class PanelGuiScreen extends GuiScreen {
 
     ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFProRegular");
 
+    EasingAnimation modulesScrollAnim = new EasingAnimation();
+    int modulesScroll;
+
+    float moduleOffset;
+
+
     {
         backgroundX = 5;
         backgroundY = 5;
@@ -46,10 +53,13 @@ public class PanelGuiScreen extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        int currentScroll = Mouse.getDWheel();
         ScaledResolution sc = new ScaledResolution(mc);
 
         openAnim.update(3, Easing.IN_OUT_QUINT);
         openAnim.setEnd(opened ? 1 : 0);
+
+        fontRenderer = Client.INST.getFonts().fonts.get("SFPro");
 
         opened = GuiUtils.isHovered(mouseX, mouseY, 0, 0, 150 + 5, backgroundHeight + 10);
 
@@ -60,6 +70,17 @@ public class PanelGuiScreen extends GuiScreen {
         backgroundWidth = 155 * openAnim.getValue();
         backgroundHeight = sc.getScaledHeight() - 10;
 
+        if (GuiUtils.isHovered(mouseX, mouseY, backgroundX, backgroundY, backgroundWidth, backgroundHeight)) {
+            modulesScroll += currentScroll / 120 * 25;
+        }
+
+        float altVisibleHeight = backgroundHeight;
+        float maxScroll = Math.max(moduleOffset - altVisibleHeight, 0);
+        modulesScroll = (int) Math.clamp(modulesScroll, -maxScroll, 0);
+
+        modulesScrollAnim.update(4f, Easing.OUT_CUBIC);
+        modulesScrollAnim.setEnd(modulesScroll);
+
         Color panelColor = new Color(0,0,0, clickGui.backgroundAlpha.getValue());
         float panelRadius = 10;
 
@@ -68,7 +89,7 @@ public class PanelGuiScreen extends GuiScreen {
 
         categoryPanelWidth = 50 * openAnim.getValue();
 
-        RoundedUtils.drawRect(backgroundX, backgroundY, categoryPanelWidth,backgroundHeight, 10,10,0,0, panelColor);
+        RoundedUtils.drawRect(backgroundX, backgroundY, categoryPanelWidth, backgroundHeight, 10,10,0,0, panelColor);
 
         float finalCategoryOffset = backgroundHeight / Category.values().length;
 
@@ -88,9 +109,9 @@ public class PanelGuiScreen extends GuiScreen {
         List<Module> moduleList = Client.INST.getModuleManager().getModulesByCategory(selectedCategory);
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(sc, backgroundX, backgroundY + 5, backgroundWidth, backgroundHeight);
+        ScissorUtils.scissor(sc, backgroundX, backgroundY + 2, backgroundWidth, backgroundHeight - 4);
 
-        float moduleOffset = 0;
+        moduleOffset = modulesScrollAnim.getValue();
         for (Module module : moduleList) {
             float moduleX = backgroundX + categoryPanelWidth + 5;
             float moduleY = backgroundY + 5 + moduleOffset;
@@ -101,7 +122,7 @@ public class PanelGuiScreen extends GuiScreen {
 
             Color baseColor = getBaseColor(module, hovered);
 
-            RoundedUtils.drawRect(moduleX, moduleY, moduleWidth, moduleHeight, 5f, baseColor);
+            RoundedUtils.drawRect(moduleX, moduleY, moduleWidth, moduleHeight, 10, baseColor);
             fontRenderer.drawString(module.getName(), moduleX + 5, moduleY + 10.5f, Color.WHITE);
             moduleOffset += 30;
         }
@@ -112,7 +133,7 @@ public class PanelGuiScreen extends GuiScreen {
         AlphaUtils.draw(openAnim.getValue() * 1.7f);
 
         for (Panel panel : modulePanels) {
-            panel.render(mouseX, mouseY);
+            panel.render(mouseX, mouseY, currentScroll);
         }
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -149,7 +170,7 @@ public class PanelGuiScreen extends GuiScreen {
 
         List<Module> moduleList = Client.INST.getModuleManager().getModulesByCategory(selectedCategory);
 
-        float moduleOffset = 0;
+        moduleOffset = modulesScrollAnim.getValue();
         for (Module module : moduleList) {
             float moduleX = backgroundX + categoryPanelWidth + 5;
             float moduleY = backgroundY + 5 + moduleOffset;

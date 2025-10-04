@@ -15,7 +15,7 @@ import net.minecraft.init.Items;
 import java.util.ArrayList;
 import java.util.List;
 
-@ModuleInfo(name = "MurderMystery", category = Category.MISC, description = "Позволяет видить кто Убийца и Детектив.")
+@ModuleInfo(name = "MurderMystery", category = Category.MISC, description = "Позволяет видеть кто Убийца и Детектив.")
 public class MurderMystery extends Module {
 
     CheckBox checkMurders = new CheckBox("CheckMurders", this);
