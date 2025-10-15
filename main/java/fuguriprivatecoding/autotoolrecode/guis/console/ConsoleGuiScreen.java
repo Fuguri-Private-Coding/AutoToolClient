@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
@@ -198,6 +199,7 @@ public class ConsoleGuiScreen extends GuiScreen {
 
     public void log(String msg) {
         history.add("AutoTool:§3 " + msg);
+        ClientUtils.chatLog(msg);
         System.out.println("[Console]: " + msg);
     }
 

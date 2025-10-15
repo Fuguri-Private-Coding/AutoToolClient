@@ -13,7 +13,7 @@ public class CommandBind extends Command {
 	@Override
 	public void execute(String[] args) {
 		if (args.length < 2) {
-			console.log("Not enough arguments!");
+			addMessage("Not enough arguments!");
 			super.usage();
 			return;
 		}
@@ -21,25 +21,25 @@ public class CommandBind extends Command {
 		if (args.length == 2) {
 			if (args[1].equalsIgnoreCase("clear")) {
 				Client.INST.getModuleManager().getModules().forEach(module -> module.setKey(Keyboard.KEY_NONE));
-				console.log("All binds are cleared!");
+                addMessage("All binds are cleared!");
 			}
 		} else if (args.length == 3) {
 			Module module = Client.INST.getModuleManager().getModule(args[1]);
 		
 			if (module == null) {
-				console.log("There is no such module!");
+                addMessage("There is no such module!");
 				return;
 			}
 			
 			int key = Keyboard.getKeyIndex(args[2].toUpperCase());
 			
 			if (key == Keyboard.KEY_ESCAPE || key == Keyboard.KEY_RETURN) {
-				console.log("You cannot bind a module to this key!");
+                addMessage("You cannot bind a module to this key!");
 				return;
 			}
 			
 			module.setKey(key);
-			console.log("Module " + module.getName() + " successfully added to " + args[2].toUpperCase());
+            addMessage("Module " + module.getName() + " successfully added to " + args[2].toUpperCase());
 		}
 	}
 

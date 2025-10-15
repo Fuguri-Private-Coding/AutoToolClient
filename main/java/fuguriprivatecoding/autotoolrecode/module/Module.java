@@ -63,7 +63,6 @@ public class Module implements Imports, SettingAble {
 	void playSound(float volume) {
 		if (Client.INST.isStarting() || name.equalsIgnoreCase("ClickGui")) return;
 		if (toggled) Client.INST.getSoundsManager().getEnableSound().asyncPlay(volume);else Client.INST.getSoundsManager().getDisableSound().asyncPlay(volume);
-		Notifications.instance.addNotification(name,toggled);
 	}
 
     public void updateToggleAnimation() {
