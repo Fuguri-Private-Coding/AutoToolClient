@@ -41,6 +41,10 @@ public class EasingAnimation {
             value = end;
         }
     }
+
+    public void setEnd(boolean hovered) {
+        setEnd(hovered ? 1 : 0);
+    }
     
     public void setEnd(float endValue) {
         if (this.end != endValue) {

@@ -29,7 +29,7 @@ public class ClickManager implements Imports {
 
         if (event instanceof TickEvent tickEvent && !tickEvent.isCanceled()) {
             if (clickSettings.simulateDoubleClick.isToggled() && clicks > 5) {
-                clicks += Math.random() <= 0.5 ? 1 : -1;
+                clicks += Math.random() <= 0.5 ? 1 : 0;
             }
 
             int iters = clicks;
@@ -37,8 +37,13 @@ public class ClickManager implements Imports {
 
             EntityLivingBase target = Client.INST.getCombatManager().getTargetOrSelectedEntity();
             clicking = needClick(target);
+
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
-            if (rayCast != null && rayCast.isFriend() || !clicking) { return; }
+
+            if (rayCast != null && rayCast.isFriend() || !clicking) {
+                return;
+            }
+
             for (int i = 0; i < iters; i++) {
                 mc.clickMouse();
             }

@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.guis.clickgui.*;
 import fuguriprivatecoding.autotoolrecode.guis.console.*;
 import fuguriprivatecoding.autotoolrecode.guis.main.*;
-import fuguriprivatecoding.autotoolrecode.hottext.*;
 import fuguriprivatecoding.autotoolrecode.irc.*;
 import fuguriprivatecoding.autotoolrecode.managers.*;
 import fuguriprivatecoding.autotoolrecode.module.*;
@@ -30,9 +29,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.lwjgl.opengl.Display;
-import Effekseer.render.RenderEffects;
 import de.florianmichael.viamcp.ViaMCP;
-import Effekseer.installer.LoadNatives;
 import lombok.Getter;
 import lombok.Setter;
 import javax.swing.*;
@@ -65,16 +62,12 @@ public enum Client implements Imports {
 	CommandManager commandManager;
 	ClickManager clickManager;
 	DeepLearningEngine deepLearningEngine;
-	HotTextManager hotTextManager;
 
 	ClickGuiScreen clickGui;
 	ConfigGuiScreen configGuiScreen;
 	AltManagerGuiScreen altManagerGui;
-	HotTextGui hotTextGui;
 	GuiClientMainMenu mainMenu;
 
-	LoadNatives loadNatives;
-	RenderEffects renderEffects;
 	NameGenerator generator;
 
 	@Setter Discord discord;
@@ -114,11 +107,6 @@ public enum Client implements Imports {
 		friendManager = new FriendManager();
 		soundsManager = new SoundsManager();
 
-		loadNatives = new LoadNatives();
-		loadNatives.init();
-
-		renderEffects = new RenderEffects();
-
 		moduleManager = new ModuleManager();
 
 		shaderManager = new ShaderManager();
@@ -131,13 +119,6 @@ public enum Client implements Imports {
 		generator = new NameGenerator("names.txt");
 
 		altManagerGui = new AltManagerGuiScreen();
-
-		hotTextGui = new HotTextGui();
-		hotTextManager = new HotTextManager();
-
-		configManager.loadHotKeys();
-
-		Client.INST.getHotTextManager().updateHotKeys();
 
 		commandManager = new CommandManager();
 		clickManager = new ClickManager();

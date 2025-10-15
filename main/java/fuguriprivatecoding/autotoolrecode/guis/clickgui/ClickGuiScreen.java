@@ -40,7 +40,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 	int delay = 10;
 	boolean resizing, moving, binding, closing;
-	boolean showConsoleAfterClose, showConfigAfterClose, showHotKeysAfterClose;
+	boolean showConsoleAfterClose, showConfigAfterClose;
 	int settingsScroll, settingsTotalHeight, modulesScroll, modulesTotalHeight;
 
 	Vector2f pos, size, lastMouse, lastSize, lastPos, clickedCategoryPos, clickedModulePos;
@@ -710,19 +710,16 @@ public class ClickGuiScreen extends GuiScreen {
 
 		boolean console = mouseX > sc.getScaledWidth() / 2f - 50 + 10 && mouseX < sc.getScaledWidth() / 2f - 50 + 10 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
 		boolean config = mouseX > sc.getScaledWidth() / 2f - 50 + 43 && mouseX < sc.getScaledWidth() / 2f - 50 + 43 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
-		boolean hotKey = mouseX > sc.getScaledWidth() / 2f - 50 + 75 && mouseX < sc.getScaledWidth() / 2f - 50 + 75 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
 
 		ResourceLocation terminal = new ResourceLocation("minecraft", "autotool/image/terminal.png");
 		ResourceLocation configs = new ResourceLocation("minecraft", "autotool/image/configs.png");
-		ResourceLocation hotKeys = new ResourceLocation("minecraft", "autotool/image/keyboard.png");
 
 		final float panelCenterX = sc.getScaledWidth() / 2f;
 		final float panelY = sc.getScaledHeight() - guis.getValue();
 		final float panelStartX = panelCenterX - 50;
 
 		final float consoleX = panelStartX + 10;
-		final float configX = panelStartX + 43;
-		final float hotkeyX = panelStartX + 75;
+		final float configX = panelStartX + 75;
 		final float iconY = panelY + 3;
 		final int iconSize = 15;
 
@@ -731,9 +728,6 @@ public class ClickGuiScreen extends GuiScreen {
 
 		ColorUtils.glColor(config ? MAIN_COLOR : Color.WHITE);
 		RenderUtils.drawImage(configs, (int) configX, (int) iconY, iconSize, iconSize, true);
-
-		ColorUtils.glColor(hotKey ? MAIN_COLOR : Color.WHITE);
-		RenderUtils.drawImage(hotKeys, (int) hotkeyX, (int) iconY, iconSize, iconSize, true);
 
 		guis.update(clickGui.animationSpeed.getValue() / 5, Easing.IN_OUT_BACK);
 		moduleLine.update(clickGui.animationSpeed.getValue());
@@ -757,8 +751,7 @@ public class ClickGuiScreen extends GuiScreen {
 		boolean fullscreen = mouseX > background.x + 15 && mouseX < background.x + 15 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean collapse = mouseX > background.x + 25 && mouseX < background.x + 25 + 6.5 && mouseY > background.y + 4 && mouseY < background.y + 4 + 6;
 		boolean console = mouseX > sc.getScaledWidth() / 2f - 50 + 10 && mouseX < sc.getScaledWidth() / 2f - 50 + 10 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
-		boolean config = mouseX > sc.getScaledWidth() / 2f - 50 + 43 && mouseX < sc.getScaledWidth() / 2f - 50 + 43 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
-		boolean hotKeys = mouseX > sc.getScaledWidth() / 2f - 50 + 75 && mouseX < sc.getScaledWidth() / 2f - 50 + 75 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
+		boolean config = mouseX > sc.getScaledWidth() / 2f - 50 + 75 && mouseX < sc.getScaledWidth() / 2f - 50 + 75 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
 
 		if (Mouse.isButtonDown(0)) {
 			if (quit) {
@@ -782,11 +775,6 @@ public class ClickGuiScreen extends GuiScreen {
 
 			if (config) {
 				showConfigAfterClose = true;
-				closing = true;
-			}
-
-			if (hotKeys) {
-				showHotKeysAfterClose = true;
 				closing = true;
 			}
 		}
@@ -1074,11 +1062,6 @@ public class ClickGuiScreen extends GuiScreen {
 		if (showConfigAfterClose) {
 			mc.displayGuiScreen(Client.INST.getConfigGuiScreen());
 			showConfigAfterClose = false;
-		}
-
-		if (showHotKeysAfterClose) {
-			mc.displayGuiScreen(Client.INST.getHotTextGui());
-			showHotKeysAfterClose = false;
 		}
 	}
 

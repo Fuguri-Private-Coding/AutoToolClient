@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.config;
 
 import com.google.gson.*;
 import fuguriprivatecoding.autotoolrecode.alt.Account;
-import fuguriprivatecoding.autotoolrecode.hottext.HotText;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
@@ -140,28 +139,6 @@ public class ConfigManager implements Imports {
         return account;
     }
 
-    public void loadHotKeys() {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(hotTextFile));
-            JsonParser parser = new JsonParser();
-            JsonObject json = (JsonObject) parser.parse(reader);
-            reader.close();
-            Client.INST.getHotTextGui().hotKeys.clear();
-            for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-                HotText hotText = getHotKey(entry);
-
-                Client.INST.getHotTextGui().hotKeys.add(hotText);
-            }
-        } catch (RuntimeException | IOException e) {
-            e.printStackTrace(System.out);
-        }
-    }
-
-    private static HotText getHotKey(Map.Entry<String, JsonElement> entry) {
-        JsonObject moduleObject = (JsonObject) entry.getValue();
-        return new HotText(moduleObject.get("key").getAsInt(),moduleObject.get("text").getAsString(),0);
-    }
-
     public void saveAccounts() {
         FileUtils.createIfNotExists(accountFile);
         JsonObject mainObject = getAccountObject();
@@ -185,30 +162,6 @@ public class ConfigManager implements Imports {
                 moduleObject.addProperty("token", account.getRefreshToken());
             }
             mainObject.add(account.getName(), moduleObject);
-        }
-        return mainObject;
-    }
-
-    public void saveHotKeys() {
-        FileUtils.createIfNotExists(hotTextFile);
-        JsonObject mainObject = getHotKeyObject();
-        try {
-            PrintWriter writer = new PrintWriter(new FileWriter(hotTextFile));
-            Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
-            writer.println(prettyGson.toJson(mainObject));
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace(System.out);
-        }
-    }
-
-    private static JsonObject getHotKeyObject() {
-        JsonObject mainObject = new JsonObject();
-        for (HotText hotText : Client.INST.getHotTextGui().hotKeys) {
-            JsonObject moduleObject = new JsonObject();
-            moduleObject.addProperty("text", hotText.getText());
-            moduleObject.addProperty("key", hotText.getKey());
-            mainObject.add(hotText.getText(), moduleObject);
         }
         return mainObject;
     }
@@ -454,19 +407,7 @@ public class ConfigManager implements Imports {
                         moduleObject.add(set.getName(), multiBooleanObject);
                     }
                     case ColorSetting set -> {
-                        JsonObject colorSettingObject = new JsonObject();
-                        colorSettingObject.addProperty("Red", set.getRed());
-                        colorSettingObject.addProperty("Green", set.getGreen());
-                        colorSettingObject.addProperty("Blue", set.getBlue());
-                        colorSettingObject.addProperty("Alpha", set.getAlpha());
-                        colorSettingObject.addProperty("FadeRed", set.getFadeRed());
-                        colorSettingObject.addProperty("FadeGreen", set.getFadeGreen());
-                        colorSettingObject.addProperty("FadeBlue", set.getFadeBlue());
-                        colorSettingObject.addProperty("FadeAlpha", set.getFadeAlpha());
-                        colorSettingObject.addProperty("Fade", set.isFade());
-                        colorSettingObject.addProperty("FadeSpeed", set.getSpeed());
-                        colorSettingObject.addProperty("FadeOffset", set.getOffset());
-                        colorSettingObject.addProperty("Hide", set.isHide());
+                        JsonObject colorSettingObject = getColorSettingObject(set);
                         moduleObject.add(set.getName(), colorSettingObject);
                     }
                     case DoubleSlider set -> {
@@ -481,6 +422,23 @@ public class ConfigManager implements Imports {
             mainObject.add(module.getName(), moduleObject);
         }
         return mainObject;
+    }
+
+    private static JsonObject getColorSettingObject(ColorSetting set) {
+        JsonObject colorSettingObject = new JsonObject();
+        colorSettingObject.addProperty("Red", set.getRed());
+        colorSettingObject.addProperty("Green", set.getGreen());
+        colorSettingObject.addProperty("Blue", set.getBlue());
+        colorSettingObject.addProperty("Alpha", set.getAlpha());
+        colorSettingObject.addProperty("FadeRed", set.getFadeRed());
+        colorSettingObject.addProperty("FadeGreen", set.getFadeGreen());
+        colorSettingObject.addProperty("FadeBlue", set.getFadeBlue());
+        colorSettingObject.addProperty("FadeAlpha", set.getFadeAlpha());
+        colorSettingObject.addProperty("Fade", set.isFade());
+        colorSettingObject.addProperty("FadeSpeed", set.getSpeed());
+        colorSettingObject.addProperty("FadeOffset", set.getOffset());
+        colorSettingObject.addProperty("Hide", set.isHide());
+        return colorSettingObject;
     }
 
     public void exportSettingsInModule(Module module) {
@@ -511,19 +469,7 @@ public class ConfigManager implements Imports {
                     moduleObject.add(set.getName(), multiBooleanObject);
                 }
                 case ColorSetting set -> {
-                    JsonObject colorSettingObject = new JsonObject();
-                    colorSettingObject.addProperty("Red", set.getRed());
-                    colorSettingObject.addProperty("Green", set.getGreen());
-                    colorSettingObject.addProperty("Blue", set.getBlue());
-                    colorSettingObject.addProperty("Alpha", set.getAlpha());
-                    colorSettingObject.addProperty("FadeRed", set.getFadeRed());
-                    colorSettingObject.addProperty("FadeGreen", set.getFadeGreen());
-                    colorSettingObject.addProperty("FadeBlue", set.getFadeBlue());
-                    colorSettingObject.addProperty("FadeAlpha", set.getFadeAlpha());
-                    colorSettingObject.addProperty("Fade", set.isFade());
-                    colorSettingObject.addProperty("FadeSpeed", set.getSpeed());
-                    colorSettingObject.addProperty("FadeOffset", set.getOffset());
-                    colorSettingObject.addProperty("Hide", set.isHide());
+                    JsonObject colorSettingObject = getColorSettingObject(set);
                     moduleObject.add(set.getName(), colorSettingObject);
                 }
                 case DoubleSlider set -> {
@@ -640,19 +586,7 @@ public class ConfigManager implements Imports {
                         moduleObject.add(set.getName(), multiBooleanObject);
                     }
                     case ColorSetting set -> {
-                        JsonObject colorSettingObject = new JsonObject();
-                        colorSettingObject.addProperty("Red", set.getRed());
-                        colorSettingObject.addProperty("Green", set.getGreen());
-                        colorSettingObject.addProperty("Blue", set.getBlue());
-                        colorSettingObject.addProperty("Alpha", set.getAlpha());
-                        colorSettingObject.addProperty("FadeRed", set.getFadeRed());
-                        colorSettingObject.addProperty("FadeGreen", set.getFadeGreen());
-                        colorSettingObject.addProperty("FadeBlue", set.getFadeBlue());
-                        colorSettingObject.addProperty("FadeAlpha", set.getFadeAlpha());
-                        colorSettingObject.addProperty("Fade", set.isFade());
-                        colorSettingObject.addProperty("FadeSpeed", set.getSpeed());
-                        colorSettingObject.addProperty("FadeOffset", set.getOffset());
-                        colorSettingObject.addProperty("Hide", set.isHide());
+                        JsonObject colorSettingObject = getColorSettingObject(set);
                         moduleObject.add(set.getName(), colorSettingObject);
                     }
                     case DoubleSlider set -> {

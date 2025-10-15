@@ -1,9 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import Effekseer.installer.Loader;
-import Effekseer.swig.EffekseerEffectCore;
-import Effekseer.swig.EffekseerManagerCore;
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.AttackEvent;
@@ -32,33 +28,14 @@ public class Effects extends Module {
     CheckBox effect = new CheckBox("Effect", this);
 
     Mode effects = new Mode("Effects", this, effect::isToggled)
-            .addModes("Lightning", "Sacred", "Ember", "MinecraftLightning")
+            .addModes("MinecraftLightning")
             .setMode("MinecraftLightning")
             ;
-
-    CheckBox sound = new CheckBox("Sound", this);
-    Mode sounds = new Mode("Sounds", this, sound::isToggled)
-            .addModes("NeverLose", "Skeet", "HalfLife")
-            .setMode("HalfLife")
-            ;
-
-    FloatSetting volume = new FloatSetting("Volume",this, sound::isToggled, 0f,1f,1f,0.1f);
 
     Entity target;
     EntityLightningBolt bolt;
 
-    EffekseerEffectCore effectEmber;
-    EffekseerEffectCore effectSacred;
-    EffekseerEffectCore effectLightning;
-
     Vec3 targetPos;
-    int effectHandle;
-
-    public Effects() {
-        effectEmber = Loader.loadEffect("killEffects/Ember.efkefc", 0.2f);
-        effectSacred = Loader.loadEffect("killEffects/Sacred.efkefc", 0.2f);
-        effectLightning = Loader.loadEffect("killEffects/lightning/lightning.efkefc", 0.2f);
-    }
 
     @EventTarget
     public void onEvent(Event event) {
@@ -68,15 +45,9 @@ public class Effects extends Module {
 
             if (e.getHittingEntity() instanceof EntityPlayer entityPlayer) {
                 if (attackEffect.isToggled()) {
-                    if (attackEffects.get("Sharpness")) {
-                        for (int i = 0; i < attackMultiplier.getValue(); i++) {
-                            mc.thePlayer.onEnchantmentCritical(entityPlayer);
-                        }
-                    }
-                    if (attackEffects.get("Critical")) {
-                        for (int i = 0; i < attackMultiplier.getValue(); i++) {
-                            mc.thePlayer.onCriticalHit(entityPlayer);
-                        }
+                    for (int i = 0; i < attackMultiplier.getValue(); i++) {
+                        if (attackEffects.get("Sharpness")) mc.thePlayer.onEnchantmentCritical(entityPlayer);
+                        if (attackEffects.get("Critical")) mc.thePlayer.onCriticalHit(entityPlayer);
                     }
                 }
             }
@@ -84,28 +55,13 @@ public class Effects extends Module {
         if (event instanceof TickEvent) {
             if (target != null) {
                 if (effect.isToggled()) {
-                    EffekseerManagerCore effekseerManagerCore = Client.INST.getLoadNatives().getEffekseerManagerCore();
-
                     if (mc.theWorld.getLoadedEntityList().contains(target)) targetPos = new Vec3(target.posX,target.posY,target.posZ);
                     if (!mc.theWorld.getLoadedEntityList().contains(target)) {
-                        switch (effects.getMode()) {
-                            case "MinecraftLightning" -> {
-                                bolt = new EntityLightningBolt(mc.theWorld, targetPos.xCoord, targetPos.yCoord, targetPos.zCoord);
-                                bolt.setEntityId(-777);
-                                mc.theWorld.addEntityToWorld(bolt.getEntityId(), bolt);
-                                mc.theWorld.playSound(bolt.posX, bolt.posY, bolt.posZ, "ambient.weather.thunder", 1f, 1f, false);
-                            }
-                            case "Lightning" -> effectHandle = effekseerManagerCore.Play(effectLightning);
-                            case "Sacred" -> effectHandle = effekseerManagerCore.Play(effectSacred);
-                            case "Ember" -> effectHandle = effekseerManagerCore.Play(effectEmber);
-                        }
-                        effekseerManagerCore.SetEffectPosition(effectHandle, targetPos);
-                        if (sound.isToggled()) {
-                            switch (sounds.getMode()) {
-                                case "Skeet" -> Client.INST.getSoundsManager().getSkeetSound().asyncPlay(volume.getValue());
-                                case "NeverLose" -> Client.INST.getSoundsManager().getNeverLoseSound().asyncPlay(volume.getValue());
-                                case "HalfLife" -> Client.INST.getSoundsManager().getKilledSound().asyncPlay(volume.getValue());
-                            }
+                        if (effects.getMode().equals("MinecraftLightning")) {
+                            bolt = new EntityLightningBolt(mc.theWorld, targetPos.xCoord, targetPos.yCoord, targetPos.zCoord);
+                            bolt.setEntityId(-777);
+                            mc.theWorld.addEntityToWorld(bolt.getEntityId(), bolt);
+                            mc.theWorld.playSound(bolt.posX, bolt.posY, bolt.posZ, "ambient.weather.thunder", 1f, 1f, false);
                         }
                         target = null;
                     }
