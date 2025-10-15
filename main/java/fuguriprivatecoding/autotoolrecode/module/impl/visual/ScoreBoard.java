@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
@@ -10,11 +9,12 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtilss;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import fuguriprivatecoding.autotoolrecode.utils.scaling.ScaleUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.scoreboard.Score;
@@ -54,7 +54,7 @@ public class ScoreBoard extends Module {
     public final ColorSetting colorShadow = new ColorSetting("Shadow Color", this, shadow);
 
     public ScoreBoard() {
-        Client.INST.getFonts().fonts.forEach((fontName, _) -> fonts.addMode(fontName));
+        Fonts.fonts.forEach((fontName, _) -> fonts.addMode(fontName));
         fonts.setMode("SFProRounded");
     }
 
@@ -64,10 +64,11 @@ public class ScoreBoard extends Module {
         if (event instanceof Render2DEvent) {
             if (remove.isToggled()) return;
 
-            ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get(fonts.getMode());
+            ClientFontRenderer fontRenderer = Fonts.fonts.get(fonts.getMode());
 
             ScaledResolution sc = ScaleUtils.getScaledResolution(scale.getValue());
 
+            GL11.glPushMatrix();
             GL11.glScaled(scale.getValue(), scale.getValue(), 1);
 
             Scoreboard scoreboard = mc.theWorld.getScoreboard();
@@ -90,18 +91,16 @@ public class ScoreBoard extends Module {
 
                 float finalWidth = width;
                 if (roundedRect.isToggled()) {
-                    if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
-                    if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
+                    if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getFadedColor()));
+                    if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE));
 
-                    StencilUtilss.renderStencil(
-                            () -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE),
-                            () -> {
-                                RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), color.getFadedColor());
-                                RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, color.getFadedColor());
+                    StencilUtils.setUpTexture(pos.x, pos.y, finalWidth, height, roundFactor.getValue());
+                    StencilUtils.writeTexture();
 
-                                fontRenderer.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - fontRenderer.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f + 2, Color.WHITE);
-                            }
-                    );
+                    RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), color.getFadedColor());
+                    RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, color.getFadedColor());
+                    fontRenderer.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - fontRenderer.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f + 2, Color.WHITE);
+                    StencilUtils.endWriteTexture();
                 } else {
                     if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, 0, colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
                     if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, 0, colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
@@ -120,7 +119,7 @@ public class ScoreBoard extends Module {
                     fontRenderer.drawString(s1, pos.x + 3.0F, pos.y + height - (9 * j) + 2, Color.WHITE);
                 }
             }
-            GL11.glScaled(1.0 / scale.getValue(), 1.0 / scale.getValue(), 1);
+            GL11.glPopMatrix();
         }
     }
 

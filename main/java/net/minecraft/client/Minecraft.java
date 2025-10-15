@@ -1228,15 +1228,13 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     @SuppressWarnings("incomplete-switch")
     public void rightClickMouse() {
-        ClickEvent event = new ClickEvent(ClickEvent.Button.RIGHT);
-        event.call();
-
-        if (event.isCanceled()) return;
-
         if (!this.playerController.getIsHittingBlock()) {
             this.rightClickDelayTimer = 4;
             boolean flag = true;
             ItemStack itemstack = this.thePlayer.inventory.getCurrentItem();
+
+            ClickEvent event = new ClickEvent(ClickEvent.Button.RIGHT);
+            if (event.isCanceled()) return;
 
             if (this.objectMouseOver == null) {
                 logger.warn("Null returned as 'hitResult', this shouldn't happen!");

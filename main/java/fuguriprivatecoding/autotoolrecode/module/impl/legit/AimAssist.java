@@ -22,9 +22,9 @@ import org.lwjgl.input.Mouse;
 @ModuleInfo(name = "AimAssist", category = Category.LEGIT, description = "Помощь в прицеливании.")
 public class AimAssist extends Module {
 
-    final FloatSetting hSpeed = new FloatSetting("HorizontalSpeed", this, 0.1f, 30.0f, 5.0f, 0.1f) {};
+    final FloatSetting hSpeed = new FloatSetting("HorizontalSpeed", this, 0f, 30.0f, 5.0f, 0.1f) {};
     final CheckBox moveVertical = new CheckBox("MoveVertical", this, false);
-    final FloatSetting vSpeed = new FloatSetting("VerticalSpeed", this, moveVertical::isToggled, 0.1f, 15.0f, 2.5f, 0.1f) {};
+    final FloatSetting vSpeed = new FloatSetting("VerticalSpeed", this, moveVertical::isToggled, 0f, 30.0f, 2.5f, 0.1f) {};
     final FloatSetting distance = new FloatSetting("Distance", this, 3.0f, 12.0f, 6.0f, 0.1f) {};
     final IntegerSetting fov = new IntegerSetting("Fov", this, 10, 180, 35);
     final CheckBox onlyMoveForward = new CheckBox("OnlyMoveForward", this, false);

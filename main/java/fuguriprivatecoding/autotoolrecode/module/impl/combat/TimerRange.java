@@ -31,7 +31,7 @@ public class TimerRange extends Module {
     IntegerSetting maxTicks = new IntegerSetting("Max Ticks", this, 0, 20, 2);
 
     IntegerSetting maxTargetHurtTime = new IntegerSetting("Max Target Hurt Time", this, 0, 10, 0);
-    FloatSetting partialTicks = new FloatSetting("Partial Ticks", this, 0, 2.5f, 1, 0.1f);
+    FloatSetting partialTicks = new FloatSetting("Partial Ticks", this, -2.5f, 2.5f, 1, 0.1f);
 
     IntegerSetting additionalTicks = new IntegerSetting("Additional Ticks", this, -5,5,1);
 
@@ -49,8 +49,6 @@ public class TimerRange extends Module {
 
     FloatSetting lineWidth = new FloatSetting("Line Width", this, () -> renderRealPlayerPosition.isToggled() && renderBox.getAsBoolean(), 0, 5f, 1, 0.1f);
 
-    Color fadeColor;
-
     boolean teleporting = false;
     int teleportTicks, posRotIncrement = 0;
 
@@ -59,7 +57,9 @@ public class TimerRange extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof RunGameLoopEvent && balance > 0) mc.timer.renderPartialTicks = partialTicks.getValue();
+        if (event instanceof RunGameLoopEvent && balance > 0) {
+            mc.timer.renderPartialTicks = partialTicks.getValue();
+        }
 
         if (teleporting) return;
 
@@ -106,7 +106,10 @@ public class TimerRange extends Module {
                 try {
                     mc.runTick();
                     balance++;
-                    if (i == teleportTicks - 1) balance += additionalTicks.getValue();
+                    if (i == teleportTicks - 1) {
+                        mc.clickMouse();
+                        balance += additionalTicks.getValue();
+                    }
                     if (RayCastUtils.rayCast(3.0, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                         break;
                     }
@@ -128,20 +131,12 @@ public class TimerRange extends Module {
 
             AxisAlignedBB bb = target.getEntityBoundingBox().offset(realPositon.xCoord - target.posX, realPositon.yCoord - target.posY, realPositon.zCoord - target.posZ);
 
-            if (!render.getMode().equalsIgnoreCase("Player")) updateColors();
-
             switch (render.getMode()) {
                 case "Player" -> renderPlayer(realPositon, target, target.rotationYawHead, mc.timer.renderPartialTicks);
-                case "Box" -> renderBox(bb, fadeColor);
-                case "HitBox" -> renderHitBox(bb, fadeColor, lineWidth.getValue());
+                case "Box" -> renderBox(bb, color.getFadedColor());
+                case "HitBox" -> renderHitBox(bb, color.getFadedColor(), lineWidth.getValue());
             }
         }
-    }
-
-    private void updateColors() {
-        fadeColor = color.isFade() ?
-                ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
-                : color.getColor();
     }
 
     private void renderHitBox(AxisAlignedBB bb, Color color, float lineWidth) {

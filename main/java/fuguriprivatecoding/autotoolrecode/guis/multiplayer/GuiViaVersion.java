@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
@@ -55,7 +56,7 @@ public class GuiViaVersion extends GuiScreen {
 
         AlphaUtils.startWrite();
 
-        ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
+        ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
         String currentVersion = "Current Version: " + ViaLoadingBase.getInstance().getTargetVersion().getName();
 
         font.drawString(currentVersion, sc.getScaledWidth() / 2f - font.getStringWidth(currentVersion) / 2f, 5 + 2, Color.WHITE, true);

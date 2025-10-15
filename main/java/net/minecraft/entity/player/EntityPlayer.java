@@ -161,6 +161,10 @@ public abstract class EntityPlayer extends EntityLivingBase {
         return this.itemInUse != null;
     }
 
+    public int getPing() {
+        return mc.getNetHandler().getPlayerInfo(getUniqueID()).getResponseTime();
+    }
+
     public int getItemInUseDuration() {
         return this.isUsingItem() ? this.itemInUse.getMaxItemUseDuration() - this.itemInUseCount : 0;
     }

@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.guis.main;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -26,7 +27,7 @@ public class GuiClientButton extends GuiButton {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
         this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 
-        final ClientFontRenderer fonts = Client.INST.getFonts().fonts.get("SFProRounded");
+        final ClientFontRenderer fonts = Fonts.fonts.get("SFProRounded");
 
         RoundedUtils.drawRect(xPosition, yPosition, width, height, height / 2.5f, hovered ? new Color(0,0,0,0.5f) : new Color(0,0,0,0.7f));
 

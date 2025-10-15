@@ -12,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
@@ -51,8 +52,6 @@ public class ConfigGuiScreen extends GuiScreen {
 
     final Animation2D background, sizeBackground, scrolls;
 
-    final EasingAnimation alpha = new EasingAnimation(0);
-
     Color mainColor;
 
     public ConfigGuiScreen() {
@@ -81,8 +80,6 @@ public class ConfigGuiScreen extends GuiScreen {
 
         ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
-        alpha.update(5, Easing.IN_OUT_QUAD);
-
         mouseX = (int) (mouseX / scale);
         mouseY = (int) (mouseY / scale);
 
@@ -99,14 +96,9 @@ public class ConfigGuiScreen extends GuiScreen {
         if (scroll < -maxScroll) scroll = (int) -maxScroll;
 
         if (closing) {
-            alpha.setEnd(0);
-            boolean isAnimationComplete = !alpha.isAnimating();
-
-            if (isAnimationComplete) {
-                closing = false;
-                mc.displayGuiScreen(null);
-                mc.currentScreen = null;
-            }
+            closing = false;
+            mc.displayGuiScreen(null);
+            mc.currentScreen = null;
         }
 
         String name = switch (delay) {
@@ -122,7 +114,7 @@ public class ConfigGuiScreen extends GuiScreen {
             default -> "§k" + "Config".substring(0, min(delay - 20, 6));
         };
 
-        ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
+        ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
 
         background.endX = pos.x;
         background.endY = pos.y;
@@ -145,8 +137,6 @@ public class ConfigGuiScreen extends GuiScreen {
                 RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
             });
         }
-
-        AlphaUtils.startWrite();
 
         RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
@@ -220,9 +210,6 @@ public class ConfigGuiScreen extends GuiScreen {
             lastMouse.set(mouseX, mouseY);
         }
         GL11.glScaled(1f / scale, 1f / scale,1f);
-
-        AlphaUtils.endWrite();
-        AlphaUtils.draw(alpha.getValue() * 1.2f);
     }
 
     @Override
@@ -400,11 +387,6 @@ public class ConfigGuiScreen extends GuiScreen {
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
         moving = false;
-    }
-
-    @Override
-    public void initGui() {
-        alpha.setEnd(1);
     }
 
     @EventTarget

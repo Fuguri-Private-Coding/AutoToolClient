@@ -1,6 +1,5 @@
 package net.minecraft.client.multiplayer;
 
-import fuguriprivatecoding.autotoolrecode.event.events.ClickEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -391,8 +390,6 @@ public class PlayerControllerMP
                     return heldStack.onItemUse(player, worldIn, hitPos, side, f, f1, f2);
                 }
             } else {
-                ClickEvent event = new ClickEvent(ClickEvent.Button.RIGHT);
-                event.call();
                 return true;
             }
         }

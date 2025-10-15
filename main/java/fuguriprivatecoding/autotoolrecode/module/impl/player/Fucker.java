@@ -15,7 +15,6 @@ import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
@@ -77,7 +76,7 @@ public class Fucker extends Module {
 
         if (event instanceof Render3DEvent && bedPos != null) {
             RenderUtils.start3D();
-            RenderUtils.drawBlockESP(bedPos, new Color(1f * breakTicks / 10f,0,0,0.3f));
+            RenderUtils.drawBlockESP(bedPos, new Color(1,0,0,1f * breakTicks / 10f));
             ColorUtils.resetColor();
             RenderUtils.stop3D();
         }
@@ -173,11 +172,6 @@ public class Fucker extends Module {
         rotate = !resetRotate;
     }
 
-    public static boolean isBed(BlockPos blockPos) {
-        Block block = mc.theWorld.getBlockState(blockPos).getBlock();
-        return block instanceof BlockBed;
-    }
-
     public boolean handleRotate() {
         return !Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && Client.INST.getCombatManager().getTarget() == null;
     }
@@ -212,11 +206,6 @@ public class Fucker extends Module {
         return EnumFacing.UP;
     }
 
-    private int doAutoTool(BlockPos pos) {
-        if (PlayerUtil.findTool(pos) != -1) return PlayerUtil.findTool(pos);
-        return mc.thePlayer.inventory.currentItem;
-    }
-
     private float getBreakTicks(BlockPos bp, int tool) {
         int oldHeld = mc.thePlayer.inventory.currentItem;
 
@@ -227,5 +216,4 @@ public class Fucker extends Module {
         mc.thePlayer.inventory.currentItem = oldHeld;
         return ticks;
     }
-
 }

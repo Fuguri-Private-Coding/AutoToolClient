@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.utils.font;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import lombok.experimental.UtilityClass;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import java.awt.*;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+@UtilityClass
 public class Fonts implements Imports {
 
     public HashMap<String, ClientFontRenderer> fonts = new HashMap<>();
@@ -22,7 +24,8 @@ public class Fonts implements Imports {
 
     int fontsCount;
 
-    public Fonts() {
+    private void init() {
+        checkFonts();
         if (!fontsDirectory.exists()) {
             fontsDirectory.mkdirs();
             downloadFonts();
@@ -38,6 +41,14 @@ public class Fonts implements Imports {
         }
     }
 
+    private void checkFonts() {
+        MessageChannel fontsChannel = Client.INST.getIrc().getFontsChannel();
+        List<Message> messages = fontsChannel.getIterableHistory().stream().toList();
+        for (Message message : messages) {
+            if (!message.getAttachments().isEmpty()) fontsCount++;
+        }
+    }
+
     private void downloadFonts() {
         try {
             MessageChannel fontsChannel = Client.INST.getIrc().getFontsChannel();
@@ -47,8 +58,6 @@ public class Fonts implements Imports {
 
             for (Message message : messages) {
                 if (message.getAttachments().isEmpty()) continue;
-
-                fontsCount++;
 
                 message.getAttachments().forEach(attachment -> {
                     if (attachment.getFileName().endsWith(".ttf") || attachment.getFileName().endsWith(".otf")) {

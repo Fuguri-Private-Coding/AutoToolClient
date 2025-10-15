@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.guis.altmanager;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.FontRenderer;
@@ -24,7 +25,7 @@ public class AltManagerGuiText extends GuiTextField {
 
         RoundedUtils.drawRect(xPosition, yPosition, width, height, height / 2.5f,new Color(0,0,0,0.7f));
 
-        ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFProRounded");
+        ClientFontRenderer fontRenderer = Fonts.fonts.get("SFProRounded");
 
         fontRenderer.drawString(getText(), xPosition + width / 2f - fontRenderer.getStringWidth(getText()) / 2f,yPosition + 1 + height / 3f, Color.WHITE);
     }

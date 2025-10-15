@@ -13,6 +13,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.*;
@@ -61,7 +62,6 @@ public class ClickGuiScreen extends GuiScreen {
 	final Animation2D settingLine, background, sizeBackground, modulesScrolls, moduleLine, settingsScrolls;
 
 	final EasingAnimation guis = new EasingAnimation();
-	final EasingAnimation alpha = new EasingAnimation(0);
 
 	public ClickGuiScreen() {
 		lastMouse = new Vector2f(0, 0);
@@ -95,8 +95,6 @@ public class ClickGuiScreen extends GuiScreen {
 
 		float scale = clientSettings.scale.getValue();
 
-		alpha.update(5, Easing.IN_OUT_QUAD);
-
 		mouseX = (int) (mouseX / scale);
 		mouseY = (int) (mouseY / scale);
 
@@ -104,7 +102,7 @@ public class ClickGuiScreen extends GuiScreen {
 
 		if (closing) {
 			animateCloseTransition();
-			if (isCloseAnimationComplete()) completeCloseOperation();
+			completeCloseOperation();
 
 			mouseX = 0;
 			mouseY = 0;
@@ -122,7 +120,7 @@ public class ClickGuiScreen extends GuiScreen {
 			case 20 -> "_";
 			default -> "§k" + "AutoTool".substring(0, min(delay - 20, 8));
 		};
-		final ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFProRounded");
+		final ClientFontRenderer fontRenderer = Fonts.fonts.get("SFProRounded");
 
 		Client.INST.getModuleManager().getModules().sort((o1, o2) -> {
 			int width1 = (int) fontRenderer.getStringWidth(o1.getName());
@@ -174,8 +172,6 @@ public class ClickGuiScreen extends GuiScreen {
 				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.black);
 			});
 		}
-
-		AlphaUtils.startWrite();
 
 		RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
@@ -766,14 +762,11 @@ public class ClickGuiScreen extends GuiScreen {
 		settingLine.update(clickGui.animationSpeed.getValue());
 
 		GL11.glScaled(1f / scale, 1f / scale,1f);
-
-		AlphaUtils.endWrite();
-		AlphaUtils.draw(alpha.getValue() * 1.2f);
 	}
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFProRounded");
+		ClientFontRenderer fontRenderer = Fonts.fonts.get("SFProRounded");
 
 		float scale = clientSettings.scale.getValue();
 
@@ -1122,14 +1115,8 @@ public class ClickGuiScreen extends GuiScreen {
 		moduleLine.endY = 0;
 		moduleLine.update(5);
 
-		alpha.setEnd(0);
-
 		guis.setEnd(0);
 		guis.update(3, Easing.OUT_BACK);
-	}
-
-	private boolean isCloseAnimationComplete() {
-		return !alpha.isAnimating();
 	}
 
 	private void completeCloseOperation() {
@@ -1164,13 +1151,11 @@ public class ClickGuiScreen extends GuiScreen {
 	public void onGuiClosed() {
 		Client.INST.getEventManager().unregister(this);
 		Client.INST.getConfigManager().saveAsync(Client.INST.getConfigManager().getDefaultConfig());
-		alpha.setValue(0f);
 	}
 
 	@Override
 	public void initGui() {
 		Client.INST.getEventManager().register(this);
-		alpha.setEnd(1f);
 	}
 
 	@EventTarget

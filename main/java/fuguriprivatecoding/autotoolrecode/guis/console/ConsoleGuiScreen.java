@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
@@ -40,8 +41,6 @@ public class ConsoleGuiScreen extends GuiScreen {
 
     Color mainColor;
     final Animation2D background, sizeBackground, scrolls;
-
-    final EasingAnimation alpha = new EasingAnimation(0);
 
     private final GuiTextField textField = new GuiTextField(0, null, 0, 0, 0, 0);
     public final List<String> history = new CopyOnWriteArrayList<>();
@@ -85,8 +84,6 @@ public class ConsoleGuiScreen extends GuiScreen {
         mouseX = (int) (mouseX / scale);
         mouseY = (int) (mouseY / scale);
 
-        alpha.update(5, Easing.IN_OUT_QUAD);
-
         GL11.glScaled(scale, scale, 1f);
 
         mainColor = clickGui.color.getFadedColor();
@@ -98,19 +95,14 @@ public class ConsoleGuiScreen extends GuiScreen {
         float consoleVisibleHeight = sizeBackground.y - 35;
         float maxScroll = Math.max(0, totalHeight - consoleVisibleHeight);
 
+        if (scroll < -maxScroll) scroll = (int) -maxScroll;
         if (scroll > 0) scroll = 0;
         if (history.isEmpty()) scroll = 0;
-        if (scroll < -maxScroll) scroll = (int) -maxScroll;
 
         if (closing) {
-            alpha.setEnd(0);
-            boolean isAnimationComplete = !alpha.isAnimating();
-
-            if (isAnimationComplete) {
-                closing = false;
-                mc.displayGuiScreen(null);
-                mc.currentScreen = null;
-            }
+            closing = false;
+            mc.displayGuiScreen(null);
+            mc.currentScreen = null;
         }
 
         textField.setFocused(true);
@@ -129,7 +121,7 @@ public class ConsoleGuiScreen extends GuiScreen {
             default -> "§k" + "Console_".substring(0, min(delay - 20, 8));
         };
 
-        ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
+        ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
 
         double widthName = font.getStringWidth(name);
         double width = font.getStringWidth("Clear History");
@@ -155,8 +147,6 @@ public class ConsoleGuiScreen extends GuiScreen {
                 RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.BLACK.getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
             });
         }
-
-        AlphaUtils.startWrite();
 
         RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
@@ -204,9 +194,6 @@ public class ConsoleGuiScreen extends GuiScreen {
             lastMouse.set(mouseX, mouseY);
         }
         GL11.glScaled(1f / scale, 1f / scale, 1f);
-
-        AlphaUtils.endWrite();
-        AlphaUtils.draw(alpha.getValue() * 1.2f);
     }
 
     public void log(String msg) {
@@ -243,7 +230,7 @@ public class ConsoleGuiScreen extends GuiScreen {
         mouseX = (int) (mouseX / scale);
         mouseY = (int) (mouseY / scale);
 
-        ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
+        ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
 
         double width = font.getStringWidth("Clear History");
 
@@ -288,11 +275,6 @@ public class ConsoleGuiScreen extends GuiScreen {
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
         moving = false;
-    }
-
-    @Override
-    public void initGui() {
-        alpha.setEnd(1);
     }
 
     @EventTarget

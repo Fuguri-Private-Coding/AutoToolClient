@@ -13,16 +13,15 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.util.vector.Vector2f;
-
 import java.awt.*;
 
 @ModuleInfo(name = "DynamicIsland", category = Category.VISUAL)
@@ -54,7 +53,7 @@ public class DynamicIsland extends Module {
     String currentText, currentWidthText;
 
     public DynamicIsland() {
-        Client.INST.getFonts().fonts.forEach((fontName, _) -> fonts.addMode(fontName));
+        Fonts.fonts.forEach((fontName, _) -> fonts.addMode(fontName));
         fonts.setMode("SFProRounded");
         currentText = "AutoTool";
     }
@@ -62,7 +61,7 @@ public class DynamicIsland extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent e) {
-            ClientFontRenderer font = Client.INST.getFonts().fonts.get(fonts.getMode());
+            ClientFontRenderer font = Fonts.fonts.get(fonts.getMode());
             Vector2f screenSize = new Vector2f(e.getSc().getScaledWidth(), e.getSc().getScaledHeight());
 
             float height = 15;
@@ -120,8 +119,10 @@ public class DynamicIsland extends Module {
 
             font.drawString(currentText, (screenSize.x / 2f - font.getStringWidth(currentText) / 2f), 5.5f + needY.getValue(), new Color(textColor.getFadedColor().getRed() / 255f, textColor.getFadedColor().getGreen() / 255f, textColor.getFadedColor().getBlue() / 255f, textAlpha.getValue()));
 
-            if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), bgColorShadow.getColor(), bgColorShadow.getFadeColor(), bgColorShadow.getSpeed()));
-            if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), height, radiusAnim.getValue(), Color.WHITE, Color.WHITE, bgColorShadow.getSpeed()));
+            if (glow.isToggled())
+                BloomRealUtils.addToDraw(() -> RoundedUtils.drawRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), currentHeight.getValue(), radiusAnim.getValue(), bgColorShadow.getFadedColor()));
+            if (blur.isToggled())
+                GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(screenSize.x / 2f - currentWidth.getValue() / 2f, yOffsetValue, currentWidth.getValue(), currentHeight.getValue(), radiusAnim.getValue(), Color.WHITE));
         }
     }
 

@@ -9,10 +9,10 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.StencilUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import java.awt.*;
@@ -54,16 +54,16 @@ public class ArrayList extends Module {
     CheckBox line = new CheckBox("Line",this, true);
     final ColorSetting lineColor = new ColorSetting("Line Color", this, () -> line.isToggled());
 
-    ClientFontRenderer font = Client.INST.getFonts().fonts.get("JetBrains");
+    ClientFontRenderer font = Fonts.fonts.get("JetBrains");
 
     public ArrayList() {
-        Client.INST.getFonts().fonts.forEach((fontName, _) -> fonts.addMode(fontName));
+        Fonts.fonts.forEach((fontName, _) -> fonts.addMode(fontName));
         fonts.setMode("SFProRounded");
     }
 
     @EventTarget
     public void onEvent(Event event) {
-        if (!font.name.equalsIgnoreCase(fonts.getMode())) font = Client.INST.getFonts().fonts.get(fonts.getMode());
+        if (!font.name.equalsIgnoreCase(fonts.getMode())) font = Fonts.fonts.get(fonts.getMode());
         if (event instanceof Render2DEvent) {
             List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModuleManager().getEnabledModules());
             ScaledResolution sc = new ScaledResolution(mc);
@@ -108,9 +108,7 @@ public class ArrayList extends Module {
         float increasingWidth = horizontalSpacing.getValue();
 
         float backgroundStartX = (float) (sc.getScaledWidth() - xOffset - textWidth - 4f - increasingWidth);
-        float backgroundStartXыыы = (float) (sc.getScaledWidth() - 6 - textWidth - 4f - increasingWidth);
         float backgroundEndX = (float) (sc.getScaledWidth() - xOffset);
-        float backgroundEndXыыы = (float) (sc.getScaledWidth() - 6);
         float textX = backgroundStartX + 2.25f + increasingWidth / 2f;
 
         float backgroundHeight = verticalSpacing.getValue();

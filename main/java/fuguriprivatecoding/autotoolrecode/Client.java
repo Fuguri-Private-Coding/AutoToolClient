@@ -1,8 +1,6 @@
 package fuguriprivatecoding.autotoolrecode;
 
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.*;
-import fuguriprivatecoding.autotoolrecode.guis.clickgui.drop.DropDownClickGuiScreen;
-import fuguriprivatecoding.autotoolrecode.guis.clickgui.panel.PanelGuiScreen;
 import fuguriprivatecoding.autotoolrecode.guis.config.*;
 import fuguriprivatecoding.autotoolrecode.config.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
@@ -12,7 +10,6 @@ import fuguriprivatecoding.autotoolrecode.event.*;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.guis.clickgui.*;
 import fuguriprivatecoding.autotoolrecode.guis.console.*;
-import fuguriprivatecoding.autotoolrecode.guis.imgui.*;
 import fuguriprivatecoding.autotoolrecode.guis.main.*;
 import fuguriprivatecoding.autotoolrecode.hottext.*;
 import fuguriprivatecoding.autotoolrecode.irc.*;
@@ -71,8 +68,6 @@ public enum Client implements Imports {
 	HotTextManager hotTextManager;
 
 	ClickGuiScreen clickGui;
-	DropDownClickGuiScreen dropDown;
-	PanelGuiScreen panelGui;
 	ConfigGuiScreen configGuiScreen;
 	AltManagerGuiScreen altManagerGui;
 	HotTextGui hotTextGui;
@@ -84,11 +79,6 @@ public enum Client implements Imports {
 
 	@Setter Discord discord;
 	@Setter ClientIRC irc;
-
-	Fonts fonts;
-
-	ClickGuiWindow clickGuiWindow;
-	ImGuiManager imGuiManager;
 
 	List<Message> changeLogList;
 
@@ -116,7 +106,7 @@ public enum Client implements Imports {
 
 		console = new ConsoleGuiScreen();
 
-		fonts = new Fonts();
+        Fonts.initFonts();
 
 		discord = new Discord();
 
@@ -161,13 +151,7 @@ public enum Client implements Imports {
 
 		ViaMCP.create();
 
-		clickGuiWindow = new ClickGuiWindow();
-
-		panelGui = new PanelGuiScreen();
-
 		clickGui = new ClickGuiScreen();
-
-		dropDown = new DropDownClickGuiScreen();
 
 		configGuiScreen = new ConfigGuiScreen();
 

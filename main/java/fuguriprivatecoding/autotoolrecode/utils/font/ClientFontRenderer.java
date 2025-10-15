@@ -99,12 +99,20 @@ public class ClientFontRenderer implements Imports {
                 i++;
                 if (i < text.length()) {
                     char colorChar = text.charAt(i);
-                    if (colorChar == 'l') {
-                        bold = true;
-                    } else if (colorChar == 'r') {
-                        bold = false;
+                    int colorIndex = "0123456789abcdefklmnor".indexOf(colorChar);
+
+                    if (colorIndex >= 0) {
+                        if (colorIndex == 17) {
+                            bold = true;
+                        } else if (colorIndex == 21) {
+                            bold = false;
+                        }
                     }
                 }
+                continue;
+            }
+
+            if (c == '\n') {
                 continue;
             }
 

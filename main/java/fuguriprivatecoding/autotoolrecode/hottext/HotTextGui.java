@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
@@ -48,8 +49,6 @@ public class HotTextGui extends GuiScreen {
 
     Color mainColor;
     final Animation2D background, sizeBackground, scrolls;
-
-    final EasingAnimation alpha = new EasingAnimation(0);
 
     ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
     ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
@@ -96,8 +95,6 @@ public class HotTextGui extends GuiScreen {
         mouseX = (int) (mouseX / scale);
         mouseY = (int) (mouseY / scale);
 
-        alpha.update(5, Easing.IN_OUT_QUAD);
-
         GL11.glScaled(scale, scale, 1f);
 
         boolean hotScroll = mouseX > background.x && mouseX < background.x + sizeBackground.x && mouseY > background.y + 15 && mouseY < background.y + sizeBackground.y;
@@ -123,17 +120,12 @@ public class HotTextGui extends GuiScreen {
         };
 
         if (closing) {
-            alpha.setEnd(0);
-            boolean isAnimationComplete = !alpha.isAnimating();
-
-            if (isAnimationComplete) {
-                closing = false;
-                mc.displayGuiScreen(null);
-                mc.currentScreen = null;
-            }
+            closing = false;
+            mc.displayGuiScreen(null);
+            mc.currentScreen = null;
         }
 
-        ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
+        ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
 
         double widthName = font.getStringWidth(name);
         double widthCreate = font.getStringWidth("Create") / 2f;
@@ -158,8 +150,6 @@ public class HotTextGui extends GuiScreen {
         if (clickGui.blur.isToggled()) {
             GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.WHITE));
         }
-
-        AlphaUtils.startWrite();
 
         RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
 
@@ -230,9 +220,6 @@ public class HotTextGui extends GuiScreen {
             lastMouse.set(mouseX, mouseY);
         }
         GL11.glScaled(1f / scale, 1f / scale, 1f);
-
-        AlphaUtils.endWrite();
-        AlphaUtils.draw(alpha.getValue() * 1.2f);
     }
 
     @Override
@@ -376,7 +363,6 @@ public class HotTextGui extends GuiScreen {
     @Override
     public void initGui() {
         Client.INST.getConfigManager().loadHotKeys();
-        alpha.setEnd(1);
     }
 
     @EventTarget

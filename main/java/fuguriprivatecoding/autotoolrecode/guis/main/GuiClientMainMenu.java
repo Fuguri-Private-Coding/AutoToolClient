@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.guis.main;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
@@ -36,7 +37,7 @@ public class GuiClientMainMenu extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         final ScaledResolution sc = new ScaledResolution(mc);
-        final ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
+        final ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
         final String userText = "Hello, " + Client.INST.getProfile().getUsername() + " welcome to AutoTool!";
 
         alphaAnim.update(3, Easing.IN_OUT_QUAD);

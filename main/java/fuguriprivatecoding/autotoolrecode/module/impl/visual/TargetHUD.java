@@ -12,12 +12,14 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.projection.Convertors;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtilss;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -65,7 +67,7 @@ public class TargetHUD extends Module {
     Vector2f pos = new Vector2f();
 
     public TargetHUD() {
-        Client.INST.getFonts().fonts.forEach((fontName, _) -> fonts.addMode(fontName));
+        Fonts.fonts.forEach((fontName, _) -> fonts.addMode(fontName));
         fonts.setMode("SFProRounded");
     }
 
@@ -82,7 +84,7 @@ public class TargetHUD extends Module {
         if (event instanceof Render2DEvent e) {
             currentScale.update(5f, Easing.IN_OUT_QUINT);
 
-            ClientFontRenderer font = Client.INST.getFonts().fonts.get(fonts.getMode());
+            ClientFontRenderer font = Fonts.fonts.get(fonts.getMode());
 
             float width = 120;
             float height = 40;
@@ -93,7 +95,7 @@ public class TargetHUD extends Module {
                 entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
                 float[] positions = Convertors.convert2D(
                     (float) (target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX),
-                 (float) (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY) + target.height / 2f + yOffset.getValue(),
+                    (float) (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY) + target.height / 2f + yOffset.getValue(),
                     (float) (target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ), mc.gameSettings.guiScale);
                 entityRenderer.setupOverlayRendering();
 
@@ -125,47 +127,56 @@ public class TargetHUD extends Module {
     }
 
     private void renderHUD(float posX, float posY, float width, float height, float radius, ClientFontRenderer font, EntityLivingBase target, double scaleFactor) {
+        glPushMatrix();
         glScaled(scaleFactor, scaleFactor, 1);
-        StencilUtilss.renderStencil(
-            () -> RenderUtils.drawMixedRoundedRect(posX, posY, width, height, radius, Color.BLACK, Color.BLACK, bgColor.getSpeed()),
-            () -> {
-                if (render.get("Background")) RenderUtils.drawMixedRoundedRect(posX, posY, width, height, radius, bgColor.getFadedColor(), bgColor.getFadedColor(), bgColor.getSpeed());
-                if (render.get("Name")) font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, textColor.getFadedColor());
 
-                if (render.get("Health")) {
-                    float maxHealth = target.getMaxHealth();
-                    float currentHealth = target.getHealth();
-                    float healthPercentage = currentHealth / maxHealth;
-                    float maxHealthBarWidth = width - height - 5;
-                    float targetHealthWidth = maxHealthBarWidth * healthPercentage;
+        StencilUtils.setUpTexture(posX, posY, width, height, radius);
 
-                    if (healthAnimation.getEnd() != targetHealthWidth) healthAnimation.setEnd(targetHealthWidth);
+        StencilUtils.writeTexture();
+        if (render.get("Background")) RoundedUtils.drawRect(posX, posY, width, height, radius, bgColor.getFadedColor());
+        if (render.get("Name")) font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, textColor.getFadedColor());
 
-                    healthAnimation.update(7, Easing.LINEAR);
+        if (render.get("Health")) {
+            float maxHealth = target.getMaxHealth();
+            float currentHealth = target.getHealth();
+            float healthPercentage = currentHealth / maxHealth;
+            float maxHealthBarWidth = width - height - 5;
+            float targetHealthWidth = maxHealthBarWidth * healthPercentage;
 
-                    float animatedHealthWidth = healthAnimation.getValue();
+            if (healthAnimation.getEnd() != targetHealthWidth) healthAnimation.setEnd(targetHealthWidth);
 
-                    RenderUtils.drawMixedRoundedRect(posX + height, posY + height / 2f + 2, maxHealthBarWidth, 10, 5, bgColor.getColor(), bgColor.getColor(), bgColor.getSpeed());
-                    RenderUtils.drawMixedRoundedRect(posX + height, posY + height / 2f + 2, animatedHealthWidth, 10, 5, healthColor.getColor(), healthColor.getFadeColor(), 180, 0, 0, 90, healthColor.getSpeed());
-                }
+            healthAnimation.update(7, Easing.LINEAR);
 
-                if (render.get("Head") && target instanceof EntityPlayer) {
-                    int hurtTime = target.hurtTime / 2;
+            float animatedHealthWidth = healthAnimation.getValue();
 
-                    StencilUtilss.renderStencil(
-                        () -> RenderUtils.drawMixedRoundedRect(posX + 5 + hurtTime / 2f, posY + 5 + hurtTime / 2f, (height - 10 - hurtTime) * currentScale.getValue(), (height - 10 - hurtTime) * currentScale.getValue(), headRadius.getValue() * currentScale.getValue(), Color.WHITE, Color.WHITE, bgColor.getSpeed()),
-                        () -> {
-                            glColor4f(1f, 1f - hurtTime, 1f - hurtTime, 1f);
-                            RenderUtils.quickDrawHead(target.getSkin(), posX + 5 + hurtTime / 2f, posY + 5 + hurtTime / 2f, (height - 10 - hurtTime) * currentScale.getValue(), (height - 10 - hurtTime) * currentScale.getValue());
-                        });
-                }
-            }
-        );
+            float healthX = posX + height;
+            float healthY = posY + height / 2f + 2;
+
+            RoundedUtils.drawRect(healthX, healthY, maxHealthBarWidth, 10, 5, bgColor.getFadedColor());
+            RoundedUtils.drawRect(healthX, healthY, animatedHealthWidth, 10, 5, healthColor.getFadedColor());
+        }
+
+        if (render.get("Head") && target instanceof EntityPlayer) {
+            int hurtTime = target.hurtTime / 10;
+
+            float headX = posX + 5 + hurtTime / 2f;
+            float headY = posY + 5 + hurtTime / 2f;
+            float headWidth = (height - 10 - hurtTime) * currentScale.getValue();
+            float headHeight = (height - 10 - hurtTime) * currentScale.getValue();
+
+            StencilUtils.setUpTexture(headX, headY, headWidth, headHeight, headRadius.getValue() * currentScale.getValue());
+            StencilUtils.writeTexture();
+            glColor4f(hurtTime, 1 - hurtTime,1 - hurtTime, 1f);
+            RenderUtils.quickDrawHead(target.getSkin(),headX, headY, headWidth, headHeight);
+            StencilUtils.endWriteTexture();
+        }
+
+        StencilUtils.endWriteTexture();
 
         if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(posX, posY, width, height, radius, bgShadowColor.getColor(), bgShadowColor.getFadeColor(), bgShadowColor.getSpeed()));
         if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(posX, posY, width, height, radius, Color.BLACK, Color.BLACK, bgColor.getSpeed()));
 
-        glScaled(1f / scaleFactor, 1f / scaleFactor, 1f);
+        glPopMatrix();
     }
 
     private void updateTarget() {

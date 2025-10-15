@@ -19,7 +19,6 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.block.*;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -43,7 +42,6 @@ public class Scaffold extends Module {
     BooleanSupplier tellyVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge");
     BooleanSupplier godVisible = () -> rotMode.getMode().equalsIgnoreCase("GodBridge");
 
-    BooleanSupplier tellyGodVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("GodBridge");
     BooleanSupplier tellyGodNormalVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("GodBridge") || rotMode.getMode().equalsIgnoreCase("Normal");
 
     DoubleSlider yawClutchSpeed = new DoubleSlider("Yaw Clutch Speed", this, godVisible, 0,180,90,1);
@@ -199,32 +197,6 @@ public class Scaffold extends Module {
         mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
     }
 
-    private BlockPos getBlockPos() {
-        List<BlockPos> posList = new ArrayList<>();
-
-        for (float y = 4.5f; y >= -4.5; --y) {
-            for (float x = -4.5f; x <= 4.5; ++x) {
-                for (float z = -4.5f; z <= 4.5; ++z) {
-                    BlockPos pos = new BlockPos(
-                            mc.thePlayer.posX + x,
-                            mc.thePlayer.posY + y,
-                            mc.thePlayer.posZ + z
-                    );
-
-                    IBlockState state = mc.theWorld.getBlockState(pos);
-
-                    if (state.getBlock() instanceof BlockAir || pos.getY() > mc.thePlayer.posY) continue;
-
-                    posList.add(pos);
-
-                    posList.sort(Comparator.comparingDouble(poses -> mc.thePlayer.getPositionVector().distanceTo(new Vec3(poses.getX() + 0.5, poses.getY() + 0.5, poses.getZ() + 0.5))));
-
-                }
-            }
-        }
-        return posList.getFirst();
-    }
-
     private BlockPos getDirectionalBlockPos(float edgeOffset) {
         double x = mc.thePlayer.posX;
         double y = mc.thePlayer.posY - 0.7;
@@ -247,17 +219,19 @@ public class Scaffold extends Module {
     void legitPlace() {
         MovingObjectPosition mouseOver = RayCastUtils.rayCast(6, 4.5f, Rot.getServerRotation());
 
-        if (mouse.sideHit == mouseOver.sideHit
-                && mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
+        if (mouse.sideHit == mouseOver.sideHit &&
+                mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
                 && getSameYValue(mouse) && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
+
             if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
                 if (noSwing.isToggled()) {
                     if (serverSwing.isToggled()) mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
                 } else {
                     mc.thePlayer.swingItem();
                 }
-                blocksLeft++;
             }
+
+            blocksLeft++;
         }
     }
 
@@ -390,20 +364,21 @@ public class Scaffold extends Module {
         float step = 2f;
         List<RotationData> validRotations = new ArrayList<>();
 
-        for (float yaw = -180; yaw < 180; yaw += step) {
+        for (float i = 0; i < 360; i += step) {
+            float yaw = MathHelper.wrapDegree(i);
             float pitch = getPitch(yaw, false);
             MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, pitch));
 
             if (hit == null
-                    || hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                    || hit.sideHit == EnumFacing.DOWN) {
+                || hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+                || hit.sideHit == EnumFacing.DOWN) {
                 continue;
             }
 
             validRotations.add(new RotationData(
-                    new Rot(MathHelper.wrapDegree(yaw), pitch),
-                    hit.hitVec,
-                    hit
+                new Rot(yaw, pitch),
+                hit.hitVec,
+                hit
             ));
         }
 

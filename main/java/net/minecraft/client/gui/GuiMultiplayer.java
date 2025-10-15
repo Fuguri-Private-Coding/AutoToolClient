@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
 import fuguriprivatecoding.autotoolrecode.guis.multiplayer.GuiViaVersion;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
@@ -284,7 +285,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
         alphaAnim.setEnd(1f);
 
         ScaledResolution sc = new ScaledResolution(mc);
-        ClientFontRenderer fontRenderer = Client.INST.getFonts().fonts.get("SFProRounded");
+        ClientFontRenderer fontRenderer = Fonts.fonts.get("SFProRounded");
         AlphaUtils.startWrite();
         RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 155, 30, 310, sc.getScaledHeight() - 87, 10, new Color(0,0,0,0.7f));
         ScissorUtils.enableScissor();

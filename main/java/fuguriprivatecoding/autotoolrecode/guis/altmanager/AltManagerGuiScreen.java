@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
@@ -77,7 +78,7 @@ public class AltManagerGuiScreen extends GuiScreen {
 
         scroll += currentScroll / 120 * 50;
 
-        ClientFontRenderer font = Client.INST.getFonts().fonts.get("SFProRounded");
+        ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
 
         float altVisibleHeight = sc.getScaledHeight() - 35;
         float maxScroll = Math.max(scrollTotalHeight - altVisibleHeight, 0);

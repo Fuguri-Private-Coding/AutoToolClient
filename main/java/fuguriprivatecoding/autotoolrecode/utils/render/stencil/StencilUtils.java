@@ -1,49 +1,27 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.stencil;
 
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import net.minecraft.client.renderer.GlStateManager;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
+import java.awt.*;
 
-public class StencilUtilss implements Imports {
+public class StencilUtils implements Imports {
 
-    public static void dispose() {
-        GL11.glDisable(2960);
-        GlStateManager.disableAlpha();
-        GlStateManager.disableBlend();
-    }
-
-    public static void renderStencil(Runnable hoverTexture, Runnable textureToStencil) {
+    public static void setUpTexture(float x, float y, float width, float height, float radius) {
         initStencil();
         GL11.glEnable(2960);
         bindWriteStencilBuffer();
-        hoverTexture.run();
+        RoundedUtils.drawRect(x + 1, y + 1, width - 2, height - 2, radius, Color.WHITE);
+    }
+
+    public static void writeTexture() {
         bindReadStencilBuffer(1);
-        textureToStencil.run();
+    }
+
+    public static void endWriteTexture() {
         uninitStencilBuffer();
-    }
-
-    public static void erase(boolean invert) {
-        GL11.glStencilFunc(invert ? 514 : 517, 1, 65535);
-        GL11.glStencilOp(7680, 7680, 7681);
-        GlStateManager.colorMask(true, true, true, true);
-        GlStateManager.enableAlpha();
-        GlStateManager.enableBlend();
-        GL11.glAlphaFunc(516, 0.0F);
-    }
-
-    public static void write(boolean renderClipLayer) {
-        checkSetupFBO(mc.getFramebuffer());
-        GL11.glClearStencil(0);
-        GL11.glClear(1024);
-        GL11.glEnable(2960);
-        GL11.glStencilFunc(519, 1, 65535);
-        GL11.glStencilOp(7680, 7680, 7681);
-        if (!renderClipLayer) {
-            GlStateManager.colorMask(false, false, false, false);
-        }
-
     }
 
     public static void checkSetupFBO(Framebuffer framebuffer) {
@@ -51,7 +29,6 @@ public class StencilUtilss implements Imports {
             setupFBO(framebuffer);
             framebuffer.depthBuffer = -1;
         }
-
     }
 
     public static void setupFBO(Framebuffer framebuffer) {

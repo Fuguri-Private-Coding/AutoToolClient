@@ -632,18 +632,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
                 }
 
-                if (customCamera.smoothCamera.isToggled() && customCamera.isToggled()) {
-                    cameraX.update(customCamera.xAnimationSmooth.getValue());
-                    cameraX.setEndValue(mc.thePlayer.moveStrafing / 2f);
-                    cameraY.update(customCamera.yAnimationSmooth.getValue());
-                    cameraY.setEndValue((float) (mc.thePlayer.motionY / 0.5f));
-                    cameraZ.update(customCamera.zAnimationSmooth.getValue());
-                    cameraZ.setEndValue(mc.thePlayer.moveForward / 2f);
-                }
-
                 GlStateManager.rotate(entity.rotationPitch - f2, 1.0F, 0.0F, 0.0F);
                 GlStateManager.rotate(entity.rotationYaw - f1, 0.0F, 1.0F, 0.0F);
-                GlStateManager.translate(customCamera.isToggled() && customCamera.smoothCamera.isToggled() ? -cameraX.value : 0f, customCamera.isToggled() && customCamera.smoothCamera.isToggled() ? cameraY.value : 0f, (float) (-d3) + (customCamera.isToggled() && customCamera.smoothCamera.isToggled() ? -cameraZ.value : 0f));
+                GlStateManager.translate(0f, 0f, -d3);
                 GlStateManager.rotate(f1 - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
                 GlStateManager.rotate(f2 - entity.rotationPitch, 1.0F, 0.0F, 0.0F);
             }
@@ -1652,9 +1643,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             f /= 2.0F;
         }
 
-        Ambience ambience = Client.INST.getModuleManager().getModule(Ambience.class);
-        if (ambience != null && ambience.skipRainParticles()) return;
-
         if (f != 0.0F && Config.isRainSplash()) {
             this.random.setSeed((long) this.rendererUpdateCount * 312987231L);
             Entity entity = this.mc.getRenderViewEntity();
@@ -1790,8 +1778,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                             this.random.setSeed(l1 * l1 * 3121L + l1 * 45238971L ^ k1 * k1 * 418711L + k1 * 13761L);
                             blockpos$mutableblockpos.set(l1, k2, k1);
 
-                            final Ambience ambience = Client.INST.getModuleManager().getModule(Ambience.class);
-                            final float f1 = ambience.getFloatTemperature(blockpos$mutableblockpos, biomegenbase);
+                            final float f1 = biomegenbase.getFloatTemperature(blockpos$mutableblockpos);
 
                             if (world.getWorldChunkManager().getTemperatureAtHeight(f1, j2) >= 0.15F) {
                                 if (j1 != 0) {
@@ -1820,10 +1807,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                             } else {
                                 Color color = Color.white;
                                 ResourceLocation texture = TEXTURE_SNOW_HEAVY;
-
-                                if (ambience.isToggled()) {
-                                    color = ambience.color.getFadedColor();
-                                }
 
                                 if (j1 != 1) {
                                     if (j1 == 0) {
