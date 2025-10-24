@@ -99,7 +99,7 @@ public enum Client implements Imports {
 
 		console = new ConsoleGuiScreen();
 
-        Fonts.initFonts();
+        Fonts.init();
 
 		discord = new Discord();
 

@@ -24,7 +24,7 @@ public class Fonts implements Imports {
 
     int fontsCount;
 
-    private void init() {
+    public void init() {
         checkFonts();
         if (!fontsDirectory.exists()) {
             fontsDirectory.mkdirs();
