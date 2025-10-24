@@ -709,7 +709,7 @@ public class ClickGuiScreen extends GuiScreen {
 		RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue() * 2.5f, BACKGROUND_COLOR.getRGB(), Color.black.getRGB(),Color.black.getRGB());
 
 		boolean console = mouseX > sc.getScaledWidth() / 2f - 50 + 10 && mouseX < sc.getScaledWidth() / 2f - 50 + 10 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
-		boolean config = mouseX > sc.getScaledWidth() / 2f - 50 + 43 && mouseX < sc.getScaledWidth() / 2f - 50 + 43 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
+		boolean config = mouseX > sc.getScaledWidth() / 2f - 75 + 43 && mouseX < sc.getScaledWidth() / 2f - 50 + 75 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
 
 		ResourceLocation terminal = new ResourceLocation("minecraft", "autotool/image/terminal.png");
 		ResourceLocation configs = new ResourceLocation("minecraft", "autotool/image/configs.png");

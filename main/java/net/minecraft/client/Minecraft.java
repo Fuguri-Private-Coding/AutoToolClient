@@ -1234,6 +1234,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             ItemStack itemstack = this.thePlayer.inventory.getCurrentItem();
 
             ClickEvent event = new ClickEvent(ClickEvent.Button.RIGHT);
+            event.call();
+
             if (event.isCanceled()) return;
 
             if (this.objectMouseOver == null) {
