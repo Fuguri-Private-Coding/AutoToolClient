@@ -4,11 +4,15 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.scaling.ScaleUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 import java.io.IOException;
@@ -26,6 +30,8 @@ public class ClickGuiScreenNew extends GuiScreen {
 
     ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
     ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
+
+    ResourceLocation exitLogo = new ResourceLocation("minecraft", "autotool/mainmenu/exit.png");
 
     boolean closing;
 
@@ -51,13 +57,26 @@ public class ClickGuiScreenNew extends GuiScreen {
         float radius = clientSettings.backgroundRadius.getValue();
 
         RoundedUtils.drawRect(x, y, width, height, radius, rectColor);
+        RoundedUtils.drawRect(x, y, width, 15, radius, rectColor);
 
+        boolean hoverExit = GuiUtils.isHovered(mouseX, mouseY, x + width - 20, y, 15, 15);
+
+        ColorUtils.glColor(hoverExit ? Color.RED : Color.WHITE);
+        RenderUtils.drawImage(exitLogo, x + width - 20, y, 15, 15, true);
 
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
+
+        boolean hoverExit = GuiUtils.isHovered(mouseX, mouseY, x + width - 20, y, 15, 15);
+
+        if (hoverExit && !closing) {
+            openAnim.setEnd(0);
+            closing = true;
+        }
+
     }
 
     @Override

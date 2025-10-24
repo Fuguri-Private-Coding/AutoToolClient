@@ -116,18 +116,16 @@ public class Scaffold extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            rotate();
-            legitPlace();
-        }
-
-        if (event instanceof LegitClickTimingEvent) {
             int slot = findBlock();
 
-            if (slot == -1) { return; }
-
-            if (mc.thePlayer.inventory.currentItem != slot) {
-                mc.thePlayer.inventory.currentItem = slot;
+            if (slot != -1) {
+                if (mc.thePlayer.inventory.currentItem != slot) {
+                    mc.thePlayer.inventory.currentItem = slot;
+                }
             }
+
+            rotate();
+            legitPlace();
         }
 
         if (event instanceof Render3DEvent && mouse.getBlockPos() != null && render.isToggled()) {

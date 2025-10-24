@@ -14,7 +14,6 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
-import fuguriprivatecoding.autotoolrecode.guis.imgui.ImGuiManager;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
@@ -1187,8 +1186,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         if (this.mc.gameSettings.ofProfiler) {
             this.mc.gameSettings.showDebugProfilerChart = true;
         }
-
-        ImGuiManager.renderAll();
     }
 
     public void renderStreamIndicator(float partialTicks) {
