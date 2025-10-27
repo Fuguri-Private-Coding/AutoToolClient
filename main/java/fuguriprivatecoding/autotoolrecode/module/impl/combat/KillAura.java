@@ -67,7 +67,8 @@ public class KillAura extends Module {
 
     BooleanSupplier linearVisible = () -> smoothMode.getMode().equalsIgnoreCase("Linear");
 
-    DoubleSlider mixDelta = new DoubleSlider("Mix Delta", this, 0, 1, 0.7, 0.1f);
+    DoubleSlider mixYawDelta = new DoubleSlider("Mix Yaw Delta", this, 0, 1, 1, 0.01f);
+    DoubleSlider mixPitchDelta = new DoubleSlider("Mix Pitch Delta", this, 0, 1, 1, 0.01f);
 
     CheckBox reactionTimeWithAnimation = new CheckBox("Reaction Time With Animation", this, linearVisible, false);
     final IntegerSetting rotationDuration = new IntegerSetting("Rotation Duration", this, () -> linearVisible.getAsBoolean() && reactionTimeWithAnimation.isToggled(), 1, 2000, 600);
@@ -133,23 +134,22 @@ public class KillAura extends Module {
         if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) return;
 
         if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
-            if (clickTimer.reachedMS(delay)) {
-                clickTimer.reset();
-                Client.INST.getClickManager().addClick();
-                delay = Math.round(1000f / CPS.getRandomizedIntValue());
+            if (TimerRange.balance == 0) {
+                if (clickTimer.reachedMS(delay)) {
+                    clickTimer.reset();
+                    Client.INST.getClickManager().addClick();
+                    delay = Math.round(1000f / CPS.getRandomizedIntValue());
+                }
             }
         }
 
         if (DistanceUtils.getDistance(target) < rotateDistance.getValue()) {
-            Rot lr = Rot.getServerRotation().copy();
+            Rot lr = Rot.getServerRotation();
 
-            if (event instanceof MotionEvent e) {
-                e.setYaw(lr.getYaw());
-                e.setPitch(lr.getPitch());
-
+            if (event instanceof TickEvent) {
                 AxisAlignedBB box = getHitBox(target);
                 Rot needRotation = switch (hitVec.getMode()) {
-                    case "Best" -> RotUtils.getBestRotation(box);
+                    case "Best" -> RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f));
                     case "Nearest" -> RotUtils.getNearestRotations(lr, box);
                     case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
                     case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
@@ -198,6 +198,7 @@ public class KillAura extends Module {
                         delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
                         delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
                     }
+
                     case "AIModel" -> {
                         if (model.getModes() == null) smoothMode.setMode("Linear");
                         if (AIRotationSmooth.currentModelName != null) {
@@ -220,8 +221,8 @@ public class KillAura extends Module {
 
                 RotUtils.limitDelta(delta, speed);
 
-                delta.setYaw(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
-                delta.setPitch(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
+                delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
+                delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
 
                 lastDelta = new Rot(delta.getYaw(), delta.getPitch());
 
@@ -235,21 +236,30 @@ public class KillAura extends Module {
                 }
             }
 
+            if (event instanceof MotionEvent e) {
+                e.setYaw(lr.getYaw());
+                e.setPitch(lr.getPitch());
+            }
+
             if (event instanceof LookEvent e) {
                 e.setYaw(lr.getYaw());
                 e.setPitch(lr.getPitch());
             }
+
             if (event instanceof ChangeHeadRotationEvent e) {
                 e.setYaw(lr.getYaw());
                 e.setPitch(lr.getPitch());
             }
+
             if (event instanceof UpdateBodyRotationEvent e) {
                 e.setYaw(lr.getYaw());
             }
+
             if (!moveFix.getMode().equalsIgnoreCase("OFF")) {
                 if (event instanceof MoveFlyingEvent e) e.setYaw(lr.getYaw());
                 if (event instanceof JumpEvent e) e.setYaw(lr.getYaw());
             }
+
             if (event instanceof MoveEvent e) {
                 switch (moveFix.getMode()) {
                     case "Silent" -> MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));

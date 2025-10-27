@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
@@ -32,7 +33,7 @@ public class ChestStealer extends Module {
 
     boolean checked = false;
 
-    Vector2f lastPos;
+    Vector2f lastPos = new Vector2f(0,0);
 
     public ChestStealer() {
         delayStopWatch = new StopWatch();
@@ -55,8 +56,6 @@ public class ChestStealer extends Module {
                         if (name.contains(str)) return;
                     }
                 }
-
-                if (lastPos == null) lastPos = new Vector2f(0,0);
 
                 if (!startDelayStopWatch.reachedMS(startDelay.getRandomizedIntValue())) return;
 

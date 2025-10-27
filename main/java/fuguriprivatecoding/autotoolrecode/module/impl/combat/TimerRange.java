@@ -49,7 +49,7 @@ public class TimerRange extends Module {
 
     FloatSetting lineWidth = new FloatSetting("Line Width", this, () -> renderRealPlayerPosition.isToggled() && renderBox.getAsBoolean(), 0, 5f, 1, 0.1f);
 
-    boolean teleporting = false;
+    boolean teleporting = false, click = false;
     int teleportTicks, posRotIncrement = 0;
 
     public static int balance = 0;
@@ -57,6 +57,11 @@ public class TimerRange extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
+        if (event instanceof LegitClickTimingEvent && click) {
+            mc.clickMouse();
+            click = false;
+        }
+
         if (event instanceof RunGameLoopEvent && balance > 0) {
             mc.timer.renderPartialTicks = partialTicks.getValue();
         }
@@ -107,10 +112,10 @@ public class TimerRange extends Module {
                     mc.runTick();
                     balance++;
                     if (i == teleportTicks - 1) {
-                        mc.clickMouse();
                         balance += additionalTicks.getValue();
                     }
                     if (RayCastUtils.rayCast(3.0, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
+                        click = true;
                         break;
                     }
                 } catch (Exception ignored) {}

@@ -187,9 +187,7 @@ public class BackTrack extends Module {
     }
 
     private void updateColors() {
-        fadeColor = color.isFade() ?
-                ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
-                : color.getColor();
+        fadeColor = color.getFadedColor();
     }
 
     private void renderHitBox(AxisAlignedBB bb, Color color, float lineWidth) {

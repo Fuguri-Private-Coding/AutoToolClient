@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.SprintEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
@@ -15,13 +16,14 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.util.MathHelper;
 
 @ModuleInfo(name = "MoreKB", category = Category.COMBAT, description = "Автоматический ресет спринта после удара.")
 public class MoreKB extends Module {
 
     final Mode mode = new Mode("Mode", this)
-            .addModes("WTap", "LegitFast")
+            .addModes("WTap", "LegitFast", "One")
             .setMode("LegitFast");
 
     DoubleSlider delayTicks = new DoubleSlider("DelayTicks", this, 0,20,2,1);
@@ -63,6 +65,13 @@ public class MoreKB extends Module {
             case "LegitFast" -> {
                 if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
                     mc.thePlayer.setSprinting(false);
+                    reset--;
+                }
+            }
+
+            case "One" -> {
+                if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
+                    mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
                     reset--;
                 }
             }

@@ -1,5 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.font;
 
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.NameProtect;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -86,6 +88,10 @@ public class ClientFontRenderer implements Imports {
     public double getStringWidth(String text) {
         if (text == null) {
             return 0;
+        }
+
+        if (Client.INST.getModuleManager() != null && Client.INST.getModuleManager().getModule(NameProtect.class).isToggled()) {
+            text = text.replaceAll(mc.getSession().getUsername(), Client.INST.getProfile().getUsername());
         }
 
         char COLOR_INVOKER = '§';
@@ -194,6 +200,10 @@ public class ClientFontRenderer implements Imports {
     public float drawString(String text, double x, double y, int color, boolean shadow) {
         if (text == null) {
             return 0.0f;
+        }
+
+        if (Client.INST.getModuleManager() != null && Client.INST.getModuleManager().getModule(NameProtect.class).isToggled()) {
+            text = text.replaceAll(mc.getSession().getUsername(), Client.INST.getProfile().getUsername());
         }
 
         x -= 1.0;

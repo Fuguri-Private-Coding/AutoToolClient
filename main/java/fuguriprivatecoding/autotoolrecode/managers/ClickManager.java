@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.managers;
 
+import fuguriprivatecoding.autotoolrecode.event.events.LegitClickTimingEvent;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.Client;
@@ -27,7 +28,7 @@ public class ClickManager implements Imports {
     public void onEvent(Event event) {
         if (clickSettings == null) clickSettings = Client.INST.getModuleManager().getModule(ClickSettings.class);
 
-        if (event instanceof TickEvent tickEvent && !tickEvent.isCanceled()) {
+        if (event instanceof LegitClickTimingEvent) {
             if (clickSettings.simulateDoubleClick.isToggled() && clicks > 5) {
                 clicks += Math.random() <= 0.5 ? 1 : 0;
             }

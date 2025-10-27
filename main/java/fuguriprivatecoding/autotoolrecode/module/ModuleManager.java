@@ -40,6 +40,7 @@ public class ModuleManager {
             new TEZD(),
             new Dot(),
             new FastPlace(),
+            new NameProtect(),
             new BedESP(),
             new Booster(),
             new ChestStealer(),

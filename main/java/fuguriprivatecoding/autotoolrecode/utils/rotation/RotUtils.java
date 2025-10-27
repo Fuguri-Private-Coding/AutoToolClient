@@ -45,9 +45,9 @@ public class RotUtils implements Imports {
 	}
 
 	public static Rot getRotationToBlock(BlockPos blockPos, EnumFacing direction) {
-		double centerX = blockPos.getX() + 0.5 + direction.getFrontOffsetX() * 0.5;
-		double centerY = blockPos.getY() + 0.5 + direction.getFrontOffsetY() * 0.5;
-		double centerZ = blockPos.getZ() + 0.5 + direction.getFrontOffsetZ() * 0.5;
+        double centerX = blockPos.getX() + 0.5 + direction.getFrontOffsetX() * 0.5;
+        double centerY = blockPos.getY() + 0.5 + direction.getFrontOffsetY() * 0.5;
+        double centerZ = blockPos.getZ() + 0.5 + direction.getFrontOffsetZ() * 0.5;
 
 		double playerX = mc.thePlayer.posX;
 		double playerY = mc.thePlayer.posY + mc.thePlayer.getEyeHeight();

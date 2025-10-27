@@ -341,7 +341,6 @@ public class Scaffold extends Module {
             if (mouses == null || mouses.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
                     || positionHashMap.containsValue(mouses)
                     || mouses.sideHit == EnumFacing.DOWN
-//                || mouses.getBlockPos().getY() < mc.thePlayer.getPosition().getY()
             ) continue;
             positionHashMap.put(i, mouses);
         }
@@ -374,7 +373,7 @@ public class Scaffold extends Module {
             if (hit == null
                 || hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
                 || hit.sideHit == EnumFacing.DOWN
-//                || hit.getBlockPos().getY() >= mc.thePlayer.getPosition().getY()
+                || hit.hitVec.yCoord >= mc.thePlayer.posY
             ) {
                 continue;
             }

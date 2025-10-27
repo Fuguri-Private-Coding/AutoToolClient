@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Random;
+
+import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.NameProtect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -384,6 +387,11 @@ public class FontRenderer implements IResourceManagerReloadListener
 
     private void renderStringAtPos(String text, boolean shadow)
     {
+
+        if (Client.INST.getModuleManager() != null && Client.INST.getModuleManager().getModule(NameProtect.class).isToggled()) {
+            text = text.replaceAll(Minecraft.getMinecraft().getSession().getUsername(), Client.INST.getProfile().getUsername());
+        }
+
         for (int i = 0; i < text.length(); ++i)
         {
             char c0 = text.charAt(i);
@@ -607,6 +615,11 @@ public class FontRenderer implements IResourceManagerReloadListener
         }
         else
         {
+
+            if (Client.INST.getModuleManager() != null && Client.INST.getModuleManager().getModule(NameProtect.class).isToggled()) {
+                text = text.replaceAll(Minecraft.getMinecraft().getSession().getUsername(), Client.INST.getProfile().getUsername());
+            }
+
             float f = 0.0F;
             boolean flag = false;
 

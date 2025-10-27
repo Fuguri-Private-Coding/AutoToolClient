@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
@@ -19,6 +20,7 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
+import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
 
 import java.awt.*;
@@ -76,7 +78,7 @@ public class Fucker extends Module {
 
         if (event instanceof Render3DEvent && bedPos != null) {
             RenderUtils.start3D();
-            RenderUtils.drawBlockESP(bedPos, new Color(1,0,0,1f * breakTicks / 10f));
+            RenderUtils.drawBlockESP(bedPos, new Color(1,0,0,1f * breakTicks / 10));
             ColorUtils.resetColor();
             RenderUtils.stop3D();
         }
@@ -118,7 +120,7 @@ public class Fucker extends Module {
                 for (double z = mc.thePlayer.posZ - range; z <= mc.thePlayer.posZ + range; z++) {
                     BlockPos pos = new BlockPos((int) x, (int) y, (int) z);
 
-                    if (mc.theWorld.getBlockState(pos).getBlock() instanceof BlockBed && mc.theWorld.getBlockState(pos).getValue(BlockBed.PART) == BlockBed.EnumPartType.HEAD) {
+                    if (mc.theWorld.getBlockState(pos).getBlock() instanceof BlockBed && (mc.theWorld.getBlockState(pos).getValue(BlockBed.PART) == BlockBed.EnumPartType.HEAD || mc.theWorld.getBlockState(pos).getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT)) {
                         bedPos = pos;
                         break;
                     }
@@ -142,11 +144,11 @@ public class Fucker extends Module {
         float totalBreakTicks = getBreakTicks(bedPos, mc.thePlayer.inventory.currentItem);
         if (breakTicks == 0) {
             rotate = true;
-            mc.thePlayer.swingItem();
+            mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
             mc.getNetHandler().addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, bedPos, EnumFacing.UP));
         } else if (breakTicks >= totalBreakTicks) {
             rotate = true;
-            mc.thePlayer.swingItem();
+            mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
             mc.getNetHandler().addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, bedPos, EnumFacing.UP));
 
             mc.theWorld.sendBlockBreakProgress(mc.thePlayer.getEntityId(), blockPos, 1);
@@ -179,9 +181,12 @@ public class Fucker extends Module {
     public void destroy() {
         if (bedPos != null) {
             if (rotate) {
-                Rot.setServerRotation(RotUtils.getRotationToBlock(bedPos, getEnumFacing(bedPos)));
+                Rot rot = RotUtils.getRotationToBlock(bedPos, getEnumFacing(bedPos));
+
+                Rot.setServerRotation(rot);
             }
             rotate = false;
+
             mine(bedPos);
         } else {
             reset(true);
