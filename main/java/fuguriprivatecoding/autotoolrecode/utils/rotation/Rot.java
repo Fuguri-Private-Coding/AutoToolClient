@@ -79,7 +79,7 @@ public class Rot {
 	public Rot copy() {
 		return new Rot(
 				yaw,
-				pitch
+				Math.clamp(pitch, -90, 90)
 		);
 	}
 

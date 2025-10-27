@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 
 @UtilityClass
@@ -179,6 +180,25 @@ public class MoveUtils implements Imports {
         if (strafe < 0) yaw += 90 * forwardMult;
 
         return MathHelper.wrapDegree(yaw);
+    }
+
+    public BlockPos getDirectionalBlockPos(float edgeOffset, float yOffset) {
+        double x = mc.thePlayer.posX;
+        double y = mc.thePlayer.posY - yOffset;
+        double z = mc.thePlayer.posZ;
+
+        boolean movingX = Math.abs(mc.thePlayer.motionX) > 0.1;
+        boolean movingZ = Math.abs(mc.thePlayer.motionZ) > 0.1;
+
+        if (movingX || movingZ) {
+            if (Math.abs(mc.thePlayer.motionX) > Math.abs(mc.thePlayer.motionZ)) {
+                x += (mc.thePlayer.motionX > 0) ? -edgeOffset : edgeOffset;
+            } else {
+                z += (mc.thePlayer.motionZ > 0) ? -edgeOffset : edgeOffset;
+            }
+        }
+
+        return new BlockPos(x, y, z);
     }
 
     public static float getDirection(float yaw) {

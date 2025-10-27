@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import net.minecraft.util.BlockPos;
 
 @ModuleInfo(name = "BridgeAssist", category = Category.LEGIT, description = "Помогает в строительстве.")
@@ -26,7 +27,7 @@ public class BridgeAssist extends Module {
             if (pitchCheck.isToggled() && (mc.thePlayer.rotationPitch < pitch.getMinValue() || mc.thePlayer.rotationPitch > pitch.getMaxValue())) return;
             if (mc.thePlayer.capabilities.isFlying) return;
 
-            BlockPos pos = getBlockPos(edgeOffset.getValue());
+            BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.5f);
 
             if (sneakIfPressed.isToggled() && e.isSneak() && !mc.theWorld.isAirBlock(pos)) {
                 e.setSneak(false);
@@ -34,24 +35,5 @@ public class BridgeAssist extends Module {
                 e.setSneak(true);
             }
         }
-    }
-
-    private BlockPos getBlockPos(float edgeOffset) {
-        double x = mc.thePlayer.posX;
-        double y = mc.thePlayer.posY - 0.5;
-        double z = mc.thePlayer.posZ;
-
-        boolean movingX = Math.abs(mc.thePlayer.motionX) > 0.1;
-        boolean movingZ = Math.abs(mc.thePlayer.motionZ) > 0.1;
-
-        if (movingX || movingZ) {
-            if (Math.abs(mc.thePlayer.motionX) > Math.abs(mc.thePlayer.motionZ)) {
-                x += (mc.thePlayer.motionX > 0) ? -edgeOffset : edgeOffset;
-            } else {
-                z += (mc.thePlayer.motionZ > 0) ? -edgeOffset : edgeOffset;
-            }
-        }
-
-        return new BlockPos(x, y, z);
     }
 }

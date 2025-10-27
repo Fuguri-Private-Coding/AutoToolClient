@@ -131,6 +131,7 @@ public class KillAura extends Module {
         if (combatManager.getTarget() == null) return;
         EntityLivingBase target = combatManager.getTarget();
         if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) return;
+
         if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
             if (clickTimer.reachedMS(delay)) {
                 clickTimer.reset();

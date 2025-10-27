@@ -2,7 +2,9 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
+import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -109,7 +111,7 @@ public class AutoSoup extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof RunGameLoopEvent) {
+        if (event instanceof MotionEvent) {
             if (mc.currentScreen == null) {
                 if (soupTimer.reachedMS(soupSwitchTime * 50L)) {
                     if (switchBack) {
@@ -124,7 +126,7 @@ public class AutoSoup extends Module {
                         dropTimer.reset();
                     }
 
-                    if (Range.between(1, 9).contains(getSoupSlot()) && mc.thePlayer.getHealth() < RandomUtils.nextInt(minHealth.getValue(), maxHealth.getValue())) {
+                    if (Range.between(9, 1).contains(getSoupSlot()) && mc.thePlayer.getHealth() < RandomUtils.nextInt(minHealth.getValue(), maxHealth.getValue())) {
                         lastSoupSlot = mc.thePlayer.inventory.currentItem;
 
                         mc.thePlayer.inventory.currentItem = getSoupSlot();
