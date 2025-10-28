@@ -41,7 +41,7 @@ public class Velocity extends Module {
             case "Vanilla" -> {
                 if (event instanceof PacketEvent e
                         && e.getPacket() instanceof S12PacketEntityVelocity s12
-                        && s12.getEntityID() == mc.thePlayer.getEntityId()) {
+                        && s12.getId() == mc.thePlayer.getEntityId()) {
                     e.cancel();
                     double needMotionX = s12.getMotionX() / 8000d;
                     double needMotionY = s12.getMotionY() / 8000d;

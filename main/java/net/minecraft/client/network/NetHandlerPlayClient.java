@@ -8,7 +8,6 @@ import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.TeleportEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
 import io.netty.buffer.Unpooled;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +18,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.Map.Entry;
 
-import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
 import net.minecraft.block.Block;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -398,7 +396,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
 
     public void handleEntityVelocity(S12PacketEntityVelocity packetIn) {
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.gameController);
-        Entity entity = this.clientWorldController.getEntityByID(packetIn.getEntityID());
+        Entity entity = this.clientWorldController.getEntityByID(packetIn.getId());
 
         if (entity != null) {
             entity.setVelocity((double) packetIn.getMotionX() / 8000.0D, (double) packetIn.getMotionY() / 8000.0D, (double) packetIn.getMotionZ() / 8000.0D);

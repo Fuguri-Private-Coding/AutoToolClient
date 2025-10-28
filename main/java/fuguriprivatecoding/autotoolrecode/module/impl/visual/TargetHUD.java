@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
@@ -157,7 +158,7 @@ public class TargetHUD extends Module {
         }
 
         if (render.get("Head") && target instanceof EntityPlayer) {
-            int hurtTime = target.hurtTime / 10;
+            float hurtTime = target.hurtTime / 10f;
 
             float headX = posX + 5 + hurtTime / 2f;
             float headY = posY + 5 + hurtTime / 2f;
@@ -166,15 +167,16 @@ public class TargetHUD extends Module {
 
             StencilUtils.setUpTexture(headX, headY, headWidth, headHeight, headRadius.getValue() * currentScale.getValue());
             StencilUtils.writeTexture();
-            glColor4f(hurtTime, 1 - hurtTime,1 - hurtTime, 1f);
-            RenderUtils.quickDrawHead(target.getSkin(),headX, headY, headWidth, headHeight);
+            glColor4f(1f / hurtTime, 1f - hurtTime, 1f - hurtTime, 1f);
+            RenderUtils.quickDrawHead(target.getSkin(), headX, headY, headWidth, headHeight);
+            ColorUtils.resetColor();
             StencilUtils.endWriteTexture();
         }
 
         StencilUtils.endWriteTexture();
 
-        if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(posX, posY, width, height, radius, bgShadowColor.getColor(), bgShadowColor.getFadeColor(), bgShadowColor.getSpeed()));
-        if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(posX, posY, width, height, radius, Color.BLACK, Color.BLACK, bgColor.getSpeed()));
+        if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RoundedUtils.drawRect(posX, posY, width, height, radius, bgShadowColor.getFadedColor()));
+        if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(posX, posY, width, height, radius, Color.WHITE));
 
         glPopMatrix();
     }

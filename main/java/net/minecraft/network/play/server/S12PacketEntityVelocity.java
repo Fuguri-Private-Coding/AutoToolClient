@@ -8,7 +8,7 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 
 public class S12PacketEntityVelocity implements Packet<INetHandlerPlayClient>
 {
-    private int entityID;
+    private int id;
     private int motionX;
     private int motionY;
     private int motionZ;
@@ -24,7 +24,7 @@ public class S12PacketEntityVelocity implements Packet<INetHandlerPlayClient>
 
     public S12PacketEntityVelocity(int entityIDIn, double motionXIn, double motionYIn, double motionZIn)
     {
-        this.entityID = entityIDIn;
+        this.id = entityIDIn;
         double d0 = 3.9D;
 
         if (motionXIn < -d0)
@@ -64,7 +64,7 @@ public class S12PacketEntityVelocity implements Packet<INetHandlerPlayClient>
 
     public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.entityID = buf.readVarIntFromBuffer();
+        this.id = buf.readVarIntFromBuffer();
         this.motionX = buf.readShort();
         this.motionY = buf.readShort();
         this.motionZ = buf.readShort();
@@ -72,7 +72,7 @@ public class S12PacketEntityVelocity implements Packet<INetHandlerPlayClient>
 
     public void writePacketData(PacketBuffer buf) throws IOException
     {
-        buf.writeVarIntToBuffer(this.entityID);
+        buf.writeVarIntToBuffer(this.id);
         buf.writeShort(this.motionX);
         buf.writeShort(this.motionY);
         buf.writeShort(this.motionZ);
@@ -83,9 +83,9 @@ public class S12PacketEntityVelocity implements Packet<INetHandlerPlayClient>
         handler.handleEntityVelocity(this);
     }
 
-    public int getEntityID()
+    public int getId()
     {
-        return this.entityID;
+        return this.id;
     }
 
     public int getMotionX()

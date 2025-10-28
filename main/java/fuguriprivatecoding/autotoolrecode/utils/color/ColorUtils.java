@@ -69,9 +69,8 @@ public class ColorUtils {
         double staticOffset = i * offset * (Math.PI / 180);
 
         double sinWave = Math.sin(angle + staticOffset);
-        double cosWave = Math.cos(angle + staticOffset);
 
-        final double percent = (sinWave + cosWave + 2) / 4;
+        final double percent = (sinWave + 1) / 2;
 
         final double inverse_percent = 1.0 - percent;
 

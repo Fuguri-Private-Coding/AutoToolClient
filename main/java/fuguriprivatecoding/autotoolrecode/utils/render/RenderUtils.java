@@ -126,7 +126,6 @@ public class RenderUtils implements Imports {
 
     public static void start3DNameTag() {
         glPushAttrib(GL_ENABLE_BIT);
-        glPushMatrix();
         glDisable(GL_LIGHTING);
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_LINE_SMOOTH);
@@ -138,7 +137,6 @@ public class RenderUtils implements Imports {
         glDisable(GL_BLEND);
         glDisable(GL_LINE_SMOOTH);
 
-        glPopMatrix();
         glPopAttrib();
 
         ColorUtils.resetColor();

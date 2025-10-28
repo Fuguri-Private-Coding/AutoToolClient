@@ -4,7 +4,6 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.SprintEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;

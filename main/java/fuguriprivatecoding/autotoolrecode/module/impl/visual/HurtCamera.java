@@ -19,7 +19,7 @@ public class HurtCamera extends Module {
     public void onEvent(Event event) {
         if (event instanceof PacketEvent e &&
             e.getPacket() instanceof S12PacketEntityVelocity s12 &&
-            s12.getEntityID() == mc.thePlayer.getEntityId()) {
+            s12.getId() == mc.thePlayer.getEntityId()) {
             final double velocityX = s12.getMotionX() / 8000.0D;
             final double velocityZ = s12.getMotionZ() / 8000.0D;
 
