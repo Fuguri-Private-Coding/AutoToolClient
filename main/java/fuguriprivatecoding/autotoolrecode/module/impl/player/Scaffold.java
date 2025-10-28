@@ -36,7 +36,7 @@ public class Scaffold extends Module {
     DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
     DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
 
-    Mode rotMode = new Mode("Rotation Mode", this)
+    Mode rotMode = new Mode("RotationMode", this)
             .addModes("TellyBridge", "GodBridge", "Normal")
             .setMode("GodBridge");
 
@@ -46,36 +46,40 @@ public class Scaffold extends Module {
 
     BooleanSupplier tellyGodNormalVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("GodBridge") || rotMode.getMode().equalsIgnoreCase("Normal");
 
-    DoubleSlider yawClutchSpeed = new DoubleSlider("Yaw Clutch Speed", this, godVisible, 0,180,90,1);
-    DoubleSlider pitchClutchSpeed = new DoubleSlider("Pitch Clutch Speed", this, godVisible, 0,180,90,1);
+    DoubleSlider yawClutchSpeed = new DoubleSlider("YawClutchSpeed", this, godVisible, 0,180,90,1);
+    DoubleSlider pitchClutchSpeed = new DoubleSlider("PitchClutchSpeed", this, godVisible, 0,180,90,1);
 
-    DoubleSlider yawForwardTellySpeed = new DoubleSlider("Yaw Forward Telly Speed", this, tellyVisible, 0,180,90,1);
-    DoubleSlider pitchForwardTellySpeed = new DoubleSlider("Pitch Forward Telly Speed", this, tellyVisible, 0,180,90,1);
+    DoubleSlider yawForwardTellySpeed = new DoubleSlider("YawForwardTellySpeed", this, tellyVisible, 0,180,90,1);
+    DoubleSlider pitchForwardTellySpeed = new DoubleSlider("PitchForwardTellySpeed", this, tellyVisible, 0,180,90,1);
 
-    DoubleSlider pitchCorrectionSearch = new DoubleSlider("Pitch Correction Search", this, tellyGodNormalVisible, 0,90,90,0.1f);
+    DoubleSlider pitchCorrectionSearch = new DoubleSlider("PitchCorrectionSearch", this, tellyGodNormalVisible, 0,90,90,0.1f);
 
-    FloatSetting stepPitchCorrection = new FloatSetting("Step Pitch Correction", this, tellyGodNormalVisible, 0.3f, 10, 0.8f, 0.01f);
+    FloatSetting stepPitchCorrection = new FloatSetting("StepPitchCorrection", this, tellyGodNormalVisible, 0.3f, 10, 0.8f, 0.01f);
 
-    IntegerSetting sortingDistanceStrength = new IntegerSetting("Sorting Distance Strength", this, tellyGodNormalVisible, 0,100,2);
+    IntegerSetting sortingDistanceStrength = new IntegerSetting("SortingDistanceStrength", this, tellyGodNormalVisible, 0,100,2);
 
     MultiMode removeSwing = new MultiMode("RemoveSwing", this)
         .addModes("On Client", "On Server")
         ;
 
+    Mode sprintMode = new Mode("SprintMode", this)
+        .addModes("None", "Legit", "AllDirection")
+        .setMode("Legit")
+        ;
+
     final CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this, tellyGodVisible);
 
-    final CheckBox speedTelly = new CheckBox("Speed Telly", this, tellyVisible, true);
-    DoubleSlider tellyTicks = new DoubleSlider("Telly Ticks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 0,12,5,1);
-
-    MultiMode sneakIf = new MultiMode("SneakIf", this, godVisible)
-        .addModes("Rotate", "Clutching", "Zero Blocks", "Ninja Bridge");
-
-    final FloatSetting edgeOffset = new FloatSetting("Edge Offset", this, () -> godVisible.getAsBoolean() && sneakIf.get("Ninja Bridge"), 0f,0.1f,0.05f, 0.01f);
+    final CheckBox speedTelly = new CheckBox("SpeedTelly", this, tellyVisible, true);
+    DoubleSlider tellyTicks = new DoubleSlider("TellyTicks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 0,12,5,1);
 
     final CheckBox sameY = new CheckBox("SameY", this, true);
 
-    final CheckBox render = new CheckBox("Render", this, true);
+    MultiMode sneakIf = new MultiMode("SneakIf", this, godVisible)
+        .addModes("Clutching", "Rotate", "Zero Blocks", "Ninja Bridge");
 
+    final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, () -> godVisible.getAsBoolean() && sneakIf.get("Ninja Bridge"), 0f,0.1f,0.05f, 0.01f);
+
+    final CheckBox render = new CheckBox("Render", this, true);
     final ColorSetting color = new ColorSetting("Color", this);
 
     final CheckBox glow = new CheckBox("Glow", this);
@@ -114,6 +118,13 @@ public class Scaffold extends Module {
     @Override
     public void onDisable() {
         resetValues();
+    }
+
+    @Override
+    public void onEnable() {
+        if (mc.thePlayer.isUsingItem()) {
+            mc.thePlayer.setItemInUse(mc.thePlayer.inventory.getCurrentItem(), 0);
+        }
     }
 
     @EventTarget
@@ -167,9 +178,12 @@ public class Scaffold extends Module {
             }
         }
 
-        if (event instanceof JumpEvent e) e.setYaw(Rot.getServerRotation().getYaw());
-        if (event instanceof UpdateBodyRotationEvent e) e.setYaw(Rot.getServerRotation().getYaw());
-        if (event instanceof MoveFlyingEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+        if (event instanceof SprintEvent) {
+            switch (sprintMode.getMode()) {
+                case "AllDirection" -> mc.thePlayer.setSprinting(true);
+                case "None" -> mc.thePlayer.setSprinting(false);
+            }
+        }
 
         if (event instanceof MotionEvent e) {
             e.setYaw(Rot.getServerRotation().getYaw());
@@ -184,6 +198,11 @@ public class Scaffold extends Module {
             }
         }
 
+        if (event instanceof JumpEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+        if (event instanceof UpdateBodyRotationEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+        if (event instanceof MoveFlyingEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+        if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.RIGHT) e.cancel();
+
         if (event instanceof LookEvent e) {
             e.setYaw(Rot.getServerRotation().getYaw());
             e.setPitch(Rot.getServerRotation().getPitch());
@@ -192,10 +211,6 @@ public class Scaffold extends Module {
         if (event instanceof ChangeHeadRotationEvent e) {
             e.setYaw(Rot.getServerRotation().getYaw());
             e.setPitch(Rot.getServerRotation().getPitch());
-        }
-
-        if (event instanceof ClickEvent e) {
-            if (e.getButton() == ClickEvent.Button.RIGHT) e.cancel();
         }
     }
 
