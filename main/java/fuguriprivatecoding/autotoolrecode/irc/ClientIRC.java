@@ -1,5 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.irc;
 
+import fuguriprivatecoding.autotoolrecode.profile.Profile;
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.Client;
@@ -13,7 +15,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
-public class ClientIRC extends ListenerAdapter {
+public class ClientIRC extends ListenerAdapter implements Imports {
 
     @Getter @Setter
     public MessageChannel chatChannel, loginChannel, serverChannel, keyChannel,
@@ -89,6 +91,53 @@ public class ClientIRC extends ListenerAdapter {
             message = message.replaceAll(Client.INST.getProfile().toString(), Client.INST.getProfile().toColoredString());
             Client.INST.getConsole().history.add("§f[§2IRC§f] " + message);
         }
+    }
+
+
+    public void connectClient() {
+        MessageChannel onlineChannel = getOnlineChannel();
+        String messageContent = Client.INST.getProfile().toString() + " " + Client.INST.getVersion();
+
+        onlineChannel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.ONLINE_MESSAGE_ID = sendMessage.getIdLong());
+    }
+
+    public void disconnectClient() {
+        if (ClientIRC.ONLINE_MESSAGE_ID != -1) getOnlineChannel().deleteMessageById(ClientIRC.ONLINE_MESSAGE_ID).queue();
+        if (ClientIRC.MESSAGE_ID != -1) getServerChannel().deleteMessageById(ClientIRC.MESSAGE_ID).queue();
+    }
+
+    public void disconnectServer() {
+        if (ClientIRC.MESSAGE_ID != -1) getServerChannel().deleteMessageById(ClientIRC.MESSAGE_ID).queue();
+    }
+
+    public void connectServer() {
+        if (ClientIRC.MESSAGE_ID != -1) {
+            updateExistingServerConnection();
+        } else {
+            createNewServerConnection();
+        }
+    }
+
+    private void updateExistingServerConnection() {
+        MessageChannel serverChannel = Client.INST.getIrc().getServerChannel();
+
+        serverChannel.deleteMessageById(ClientIRC.MESSAGE_ID).queue(_ -> {
+            ClientIRC.MESSAGE_ID = -1;
+            sendServerConnectionMessage(serverChannel);
+        });
+    }
+
+    private void createNewServerConnection() {
+        MessageChannel serverChannel = Client.INST.getIrc().getServerChannel();
+        sendServerConnectionMessage(serverChannel);
+    }
+
+    private void sendServerConnectionMessage(MessageChannel channel) {
+        String username = mc.getSession().getUsername();
+        Profile profile = Client.INST.getProfile();
+        String messageContent = username + " " + profile;
+
+        channel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.MESSAGE_ID = sendMessage.getIdLong());
     }
 
     public void sendIRCMessage(String text) {

@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.deeplearn.rotation.AIRotationSmooth;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
@@ -31,7 +30,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
-import java.io.File;
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, description = "Автоматически целится и бьет противника.")
@@ -62,7 +60,7 @@ public class KillAura extends Module {
     final CheckBox gcd = new CheckBox("GCD (FIX)", this);
 
     final Mode smoothMode = new Mode("SmoothMode", this)
-        .addModes("Linear", "AIModel")
+        .addModes("Linear")
         .setMode("Linear");
 
     BooleanSupplier linearVisible = () -> smoothMode.getMode().equalsIgnoreCase("Linear");
@@ -82,17 +80,6 @@ public class KillAura extends Module {
         1, 5, 1.5f, 0.1f
     );
 
-    final BooleanSupplier modelVisible = () -> smoothMode.getMode().equalsIgnoreCase("AIModel");
-
-    public final Mode model = new Mode("AIModel", this, modelVisible);
-    final FloatSetting yawMultiplier = new FloatSetting("YawMultiplier", this, modelVisible, 0.5f, 2, 1, 0.1f);
-    final FloatSetting pitchMultiplier = new FloatSetting("PitchMultiplier", this, modelVisible, 0.5f, 2, 1, 0.1f);
-
-    final CheckBox correction = new CheckBox("Correction", this, modelVisible);
-    final BooleanSupplier correctionVisible = () -> modelVisible.getAsBoolean() && correction.isToggled();
-    final IntegerSetting yawCorrectionSpeed = new IntegerSetting("YawCorrectionSpeed", this, correctionVisible, 0, 180, 90);
-    final IntegerSetting pitchCorrectionSpeed = new IntegerSetting("PitchCorrectionSpeed", this, correctionVisible, 0, 180, 30);
-
     final CheckBox lockView = new CheckBox("LockView", this);
 
     DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
@@ -106,13 +93,8 @@ public class KillAura extends Module {
 
     Rot lastDelta = new Rot();
 
-    public KillAura() {
-        updateModels();
-    }
-
     @Override
     public void onEnable() {
-        updateModels();
         interpolation.reset();
         startTest = new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
     }
@@ -197,25 +179,6 @@ public class KillAura extends Module {
 
                         delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
                         delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
-                    }
-
-                    case "AIModel" -> {
-                        if (model.getModes() == null) smoothMode.setMode("Linear");
-                        if (AIRotationSmooth.currentModelName != null) {
-                            if (!AIRotationSmooth.currentModelName.equalsIgnoreCase(model.getMode())) {
-                                AIRotationSmooth.changeModel(model.getMode());
-                            }
-
-                            Rot targetRot = lr.add(delta);
-
-                            Rot aiRotation = AIRotationSmooth.compute(
-                                lr, targetRot, target,
-                                yawMultiplier.getValue(), pitchMultiplier.getValue(),
-                                correction.isToggled(), yawCorrectionSpeed.getValue(), pitchCorrectionSpeed.getValue()
-                            );
-
-                            delta = RotUtils.getDelta(lr, aiRotation);
-                        }
                     }
                 }
 
@@ -345,14 +308,5 @@ public class KillAura extends Module {
         }
 
         return target;
-    }
-
-    public void updateModels() {
-        model.getModes().clear();
-        if (Client.INST.getModelsDirectory().listFiles() != null) {
-            for (File modelFile : Client.INST.getModelsDirectory().listFiles()) {
-                model.getModes().add(modelFile.getName().replaceAll(".params", ""));
-            }
-        }
     }
 }

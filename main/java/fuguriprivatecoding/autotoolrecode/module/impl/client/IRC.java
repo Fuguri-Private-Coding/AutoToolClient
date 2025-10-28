@@ -25,13 +25,13 @@ public class IRC extends Module {
 
     @Override
     public void onDisable() {
-        Client.INST.disconnectServer();
+        Client.INST.getIrc().disconnectServer();
         history = new ArrayList<>();
     }
 
     @Override
     public void onEnable() {
-        Client.INST.connectServer();
+        Client.INST.getIrc().connectServer();
     }
 
     @EventTarget

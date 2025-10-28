@@ -100,7 +100,6 @@ public class ModuleManager {
 			new BlockOverlay(),
 			new DynamicIsland(),
 			new FakeGameMode(),
-			new ModelTrainer(),
 			new KeepSprint(),
 			new AutoLeave(),
 			new Effects(),

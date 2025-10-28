@@ -2,8 +2,8 @@ package fuguriprivatecoding.autotoolrecode.guis.altmanager;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.alt.Account;
-import fuguriprivatecoding.autotoolrecode.alt.Auth;
-import fuguriprivatecoding.autotoolrecode.alt.MicrosoftAuthCallback;
+import fuguriprivatecoding.autotoolrecode.alt.microsoft.Auth;
+import fuguriprivatecoding.autotoolrecode.alt.microsoft.MicrosoftAuthCallback;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;

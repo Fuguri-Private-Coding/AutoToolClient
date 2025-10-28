@@ -21,13 +21,11 @@ import fuguriprivatecoding.autotoolrecode.utils.file.*;
 import fuguriprivatecoding.autotoolrecode.utils.packet.*;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.utils.version.ClientVersion;
-import fuguriprivatecoding.autotoolrecode.deeplearn.DeepLearningEngine;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.lwjgl.opengl.Display;
 import de.florianmichael.viamcp.ViaMCP;
 import lombok.Getter;
@@ -61,7 +59,6 @@ public enum Client implements Imports {
 	ConfigManager configManager;
 	CommandManager commandManager;
 	ClickManager clickManager;
-	DeepLearningEngine deepLearningEngine;
 
 	ClickGuiScreen clickGui;
 	ConfigGuiScreen configGuiScreen;
@@ -86,7 +83,7 @@ public enum Client implements Imports {
 		Display.setTitle(getFullName());
 
 		updateClient();
-		connectClient();
+        irc.connectClient();
 
 		clientDirectory = new File(name);
 		modelsDirectory = new File(name + "/models");
@@ -122,9 +119,6 @@ public enum Client implements Imports {
 
 		commandManager = new CommandManager();
 		clickManager = new ClickManager();
-
-		deepLearningEngine = new DeepLearningEngine();
-		deepLearningEngine.init();
 
 		new PositionResolverComponent();
 
@@ -165,7 +159,7 @@ public enum Client implements Imports {
 		configManager.saveModulesFromConfig();
 		configManager.saveConfig(configManager.getDefaultConfig());
 		configManager.saveBinds();
-		disconnectClient();
+        irc.disconnectClient();
 	}
 
 	public String getFullName() {
@@ -176,7 +170,7 @@ public enum Client implements Imports {
 
 	@EventTarget
 	public void onEvent(Event event) {
-		if (event instanceof ServerJoinEvent && moduleManager.getModule(IRC.class).isToggled()) connectServer();
+		if (event instanceof ServerJoinEvent && moduleManager.getModule(IRC.class).isToggled()) irc.connectServer();
 		if (event instanceof KeyEvent keyEvent) handleKeyEventForModules(keyEvent);
 		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
 			lastTime = System.currentTimeMillis();
@@ -190,49 +184,4 @@ public enum Client implements Imports {
 		}
 	}
 
-	public void connectClient() {
-		MessageChannel onlineChannel = irc.getOnlineChannel();
-		String messageContent = Client.INST.getProfile().toString() + " " + version;
-
-		onlineChannel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.ONLINE_MESSAGE_ID = sendMessage.getIdLong());
-	}
-
-	public void disconnectClient() {
-		if (ClientIRC.ONLINE_MESSAGE_ID != -1) irc.getOnlineChannel().deleteMessageById(ClientIRC.ONLINE_MESSAGE_ID).queue();
-		if (ClientIRC.MESSAGE_ID != -1) irc.getServerChannel().deleteMessageById(ClientIRC.MESSAGE_ID).queue();
-	}
-
-	public void disconnectServer() {
-		if (ClientIRC.MESSAGE_ID != -1) irc.getServerChannel().deleteMessageById(ClientIRC.MESSAGE_ID).queue();
-	}
-
-	public void connectServer() {
-		if (ClientIRC.MESSAGE_ID != -1) {
-			updateExistingServerConnection();
-		} else {
-			createNewServerConnection();
-		}
-	}
-
-	private void updateExistingServerConnection() {
-		MessageChannel serverChannel = Client.INST.getIrc().getServerChannel();
-
-		serverChannel.deleteMessageById(ClientIRC.MESSAGE_ID).queue(_ -> {
-			ClientIRC.MESSAGE_ID = -1;
-			sendServerConnectionMessage(serverChannel);
-		});
-	}
-
-	private void createNewServerConnection() {
-		MessageChannel serverChannel = Client.INST.getIrc().getServerChannel();
-		sendServerConnectionMessage(serverChannel);
-	}
-
-	private void sendServerConnectionMessage(MessageChannel channel) {
-		String username = mc.getSession().getUsername();
-		Profile profile = Client.INST.getProfile();
-		String messageContent = username + " " + profile;
-
-		channel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.MESSAGE_ID = sendMessage.getIdLong());
-	}
 }
