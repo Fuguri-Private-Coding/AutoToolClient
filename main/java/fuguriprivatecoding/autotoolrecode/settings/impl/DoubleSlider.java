@@ -5,7 +5,6 @@ import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
-import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.function.BooleanSupplier;

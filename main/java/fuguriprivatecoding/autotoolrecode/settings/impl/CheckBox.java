@@ -3,12 +3,9 @@ package fuguriprivatecoding.autotoolrecode.settings.impl;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
-
 import java.util.function.BooleanSupplier;
 
 @Getter
