@@ -4,10 +4,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
-import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -23,11 +20,14 @@ public class Velocity extends Module {
             .addModes("Vanilla", "Jump", "Intave")
             .setMode("Vanilla");
 
-    final IntegerSetting chance = new IntegerSetting("Chance", this, () -> mode.getMode().equalsIgnoreCase("Jump"), 0,100,80);
-    DoubleSlider jumpDelay = new DoubleSlider("JumpDelay", this, () -> mode.getMode().equalsIgnoreCase("Jump"), 0, 500,80,1);
+    final FloatSetting vanillaXZ = new FloatSetting("XZ", this,() -> mode.is("Vanilla"), -1, 1, 0, 0.1f);
+    final FloatSetting vanillaY = new FloatSetting("Y", this,() -> mode.is("Vanilla"), 0, 1, 1, 0.1f);
 
-    final FloatSetting XZ = new FloatSetting("XZ", this,() -> mode.getMode().equalsIgnoreCase("Vanilla"), -1, 1, 0, 0.1f);
-    final FloatSetting Y = new FloatSetting("Y", this,() -> mode.getMode().equalsIgnoreCase("Vanilla"), 0, 1, 1, 0.1f);
+    final FloatSetting intaveSprintXZ = new FloatSetting("IntaveXZ", this, () -> mode.is("Intave"),0,1,0.6f, 0.01f);
+    final CheckBox intaveJump = new CheckBox("IntaveJump", this, () -> mode.is("Intave"));
+
+    final IntegerSetting jumpChance = new IntegerSetting("Chance", this, () -> mode.is("Jump") || (mode.is("Intave") && intaveJump.isToggled()), 0,100,80);
+    final DoubleSlider jumpDelay = new DoubleSlider("JumpDelay", this, () -> mode.is("Jump") || (mode.is("Intave") && intaveJump.isToggled()), 0, 500,80,1);
 
     private boolean jumps, gotHit;
     private int delay, lastHurtTime;
@@ -51,9 +51,9 @@ public class Velocity extends Module {
                     double deltaMotionY = needMotionY - mc.thePlayer.motionY;
                     double deltaMotionZ = needMotionZ - mc.thePlayer.motionZ;
 
-                    deltaMotionX *= XZ.getValue();
-                    deltaMotionY *= Y.getValue();
-                    deltaMotionZ *= XZ.getValue();
+                    deltaMotionX *= vanillaXZ.getValue();
+                    deltaMotionY *= vanillaY.getValue();
+                    deltaMotionZ *= vanillaXZ.getValue();
 
                     mc.thePlayer.motionX += deltaMotionX;
                     mc.thePlayer.motionY += deltaMotionY;
@@ -63,16 +63,14 @@ public class Velocity extends Module {
             case "Intave" -> {
                 if (event instanceof AttackEvent) {
                     if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.isSprinting()) {
-                        mc.thePlayer.motionX *= 0.6f;
-                        mc.thePlayer.motionZ *= 0.6f;
+                        mc.thePlayer.motionX *= intaveSprintXZ.getValue();
+                        mc.thePlayer.motionZ *= intaveSprintXZ.getValue();
                         mc.thePlayer.setSprinting(false);
                     }
                 }
-            }
 
-            case "Jump" -> {
-                if (event instanceof MoveButtonEvent e) {
-                    if (mc.thePlayer.hurtTime == 10 && mc.thePlayer.hurtTime != lastHurtTime && rand.nextInt(100) <= chance.getValue()) {
+                if (event instanceof MoveButtonEvent e && intaveJump.isToggled()) {
+                    if (mc.thePlayer.hurtTime == 10 && mc.thePlayer.hurtTime != lastHurtTime && rand.nextInt(100) <= jumpChance.getValue()) {
                         delay = jumpDelay.getRandomizedIntValue();
                         gotHit = true;
                         timer.reset();
@@ -82,8 +80,28 @@ public class Velocity extends Module {
                     if (timer.reachedMS(delay) && !jumps && gotHit) {
                         e.setJump(true);
                         jumps = true;
-                        timer.reset();
                         gotHit = false;
+                        timer.reset();
+                    }
+
+                    if (mc.thePlayer.onGround) jumps = false;
+                }
+            }
+
+            case "Jump" -> {
+                if (event instanceof MoveButtonEvent e) {
+                    if (mc.thePlayer.hurtTime == 10 && mc.thePlayer.hurtTime != lastHurtTime && rand.nextInt(100) <= jumpChance.getValue()) {
+                        delay = jumpDelay.getRandomizedIntValue();
+                        gotHit = true;
+                        timer.reset();
+                    }
+                    lastHurtTime = mc.thePlayer.hurtTime;
+
+                    if (timer.reachedMS(delay) && !jumps && gotHit) {
+                        e.setJump(true);
+                        jumps = true;
+                        gotHit = false;
+                        timer.reset();
                     }
 
                     if (mc.thePlayer.onGround) jumps = false;

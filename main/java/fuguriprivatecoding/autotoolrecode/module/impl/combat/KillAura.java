@@ -230,6 +230,7 @@ public class KillAura extends Module {
                 lr = lr.add(delta);
                 lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
                 Rot.setServerRotation(lr);
+
                 if (lockView.isToggled()) {
                     mc.thePlayer.rotationYaw = Rot.getServerRotation().getYaw();
                     mc.thePlayer.rotationPitch = Rot.getServerRotation().getPitch();

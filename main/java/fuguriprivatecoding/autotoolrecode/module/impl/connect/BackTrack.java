@@ -1,10 +1,9 @@
-package fuguriprivatecoding.autotoolrecode.module.impl.connection;
+package fuguriprivatecoding.autotoolrecode.module.impl.connect;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
-import fuguriprivatecoding.autotoolrecode.event.events.AttackEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
@@ -13,8 +12,6 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -49,13 +46,10 @@ public class BackTrack extends Module {
     BooleanSupplier renderBox = () -> (render.getMode().equalsIgnoreCase("Box") || render.getMode().equalsIgnoreCase("HitBox"));
 
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
-
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, () -> render.getMode().equalsIgnoreCase("HitBox"), 1f,5f,1f,0.1f);
 
-    CheckBox whileKillAura = new CheckBox("WhileKillAura", this);
-
+    CheckBox whileKillAura = new CheckBox("WhileKillAura", this, true);
     CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
-    CheckBox debugDistance = new CheckBox("DebugDistance", this, true);
 
     public final List<TimedVar<Packet>> packetBuffer = new CopyOnWriteArrayList<>();
 
@@ -64,23 +58,11 @@ public class BackTrack extends Module {
 
     private int delayBetweenBackTracks;
 
-    private Color fadeColor;
-
     private Glow shadows;
 
     @EventTarget
     public void onEvent(Event event) {
         if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
-        if (target != null && event instanceof AttackEvent && debugDistance.isToggled()) {
-            AxisAlignedBB realBox = target.getEntityBoundingBox().offset(target.nx - target.posX, target.ny - target.posY, target.nz - target.posZ).expand(
-                    target.getCollisionBorderSize(),
-                    target.getCollisionBorderSize(),
-                    target.getCollisionBorderSize()
-            );
-            if (!packetBuffer.isEmpty() && DistanceUtils.getDistance(realBox) > 3)
-                ClientUtils.chatLog("Distance: " + String.format("%.4f", DistanceUtils.getDistance(realBox)));
-        }
-
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();
             if (target == null || e.isCanceled() || e.getDirection() != PacketDirection.INCOMING) return;
@@ -156,8 +138,6 @@ public class BackTrack extends Module {
                 y = target.lry + (target.ry - target.lry) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
                 z = target.lrz + (target.rz - target.lrz) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
 
-                if (!render.getMode().equalsIgnoreCase("Player")) updateColors();
-
                 Vec3 pos = new Vec3(x,y,z);
                 AxisAlignedBB bb = target.getEntityBoundingBox().offset(pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ);
                 switch (render.getMode()) {
@@ -172,22 +152,18 @@ public class BackTrack extends Module {
                         if (shadows.module.get("BackTrack") && shadows.isToggled()) {
                             BloomUtils.addToDraw(() -> renderBox(bb, Color.white));
                         }
-                        renderBox(bb, fadeColor);
+                        renderBox(bb, color.getFadedColor());
                     }
 
                     case "HitBox" -> {
                         if (shadows.module.get("BackTrack") && shadows.isToggled()) {
                             BloomUtils.addToDraw(() -> renderHitBox(bb, Color.white, lineWidth.getValue()));
                         }
-                        renderHitBox(bb, fadeColor, lineWidth.getValue());
+                        renderHitBox(bb, color.getFadedColor(), lineWidth.getValue());
                     }
                 }
             }
         }
-    }
-
-    private void updateColors() {
-        fadeColor = color.getFadedColor();
     }
 
     private void renderHitBox(AxisAlignedBB bb, Color color, float lineWidth) {

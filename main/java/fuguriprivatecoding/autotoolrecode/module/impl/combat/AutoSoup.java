@@ -3,101 +3,29 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtils;
-import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
-import org.apache.commons.lang3.Range;
 
 @ModuleInfo(name = "AutoSoup", category = Category.COMBAT, description = "Автоматический хил супами")
 public class AutoSoup extends Module {
 
-    final IntegerSetting minHealth = new IntegerSetting("Min Health", this, 4, 20, 9) {
-        @Override
-        public int getValue() {
-            if (maxHealth.value < value) { value = maxHealth.value; }
-            return value;
-        }
-    };
-    final IntegerSetting maxHealth = new IntegerSetting("Max Health", this, 4, 20, 12) {
-        @Override
-        public int getValue() {
-            if (minHealth.value > value) { value = minHealth.value; }
-            return value;
-        }
-    };
+    DoubleSlider health = new DoubleSlider("Health", this, 1, 20, 9, 1);
 
-    final IntegerSetting minUseDelay = new IntegerSetting("Min Use Delay", this, 0, 10, 0) {
-        @Override
-        public int getValue() {
-            if (maxUseDelay.value < value) { value = maxUseDelay.value; }
-            return value;
-        }
-    };
-    final IntegerSetting maxUseDelay = new IntegerSetting("Max Use Delay", this, 0, 10, 0) {
-        @Override
-        public int getValue() {
-            if (minUseDelay.value > value) { value = minUseDelay.value; }
-            return value;
-        }
-    };
-
-    final IntegerSetting minDropDelay = new IntegerSetting("Min Drop Delay", this, 0, 10, 0) {
-        @Override
-        public int getValue() {
-            if (maxDropDelay.value < value) { value = maxDropDelay.value; }
-            return value;
-        }
-    };
-    final IntegerSetting maxDropDelay = new IntegerSetting("Max Drop Delay", this, 0, 10, 0) {
-        @Override
-        public int getValue() {
-            if (minDropDelay.value > value) { value = minDropDelay.value; }
-            return value;
-        }
-    };
-
-    final IntegerSetting minSwitchDelay = new IntegerSetting("Min Switch Delay", this, 0, 10, 0) {
-        @Override
-        public int getValue() {
-            if (maxSwitchDelay.value < value) { value = maxSwitchDelay.value; }
-            return value;
-        }
-    };
-    final IntegerSetting maxSwitchDelay = new IntegerSetting("Max Switch Delay", this, 0, 10, 0) {
-        @Override
-        public int getValue() {
-            if (minSwitchDelay.value > value) { value = minSwitchDelay.value; }
-            return value;
-        }
-    };
+    DoubleSlider useDelay = new DoubleSlider("UseDelay", this, 1, 20, 9, 1);
+    DoubleSlider dropDelay = new DoubleSlider("DropDelay", this, 1, 20, 9, 1);
+    DoubleSlider switchDelay = new DoubleSlider("SwitchDelay", this, 1, 20, 9, 1);
 
     final CheckBox refill = new CheckBox("Refill", this, true);
-
-    final IntegerSetting minRefillDelay = new IntegerSetting("Min Refill Delay", this, refill::isToggled, 0, 10, 0) {
-        @Override
-        public int getValue() {
-            if (maxRefillDelay.value < value) { value = maxRefillDelay.value; }
-            return value;
-        }
-    };
-    final IntegerSetting maxRefillDelay = new IntegerSetting("Max Refill Delay", this, refill::isToggled, 0, 10, 0) {
-        @Override
-        public int getValue() {
-            if (minRefillDelay.value > value) { value = minRefillDelay.value; }
-            return value;
-        }
-    };
+    DoubleSlider refillDelay = new DoubleSlider("RefillDelay", this, 1, 20, 9, 1);
 
     private final StopWatch soupTimer = new StopWatch();
     private final StopWatch refillTimer = new StopWatch();
@@ -118,18 +46,20 @@ public class AutoSoup extends Module {
                         mc.thePlayer.inventory.currentItem = lastSoupSlot;
 
                         switchBack = false;
-                        soupSwitchTime = RandomUtils.nextInt(minSwitchDelay.getValue(), maxSwitchDelay.getValue());
-                        soupUseTime = RandomUtils.nextInt(minUseDelay.getValue(), maxUseDelay.getValue());
-                        soupDropTime = RandomUtils.nextInt(minDropDelay.getValue(), maxDropDelay.getValue());
+                        soupSwitchTime = switchDelay.getRandomizedIntValue();
+                        soupUseTime = useDelay.getRandomizedIntValue();
+                        soupDropTime = dropDelay.getRandomizedIntValue();
                         soupTimer.reset();
                         useTimer.reset();
                         dropTimer.reset();
                     }
 
-                    if (Range.between(9, 1).contains(getSoupSlot()) && mc.thePlayer.getHealth() < RandomUtils.nextInt(minHealth.getValue(), maxHealth.getValue())) {
+                    int soupSlot = getSoupSlot();
+
+                    if (soupSlot != -1 && mc.thePlayer.getHealth() < health.getRandomizedIntValue()) {
                         lastSoupSlot = mc.thePlayer.inventory.currentItem;
 
-                        mc.thePlayer.inventory.currentItem = getSoupSlot();
+                        mc.thePlayer.inventory.currentItem = soupSlot;
 
                         if (useTimer.reachedMS(soupUseTime * 50L)) {
                             mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
@@ -139,7 +69,7 @@ public class AutoSoup extends Module {
                         }
 
                         switchBack = true;
-                        soupSwitchTime = RandomUtils.nextInt(minSwitchDelay.getValue(), maxSwitchDelay.getValue());
+                        soupSwitchTime = switchDelay.getRandomizedIntValue();
                         soupTimer.reset();
                     }
                 } else if (mc.thePlayer.getCurrentEquippedItem().getItem() == Items.bowl) {
@@ -148,7 +78,7 @@ public class AutoSoup extends Module {
 
                 refillTimer.reset();
             } else if (mc.currentScreen instanceof GuiInventory) {
-                if (refill.isToggled() && refillTimer.reachedMS(RandomUtils.nextInt(minRefillDelay.getValue(), maxRefillDelay.getValue()) * 50L)) {
+                if (refill.isToggled() && refillTimer.reachedMS(refillDelay.getRandomizedIntValue() * 50L)) {
                     for (int slot = InventoryUtils.EXCLUDE_ARMOR_BEGIN; slot < InventoryUtils.ONLY_HOT_BAR_BEGIN; slot++) {
                         final ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(slot).getStack();
 
@@ -160,7 +90,7 @@ public class AutoSoup extends Module {
                                     if (hotbarStack == null) {
                                         mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 0, 1, mc.thePlayer);
 
-                                        if (RandomUtils.nextInt(minRefillDelay.getValue(), maxRefillDelay.getValue()) > 0) {
+                                        if (refillDelay.getRandomizedIntValue() > 0) {
                                             refillTimer.reset();
                                             return;
                                         }

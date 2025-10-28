@@ -7,7 +7,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.module.impl.connection.BackTrack;
+import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
@@ -28,16 +28,13 @@ import java.util.function.BooleanSupplier;
 public class TimerRange extends Module {
 
     IntegerSetting maxTicks = new IntegerSetting("Max Ticks", this, 0, 20, 2);
-
     IntegerSetting maxTargetHurtTime = new IntegerSetting("Max Target Hurt Time", this, 0, 10, 0);
     FloatSetting partialTicks = new FloatSetting("Partial Ticks", this, -2.5f, 2.5f, 1, 0.1f);
 
     IntegerSetting additionalTicks = new IntegerSetting("Additional Ticks", this, -5,5,1);
-
     FloatSetting minDistanceToSkipTick = new FloatSetting("Min Distance To Skip Tick", this, 2.5f, 6, 3, 0.1f);
 
     CheckBox renderRealPlayerPosition = new CheckBox("Render Real Player Position", this);
-
     Mode render = new Mode("Render", this, renderRealPlayerPosition::isToggled)
             .addModes("Player", "HitBox", "Box")
             .setMode("Player");
@@ -45,7 +42,6 @@ public class TimerRange extends Module {
     BooleanSupplier renderBox = () -> (render.getMode().equalsIgnoreCase("Box") || render.getMode().equalsIgnoreCase("HitBox")) && renderRealPlayerPosition.isToggled();
 
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
-
     FloatSetting lineWidth = new FloatSetting("Line Width", this, () -> renderRealPlayerPosition.isToggled() && renderBox.getAsBoolean(), 0, 5f, 1, 0.1f);
 
     boolean teleporting = false, click = false;

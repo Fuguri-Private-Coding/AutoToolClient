@@ -6,7 +6,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.combat.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.move.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.connection.*;
+import fuguriprivatecoding.autotoolrecode.module.impl.connect.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.exploit.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.*;

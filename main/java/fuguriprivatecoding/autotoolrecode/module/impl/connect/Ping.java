@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.module.impl.connection;
+package fuguriprivatecoding.autotoolrecode.module.impl.connect;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
@@ -97,9 +97,7 @@ public class Ping extends Module {
         if (mc.isIntegratedServerRunning()) return;
         long currentTime = System.currentTimeMillis();
         switch (event) {
-            case ChangeSprintEvent _ -> {
-                if (actions.get("ChangeSprint")) reset(changeSprintTimeCondition.getValue());
-            }
+            case ChangeSprintEvent _ when actions.get("ChangeSprint") -> reset(changeSprintTimeCondition.getValue());
 
             case PacketEvent e -> {
                 if (currentTime - lastResetTime < delayBeforeNextLag) {
@@ -107,7 +105,7 @@ public class Ping extends Module {
                     break;
                 }
 
-                Packet<?> packet = e.getPacket();
+                Packet packet = e.getPacket();
 
                 switch (packet) {
                     case C01PacketChatMessage _ -> reset(50);
@@ -162,11 +160,7 @@ public class Ping extends Module {
                 currentPos = posBuffer.isEmpty() ? mc.thePlayer.getPositionVector() : posBuffer.getFirst().pos();
             }
 
-            case Render3DEvent _ -> {
-                if (mc.gameSettings.thirdPersonView == 0 || lastPos == null || currentPos == null || renderModes.getMode().equalsIgnoreCase("OFF")) {
-                    break;
-                }
-
+            case Render3DEvent _ when !(mc.gameSettings.thirdPersonView == 0 || lastPos == null || currentPos == null || renderModes.getMode().equalsIgnoreCase("OFF")) -> {
                 EntityPlayerSP player = mc.thePlayer;
 
                 double x = lastPos.xCoord + (currentPos.xCoord - lastPos.xCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
@@ -240,6 +234,6 @@ public class Ping extends Module {
         }
     }
 
-    private record PacketWithTime(Packet<?> packet, long time) {}
+    private record PacketWithTime(Packet packet, long time) {}
     private record VecWithTime(Vec3 pos, long time) {}
 }

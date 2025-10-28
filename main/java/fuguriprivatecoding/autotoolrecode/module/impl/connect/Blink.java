@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.module.impl.connection;
+package fuguriprivatecoding.autotoolrecode.module.impl.connect;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -19,7 +18,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.Vec3;
-import java.awt.*;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
@@ -38,7 +37,6 @@ public class Blink extends Module {
     BooleanSupplier renderBox = () -> (renderModes.getMode().equalsIgnoreCase("HitBox"));
 
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
-
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f,5f,1f,0.1f);
 
     private final List<Packet> buffer = new CopyOnWriteArrayList<>();
@@ -91,14 +89,10 @@ public class Blink extends Module {
 
             switch (renderModes.getMode()) {
                 case "HitBox" -> {
-                    Color fadeColor = color.isFade() ?
-                            ColorUtils.fadeColor(color.getColor(), color.getFadeColor(), color.getSpeed())
-                            : color.getColor();
-
                     RenderUtils.start3D();
                     Vec3 smoothPos = new Vec3(x,y,z);
                     Vec3 diff = smoothPos.subtract(player.getPositionVector());
-                    RenderUtils.drawHitBox(player.getEntityBoundingBox().offset(diff), fadeColor, lineWidth.getValue());
+                    RenderUtils.drawHitBox(player.getEntityBoundingBox().offset(diff), color.getFadedColor(), lineWidth.getValue());
                     RenderUtils.stop3D();
                 }
 
