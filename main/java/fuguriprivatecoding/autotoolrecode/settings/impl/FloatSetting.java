@@ -1,10 +1,9 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 
@@ -60,12 +59,16 @@ public class FloatSetting extends Setting {
     }
 
     @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        float[] v = new float[] {value};
-        if (ImGui.sliderFloat(getName(), v, min, max)) {
-            setValue(v[0]);
-        }
-        ImGui.popID();
+    public JsonObject getObject() {
+        JsonObject object = new JsonObject();
+
+        object.addProperty("value", value);
+
+        return object;
+    }
+
+    @Override
+    public void setObject(JsonObject object) {
+        value = object.get("value").getAsFloat();
     }
 }

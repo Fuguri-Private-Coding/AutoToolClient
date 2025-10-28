@@ -1,13 +1,12 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import org.lwjgl.util.vector.Vector4f;
-
 import java.awt.*;
 import java.util.function.BooleanSupplier;
 
@@ -130,18 +129,6 @@ public class ColorSetting extends Setting {
         return ColorUtils.fadeColor(getColor(), getColor(), getSpeed());
     }
 
-    public Color getRainbowColor(int i) {
-        float alpha = ColorUtils.fadeColor(getColor(), isFade() ? getFadeColor() : getColor(), speed).getAlpha();
-
-        return ColorUtils.rainbow(speed, offset, i, alpha);
-    }
-
-    public Color getRainbowColor() {
-        float alpha = ColorUtils.fadeColor(getColor(), isFade() ? getFadeColor() : getColor(), speed).getAlpha();
-
-        return ColorUtils.rainbow(1f, alpha);
-    }
-
     public Color getFadedFloatColor() {
         Color mixedColor = isFade() ? ColorUtils.fadeColor(getColor(), getFadeColor(), getSpeed()) : ColorUtils.fadeColor(getColor(), getColor(), getSpeed());
         return new Color(mixedColor.getRed() / 255f, mixedColor.getGreen() / 255f, mixedColor.getBlue() / 255f, mixedColor.getAlpha() / 255f);
@@ -160,42 +147,6 @@ public class ColorSetting extends Setting {
     public Color getFadeColor() {
         if (isFade()) return new Color(fadeRed, fadeGreen, fadeBlue, fadeAlpha);
         return new Color(red, green, blue, alpha);
-    }
-
-    public void toggleFade() {
-        this.fade = !this.fade;
-    }
-
-    public int getRedInt() {
-        return (int)(red * 255);
-    }
-
-    public int getGreenInt() {
-        return (int)(green * 255);
-    }
-
-    public int getBlueInt() {
-        return (int)(blue * 255);
-    }
-
-    public int getAlphaInt() {
-        return (int)(alpha * 255);
-    }
-
-    public int getFadeRedInt() {
-        return (int)(fadeRed * 255);
-    }
-
-    public int getFadeGreenInt() {
-        return (int)(fadeGreen * 255);
-    }
-
-    public int getFadeBlueInt() {
-        return (int)(fadeBlue * 255);
-    }
-
-    public int getFadeAlphaInt() {
-        return (int)(fadeAlpha * 255);
     }
 
     public void updateAnimation() {
@@ -220,103 +171,35 @@ public class ColorSetting extends Setting {
         this.alpha = color.getAlpha() / 255.0f;
     }
 
-    public void setFadeColor(Color color) {
-        this.fadeRed = color.getRed() / 255.0f;
-        this.fadeGreen = color.getGreen() / 255.0f;
-        this.fadeBlue = color.getBlue() / 255.0f;
-        this.fadeAlpha = color.getAlpha() / 255.0f;
-    }
-
-    public void copyToFade() {
-        this.fadeRed = this.red;
-        this.fadeGreen = this.green;
-        this.fadeBlue = this.blue;
-        this.fadeAlpha = this.alpha;
-    }
-
-    public void copyFromFade() {
-        this.red = this.fadeRed;
-        this.green = this.fadeGreen;
-        this.blue = this.fadeBlue;
-        this.alpha = this.fadeAlpha;
-    }
-
-    public void resetFade() {
-        this.fadeRed = this.red;
-        this.fadeGreen = this.green;
-        this.fadeBlue = this.blue;
-        this.fadeAlpha = this.alpha;
-        this.offset = 0.5f;
-        this.speed = 1.0f;
+    @Override
+    public JsonObject getObject() {
+        JsonObject object = new JsonObject();
+        object.addProperty("red", red);
+        object.addProperty("green", green);
+        object.addProperty("blue", blue);
+        object.addProperty("alpha", alpha);
+        object.addProperty("fadeRed", fadeRed);
+        object.addProperty("fadeGreen", fadeGreen);
+        object.addProperty("fadeBlue", fadeBlue);
+        object.addProperty("fadeAlpha", fadeAlpha);
+        object.addProperty("fade", fade);
+        object.addProperty("fadeSpeed", speed);
+        object.addProperty("fadeOffset", offset);
+        return object;
     }
 
     @Override
-    public void render() {
-        if (ImGui.collapsingHeader(getName())) {
-            ImGui.pushID(hashCode());
-            ImGui.indent();
-            ImGui.separator();
-
-
-            if (ImGui.checkbox("Fade", fade)) {
-                fade = !fade;
-            }
-
-            float[] color = new float[] { red, green, blue, alpha };
-            float[] color2 = new float[] { fadeRed, fadeGreen, fadeBlue, fadeAlpha };
-
-            if (ImGui.colorEdit4("First color", color)) {
-                red = color[0];
-                green = color[1];
-                blue = color[2];
-                alpha = color[3];
-            }
-
-            if (fade) {
-                if (ImGui.colorEdit4("Second color", color2)) {
-                    fadeRed = color2[0];
-                    fadeGreen = color2[1];
-                    fadeBlue = color2[2];
-                    fadeAlpha = color2[3];
-                }
-
-                float[] speedV = new float[] { speed };
-                if (ImGui.sliderFloat("Speed: ", speedV, 0, 20, "%.1f")) {
-                    speed = speedV[0];
-                }
-
-                float[] offsetV = new float[] { offset };
-                if (ImGui.sliderFloat("Offset: ", offsetV, 0, 20, "%.1f")) {
-                    offset = offsetV[0];
-                }
-            }
-            ImGui.unindent();
-            ImGui.popID();
-        }
-    }
-
-    private float currentOffsetY = 0f;
-    private float targetOffsetY = 0f;
-    private final float slideAnimationSpeed = 0.2f;
-    private boolean isSliding = false;
-
-    public void updateSlideAnimation() {
-        if (isSliding) {
-            currentOffsetY += (targetOffsetY - currentOffsetY) * slideAnimationSpeed;
-
-            if (Math.abs(targetOffsetY - currentOffsetY) < 0.5f) {
-                currentOffsetY = targetOffsetY;
-                isSliding = false;
-            }
-        }
-    }
-
-    public void setTargetSlideOffset(float offset) {
-        this.targetOffsetY = offset;
-        this.isSliding = true;
-    }
-
-    public float getSlideOffset() {
-        return currentOffsetY;
+    public void setObject(JsonObject object) {
+        red = object.get("red").getAsFloat();
+        green = object.get("green").getAsFloat();
+        blue = object.get("blue").getAsFloat();
+        alpha = object.get("alpha").getAsFloat();
+        fadeRed = object.get("fadeRed").getAsFloat();
+        fadeGreen = object.get("fadeGreen").getAsFloat();
+        fadeBlue = object.get("fadeBlue").getAsFloat();
+        fadeAlpha = object.get("fadeAlpha").getAsFloat();
+        fade = object.get("fade").getAsBoolean();
+        speed = object.get("fadeSpeed").getAsFloat();
+        offset = object.get("fadeOffset").getAsFloat();
     }
 }

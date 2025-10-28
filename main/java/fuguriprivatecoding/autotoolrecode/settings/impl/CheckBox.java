@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import imgui.ImGui;
@@ -51,12 +52,15 @@ public class CheckBox extends Setting {
 		}
 	}
 
-	@Override
-	public void render() {
-		ImGui.pushID(hashCode());
-		if (ImGui.checkbox(getName(), toggled)) {
-			toggled = !toggled;
-		}
-		ImGui.popID();
-	}
+    @Override
+    public JsonObject getObject() {
+        JsonObject object = new JsonObject();
+        object.addProperty("toggled", toggled);
+        return object;
+    }
+
+    @Override
+    public void setObject(JsonObject object) {
+        toggled = object.get("toggled").getAsBoolean();
+    }
 }

@@ -1,12 +1,13 @@
 package fuguriprivatecoding.autotoolrecode.settings;
 
+import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
 
 import java.util.function.BooleanSupplier;
 
-public class Setting implements ISetting {
+public abstract class Setting implements ISetting {
 	final String name;
 	BooleanSupplier visible;
 
@@ -23,10 +24,6 @@ public class Setting implements ISetting {
 		this.name = name;
 		this.visible = visible;
 		parent.addSetting(this);
-	}
-
-	public void render() {
-
 	}
 
 	@Override
@@ -48,4 +45,7 @@ public class Setting implements ISetting {
 	public boolean isVisible() {
 		return visible.getAsBoolean();
 	}
+
+    public abstract JsonObject getObject();
+    public abstract void setObject(JsonObject object);
 }

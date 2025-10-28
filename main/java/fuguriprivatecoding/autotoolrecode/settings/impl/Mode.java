@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import imgui.ImGui;
@@ -24,8 +25,8 @@ public class Mode extends Setting {
 
     private final Map<String, Float> modeProgress = new HashMap<>();
     private final float animationSpeed = 0.15f;
-    private Color selectedColor = new Color(76, 175, 80); // Зеленый для выбранного
-    private Color unselectedColor = new Color(150, 150, 150); // Серый для невыбранного
+    private Color selectedColor = new Color(76, 175, 80);
+    private Color unselectedColor = new Color(150, 150, 150);
 
     public Mode(String name, SettingAble parent) {
         super(name, parent);
@@ -36,6 +37,20 @@ public class Mode extends Setting {
         super(name, parent);
         this.setVisible(visible);
         initAnimation();
+    }
+
+    @Override
+    public JsonObject getObject() {
+        JsonObject object = new JsonObject();
+
+        object.addProperty("mode", mode);
+
+        return object;
+    }
+
+    @Override
+    public void setObject(JsonObject object) {
+        setMode(object.get("mode").getAsString());
     }
 
     private void initAnimation() {
@@ -88,18 +103,5 @@ public class Mode extends Setting {
 
     public boolean is(String mode) {
         return this.mode.equalsIgnoreCase(mode);
-    }
-
-    @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        ImGui.text(getName());
-        ImGui.sameLine();
-
-        ImInt index = new ImInt(modes.indexOf(mode));
-        if (ImGui.combo("", index, modes.toArray(String[]::new), 5)) {
-            mode = modes.get(index.get());
-        }
-        ImGui.popID();
     }
 }

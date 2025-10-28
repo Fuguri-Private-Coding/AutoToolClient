@@ -1,11 +1,10 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
-import org.lwjgl.input.Keyboard;
 
 import java.util.function.BooleanSupplier;
 
@@ -28,25 +27,16 @@ public class KeyBind extends Setting {
     }
 
     @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        ImGui.text(getName());
-        ImGui.sameLine();
-        String keyName = Keyboard.getKeyName(key);
-        if (keyName == null) keyName = "UNKNOWN";
+    public JsonObject getObject() {
+        JsonObject object = new JsonObject();
 
-        if (listeningForKey) {
-            ImGui.text("[Press a key]"); // Индикатор ожидания
-            for (int i = 0; i < Keyboard.KEYBOARD_SIZE; i++) {
-                if (ImGui.isKeyPressed(i)) {
-                    key = i;
-                    listeningForKey = false;
-                    break;
-                }
-            }
-        } else if (ImGui.button(keyName)) {
-            listeningForKey = true;
-        }
-        ImGui.popID();
+        object.addProperty("key", key);
+
+        return object;
+    }
+
+    @Override
+    public void setObject(JsonObject object) {
+        key = object.get("ket").getAsInt();
     }
 }

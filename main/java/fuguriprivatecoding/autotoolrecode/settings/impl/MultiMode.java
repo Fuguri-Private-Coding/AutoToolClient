@@ -1,17 +1,13 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
-import imgui.ImGui;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.doubles.Doubles;
 import lombok.Setter;
-
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.HashMap;
@@ -37,6 +33,24 @@ public class MultiMode extends Setting {
         super(name, parent);
         setVisible(visible);
         values = new CopyOnWriteArrayList<>();
+    }
+
+    @Override
+    public JsonObject getObject() {
+        JsonObject object = new JsonObject();
+
+        for (Doubles<String, Boolean> value : values) {
+            object.addProperty(value.getFirst(), value.getSecond());
+        }
+
+        return object;
+    }
+
+    @Override
+    public void setObject(JsonObject object) {
+        for (Doubles<String, Boolean> value : values) {
+            value.setSecond(object.get(value.getFirst()).getAsBoolean());
+        }
     }
 
     public MultiMode add(String name, boolean value) {
@@ -109,43 +123,5 @@ public class MultiMode extends Setting {
 
     public Color getModeColor(Doubles<String, Boolean> value) {
         return getModeColor(value.getFirst());
-    }
-
-    @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        ImGui.text(getName());
-        ImGui.sameLine();
-        if (ImGui.button("Select Modes")) { // Кнопка для открытия popup
-            ImGui.openPopup("multiModePopup");
-        }
-
-        if (ImGui.beginPopup("multiModePopup")) { // Popup с чекбоксами
-            for (Doubles<String, Boolean> mode : values) {
-                if (ImGui.checkbox(mode.getFirst(), mode.getSecond())) mode.setSecond(!mode.getSecond());
-            }
-            ImGui.endPopup();
-        }
-
-        StringBuilder current = new StringBuilder();
-
-        List<Doubles<String, Boolean>> toggledModes = new ArrayList<>();
-
-        for (Doubles<String, Boolean> mode : values) {
-            if (mode.getSecond()) {
-                toggledModes.add(mode);
-            }
-        }
-
-        for (Doubles<String, Boolean> toggledMode : toggledModes) {
-            current.append(toggledMode.getFirst());
-            if (toggledMode != toggledModes.getLast()) {
-                current.append(", ");
-            }
-        }
-
-        ImGui.sameLine();
-        ImGui.text(current.toString());
-        ImGui.popID();
     }
 }

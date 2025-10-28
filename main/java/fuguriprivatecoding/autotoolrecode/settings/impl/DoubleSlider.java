@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
+import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
@@ -87,22 +88,18 @@ public class DoubleSlider extends Setting {
     }
 
     @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        float[] minV = new float[] { (float) minValue };
-        float[] maxV = new float[] { (float) maxValue };
+    public JsonObject getObject() {
+        JsonObject object = new JsonObject();
 
-        if (ImGui.collapsingHeader(getName())) {
-            ImGui.indent();
-            if (ImGui.sliderFloat("Min", minV, (float) min, (float) max)) {
-                setMinValue(minV[0]);
-            }
-            if (ImGui.sliderFloat("Max", maxV, (float) min, (float) max)) {
-                setMaxValue(maxV[0]);
-            }
-            ImGui.unindent();
-        }
+        object.addProperty("min", minValue);
+        object.addProperty("max", maxValue);
 
-        ImGui.popID();
+        return object;
+    }
+
+    @Override
+    public void setObject(JsonObject object) {
+        minValue = object.get("min").getAsDouble();
+        maxValue = object.get("max").getAsDouble();
     }
 }
