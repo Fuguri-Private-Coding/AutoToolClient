@@ -136,6 +136,8 @@ public class RenderUtils implements Imports {
     public static void stop3DNameTag() {
         glDisable(GL_BLEND);
         glDisable(GL_LINE_SMOOTH);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_DEPTH_TEST);
 
         glPopAttrib();
 
