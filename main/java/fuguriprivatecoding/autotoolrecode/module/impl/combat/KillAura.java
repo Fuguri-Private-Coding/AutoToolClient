@@ -131,7 +131,7 @@ public class KillAura extends Module {
             if (event instanceof TickEvent) {
                 AxisAlignedBB box = getHitBox(target);
                 Rot needRotation = TimerRange.teleporting && teleportPredictFix.isToggled() ?
-                    RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f)) :
+                    RotUtils.getBestRotation(box.expand(0.1f,0f,0.1f)) :
                     switch (hitVec.getMode()) {
                     case "Best" -> RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f));
                     case "Nearest" -> RotUtils.getNearestRotations(lr, box);

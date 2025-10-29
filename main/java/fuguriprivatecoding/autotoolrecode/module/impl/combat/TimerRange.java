@@ -15,6 +15,7 @@ import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -75,7 +76,7 @@ public class TimerRange extends Module {
 
             if (target == null) return;
 
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, Rot.getServerRotation().getYaw());
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, RotUtils.getBestRotation(target).getYaw());
 
             pos = new Vec3(target.posX, target.posY, target.posZ);
             targetPos = new Vec3(target.newPosX, target.newPosY, target.newPosZ);
