@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
 import com.google.gson.JsonObject;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +14,9 @@ import java.util.function.BooleanSupplier;
 public class IntegerSetting extends Setting {
     public int min, max, value;
 
-    private float animatedValue;
-    private final float animationSpeed = 0.2f;
+    EasingAnimation sliderAnim = new EasingAnimation();
+
+    public float animatedValue;
 
     public IntegerSetting(String name, SettingAble parent, int min, int max, int value) {
         super(name, parent);
@@ -42,16 +44,6 @@ public class IntegerSetting extends Setting {
 
     public float getAnimatedNormalize() {
         return (animatedValue - min) / (max - min);
-    }
-
-    public void updateAnimation() {
-        animatedValue += (value - animatedValue) * animationSpeed;
-
-        if (Math.abs(value - animatedValue) < 0.1f) {
-            animatedValue = value;
-        }
-
-        animatedValue = Math.max(min, Math.min(max, animatedValue));
     }
 
     @Override

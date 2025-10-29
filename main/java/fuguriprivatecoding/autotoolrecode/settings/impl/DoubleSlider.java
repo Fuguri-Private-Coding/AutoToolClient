@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.settings.impl;
 
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.settings.Setting;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
@@ -17,9 +18,12 @@ public class DoubleSlider extends Setting {
     public double min, max, step;
     public double minValue, maxValue;
 
-    private double animatedValueMin;
-    private double animatedValueMax;
-    private final float animationSpeed = 0.2f;
+
+    EasingAnimation sliderMinAnim = new EasingAnimation();
+    EasingAnimation sliderMaxAnim = new EasingAnimation();
+
+    public double animatedValueMin;
+    public double animatedValueMax;
 
     public DoubleSlider(String name, SettingAble parent, double min, double max, double value, double step) {
         super(name, parent);
@@ -66,24 +70,6 @@ public class DoubleSlider extends Setting {
 
     public double getRandomizedDoubleValue() {
         return RandomUtils.nextDouble(minValue, maxValue);
-    }
-
-    public void updateAnimations() {
-        animatedValueMin += (minValue - animatedValueMin) * animationSpeed;
-
-        if (Math.abs(minValue - animatedValueMin) < 0.01f) {
-            animatedValueMin = minValue;
-        }
-
-        animatedValueMin = Math.max(min, Math.min(max, animatedValueMin));
-
-        animatedValueMax += (maxValue - animatedValueMax) * animationSpeed;
-
-        if (Math.abs(maxValue - animatedValueMax) < 0.01f) {
-            animatedValueMax = maxValue;
-        }
-
-        animatedValueMax = Math.max(min, Math.min(max, animatedValueMax));
     }
 
     @Override

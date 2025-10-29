@@ -352,8 +352,11 @@ public class ClickGuiScreen extends GuiScreen {
 					}
 
 					case CheckBox checkBox -> {
-						float toggleProgress = checkBox.getToggleProgress();
-						Color toggleColor = ColorUtils.interpolateColor(Color.RED, Color.GREEN.darker(), toggleProgress);
+                        EasingAnimation toggleAnim = checkBox.getToggleAnimation();
+                        toggleAnim.update(4f, Easing.OUT_CUBIC);
+                        toggleAnim.setEnd(checkBox.isToggled());
+
+						Color toggleColor = ColorUtils.interpolateColor(Color.RED, Color.GREEN.darker(), toggleAnim.getValue());
 
 						fontRenderer.drawString(
 								String.valueOf(checkBox.isToggled()),
@@ -361,12 +364,15 @@ public class ClickGuiScreen extends GuiScreen {
 								background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset,
 								toggleColor
 						);
-
-						checkBox.updateToggleAnimation();
 					}
 
 					case IntegerSetting integerSetting -> {
-						integerSetting.updateAnimation();
+                        EasingAnimation sliderAnim = integerSetting.getSliderAnim();
+
+                        sliderAnim.update(4f, Easing.OUT_CUBIC);
+                        sliderAnim.setEnd(integerSetting.value);
+
+                        integerSetting.setAnimatedValue(sliderAnim.getValue());
 
 						float animatedFilledFactor = integerSetting.getAnimatedNormalize();
 						final float length = 75;
@@ -393,9 +399,14 @@ public class ClickGuiScreen extends GuiScreen {
 					}
 
 					case FloatSetting floatSetting -> {
-						floatSetting.updateAnimation();
+                        EasingAnimation sliderAnim = floatSetting.getSliderAnim();
 
-						float animatedFilledFactor = floatSetting.getAnimatedNormalize();
+                        sliderAnim.update(4f, Easing.OUT_CUBIC);
+                        sliderAnim.setEnd(floatSetting.value);
+
+                        floatSetting.setAnimatedValue(sliderAnim.getValue());
+
+                        float animatedFilledFactor = floatSetting.getAnimatedNormalize();
 						final float length = 75;
 						final float sliderLength = animatedFilledFactor * length;
 
@@ -420,9 +431,21 @@ public class ClickGuiScreen extends GuiScreen {
 					}
 
 					case DoubleSlider doubleSlider -> {
-						doubleSlider.updateAnimations();
+                        EasingAnimation sliderMinAnim = doubleSlider.getSliderMinAnim();
 
-						double animatedFilledFactorMin = doubleSlider.getAnimatedNormalizeMin();
+                        sliderMinAnim.update(4f, Easing.OUT_CUBIC);
+                        sliderMinAnim.setEnd((float) doubleSlider.minValue);
+
+                        doubleSlider.setAnimatedValueMin(sliderMinAnim.getValue());
+
+                        EasingAnimation sliderMaxAnim = doubleSlider.getSliderMaxAnim();
+
+                        sliderMaxAnim.update(4f, Easing.OUT_CUBIC);
+                        sliderMaxAnim.setEnd((float) doubleSlider.maxValue);
+
+                        doubleSlider.setAnimatedValueMax(sliderMaxAnim.getValue());
+
+                        double animatedFilledFactorMin = doubleSlider.getAnimatedNormalizeMin();
 						double animatedFilledFactorMax = doubleSlider.getAnimatedNormalizeMax();
 						final float length = 75;
 						final float minSliderLength = (float) (animatedFilledFactorMin * length);
