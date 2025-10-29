@@ -37,6 +37,6 @@ public class KeyBind extends Setting {
 
     @Override
     public void setObject(JsonObject object) {
-        key = object.get("ket").getAsInt();
+        key = object.get("key").getAsInt();
     }
 }

@@ -180,7 +180,10 @@ public class Scaffold extends Module {
 
         if (event instanceof SprintEvent) {
             switch (sprintMode.getMode()) {
-                case "AllDirection" -> mc.thePlayer.setSprinting(true);
+                case "AllDirection" -> {
+                    if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.isSneaking())
+                        mc.thePlayer.setSprinting(true);
+                }
                 case "None" -> mc.thePlayer.setSprinting(false);
             }
         }

@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.guis.altmanager;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.alt.Account;
+import fuguriprivatecoding.autotoolrecode.alt.AccountManager;
 import fuguriprivatecoding.autotoolrecode.alt.microsoft.Auth;
 import fuguriprivatecoding.autotoolrecode.alt.microsoft.MicrosoftAuthCallback;
 import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
@@ -62,7 +63,7 @@ public class AltManagerGuiScreen extends GuiScreen {
     public void initGui() {
         super.initGui();
         ScaledResolution sc = new ScaledResolution(mc);
-        Client.INST.getConfigManager().loadAccounts();
+        AccountManager.loadAccounts();
         altManagerGuiText = new AltManagerGuiText(0, mc.fontRendererObj, 75, sc.getScaledHeight() - 100, 100, 20);
         buttonList.add(new GuiClientButton(1, 75,  sc.getScaledHeight() - 75, 100, 20, "Login"));
         buttonList.add(new GuiClientButton(2, 75, sc.getScaledHeight() - 50, 100, 20, "Delete"));
@@ -371,7 +372,7 @@ public class AltManagerGuiScreen extends GuiScreen {
         altManagerGuiText.textboxKeyTyped(typedChar, keyCode);
 
         if (keyCode == Keyboard.KEY_ESCAPE) {
-            Client.INST.getConfigManager().saveAccounts();
+            AccountManager.saveAccounts();
             selectedAccount = null;
         }
     }

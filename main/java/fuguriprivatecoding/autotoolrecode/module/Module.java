@@ -23,7 +23,6 @@ public class Module implements Imports, SettingAble {
 	@Getter boolean toggled;
 	@Getter final List<Setting> settings;
 	@Getter @Setter boolean hide = annotation.hide();
-	@Getter @Setter boolean loadFromConfig = annotation.loadFromConfig();
 	@Getter String description = annotation.description();
 
 	@Getter @Setter long hoverStartTime;

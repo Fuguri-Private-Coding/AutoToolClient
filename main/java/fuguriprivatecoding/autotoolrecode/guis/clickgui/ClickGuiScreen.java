@@ -277,7 +277,6 @@ public class ClickGuiScreen extends GuiScreen {
 			ScissorUtils.scissor(sc, background.x + verticalLineXOffset + 4, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT, sizeBackground.x - verticalLineXOffset - 4, fontRenderer.FONT_HEIGHT + 2);
 			fontRenderer.drawString("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey())), background.x + verticalLineXOffset + 5, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, CATEGORY_COLOR);
 			fontRenderer.drawString("Hide: " + selectedModule.isHide(), background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()), background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, CATEGORY_COLOR);
-			fontRenderer.drawString("LoadFromConfig: " + selectedModule.isLoadFromConfig(), background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()) - fontRenderer.getStringWidth("LoadFromConfig: " + selectedModule.isLoadFromConfig()) - 5, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 6, CATEGORY_COLOR);
 			ScissorUtils.disableScissor();
 
 			ScissorUtils.enableScissor();
@@ -782,7 +781,6 @@ public class ClickGuiScreen extends GuiScreen {
 		if (clickedCategory != null && clickedCategoryPos.x != 0 && clickedCategoryPos.y != 0) {
 			boolean clickRectangle = mouseX > clickedCategoryPos.x - 5 && mouseX < clickedCategoryPos.x + 110 && mouseY > clickedCategoryPos.y - 5 && mouseY < clickedCategoryPos.y + 58;
 			boolean clickHideCategory = mouseX > clickedCategoryPos.x + 3 && mouseX < clickedCategoryPos.x + 3 + fontRenderer.getStringWidth("HideCategory") && mouseY > clickedCategoryPos.y + 3 && mouseY < clickedCategoryPos.y + 3 + fontRenderer.FONT_HEIGHT;
-			boolean clickLoadFromConfig = mouseX > clickedCategoryPos.x + 3 && mouseX < clickedCategoryPos.x + 3 + fontRenderer.getStringWidth("LoadFromConfig") && mouseY > clickedCategoryPos.y + 13 && mouseY < clickedCategoryPos.y + 13 + fontRenderer.FONT_HEIGHT;
 			boolean clickImportCategory = mouseX > clickedCategoryPos.x + 3 && mouseX < clickedCategoryPos.x + 3 + fontRenderer.getStringWidth("Import") && mouseY > clickedCategoryPos.y + 23 && mouseY < clickedCategoryPos.y + 23 + fontRenderer.FONT_HEIGHT;
 			boolean clickExportFromConfig = mouseX > clickedCategoryPos.x + 3 && mouseX < clickedCategoryPos.x + 3 + fontRenderer.getStringWidth("Export") && mouseY > clickedCategoryPos.y + 33 && mouseY < clickedCategoryPos.y + 33 + fontRenderer.FONT_HEIGHT;
 
@@ -790,10 +788,9 @@ public class ClickGuiScreen extends GuiScreen {
 				List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModuleManager().getModulesByCategory(clickedCategory));
 				for (Module module : moduleList) {
 					if (clickHideCategory) module.setHide(!module.isHide());
-					if (clickLoadFromConfig) module.setLoadFromConfig(!module.isLoadFromConfig());
 				}
-				if (clickImportCategory) Client.INST.getConfigManager().importSettingsInCategory(clickedCategory);
-				if (clickExportFromConfig) Client.INST.getConfigManager().exportSettingsInCategory(clickedCategory);
+				if (clickImportCategory) Client.INST.getConfigManager().importSettings(clickedCategory);
+				if (clickExportFromConfig) Client.INST.getConfigManager().exportSettings(clickedCategory);
 			} else {
 				clickedCategoryPos.set(0,0);
 				clickedCategory = null;
@@ -807,8 +804,8 @@ public class ClickGuiScreen extends GuiScreen {
 			boolean clickHide = mouseX > clickedCategoryPos.x + 3 && mouseX < clickedModulePos.x + 3 + fontRenderer.getStringWidth("Hide") && mouseY > clickedModulePos.y + 23 && mouseY < clickedModulePos.y + 23 + fontRenderer.FONT_HEIGHT;
 
 			if (clickRectangle) {
-				if (clickImport) Client.INST.getConfigManager().importSettingsInModule(clickedModule);
-				if (clickExport) Client.INST.getConfigManager().exportSettingsInModule(clickedModule);
+				if (clickImport) Client.INST.getConfigManager().importSettings(clickedModule);
+				if (clickExport) Client.INST.getConfigManager().exportSettings(clickedModule);
 				if (clickHide) selectedModule.setHide(!selectedModule.isHide());
 			} else {
 				clickedModulePos.set(0,0);
@@ -898,10 +895,9 @@ public class ClickGuiScreen extends GuiScreen {
 		if (selectedModule != null) {
 			boolean bind = mouseX > background.x + verticalLineXOffset + 5 && mouseX < background.x + verticalLineXOffset + 5 + fontRenderer.getStringWidth("Keybind: " + (binding ? "▬" : Keyboard.getKeyName(selectedModule.getKey()))) && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9;
 			boolean hide = mouseX > background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()) && mouseX < background.x + sizeBackground.x - 5 && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9;
-			boolean loadFromConfig = mouseX > background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()) - fontRenderer.getStringWidth("LoadFromConfig: " + selectedModule.isLoadFromConfig()) - 5 && mouseX < background.x + sizeBackground.x - 5 - fontRenderer.getStringWidth("Hide: " + selectedModule.isHide()) - fontRenderer.getStringWidth("LoadFromConfig: " + selectedModule.isLoadFromConfig()) - 5 + fontRenderer.getStringWidth("LoadFromConfig: " + selectedModule.isLoadFromConfig()) && mouseY > background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 && mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 6 + 9;
+
 			if (bind) binding = true;
 			if (hide) selectedModule.setHide(!selectedModule.isHide());
-			if (loadFromConfig) selectedModule.setLoadFromConfig(!selectedModule.isLoadFromConfig());
 
 			for (Setting setting : selectedModule.getSettings()) {
 				if (!setting.isVisible())

@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode;
 
+import fuguriprivatecoding.autotoolrecode.alt.AccountManager;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.*;
 import fuguriprivatecoding.autotoolrecode.guis.config.*;
 import fuguriprivatecoding.autotoolrecode.config.*;
@@ -113,6 +114,8 @@ public enum Client implements Imports {
 		configManager.init();
 		configManager.loadBinds();
 
+        AccountManager.init();
+
 		generator = new NameGenerator("names.txt");
 
 		altManagerGui = new AltManagerGuiScreen();
@@ -138,7 +141,6 @@ public enum Client implements Imports {
 		discord.startRPC();
 
 		configManager.loadConfig(configManager.getDefaultConfig());
-		configManager.loadModulesFromConfig();
 
 		starting = false;
 
@@ -156,7 +158,6 @@ public enum Client implements Imports {
 	}
 
 	public void onClose() {
-		configManager.saveModulesFromConfig();
 		configManager.saveConfig(configManager.getDefaultConfig());
 		configManager.saveBinds();
         irc.disconnectClient();
