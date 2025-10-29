@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
@@ -44,7 +45,7 @@ public class TimerRange extends Module {
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
     FloatSetting lineWidth = new FloatSetting("Line Width", this, () -> renderRealPlayerPosition.isToggled() && renderBox.getAsBoolean(), 0, 5f, 1, 0.1f);
 
-    boolean teleporting = false, click = false;
+    public static boolean teleporting = false, click = false;
     int teleportTicks, posRotIncrement = 0;
 
     public static int balance = 0;
@@ -89,7 +90,7 @@ public class TimerRange extends Module {
 
                 AxisAlignedBB targetBox = getFixedCashedBB(target, newPos, position);
 
-                boolean skipTickDistance = DistanceUtils.getDistance(simulatedPlayer, targetBox) > minDistanceToSkipTick.getValue();
+                boolean skipTickDistance = DistanceUtils.getDistance(simulatedPlayer, targetBox.expand(0.1f,0.1f,0.1f)) > minDistanceToSkipTick.getValue();
 
                 if (skipTickDistance) {
                     simulatedPlayer.tick();
@@ -107,10 +108,10 @@ public class TimerRange extends Module {
                     mc.runTick();
                     balance++;
                     if (i == teleportTicks - 1) {
+                        click = true;
                         balance += additionalTicks.getValue();
                     }
                     if (RayCastUtils.rayCast(3.0, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
-                        click = true;
                         break;
                     }
                 } catch (Exception ignored) {}

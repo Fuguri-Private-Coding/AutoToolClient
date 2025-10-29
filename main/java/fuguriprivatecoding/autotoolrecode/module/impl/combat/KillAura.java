@@ -26,10 +26,8 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
+
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, description = "Автоматически целится и бьет противника.")
@@ -58,6 +56,8 @@ public class KillAura extends Module {
     DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0, 180, 90, 1);
 
     final CheckBox gcd = new CheckBox("GCD (FIX)", this);
+
+    final CheckBox teleportPredictFix = new CheckBox("Teleport Predict Fix", this);
 
     final Mode smoothMode = new Mode("SmoothMode", this)
         .addModes("Linear")
@@ -130,7 +130,9 @@ public class KillAura extends Module {
 
             if (event instanceof TickEvent) {
                 AxisAlignedBB box = getHitBox(target);
-                Rot needRotation = switch (hitVec.getMode()) {
+                Rot needRotation = TimerRange.teleporting && teleportPredictFix.isToggled() ?
+                    RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f)) :
+                    switch (hitVec.getMode()) {
                     case "Best" -> RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f));
                     case "Nearest" -> RotUtils.getNearestRotations(lr, box);
                     case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
@@ -143,14 +145,16 @@ public class KillAura extends Module {
                 Rot delta = RotUtils.getDelta(lr, needRotation);
 
                 Rot speed = new Rot(
-                    yawSpeed.getRandomizedIntValue(),
-                    pitchSpeed.getRandomizedIntValue()
+                    TimerRange.teleporting && teleportPredictFix.isToggled() ? 180 : yawSpeed.getRandomizedIntValue(),
+                    TimerRange.teleporting && teleportPredictFix.isToggled() ? 180 : pitchSpeed.getRandomizedIntValue()
                 );
 
                 RotUtils.limitDelta(delta, speed);
 
                 switch (smoothMode.getMode()) {
                     case "Linear" -> {
+                        if (TimerRange.teleporting && teleportPredictFix.isToggled()) break;
+
                         if (reactionTimeWithAnimation.isToggled() && RayCastUtils.rayCast(3, 3, Rot.getServerRotation()).typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
                             interpolation.setDuration(rotationDuration.getValue());
                             interpolation.setEasing(Easing.IN_OUT_BACK);
@@ -184,8 +188,10 @@ public class KillAura extends Module {
 
                 RotUtils.limitDelta(delta, speed);
 
-                delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
-                delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
+                if (!TimerRange.teleporting) {
+                    delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
+                    delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
+                }
 
                 lastDelta = new Rot(delta.getYaw(), delta.getPitch());
 
@@ -236,8 +242,8 @@ public class KillAura extends Module {
     private AxisAlignedBB getHitBox(EntityLivingBase target) {
         AxisAlignedBB box = target.getEntityBoundingBox();
 
-        double horizontalPercent = horizontalHitBoxSize.getValue() / 200d;
-        double verticalPercent = verticalHitBoxSize.getValue() / 200d;
+        double horizontalPercent = (TimerRange.teleporting && teleportPredictFix.isToggled() ? 100 : horizontalHitBoxSize.getValue()) / 200d;
+        double verticalPercent = (TimerRange.teleporting && teleportPredictFix.isToggled() ? 100 : verticalHitBoxSize.getValue()) / 200d;
 
         Vec3 center = new Vec3(
             (box.maxX + box.minX) / 2,

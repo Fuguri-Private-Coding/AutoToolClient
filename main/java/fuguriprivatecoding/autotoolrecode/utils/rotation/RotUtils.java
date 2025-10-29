@@ -26,6 +26,10 @@ public class RotUtils implements Imports {
 		return bb.clampVecToInside(eyes);
 	}
 
+    public static Vec3 getBestHitVec(AxisAlignedBB bb, Vec3 eye) {
+        return bb.clampVecToInside(eye);
+    }
+
 	public static float[] faceTrajectory(Entity target, boolean predict, float predictSize, float gravity, float velocity) {
 		double posX = target.posX + (predict ? (target.posX - target.prevPosX) * predictSize : 0.0) - (mc.thePlayer.posX + (predict ? mc.thePlayer.posX - mc.thePlayer.prevPosX : 0.0));
 		double posY = target.getEntityBoundingBox().minY + (predict ? (target.getEntityBoundingBox().minY - target.prevPosY) * predictSize : 0.0) + target.getEyeHeight() - 0.15 - (mc.thePlayer.getEntityBoundingBox().minY + (predict ? mc.thePlayer.posY - mc.thePlayer.prevPosY : 0.0)) - mc.thePlayer.getEyeHeight();

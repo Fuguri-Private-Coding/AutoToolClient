@@ -26,7 +26,7 @@ import java.util.Map;
 @Getter
 public class ConfigManager implements Imports {
 
-    File configsDirectory, hotTextDirectory, bindsDirectory;
+    File configsDirectory, bindsDirectory;
     File bindFile, loadModulesFile, hotTextFile, accountFile;
     private List<Config> configs;
     Config defaultConfig;
@@ -35,13 +35,11 @@ public class ConfigManager implements Imports {
         configs = new ArrayList<>();
         configsDirectory = new File(Client.INST.getName() + "/configs");
         bindsDirectory = new File(Client.INST.getName() + "/binds");
-        hotTextDirectory = new File(Client.INST.getName() + "/hotkeys");
         defaultConfig = new Config("default");
         bindFile = new File(bindsDirectory, "binds.json");
-        hotTextFile = new File(hotTextDirectory, "hotkeys.json");
 
         try {
-            FileUtils.createDirectoriesIfNotExists(configsDirectory, bindsDirectory, hotTextDirectory);
+            FileUtils.createDirectoriesIfNotExists(configsDirectory, bindsDirectory);
         } catch (IOException e) {
             System.out.println("Failed create directories.");
         }
