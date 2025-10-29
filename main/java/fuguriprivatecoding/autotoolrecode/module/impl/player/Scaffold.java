@@ -7,12 +7,15 @@ import fuguriprivatecoding.autotoolrecode.managers.PlayerManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.EnumFacingOffset;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.RotationData;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtil;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
@@ -24,7 +27,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
+import org.joml.Vector2f;
 import org.lwjgl.input.Mouse;
 import java.util.*;
 import java.util.List;
@@ -110,6 +115,11 @@ public class Scaffold extends Module {
 
     RotationData closest;
 
+    private Vec3 targetBlock;
+
+    private BlockPos blockFace;
+    private EnumFacingOffset enumFacing;
+
     double lastDelta = 0;
     float lastPitch = 80;
 
@@ -145,11 +155,11 @@ public class Scaffold extends Module {
             legitPlace();
         }
 
-        if (event instanceof Render3DEvent && mouse.getBlockPos() != null && render.isToggled()) {
+        if (event instanceof Render3DEvent && blockFace != null && render.isToggled()) {
             RenderUtils.start3D();
 
-            if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(mouse.getBlockPos(), glowColor.getFadedFloatColor()));
-            RenderUtils.drawBlockESP(mouse.getBlockPos(), color.getFadedFloatColor());
+            if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(blockFace, glowColor.getFadedFloatColor()));
+            RenderUtils.drawBlockESP(blockFace, color.getFadedFloatColor());
 
             ColorUtils.resetColor();
             RenderUtils.stop3D();
@@ -233,7 +243,9 @@ public class Scaffold extends Module {
 
         if (mouse.sideHit == mouseOver.sideHit &&
                 mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
-                && getSameYValue(mouse) && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
+                && getSameYValue(mouse)
+                && mouse.getBlockPos().getX() == mouseOver.getBlockPos().getX() && mouse.getBlockPos().getZ() == mouseOver.getBlockPos().getZ()
+            && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
 
             if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
                 if (!removeSwing.get("On Client")) {
@@ -258,11 +270,15 @@ public class Scaffold extends Module {
     }
 
     void rotate() {
+        float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : mc.thePlayer.rotationYaw;
+        float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw + 180), 45);
+
+        boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.6) != Math.floor(mc.thePlayer.posX) ||
+            Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(roundedYaw)) * 0.3) != Math.floor(mc.thePlayer.posZ);
+
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (getTellyValue()) {
-                    float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : mc.thePlayer.rotationYaw;
-
                     rotation = new Rot(yaw, lastRotation.getPitch());
                 } else {
                     rotation = getBestRotation();
@@ -273,13 +289,6 @@ public class Scaffold extends Module {
                 if (getSafeValue()) {
                     rotation = getBestRotation();
                 } else {
-                    float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : mc.thePlayer.rotationYaw;
-
-                    float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw + 180), 45);
-
-                    boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.6) != Math.floor(mc.thePlayer.posX) ||
-                        Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(roundedYaw)) * 0.3) != Math.floor(mc.thePlayer.posZ);
-
                     MovingObjectPosition rightRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw + 45, getPitch(roundedYaw + 45, false)));
                     MovingObjectPosition leftRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw - 45, getPitch(roundedYaw - 45, false)));
 
@@ -380,7 +389,7 @@ public class Scaffold extends Module {
     }
 
     private Rot getBestRotation() {
-        float step = 2f;
+        float step = 5;
         List<RotationData> validRotations = new ArrayList<>();
 
         for (float i = 0; i < 360; i += step) {

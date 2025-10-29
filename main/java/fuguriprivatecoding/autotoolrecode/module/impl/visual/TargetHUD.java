@@ -83,7 +83,7 @@ public class TargetHUD extends Module {
         if (target == null || target.getSkin() == null || target.getName() == null) return;
 
         if (event instanceof Render2DEvent e) {
-            currentScale.update(5f, Easing.IN_OUT_QUINT);
+            currentScale.update(2, Easing.IN_OUT_BACK);
 
             ClientFontRenderer font = Fonts.fonts.get(fonts.getMode());
 
