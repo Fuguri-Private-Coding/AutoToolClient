@@ -30,6 +30,33 @@ public class RotUtils implements Imports {
         return bb.clampVecToInside(eye);
     }
 
+    public static Rot calculate(final Vector3d from, final Vector3d to) {
+        final Vector3d diff = to.subtract(from);
+        final double distance = Math.hypot(diff.x, diff.z);
+        final float yaw = (float) (MathHelper.atan2(diff.z, diff.x) * 180 / PI) - 90.0F;
+        final float pitch = (float) (-(MathHelper.atan2(diff.y, distance) * 180 / PI));
+        return new Rot(yaw, pitch);
+    }
+
+    public Rot calculate(final Vec3 to, final EnumFacing enumFacing) {
+        return calculate(new Vector3d(to.xCoord, to.yCoord, to.zCoord), enumFacing);
+    }
+
+    public static Rot calculate(final Vector3d to) {
+        return calculate(mc.thePlayer.getCustomPositionVector().add(0, mc.thePlayer.getEyeHeight(), 0), to);
+    }
+
+    public static Rot calculate(final Vector3d position, final EnumFacing enumFacing) {
+        double x = position.x + 0.5D;
+        double y = position.y + 0.5D;
+        double z = position.z + 0.5D;
+
+        x += (double) enumFacing.getDirectionVec().getX() * 0.5D;
+        y += (double) enumFacing.getDirectionVec().getY() * 0.5D;
+        z += (double) enumFacing.getDirectionVec().getZ() * 0.5D;
+        return calculate(new Vector3d(x, y, z));
+    }
+
 	public static float[] faceTrajectory(Entity target, boolean predict, float predictSize, float gravity, float velocity) {
 		double posX = target.posX + (predict ? (target.posX - target.prevPosX) * predictSize : 0.0) - (mc.thePlayer.posX + (predict ? mc.thePlayer.posX - mc.thePlayer.prevPosX : 0.0));
 		double posY = target.getEntityBoundingBox().minY + (predict ? (target.getEntityBoundingBox().minY - target.prevPosY) * predictSize : 0.0) + target.getEyeHeight() - 0.15 - (mc.thePlayer.getEntityBoundingBox().minY + (predict ? mc.thePlayer.posY - mc.thePlayer.prevPosY : 0.0)) - mc.thePlayer.getEyeHeight();

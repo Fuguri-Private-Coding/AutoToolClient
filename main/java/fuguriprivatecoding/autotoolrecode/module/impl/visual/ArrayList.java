@@ -73,12 +73,16 @@ public class ArrayList extends Module {
             float yOffset = yPosOffset.getValue();
             double xOffset = xPosOffset.getValue();
             for (Module module : moduleList) {
-                module.getArrayListAnimation().update(animationSpeed.getValue(), Easing.LINEAR);
+                module.getArrayListAnimation().update(animationSpeed.getValue(), Easing.OUT_CUBIC);
 
-                module.updateToggleAnimation();
+                boolean suffixCondition = suffix.isToggled() && !"".equals(module.getSuffix());
+                String fullText = module.getName() + (suffixCondition ? " - " + module.getSuffix() : "");
+                float width = (float) font.getStringWidth(fullText) + horizontalSpacing.getValue() * 2 + 8;
 
                 switch (pos.getMode()) {
-                    case "Right Up" -> renderRightUp(xOffset + module.getArrayListAnimation().getValue(), yOffset,
+                    case "Right Up" -> renderRightUp(
+                        xOffset - width + module.getArrayListAnimation().getValue() * width,
+                        yOffset,
                         module,
                         sc,
                         lineColor.getMixedColor(moduleList.indexOf(module)),
@@ -86,14 +90,16 @@ public class ArrayList extends Module {
                         moduleList
                     );
 
-                    case "Left Up" -> renderLeftUp(xOffset + module.getArrayListAnimation().getValue(), yOffset,
+                    case "Left Up" -> renderLeftUp(
+                        xOffset - width + module.getArrayListAnimation().getValue() * width,
+                        yOffset,
                         module,
                         lineColor.getMixedColor(moduleList.indexOf(module)),
                         textColor.getMixedColor(moduleList.indexOf(module)),
                         moduleList
                     );
                 }
-                yOffset += verticalSpacing.getValue() * module.getToggleProgress();
+                yOffset += verticalSpacing.getValue() * module.getArrayListAnimation().getValue();
             }
         }
     }

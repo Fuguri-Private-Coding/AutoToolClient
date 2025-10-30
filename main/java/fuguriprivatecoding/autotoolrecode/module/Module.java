@@ -28,7 +28,7 @@ public class Module implements Imports, SettingAble {
 	@Getter @Setter long hoverStartTime;
 	@Getter @Setter boolean isHovered;
 	@Getter private float toggleProgress = 0f;
-	@Getter EasingAnimation arrayListAnimation = new EasingAnimation(-100);
+	@Getter EasingAnimation arrayListAnimation = new EasingAnimation(0);
 
     public Module() {
 		settings = new ArrayList<>();
@@ -43,12 +43,12 @@ public class Module implements Imports, SettingAble {
 		if (toggled) {
 			playSound(volume);
 			Client.INST.getEventManager().register(this);
-			arrayListAnimation.setEnd(0);
+			arrayListAnimation.setEnd(1);
 			onEnable();
 		} else {
 			playSound(volume);
 			Client.INST.getEventManager().unregister(this);
-			arrayListAnimation.setEnd(-100);
+			arrayListAnimation.setEnd(0);
 			onDisable();
 		}
 	}

@@ -110,6 +110,7 @@ public class ModuleManager {
 			new TimeChanger(),
 			new TargetHUD(),
 			new Scaffold(),
+//            new Scaff(),
 			new HighJump(),
 			new LongJump()
 		);

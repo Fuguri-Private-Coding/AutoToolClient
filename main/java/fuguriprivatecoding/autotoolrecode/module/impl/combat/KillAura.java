@@ -11,11 +11,8 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
-import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
-import fuguriprivatecoding.autotoolrecode.utils.interpolation.Interpolation;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
-import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
@@ -68,9 +65,6 @@ public class KillAura extends Module {
     DoubleSlider mixYawDelta = new DoubleSlider("Mix Yaw Delta", this, 0, 1, 1, 0.01f);
     DoubleSlider mixPitchDelta = new DoubleSlider("Mix Pitch Delta", this, 0, 1, 1, 0.01f);
 
-    CheckBox reactionTimeWithAnimation = new CheckBox("Reaction Time With Animation", this, linearVisible, false);
-    final IntegerSetting rotationDuration = new IntegerSetting("Rotation Duration", this, () -> linearVisible.getAsBoolean() && reactionTimeWithAnimation.isToggled(), 1, 2000, 600);
-
     CheckBox basicRandomize = new CheckBox("Basic Randomize", this, linearVisible, false);
     FloatSetting randomizeStrength = new FloatSetting("Randomize Strength", this, () -> basicRandomize.isToggled() && linearVisible.getAsBoolean(), 0, 20, 5, 0.1f);
 
@@ -94,18 +88,9 @@ public class KillAura extends Module {
     Rot lastDelta = new Rot();
 
     @Override
-    public void onEnable() {
-        interpolation.reset();
-        startTest = new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
-    }
-
-    @Override
     public void onDisable() {
         Client.INST.getCombatManager().setTarget(null);
     }
-
-    Rot startTest = new Rot();
-    Interpolation interpolation = new Interpolation(Easing.IN_OUT_BACK, 200);
 
     @EventTarget
     public void onEvent(Event event) {
@@ -154,23 +139,6 @@ public class KillAura extends Module {
                 switch (smoothMode.getMode()) {
                     case "Linear" -> {
                         if (TimerRange.teleporting && teleportPredictFix.isToggled()) break;
-
-                        if (reactionTimeWithAnimation.isToggled() && RayCastUtils.rayCast(3, 3, Rot.getServerRotation()).typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
-                            interpolation.setDuration(rotationDuration.getValue());
-                            interpolation.setEasing(Easing.IN_OUT_BACK);
-
-                            if (interpolation.getRaw() == 1) {
-                                startTest = needRotation.copy();
-                                interpolation.reset();
-                            }
-
-                            needRotation = new Rot(
-                                startTest.getYaw() + MathHelper.wrapDegree(needRotation.getYaw() - startTest.getYaw()) * (float) interpolation.get(),
-                                startTest.getPitch() + (needRotation.getPitch() - startTest.getPitch()) * (float) interpolation.get()
-                            );
-
-                            delta = RotUtils.getDelta(lr, needRotation);
-                        }
 
                         if (basicRandomize.isToggled()) {
                             Rot rot = new Rot(

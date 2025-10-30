@@ -173,7 +173,7 @@ public class PlayerUtil implements Imports {
             }
         }
 
-        possibilities.removeIf(vec3 -> mc.thePlayer.getDistance(vec3.xCoord, vec3.yCoord, vec3.zCoord) > 5 || !(PlayerUtil.block(vec3.xCoord, vec3.yCoord, vec3.zCoord) instanceof BlockAir));
+        possibilities.removeIf(vec3 -> !(PlayerUtil.block(vec3.xCoord, vec3.yCoord, vec3.zCoord) instanceof BlockAir));
 
         if (possibilities.isEmpty()) return null;
 

@@ -22,7 +22,7 @@ public class CustomCrosshair extends Module {
 
     ColorSetting color = new ColorSetting("Color", this);
 
-    FloatSetting length = new FloatSetting("Length", this, 1, 20, 4, 0.1f);
+    FloatSetting length = new FloatSetting("Length", this, () -> mode.is("Cross"), 1, 20, 4, 0.1f);
     FloatSetting scale = new FloatSetting("Scale", this, 0,20,2, 0.1f);
 
     @EventTarget
@@ -52,7 +52,7 @@ public class CustomCrosshair extends Module {
                     float width = scale.getValue() * 2;
                     float height = scale.getValue() * 2;
 
-                    RoundedUtils.drawRect(x,y,width,height,height / 2, color.getFadedColor());
+                    RoundedUtils.drawRect(x, y, width, height,height / 2, color.getFadedColor());
                 }
             }
         }
