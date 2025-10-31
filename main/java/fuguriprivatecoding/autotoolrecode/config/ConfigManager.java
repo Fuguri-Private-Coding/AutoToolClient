@@ -79,7 +79,7 @@ public class ConfigManager implements Imports {
         }
         try {
             PrintWriter writer = new PrintWriter(new FileWriter(bindFile));
-            Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+            Gson prettyGson = new GsonBuilder().create();
             writer.println(prettyGson.toJson(mainObject));
             writer.close();
         } catch (IOException e) {
@@ -192,7 +192,7 @@ public class ConfigManager implements Imports {
         if (module == null) return;
 
         JsonObject json = createModuleExportObject(module);
-        String textToCopy = new GsonBuilder().setPrettyPrinting().create().toJson(json);
+        String textToCopy = new GsonBuilder().create().toJson(json);
 
         copyToClipboard(textToCopy);
         logSuccess("Exported settings from " + module.getName());
@@ -200,7 +200,7 @@ public class ConfigManager implements Imports {
 
     public void exportSettings(Category category) {
         JsonObject json = createCategoryExportObject(category);
-        String textToCopy = new GsonBuilder().setPrettyPrinting().create().toJson(json);
+        String textToCopy = new GsonBuilder().create().toJson(json);
 
         copyToClipboard(textToCopy);
         logSuccess("Exported settings from " + category.name);
@@ -275,7 +275,7 @@ public class ConfigManager implements Imports {
 
         try {
             PrintWriter writer = new PrintWriter(new FileWriter(config.getConfigFile()));
-            String json = new GsonBuilder().setPrettyPrinting().create().toJson(mainObject);
+            String json = new GsonBuilder().create().toJson(mainObject);
             writer.println(json);
             writer.close();
         } catch (IOException e) {

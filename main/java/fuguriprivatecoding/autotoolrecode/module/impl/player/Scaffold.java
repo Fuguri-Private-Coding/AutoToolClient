@@ -151,11 +151,11 @@ public class Scaffold extends Module {
             legitPlace();
         }
 
-        if (event instanceof Render3DEvent && blockFace != null && render.isToggled()) {
+        if (event instanceof Render3DEvent && mouse.getBlockPos() != null && render.isToggled()) {
             RenderUtils.start3D();
 
-            if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(blockFace, glowColor.getFadedFloatColor()));
-            RenderUtils.drawBlockESP(blockFace, color.getFadedFloatColor());
+            if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(mouse.getBlockPos(), glowColor.getFadedFloatColor()));
+            RenderUtils.drawBlockESP(mouse.getBlockPos(), color.getFadedFloatColor());
 
             ColorUtils.resetColor();
             RenderUtils.stop3D();

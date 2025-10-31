@@ -74,7 +74,7 @@ public final class RayCastUtil implements Imports {
     }
 
     public static boolean overBlock(final Vector2f rotation, final EnumFacing enumFacing, final BlockPos pos, final boolean strict) {
-        final MovingObjectPosition movingObjectPosition = mc.thePlayer.rayTrace(4.5f, 1f, new Rot(rotation.x, rotation.y));
+        final MovingObjectPosition movingObjectPosition = mc.thePlayer.rayTrace(4.5f, mc.timer.renderPartialTicks, new Rot(rotation.x, rotation.y));
 
         if (movingObjectPosition == null) return false;
 
