@@ -37,6 +37,8 @@ public class Configs implements Imports {
         defaultConfig = new Config("default");
         bindFile = new File(bindsDirectory, "binds.json");
 
+        saveConfig(defaultConfig);
+
         try {
             FileUtils.createDirectoriesIfNotExists(configsDirectory, bindsDirectory);
         } catch (IOException e) {

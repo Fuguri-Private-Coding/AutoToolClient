@@ -33,30 +33,38 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "Scaffold", category = Category.PLAYER)
 public class Scaffold extends Module {
 
-    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
-    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
-
     Mode rotMode = new Mode("RotationMode", this)
             .addModes("TellyBridge", "GodBridge", "Normal")
             .setMode("GodBridge");
 
+    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
+    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
+
     BooleanSupplier tellyVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge");
     BooleanSupplier godVisible = () -> rotMode.getMode().equalsIgnoreCase("GodBridge");
     BooleanSupplier tellyGodVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("GodBridge");
+    BooleanSupplier tellyNormalVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("Normal");
 
     BooleanSupplier tellyGodNormalVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("GodBridge") || rotMode.getMode().equalsIgnoreCase("Normal");
 
     DoubleSlider yawClutchSpeed = new DoubleSlider("YawClutchSpeed", this, godVisible, 0,180,90,1);
     DoubleSlider pitchClutchSpeed = new DoubleSlider("PitchClutchSpeed", this, godVisible, 0,180,90,1);
-
     DoubleSlider yawForwardTellySpeed = new DoubleSlider("YawForwardTellySpeed", this, tellyVisible, 0,180,90,1);
     DoubleSlider pitchForwardTellySpeed = new DoubleSlider("PitchForwardTellySpeed", this, tellyVisible, 0,180,90,1);
 
-    DoubleSlider pitchCorrectionSearch = new DoubleSlider("PitchCorrectionSearch", this, tellyGodNormalVisible, 0,90,90,0.1f);
+    DoubleSlider pitchCorrectionSearch = new DoubleSlider("PitchCorrectionSearch", this, 0,90,90,0.1f);
+    FloatSetting stepPitchCorrection = new FloatSetting("StepPitchCorrection", this, 0.3f, 10, 1f, 0.01f);
 
-    FloatSetting stepPitchCorrection = new FloatSetting("StepPitchCorrection", this, tellyGodNormalVisible, 0.3f, 10, 0.8f, 0.01f);
+    CheckBox sortYawOffset = new CheckBox("SortYawOffset", this, tellyNormalVisible);
+    FloatSetting yawOffset = new FloatSetting("YawOffset", this, () -> tellyNormalVisible.getAsBoolean() && sortYawOffset.isToggled(), 0, 90, 45, 0.1f);
 
-    IntegerSetting sortingDistanceStrength = new IntegerSetting("SortingDistanceStrength", this, tellyGodNormalVisible, 0,100,2);
+    Mode forwardTellyPitchMode = new Mode("ForwardTellyPitchMode", this, tellyVisible)
+        .addModes("LastRotation", "Custom")
+        .setMode("Custom");
+
+    DoubleSlider forwardTellyPitch = new DoubleSlider("ForwardTellyPitch", this, () -> forwardTellyPitchMode.is("Custom") && tellyVisible.getAsBoolean(), -90, 90, 60, 1);
+
+    IntegerSetting sortingDistanceStrength = new IntegerSetting("SortingDistanceStrength", this, tellyGodNormalVisible, 0,100,0);
 
     MultiMode removeSwing = new MultiMode("RemoveSwing", this)
         .addModes("On Client", "On Server")
@@ -67,10 +75,10 @@ public class Scaffold extends Module {
         .setMode("Legit")
         ;
 
-    final CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this, tellyGodVisible);
+    final CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this);
 
     final CheckBox speedTelly = new CheckBox("SpeedTelly", this, tellyVisible, true);
-    DoubleSlider tellyTicks = new DoubleSlider("TellyTicks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 0,12,5,1);
+    DoubleSlider airTicks = new DoubleSlider("AirTicks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 0,10,3,1);
 
     final CheckBox sameY = new CheckBox("SameY", this, true);
 
@@ -108,8 +116,6 @@ public class Scaffold extends Module {
 
     Rot rotation, lastRotation;
 
-    RotationData closest;
-
     double lastDelta = 0;
     float lastPitch = 80;
 
@@ -123,7 +129,7 @@ public class Scaffold extends Module {
     @Override
     public void onEnable() {
         if (mc.thePlayer.isUsingItem()) {
-            mc.thePlayer.setItemInUse(mc.thePlayer.inventory.getCurrentItem(), 0);
+            mc.thePlayer.clearItemInUse();
         }
     }
 
@@ -161,7 +167,7 @@ public class Scaffold extends Module {
             switch (rotMode.getMode()) {
                 case "GodBridge" -> {
                     if (sneakIf.get("Rotate") && lastDelta > 5) {
-                        if (getSafeValue() && !sneakIf.get("Clutching")) {
+                        if (isClutch() && !sneakIf.get("Clutching")) {
                             return;
                         }
 
@@ -217,10 +223,6 @@ public class Scaffold extends Module {
         }
     }
 
-    boolean getSafeValue() {
-        return mc.thePlayer.hurtResistantTime > 0 || Player.airTicks > 12;
-    }
-
     private void resetValues() {
         blocksLeft = 0;
         mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
@@ -233,7 +235,7 @@ public class Scaffold extends Module {
 
         if (mouse.sideHit == mouseOver.sideHit &&
                 mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
-                && getSameYValue(mouse)
+                && isSameY(mouse)
                 && mouse.getBlockPos().getX() == mouseOver.getBlockPos().getX() && mouse.getBlockPos().getZ() == mouseOver.getBlockPos().getZ()
             && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
 
@@ -251,14 +253,6 @@ public class Scaffold extends Module {
         }
     }
 
-    boolean getSameYValue(MovingObjectPosition mouse) {
-        if (sameY.isToggled()) {
-            if (Mouse.isButtonDown(1)) return mouse.sideHit != EnumFacing.DOWN;
-            return mouse.sideHit != EnumFacing.DOWN && mouse.sideHit != EnumFacing.UP;
-        }
-        return mouse.sideHit != EnumFacing.DOWN;
-    }
-
     void rotate() {
         float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : mc.thePlayer.rotationYaw;
         float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw + 180), 45);
@@ -268,16 +262,20 @@ public class Scaffold extends Module {
 
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
-                if (getTellyValue()) {
-                    rotation = new Rot(yaw, lastRotation.getPitch());
+                if (isTelly()) {
+                    float forwardPitch = forwardTellyPitchMode.is("LastRotation") ? lastRotation.getPitch() : (float) forwardTellyPitch.getRandomizedDoubleValue();
+
+                    rotation = new Rot(yaw, forwardPitch);
                 } else {
-                    rotation = getBestRotation(yaw, MoveUtils.isMoveDiagonally(yaw) ? 0 : isOnRightSide ? 45 : -45);
+                    float offset = MoveUtils.isMoveDiagonally(yaw) ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
+
+                    rotation = getBestRotation(yaw, offset, sortYawOffset.isToggled());
                 }
             }
 
             case "GodBridge" -> {
-                if (getSafeValue()) {
-                    rotation = getBestRotation(yaw, 0);
+                if (isClutch()) {
+                    rotation = getBestRotation(yaw, 0, false);
                 } else {
                     MovingObjectPosition rightRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw + 45, getPitch(roundedYaw + 45, false)));
                     MovingObjectPosition leftRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw - 45, getPitch(roundedYaw - 45, false)));
@@ -293,28 +291,40 @@ public class Scaffold extends Module {
                 }
             }
 
-            case "Normal" -> rotation = getBestRotation(yaw, 0);
+            case "Normal" -> {
+                float offset = MoveUtils.isMoveDiagonally(yaw) ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
+
+                rotation = getBestRotation(yaw, offset, sortYawOffset.isToggled());
+            }
         }
 
         Delta delta = RotUtils.getDelta(Rot.getServerRotation(), rotation);
 
         delta = getDeltaSpeed(delta);
-
         delta = RotUtils.fixDelta(delta);
 
         lastDelta = delta.hypot();
 
-        Rot rot = new Rot(
-                Rot.getServerRotation().getYaw() + delta.getYaw(),
-                Rot.getServerRotation().getPitch() + delta.getPitch()
-        );
+        Rot rot = Rot.getServerRotation().add(delta);
 
         Rot.setServerRotation(rot);
     }
 
-    boolean getTellyValue() {
+    boolean isClutch() {
+        return mc.thePlayer.hurtResistantTime > 0 || Player.airTicks > 12;
+    }
+
+    boolean isSameY(MovingObjectPosition mouse) {
+        if (sameY.isToggled()) {
+            if (Mouse.isButtonDown(1)) return mouse.sideHit != EnumFacing.DOWN;
+            return mouse.sideHit != EnumFacing.DOWN && mouse.sideHit != EnumFacing.UP;
+        }
+        return mouse.sideHit != EnumFacing.DOWN;
+    }
+
+    boolean isTelly() {
         if (MoveUtils.isMoving()) {
-            if (mc.gameSettings.keyBindJump.isKeyDown()) return mc.thePlayer.onGround || mc.thePlayer.jumpTicks > tellyTicks.getRandomizedIntValue();
+            if (mc.gameSettings.keyBindJump.isKeyDown()) return mc.thePlayer.onGround || Player.airTicks < (speedTelly.isToggled() ? 0 : airTicks.getRandomizedIntValue());
             return !mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ));
         }
         return false;
@@ -323,7 +333,7 @@ public class Scaffold extends Module {
     Delta getDeltaSpeed(Delta delta) {
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
-                if (getTellyValue()) {
+                if (isTelly()) {
                     return delta.limit(yawForwardTellySpeed.getRandomizedIntValue(), pitchForwardTellySpeed.getRandomizedIntValue());
                 } else {
                     return delta.limit(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
@@ -331,7 +341,7 @@ public class Scaffold extends Module {
             }
 
             case "GodBridge" -> {
-                if (getSafeValue()) {
+                if (isClutch()) {
                     return delta.limit(yawClutchSpeed.getRandomizedIntValue(), pitchClutchSpeed.getRandomizedIntValue());
                 } else {
                     return delta.limit(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
@@ -378,11 +388,13 @@ public class Scaffold extends Module {
         return pitches.getFirst();
     }
 
-    private Rot getBestRotation(float yawOffset, float offset) {
+    private Rot getBestRotation(float yawOffset, float offset, boolean sortOffset) {
         float step = 5;
         List<RotationData> validRotations = new ArrayList<>();
 
-        for (float possibleYaw = yawOffset - 180 + offset; possibleYaw <= yawOffset + 360 - 180; possibleYaw += 45) {
+        float finalOffsetYaw = yawOffset - 180 + offset;
+
+        for (float possibleYaw = 0; possibleYaw < 360; possibleYaw += step) {
             float yaw = MathHelper.wrapDegree(possibleYaw);
             float pitch = getPitch(yaw, false);
             MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, pitch));
@@ -403,20 +415,23 @@ public class Scaffold extends Module {
         }
 
         if (validRotations.isEmpty()) {
+            lastRotation = new Rot(finalOffsetYaw, lastRotation.getPitch());
             return lastRotation;
         }
 
         validRotations.sort(Comparator.comparingDouble(data -> {
-            double yawDiff = MathHelper.wrapDegree(Rot.getServerRotation().getYaw() - data.rotation().getYaw());
+            double sortYawOffset = sortOffset ? finalOffsetYaw : Rot.getServerRotation().getYaw();
+
+            double yawDiff = MathHelper.wrapDegree(sortYawOffset - data.rotation().getYaw());
             double pitchDiff = Rot.getServerRotation().getPitch() - data.rotation().getPitch();
 
             return Math.hypot(yawDiff, pitchDiff) + DistanceUtils.getDistance(data.hitPos()) * (sortingDistanceStrength.getValue() * 10);
         }));
 
-        closest = validRotations.getFirst();
+        RotationData rotationData = validRotations.getFirst();
 
-        lastRotation = closest.rotation();
-        mouse = closest.mouse();
+        lastRotation = rotationData.rotation();
+        mouse = rotationData.mouse();
         return lastRotation;
     }
 

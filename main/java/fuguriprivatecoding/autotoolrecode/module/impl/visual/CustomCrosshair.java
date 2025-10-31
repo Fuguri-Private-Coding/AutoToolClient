@@ -18,6 +18,7 @@ public class CustomCrosshair extends Module {
 
     Mode mode = new Mode("Mode",this)
         .addModes("Cross", "Dot")
+        .setMode("Cross")
         ;
 
     ColorSetting color = new ColorSetting("Color", this);

@@ -101,6 +101,6 @@ public class Mode extends Setting {
     }
 
     public boolean is(String mode) {
-        return this.mode.equalsIgnoreCase(mode);
+        return this.mode != null && this.mode.equalsIgnoreCase(mode);
     }
 }

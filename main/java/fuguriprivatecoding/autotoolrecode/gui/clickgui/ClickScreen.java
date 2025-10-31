@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
@@ -243,11 +244,13 @@ public class ClickScreen extends GuiScreen {
 		List<Module> moduleList = Client.INST.getModules().getModulesByCategory(selectedCategory);
 
 		for (Module module : moduleList) {
-            EasingAnimation toggleModuleAnim = new EasingAnimation();
-            toggleModuleAnim.setEnd(module.isToggled() || module.isHovered());
+            EasingAnimation toggleModuleAnim = module.getToggleAnimation();
+            toggleModuleAnim.update(3f, Easing.OUT_CUBIC);
+            toggleModuleAnim.setEnd(module.isToggled());
 
-            Color mixedModuleColor = module.isHovered() ? clickGui.color.getMixedColor(moduleList.indexOf(module)).darker().darker().darker() : clickGui.color.getMixedColor(moduleList.indexOf(module));
-            Color toggleColor = ColorUtils.interpolateColor(CATEGORY_COLOR, mixedModuleColor, toggleModuleAnim.getValue());
+            Color mixedModuleColor = clickGui.color.getMixedColor(moduleList.indexOf(module));
+
+            Color toggleColor = ColorUtils.interpolateColor(module.isHovered() ? CATEGORY_COLOR.darker() : CATEGORY_COLOR, module.isHovered() ? mixedModuleColor.darker() : mixedModuleColor, toggleModuleAnim.getValue());
 
             fontRenderer.drawString(module.getName() + (!module.isHide() ? " ✓" : " ×"), background.x + 4, background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 2, toggleColor);
 
@@ -264,7 +267,18 @@ public class ClickScreen extends GuiScreen {
 
 		offset = 0;
 		for (Category category : Category.values()) {
-			fontRenderer.drawString(category.name, background.x + verticalLineXOffset + 5 + 5 + offset, background.y + 4 + 1, category == selectedCategory ? MAIN_COLOR : CATEGORY_COLOR);
+            boolean selectCategory = mouseX > background.x + verticalLineXOffset + 5 + 5 + offset && mouseX < background.x + verticalLineXOffset + 5 + 5 + offset + fontRenderer.getStringWidth(category.name) && mouseY > background.y + 2 && mouseY < background.y + 2 + fontRenderer.FONT_HEIGHT;
+            category.hovered = selectCategory;
+
+            EasingAnimation toggleCategoryAnim = category.getToggleAnim();
+            toggleCategoryAnim.update(3f, Easing.OUT_CUBIC);
+            toggleCategoryAnim.setEnd(category == selectedCategory);
+
+            Color mixedCategoryColor = clickGui.color.getMixedColor(List.of(Category.values()).indexOf(category));
+
+            Color toggleColor = ColorUtils.interpolateColor(category.isHovered() ? CATEGORY_COLOR.darker() : CATEGORY_COLOR, category.isHovered() ? mixedCategoryColor.darker() : mixedCategoryColor, toggleCategoryAnim.getValue());
+
+            fontRenderer.drawString(category.name, background.x + verticalLineXOffset + 5 + 5 + offset, background.y + 4 + 1, toggleColor);
 			offset += (float) (fontRenderer.getStringWidth(category.name) + 5);
 		}
 
@@ -287,6 +301,8 @@ public class ClickScreen extends GuiScreen {
 
                 float settingWidth = (float) fontRenderer.getStringWidth(setting.getName() + " ");
 				fontRenderer.drawString(setting.getName() + " ", background.x + verticalLineXOffset + 5, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset - 0.5f, CATEGORY_COLOR);
+
+                MAIN_COLOR = clickGui.color.getMixedColor(selectedModule.getSettings().indexOf(setting));
 
 				switch (setting) {
 					case MultiMode multiMode -> {
@@ -704,13 +720,13 @@ public class ClickScreen extends GuiScreen {
 			if (mouseX < background.x || mouseX > background.x + sizeBackground.x || mouseY < background.y + 15 || mouseY > background.y + sizeBackground.y) continue;
 			float moduleWidth = (float) fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc + 9;
-			if (moduleCondition && !module.getDescription().equalsIgnoreCase("") && clickedModule == null) {
+			if (moduleCondition && clickedModule == null) {
 				if (!module.isHovered()) {
 					module.setHoverStartTime(System.currentTimeMillis());
 					module.setHovered(true);
 				} else {
 					long hoverTime = System.currentTimeMillis() - module.getHoverStartTime();
-					if (hoverTime >= 500) {
+					if (hoverTime >= 500 && !module.getDescription().equalsIgnoreCase("")) {
 						float descriptionWidth = (float) fontRenderer.getStringWidth(module.getDescription());
 						RenderUtils.drawRoundedOutLineRectangle(mouseX, mouseY - 8, descriptionWidth + 6, 14, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR.getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
 						fontRenderer.drawString(module.getDescription(), mouseX + 3 + 2, mouseY + 2 - 5, Color.WHITE, true);
@@ -752,7 +768,7 @@ public class ClickScreen extends GuiScreen {
 		ColorUtils.glColor(config ? MAIN_COLOR : Color.WHITE);
 		RenderUtils.drawImage(configs, (int) configX, (int) iconY, iconSize, iconSize, true);
 
-		guis.update(clickGui.animationSpeed.getValue() / 5, Easing.IN_OUT_BACK);
+		guis.update(clickGui.animationSpeed.getValue() / 5, Easing.OUT_BACK);
 		moduleLine.update(clickGui.animationSpeed.getValue());
 		settingLine.update(clickGui.animationSpeed.getValue());
 
