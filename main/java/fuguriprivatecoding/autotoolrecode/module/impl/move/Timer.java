@@ -6,7 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 
 @ModuleInfo(name = "Timer", category = Category.MOVE, description = "Ускоряет игру")
 public class Timer extends Module {

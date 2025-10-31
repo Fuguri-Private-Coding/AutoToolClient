@@ -6,7 +6,7 @@ import com.mojang.authlib.GameProfile;
 import java.util.Comparator;
 import java.util.List;
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.managers.Friends;
+import fuguriprivatecoding.autotoolrecode.handle.Friends;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;

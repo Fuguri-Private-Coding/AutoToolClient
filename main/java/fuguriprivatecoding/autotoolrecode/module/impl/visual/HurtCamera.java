@@ -6,7 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.util.MathHelper;
 

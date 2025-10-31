@@ -8,10 +8,10 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.KeyBind;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.KeyBind;
 import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "Booster", category = Category.MOVE, description = "Позволяет вам телепортироватся по нажатию кнопке.")

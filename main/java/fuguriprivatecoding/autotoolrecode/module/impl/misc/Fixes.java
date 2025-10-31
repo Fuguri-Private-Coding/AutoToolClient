@@ -8,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
-import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 
 @ModuleInfo(name = "Fixes", category = Category.MISC, description = "Убирает задержки механики майнкрафта.")

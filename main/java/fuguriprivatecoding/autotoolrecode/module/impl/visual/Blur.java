@@ -3,10 +3,8 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 
 @ModuleInfo(name = "Blur", category = Category.VISUAL, description = "Размытие экрана.")
 public class Blur extends Module {

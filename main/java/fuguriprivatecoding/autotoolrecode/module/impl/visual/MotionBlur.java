@@ -6,7 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import net.minecraft.util.ResourceLocation;
 
 @ModuleInfo(name = "MotionBlur", category = Category.VISUAL, description = "Размытие экрана при движение камерой.")

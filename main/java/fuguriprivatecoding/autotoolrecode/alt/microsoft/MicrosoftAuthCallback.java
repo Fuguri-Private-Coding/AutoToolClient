@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.alt.microsoft;
 
 import com.sun.net.httpserver.HttpServer;
 import fuguriprivatecoding.autotoolrecode.alt.Account;
-import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltScreen;
+import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
 import java.io.Closeable;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;

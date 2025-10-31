@@ -2,9 +2,9 @@ package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;

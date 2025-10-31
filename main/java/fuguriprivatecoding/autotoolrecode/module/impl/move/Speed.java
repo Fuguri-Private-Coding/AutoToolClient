@@ -5,16 +5,13 @@ import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveFlyingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.UpdateEvent;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
 
 import static fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils.strafe;
 

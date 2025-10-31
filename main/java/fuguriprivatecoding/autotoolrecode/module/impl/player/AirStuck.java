@@ -8,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
 @ModuleInfo(name = "AirStuck", category = Category.PLAYER, description = "Позволяет вам зависнуть в воздухе.")

@@ -3,7 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
-import fuguriprivatecoding.autotoolrecode.settings.Setting;
+import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import java.util.ArrayList;

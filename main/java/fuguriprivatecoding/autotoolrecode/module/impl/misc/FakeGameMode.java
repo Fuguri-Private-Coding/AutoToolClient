@@ -3,7 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import net.minecraft.world.WorldSettings;
 
 @ModuleInfo(name = "FakeGameMode", category = Category.MISC, description = "Фейково меняет вам режим игры.")

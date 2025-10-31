@@ -1,8 +1,8 @@
 package fuguriprivatecoding.autotoolrecode;
 
 import fuguriprivatecoding.autotoolrecode.alt.Accounts;
-import fuguriprivatecoding.autotoolrecode.guis.altmanager.*;
-import fuguriprivatecoding.autotoolrecode.guis.config.*;
+import fuguriprivatecoding.autotoolrecode.gui.altmanager.*;
+import fuguriprivatecoding.autotoolrecode.gui.config.*;
 import fuguriprivatecoding.autotoolrecode.config.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
@@ -11,11 +11,11 @@ import fuguriprivatecoding.autotoolrecode.utils.sound.*;
 import fuguriprivatecoding.autotoolrecode.command.*;
 import fuguriprivatecoding.autotoolrecode.event.*;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
-import fuguriprivatecoding.autotoolrecode.guis.clickgui.*;
-import fuguriprivatecoding.autotoolrecode.guis.console.*;
-import fuguriprivatecoding.autotoolrecode.guis.main.*;
+import fuguriprivatecoding.autotoolrecode.gui.clickgui.*;
+import fuguriprivatecoding.autotoolrecode.gui.console.*;
+import fuguriprivatecoding.autotoolrecode.gui.main.*;
 import fuguriprivatecoding.autotoolrecode.irc.*;
-import fuguriprivatecoding.autotoolrecode.managers.*;
+import fuguriprivatecoding.autotoolrecode.handle.*;
 import fuguriprivatecoding.autotoolrecode.module.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
 import fuguriprivatecoding.autotoolrecode.utils.file.*;

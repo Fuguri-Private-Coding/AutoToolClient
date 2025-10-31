@@ -7,7 +7,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.*;
+import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;

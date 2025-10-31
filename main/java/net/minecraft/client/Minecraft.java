@@ -40,7 +40,7 @@ import fuguriprivatecoding.autotoolrecode.utils.file.WindowIconHelper;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.guis.main.MainScreen;
+import fuguriprivatecoding.autotoolrecode.gui.main.MainScreen;
 import lombok.Setter;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

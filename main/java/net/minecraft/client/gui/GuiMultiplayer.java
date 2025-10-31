@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.List;
 
 import fuguriprivatecoding.autotoolrecode.event.events.ServerJoinEvent;
-import fuguriprivatecoding.autotoolrecode.guis.buttons.Button;
-import fuguriprivatecoding.autotoolrecode.guis.multiplayer.ViaVersionScreen;
+import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
+import fuguriprivatecoding.autotoolrecode.gui.multiplayer.ViaVersionScreen;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;

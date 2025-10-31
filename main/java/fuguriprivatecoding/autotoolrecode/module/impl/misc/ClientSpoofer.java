@@ -3,7 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 
 @ModuleInfo(name = "ClientSpoofer", category = Category.MISC, description = "Спуфает название клиента которое видит античит.")
 public class ClientSpoofer extends Module {

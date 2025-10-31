@@ -6,8 +6,8 @@ import fuguriprivatecoding.autotoolrecode.event.events.HitSlowDownEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 
 @ModuleInfo(name = "KeepSprint", category = Category.COMBAT, description = "Не замедлятся от удара.")
 public class KeepSprint extends Module {

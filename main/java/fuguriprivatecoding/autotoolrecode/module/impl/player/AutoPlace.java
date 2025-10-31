@@ -7,7 +7,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;

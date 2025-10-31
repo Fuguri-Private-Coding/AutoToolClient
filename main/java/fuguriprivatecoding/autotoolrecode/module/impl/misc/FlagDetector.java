@@ -7,7 +7,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 

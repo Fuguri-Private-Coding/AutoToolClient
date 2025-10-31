@@ -2,15 +2,12 @@ package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.UpdateEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
-import net.minecraft.network.play.server.S27PacketExplosion;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 
 @ModuleInfo(name = "Fly", category = Category.MOVE, description = "Позволяет вам летать.")
 public class Fly extends Module {

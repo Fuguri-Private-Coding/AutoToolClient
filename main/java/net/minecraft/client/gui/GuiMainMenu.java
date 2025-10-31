@@ -14,7 +14,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltScreen;
+import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;

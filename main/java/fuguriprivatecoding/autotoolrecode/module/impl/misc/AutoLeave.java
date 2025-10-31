@@ -7,9 +7,9 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.settings.impl.KeyBind;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.KeyBind;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import org.lwjgl.input.Keyboard;
 

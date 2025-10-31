@@ -8,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
+import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.MovingObjectPosition;

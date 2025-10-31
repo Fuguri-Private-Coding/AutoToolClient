@@ -3,9 +3,8 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.settings.impl.DoubleSlider;
-import fuguriprivatecoding.autotoolrecode.settings.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 
 @ModuleInfo(name = "ClickSettings", category = Category.COMBAT, description = "Позволяет бить в тайминг.")
 public class ClickSettings extends Module {

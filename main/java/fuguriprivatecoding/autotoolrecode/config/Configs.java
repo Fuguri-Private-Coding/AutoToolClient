@@ -7,7 +7,7 @@ import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Module;
-import fuguriprivatecoding.autotoolrecode.settings.Setting;
+import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import java.awt.*;

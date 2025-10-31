@@ -88,9 +88,4 @@ public class MathUtils implements Imports {
     }
 
     private static final Random random = new Random();
-
-    public static int rs() {
-        return random.nextBoolean() ? 1 : -1;
-    }
-
 }

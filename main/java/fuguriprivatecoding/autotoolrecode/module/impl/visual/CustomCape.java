@@ -7,7 +7,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Message;

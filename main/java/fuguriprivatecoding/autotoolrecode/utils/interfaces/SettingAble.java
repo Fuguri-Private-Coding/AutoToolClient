@@ -1,6 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.interfaces;
 
-import fuguriprivatecoding.autotoolrecode.settings.Setting;
+import fuguriprivatecoding.autotoolrecode.setting.Setting;
 
 import java.util.List;
 
