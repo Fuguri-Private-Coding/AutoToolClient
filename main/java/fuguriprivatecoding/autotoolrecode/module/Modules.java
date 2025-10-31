@@ -59,7 +59,7 @@ public class Modules {
 			new AutoTool(),
 			new AntiFireball(),
 			new ChestESP(),
-			new DiscordRPCModule(),
+			new DIscordRPC(),
 			new Phase(),
 			new NoGuiClose(),
 			new AirStuck(),

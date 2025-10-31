@@ -11,10 +11,10 @@ import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
         category = Category.CLIENT,
         description = "Мульти донксинг халяль клиент ДИСКОРД РПС"
 )
-public class DiscordRPCModule extends Module {
+public class DIscordRPC extends Module {
     Discord discord;
 
-    public DiscordRPCModule() {
+    public DIscordRPC() {
         discord = Client.INST.getDiscord();
     }
 
