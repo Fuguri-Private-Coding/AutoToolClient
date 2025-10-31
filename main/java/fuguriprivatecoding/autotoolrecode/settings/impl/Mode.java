@@ -66,9 +66,10 @@ public class Mode extends Setting {
         return this;
     }
 
-    public void addMode(String mode) {
+    public Mode addMode(String mode) {
         modes.add(mode);
         modeProgress.put(mode, mode.equals(this.mode) ? 1.0f : 0.0f);
+        return this;
     }
 
     public Mode addModes(String... modes) {

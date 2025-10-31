@@ -23,7 +23,10 @@ import java.util.List;
 @ModuleInfo(name = "CustomCape", category = Category.VISUAL, description = "Изменяет вам плащ.")
 public class CustomCape extends Module {
 
-    public Mode capeMode = new Mode("CapeMode", this);
+    public Mode capeMode = new Mode("CapeMode", this)
+        .addMode("None")
+        .setMode("None")
+        ;
 
     @Getter
     File capeDirectory = new File(Client.INST.getName() + "/capes");
