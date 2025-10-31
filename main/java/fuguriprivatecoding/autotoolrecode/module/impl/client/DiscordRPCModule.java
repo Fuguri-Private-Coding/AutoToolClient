@@ -4,7 +4,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.utils.discord.Discord;
+import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
 
 @ModuleInfo(
         name = "DiscordRPC",

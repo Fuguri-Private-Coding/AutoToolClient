@@ -21,7 +21,7 @@ public class AutoPlace extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) return;
+        if (Client.INST.getModules().getModule(Scaffold.class).isToggled()) return;
         if (mc.currentScreen != null) return;
         if (event instanceof DrawBlockHighlightEvent) {
             if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock))

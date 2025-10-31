@@ -3,9 +3,9 @@ package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
-import fuguriprivatecoding.autotoolrecode.guis.config.ConfigGuiScreen;
-import fuguriprivatecoding.autotoolrecode.guis.clickgui.ClickGuiScreen;
-import fuguriprivatecoding.autotoolrecode.guis.console.ConsoleGuiScreen;
+import fuguriprivatecoding.autotoolrecode.guis.config.ConfigScreen;
+import fuguriprivatecoding.autotoolrecode.guis.clickgui.ClickScreen;
+import fuguriprivatecoding.autotoolrecode.guis.console.ConsoleScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -32,16 +32,16 @@ public class NoGuiClose extends Module {
 
     private boolean guiClosed(GuiScreen currentScreen) {
         switch (currentScreen) {
-            case ClickGuiScreen _ -> {
+            case ClickScreen _ -> {
                 if (modes.get("ClickGui")) return true;
             }
 
 
-            case ConfigGuiScreen _ -> {
+            case ConfigScreen _ -> {
                 if (modes.get("ConfigGui")) return true;
             }
 
-            case ConsoleGuiScreen _ -> {
+            case ConsoleScreen _ -> {
                 if (modes.get("ConsoleGui")) return true;
             }
 

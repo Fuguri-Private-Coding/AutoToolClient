@@ -17,7 +17,7 @@ public class ClientSettings extends Module {
     public FloatSetting scale = new FloatSetting("Scale", this, 0.5f, 2, 1, 0.01f) {};
 
     public static int getScroll() {
-        ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
+        ClientSettings clientSettings = Client.INST.getModules().getModule(ClientSettings.class);
         int currentScroll = Mouse.getDWheel();
 
         return currentScroll / 120 * clientSettings.scroll.getValue();

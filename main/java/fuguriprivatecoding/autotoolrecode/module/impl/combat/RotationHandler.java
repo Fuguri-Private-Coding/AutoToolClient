@@ -29,12 +29,12 @@ public class RotationHandler extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        boolean handle = (Client.INST.getCombatManager().getTarget() == null
-            || DistanceUtils.getDistance(Client.INST.getCombatManager().getTarget()) > Client.INST.getModuleManager().getModule(KillAura.class).rotateDistance.getValue())
-            && !Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()
-            && Client.INST.getModuleManager().getModule(AntiFireball.class).target == null &&
-            !Client.INST.getModuleManager().getModule(Fucker.class).rotate &&
-            Client.INST.getModuleManager().getModule(Fucker.class).bedPos == null;
+        boolean handle = (Client.INST.getTargetStorage().getTarget() == null
+            || DistanceUtils.getDistance(Client.INST.getTargetStorage().getTarget()) > Client.INST.getModules().getModule(KillAura.class).rotateDistance.getValue())
+            && !Client.INST.getModules().getModule(Scaffold.class).isToggled()
+            && Client.INST.getModules().getModule(AntiFireball.class).target == null &&
+            !Client.INST.getModules().getModule(Fucker.class).rotate &&
+            Client.INST.getModules().getModule(Fucker.class).bedPos == null;
         if (handle) {
             if (Rot.isChanged()) {
                 if (event instanceof MotionEvent motionEvent) {

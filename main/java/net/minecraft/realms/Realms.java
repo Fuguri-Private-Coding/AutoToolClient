@@ -5,7 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.util.UUIDTypeAdapter;
 import java.net.Proxy;
 
-import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
+import fuguriprivatecoding.autotoolrecode.guis.main.MainScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.Session;
@@ -113,6 +113,6 @@ public class Realms
 
     public static boolean inTitleScreen()
     {
-        return Minecraft.getMinecraft().currentScreen != null && Minecraft.getMinecraft().currentScreen instanceof GuiClientMainMenu;
+        return Minecraft.getMinecraft().currentScreen != null && Minecraft.getMinecraft().currentScreen instanceof MainScreen;
     }
 }

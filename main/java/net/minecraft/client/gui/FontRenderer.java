@@ -388,7 +388,7 @@ public class FontRenderer implements IResourceManagerReloadListener
     private void renderStringAtPos(String text, boolean shadow)
     {
 
-        if (Client.INST.getModuleManager() != null && Client.INST.getModuleManager().getModule(NameProtect.class).isToggled()) {
+        if (Client.INST.getModules() != null && Client.INST.getModules().getModule(NameProtect.class).isToggled()) {
             text = text.replaceAll(Minecraft.getMinecraft().getSession().getUsername(), Client.INST.getProfile().getUsername());
         }
 
@@ -616,7 +616,7 @@ public class FontRenderer implements IResourceManagerReloadListener
         else
         {
 
-            if (Client.INST.getModuleManager() != null && Client.INST.getModuleManager().getModule(NameProtect.class).isToggled()) {
+            if (Client.INST.getModules() != null && Client.INST.getModules().getModule(NameProtect.class).isToggled()) {
                 text = text.replaceAll(Minecraft.getMinecraft().getSession().getUsername(), Client.INST.getProfile().getUsername());
             }
 

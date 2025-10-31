@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.command.impl;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.command.Command;
-import fuguriprivatecoding.autotoolrecode.command.CommandManager;
+import fuguriprivatecoding.autotoolrecode.command.Commands;
 
 public class CommandHelp extends Command {
 
@@ -18,7 +18,7 @@ public class CommandHelp extends Command {
         }
 
         if (args[0].equalsIgnoreCase("help")) {
-            CommandManager commandManager = Client.INST.getCommandManager();
+            Commands commandManager = Client.INST.getCommands();
             if (commandManager.commands.isEmpty()) {
                 addMessage("Command List is empty.");
                 return;

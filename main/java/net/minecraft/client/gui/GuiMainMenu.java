@@ -14,7 +14,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiScreen;
+import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -249,11 +249,11 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         }
 
         if (button.id == 1487) {
-            mc.displayGuiScreen(new AltManagerGuiScreen());
+            mc.displayGuiScreen(new AltScreen());
         }
 
         if (button.id == 1488) {
-            Client.INST.getShaderManager().init();
+            Client.INST.getShaders().init();
             System.out.println("reloaded shaders");
         }
 

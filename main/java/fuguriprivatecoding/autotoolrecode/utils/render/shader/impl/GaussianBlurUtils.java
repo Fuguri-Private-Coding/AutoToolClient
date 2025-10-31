@@ -29,9 +29,9 @@ public class GaussianBlurUtils implements Imports {
     }
 
     public static void draw() {
-        if (blur == null) blur = Client.INST.getModuleManager().getModule(Blur.class);
+        if (blur == null) blur = Client.INST.getModules().getModule(Blur.class);
         if (!Display.isActive() || !Display.isVisible() || !blur.isToggled()) return;
-        Shader program = Client.INST.getShaderManager().getGaussianBlur();
+        Shader program = Client.INST.getShaders().getGaussianBlur();
 
         inputFramebuffer.bindFramebuffer(true);
 

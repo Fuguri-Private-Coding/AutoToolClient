@@ -4,12 +4,12 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.scaling.ScaleUtils;
+import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
@@ -28,8 +28,8 @@ public class ClickGuiScreenNew extends GuiScreen {
 
     float x, y, width, height = 0;
 
-    ClickGui clickGui = Client.INST.getModuleManager().getModule(ClickGui.class);
-    ClientSettings clientSettings = Client.INST.getModuleManager().getModule(ClientSettings.class);
+    ClickGui clickGui = Client.INST.getModules().getModule(ClickGui.class);
+    ClientSettings clientSettings = Client.INST.getModules().getModule(ClientSettings.class);
 
     ResourceLocation exitLogo = new ResourceLocation("minecraft", "autotool/mainmenu/exit.png");
 

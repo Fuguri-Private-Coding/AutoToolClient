@@ -29,9 +29,9 @@ public class BloomRealUtils implements Imports {
     }
 
     public static void draw() {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
+        if (shadows == null) shadows = Client.INST.getModules().getModule(Glow.class);
         if (!Display.isActive() || !Display.isVisible() || !shadows.isToggled()) return;
-        Shader program = Client.INST.getShaderManager().getBloomReal();
+        Shader program = Client.INST.getShaders().getBloomReal();
 
         inputFramebuffer.bindFramebuffer(true);
 

@@ -16,7 +16,7 @@ public class BackgroundUtils implements Imports {
     private static Framebuffer tempFBO = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
 
     public static void run() {
-        if (program == null) program = Client.INST.getShaderManager().getBackground();
+        if (program == null) program = Client.INST.getShaders().getBackground();
         if (!Display.isVisible() || !Display.isActive()) return;
 
         update();

@@ -13,6 +13,6 @@ public class MoreSwing extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof TickEvent && Client.INST.getCombatManager().getTarget() != null) mc.thePlayer.swingItemNoPacket();
+        if (event instanceof TickEvent && Client.INST.getTargetStorage().getTarget() != null) mc.thePlayer.swingItemNoPacket();
     }
 }

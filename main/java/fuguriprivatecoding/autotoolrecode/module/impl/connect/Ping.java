@@ -92,7 +92,7 @@ public class Ping extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
+        if (shadows == null) shadows = Client.INST.getModules().getModule(Glow.class);
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (mc.isIntegratedServerRunning()) return;
         long currentTime = System.currentTimeMillis();
@@ -136,7 +136,7 @@ public class Ping extends Module {
             case TickEvent _ -> {
                 if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChest) && actions.get("OpenedGui"))
                     reset(openedGuiTimeCondition.getValue());
-                if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && actions.get("Scaffold"))
+                if (Client.INST.getModules().getModule(Scaffold.class).isToggled() && actions.get("Scaffold"))
                     reset(scaffoldTimeCondition.getValue());
 
                 if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) reset(damageTimeCondition.getValue());
@@ -149,7 +149,7 @@ public class Ping extends Module {
                 }
 
                 if (resetIfDistance.isToggled()) {
-                    EntityLivingBase target = Client.INST.getCombatManager().getTargetOrSelectedEntity();
+                    EntityLivingBase target = Client.INST.getTargetStorage().getTargetOrSelectedEntity();
 
                     if (target != null && DistanceUtils.getDistance(target) <= resetDistance.getValue()) {
                         reset(50);

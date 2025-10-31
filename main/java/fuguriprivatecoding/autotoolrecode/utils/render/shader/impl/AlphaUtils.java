@@ -28,7 +28,7 @@ public class AlphaUtils implements Imports {
     }
 
     public static void draw(float alpha) {
-        if (program == null) program = Client.INST.getShaderManager().getAlpha();
+        if (program == null) program = Client.INST.getShaders().getAlpha();
         if (!Display.isVisible()) return;
 
         final int programID = program.getProgramId();

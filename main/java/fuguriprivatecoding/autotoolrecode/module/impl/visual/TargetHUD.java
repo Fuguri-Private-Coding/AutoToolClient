@@ -5,15 +5,15 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
-import fuguriprivatecoding.autotoolrecode.managers.CombatManager;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
-import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.projection.Convertors;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -182,8 +182,8 @@ public class TargetHUD extends Module {
     }
 
     private void updateTarget() {
-        CombatManager combatManager = Client.INST.getCombatManager();
-        EntityLivingBase currentTarget = combatManager.getTarget();
+        TargetStorage targetStorage = Client.INST.getTargetStorage();
+        EntityLivingBase currentTarget = targetStorage.getTarget();
 
         if (target == null && currentTarget != null) {
             target = currentTarget;

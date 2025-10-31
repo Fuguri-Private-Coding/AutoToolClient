@@ -3,7 +3,6 @@ package net.minecraft.client.gui;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -98,7 +97,7 @@ public class GuiIngame extends Gui {
     }
 
     public void renderGameOverlay(float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
+        if (shadows == null) shadows = Client.INST.getModules().getModule(Glow.class);
         ScaledResolution scaledresolution = new ScaledResolution(this.mc);
         int i = scaledresolution.getScaledWidth();
         int j = scaledresolution.getScaledHeight();
@@ -135,7 +134,7 @@ public class GuiIngame extends Gui {
         this.mc.getTextureManager().bindTexture(icons);
         GlStateManager.enableBlend();
 
-        if (this.showCrosshair() && !Client.INST.getModuleManager().getModule(CustomCrosshair.class).isToggled()) {
+        if (this.showCrosshair() && !Client.INST.getModules().getModule(CustomCrosshair.class).isToggled()) {
             GlStateManager.tryBlendFuncSeparate(775, 769, 1, 0);
             GlStateManager.enableAlpha();
             this.drawTexturedModalRect(i / 2 - 7, j / 2 - 7, 0, 0, 16, 16);

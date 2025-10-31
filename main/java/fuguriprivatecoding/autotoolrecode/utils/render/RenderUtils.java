@@ -1,6 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.render;
 
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;

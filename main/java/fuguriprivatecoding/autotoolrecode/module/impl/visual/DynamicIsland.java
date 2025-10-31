@@ -12,8 +12,8 @@ import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
-import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
-import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
@@ -67,9 +67,9 @@ public class DynamicIsland extends Module {
             float height = 15;
             float yOffsetValue = this.yOffset.getValue();
 
-            EntityLivingBase ent = Client.INST.getCombatManager().getTarget();
-            BackTrack backTrack = Client.INST.getModuleManager().getModule(BackTrack.class);
-            Scaffold scaffOld = Client.INST.getModuleManager().getModule(Scaffold.class);
+            EntityLivingBase ent = Client.INST.getTargetStorage().getTarget();
+            BackTrack backTrack = Client.INST.getModules().getModule(BackTrack.class);
+            Scaffold scaffOld = Client.INST.getModules().getModule(Scaffold.class);
 
             String name = Client.INST.getFullName();
             String target, backtrack = "", scaffold = "", bps = "";

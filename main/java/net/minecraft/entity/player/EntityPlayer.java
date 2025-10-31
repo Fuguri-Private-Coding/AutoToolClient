@@ -191,7 +191,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
     }
 
     public void onUpdate() {
-        this.noClip = Client.INST.getModuleManager().getModule(Phase.class).isToggled() || this.isSpectator();
+        this.noClip = Client.INST.getModules().getModule(Phase.class).isToggled() || this.isSpectator();
 
         if (this.isSpectator()) {
             this.onGround = false;
@@ -1942,7 +1942,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
     }
 
     public boolean isFriend() {
-        return Client.INST.getFriendManager().isFriend(getName(), Client.INST.getModuleManager().getModule(MidClick.class).reverseFriends.isToggled());
+        return Client.INST.getFriends().isFriend(getName(), Client.INST.getModules().getModule(MidClick.class).reverseFriends.isToggled());
     }
 
     public boolean hasReducedDebug()

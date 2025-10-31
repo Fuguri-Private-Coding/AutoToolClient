@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.settings.impl;
 
 import com.google.gson.JsonObject;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
 import lombok.Setter;

@@ -5,13 +5,13 @@ import com.google.common.collect.Lists;
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
-import fuguriprivatecoding.autotoolrecode.Client;
+
 import fuguriprivatecoding.autotoolrecode.event.events.ServerJoinEvent;
-import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientButton;
-import fuguriprivatecoding.autotoolrecode.guis.multiplayer.GuiViaVersion;
+import fuguriprivatecoding.autotoolrecode.guis.buttons.Button;
+import fuguriprivatecoding.autotoolrecode.guis.multiplayer.ViaVersionScreen;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
-import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
@@ -83,14 +83,14 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
     }
 
     public void createButtons() {
-        this.buttonList.add(this.btnEditServer = new GuiClientButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit")));
-        this.buttonList.add(this.btnDeleteServer = new GuiClientButton(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete")));
-        this.buttonList.add(this.btnSelectServer = new GuiClientButton(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select")));
-        this.buttonList.add(new GuiClientButton(4, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("selectServer.direct")));
-        this.buttonList.add(new GuiClientButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add")));
-        this.buttonList.add(new GuiClientButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh")));
-        this.buttonList.add(new GuiClientButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel")));
-        this.buttonList.add(new GuiClientButton(69, 5, 5, 90, 20, "Version"));
+        this.buttonList.add(this.btnEditServer = new Button(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit")));
+        this.buttonList.add(this.btnDeleteServer = new Button(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete")));
+        this.buttonList.add(this.btnSelectServer = new Button(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select")));
+        this.buttonList.add(new Button(4, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("selectServer.direct")));
+        this.buttonList.add(new Button(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add")));
+        this.buttonList.add(new Button(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh")));
+        this.buttonList.add(new Button(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel")));
+        this.buttonList.add(new Button(69, 5, 5, 90, 20, "Version"));
         this.selectServer(this.serverListSelector.func_148193_k());
     }
 
@@ -154,7 +154,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
             } else if (button.id == 8) {
                 this.refreshServerList();
             } else if (button.id == 69) {
-                this.mc.displayGuiScreen(new GuiViaVersion());
+                this.mc.displayGuiScreen(new ViaVersionScreen());
             }
         }
     }

@@ -27,8 +27,8 @@ public class Module implements Imports, SettingAble {
 
 	@Getter @Setter long hoverStartTime;
 	@Getter @Setter boolean isHovered;
-	@Getter private float toggleProgress = 0f;
 	@Getter EasingAnimation arrayListAnimation = new EasingAnimation(0);
+	@Getter EasingAnimation toggleAnimation = new EasingAnimation();
 
     public Module() {
 		settings = new ArrayList<>();
@@ -38,16 +38,16 @@ public class Module implements Imports, SettingAble {
 	public void toggle() {
 		toggled = !toggled;
 		float volume = 1;
-		if (Client.INST.getModuleManager() != null && Client.INST.getModuleManager().getModule(ClientSettings.class) != null) volume = Client.INST.getModuleManager().getModule(ClientSettings.class).toggleModuleVolume.getValue();
+		if (Client.INST.getModules() != null && Client.INST.getModules().getModule(ClientSettings.class) != null) volume = Client.INST.getModules().getModule(ClientSettings.class).toggleModuleVolume.getValue();
 
 		if (toggled) {
 			playSound(volume);
-			Client.INST.getEventManager().register(this);
+			Client.INST.getEvents().register(this);
 			arrayListAnimation.setEnd(1);
 			onEnable();
 		} else {
 			playSound(volume);
-			Client.INST.getEventManager().unregister(this);
+			Client.INST.getEvents().unregister(this);
 			arrayListAnimation.setEnd(0);
 			onDisable();
 		}
@@ -55,18 +55,8 @@ public class Module implements Imports, SettingAble {
 
 	void playSound(float volume) {
 		if (Client.INST.isStarting() || name.equalsIgnoreCase("ClickGui")) return;
-		if (toggled) Client.INST.getSoundsManager().getEnableSound().asyncPlay(volume);else Client.INST.getSoundsManager().getDisableSound().asyncPlay(volume);
+		if (toggled) Client.INST.getSounds().getEnableSound().asyncPlay(volume);else Client.INST.getSounds().getDisableSound().asyncPlay(volume);
 	}
-
-    public void updateToggleAnimation() {
-        float target = toggled ? 1f : 0f;
-        float animationSpeed = 0.15f;
-        toggleProgress += (target - toggleProgress) * animationSpeed;
-
-        if (Math.abs(toggleProgress - target) < 0.01f) {
-            toggleProgress = target;
-        }
-    }
 
 	public boolean toggled() {
         return toggled;

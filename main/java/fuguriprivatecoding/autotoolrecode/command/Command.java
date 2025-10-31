@@ -3,7 +3,7 @@ package fuguriprivatecoding.autotoolrecode.command;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.guis.console.ConsoleGuiScreen;
+import fuguriprivatecoding.autotoolrecode.guis.console.ConsoleScreen;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +14,7 @@ public abstract class Command {
 	private final String usage;
 	private final List<String> aliases;
 
-	protected final ConsoleGuiScreen console;
+	protected final ConsoleScreen console;
 
 	public Command(String name, String usage, String... aliases) {
 		this.name = name;

@@ -6,7 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.managers.CombatManager;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -89,22 +89,22 @@ public class KillAura extends Module {
 
     @Override
     public void onDisable() {
-        Client.INST.getCombatManager().setTarget(null);
+        Client.INST.getTargetStorage().setTarget(null);
     }
 
     @EventTarget
     public void onEvent(Event event) {
-        CombatManager combatManager = Client.INST.getCombatManager();
-        if (event instanceof TickEvent) combatManager.setTarget(findNewTarget());
-        if (combatManager.getTarget() == null) return;
-        EntityLivingBase target = combatManager.getTarget();
-        if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) return;
+        TargetStorage targetStorage = Client.INST.getTargetStorage();
+        if (event instanceof TickEvent) targetStorage.setTarget(findNewTarget());
+        if (targetStorage.getTarget() == null) return;
+        EntityLivingBase target = targetStorage.getTarget();
+        if (Client.INST.getModules().getModule(Scaffold.class).isToggled()) return;
 
         if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
             if (TimerRange.balance == 0) {
                 if (clickTimer.reachedMS(delay)) {
                     clickTimer.reset();
-                    Client.INST.getClickManager().addClick();
+                    Client.INST.getClicks().addClick();
                     delay = Math.round(1000f / CPS.getRandomizedIntValue());
                 }
             }

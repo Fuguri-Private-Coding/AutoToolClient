@@ -34,15 +34,15 @@ public class AimAssist extends Module {
     @Override
     public void onDisable() {
         super.onDisable();
-        Client.INST.getCombatManager().setTarget(null);
+        Client.INST.getTargetStorage().setTarget(null);
     }
 
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof MotionEvent) {
-            Client.INST.getCombatManager().setTarget(TargetFinder.findTarget(distance.getValue(), true, false, false));
+            Client.INST.getTargetStorage().setTarget(TargetFinder.findTarget(distance.getValue(), true, false, false));
 
-            EntityLivingBase target = Client.INST.getCombatManager().getTarget();
+            EntityLivingBase target = Client.INST.getTargetStorage().getTarget();
 
             if (target == null || mc.currentScreen != null) return;
             if (RotUtils.getFovToEntity(target) > fov.getValue()) return;

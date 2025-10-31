@@ -40,7 +40,7 @@ import fuguriprivatecoding.autotoolrecode.utils.file.WindowIconHelper;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.guis.main.GuiClientMainMenu;
+import fuguriprivatecoding.autotoolrecode.guis.main.MainScreen;
 import lombok.Setter;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -480,9 +480,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         this.ingameGUI = new GuiIngame(this);
 
         if (this.serverName != null) {
-            this.displayGuiScreen(new GuiConnecting(Client.INST.getMainMenu(), this, this.serverName, this.serverPort));
+            this.displayGuiScreen(new GuiConnecting(Client.INST.getMainScreen(), this, this.serverName, this.serverPort));
         } else {
-            this.displayGuiScreen(Client.INST.getMainMenu());
+            this.displayGuiScreen(Client.INST.getMainScreen());
         }
 
         this.renderEngine.deleteTexture(this.mojangLogo);
@@ -756,12 +756,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         }
 
         if (guiScreenIn == null && this.theWorld == null) {
-            guiScreenIn = new GuiClientMainMenu();
+            guiScreenIn = new MainScreen();
         } else if (guiScreenIn == null && this.thePlayer.getHealth() <= 0.0F) {
             guiScreenIn = new GuiGameOver();
         }
 
-        if (guiScreenIn instanceof GuiClientMainMenu) {
+        if (guiScreenIn instanceof MainScreen) {
             this.gameSettings.showDebugInfo = false;
             this.ingameGUI.getChatGUI().clearChatMessages();
         }

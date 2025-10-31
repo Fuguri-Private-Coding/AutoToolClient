@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.alt.microsoft;
 
 import com.sun.net.httpserver.HttpServer;
 import fuguriprivatecoding.autotoolrecode.alt.Account;
-import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltManagerGuiScreen;
+import fuguriprivatecoding.autotoolrecode.guis.altmanager.AltScreen;
 import java.io.Closeable;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -26,7 +26,7 @@ public class MicrosoftAuthCallback implements Closeable {
 
             server = HttpServer.create(new InetSocketAddress("localhost", 59125), 0);
             server.createContext("/", ex -> {
-                AltManagerGuiScreen.updateStatus("Microsoft authentication callback request: " + ex.getRemoteAddress());
+                AltScreen.updateStatus("Microsoft authentication callback request: " + ex.getRemoteAddress());
                 try {
                     final byte[] messageToHTML = "Закрывай страницу братишка все сработало можешь не ссать!!".getBytes(StandardCharsets.UTF_8);
 
@@ -42,7 +42,7 @@ public class MicrosoftAuthCallback implements Closeable {
                         try {
                             cf.complete(auth(progressHandler, ex.getRequestURI().getQuery()));
                         } catch (Throwable t) {
-                            AltManagerGuiScreen.updateStatus("Unable to authenticate via Microsoft.");
+                            AltScreen.updateStatus("Unable to authenticate via Microsoft.");
                             cf.completeExceptionally(t);
                         }
                     }, "MicrosoftAuthThread");
@@ -50,15 +50,15 @@ public class MicrosoftAuthCallback implements Closeable {
                     thread.setDaemon(true);
                     thread.start();
                 } catch (Throwable t) {
-                    AltManagerGuiScreen.updateStatus("Unable to process request on Microsoft authentication callback server.");
+                    AltScreen.updateStatus("Unable to process request on Microsoft authentication callback server.");
                     close();
                     cf.completeExceptionally(t);
                 }
             });
             server.start();
-            AltManagerGuiScreen.updateStatus("Started Microsoft authentication callback server.");
+            AltScreen.updateStatus("Started Microsoft authentication callback server.");
         } catch (Throwable t) {
-            AltManagerGuiScreen.updateStatus("Unable to run the Microsoft authentication callback server.");
+            AltScreen.updateStatus("Unable to run the Microsoft authentication callback server.");
             close();
             cf.completeExceptionally(t);
         }
@@ -88,10 +88,10 @@ public class MicrosoftAuthCallback implements Closeable {
         try {
             if (server != null) {
                 server.stop(0);
-                AltManagerGuiScreen.updateStatus("Stopped Microsoft authentication callback server.");
+                AltScreen.updateStatus("Stopped Microsoft authentication callback server.");
             }
         } catch (Throwable t) {
-            AltManagerGuiScreen.updateStatus("Unable to stop the Microsoft authentication callback server.");
+            AltScreen.updateStatus("Unable to stop the Microsoft authentication callback server.");
         }
     }
 }

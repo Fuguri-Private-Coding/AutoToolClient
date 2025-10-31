@@ -27,11 +27,11 @@ public class ClickGui extends Module {
 	public void onEnable() {
 		switch (guiMode.getMode()) {
 			case "ImGui" -> {
-				mc.displayGuiScreen(Client.INST.getClickGui());
+				mc.displayGuiScreen(Client.INST.getClickScreen());
 //				mc.displayGuiScreen(imGuiScreen);
 //				ImGuiManager.addWindow(ImGuiScreen.clickGuiWindow);
 			}
-			case "JavaGui" -> mc.displayGuiScreen(Client.INST.getClickGui());
+			case "JavaGui" -> mc.displayGuiScreen(Client.INST.getClickScreen());
 		}
 		toggle();
 	}

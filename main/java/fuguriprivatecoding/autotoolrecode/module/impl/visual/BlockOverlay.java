@@ -27,7 +27,7 @@ public class BlockOverlay extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) return;
+        if (Client.INST.getModules().getModule(Scaffold.class).isToggled()) return;
         if (event instanceof DrawBlockHighlightEvent) {
             MovingObjectPosition renderRayCast = mc.objectMouseOver;
             if (renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {

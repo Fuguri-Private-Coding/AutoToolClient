@@ -39,7 +39,7 @@ public class MoreKB extends Module {
     @EventTarget
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            EntityLivingBase target = Client.INST.getCombatManager().getTargetOrSelectedEntity();
+            EntityLivingBase target = Client.INST.getTargetStorage().getTargetOrSelectedEntity();
             if (target != null && target.hurtTime == 10 && !dontReset(target)) {
                 delay = delayTicks.getRandomizedIntValue();
                 reset = resetTicks.getRandomizedIntValue();

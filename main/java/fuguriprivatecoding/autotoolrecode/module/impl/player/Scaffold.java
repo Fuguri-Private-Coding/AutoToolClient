@@ -3,14 +3,13 @@ package fuguriprivatecoding.autotoolrecode.module.impl.player;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
-import fuguriprivatecoding.autotoolrecode.managers.PlayerManager;
+import fuguriprivatecoding.autotoolrecode.managers.Player;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.EnumFacingOffset;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.RotationData;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
@@ -110,11 +109,6 @@ public class Scaffold extends Module {
     Rot rotation, lastRotation;
 
     RotationData closest;
-
-    private Vec3 targetBlock;
-
-    private BlockPos blockFace;
-    private EnumFacingOffset enumFacing;
 
     double lastDelta = 0;
     float lastPitch = 80;
@@ -224,7 +218,7 @@ public class Scaffold extends Module {
     }
 
     boolean getSafeValue() {
-        return mc.thePlayer.hurtResistantTime > 0 || PlayerManager.airTicks > 12;
+        return mc.thePlayer.hurtResistantTime > 0 || Player.airTicks > 12;
     }
 
     private void resetValues() {

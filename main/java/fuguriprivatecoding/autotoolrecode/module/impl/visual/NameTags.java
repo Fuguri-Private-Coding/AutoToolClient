@@ -14,8 +14,8 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.settings.impl.Mode;
-import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
-import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -51,8 +51,8 @@ public class NameTags extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (murderDetector == null) murderDetector = Client.INST.getModuleManager().getModule(MurderMystery.class);
-        if (midClick == null) midClick = Client.INST.getModuleManager().getModule(MidClick.class);
+        if (murderDetector == null) murderDetector = Client.INST.getModules().getModule(MurderMystery.class);
+        if (midClick == null) midClick = Client.INST.getModules().getModule(MidClick.class);
 
         if (event instanceof Render3DEvent) {
             RenderUtils.start3DNameTag();

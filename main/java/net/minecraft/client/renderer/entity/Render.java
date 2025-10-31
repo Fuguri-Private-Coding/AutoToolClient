@@ -47,7 +47,7 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     }
 
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        if (entity instanceof EntityPlayer && Client.INST.getModuleManager().getModule(NameTags.class).isToggled()) {
+        if (entity instanceof EntityPlayer && Client.INST.getModules().getModule(NameTags.class).isToggled()) {
             return;
         }
         this.renderName(entity, x, y, z);
@@ -64,7 +64,7 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     }
 
     protected void renderOffsetLivingLabel(T entityIn, double x, double y, double z, String str, float p_177069_9_, double p_177069_10_) {
-        if (entityIn instanceof EntityPlayer && Client.INST.getModuleManager().getModule(NameTags.class).isToggled()) {
+        if (entityIn instanceof EntityPlayer && Client.INST.getModules().getModule(NameTags.class).isToggled()) {
             return;
         }
         this.renderLivingLabel(entityIn, str, x, y, z, 256);
@@ -301,9 +301,9 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     protected void renderLivingLabel(T entityIn, String str, double x, double y, double z, int maxDistance) {
         double d0 = entityIn.getDistanceSqToEntity(this.renderManager.livingPlayer);
 
-        boolean b = entityIn instanceof EntityPlayer && Client.INST.getModuleManager().getModule(NameTags.class).isToggled();
+        boolean b = entityIn instanceof EntityPlayer && Client.INST.getModules().getModule(NameTags.class).isToggled();
 
-        boolean friend = entityIn instanceof EntityPlayer ent && Client.INST.getModuleManager().getModule(MidClick.class).showInName.isToggled() && ent.isFriend();
+        boolean friend = entityIn instanceof EntityPlayer ent && Client.INST.getModules().getModule(MidClick.class).showInName.isToggled() && ent.isFriend();
 
         if (d0 <= (double) (maxDistance * maxDistance) || b) {
             if (friend) str = "§2[Friend]§9 " + str;

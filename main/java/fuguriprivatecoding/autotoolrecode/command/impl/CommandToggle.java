@@ -17,7 +17,7 @@ public class CommandToggle extends Command {
 			super.usage();
 			return;
 		}
-		Module module = Client.INST.getModuleManager().getModule(args[1]);
+		Module module = Client.INST.getModules().getModule(args[1]);
 		if (module == null) {
 			addMessage("There is no such module!");
 			return;

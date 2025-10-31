@@ -943,7 +943,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     }
 
     public int getArmSwingAnimationEnd() {
-        Animations animations = Client.INST.getModuleManager().getModule(Animations.class);
+        Animations animations = Client.INST.getModules().getModule(Animations.class);
 
         int i = this.isPotionActive(Potion.digSpeed)
                 ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier())

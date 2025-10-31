@@ -217,7 +217,7 @@ public class GuiChat extends GuiScreen {
     }
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
+        if (shadows == null) shadows = Client.INST.getModules().getModule(Glow.class);
         animation2D.endX = fontRendererObj.getStringWidth(inputField.getText() + "_") + 4;
         animation2D.update(50f);
         if (shadows.isToggled() && shadows.module.get("Chat")) {

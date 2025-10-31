@@ -6,7 +6,7 @@ import com.mojang.authlib.GameProfile;
 import java.util.Comparator;
 import java.util.List;
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.managers.FriendManager;
+import fuguriprivatecoding.autotoolrecode.managers.Friends;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
@@ -43,11 +43,11 @@ public class GuiPlayerTabOverlay extends Gui
 
     public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
     {
-        final MidClick midClick = Client.INST.getModuleManager().getModule(MidClick.class);
-        final MurderMystery murderDetector = Client.INST.getModuleManager().getModule(MurderMystery.class);
-        final FriendManager friendManager = Client.INST.getFriendManager();
+        final MidClick midClick = Client.INST.getModules().getModule(MidClick.class);
+        final MurderMystery murderDetector = Client.INST.getModules().getModule(MurderMystery.class);
+        final Friends friends = Client.INST.getFriends();
 
-        String friend = friendManager.isFriend(networkPlayerInfoIn.getGameProfile().getName(), midClick.reverseFriends.isToggled()) ? "§2[Friend]§9 " : "";
+        String friend = friends.isFriend(networkPlayerInfoIn.getGameProfile().getName(), midClick.reverseFriends.isToggled()) ? "§2[Friend]§9 " : "";
         String murder = murderDetector.isToggled() && murderDetector.murders.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§4[Murder]§4 " : "";
         String detective = murderDetector.isToggled() && murderDetector.detectives.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§6[Detective]§6 " : "";
         String user = IRC.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()) != null ? IRC.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()).toColoredString() + " " : "";

@@ -1,10 +1,12 @@
 package fuguriprivatecoding.autotoolrecode;
 
-import fuguriprivatecoding.autotoolrecode.alt.AccountManager;
+import fuguriprivatecoding.autotoolrecode.alt.Accounts;
 import fuguriprivatecoding.autotoolrecode.guis.altmanager.*;
 import fuguriprivatecoding.autotoolrecode.guis.config.*;
 import fuguriprivatecoding.autotoolrecode.config.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
+import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.sound.*;
 import fuguriprivatecoding.autotoolrecode.command.*;
 import fuguriprivatecoding.autotoolrecode.event.*;
@@ -15,13 +17,12 @@ import fuguriprivatecoding.autotoolrecode.guis.main.*;
 import fuguriprivatecoding.autotoolrecode.irc.*;
 import fuguriprivatecoding.autotoolrecode.managers.*;
 import fuguriprivatecoding.autotoolrecode.module.*;
-import fuguriprivatecoding.autotoolrecode.utils.font.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
-import fuguriprivatecoding.autotoolrecode.utils.discord.*;
 import fuguriprivatecoding.autotoolrecode.utils.file.*;
 import fuguriprivatecoding.autotoolrecode.utils.packet.*;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
-import fuguriprivatecoding.autotoolrecode.utils.version.ClientVersion;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
@@ -34,7 +35,6 @@ import lombok.Setter;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 @Getter
 public enum Client implements Imports {
@@ -46,32 +46,30 @@ public enum Client implements Imports {
 	@Setter
 	Profile profile;
 
-	File clientDirectory;
-	File modelsDirectory;
-	File soundsDirectory;
+	File clientDir;
+	File soundsDir;
 
-	ConsoleGuiScreen console;
-	SoundsManager soundsManager;
-	EventManager eventManager;
-	CombatManager combatManager;
-	FriendManager friendManager;
-	ModuleManager moduleManager;
-	ShaderManager shaderManager;
-	ConfigManager configManager;
-	CommandManager commandManager;
-	ClickManager clickManager;
+    Clicks clicks;
+    Sounds sounds;
+    Events events;
+    Shaders shaders;
+    Friends friends;
+    Modules modules;
+    Configs configs;
+    Commands commands;
+    ConsoleScreen console;
+    TargetStorage targetStorage;
 
-	ClickGuiScreen clickGui;
-	ConfigGuiScreen configGuiScreen;
-	AltManagerGuiScreen altManagerGui;
-	GuiClientMainMenu mainMenu;
+	ClickScreen clickScreen;
+	ConfigScreen configScreen;
+	AltScreen altScreen;
+	MainScreen mainScreen;
 
 	NameGenerator generator;
 
-	@Setter Discord discord;
+	@Setter
+    Discord discord;
 	@Setter ClientIRC irc;
-
-	List<Message> changeLogList;
 
 	boolean starting = true;
 
@@ -86,61 +84,60 @@ public enum Client implements Imports {
 		updateClient();
         irc.connectClient();
 
-		clientDirectory = new File(name);
-		modelsDirectory = new File(name + "/models");
-		soundsDirectory = new File(name + "/sounds");
+		clientDir = new File(name);
+		soundsDir = new File(name + "/sounds");
 
-		FileUtils.createDirectoriesIfNotExists(clientDirectory, modelsDirectory, soundsDirectory);
+		FileUtils.createDirectoriesIfNotExists(clientDir, soundsDir);
 
-		eventManager = new EventManager();
-		eventManager.register(this);
+		events = new Events();
+		events.register(this);
 
-		console = new ConsoleGuiScreen();
+		console = new ConsoleScreen();
 
         Fonts.init();
 
 		discord = new Discord();
 
-		combatManager = new CombatManager();
-		friendManager = new FriendManager();
-		soundsManager = new SoundsManager();
+		targetStorage = new TargetStorage();
+		friends = new Friends();
+		sounds = new Sounds();
 
-		moduleManager = new ModuleManager();
+		modules = new Modules();
 
-		shaderManager = new ShaderManager();
-		shaderManager.init();
+		shaders = new Shaders();
+		shaders.init();
 
-		configManager = new ConfigManager();
-		configManager.init();
-		configManager.loadBinds();
+		configs = new Configs();
+		configs.init();
+		configs.loadBinds();
 
-        AccountManager.init();
+        Accounts.init();
 
 		generator = new NameGenerator("names.txt");
 
-		altManagerGui = new AltManagerGuiScreen();
+		altScreen = new AltScreen();
 
-		commandManager = new CommandManager();
-		clickManager = new ClickManager();
+		commands = new Commands();
+		clicks = new Clicks();
 
 		new PositionResolverComponent();
 
-        new PlayerManager();
+        new Player();
 
 		ViaMCP.create();
 
-		clickGui = new ClickGuiScreen();
+		clickScreen = new ClickScreen();
 
-		configGuiScreen = new ConfigGuiScreen();
+		configScreen = new ConfigScreen();
 
 		mc.gameSettings.ofFastRender = false;
 
-		mainMenu = new GuiClientMainMenu();
+		mainScreen = new MainScreen();
 
 		discord.init();
 		discord.startRPC();
 
-		configManager.loadConfig(configManager.getDefaultConfig());
+		configs.loadConfig(configs.getDefaultConfig());
 
 		starting = false;
 
@@ -158,8 +155,8 @@ public enum Client implements Imports {
 	}
 
 	public void onClose() {
-		configManager.saveConfig(configManager.getDefaultConfig());
-		configManager.saveBinds();
+		configs.saveConfig(configs.getDefaultConfig());
+		configs.saveBinds();
         irc.disconnectClient();
 	}
 
@@ -171,7 +168,7 @@ public enum Client implements Imports {
 
 	@EventTarget
 	public void onEvent(Event event) {
-		if (event instanceof ServerJoinEvent && moduleManager.getModule(IRC.class).isToggled()) irc.connectServer();
+		if (event instanceof ServerJoinEvent && modules.getModule(IRC.class).isToggled()) irc.connectServer();
 		if (event instanceof KeyEvent keyEvent) handleKeyEventForModules(keyEvent);
 		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
 			lastTime = System.currentTimeMillis();
@@ -180,7 +177,7 @@ public enum Client implements Imports {
 	}
 
 	private void handleKeyEventForModules(KeyEvent keyEvent) {
-		for (Module module : moduleManager.getModules()) {
+		for (Module module : modules.getModules()) {
 			if (module.getKey() == keyEvent.getKey()) module.toggle();
 		}
 	}

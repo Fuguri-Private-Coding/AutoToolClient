@@ -31,7 +31,7 @@ public class MidClick extends Module {
                     down = true;
                     Entity entity = RayCastUtils.raycastEntity(range.getValue(), mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, entity1 -> entity1 instanceof EntityPlayer);
                     if (entity instanceof EntityPlayer entity2) {
-                        Client.INST.getFriendManager().onClick(entity2.getName());
+                        Client.INST.getFriends().onClick(entity2.getName());
                     }
                 }
             } else {

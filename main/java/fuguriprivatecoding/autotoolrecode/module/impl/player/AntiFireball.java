@@ -50,7 +50,7 @@ public class AntiFireball extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (mc.thePlayer.ticksExisted < 40 || (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && rotate.isToggled()))
+        if (mc.thePlayer.ticksExisted < 40 || (Client.INST.getModules().getModule(Scaffold.class).isToggled() && rotate.isToggled()))
             return;
 
         if (event instanceof TickEvent) {

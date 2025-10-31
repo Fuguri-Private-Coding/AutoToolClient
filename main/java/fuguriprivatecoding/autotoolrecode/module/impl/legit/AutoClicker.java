@@ -3,9 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -14,7 +12,6 @@ import fuguriprivatecoding.autotoolrecode.settings.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.input.Mouse;
 
@@ -39,7 +36,7 @@ public class AutoClicker extends Module {
                 if (RayCastUtils.rayCast(3, 4.5, new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) return;
 
                 if (leftStopWatch.reachedMS(leftDelay)) {
-                    Client.INST.getClickManager().addClick();
+                    Client.INST.getClicks().addClick();
                     leftStopWatch.reset();
                 }
                 leftDelay = getLeftDelay();

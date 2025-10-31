@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -66,7 +66,7 @@ public class TargetESP extends Module {
     private void renderSigma(Color color1, Color color2) {
         double animationTranslate = sin(System.currentTimeMillis() / 1000.0 * speed.getValue());
 
-        final EntityLivingBase target = Client.INST.getCombatManager().getTarget();
+        final EntityLivingBase target = Client.INST.getTargetStorage().getTarget();
 
         if (target == null) return;
 
@@ -131,7 +131,7 @@ public class TargetESP extends Module {
     }
 
     private void renderSigma2(Color color1, Color color2) {
-        final EntityLivingBase target = Client.INST.getCombatManager().getTarget();
+        final EntityLivingBase target = Client.INST.getTargetStorage().getTarget();
 
         if (target == null) return;
 

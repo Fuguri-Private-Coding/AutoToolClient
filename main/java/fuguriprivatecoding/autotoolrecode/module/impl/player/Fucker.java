@@ -9,8 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.settings.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
-import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -176,7 +175,7 @@ public class Fucker extends Module {
     }
 
     public boolean handleRotate() {
-        return !Client.INST.getModuleManager().getModule(Scaffold.class).isToggled() && Client.INST.getCombatManager().getTarget() == null;
+        return !Client.INST.getModules().getModule(Scaffold.class).isToggled() && Client.INST.getTargetStorage().getTarget() == null;
     }
 
     public void destroy() {

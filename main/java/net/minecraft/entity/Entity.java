@@ -243,7 +243,7 @@ public abstract class Entity implements ICommandSender
     }
 
     public void setAngles(float yaw, float pitch) {
-        FreeLook freeLook = Client.INST.getModuleManager().getModule(FreeLook.class);
+        FreeLook freeLook = Client.INST.getModules().getModule(FreeLook.class);
         if (Minecraft.getMinecraft().thePlayer == this) {
             if (freeLook.isToggled()) {
                 freeLook.rotYaw += yaw * 0.15f;

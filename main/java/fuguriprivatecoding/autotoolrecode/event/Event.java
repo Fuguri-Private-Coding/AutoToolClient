@@ -4,10 +4,10 @@ import fuguriprivatecoding.autotoolrecode.Client;
 
 public class Event {
     public void call() {
-        Client.INST.getEventManager().call(this);
+        Client.INST.getEvents().call(this);
     }
 
     public void callNoWorldNoPlayer() {
-        Client.INST.getEventManager().callNoWorldNoPlayer(this);
+        Client.INST.getEvents().callNoWorldNoPlayer(this);
     }
 }

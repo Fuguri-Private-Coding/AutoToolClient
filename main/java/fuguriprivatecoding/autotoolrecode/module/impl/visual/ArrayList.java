@@ -8,8 +8,8 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.font.ClientFontRenderer;
-import fuguriprivatecoding.autotoolrecode.utils.font.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
@@ -65,7 +65,7 @@ public class ArrayList extends Module {
     public void onEvent(Event event) {
         if (!font.name.equalsIgnoreCase(fonts.getMode())) font = Fonts.fonts.get(fonts.getMode());
         if (event instanceof Render2DEvent) {
-            List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModuleManager().getEnabledModules());
+            List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModules().getEnabledModules());
             ScaledResolution sc = new ScaledResolution(mc);
 
             sort(moduleList, font);

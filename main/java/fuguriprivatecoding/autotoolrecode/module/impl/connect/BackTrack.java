@@ -62,7 +62,7 @@ public class BackTrack extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModuleManager().getModule(Glow.class);
+        if (shadows == null) shadows = Client.INST.getModules().getModule(Glow.class);
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();
             if (target == null || e.isCanceled() || e.getDirection() != PacketDirection.INCOMING) return;
@@ -92,9 +92,9 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof Render3DEvent) {
-            if (target != (whileKillAura.isToggled() ? Client.INST.getCombatManager().getTarget() : Client.INST.getCombatManager().getTargetOrSelectedEntity())) {
+            if (target != (whileKillAura.isToggled() ? Client.INST.getTargetStorage().getTarget() : Client.INST.getTargetStorage().getTargetOrSelectedEntity())) {
                 handle(true);
-                target = (whileKillAura.isToggled() ? Client.INST.getCombatManager().getTarget() : Client.INST.getCombatManager().getTargetOrSelectedEntity());
+                target = (whileKillAura.isToggled() ? Client.INST.getTargetStorage().getTarget() : Client.INST.getTargetStorage().getTargetOrSelectedEntity());
             }
 
             if (delayBetweenBackTracks > 0) {

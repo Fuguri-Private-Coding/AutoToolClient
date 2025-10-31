@@ -9,7 +9,6 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.settings.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
@@ -66,7 +65,7 @@ public class TimerRange extends Module {
         if (teleporting) return;
 
         if (event instanceof TickEvent e) {
-            EntityLivingBase target = Client.INST.getCombatManager().getTarget();
+            EntityLivingBase target = Client.INST.getTargetStorage().getTarget();
 
             if (balance > 0) {
                 e.cancel();
@@ -121,7 +120,7 @@ public class TimerRange extends Module {
         }
 
         if (event instanceof Render3DEvent && renderRealPlayerPosition.isToggled()) {
-            EntityLivingBase target = Client.INST.getCombatManager().getTarget();
+            EntityLivingBase target = Client.INST.getTargetStorage().getTarget();
 
             if (target == null) return;
 
@@ -172,7 +171,7 @@ public class TimerRange extends Module {
     }
 
     private AxisAlignedBB getFixedCashedBB(EntityLivingBase target, Vec3 newPos, Vec3 pos) {
-        BackTrack backTrack = Client.INST.getModuleManager().getModule(BackTrack.class);
+        BackTrack backTrack = Client.INST.getModules().getModule(BackTrack.class);
         if (backTrack.isToggled() && !backTrack.packetBuffer.isEmpty()) {
             return target.getEntityBoundingBox().offset(
                     pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ

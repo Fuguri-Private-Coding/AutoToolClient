@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.config;
 
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import lombok.Setter;
 
@@ -22,7 +21,7 @@ public class Config {
 
     public Config(String name) {
        this.name = name;
-       configFile = new File(Client.INST.getConfigManager().getConfigsDirectory(), name + CONFIG_FORMAT);
+       configFile = new File(Client.INST.getConfigs().getConfigsDirectory(), name + CONFIG_FORMAT);
        lastUpdateDate = new Date();
        FileUtils.createIfNotExists(configFile);
     }
@@ -34,17 +33,6 @@ public class Config {
 
     public String getLastUpdateDate() {
         return DATE_FORMAT.format(lastUpdateDate);
-    }
-
-    public void rename(String name) {
-        if (this.name.equalsIgnoreCase(name)) {
-            ClientUtils.chatLog("Нельзя переименовать конфигурацию в такое-же название как и до этого!");
-            return;
-        }
-        this.name = name;
-        if (!configFile.renameTo(new File(name))) {
-            ClientUtils.chatLog("Не удалось переименовать конфигурацию");
-        }
     }
 
     public void onUpdate() {

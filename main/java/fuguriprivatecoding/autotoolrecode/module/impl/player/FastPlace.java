@@ -28,7 +28,7 @@ public class FastPlace extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (Client.INST.getModuleManager().getModule(Scaffold.class).isToggled()) return;
+        if (Client.INST.getModules().getModule(Scaffold.class).isToggled()) return;
         if (mc.currentScreen != null) return;
         boolean needClick = Mouse.isButtonDown(1) && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
         if (event instanceof TickEvent) {
