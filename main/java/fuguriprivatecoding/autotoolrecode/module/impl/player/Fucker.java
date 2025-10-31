@@ -14,6 +14,7 @@ import fuguriprivatecoding.autotoolrecode.utils.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.block.BlockAir;
@@ -181,7 +182,16 @@ public class Fucker extends Module {
     public void destroy() {
         if (bedPos != null) {
             if (rotate) {
-                Rot rot = RotUtils.getRotationToBlock(bedPos, getEnumFacing(bedPos));
+                Rot needRot = RotUtils.getRotationToBlock(bedPos, getEnumFacing(bedPos));
+
+                Delta delta = RotUtils.getDelta(Rot.getServerRotation(), needRot);
+
+                delta = RotUtils.fixDelta(delta);
+
+                Rot rot = new Rot(
+                    Rot.getServerRotation().getYaw() + delta.getYaw(),
+                    Rot.getServerRotation().getPitch() + delta.getPitch()
+                );
 
                 Rot.setServerRotation(rot);
             }

@@ -277,13 +277,13 @@ public class Scaffold extends Module {
                 if (getTellyValue()) {
                     rotation = new Rot(yaw, lastRotation.getPitch());
                 } else {
-                    rotation = getBestRotation();
+                    rotation = getBestRotation(yaw, MoveUtils.isMoveDiagonally(yaw) ? 0 : isOnRightSide ? 45 : -45);
                 }
             }
 
             case "GodBridge" -> {
                 if (getSafeValue()) {
-                    rotation = getBestRotation();
+                    rotation = getBestRotation(yaw, 0);
                 } else {
                     MovingObjectPosition rightRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw + 45, getPitch(roundedYaw + 45, false)));
                     MovingObjectPosition leftRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw - 45, getPitch(roundedYaw - 45, false)));
@@ -299,7 +299,7 @@ public class Scaffold extends Module {
                 }
             }
 
-            case "Normal" -> rotation = getBestRotation();
+            case "Normal" -> rotation = getBestRotation(yaw, 0);
         }
 
         Delta delta = RotUtils.getDelta(Rot.getServerRotation(), rotation);
@@ -384,12 +384,12 @@ public class Scaffold extends Module {
         return pitches.getFirst();
     }
 
-    private Rot getBestRotation() {
+    private Rot getBestRotation(float yawOffset, float offset) {
         float step = 5;
         List<RotationData> validRotations = new ArrayList<>();
 
-        for (float i = 0; i < 360; i += step) {
-            float yaw = MathHelper.wrapDegree(i);
+        for (float possibleYaw = yawOffset - 180 + offset; possibleYaw <= yawOffset + 360 - 180; possibleYaw += 45) {
+            float yaw = MathHelper.wrapDegree(possibleYaw);
             float pitch = getPitch(yaw, false);
             MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, pitch));
 
