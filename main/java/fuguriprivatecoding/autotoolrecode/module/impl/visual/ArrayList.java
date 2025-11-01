@@ -58,7 +58,7 @@ public class ArrayList extends Module {
 
     public ArrayList() {
         Fonts.fonts.forEach((fontName, _) -> fonts.addMode(fontName));
-        fonts.setMode("SFProRounded");
+        fonts.setMode("SFProRegular");
     }
 
     @EventTarget

@@ -5,10 +5,13 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "ClickGui", category = Category.VISUAL, key = Keyboard.KEY_RSHIFT, description = "ХАЛЯЛЬ #НАСТРОЙКА КЛИК ГУИ ЙОУ.")
 public class ClickGui extends Module {
+
+    public Mode fonts = new Mode("Fonts", this);
 
 	Mode guiMode = new Mode("GuiMode", this).addModes("ImGui", "JavaGui").setMode("ImGui");
 
@@ -22,6 +25,11 @@ public class ClickGui extends Module {
 	public final ColorSetting colorShadow = new ColorSetting("Color Shadow", this);
 
 //	ImGuiScreen imGuiScreen = new ImGuiScreen();
+
+    public ClickGui() {
+        Fonts.fonts.forEach((fontName, _) -> fonts.addMode(fontName));
+        fonts.setMode("SFProRounded");
+    }
 
 	@Override
 	public void onEnable() {

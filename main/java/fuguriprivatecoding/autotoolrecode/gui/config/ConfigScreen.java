@@ -110,7 +110,7 @@ public class ConfigScreen extends GuiScreen {
             default -> "§k" + "Config".substring(0, min(delay - 20, 6));
         };
 
-        ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
+        ClientFontRenderer font = Fonts.fonts.get(clickGui.fonts.getMode());
 
         background.endX = pos.x;
         background.endY = pos.y;

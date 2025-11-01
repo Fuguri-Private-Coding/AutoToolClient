@@ -98,6 +98,8 @@ public class ClickScreen extends GuiScreen {
 		mouseX = (int) (mouseX / scale);
 		mouseY = (int) (mouseY / scale);
 
+        GL11.glPushMatrix();
+
 		GL11.glScaled(scale,scale,1f);
 
 		if (closing) {
@@ -120,7 +122,7 @@ public class ClickScreen extends GuiScreen {
 			case 20 -> "_";
 			default -> "§k" + "AutoTool".substring(0, min(delay - 20, 8));
 		};
-		final ClientFontRenderer fontRenderer = Fonts.fonts.get("SFProRounded");
+		final ClientFontRenderer fontRenderer = Fonts.fonts.get(clickGui.fonts.getMode());
 
 		Client.INST.getModules().getModules().sort((o1, o2) -> {
 			int width1 = (int) fontRenderer.getStringWidth(o1.getName());
@@ -267,8 +269,7 @@ public class ClickScreen extends GuiScreen {
 
 		offset = 0;
 		for (Category category : Category.values()) {
-            boolean selectCategory = mouseX > background.x + verticalLineXOffset + 5 + 5 + offset && mouseX < background.x + verticalLineXOffset + 5 + 5 + offset + fontRenderer.getStringWidth(category.name) && mouseY > background.y + 2 && mouseY < background.y + 2 + fontRenderer.FONT_HEIGHT;
-            category.hovered = selectCategory;
+            category.hovered = mouseX > background.x + verticalLineXOffset + 5 + 5 + offset && mouseX < background.x + verticalLineXOffset + 5 + 5 + offset + fontRenderer.getStringWidth(category.name) && mouseY > background.y + 2 && mouseY < background.y + 2 + fontRenderer.FONT_HEIGHT;
 
             EasingAnimation toggleCategoryAnim = category.getToggleAnim();
             toggleCategoryAnim.update(3f, Easing.OUT_CUBIC);
@@ -772,12 +773,12 @@ public class ClickScreen extends GuiScreen {
 		moduleLine.update(clickGui.animationSpeed.getValue());
 		settingLine.update(clickGui.animationSpeed.getValue());
 
-		GL11.glScaled(1f / scale, 1f / scale,1f);
+        GL11.glPopMatrix();
 	}
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		ClientFontRenderer fontRenderer = Fonts.fonts.get("SFProRounded");
+		ClientFontRenderer fontRenderer = Fonts.fonts.get(clickGui.fonts.getMode());
 
 		float scale = clientSettings.scale.getValue();
 

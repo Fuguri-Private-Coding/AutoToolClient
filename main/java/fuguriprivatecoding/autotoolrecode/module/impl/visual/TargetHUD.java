@@ -83,7 +83,7 @@ public class TargetHUD extends Module {
         if (target == null || target.getSkin() == null || target.getName() == null) return;
 
         if (event instanceof Render2DEvent e) {
-            currentScale.update(2, Easing.IN_OUT_BACK);
+            currentScale.update(2, Easing.OUT_BACK);
 
             ClientFontRenderer font = Fonts.fonts.get(fonts.getMode());
 
@@ -102,18 +102,14 @@ public class TargetHUD extends Module {
 
                 if (positions == null || positions[2] > 1) return;
 
-                positions[0] /= scale.getValue();
-                positions[1] /= scale.getValue();
-
-                float currentWidth = width * currentScale.getValue();
-                float currentHeight = height * currentScale.getValue();
-
                 pos.set(
-                    positions[0] - ((width / 2f) * currentScale.getValue()),
-                    positions[1] - ((height / 2f) * currentScale.getValue())
+                    (positions[0] / currentScale.getValue()) - width / 2f,
+                    (positions[1] / currentScale.getValue()) - height / 2f
                 );
 
-                renderHUD(pos.x, pos.y, currentWidth, currentHeight, bgRadius.getValue() * currentScale.getValue(), font, target, this.scale.getValue());
+                float scale = currentScale.getValue();
+
+                renderHUD(pos.x, pos.y, width, height, bgRadius.getValue(), font, target, scale);
             } else {
                 pos.set(
                     (e.getSc().getScaledWidth() / 100f) * xPos.getValue() / currentScale.getValue() - width / 2f,
@@ -129,12 +125,12 @@ public class TargetHUD extends Module {
 
     private void renderHUD(float posX, float posY, float width, float height, float radius, ClientFontRenderer font, EntityLivingBase target, double scaleFactor) {
         glPushMatrix();
-        glScaled(scaleFactor, scaleFactor, 1);
+        glScaled(scaleFactor, scaleFactor, scaleFactor);
 
+        if (render.get("Background")) RoundedUtils.drawRect(posX, posY, width, height, radius, bgColor.getFadedColor());
         StencilUtils.setUpTexture(posX, posY, width, height, radius);
 
         StencilUtils.writeTexture();
-        if (render.get("Background")) RoundedUtils.drawRect(posX, posY, width, height, radius, bgColor.getFadedColor());
         if (render.get("Name")) font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, textColor.getFadedColor());
 
         if (render.get("Health")) {
@@ -162,8 +158,8 @@ public class TargetHUD extends Module {
 
             float headX = posX + 5 + hurtTime / 2f;
             float headY = posY + 5 + hurtTime / 2f;
-            float headWidth = (height - 10 - hurtTime) * currentScale.getValue();
-            float headHeight = (height - 10 - hurtTime) * currentScale.getValue();
+            float headWidth = height - 10 - hurtTime;
+            float headHeight = height - 10 - hurtTime;
 
             StencilUtils.setUpTexture(headX, headY, headWidth, headHeight, headRadius.getValue() * currentScale.getValue());
             StencilUtils.writeTexture();

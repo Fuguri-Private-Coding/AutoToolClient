@@ -24,7 +24,6 @@ public class RoundedUtils implements Imports {
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableAlpha();
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.0F);
         program.renderShader(x, y, width, height);
         GlStateManager.disableBlend();
         Shader.stop();

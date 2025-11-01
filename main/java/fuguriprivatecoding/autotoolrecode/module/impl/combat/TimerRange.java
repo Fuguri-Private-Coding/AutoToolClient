@@ -53,11 +53,6 @@ public class TimerRange extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        if (event instanceof LegitClickTimingEvent && click) {
-            mc.clickMouse();
-            click = false;
-        }
-
         if (event instanceof RunGameLoopEvent && balance > 0) {
             mc.timer.renderPartialTicks = partialTicks.getValue();
         }
@@ -90,7 +85,7 @@ public class TimerRange extends Module {
 
                 AxisAlignedBB targetBox = getFixedCashedBB(target, newPos, position);
 
-                boolean skipTickDistance = DistanceUtils.getDistance(simulatedPlayer, targetBox.expand(0.1f,0.1f,0.1f)) > minDistanceToSkipTick.getValue();
+                boolean skipTickDistance = DistanceUtils.getDistance(simulatedPlayer, targetBox) > minDistanceToSkipTick.getValue();
 
                 if (skipTickDistance) {
                     simulatedPlayer.tick();
@@ -108,10 +103,10 @@ public class TimerRange extends Module {
                     mc.runTick();
                     balance++;
                     if (i == teleportTicks - 1) {
-                        click = true;
+                        Client.INST.getClicks().addClick();
                         balance += additionalTicks.getValue();
                     }
-                    if (RayCastUtils.rayCast(3.0, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
+                    if (RayCastUtils.rayCast(3, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                         break;
                     }
                 } catch (Exception ignored) {}

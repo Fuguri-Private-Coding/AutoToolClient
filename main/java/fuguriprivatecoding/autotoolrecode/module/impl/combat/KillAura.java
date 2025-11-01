@@ -115,7 +115,7 @@ public class KillAura extends Module {
 
             if (event instanceof TickEvent) {
                 AxisAlignedBB box = getHitBox(target);
-                Rot needRotation = TimerRange.teleporting && teleportPredictFix.isToggled() ?
+                Rot needRotation = (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ?
                     RotUtils.getBestRotation(box.expand(0.1f,0f,0.1f)) :
                     switch (hitVec.getMode()) {
                     case "Best" -> RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f));
@@ -130,15 +130,15 @@ public class KillAura extends Module {
                 Rot delta = RotUtils.getDelta(lr, needRotation);
 
                 Rot speed = new Rot(
-                    TimerRange.teleporting && teleportPredictFix.isToggled() ? 180 : yawSpeed.getRandomizedIntValue(),
-                    TimerRange.teleporting && teleportPredictFix.isToggled() ? 180 : pitchSpeed.getRandomizedIntValue()
+                    (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 180 : yawSpeed.getRandomizedIntValue(),
+                    (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 180 : pitchSpeed.getRandomizedIntValue()
                 );
 
                 RotUtils.limitDelta(delta, speed);
 
                 switch (smoothMode.getMode()) {
                     case "Linear" -> {
-                        if (TimerRange.teleporting && teleportPredictFix.isToggled()) break;
+                        if ((TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled()) break;
 
                         if (basicRandomize.isToggled()) {
                             Rot rot = new Rot(
@@ -156,7 +156,7 @@ public class KillAura extends Module {
 
                 RotUtils.limitDelta(delta, speed);
 
-                if (!TimerRange.teleporting) {
+                if (TimerRange.balance <= 0 && !TimerRange.teleporting) {
                     delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
                     delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
                 }
@@ -210,8 +210,8 @@ public class KillAura extends Module {
     private AxisAlignedBB getHitBox(EntityLivingBase target) {
         AxisAlignedBB box = target.getEntityBoundingBox();
 
-        double horizontalPercent = (TimerRange.teleporting && teleportPredictFix.isToggled() ? 100 : horizontalHitBoxSize.getValue()) / 200d;
-        double verticalPercent = (TimerRange.teleporting && teleportPredictFix.isToggled() ? 100 : verticalHitBoxSize.getValue()) / 200d;
+        double horizontalPercent = ((TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 100 : horizontalHitBoxSize.getValue()) / 200d;
+        double verticalPercent = ((TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 100 : verticalHitBoxSize.getValue()) / 200d;
 
         Vec3 center = new Vec3(
             (box.maxX + box.minX) / 2,

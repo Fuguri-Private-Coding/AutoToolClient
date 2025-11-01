@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.handle;
 
 import fuguriprivatecoding.autotoolrecode.event.events.LegitClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.TimerRange;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.Client;
@@ -56,7 +57,7 @@ public class Clicks implements Imports {
         if (target == null) { return true; }
         if (target.hurtTime <= startRandomizedHurtTime) { return true; }
         if (!clickSettings.isToggled()) return true;
-        return mc.thePlayer.hurtTime >= endRandomizeHurtTime;
+        return mc.thePlayer.hurtTime >= endRandomizeHurtTime || (TimerRange.teleporting || TimerRange.balance > 0);
     }
 
     public void addClick() { clicks++; }

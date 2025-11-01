@@ -119,7 +119,7 @@ public class ConsoleScreen extends GuiScreen {
             default -> "§k" + "Console_".substring(0, min(delay - 20, 8));
         };
 
-        ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
+        ClientFontRenderer font = Fonts.fonts.get(clickGui.fonts.getMode());
 
         double widthName = font.getStringWidth(name);
         double width = font.getStringWidth("Clear History");
@@ -229,7 +229,7 @@ public class ConsoleScreen extends GuiScreen {
         mouseX = (int) (mouseX / scale);
         mouseY = (int) (mouseY / scale);
 
-        ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
+        ClientFontRenderer font = Fonts.fonts.get(clickGui.fonts.getMode());
 
         double width = font.getStringWidth("Clear History");
 

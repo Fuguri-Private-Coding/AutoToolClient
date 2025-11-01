@@ -97,7 +97,7 @@ public class AltScreen extends GuiScreen {
         BackgroundUtils.run();
 
         AlphaUtils.startWrite();
-        
+
         accounts.removeIf(account -> account.isDeleting() && account.getAnim().getValue() == 0);
 
         RoundedUtils.drawRect(sc.getScaledWidth() - 285, 15, 250, sc.getScaledHeight() - 30, 7.5f, new Color(0, 0, 0, 0.7f));
