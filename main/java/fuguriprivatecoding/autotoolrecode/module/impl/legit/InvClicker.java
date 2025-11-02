@@ -39,16 +39,7 @@ public class InvClicker extends Module {
         try {
             if (mouseDown >= delay.getValue()) {
                 try {
-                    Method mouseClickedMethod = GuiScreen.class.getDeclaredMethod(
-                            "mouseClicked",
-                            int.class,
-                            int.class,
-                            int.class
-                    );
-
-                    mouseClickedMethod.setAccessible(true);
-
-                    mouseClickedMethod.invoke(guiScreen, mouseInGUIPosX, mouseInGUIPosY, 1);
+                    guiScreen.mouseClick(mouseInGUIPosX, mouseInGUIPosY, 1);
                 } catch (Exception ignored) {}
                 mouseDown = 0;
             }

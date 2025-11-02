@@ -764,10 +764,10 @@ public class ClickScreen extends GuiScreen {
 		final int iconSize = 15;
 
 		ColorUtils.glColor(console ? MAIN_COLOR : Color.WHITE);
-		RenderUtils.drawImage(terminal, (int) consoleX, (int) iconY, iconSize, iconSize, true);
+		RenderUtils.drawImage(terminal, consoleX, iconY, iconSize, iconSize, true);
 
 		ColorUtils.glColor(config ? MAIN_COLOR : Color.WHITE);
-		RenderUtils.drawImage(configs, (int) configX, (int) iconY, iconSize, iconSize, true);
+		RenderUtils.drawImage(configs, configX, iconY, iconSize, iconSize, true);
 
 		guis.update(clickGui.animationSpeed.getValue() / 5, Easing.OUT_BACK);
 		moduleLine.update(clickGui.animationSpeed.getValue());

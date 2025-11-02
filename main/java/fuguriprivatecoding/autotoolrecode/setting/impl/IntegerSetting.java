@@ -3,11 +3,18 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
+import java.awt.*;
 import java.util.function.BooleanSupplier;
+
+import static java.lang.Math.round;
+import static java.lang.Math.signum;
 
 @Getter
 @Setter

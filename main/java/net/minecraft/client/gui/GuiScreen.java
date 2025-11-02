@@ -437,6 +437,10 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         this.mc.thePlayer.sendChatMessage(msg);
     }
 
+    public void mouseClick(int mouseX, int mouseY, int mouseButton) throws IOException {
+        mouseClicked(mouseX, mouseY, mouseButton);
+    }
+
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         if (mouseButton == 0)

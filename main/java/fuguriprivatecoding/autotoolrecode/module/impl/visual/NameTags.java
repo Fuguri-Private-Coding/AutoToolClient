@@ -55,13 +55,13 @@ public class NameTags extends Module {
         if (midClick == null) midClick = Client.INST.getModules().getModule(MidClick.class);
 
         if (event instanceof Render3DEvent) {
-            RenderUtils.start3DNameTag();
+            RenderUtils.start3D();
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
                 Vec3 pos = calculateTranslatedPos(entity);
 
                 renderNameTag(entity, getText(entity), pos);
             }
-            RenderUtils.stop3DNameTag();
+            RenderUtils.stop3D();
         }
     }
 

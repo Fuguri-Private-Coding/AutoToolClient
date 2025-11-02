@@ -234,9 +234,9 @@ public class Scaffold extends Module {
         MovingObjectPosition mouseOver = RayCastUtils.rayCast(6, 4.5f, Rot.getServerRotation());
 
         if (mouse.sideHit == mouseOver.sideHit &&
-                mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
-                && isSameY(mouse)
-                && mouse.getBlockPos().getX() == mouseOver.getBlockPos().getX() && mouse.getBlockPos().getZ() == mouseOver.getBlockPos().getZ()
+            mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
+            && isSameY(mouse)
+            && mouse.getBlockPos().equals(mouseOver.getBlockPos())
             && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
 
             if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {

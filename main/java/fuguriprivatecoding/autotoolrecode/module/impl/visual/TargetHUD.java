@@ -47,11 +47,11 @@ public class TargetHUD extends Module {
     public final ColorSetting textColor = new ColorSetting("Text Color", this, () -> render.get("Name"));
     public final ColorSetting bgColor = new ColorSetting("Background Color", this, () -> render.get("Background"));
 
-    FloatSetting bgRadius = new FloatSetting("Background Radius", this, 0f, 200f, 10f, 0.1f);
+    FloatSetting bgRadius = new FloatSetting("Background Radius", this, 0f, 20f, 10f, 0.1f);
 
     public final ColorSetting healthColor = new ColorSetting("Health Color", this, () -> render.get("Health"));
 
-    FloatSetting headRadius = new FloatSetting("Head Radius", this, () -> render.get("Head"), 0f, 50f, 10f, 0.1f);
+    FloatSetting headRadius = new FloatSetting("Head Radius", this, () -> render.get("Head"), 0f, 15f, 7.5f, 0.1f);
 
     private final FloatSetting scale = new FloatSetting("Scale", this, 0.5f, 3f, 1.5f, 0.05f);
 
@@ -102,12 +102,13 @@ public class TargetHUD extends Module {
 
                 if (positions == null || positions[2] > 1) return;
 
-                pos.set(
-                    (positions[0] / currentScale.getValue()) - width / 2f,
-                    (positions[1] / currentScale.getValue()) - height / 2f
-                );
 
-                float scale = currentScale.getValue();
+                float scale = this.scale.getValue() * currentScale.getValue();
+
+                pos.set(
+                    (positions[0] / scale) - width / 2f,
+                    (positions[1] / scale) - height / 2f
+                );
 
                 renderHUD(pos.x, pos.y, width, height, bgRadius.getValue(), font, target, scale);
             } else {
