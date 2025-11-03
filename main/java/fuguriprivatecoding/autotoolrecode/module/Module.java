@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module;
 
+import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
@@ -61,14 +62,9 @@ public class Module implements Imports, SettingAble, EventListener {
 		if (toggled) Sounds.getEnableSound().asyncPlay(volume);else Sounds.getDisableSound().asyncPlay(volume);
 	}
 
-	public boolean toggled() {
-        return toggled;
-	}
-
 	public void onEnable() {
 
 	}
-
 	public void onDisable() {
 
 	}
@@ -99,4 +95,29 @@ public class Module implements Imports, SettingAble, EventListener {
 	public void addSettings(Setting... settings) {
 		this.settings.addAll(List.of(settings));
 	}
+
+    public JsonObject getObject() {
+        JsonObject object = new JsonObject();
+        object.addProperty("toggled", toggled);
+        object.addProperty("hide", hide);
+
+        for (Setting setting : settings) {
+            JsonObject settingObject = setting.getObject();
+            object.add(setting.getName(), settingObject);
+        }
+
+        return object;
+    }
+
+    public void setObject(JsonObject object, boolean includeStates) {
+        if (includeStates) {
+            setToggled(object.get("toggled").getAsBoolean());
+            setHide(object.get("hide").getAsBoolean());
+        }
+
+        for (Setting setting : settings) {
+            JsonObject settingObject = object.getAsJsonObject(setting.getName());
+            setting.setObject(settingObject);
+        }
+    }
 }

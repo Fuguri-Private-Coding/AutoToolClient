@@ -7,7 +7,6 @@ import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Module;
-import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import lombok.experimental.UtilityClass;
@@ -27,18 +26,14 @@ import java.util.Map;
 public class Configs implements Imports {
 
     @Getter File configsDirectory, bindsDirectory;
-    @Getter File bindFile, loadModulesFile, hotTextFile, accountFile;
-    @Getter private List<Config> configs;
-    @Getter Config defaultConfig;
+    @Getter File bindFile;
+    @Getter private List<Config> configs = new ArrayList<>();
+    @Getter Config defaultConfig = new Config("default");
 
     public void init() {
-        configs = new ArrayList<>();
         configsDirectory = new File(Client.INST.getName() + "/configs");
         bindsDirectory = new File(Client.INST.getName() + "/binds");
-        defaultConfig = new Config("default");
         bindFile = new File(bindsDirectory, "binds.json");
-
-        saveConfig(defaultConfig);
 
         try {
             FileUtils.createDirectoriesIfNotExists(configsDirectory, bindsDirectory);
@@ -117,23 +112,9 @@ public class Configs implements Imports {
         }
     }
 
-    private void applyModuleSettings(Module module, JsonObject moduleObject) {
+    private void applyModuleSettings(Module module, JsonObject moduleObject, boolean includeStates) {
         if (module == null || moduleObject == null) return;
-
-        if (moduleObject.has("toggled")) {
-            module.setToggled(moduleObject.get("toggled").getAsBoolean());
-        }
-
-        if (moduleObject.has("hide")) {
-            module.setHide(moduleObject.get("hide").getAsBoolean());
-        }
-
-        for (Setting setting : module.getSettings()) {
-            JsonObject settingObject = moduleObject.getAsJsonObject(setting.getName());
-            if (settingObject != null) {
-                setting.setObject(settingObject);
-            }
-        }
+        module.setObject(moduleObject, includeStates);
     }
 
     private void copyToClipboard(String text) {
@@ -154,7 +135,7 @@ public class Configs implements Imports {
 
             JsonObject moduleObject = json.getAsJsonObject(module.getName());
             if (moduleObject != null) {
-                applyModuleSettings(module, moduleObject);
+                applyModuleSettings(module, moduleObject, false);
                 logSuccess("Imported settings to " + module.getName());
             }
 
@@ -177,7 +158,7 @@ public class Configs implements Imports {
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
                 Module module = Modules.getModule(entry.getKey());
                 if (module != null && module.getCategory() == category) {
-                    applyModuleSettings(module, (JsonObject) entry.getValue());
+                    applyModuleSettings(module, (JsonObject) entry.getValue(), true);
                 }
             }
 
@@ -208,30 +189,16 @@ public class Configs implements Imports {
 
     private JsonObject createModuleExportObject(Module module) {
         JsonObject json = new JsonObject();
-        json.add(module.getName(), createModuleObject(module, false));
+        json.add(module.getName(), module.getObject());
         return json;
     }
 
     private JsonObject createCategoryExportObject(Category category) {
         JsonObject json = new JsonObject();
         for (Module module : Modules.getModulesByCategory(category)) {
-            json.add(module.getName(), createModuleObject(module, true));
+            json.add(module.getName(), module.getObject());
         }
         return json;
-    }
-
-    private JsonObject createModuleObject(Module module, boolean includeState) {
-        JsonObject moduleObject = new JsonObject();
-
-        if (includeState) {
-            moduleObject.addProperty("toggled", module.isToggled());
-        }
-
-        for (Setting setting : module.getSettings()) {
-            moduleObject.add(setting.getName(), setting.getObject());
-        }
-
-        return moduleObject;
     }
 
     public void loadConfig(Config config) {
@@ -245,7 +212,7 @@ public class Configs implements Imports {
 
                 Module module = Modules.getModule(entry.getKey());
                 if (module != null) {
-                    applyModuleSettings(module, (JsonObject) entry.getValue());
+                    applyModuleSettings(module, (JsonObject) entry.getValue(), true);
                 }
             }
 
@@ -268,8 +235,7 @@ public class Configs implements Imports {
         mainObject.add("ConfigInformation", infoObject);
 
         for (Module module : Modules.getModules()) {
-            JsonObject moduleObject = createModuleObject(module, true);
-            moduleObject.addProperty("hide", module.isHide());
+            JsonObject moduleObject = module.getObject();
             mainObject.add(module.getName(), moduleObject);
         }
 
@@ -315,10 +281,6 @@ public class Configs implements Imports {
             e.printStackTrace(System.out);
         }
         return null;
-    }
-
-    public void loadAsync(Config config) {
-        new Thread(() -> loadConfig(config)).start();
     }
 
     public void saveAsync(Config config) {
