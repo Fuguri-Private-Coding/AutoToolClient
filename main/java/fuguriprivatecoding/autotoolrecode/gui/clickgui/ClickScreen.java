@@ -88,7 +88,7 @@ public class ClickScreen extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		int currentScroll = Mouse.getDWheel();
+		int currentScroll = ClientSettings.getScroll();
 
 		MAIN_COLOR = clickGui.color.getFadedColor();
 		BACKGROUND_COLOR = new Color(0,0,0,clickGui.backgroundAlpha.getValue());

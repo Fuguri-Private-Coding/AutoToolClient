@@ -34,6 +34,7 @@ public class Modules {
 			new Trajectory(),
 			new Regen(),
 			new Reach(),
+            new Teams(),
 			new CustomItemPos(),
 			new Hitbox(),
             new Blur(),

@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
+import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.function.BooleanSupplier;
@@ -70,6 +71,26 @@ public class DoubleSlider extends Setting {
 
     public double getRandomizedDoubleValue() {
         return RandomUtils.nextDouble(minValue, maxValue);
+    }
+
+    @Override
+    public void render() {
+        ImGui.pushID(hashCode());
+        float[] minV = new float[] { (float) minValue };
+        float[] maxV = new float[] { (float) maxValue };
+
+        if (ImGui.collapsingHeader(getName())) {
+            ImGui.indent();
+            if (ImGui.sliderFloat("Min", minV, (float) min, (float) max)) {
+                setMinValue(minV[0]);
+            }
+            if (ImGui.sliderFloat("Max", maxV, (float) min, (float) max)) {
+                setMaxValue(maxV[0]);
+            }
+            ImGui.unindent();
+        }
+
+        ImGui.popID();
     }
 
     @Override

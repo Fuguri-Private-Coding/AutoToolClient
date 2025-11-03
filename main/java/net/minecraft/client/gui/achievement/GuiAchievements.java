@@ -2,6 +2,8 @@ package net.minecraft.client.gui.achievement;
 
 import java.io.IOException;
 import java.util.Random;
+
+import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -127,7 +129,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter
                 this.field_146554_D = 0;
             }
 
-            int i1 = Mouse.getDWheel();
+            int i1 = DeltaTracker.getDeltaScroll();
             float f3 = this.field_146570_r;
 
             if (i1 < 0)

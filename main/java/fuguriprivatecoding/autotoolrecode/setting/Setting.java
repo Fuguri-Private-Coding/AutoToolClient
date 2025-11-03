@@ -26,6 +26,8 @@ public abstract class Setting implements ISetting {
 		parent.addSetting(this);
 	}
 
+    public void render() {}
+    
 	@Override
 	public String getName() {
 		return name;

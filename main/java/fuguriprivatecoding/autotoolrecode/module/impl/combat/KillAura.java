@@ -243,7 +243,7 @@ public class KillAura extends Module {
             if (entity == mc.thePlayer) continue;
             if (DistanceUtils.getDistance(entity) > findDistance.getValue()) continue;
             if (!(entity instanceof EntityLivingBase ent)) continue;
-            if (entity instanceof EntityPlayer player && player.isFriend()) continue;
+            if (entity instanceof EntityPlayer player && (player.isFriend() || player.isTeam())) continue;
             switch (ent) {
                 case EntityPlayer _ when !targets.get("Players") -> {
                     continue;

@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.AttackEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.ChangeHeadRotationEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.HitSlowDownEvent;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.Teams;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Phase;
 import net.minecraft.block.Block;
@@ -1942,7 +1943,13 @@ public abstract class EntityPlayer extends EntityLivingBase {
     }
 
     public boolean isFriend() {
-        return Client.INST.getFriends().isFriend(getName(), Client.INST.getModules().getModule(MidClick.class).reverseFriends.isToggled());
+        MidClick midClick = Client.INST.getModules().getModule(MidClick.class);
+        return midClick.isToggled() && Client.INST.getFriends().isFriend(getName(), midClick.reverseFriends.isToggled());
+    }
+
+    public boolean isTeam() {
+        Teams teams = Client.INST.getModules().getModule(Teams.class);
+        return teams.isToggled() && teams.getTeamList().contains(this);
     }
 
     public boolean hasReducedDebug()

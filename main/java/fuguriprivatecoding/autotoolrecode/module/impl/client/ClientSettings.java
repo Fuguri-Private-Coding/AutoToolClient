@@ -6,7 +6,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
-import org.lwjgl.input.Mouse;
+import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 
 @ModuleInfo(name = "ClientSettings", category = Category.CLIENT, description = "Модуль где вы можете подробно настраивать клиент.", toggled = true)
 public class ClientSettings extends Module {
@@ -18,7 +18,7 @@ public class ClientSettings extends Module {
 
     public static int getScroll() {
         ClientSettings clientSettings = Client.INST.getModules().getModule(ClientSettings.class);
-        int currentScroll = Mouse.getDWheel();
+        int currentScroll = DeltaTracker.getDeltaScroll();
 
         return currentScroll / 120 * clientSettings.scroll.getValue();
     }

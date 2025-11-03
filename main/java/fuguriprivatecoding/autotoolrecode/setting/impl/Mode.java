@@ -3,6 +3,8 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import imgui.ImGui;
+import imgui.type.ImInt;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
@@ -35,6 +37,19 @@ public class Mode extends Setting {
         super(name, parent);
         this.setVisible(visible);
         initAnimation();
+    }
+
+    @Override
+    public void render() {
+        ImGui.pushID(hashCode());
+        ImGui.text(getName());
+        ImGui.sameLine();
+
+        ImInt index = new ImInt(modes.indexOf(mode));
+        if (ImGui.combo("", index, modes.toArray(String[]::new), 5)) {
+            mode = modes.get(index.get());
+        }
+        ImGui.popID();
     }
 
     @Override

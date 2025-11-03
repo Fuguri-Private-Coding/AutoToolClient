@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
@@ -51,6 +52,16 @@ public class IntegerSetting extends Setting {
 
     public float getAnimatedNormalize() {
         return (animatedValue - min) / (max - min);
+    }
+
+    @Override
+    public void render() {
+        ImGui.pushID(hashCode());
+        float[] v = new float[] {value};
+        if (ImGui.sliderFloat(getName(), v, min, max)) {
+            setValue( Math.round(v[0]));
+        }
+        ImGui.popID();
     }
 
     @Override

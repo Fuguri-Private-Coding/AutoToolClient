@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
@@ -36,6 +37,15 @@ public class CheckBox extends Setting {
 		this.setVisible(visible);
 		this.toggled = toggled;
 	}
+
+    @Override
+    public void render() {
+        ImGui.pushID(hashCode());
+        if (ImGui.checkbox(getName(), toggled)) {
+            toggled = !toggled;
+        }
+        ImGui.popID();
+    }
 
     @Override
     public JsonObject getObject() {

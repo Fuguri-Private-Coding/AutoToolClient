@@ -41,7 +41,7 @@ public class Clicks implements Imports {
 
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
 
-            if (rayCast != null && rayCast.isFriend() || !clicking) {
+            if (rayCast != null && (rayCast.isFriend() || rayCast.isTeam()) || !clicking) {
                 return;
             }
 

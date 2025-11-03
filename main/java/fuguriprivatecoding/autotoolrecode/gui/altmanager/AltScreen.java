@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.alt.microsoft.Auth;
 import fuguriprivatecoding.autotoolrecode.alt.microsoft.MicrosoftAuthCallback;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.TextButton;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
@@ -18,6 +19,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -76,7 +78,7 @@ public class AltScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         ScaledResolution sc = new ScaledResolution(mc);
-        int currentScroll = Mouse.getDWheel();
+        int currentScroll = ClientSettings.getScroll();
 
         scroll += currentScroll / 120 * 50;
 
