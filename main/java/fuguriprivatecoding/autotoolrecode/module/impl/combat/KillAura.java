@@ -85,6 +85,10 @@ public class KillAura extends Module {
     final StopWatch clickTimer = new StopWatch();
     private long delay;
 
+    TargetStorage targetStorage;
+
+    EntityLivingBase target;
+
     Rot lastDelta = new Rot();
 
     @Override
@@ -94,10 +98,10 @@ public class KillAura extends Module {
 
     @EventTarget
     public void onEvent(Event event) {
-        TargetStorage targetStorage = Client.INST.getTargetStorage();
+        targetStorage = Client.INST.getTargetStorage();
         if (event instanceof TickEvent) targetStorage.setTarget(findNewTarget());
         if (targetStorage.getTarget() == null) return;
-        EntityLivingBase target = targetStorage.getTarget();
+        target = targetStorage.getTarget();
         if (Client.INST.getModules().getModule(Scaffold.class).isToggled()) return;
 
         if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {

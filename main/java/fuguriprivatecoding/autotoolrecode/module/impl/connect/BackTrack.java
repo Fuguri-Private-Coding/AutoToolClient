@@ -31,10 +31,9 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "BackTrack", category = Category.CONNECTION, description = "Абьюз интернета для увеличения дистанции удара.")
 public class BackTrack extends Module {
 
-
     DoubleSlider delay = new DoubleSlider("Delay", this, 0,5000,200,1);
 
-    BooleanSupplier constantRandomSupplier = () -> delay.minValue == delay.maxValue;
+    BooleanSupplier constantRandomSupplier = () -> delay.minValue != delay.maxValue;
 
     final CheckBox constantRandomize = new CheckBox("ConstantDelayRandomize", this, constantRandomSupplier, true);
 
