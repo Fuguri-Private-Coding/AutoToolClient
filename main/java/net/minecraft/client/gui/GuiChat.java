@@ -222,9 +222,9 @@ public class GuiChat extends GuiScreen {
         animation2D.endX = fontRendererObj.getStringWidth(inputField.getText() + "_") + 4;
         animation2D.update(50f);
         if (shadows.isToggled() && shadows.module.get("Chat")) {
-            BloomUtils.addToDraw(() -> drawRect(2f, this.height - 14f, 2f + (float) animation2D.x, this.height - 2f, Integer.MIN_VALUE));
+            BloomUtils.addToDraw(() -> drawRect(2f, this.height - 14f, 2f + animation2D.x, this.height - 2f, Integer.MIN_VALUE));
         }
-        drawRect(2f, this.height - 14f, 2f + (float) animation2D.x, this.height - 2f, Integer.MIN_VALUE);
+        drawRect(2f, this.height - 14f, 2f + animation2D.x, this.height - 2f, Integer.MIN_VALUE);
 
         this.inputField.drawTextBox();
         IChatComponent ichatcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());

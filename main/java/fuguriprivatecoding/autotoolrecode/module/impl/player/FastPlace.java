@@ -31,13 +31,10 @@ public class FastPlace extends Module {
         if (mc.currentScreen != null) return;
         boolean needClick = Mouse.isButtonDown(1) && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
         if (event instanceof TickEvent) {
-            if (stopWatch.reachedMS(delay)) {
-                if (needClick && mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mc.objectMouseOver.getBlockPos(), mc.objectMouseOver.sideHit, mc.objectMouseOver.hitVec)) {
-                    mc.thePlayer.swingItem();
-                    mc.getItemRenderer().resetEquippedProgress();
-                    delay = (long) (1000D / CPS.getRandomizedIntValue());
-                    stopWatch.reset();
-                }
+            if (stopWatch.reachedMS(delay) && needClick) {
+                mc.rightClickMouse();
+                delay = (long) (1000D / CPS.getRandomizedIntValue());
+                stopWatch.reset();
             }
         }
         if (event instanceof ClickEvent e) {

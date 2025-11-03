@@ -33,10 +33,7 @@ public class AutoPlace extends Module {
 
             if (!needHoldRight.isToggled() || Mouse.isButtonDown(1)) {
                 if (mc.theWorld.getBlockState(mc.objectMouseOver.getBlockPos()).getBlock().getMaterial() != Material.air) {
-                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mc.objectMouseOver.getBlockPos(), mc.objectMouseOver.sideHit, mc.objectMouseOver.hitVec)) {
-                        mc.thePlayer.swingItem();
-                        mc.getItemRenderer().resetEquippedProgress();
-                    }
+                    mc.rightClickMouse();
                 }
             }
         }

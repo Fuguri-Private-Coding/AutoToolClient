@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 
 public class DistanceUtils implements Imports {
@@ -26,6 +27,11 @@ public class DistanceUtils implements Imports {
 		Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
 		return eyes.distanceTo(pos);
 	}
+
+    public static double getDistance(BlockPos pos) {
+        Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
+        return eyes.distanceTo(new Vec3(pos.getX(), pos.getY(), pos.getZ()));
+    }
 
 	public static double getDistance(AxisAlignedBB bb) {
 		return mc.thePlayer.getPositionEyes(1.0f).distanceTo(RotUtils.getBestHitVec(bb));

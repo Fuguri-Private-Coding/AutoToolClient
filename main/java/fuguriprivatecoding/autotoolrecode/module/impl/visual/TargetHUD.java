@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -19,6 +20,9 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtil
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiNewChat;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -72,10 +76,8 @@ public class TargetHUD extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (mc.currentScreen != null) return;
-
         if (event instanceof TickEvent) {
-            updateTarget();
+            updateTarget(mc.currentScreen);
         }
 
         if (target == null || target.getSkin() == null || target.getName() == null) return;
@@ -99,7 +101,6 @@ public class TargetHUD extends Module {
                 entityRenderer.setupOverlayRendering();
 
                 if (positions == null || positions[2] > 1) return;
-
 
                 float scale = this.scale.getValue() * currentScale.getValue();
 
@@ -176,19 +177,23 @@ public class TargetHUD extends Module {
         glPopMatrix();
     }
 
-    private void updateTarget() {
+    private void updateTarget(GuiScreen screen) {
         EntityLivingBase currentTarget = TargetStorage.getTarget();
-
-        if (target == null && currentTarget != null) {
-            target = currentTarget;
+        if (screen instanceof GuiChat || screen instanceof ClickScreen) {
             currentScale.setEnd(1);
-        } else if (target != null) {
-            if (currentTarget == null) {
-                currentScale.setEnd(0);
-                if (!currentScale.isAnimating()) target = null;
-            } else {
+            target = mc.thePlayer;
+        } else if (screen == null) {
+            if (target == null && currentTarget != null) {
                 target = currentTarget;
-                currentScale.setEnd(1f);
+                currentScale.setEnd(1);
+            } else if (target != null) {
+                if (currentTarget == null) {
+                    currentScale.setEnd(0);
+                    if (!currentScale.isAnimating()) target = null;
+                } else {
+                    target = currentTarget;
+                    currentScale.setEnd(1f);
+                }
             }
         }
     }

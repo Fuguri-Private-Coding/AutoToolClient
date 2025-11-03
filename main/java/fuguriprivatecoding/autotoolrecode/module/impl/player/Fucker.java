@@ -8,8 +8,8 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
@@ -33,7 +33,6 @@ public class Fucker extends Module {
     CheckBox whiteListOwnBed = new CheckBox("WhiteListOwnBed", this);
 
     public BlockPos bedPos;
-    public boolean rotate = false;
     private int breakTicks;
     private int delayTicks;
     private Vec3 home;
@@ -41,7 +40,6 @@ public class Fucker extends Module {
     @Override
     public void onEnable() {
         super.onEnable();
-        rotate = false;
         bedPos = null;
 
         breakTicks = 0;
@@ -50,7 +48,7 @@ public class Fucker extends Module {
     @Override
     public void onDisable() {
         super.onDisable();
-        reset(true);
+        reset();
     }
 
     @Override
@@ -67,7 +65,7 @@ public class Fucker extends Module {
 
         if (event instanceof TickEvent) {
             if (!handleRotate()) {
-                reset(true);
+                reset();
                 return;
             }
 
@@ -83,7 +81,7 @@ public class Fucker extends Module {
             RenderUtils.stop3D();
         }
 
-        if (bedPos != null && rotate) {
+        if (bedPos != null) {
             if (event instanceof MotionEvent e) {
                 e.setYaw(Rot.getServerRotation().getYaw());
                 e.setPitch(Rot.getServerRotation().getPitch());
@@ -115,17 +113,31 @@ public class Fucker extends Module {
         }
         bedPos = null;
         double range = breakDistance.getValue();
+        double minDistance = Double.MAX_VALUE;
+        BlockPos closestBed = null;
+
         for (double x = mc.thePlayer.posX - range; x <= mc.thePlayer.posX + range; x++) {
             for (double y = mc.thePlayer.posY + mc.thePlayer.getEyeHeight() - range; y <= mc.thePlayer.posY + mc.thePlayer.getEyeHeight() + range; y++) {
                 for (double z = mc.thePlayer.posZ - range; z <= mc.thePlayer.posZ + range; z++) {
                     BlockPos pos = new BlockPos((int) x, (int) y, (int) z);
 
-                    if (mc.theWorld.getBlockState(pos).getBlock() instanceof BlockBed && (mc.theWorld.getBlockState(pos).getValue(BlockBed.PART) == BlockBed.EnumPartType.HEAD || mc.theWorld.getBlockState(pos).getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT)) {
-                        bedPos = pos;
-                        break;
+                    if (mc.theWorld.getBlockState(pos).getBlock() instanceof BlockBed &&
+                        (mc.theWorld.getBlockState(pos).getValue(BlockBed.PART) == BlockBed.EnumPartType.HEAD ||
+                            mc.theWorld.getBlockState(pos).getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT)) {
+
+                        double distance = DistanceUtils.getDistance(pos);
+
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestBed = pos;
+                        }
                     }
                 }
             }
+        }
+
+        if (closestBed != null) {
+            bedPos = closestBed;
         }
     }
 
@@ -143,20 +155,17 @@ public class Fucker extends Module {
 
         float totalBreakTicks = getBreakTicks(bedPos, mc.thePlayer.inventory.currentItem);
         if (breakTicks == 0) {
-            rotate = true;
             mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
             mc.getNetHandler().addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, bedPos, EnumFacing.UP));
         } else if (breakTicks >= totalBreakTicks) {
-            rotate = true;
             mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
             mc.getNetHandler().addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, bedPos, EnumFacing.UP));
 
             mc.theWorld.sendBlockBreakProgress(mc.thePlayer.getEntityId(), blockPos, 1);
 
-            reset(false);
+            reset();
             return;
         } else {
-            rotate = true;
             mc.thePlayer.swingItem();
         }
 
@@ -166,12 +175,11 @@ public class Fucker extends Module {
         mc.theWorld.sendBlockBreakProgress(mc.thePlayer.getEntityId(), bedPos, currentProgress / 10);
     }
 
-    private void reset(boolean resetRotate) {
+    private void reset() {
         if (bedPos != null) mc.theWorld.sendBlockBreakProgress(mc.thePlayer.getEntityId(), bedPos, -1);
         breakTicks = 0;
         delayTicks = 5;
         bedPos = null;
-        rotate = !resetRotate;
     }
 
     public boolean handleRotate() {
@@ -180,44 +188,35 @@ public class Fucker extends Module {
 
     public void destroy() {
         if (bedPos != null) {
-            if (rotate) {
-                Rot needRot = RotUtils.getRotationToBlock(bedPos, getEnumFacing(bedPos));
+            Rot needRot = RotUtils.calculate(new Vector3d(bedPos.getX(), bedPos.getY(), bedPos.getZ()), getEnumFacing(bedPos));
 
-                Delta delta = RotUtils.getDelta(Rot.getServerRotation(), needRot);
+            Delta delta = RotUtils.getDelta(Rot.getServerRotation(), needRot);
 
-                delta = RotUtils.fixDelta(delta);
+            delta = RotUtils.fixDelta(delta);
 
-                Rot rot = new Rot(
-                    Rot.getServerRotation().getYaw() + delta.getYaw(),
-                    Rot.getServerRotation().getPitch() + delta.getPitch()
-                );
+            Rot rot = new Rot(
+                Rot.getServerRotation().getYaw() + delta.getYaw(),
+                Rot.getServerRotation().getPitch() + delta.getPitch()
+            );
 
-                Rot.setServerRotation(rot);
-            }
-            rotate = false;
+            Rot.setServerRotation(rot);
 
             mine(bedPos);
         } else {
-            reset(true);
+            reset();
         }
     }
 
     public static EnumFacing getEnumFacing(BlockPos pos) {
-        Vec3 eyesPos = new Vec3(mc.thePlayer.posX, mc.thePlayer.posY + mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
+        Vec3 eyesPos = mc.thePlayer.getPositionVector();
 
-        if (pos.getY() > eyesPos.yCoord) {
-            if (PlayerUtil.isReplaceable(pos.add(0, -1, 0))) {
-                return EnumFacing.DOWN;
-            } else {
-                return mc.thePlayer.getHorizontalFacing().getOpposite();
-            }
-        }
-
-        if (!PlayerUtil.isReplaceable(pos.add(0, 1, 0))) {
+        if (pos.getY() < eyesPos.yCoord) {
+            return EnumFacing.UP;
+        } else if (pos.getY() > eyesPos.yCoord) {
+            return EnumFacing.DOWN;
+        } else {
             return mc.thePlayer.getHorizontalFacing().getOpposite();
         }
-
-        return EnumFacing.UP;
     }
 
     private float getBreakTicks(BlockPos bp, int tool) {

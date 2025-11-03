@@ -10,6 +10,6 @@ public class ClickEvent extends CancelableEvent {
     private final Button button;
 
     public enum Button {
-        LEFT, RIGHT
+        LEFT, RIGHT, MIDDLE
     }
 }

@@ -147,6 +147,7 @@ public class Scaffold extends Module {
                 }
             }
 
+            mc.rightClickDelayTimer = 10;
             legitPlace();
         }
 
@@ -238,14 +239,14 @@ public class Scaffold extends Module {
             && mouse.getBlockPos().equals(mouseOver.getBlockPos())
             && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
 
-            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem(), mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec)) {
-                if (!removeSwing.get("On Client")) {
-                    mc.thePlayer.swingItemNoPacket();
-                }
+            mc.rightClickMouse(false);
 
-                if (!removeSwing.get("On Server")) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
-                }
+            if (!removeSwing.get("On Client")) {
+                mc.thePlayer.swingItemNoPacket();
+            }
+
+            if (!removeSwing.get("On Server")) {
+                mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
             }
 
             blocksLeft++;

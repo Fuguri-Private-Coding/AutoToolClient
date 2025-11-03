@@ -93,16 +93,17 @@ public class ScoreBoard extends Module {
                     if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getFadedColor()));
                     if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE));
 
+                    RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), color.getFadedColor());
+                    RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, color.getFadedColor());
+
                     StencilUtils.setUpTexture(pos.x, pos.y, finalWidth, height, roundFactor.getValue());
                     StencilUtils.writeTexture();
 
-                    RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), color.getFadedColor());
-                    RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, color.getFadedColor());
                     fontRenderer.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - fontRenderer.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f + 2, Color.WHITE);
                     StencilUtils.endWriteTexture();
                 } else {
-                    if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, 0, colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
-                    if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, 0, colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
+                    if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, 0, colorShadow.getFadedColor()));
+                    if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE));
 
                     RoundedUtils.drawRect(pos.x, pos.y, width, height, 0, color.getFadedColor());
                     RoundedUtils.drawRect(pos.x, pos.y, width, 12, 0, color.getFadedColor());

@@ -33,7 +33,6 @@ public class RotationHandler extends Module {
             || DistanceUtils.getDistance(TargetStorage.getTarget()) > Modules.getModule(KillAura.class).rotateDistance.getValue())
             && !Modules.getModule(Scaffold.class).isToggled()
             && Modules.getModule(AntiFireball.class).target == null &&
-            !Modules.getModule(Fucker.class).rotate &&
             Modules.getModule(Fucker.class).bedPos == null;
         if (handle) {
             if (Rot.isChanged()) {

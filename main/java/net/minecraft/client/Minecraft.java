@@ -260,7 +260,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     private ISaveFormat saveLoader;
     @Getter
     private static int debugFPS;
-    private int rightClickDelayTimer;
+    public int rightClickDelayTimer;
     private String serverName;
     private int serverPort;
     public boolean inGameHasFocus;
@@ -1190,9 +1190,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     }
 
     public void clickMouse() {
-
-        new ClickEvent(ClickEvent.Button.LEFT).call();
-
         if (this.leftClickCounter <= 0) {
             AttackOrder.sendConditionalSwing(this.objectMouseOver);
 
@@ -1227,16 +1224,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     }
 
     @SuppressWarnings("incomplete-switch")
-    public void rightClickMouse() {
+    public void rightClickMouse(boolean swing) {
         if (!this.playerController.getIsHittingBlock()) {
             this.rightClickDelayTimer = 4;
             boolean flag = true;
             ItemStack itemstack = this.thePlayer.inventory.getCurrentItem();
-
-            ClickEvent event = new ClickEvent(ClickEvent.Button.RIGHT);
-            event.call();
-
-            if (event.isCanceled()) return;
 
             if (this.objectMouseOver == null) {
                 logger.warn("Null returned as 'hitResult', this shouldn't happen!");
@@ -1259,7 +1251,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
                             if (this.playerController.onPlayerRightClick(this.thePlayer, this.theWorld, itemstack, blockpos, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec)) {
                                 flag = false;
-                                this.thePlayer.swingItem();
+                                if (swing) this.thePlayer.swingItem();
                             }
 
                             if (itemstack == null) {
@@ -1283,6 +1275,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 }
             }
         }
+    }
+
+    public void rightClickMouse() {
+        rightClickMouse(true);
     }
 
     public void toggleFullscreen() {
@@ -1614,6 +1610,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 this.displayGuiScreen(new GuiChat("/"));
             }
 
+            ClickEvent rightEvent = new ClickEvent(ClickEvent.Button.RIGHT);
+            rightEvent.call();
+
             if (this.thePlayer.isUsingItem()) {
                 if (!this.gameSettings.keyBindUseItem.isKeyDown()) {
                     this.playerController.onStoppedUsingItem(this.thePlayer);
@@ -1622,20 +1621,26 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 new LegitClickTimingEvent().call();
 
                 while (this.gameSettings.keyBindAttack.isPressed()) {
-                    this.clickMouse();
+                    ClickEvent leftEvent = new ClickEvent(ClickEvent.Button.LEFT);
+                    leftEvent.call();
+
+                    if (!leftEvent.isCanceled()) this.clickMouse();
                 }
 
                 while (this.gameSettings.keyBindUseItem.isPressed()) {
-                    this.rightClickMouse();
+                    if (!rightEvent.isCanceled()) this.rightClickMouse();
                 }
 
                 while (this.gameSettings.keyBindPickBlock.isPressed()) {
-                    this.middleClickMouse();
+                    ClickEvent middleEvent = new ClickEvent(ClickEvent.Button.MIDDLE);
+                    middleEvent.call();
+
+                    if (!middleEvent.isCanceled()) this.middleClickMouse();
                 }
             }
 
             if (this.gameSettings.keyBindUseItem.isKeyDown() && this.rightClickDelayTimer == 0 && !this.thePlayer.isUsingItem()) {
-                this.rightClickMouse();
+                if (!rightEvent.isCanceled()) this.rightClickMouse();
             }
 
             this.sendClickBlockToController(this.currentScreen == null && this.gameSettings.keyBindAttack.isKeyDown() && this.inGameHasFocus);
