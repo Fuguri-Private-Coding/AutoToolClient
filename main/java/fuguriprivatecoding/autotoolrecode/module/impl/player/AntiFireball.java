@@ -1,12 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
@@ -48,9 +47,9 @@ public class AntiFireball extends Module {
 
     public EntityFireball target;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
-        if (mc.thePlayer.ticksExisted < 40 || (Client.INST.getModules().getModule(Scaffold.class).isToggled() && rotate.isToggled()))
+        if (mc.thePlayer.ticksExisted < 40 || (Modules.getModule(Scaffold.class).isToggled() && rotate.isToggled()))
             return;
 
         if (event instanceof TickEvent) {

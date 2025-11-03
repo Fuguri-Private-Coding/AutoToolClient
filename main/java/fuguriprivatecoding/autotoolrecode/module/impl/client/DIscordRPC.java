@@ -11,20 +11,15 @@ import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
         category = Category.CLIENT,
         description = "Мульти донксинг халяль клиент ДИСКОРД РПС"
 )
-public class DIscordRPC extends Module {
-    Discord discord;
-
-    public DIscordRPC() {
-        discord = Client.INST.getDiscord();
-    }
+public class DiscordRPC extends Module {
 
     @Override
     public void onEnable() {
-        if (!Client.INST.isStarting()) discord.init();
+        if (!Client.INST.isStarting()) Discord.init();
     }
 
     @Override
     public void onDisable() {
-        discord.stop();
+        Discord.stop();
     }
 }

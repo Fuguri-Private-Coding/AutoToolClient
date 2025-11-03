@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
@@ -217,7 +218,7 @@ public class GuiChat extends GuiScreen {
     }
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModules().getModule(Glow.class);
+        if (shadows == null) shadows = Modules.getModule(Glow.class);
         animation2D.endX = fontRendererObj.getStringWidth(inputField.getText() + "_") + 4;
         animation2D.update(50f);
         if (shadows.isToggled() && shadows.module.get("Chat")) {

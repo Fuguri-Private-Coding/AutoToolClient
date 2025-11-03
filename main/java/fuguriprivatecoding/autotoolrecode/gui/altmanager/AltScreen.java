@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.gui.altmanager;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.alt.Account;
 import fuguriprivatecoding.autotoolrecode.alt.Accounts;
 import fuguriprivatecoding.autotoolrecode.alt.microsoft.Auth;
@@ -10,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.gui.buttons.TextButton;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
@@ -19,7 +19,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -39,7 +38,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class AltScreen extends GuiScreen {
 
     TextButton textButton;
-    public List<Account> accounts = new CopyOnWriteArrayList<>();
+    public static List<Account> accounts = new CopyOnWriteArrayList<>();
 
     private long lastClickTime = 0;
     private Account lastClickedAccount = null;
@@ -57,7 +56,13 @@ public class AltScreen extends GuiScreen {
 
     EasingAnimation alphaAnim = new EasingAnimation();
 
-    public AltScreen() {
+    public static AltScreen INST;
+
+    public static void init() {
+        INST = new AltScreen();
+    }
+
+    private AltScreen() {
         mc = Minecraft.getMinecraft();
         scrolls = new Animation2D();
     }
@@ -78,9 +83,7 @@ public class AltScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         ScaledResolution sc = new ScaledResolution(mc);
-        int currentScroll = ClientSettings.getScroll();
-
-        scroll += currentScroll / 120 * 50;
+        scroll += ClientSettings.getScroll();
 
         ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
 
@@ -257,7 +260,7 @@ public class AltScreen extends GuiScreen {
                         updateStatus("Successful logged account: " + selectedAccount.getName() + ".");
                     }
                 } else {
-                    mc.getSession().setUsername(Client.INST.getGenerator().generateRealisticNick(16));
+                    mc.getSession().setUsername(NameGenerator.generate(16));
                     updateStatus("Successful generated name..");
                 }
             }

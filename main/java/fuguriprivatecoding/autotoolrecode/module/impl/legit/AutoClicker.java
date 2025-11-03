@@ -1,9 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
+import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -28,7 +27,7 @@ public class AutoClicker extends Module {
 
     final StopWatch leftStopWatch = new StopWatch();
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (buttons.get("Left")) {
             if (event instanceof RunGameLoopEvent) {
@@ -36,7 +35,7 @@ public class AutoClicker extends Module {
                 if (RayCastUtils.rayCast(3, 4.5, new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) return;
 
                 if (leftStopWatch.reachedMS(leftDelay)) {
-                    Client.INST.getClicks().addClick();
+                    Clicks.addClick();
                     leftStopWatch.reset();
                 }
                 leftDelay = getLeftDelay();

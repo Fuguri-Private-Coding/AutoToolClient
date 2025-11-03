@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.FreeLook;
 import lombok.Getter;
 import lombok.Setter;
@@ -243,7 +244,7 @@ public abstract class Entity implements ICommandSender
     }
 
     public void setAngles(float yaw, float pitch) {
-        FreeLook freeLook = Client.INST.getModules().getModule(FreeLook.class);
+        FreeLook freeLook = Modules.getModule(FreeLook.class);
         if (Minecraft.getMinecraft().thePlayer == this) {
             if (freeLook.isToggled()) {
                 freeLook.rotYaw += yaw * 0.15f;

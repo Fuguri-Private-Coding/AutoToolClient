@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.UpdateEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -18,7 +17,7 @@ public class HighJump extends Module {
         stage = 0;
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof MotionEvent e) {
             if(stage == 0) e.setOnGround(false);

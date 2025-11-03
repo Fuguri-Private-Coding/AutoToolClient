@@ -1,12 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
@@ -21,7 +20,7 @@ public class Fixes extends Module {
 
     boolean wasInGui = false;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (mc.thePlayer == null && mc.theWorld == null) return;
         if (event instanceof MotionEvent) {
@@ -35,7 +34,7 @@ public class Fixes extends Module {
                 }
             }
 
-            if (fixes.get("JumpDelay") && !Client.INST.getModules().getModule(Scaffold.class).isToggled()) {
+            if (fixes.get("JumpDelay") && !Modules.getModule(Scaffold.class).isToggled()) {
                 mc.thePlayer.jumpTicks = 0;
             }
         }

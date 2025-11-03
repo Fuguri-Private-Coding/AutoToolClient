@@ -1,12 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
@@ -19,9 +18,9 @@ public class AutoPlace extends Module {
 
     CheckBox needHoldRight = new CheckBox("HoldRight", this);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
-        if (Client.INST.getModules().getModule(Scaffold.class).isToggled()) return;
+        if (Modules.getModule(Scaffold.class).isToggled()) return;
         if (mc.currentScreen != null) return;
         if (event instanceof DrawBlockHighlightEvent) {
             if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock))

@@ -4,7 +4,8 @@ import com.github.koxx12dev.fuckyou.ImGuiGL3;
 import com.github.koxx12dev.fuckyou.ImGuiLwjgl2;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
+import fuguriprivatecoding.autotoolrecode.event.EventListener;
+import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
@@ -20,7 +21,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImGuiManager implements Imports {
+public class ImGuiManager implements Imports, EventListener {
     private static ImGuiLwjgl2 imGuiGlfw;
     private static ImGuiGL3 imGuiGl3;
     private static final List<ImGuiWindow> windows = new ArrayList<>();
@@ -35,7 +36,7 @@ public class ImGuiManager implements Imports {
         loadFonts();
         imGuiGl3.init("#version 150");
 
-        Client.INST.getEvents().register(this);
+        Events.register(this);
     }
 
     private static void loadFonts() {
@@ -94,7 +95,12 @@ public class ImGuiManager implements Imports {
         }
     }
 
-    @EventTarget
+    @Override
+    public boolean listen() {
+        return true;
+    }
+
+    @Override
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.thePlayer.ticksExisted < 100) return;
         if (event instanceof Render2DEvent) {

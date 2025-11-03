@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -35,11 +36,11 @@ public class ClickGui extends Module {
 	public void onEnable() {
 		switch (guiMode.getMode()) {
 			case "ImGui" -> {
-				mc.displayGuiScreen(Client.INST.getClickScreen());
+				mc.displayGuiScreen(ClickScreen.INST);
 //				mc.displayGuiScreen(imGuiScreen);
 //				ImGuiManager.addWindow(ImGuiScreen.clickGuiWindow);
 			}
-			case "JavaGui" -> mc.displayGuiScreen(Client.INST.getClickScreen());
+			case "JavaGui" -> mc.displayGuiScreen(ClickScreen.INST);
 		}
 		toggle();
 	}

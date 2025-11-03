@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.client;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -34,7 +33,7 @@ public class IRC extends Module {
         Client.INST.getIrc().connectServer();
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent && System.currentTimeMillis() - lastTime >= 7000) {
             new Thread(() -> {

@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -13,7 +12,7 @@ import org.lwjgl.input.Keyboard;
 @ModuleInfo(name = "GuiMove", category = Category.MOVE, description = "Позовляет вам двигатся в клиентовских окнах.")
 public class GuiMove extends Module {
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             if (mc.currentScreen instanceof ClickScreen) {

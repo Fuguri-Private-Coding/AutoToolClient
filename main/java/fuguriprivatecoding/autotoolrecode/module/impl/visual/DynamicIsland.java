@@ -2,11 +2,11 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
@@ -19,6 +19,7 @@ import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.util.vector.Vector2f;
@@ -58,7 +59,7 @@ public class DynamicIsland extends Module {
         currentText = "AutoTool";
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent e) {
             ClientFontRenderer font = Fonts.fonts.get(fonts.getMode());
@@ -67,9 +68,9 @@ public class DynamicIsland extends Module {
             float height = 15;
             float yOffsetValue = this.yOffset.getValue();
 
-            EntityLivingBase ent = Client.INST.getTargetStorage().getTarget();
-            BackTrack backTrack = Client.INST.getModules().getModule(BackTrack.class);
-            Scaffold scaffOld = Client.INST.getModules().getModule(Scaffold.class);
+            EntityLivingBase ent = TargetStorage.getTarget();
+            BackTrack backTrack = Modules.getModule(BackTrack.class);
+            Scaffold scaffOld = Modules.getModule(Scaffold.class);
 
             String name = Client.INST.getFullName();
             String target, backtrack = "", scaffold = "", bps = "";

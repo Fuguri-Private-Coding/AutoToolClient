@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -15,7 +14,7 @@ public class HurtCamera extends Module {
 
     public FloatSetting strength = new FloatSetting("Strength", this, 0, 1, 0, 0.1f);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof PacketEvent e &&
             e.getPacket() instanceof S12PacketEntityVelocity s12 &&

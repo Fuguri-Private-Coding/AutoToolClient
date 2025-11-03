@@ -8,19 +8,19 @@ import java.util.List;
 
 @Setter
 public class Commands {
-	public final List<Command> commands = new ArrayList<>();
-	
-	private String prefix = "/";
+	public static final List<Command> commands = new ArrayList<>();
 
-	public Commands() {
-		commands.add(new CommandToggle());
-		commands.add(new CommandBind());
-		commands.add(new CommandIRC());
-		commands.add(new CommandHelp());
-	}
+    public static void init() {
+        commands.add(new CommandToggle());
+        commands.add(new CommandBind());
+        commands.add(new CommandIRC());
+        commands.add(new CommandHelp());
+    }
 	
-	public boolean handle(String msg) {
-		if (!msg.startsWith(prefix)) {
+	public static boolean handle(String msg) {
+        String prefix = "/";
+
+        if (!msg.startsWith(prefix)) {
 			return false;
 		}
 		

@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Uniform;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,7 +17,7 @@ public class BackgroundUtils implements Imports {
     private static Framebuffer tempFBO = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
 
     public static void run() {
-        if (program == null) program = Client.INST.getShaders().getBackground();
+        if (program == null) program = Shaders.background;
         if (!Display.isVisible() || !Display.isActive()) return;
 
         update();

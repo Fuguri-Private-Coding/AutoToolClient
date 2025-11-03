@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.RenderItemEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -35,7 +34,7 @@ public class Animations extends Module {
 
     public CheckBox always = new CheckBox("AlwaysBlocking", this, true);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof RenderItemEvent renderItemEvent) {
             GL11.glScaled(scale.getValue(), scale.getValue(), 1);

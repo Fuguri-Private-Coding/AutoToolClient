@@ -1,9 +1,9 @@
 package net.minecraft.client.renderer;
 
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomItemPos;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.RenderItemEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.UpdateRenderingItem;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Animations;
@@ -293,7 +293,7 @@ public class ItemRenderer {
     }
 
     public void renderItemInFirstPerson(float partialTicks) {
-        if (shadows == null) shadows = Client.INST.getModules().getModule(Glow.class);
+        if (shadows == null) shadows = Modules.getModule(Glow.class);
         if (!Config.isShaders() || !Shaders.isSkipRenderHand()) {
             float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
             AbstractClientPlayer abstractclientplayer = this.mc.thePlayer;
@@ -306,7 +306,7 @@ public class ItemRenderer {
             GlStateManager.enableRescaleNormal();
             GlStateManager.pushMatrix();
 
-            CustomItemPos customItemPos = Client.INST.getModules().getModule(CustomItemPos.class);
+            CustomItemPos customItemPos = Modules.getModule(CustomItemPos.class);
 
             if (customItemPos.isToggled()) {
                 GL11.glTranslatef(customItemPos.x.getValue(), customItemPos.y.getValue(), customItemPos.z.getValue());
@@ -317,7 +317,7 @@ public class ItemRenderer {
 
             if (this.itemToRender != null) {
                 EnumAction enumaction = this.itemToRender.getItemUseAction();
-                Animations animations = Client.INST.getModules().getModule(Animations.class);
+                Animations animations = Modules.getModule(Animations.class);
                 boolean animate = (f1 > 0 && Animations.isAnimate() && animations.isToggled() && enumaction.equals(EnumAction.BLOCK)) || (animations.isToggled() && animations.always.isToggled() && f1 > 0 && enumaction.equals(EnumAction.BLOCK)) || (animations.isToggled() && abstractclientplayer.getItemInUseCount() > 0 && enumaction.equals(EnumAction.BLOCK));
 
                 if (this.itemToRender.getItem() instanceof ItemMap) {
@@ -465,7 +465,7 @@ public class ItemRenderer {
     }
 
     private void renderFireInFirstPerson(float partialTicks) {
-        NoRender noRender = Client.INST.getModules().getModule(NoRender.class);
+        NoRender noRender = Modules.getModule(NoRender.class);
 
         if (noRender.isToggled() && noRender.fire.isToggled()) return;
 

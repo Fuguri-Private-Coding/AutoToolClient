@@ -9,11 +9,10 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
-
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
@@ -474,7 +473,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             float f = 70.0F;
 
             if (useFOVSetting) {
-                FovModifier fovModifier = Client.INST.getModules().getModule(FovModifier.class);
+                FovModifier fovModifier = Modules.getModule(FovModifier.class);
                 f = fovModifier.isToggled() ? fovModifier.fov.getValue() : this.mc.gameSettings.fovSetting;
 
                 if ((fovModifier.isToggled() && fovModifier.dynamicFov.isToggled()) || (Config.isDynamicFov() && !fovModifier.isToggled())) {
@@ -538,7 +537,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             f = f / (float) entitylivingbase.maxHurtTime;
             f = MathHelper.sin(f * f * f * f * (float) Math.PI);
-            final HurtCamera hurtCamera = Client.INST.getModules().getModule(HurtCamera.class);
+            final HurtCamera hurtCamera = Modules.getModule(HurtCamera.class);
 
             final float f2 = hurtCamera.isToggled() ? 0 : entitylivingbase.attackedAtYaw;
             GlStateManager.rotate(-f2, 0.0F, 1.0F, 0.0F);
@@ -587,7 +586,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
             }
         } else if (this.mc.gameSettings.thirdPersonView > 0) {
-            CustomCamera customCamera = Client.INST.getModules().getModule(CustomCamera.class);
+            CustomCamera customCamera = Modules.getModule(CustomCamera.class);
 
             double d3 = customCamera.isToggled() ? customCamera.cameraDistance.getValue() : this.thirdPersonDistanceTemp + (this.thirdPersonDistance - this.thirdPersonDistanceTemp) * partialTicks;
 
@@ -658,7 +657,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 GlStateManager.rotate(f6, 0.0F, 1.0F, 0.0F);
             }
         } else if (!this.mc.gameSettings.debugCamEnable) {
-            FreeLook freeLook = Client.INST.getModules().getModule(FreeLook.class);
+            FreeLook freeLook = Modules.getModule(FreeLook.class);
             float pitch = freeLook.isToggled() ? freeLook.rotPitch : entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
             float yaw = freeLook.isToggled() ? freeLook.rotYaw : entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks;
 
@@ -1009,8 +1008,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     }
 
     public void updateCameraAndRender(float partialTicks, long nanoTime) {
-        if (shadows == null) shadows = Client.INST.getModules().getModule(Glow.class);
-        if (blur == null) blur = Client.INST.getModules().getModule(Blur.class);
+        if (shadows == null) shadows = Modules.getModule(Glow.class);
+        if (blur == null) blur = Modules.getModule(Blur.class);
         Config.renderPartialTicks = partialTicks;
         this.frameInit();
         boolean flag = Display.isActive();
@@ -1461,7 +1460,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, new Object[]{renderglobal, entityplayer1, this.mc.objectMouseOver, Integer.valueOf(0), entityplayer1.getHeldItem(), Float.valueOf(partialTicks)})) && !this.mc.gameSettings.hideGUI) {
                 new DrawBlockHighlightEvent().call();
-                BlockOverlay blockOverlay = Client.INST.getModules().getModule(BlockOverlay.class);
+                BlockOverlay blockOverlay = Modules.getModule(BlockOverlay.class);
                 if (!blockOverlay.isToggled()) renderglobal.drawSelectionBox(entityplayer1, this.mc.objectMouseOver, 0, partialTicks);
             }
             GlStateManager.enableAlpha();

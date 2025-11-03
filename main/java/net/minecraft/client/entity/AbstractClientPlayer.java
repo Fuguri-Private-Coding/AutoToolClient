@@ -5,6 +5,7 @@ import java.io.File;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.LookEvent;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -85,7 +86,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
 
     public ResourceLocation getLocationCape() {
         if (this instanceof EntityPlayerSP) {
-            CustomCape customCape = Client.INST.getModules().getModule(CustomCape.class);
+            CustomCape customCape = Modules.getModule(CustomCape.class);
             if (!customCape.selectedCape.equalsIgnoreCase(customCape.capeMode.getMode())) {
                 locationCape = customCape.getCape();
             }

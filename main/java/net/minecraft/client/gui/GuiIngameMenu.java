@@ -3,6 +3,7 @@ package net.minecraft.client.gui;
 import java.io.IOException;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.gui.main.MainScreen;
 import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraft.client.gui.achievement.GuiStats;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -53,16 +54,16 @@ public class GuiIngameMenu extends GuiScreen
 
                 if (flag)
                 {
-                    this.mc.displayGuiScreen(Client.INST.getMainScreen());
+                    this.mc.displayGuiScreen(MainScreen.INST);
                 }
                 else if (flag1)
                 {
                     RealmsBridge realmsbridge = new RealmsBridge();
-                    realmsbridge.switchToRealms(Client.INST.getMainScreen());
+                    realmsbridge.switchToRealms(MainScreen.INST);
                 }
                 else
                 {
-                    this.mc.displayGuiScreen(new GuiMultiplayer(Client.INST.getMainScreen()));
+                    this.mc.displayGuiScreen(new GuiMultiplayer(MainScreen.INST));
                 }
 
             case 2:

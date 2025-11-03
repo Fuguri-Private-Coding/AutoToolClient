@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -29,7 +28,7 @@ public class ChestESP extends Module {
     final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
     final CheckBox blur = new CheckBox("Blur", this);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (event instanceof Render3DEvent) {

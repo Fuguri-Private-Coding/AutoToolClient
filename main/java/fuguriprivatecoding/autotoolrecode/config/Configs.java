@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.config;
 
 import com.google.gson.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
-import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import lombok.experimental.UtilityClass;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -22,13 +23,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Getter
+@UtilityClass
 public class Configs implements Imports {
 
-    File configsDirectory, bindsDirectory;
-    File bindFile, loadModulesFile, hotTextFile, accountFile;
-    private List<Config> configs;
-    Config defaultConfig;
+    @Getter File configsDirectory, bindsDirectory;
+    @Getter File bindFile, loadModulesFile, hotTextFile, accountFile;
+    @Getter private List<Config> configs;
+    @Getter Config defaultConfig;
 
     public void init() {
         configs = new ArrayList<>();
@@ -48,8 +49,6 @@ public class Configs implements Imports {
         refreshConfigs();
     }
 
-    ClientSettings clientSettings = Client.INST.getModules().getModule(ClientSettings.class);
-
     public void loadBinds() {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(bindFile));
@@ -57,7 +56,7 @@ public class Configs implements Imports {
             JsonObject json = (JsonObject) parser.parse(reader);
             reader.close();
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-                Module module = Client.INST.getModules().getModule(entry.getKey());
+                Module module = Modules.getModule(entry.getKey());
                 if (module == null) {
                     continue;
                 }
@@ -73,7 +72,7 @@ public class Configs implements Imports {
     public void saveBinds() {
         FileUtils.createIfNotExists(bindFile);
         JsonObject mainObject = new JsonObject();
-        for (Module module : Client.INST.getModules().getModules()) {
+        for (Module module : Modules.getModules()) {
             JsonObject moduleObject = new JsonObject();
             moduleObject.addProperty("key", module.getKey());
             mainObject.add(module.getName(), moduleObject);
@@ -176,7 +175,7 @@ public class Configs implements Imports {
             if (json == null) return;
 
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-                Module module = Client.INST.getModules().getModule(entry.getKey());
+                Module module = Modules.getModule(entry.getKey());
                 if (module != null && module.getCategory() == category) {
                     applyModuleSettings(module, (JsonObject) entry.getValue());
                 }
@@ -215,7 +214,7 @@ public class Configs implements Imports {
 
     private JsonObject createCategoryExportObject(Category category) {
         JsonObject json = new JsonObject();
-        for (Module module : Client.INST.getModules().getModulesByCategory(category)) {
+        for (Module module : Modules.getModulesByCategory(category)) {
             json.add(module.getName(), createModuleObject(module, true));
         }
         return json;
@@ -244,7 +243,7 @@ public class Configs implements Imports {
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
                 if ("ConfigInformation".equals(entry.getKey())) continue;
 
-                Module module = Client.INST.getModules().getModule(entry.getKey());
+                Module module = Modules.getModule(entry.getKey());
                 if (module != null) {
                     applyModuleSettings(module, (JsonObject) entry.getValue());
                 }
@@ -268,7 +267,7 @@ public class Configs implements Imports {
         infoObject.addProperty("LastUpdate", config.getLastUpdateDate());
         mainObject.add("ConfigInformation", infoObject);
 
-        for (Module module : Client.INST.getModules().getModules()) {
+        for (Module module : Modules.getModules()) {
             JsonObject moduleObject = createModuleObject(module, true);
             moduleObject.addProperty("hide", module.isHide());
             mainObject.add(module.getName(), moduleObject);

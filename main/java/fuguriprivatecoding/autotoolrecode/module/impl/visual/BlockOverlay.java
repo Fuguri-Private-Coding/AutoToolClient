@@ -2,11 +2,11 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
@@ -25,9 +25,9 @@ public class BlockOverlay extends Module {
     final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
     final CheckBox blur = new CheckBox("Blur", this);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
-        if (Client.INST.getModules().getModule(Scaffold.class).isToggled()) return;
+        if (Modules.getModule(Scaffold.class).isToggled()) return;
         if (event instanceof DrawBlockHighlightEvent) {
             MovingObjectPosition renderRayCast = mc.objectMouseOver;
             if (renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {

@@ -1,12 +1,14 @@
 package fuguriprivatecoding.autotoolrecode.event;
 
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@UtilityClass
 public class Events implements Imports {
     private final List<Subscriber> subscribers = new CopyOnWriteArrayList<>();
 

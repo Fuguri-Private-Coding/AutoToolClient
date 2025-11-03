@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -42,7 +41,7 @@ public class Trajectory extends Module {
         positions.clear();
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof Render3DEvent) {
             positions.clear();

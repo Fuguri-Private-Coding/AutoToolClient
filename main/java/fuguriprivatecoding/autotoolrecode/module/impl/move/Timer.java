@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -17,7 +16,7 @@ public class Timer extends Module {
 		mc.timer.timerSpeed = 1.0F;
 	}
 
-	@EventTarget
+	@Override
 	public void onEvent(Event event) {
 		if (event instanceof TickEvent) {
 			if (mc.timer.timerSpeed == 1) {

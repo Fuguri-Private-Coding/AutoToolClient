@@ -1,5 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.generate;
 
+import lombok.experimental.UtilityClass;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,28 +10,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@UtilityClass
 public class NameGenerator {
 
-    private final List<String> prefixes;
-    private final List<String> suffixes;
-    private final List<String> fullNicks;
-    private final Random random;
+    private List<String> prefixes = new ArrayList<>();
+    private List<String> suffixes = new ArrayList<>();
+    private List<String> fullNicks = new ArrayList<>();
+    private final Random random = new Random();
 
-    public NameGenerator(String resourcePath) throws IOException {
-        this.fullNicks = loadNicknamesFromResource(resourcePath);
-        this.random = new Random();
+    public void init(String resourcePath) throws IOException {
+        fullNicks = loadNicknamesFromResource(resourcePath);
 
         if (fullNicks.isEmpty()) {
             throw new IllegalArgumentException("Файл с никнеймами пуст или не найден!");
         }
 
-        this.prefixes = extractPrefixes(fullNicks);
-        this.suffixes = extractSuffixes(fullNicks);
+        prefixes = extractPrefixes(fullNicks);
+        suffixes = extractSuffixes(fullNicks);
     }
 
-    private List<String> loadNicknamesFromResource(String resourcePath) throws IOException {
+    private static List<String> loadNicknamesFromResource(String resourcePath) throws IOException {
         List<String> nicks = new ArrayList<>();
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
+        try (InputStream is = NameGenerator.class.getClassLoader().getResourceAsStream(resourcePath)) {
             if (is == null) throw new IOException("Файл не найден: " + resourcePath);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -62,7 +64,7 @@ public class NameGenerator {
         return suffixes;
     }
 
-    public String generateRealisticNick(int maxLength) {
+    public String generate(int maxLength) {
         String nickname;
         int attempt = 0;
         do {

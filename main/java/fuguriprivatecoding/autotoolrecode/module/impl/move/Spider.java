@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.BlockBBEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -30,7 +29,7 @@ public class Spider extends Module {
 
     public final IntegerSetting mouseButton = new IntegerSetting("Mouse button to go up faster", this, 0, 5, 1);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         switch (mode.getMode()) {
             case "Polar" -> {

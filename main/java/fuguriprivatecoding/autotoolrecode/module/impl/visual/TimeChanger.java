@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -15,7 +14,7 @@ public class TimeChanger extends Module {
 
     IntegerSetting time = new IntegerSetting("Time", this, 0, 20, 20);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof PacketEvent packetEvent && packetEvent.getPacket() instanceof S03PacketTimeUpdate) packetEvent.setCanceled(true);
         if (event instanceof TickEvent) mc.theWorld.setWorldTime(time.getValue() * 1000L);

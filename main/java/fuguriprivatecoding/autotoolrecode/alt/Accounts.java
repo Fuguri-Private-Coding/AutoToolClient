@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.alt;
 
 import com.google.gson.*;
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import lombok.experimental.UtilityClass;
 
@@ -24,8 +25,8 @@ public class Accounts {
         try (BufferedReader reader = new BufferedReader(new FileReader(accountFile))) {
             JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
             List<Account> accounts = parseAccountsFromJson(json);
-            Client.INST.getAltScreen().accounts.clear();
-            Client.INST.getAltScreen().accounts.addAll(accounts);
+            AltScreen.accounts.clear();
+            AltScreen.accounts.addAll(accounts);
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
@@ -74,7 +75,7 @@ public class Accounts {
     private JsonObject createAccountsJson() {
         JsonObject mainObject = new JsonObject();
 
-        for (Account account : Client.INST.getAltScreen().accounts) {
+        for (Account account : AltScreen.accounts) {
             JsonObject accountJson = createAccountJson(account);
             mainObject.add(account.getName(), accountJson);
         }

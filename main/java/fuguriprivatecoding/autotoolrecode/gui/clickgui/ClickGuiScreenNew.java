@@ -1,6 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.gui.clickgui;
 
-import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
@@ -28,8 +28,8 @@ public class ClickGuiScreenNew extends GuiScreen {
 
     float x, y, width, height = 0;
 
-    ClickGui clickGui = Client.INST.getModules().getModule(ClickGui.class);
-    ClientSettings clientSettings = Client.INST.getModules().getModule(ClientSettings.class);
+    ClickGui clickGui = Modules.getModule(ClickGui.class);
+    ClientSettings clientSettings = Modules.getModule(ClientSettings.class);
 
     ResourceLocation exitLogo = new ResourceLocation("minecraft", "autotool/mainmenu/exit.png");
 

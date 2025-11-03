@@ -13,6 +13,7 @@ import java.util.UUID;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.JumpEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.UpdateBodyRotationEvent;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Animations;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.block.Block;
@@ -943,7 +944,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     }
 
     public int getArmSwingAnimationEnd() {
-        Animations animations = Client.INST.getModules().getModule(Animations.class);
+        Animations animations = Modules.getModule(Animations.class);
 
         int i = this.isPotionActive(Potion.digSpeed)
                 ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier())

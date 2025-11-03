@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -12,7 +11,6 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import java.lang.reflect.Method;
 
 @ModuleInfo(name = "InvClicker", category = Category.LEGIT, description = "Автоматически кликает в инвентаре за вас.")
 public class InvClicker extends Module {
@@ -21,7 +19,7 @@ public class InvClicker extends Module {
 
     int mouseDown;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent && (mc.currentScreen instanceof GuiChest || mc.currentScreen instanceof GuiInventory)) {
             if (!Mouse.isButtonDown(0) || !Keyboard.isKeyDown(54) && !Keyboard.isKeyDown(42)) {

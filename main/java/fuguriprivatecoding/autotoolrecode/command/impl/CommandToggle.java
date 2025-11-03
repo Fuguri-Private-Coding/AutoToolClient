@@ -1,8 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.command.impl;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.command.Command;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 
 public class CommandToggle extends Command {
 
@@ -17,7 +17,7 @@ public class CommandToggle extends Command {
 			super.usage();
 			return;
 		}
-		Module module = Client.INST.getModules().getModule(args[1]);
+		Module module = Modules.getModule(args[1]);
 		if (module == null) {
 			addMessage("There is no such module!");
 			return;

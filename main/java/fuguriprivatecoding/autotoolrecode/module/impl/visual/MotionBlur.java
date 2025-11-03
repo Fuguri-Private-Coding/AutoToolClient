@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -19,7 +18,7 @@ public class MotionBlur extends Module {
         mc.entityRenderer.stopUseShader();
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             try {

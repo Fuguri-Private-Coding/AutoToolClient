@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
@@ -35,7 +34,7 @@ public class Velocity extends Module {
     private final StopWatch timer = new StopWatch();
     private final Random rand = new Random();
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         switch (mode.getMode()) {
             case "Vanilla" -> {

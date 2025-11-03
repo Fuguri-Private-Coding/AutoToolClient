@@ -21,7 +21,7 @@ public class Config {
 
     public Config(String name) {
        this.name = name;
-       configFile = new File(Client.INST.getConfigs().getConfigsDirectory(), name + CONFIG_FORMAT);
+       configFile = new File(Configs.getConfigsDirectory(), name + CONFIG_FORMAT);
        lastUpdateDate = new Date();
        FileUtils.createIfNotExists(configFile);
     }

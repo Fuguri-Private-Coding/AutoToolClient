@@ -2,8 +2,9 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.handle.Clicks;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -85,30 +86,27 @@ public class KillAura extends Module {
     final StopWatch clickTimer = new StopWatch();
     private long delay;
 
-    TargetStorage targetStorage;
-
     EntityLivingBase target;
 
     Rot lastDelta = new Rot();
 
     @Override
     public void onDisable() {
-        Client.INST.getTargetStorage().setTarget(null);
+        TargetStorage.setTarget(null);
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
-        targetStorage = Client.INST.getTargetStorage();
-        if (event instanceof TickEvent) targetStorage.setTarget(findNewTarget());
-        if (targetStorage.getTarget() == null) return;
-        target = targetStorage.getTarget();
-        if (Client.INST.getModules().getModule(Scaffold.class).isToggled()) return;
+        if (event instanceof TickEvent) TargetStorage.setTarget(findNewTarget());
+        if (TargetStorage.getTarget() == null) return;
+        target = TargetStorage.getTarget();
+        if (Modules.getModule(Scaffold.class).isToggled()) return;
 
         if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
             if (TimerRange.balance == 0) {
                 if (clickTimer.reachedMS(delay)) {
                     clickTimer.reset();
-                    Client.INST.getClicks().addClick();
+                    Clicks.addClick();
                     delay = Math.round(1000f / CPS.getRandomizedIntValue());
                 }
             }

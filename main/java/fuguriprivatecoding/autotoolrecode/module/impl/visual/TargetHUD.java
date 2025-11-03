@@ -1,8 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -72,7 +70,7 @@ public class TargetHUD extends Module {
         fonts.setMode("SFProRounded");
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (mc.currentScreen != null) return;
 
@@ -179,8 +177,7 @@ public class TargetHUD extends Module {
     }
 
     private void updateTarget() {
-        TargetStorage targetStorage = Client.INST.getTargetStorage();
-        EntityLivingBase currentTarget = targetStorage.getTarget();
+        EntityLivingBase currentTarget = TargetStorage.getTarget();
 
         if (target == null && currentTarget != null) {
             target = currentTarget;

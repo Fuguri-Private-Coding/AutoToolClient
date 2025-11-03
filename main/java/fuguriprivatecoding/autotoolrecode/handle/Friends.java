@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Friends {
-    List<String> friendsNames;
+    static List<String> friendsNames;
 
     public Friends() {
         friendsNames = new ArrayList<>();
@@ -14,7 +14,7 @@ public class Friends {
         return friendsNames;
     }
 
-    public void onClick(String name) {
+    public static void onClick(String name) {
         if (friendsNames.contains(name)) {
             friendsNames.remove(name);
         } else {
@@ -22,7 +22,7 @@ public class Friends {
         }
     }
 
-    public boolean isFriend(String name, boolean reverseFriends) {
+    public static boolean isFriend(String name, boolean reverseFriends) {
         if (friendsNames.contains(name)) {
             return !reverseFriends;
         } else {

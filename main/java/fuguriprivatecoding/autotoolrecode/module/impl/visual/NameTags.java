@@ -1,12 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
@@ -49,10 +48,10 @@ public class NameTags extends Module {
         fonts.setMode("SFProRounded");
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
-        if (murderDetector == null) murderDetector = Client.INST.getModules().getModule(MurderMystery.class);
-        if (midClick == null) midClick = Client.INST.getModules().getModule(MidClick.class);
+        if (murderDetector == null) murderDetector = Modules.getModule(MurderMystery.class);
+        if (midClick == null) midClick = Modules.getModule(MidClick.class);
 
         if (event instanceof Render3DEvent) {
             RenderUtils.start3D();

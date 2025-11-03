@@ -1,10 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
-import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.GaussianKernel;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Uniform;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
@@ -29,9 +30,9 @@ public class BloomRealUtils implements Imports {
     }
 
     public static void draw() {
-        if (shadows == null) shadows = Client.INST.getModules().getModule(Glow.class);
+        if (shadows == null) shadows = Modules.getModule(Glow.class);
         if (!Display.isActive() || !Display.isVisible() || !shadows.isToggled()) return;
-        Shader program = Client.INST.getShaders().getBloomReal();
+        Shader program = Shaders.bloomReal;
 
         inputFramebuffer.bindFramebuffer(true);
 

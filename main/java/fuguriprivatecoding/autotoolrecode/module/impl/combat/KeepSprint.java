@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.HitSlowDownEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -19,7 +18,7 @@ public class KeepSprint extends Module {
     private final CheckBox sprintSlowDownNormal = new CheckBox("HitSprint", this);
     private final CheckBox onlyInAir = new CheckBox("OnlyInAir", this);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof HitSlowDownEvent e) {
             if (mc.thePlayer.onGround && onlyInAir.isToggled()) return;

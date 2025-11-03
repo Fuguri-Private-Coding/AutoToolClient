@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
@@ -49,7 +48,7 @@ public class BedESP extends Module {
         if (update.isAlive()) update.interrupt();
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (event instanceof WorldChangeEvent && !beds.isEmpty()) beds.clear();

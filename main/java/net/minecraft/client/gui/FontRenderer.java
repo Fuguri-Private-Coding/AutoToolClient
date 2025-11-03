@@ -13,6 +13,7 @@ import java.util.Properties;
 import java.util.Random;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.NameProtect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -388,7 +389,7 @@ public class FontRenderer implements IResourceManagerReloadListener
     private void renderStringAtPos(String text, boolean shadow)
     {
 
-        if (Client.INST.getModules() != null && Client.INST.getModules().getModule(NameProtect.class).isToggled()) {
+        if (Modules.getModule(NameProtect.class).isToggled()) {
             text = text.replaceAll(Minecraft.getMinecraft().getSession().getUsername(), Client.INST.getProfile().getUsername());
         }
 
@@ -616,7 +617,7 @@ public class FontRenderer implements IResourceManagerReloadListener
         else
         {
 
-            if (Client.INST.getModules() != null && Client.INST.getModules().getModule(NameProtect.class).isToggled()) {
+            if (Modules.getModule(NameProtect.class).isToggled()) {
                 text = text.replaceAll(Minecraft.getMinecraft().getSession().getUsername(), Client.INST.getProfile().getUsername());
             }
 

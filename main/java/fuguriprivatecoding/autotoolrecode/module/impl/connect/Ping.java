@@ -2,18 +2,19 @@ package fuguriprivatecoding.autotoolrecode.module.impl.connect;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -90,9 +91,9 @@ public class Ping extends Module {
         resetAllPackets();
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModules().getModule(Glow.class);
+        if (shadows == null) shadows = Modules.getModule(Glow.class);
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (mc.isIntegratedServerRunning()) return;
         long currentTime = System.currentTimeMillis();
@@ -136,7 +137,7 @@ public class Ping extends Module {
             case TickEvent _ -> {
                 if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChest) && actions.get("OpenedGui"))
                     reset(openedGuiTimeCondition.getValue());
-                if (Client.INST.getModules().getModule(Scaffold.class).isToggled() && actions.get("Scaffold"))
+                if (Modules.getModule(Scaffold.class).isToggled() && actions.get("Scaffold"))
                     reset(scaffoldTimeCondition.getValue());
 
                 if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) reset(damageTimeCondition.getValue());
@@ -149,7 +150,7 @@ public class Ping extends Module {
                 }
 
                 if (resetIfDistance.isToggled()) {
-                    EntityLivingBase target = Client.INST.getTargetStorage().getTargetOrSelectedEntity();
+                    EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
 
                     if (target != null && DistanceUtils.getDistance(target) <= resetDistance.getValue()) {
                         reset(50);

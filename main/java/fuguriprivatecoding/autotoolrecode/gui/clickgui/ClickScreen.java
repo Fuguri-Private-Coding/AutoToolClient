@@ -1,17 +1,20 @@
 package fuguriprivatecoding.autotoolrecode.gui.clickgui;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.config.Configs;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
+import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.gui.config.ConfigScreen;
+import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
@@ -19,6 +22,7 @@ import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import fuguriprivatecoding.autotoolrecode.utils.value.Doubles;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
@@ -37,7 +41,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import static java.lang.Math.*;
 
-public class ClickScreen extends GuiScreen {
+public class ClickScreen extends GuiScreen implements EventListener {
 
 	int delay = 10;
 	boolean resizing, moving, binding, closing;
@@ -46,8 +50,8 @@ public class ClickScreen extends GuiScreen {
 
 	Vector2f pos, size, lastMouse, lastSize, lastPos, clickedCategoryPos, clickedModulePos;
 
-	ClickGui clickGui = Client.INST.getModules().getModule(ClickGui.class);
-	ClientSettings clientSettings = Client.INST.getModules().getModule(ClientSettings.class);
+	ClickGui clickGui = Modules.getModule(ClickGui.class);
+	ClientSettings clientSettings = Modules.getModule(ClientSettings.class);
 
 	Color BACKGROUND_COLOR;
 	Color MAIN_COLOR = new Color(255, 255, 209, 255);
@@ -62,6 +66,12 @@ public class ClickScreen extends GuiScreen {
 	final Animation2D settingLine, background, sizeBackground, modulesScrolls, moduleLine, settingsScrolls;
 
 	final EasingAnimation guis = new EasingAnimation();
+
+    public static ClickScreen INST;
+
+    public static void init() {
+        INST = new ClickScreen();
+    }
 
 	public ClickScreen() {
 		lastMouse = new Vector2f(0, 0);
@@ -88,7 +98,7 @@ public class ClickScreen extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		int currentScroll = ClientSettings.getScroll();
+		int currentScroll = DeltaTracker.getDeltaScroll();
 
 		MAIN_COLOR = clickGui.color.getFadedColor();
 		BACKGROUND_COLOR = new Color(0,0,0,clickGui.backgroundAlpha.getValue());
@@ -124,7 +134,7 @@ public class ClickScreen extends GuiScreen {
 		};
 		final ClientFontRenderer fontRenderer = Fonts.fonts.get(clickGui.fonts.getMode());
 
-		Client.INST.getModules().getModules().sort((o1, o2) -> {
+		Modules.getModules().sort((o1, o2) -> {
 			int width1 = (int) fontRenderer.getStringWidth(o1.getName());
 			int width2 = (int) fontRenderer.getStringWidth(o2.getName());
 
@@ -200,7 +210,7 @@ public class ClickScreen extends GuiScreen {
 		ScissorUtils.disableScissor();
 
 		float widthsModule = 0;
-		for (Module module : Client.INST.getModules().getModules()) {
+		for (Module module : Modules.getModules()) {
 			float moduleWidth = (float) fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			if (moduleWidth > widthsModule) widthsModule = moduleWidth;
 		}
@@ -243,7 +253,7 @@ public class ClickScreen extends GuiScreen {
 		ScissorUtils.enableScissor();
 		ScissorUtils.scissor(sc, background.x, background.y + 15 + 1, widthsModule + 5, sizeBackground.y - 15 - 5);
 
-		List<Module> moduleList = Client.INST.getModules().getModulesByCategory(selectedCategory);
+		List<Module> moduleList = Modules.getModulesByCategory(selectedCategory);
 
 		for (Module module : moduleList) {
             EasingAnimation toggleModuleAnim = module.getToggleAnimation();
@@ -826,12 +836,12 @@ public class ClickScreen extends GuiScreen {
 			boolean clickExportFromConfig = mouseX > clickedCategoryPos.x + 3 && mouseX < clickedCategoryPos.x + 3 + fontRenderer.getStringWidth("Export") && mouseY > clickedCategoryPos.y + 33 && mouseY < clickedCategoryPos.y + 33 + fontRenderer.FONT_HEIGHT;
 
 			if (clickRectangle) {
-				List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModules().getModulesByCategory(clickedCategory));
+				List<Module> moduleList = new CopyOnWriteArrayList<>(Modules.getModulesByCategory(clickedCategory));
 				for (Module module : moduleList) {
 					if (clickHideCategory) module.setHide(!module.isHide());
 				}
-				if (clickImportCategory) Client.INST.getConfigs().importSettings(clickedCategory);
-				if (clickExportFromConfig) Client.INST.getConfigs().exportSettings(clickedCategory);
+				if (clickImportCategory) Configs.importSettings(clickedCategory);
+				if (clickExportFromConfig) Configs.exportSettings(clickedCategory);
 			} else {
 				clickedCategoryPos.set(0,0);
 				clickedCategory = null;
@@ -845,8 +855,8 @@ public class ClickScreen extends GuiScreen {
 			boolean clickHide = mouseX > clickedCategoryPos.x + 3 && mouseX < clickedModulePos.x + 3 + fontRenderer.getStringWidth("Hide") && mouseY > clickedModulePos.y + 23 && mouseY < clickedModulePos.y + 23 + fontRenderer.FONT_HEIGHT;
 
 			if (clickRectangle) {
-				if (clickImport) Client.INST.getConfigs().importSettings(clickedModule);
-				if (clickExport) Client.INST.getConfigs().exportSettings(clickedModule);
+				if (clickImport) Configs.importSettings(clickedModule);
+				if (clickExport) Configs.exportSettings(clickedModule);
 				if (clickHide) selectedModule.setHide(!selectedModule.isHide());
 			} else {
 				clickedModulePos.set(0,0);
@@ -868,7 +878,7 @@ public class ClickScreen extends GuiScreen {
 		}
 
 		float widthsModule = 0;
-		for (Module module : Client.INST.getModules().getModules()) {
+		for (Module module : Modules.getModules()) {
 			float moduleWidth = (float) fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			if (moduleWidth > widthsModule) widthsModule = moduleWidth;
 		}
@@ -885,7 +895,7 @@ public class ClickScreen extends GuiScreen {
 
 		float offset = modulesScrolls.y;
 
-		for (Module module : Client.INST.getModules().getModulesByCategory(selectedCategory))	{
+		for (Module module : Modules.getModulesByCategory(selectedCategory))	{
 			float moduleWidth = (float) fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 9;
 			if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y || mouseY < background.y + 15) continue;
@@ -1092,28 +1102,27 @@ public class ClickScreen extends GuiScreen {
 
 	private void handlePostCloseOperations() {
 		if (showConsoleAfterClose) {
-			mc.displayGuiScreen(Client.INST.getConsole());
+			mc.displayGuiScreen(ConsoleScreen.INST);
 			showConsoleAfterClose = false;
 		}
 
 		if (showConfigAfterClose) {
-			mc.displayGuiScreen(Client.INST.getConfigScreen());
+			mc.displayGuiScreen(ConfigScreen.INST);
 			showConfigAfterClose = false;
 		}
 	}
 
 	@Override
 	public void onGuiClosed() {
-		Client.INST.getEvents().unregister(this);
-		Client.INST.getConfigs().saveAsync(Client.INST.getConfigs().getDefaultConfig());
+		Configs.saveAsync(Configs.getDefaultConfig());
 	}
 
-	@Override
-	public void initGui() {
-		Client.INST.getEvents().register(this);
-	}
+    @Override
+    public boolean listen() {
+        return mc.currentScreen == this;
+    }
 
-	@EventTarget
+    @Override
 	public void onEvent(Event event) {
 		if (event instanceof TickEvent) {
 			if (delay > 0) {

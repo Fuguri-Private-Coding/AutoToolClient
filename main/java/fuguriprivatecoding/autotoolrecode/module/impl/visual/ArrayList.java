@@ -1,12 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
@@ -61,11 +60,11 @@ public class ArrayList extends Module {
         fonts.setMode("SFProRegular");
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (!font.name.equalsIgnoreCase(fonts.getMode())) font = Fonts.fonts.get(fonts.getMode());
         if (event instanceof Render2DEvent) {
-            List<Module> moduleList = new CopyOnWriteArrayList<>(Client.INST.getModules().getEnabledModules());
+            List<Module> moduleList = new CopyOnWriteArrayList<>(Modules.getEnabledModules());
             ScaledResolution sc = new ScaledResolution(mc);
 
             sort(moduleList, font);

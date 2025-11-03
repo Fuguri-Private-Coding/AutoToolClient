@@ -2,10 +2,13 @@ package fuguriprivatecoding.autotoolrecode.gui.config;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.config.Config;
+import fuguriprivatecoding.autotoolrecode.config.Configs;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
+import fuguriprivatecoding.autotoolrecode.event.EventListener;
+import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.TextButton;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
@@ -34,10 +37,10 @@ import java.util.List;
 
 import static java.lang.Math.min;
 
-public class ConfigScreen extends GuiScreen {
+public class ConfigScreen extends GuiScreen implements EventListener {
 
-    ClickGui clickGui = Client.INST.getModules().getModule(ClickGui.class);
-    ClientSettings clientSettings = Client.INST.getModules().getModule(ClientSettings.class);
+    ClickGui clickGui = Modules.getModule(ClickGui.class);
+    ClientSettings clientSettings = Modules.getModule(ClientSettings.class);
     private final TextButton textField;
 
     Vector2f pos, size, lastMouse, lastSize, lastPos;
@@ -50,8 +53,14 @@ public class ConfigScreen extends GuiScreen {
 
     Color mainColor;
 
-    public ConfigScreen() {
-        Client.INST.getEvents().register(this);
+    public static ConfigScreen INST;
+
+    public static void init() {
+        INST = new ConfigScreen();
+    }
+
+    private ConfigScreen() {
+        Events.register(this);
         mc = Minecraft.getMinecraft();
         ScaledResolution sc = new ScaledResolution(mc);
 
@@ -180,7 +189,7 @@ public class ConfigScreen extends GuiScreen {
         float offset = 0;
         float yOffset = scrolls.y;
         totalHeight = 0;
-        for (Config config : Client.INST.getConfigs().getConfigs()) {
+        for (Config config : Configs.getConfigs()) {
             Color selectedColor = selectedConfig != null ? selectedConfig == config ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150);
             RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clientSettings.backgroundRadius.getValue(), selectedColor);
             font.drawString(config.getName(), background.x + 10 + offset, background.y + 30 + 2 + yOffset, Color.WHITE);
@@ -214,8 +223,6 @@ public class ConfigScreen extends GuiScreen {
 
         float scale = clientSettings.scale.getValue();
 
-        ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
-
         if (keyCode == 1 && creatingConfig) {
             textField.setText("");
             textField.setFocused(false);
@@ -230,9 +237,9 @@ public class ConfigScreen extends GuiScreen {
         if (keyCode == Keyboard.KEY_RETURN) {
             if (creatingConfig && !textField.getText().isEmpty()) {
                 Config config = new Config(textField.getText());
-                Client.INST.getConfigs().saveConfig(config);
+                Configs.saveConfig(config);
                 ClientUtils.chatLog("Successful created config: " + textField.getText() + ".");
-                Client.INST.getConfigs().refreshConfigs();
+                Configs.refreshConfigs();
                 textField.setText("");
                 textField.setFocused(false);
                 creatingConfig = false;
@@ -263,7 +270,7 @@ public class ConfigScreen extends GuiScreen {
 
         float offset = 0;
         float yOffset = scrolls.y;
-        for (Config config : Client.INST.getConfigs().getConfigs()) {
+        for (Config config : Configs.getConfigs()) {
             boolean selectConfig = mouseX > background.x + 5 + offset && mouseX < background.x + 5 + offset + 100 && mouseY > background.y + 20 + yOffset && mouseY < background.y + 20 + yOffset + 30;
             if (load || save || delete || folder || refresh || create) break;
             if (selectConfig) {
@@ -301,7 +308,7 @@ public class ConfigScreen extends GuiScreen {
             }
 
             if (folder) {
-                String s = Client.INST.getConfigs().getConfigsDirectory().getAbsolutePath();
+                String s = Configs.getConfigsDirectory().getAbsolutePath();
 
                 if (Util.getOSType() == Util.EnumOS.OSX) {
                     try {
@@ -321,7 +328,7 @@ public class ConfigScreen extends GuiScreen {
             }
 
             if (refresh) {
-                Client.INST.getConfigs().refreshConfigs();
+                Configs.refreshConfigs();
                 ClientUtils.chatLog("Successful refreshed.");
             }
 
@@ -332,19 +339,19 @@ public class ConfigScreen extends GuiScreen {
 
             if (selectedConfig != null) {
                 if (load) {
-                    Client.INST.getConfigs().loadConfig(selectedConfig);
+                    Configs.loadConfig(selectedConfig);
                     ClientUtils.chatLog("Successful loaded config: " + selectedConfig.getName() + ".");
                 }
 
                 if (delete) {
-                    Client.INST.getConfigs().deleteConfig(selectedConfig);
+                    Configs.deleteConfig(selectedConfig);
                     ClientUtils.chatLog("Successful deleted config: " + selectedConfig.getName() + ".");
                 }
 
                 if (save) {
-                    Client.INST.getConfigs().saveConfig(selectedConfig);
+                    Configs.saveConfig(selectedConfig);
                     ClientUtils.chatLog("Successful saved config: " + selectedConfig.getName() + ".");
-                    Client.INST.getConfigs().saveConfig(Client.INST.getConfigs().getDefaultConfig());
+                    Configs.saveConfig(Configs.getDefaultConfig());
                 }
             }
         }
@@ -363,8 +370,8 @@ public class ConfigScreen extends GuiScreen {
                 message.getAttachments().forEach(attachment -> {
                     try {
                         if (attachment.getFileName().endsWith(".json")) {
-                            attachment.getProxy().downloadToFile(new File(Client.INST.getConfigs().getConfigsDirectory() + "/" + attachment.getFileName()))
-                                    .thenAccept(_ -> Client.INST.getConfigs().refreshConfigs());
+                            attachment.getProxy().downloadToFile(new File(Configs.getConfigsDirectory() + "/" + attachment.getFileName()))
+                                    .thenAccept(_ -> Configs.refreshConfigs());
                         }
                     } catch (Exception _) {
                         ClientUtils.chatLog("Failed download configs or models.");
@@ -381,7 +388,12 @@ public class ConfigScreen extends GuiScreen {
         moving = false;
     }
 
-    @EventTarget
+    @Override
+    public boolean listen() {
+        return mc.currentScreen == this;
+    }
+
+    @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             if (delay > 0) {

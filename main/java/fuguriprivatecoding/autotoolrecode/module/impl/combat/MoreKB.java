@@ -1,8 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.SprintEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
@@ -11,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
@@ -36,10 +35,10 @@ public class MoreKB extends Module {
 
     int delay, reset;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            EntityLivingBase target = Client.INST.getTargetStorage().getTargetOrSelectedEntity();
+            EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
             if (target != null && target.hurtTime == 10 && !dontReset(target)) {
                 delay = delayTicks.getRandomizedIntValue();
                 reset = resetTicks.getRandomizedIntValue();

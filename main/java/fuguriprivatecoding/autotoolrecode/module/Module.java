@@ -2,18 +2,21 @@ package fuguriprivatecoding.autotoolrecode.module;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.EventListener;
+import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
+import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import java.util.ArrayList;
 import java.util.List;
-
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import fuguriprivatecoding.autotoolrecode.utils.sound.Sounds;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Module implements Imports, SettingAble {
+public class Module implements Imports, SettingAble, EventListener {
 
 	final ModuleInfo annotation = getClass().getAnnotation(ModuleInfo.class);
 
@@ -38,16 +41,16 @@ public class Module implements Imports, SettingAble {
 	public void toggle() {
 		toggled = !toggled;
 		float volume = 1;
-		if (Client.INST.getModules() != null && Client.INST.getModules().getModule(ClientSettings.class) != null) volume = Client.INST.getModules().getModule(ClientSettings.class).toggleModuleVolume.getValue();
+		if (Modules.getModule(ClientSettings.class) != null) volume = Modules.getModule(ClientSettings.class).toggleModuleVolume.getValue();
 
 		if (toggled) {
 			playSound(volume);
-			Client.INST.getEvents().register(this);
+			Events.register(this);
 			arrayListAnimation.setEnd(1);
 			onEnable();
 		} else {
 			playSound(volume);
-			Client.INST.getEvents().unregister(this);
+			Events.unregister(this);
 			arrayListAnimation.setEnd(0);
 			onDisable();
 		}
@@ -55,7 +58,7 @@ public class Module implements Imports, SettingAble {
 
 	void playSound(float volume) {
 		if (Client.INST.isStarting() || name.equalsIgnoreCase("ClickGui")) return;
-		if (toggled) Client.INST.getSounds().getEnableSound().asyncPlay(volume);else Client.INST.getSounds().getDisableSound().asyncPlay(volume);
+		if (toggled) Sounds.getEnableSound().asyncPlay(volume);else Sounds.getDisableSound().asyncPlay(volume);
 	}
 
 	public boolean toggled() {
@@ -70,7 +73,12 @@ public class Module implements Imports, SettingAble {
 
 	}
 
-	public void onEvent(Event event) {}
+    @Override
+    public boolean listen() {
+        return Utils.isWorldLoaded() && toggled;
+    }
+
+    public void onEvent(Event event) {}
 
     public void setToggled(boolean toggled) {
 		if (this.toggled != toggled) {

@@ -1,32 +1,40 @@
 package fuguriprivatecoding.autotoolrecode.handle;
 
+import fuguriprivatecoding.autotoolrecode.event.EventListener;
+import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.LegitClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.TimerRange;
+import fuguriprivatecoding.autotoolrecode.utils.Utils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.ClickSettings;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class Clicks implements Imports {
+public class Clicks implements Imports, EventListener {
 
     public Clicks() {
-        Client.INST.getEvents().register(this);
+        Events.register(this);
     }
 
     @Getter @Setter boolean clicking;
+    @Getter static int clicks;
 
-    @Getter int clicks;
     ClickSettings clickSettings;
 
-    @EventTarget
+    @Override
+    public boolean listen() {
+        return Utils.isWorldLoaded();
+    }
+
+    @Override
     public void onEvent(Event event) {
-        if (clickSettings == null) clickSettings = Client.INST.getModules().getModule(ClickSettings.class);
+        if (clickSettings == null) clickSettings = Modules.getModule(ClickSettings.class);
 
         if (event instanceof LegitClickTimingEvent) {
             if (clickSettings.simulateDoubleClick.isToggled() && clicks > 5) {
@@ -36,7 +44,7 @@ public class Clicks implements Imports {
             int iters = clicks;
             clicks = 0;
 
-            EntityLivingBase target = Client.INST.getTargetStorage().getTargetOrSelectedEntity();
+            EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
             clicking = needClick(target);
 
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
@@ -60,7 +68,5 @@ public class Clicks implements Imports {
         return mc.thePlayer.hurtTime >= endRandomizeHurtTime || (TimerRange.teleporting || TimerRange.balance > 0);
     }
 
-    public void addClick() { clicks++; }
-
-    public void addClick(int clicks) { this.clicks += clicks; }
+    public static void addClick() { clicks++; }
 }

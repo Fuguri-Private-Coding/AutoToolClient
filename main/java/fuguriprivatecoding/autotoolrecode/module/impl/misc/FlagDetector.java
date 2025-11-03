@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -18,7 +17,7 @@ public class FlagDetector extends Module {
 
     int flagCount = 0;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof PacketEvent packetEvent) {
             if (packetEvent.getPacket() instanceof S08PacketPlayerPosLook) {

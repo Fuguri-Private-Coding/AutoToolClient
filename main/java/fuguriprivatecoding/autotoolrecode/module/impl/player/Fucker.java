@@ -1,12 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
@@ -16,6 +15,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
@@ -53,7 +53,7 @@ public class Fucker extends Module {
         reset(true);
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof TeleportEvent e) {
             if (whiteListOwnBed.isToggled()) {
@@ -175,7 +175,7 @@ public class Fucker extends Module {
     }
 
     public boolean handleRotate() {
-        return !Client.INST.getModules().getModule(Scaffold.class).isToggled() && Client.INST.getTargetStorage().getTarget() == null;
+        return !Modules.getModule(Scaffold.class).isToggled() && TargetStorage.getTarget() == null;
     }
 
     public void destroy() {

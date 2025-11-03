@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -81,7 +80,7 @@ public class CustomCape extends Module {
         }
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof WorldChangeEvent) selectedCape = "";
     }

@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -14,7 +13,7 @@ public class AutoWater extends Module {
 
     FloatSetting fallDistance = new FloatSetting("Fall Distance", this, 0, 4.5f, 3.5f, 0.1f);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             MovingObjectPosition rayCast = mc.objectMouseOver;

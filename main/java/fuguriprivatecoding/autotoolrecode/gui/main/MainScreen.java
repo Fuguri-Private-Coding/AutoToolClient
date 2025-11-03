@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.gui.main;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.ImgButton;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
@@ -18,7 +19,14 @@ import java.io.IOException;
 
 public class MainScreen extends GuiScreen {
 
-    public MainScreen() {
+    public static MainScreen INST;
+
+
+    public static void init() {
+        INST = new MainScreen();
+    }
+
+    private MainScreen() {
         this.mc = Imports.mc;
     }
 
@@ -71,7 +79,7 @@ public class MainScreen extends GuiScreen {
             case 0 -> mc.displayGuiScreen(new GuiSelectWorld(this));
             case 1 -> mc.displayGuiScreen(new GuiMultiplayer(this));
             case 2 -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
-            case 3 -> mc.displayGuiScreen(Client.INST.getAltScreen());
+            case 3 -> mc.displayGuiScreen(AltScreen.INST);
             case 5 -> mc.shutdownMinecraftApplet();
         }
     }

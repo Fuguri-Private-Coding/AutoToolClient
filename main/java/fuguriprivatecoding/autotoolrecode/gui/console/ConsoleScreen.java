@@ -1,9 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.gui.console;
 
-import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.command.Commands;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
+import fuguriprivatecoding.autotoolrecode.event.EventListener;
+import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
@@ -27,7 +29,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import static java.lang.Math.min;
 
-public class ConsoleScreen extends GuiScreen {
+public class ConsoleScreen extends GuiScreen implements EventListener {
 
     boolean moving, closing;
     public boolean changed = false;
@@ -35,19 +37,25 @@ public class ConsoleScreen extends GuiScreen {
     int scroll, totalHeight = 0;
     int delay = 30;
 
+    public static ConsoleScreen INST;
+
+    public static void init() {
+        INST = new ConsoleScreen();
+    }
+
     Vector2f pos, size, lastMouse, lastSize, lastPos;
 
     Color mainColor;
     final Animation2D background, sizeBackground, scrolls;
 
     private final GuiTextField textField = new GuiTextField(0, null, 0, 0, 0, 0);
-    public final List<String> history = new CopyOnWriteArrayList<>();
+    public static final List<String> history = new CopyOnWriteArrayList<>();
 
     ClickGui clickGui;
     ClientSettings clientSettings;
 
-    public ConsoleScreen() {
-        Client.INST.getEvents().register(this);
+    private ConsoleScreen() {
+        Events.register(this);
         mc = Minecraft.getMinecraft();
 
         ScaledResolution sc = new ScaledResolution(mc);
@@ -72,8 +80,8 @@ public class ConsoleScreen extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (clickGui == null) clickGui = Client.INST.getModules().getModule(ClickGui.class);
-        if (clientSettings == null) clientSettings = Client.INST.getModules().getModule(ClientSettings.class);
+        if (clickGui == null) clickGui = Modules.getModule(ClickGui.class);
+        if (clientSettings == null) clientSettings = Modules.getModule(ClientSettings.class);
 
         float scale = clientSettings.scale.getValue();
 
@@ -194,7 +202,7 @@ public class ConsoleScreen extends GuiScreen {
         GL11.glScaled(1f / scale, 1f / scale, 1f);
     }
 
-    public void log(String msg) {
+    public static void log(String msg) {
         history.add("AutoTool:§3 " + msg);
         ClientUtils.chatLog(msg);
         System.out.println("[Console]: " + msg);
@@ -211,7 +219,7 @@ public class ConsoleScreen extends GuiScreen {
 
         if (keyCode == Keyboard.KEY_RETURN && !textField.getText().isEmpty()) {
             if (changed) return;
-            if (!Client.INST.getCommands().handle(textField.getText())) {
+            if (!Commands.handle(textField.getText())) {
                 history.add(username + ": " + textField.getText());
             }
             textField.setText("");
@@ -276,7 +284,12 @@ public class ConsoleScreen extends GuiScreen {
         moving = false;
     }
 
-    @EventTarget
+    @Override
+    public boolean listen() {
+        return mc.currentScreen == this;
+    }
+
+    @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             if (delay > 0) {

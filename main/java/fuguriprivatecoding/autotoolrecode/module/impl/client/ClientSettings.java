@@ -1,9 +1,9 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.client;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
@@ -17,7 +17,7 @@ public class ClientSettings extends Module {
     public FloatSetting scale = new FloatSetting("Scale", this, 0.5f, 2, 1, 0.01f) {};
 
     public static int getScroll() {
-        ClientSettings clientSettings = Client.INST.getModules().getModule(ClientSettings.class);
+        ClientSettings clientSettings = Modules.getModule(ClientSettings.class);
         int currentScroll = DeltaTracker.getDeltaScroll();
 
         return currentScroll / 120 * clientSettings.scroll.getValue();

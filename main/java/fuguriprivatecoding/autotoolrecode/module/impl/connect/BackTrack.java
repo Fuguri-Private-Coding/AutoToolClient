@@ -1,8 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.connect;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
@@ -10,9 +8,11 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -65,9 +65,9 @@ public class BackTrack extends Module {
 
     private Glow shadows;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Client.INST.getModules().getModule(Glow.class);
+        if (shadows == null) shadows = Modules.getModule(Glow.class);
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();
             if (target == null || e.isCanceled() || e.getDirection() != PacketDirection.INCOMING) return;
@@ -98,9 +98,9 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof Render3DEvent) {
-            if (target != (whileKillAura.isToggled() ? Client.INST.getTargetStorage().getTarget() : Client.INST.getTargetStorage().getTargetOrSelectedEntity())) {
+            if (target != (whileKillAura.isToggled() ? TargetStorage.getTarget() : TargetStorage.getTargetOrSelectedEntity())) {
                 handle(true);
-                target = (whileKillAura.isToggled() ? Client.INST.getTargetStorage().getTarget() : Client.INST.getTargetStorage().getTargetOrSelectedEntity());
+                target = (whileKillAura.isToggled() ? TargetStorage.getTarget() : TargetStorage.getTargetOrSelectedEntity());
             }
 
             if (delayBetweenBackTracks > 0) {
@@ -206,6 +206,6 @@ public class BackTrack extends Module {
 
     @Override
     public String getSuffix() {
-        return String.valueOf(delays) + " ms";
+        return delays + " ms";
     }
 }

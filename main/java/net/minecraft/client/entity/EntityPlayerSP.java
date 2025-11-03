@@ -1,5 +1,6 @@
 package net.minecraft.client.entity;
 
+import fuguriprivatecoding.autotoolrecode.command.Commands;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -218,7 +219,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     }
 
     public void sendChatMessage(String message) {
-        if (Client.INST.getCommands().handle(message)) {
+        if (Commands.handle(message)) {
             return;
         }
         this.sendQueue.addToSendQueue(new C01PacketChatMessage(message));

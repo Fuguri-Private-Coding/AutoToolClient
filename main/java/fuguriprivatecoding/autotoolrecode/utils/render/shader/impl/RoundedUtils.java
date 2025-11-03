@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Uniform;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
@@ -14,7 +14,7 @@ public class RoundedUtils implements Imports {
     private static Shader program;
 
     private static void draw(final float x, final float y, final float width, final float height, final float radius1, final float radius2, final float radius3, float radius4, Color color) {
-        if (program == null) program = Client.INST.getShaders().getRounded();
+        if (program == null) program = Shaders.rounded;
         int id = program.getProgramId();
         program.start();
         Uniform.uniform2f(id, "u_size", width, height);

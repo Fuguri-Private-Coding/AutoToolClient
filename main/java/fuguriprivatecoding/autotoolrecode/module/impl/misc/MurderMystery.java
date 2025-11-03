@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -37,7 +36,7 @@ public class MurderMystery extends Module {
         if (!detectives.isEmpty()) detectives.clear();
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof WorldChangeEvent) {
             if (!murders.isEmpty()) murders.clear();

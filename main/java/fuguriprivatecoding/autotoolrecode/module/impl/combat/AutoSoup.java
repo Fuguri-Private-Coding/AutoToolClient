@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -37,7 +36,7 @@ public class AutoSoup extends Module {
     private boolean switchBack;
     private int lastSoupSlot;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof MotionEvent) {
             if (mc.currentScreen == null) {

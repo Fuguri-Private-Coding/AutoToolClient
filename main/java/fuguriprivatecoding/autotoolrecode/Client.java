@@ -21,7 +21,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
 import fuguriprivatecoding.autotoolrecode.utils.file.*;
 import fuguriprivatecoding.autotoolrecode.utils.packet.*;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
-import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
@@ -37,7 +36,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Getter
-public enum Client implements Imports {
+public enum Client implements Imports, EventListener {
 	INST;
 
 	String name = "AutoTool";
@@ -49,26 +48,6 @@ public enum Client implements Imports {
 	File clientDir;
 	File soundsDir;
 
-    Clicks clicks;
-    Sounds sounds;
-    Events events;
-    Shaders shaders;
-    Friends friends;
-    Modules modules;
-    Configs configs;
-    Commands commands;
-    ConsoleScreen console;
-    TargetStorage targetStorage;
-
-	ClickScreen clickScreen;
-	ConfigScreen configScreen;
-	AltScreen altScreen;
-	MainScreen mainScreen;
-
-	NameGenerator generator;
-
-	@Setter
-    Discord discord;
 	@Setter ClientIRC irc;
 
 	boolean starting = true;
@@ -77,11 +56,9 @@ public enum Client implements Imports {
 		long start = System.nanoTime();
 		starting = true;
 
-		name = "AutoTool";
-
-		Display.setTitle(getFullName());
-
+        setDisplayInfo();
 		updateClient();
+
         irc.connectClient();
 
 		clientDir = new File(name);
@@ -89,61 +66,51 @@ public enum Client implements Imports {
 
 		FileUtils.createDirectoriesIfNotExists(clientDir, soundsDir);
 
-		events = new Events();
-		events.register(this);
+		Events.register(this);
 
-		console = new ConsoleScreen();
+		ConsoleScreen.init();
 
         Fonts.init();
-
-		discord = new Discord();
-
-		targetStorage = new TargetStorage();
-		friends = new Friends();
-		sounds = new Sounds();
-
-		modules = new Modules();
-
-		shaders = new Shaders();
-		shaders.init();
-
-		configs = new Configs();
-		configs.init();
-		configs.loadBinds();
-
+        Sounds.init();
+        Shaders.init();
         Accounts.init();
 
-		generator = new NameGenerator("names.txt");
+        Modules.init();
 
-		altScreen = new AltScreen();
+		Configs.init();
+		Configs.loadBinds();
 
-		commands = new Commands();
-		clicks = new Clicks();
+        NameGenerator.init("names.txt");
 
-		new PositionResolverComponent();
-
+        Commands.init();
+		new Clicks();
         new Player();
+        new PositionResolverComponent();
 
 		ViaMCP.create();
 
-		clickScreen = new ClickScreen();
-
-		configScreen = new ConfigScreen();
+        AltScreen.init();
+        ClickScreen.init();
+        ConsoleScreen.init();
+		ConfigScreen.init();
+        MainScreen.init();
 
 		mc.gameSettings.ofFastRender = false;
 
-		mainScreen = new MainScreen();
+        new Discord();
 
-		discord.init();
-		discord.startRPC();
-
-		configs.loadConfig(configs.getDefaultConfig());
+		Configs.loadConfig(Configs.getDefaultConfig());
 
 		starting = false;
 
 		double elapsedNanos = System.nanoTime() - start;
-		console.log("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
+		ConsoleScreen.log("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
 	}
+
+    private void setDisplayInfo() {
+        name = "AutoTool";
+        Display.setTitle(getFullName());
+    }
 
 	private void updateClient() {
 		for (Message message : irc.getClientVersionChannel().getIterableHistory().stream().toList()) {
@@ -155,8 +122,8 @@ public enum Client implements Imports {
 	}
 
 	public void onClose() {
-		configs.saveConfig(configs.getDefaultConfig());
-		configs.saveBinds();
+		Configs.saveConfig(Configs.getDefaultConfig());
+		Configs.saveBinds();
         irc.disconnectClient();
 	}
 
@@ -166,9 +133,14 @@ public enum Client implements Imports {
 
 	private long lastTime;
 
-	@EventTarget
+    @Override
+    public boolean listen() {
+        return true;
+    }
+
+    @Override
 	public void onEvent(Event event) {
-		if (event instanceof ServerJoinEvent && modules.getModule(IRC.class).isToggled()) irc.connectServer();
+		if (event instanceof ServerJoinEvent && Modules.getModule(IRC.class).isToggled()) irc.connectServer();
 		if (event instanceof KeyEvent keyEvent) handleKeyEventForModules(keyEvent);
 		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
 			lastTime = System.currentTimeMillis();
@@ -177,7 +149,7 @@ public enum Client implements Imports {
 	}
 
 	private void handleKeyEventForModules(KeyEvent keyEvent) {
-		for (Module module : modules.getModules()) {
+		for (Module module : Modules.getModules()) {
 			if (module.getKey() == keyEvent.getKey()) module.toggle();
 		}
 	}

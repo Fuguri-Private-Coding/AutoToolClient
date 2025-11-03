@@ -1,21 +1,27 @@
 package fuguriprivatecoding.autotoolrecode.handle;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
+import fuguriprivatecoding.autotoolrecode.event.EventListener;
+import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 
-public class Player implements Imports {
+public class Player implements Imports, EventListener {
 
     public static int airTicks;
     public static int groundTicks;
 
     public Player() {
-        Client.INST.getEvents().register(this);
+        Events.register(this);
     }
 
-    @EventTarget
+    @Override
+    public boolean listen() {
+        return Utils.isWorldLoaded();
+    }
+
+    @Override
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (event instanceof TickEvent) {

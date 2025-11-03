@@ -249,12 +249,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         }
 
         if (button.id == 1487) {
-            mc.displayGuiScreen(new AltScreen());
-        }
-
-        if (button.id == 1488) {
-            Client.INST.getShaders().init();
-            System.out.println("reloaded shaders");
+            mc.displayGuiScreen(AltScreen.INST);
         }
 
         if (button.id == 5)

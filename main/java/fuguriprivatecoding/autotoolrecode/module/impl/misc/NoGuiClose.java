@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.gui.config.ConfigScreen;
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
@@ -21,7 +20,7 @@ public class NoGuiClose extends Module {
             .addModes("ClickGui", "ConfigGui", "ConsoleGui", "ChatGui")
             ;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof PacketEvent packetEvent &&
                 packetEvent.getPacket() instanceof S2EPacketCloseWindow &&

@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -20,7 +19,7 @@ public class Debugger extends Module {
 
     IntegerSetting maxTicksExisted = new IntegerSetting("Max Ticks Existed", this, () -> checkTransactions.isToggled() && limitTransactions.isToggled(), 0, 100, 20);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (event instanceof PacketEvent e) {

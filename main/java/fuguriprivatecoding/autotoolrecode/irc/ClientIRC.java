@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.irc;
 
+import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import lombok.Getter;
@@ -89,10 +90,9 @@ public class ClientIRC extends ListenerAdapter implements Imports {
         if (event.getChannel() == chatChannel) {
             String message = event.getMessage().getContentRaw();
             message = message.replaceAll(Client.INST.getProfile().toString(), Client.INST.getProfile().toColoredString());
-            Client.INST.getConsole().history.add("§f[§2IRC§f] " + message);
+            ConsoleScreen.history.add("§f[§2IRC§f] " + message);
         }
     }
-
 
     public void connectClient() {
         MessageChannel onlineChannel = getOnlineChannel();

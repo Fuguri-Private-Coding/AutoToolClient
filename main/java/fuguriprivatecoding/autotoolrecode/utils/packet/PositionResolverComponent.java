@@ -1,10 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.utils.packet;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
+import fuguriprivatecoding.autotoolrecode.event.EventListener;
+import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -12,13 +13,18 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S14PacketEntity;
 import net.minecraft.network.play.server.S18PacketEntityTeleport;
 
-public class PositionResolverComponent implements Imports {
+public class PositionResolverComponent implements Imports, EventListener {
 
     public PositionResolverComponent() {
-        Client.INST.getEvents().register(this);
+        Events.register(this);
     }
 
-    @EventTarget
+    @Override
+    public boolean listen() {
+        return Utils.isWorldLoaded();
+    }
+
+    @Override
     public void onEvent(Event event) {
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();

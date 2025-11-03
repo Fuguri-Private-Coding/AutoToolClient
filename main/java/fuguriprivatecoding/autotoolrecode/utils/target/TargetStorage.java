@@ -5,14 +5,15 @@ import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import lombok.experimental.UtilityClass;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MovingObjectPosition;
 
-@Getter @Setter
+@UtilityClass
 public class TargetStorage implements Imports {
 
     double entityReach = 3, blockReach = 4.5;
-    EntityLivingBase target;
+    @Getter @Setter EntityLivingBase target;
 
     public EntityLivingBase getTargetOrSelectedEntity() {
         if (target != null) {

@@ -11,6 +11,8 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.AttackEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.ChangeHeadRotationEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.HitSlowDownEvent;
+import fuguriprivatecoding.autotoolrecode.handle.Friends;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Teams;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Phase;
@@ -192,7 +194,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
     }
 
     public void onUpdate() {
-        this.noClip = Client.INST.getModules().getModule(Phase.class).isToggled() || this.isSpectator();
+        this.noClip = Modules.getModule(Phase.class).isToggled() || this.isSpectator();
 
         if (this.isSpectator()) {
             this.onGround = false;
@@ -1943,12 +1945,12 @@ public abstract class EntityPlayer extends EntityLivingBase {
     }
 
     public boolean isFriend() {
-        MidClick midClick = Client.INST.getModules().getModule(MidClick.class);
-        return midClick.isToggled() && Client.INST.getFriends().isFriend(getName(), midClick.reverseFriends.isToggled());
+        MidClick midClick = Modules.getModule(MidClick.class);
+        return midClick.isToggled() && Friends.isFriend(getName(), midClick.reverseFriends.isToggled());
     }
 
     public boolean isTeam() {
-        Teams teams = Client.INST.getModules().getModule(Teams.class);
+        Teams teams = Modules.getModule(Teams.class);
         return teams.isToggled() && teams.getTeamList().contains(this);
     }
 

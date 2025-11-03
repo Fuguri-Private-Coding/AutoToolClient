@@ -12,17 +12,16 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.legit.*;
 import lombok.Getter;
+import lombok.experimental.UtilityClass;
 
 import java.util.List;
 
-@Getter
+@UtilityClass
 public class Modules {
 
-	private CopyOnWriteArrayList<Module> modules;
-	public static Modules INSTANCE;
+    @Getter public CopyOnWriteArrayList<Module> modules;
 
-	public Modules() {
-		INSTANCE = this;
+	public void init() {
 		modules = new CopyOnWriteArrayList<>();
 
 		register(
@@ -60,7 +59,7 @@ public class Modules {
 			new AutoTool(),
 			new AntiFireball(),
 			new ChestESP(),
-			new DIscordRPC(),
+			new DiscordRPC(),
 			new Phase(),
 			new NoGuiClose(),
 			new AirStuck(),
@@ -111,7 +110,6 @@ public class Modules {
 			new TimeChanger(),
 			new TargetHUD(),
 			new Scaffold(),
-//            new Scaff(),
 			new HighJump(),
 			new LongJump()
 		);

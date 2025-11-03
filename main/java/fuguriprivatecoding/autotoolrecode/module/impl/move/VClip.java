@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
@@ -31,7 +30,7 @@ public class VClip extends Module {
         }
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (!isNearBars() && event instanceof PacketEvent packetEvent && (packetEvent.getPacket() instanceof C03PacketPlayer.C06PacketPlayerPosLook || packetEvent.getPacket() instanceof S08PacketPlayerPosLook)) packetEvent.setCanceled(true);
         if (!isNearBars() && event instanceof MoveButtonEvent moveButtonEvent) {

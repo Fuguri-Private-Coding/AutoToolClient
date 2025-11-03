@@ -1,12 +1,12 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
@@ -15,13 +15,13 @@ import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
-
 import java.awt.*;
 import java.util.function.BooleanSupplier;
 
@@ -51,7 +51,7 @@ public class TimerRange extends Module {
     public static int balance = 0;
     Vec3 targetPos, pos;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof RunGameLoopEvent && balance > 0) {
             mc.timer.renderPartialTicks = partialTicks.getValue();
@@ -60,7 +60,7 @@ public class TimerRange extends Module {
         if (teleporting) return;
 
         if (event instanceof TickEvent e) {
-            EntityLivingBase target = Client.INST.getTargetStorage().getTarget();
+            EntityLivingBase target = TargetStorage.getTarget();
 
             if (balance > 0) {
                 e.cancel();
@@ -103,7 +103,7 @@ public class TimerRange extends Module {
                     mc.runTick();
                     balance++;
                     if (i == teleportTicks - 1) {
-                        Client.INST.getClicks().addClick();
+                        Clicks.addClick();
                         balance += additionalTicks.getValue();
                     }
                     if (RayCastUtils.rayCast(3, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
@@ -115,7 +115,7 @@ public class TimerRange extends Module {
         }
 
         if (event instanceof Render3DEvent && renderRealPlayerPosition.isToggled()) {
-            EntityLivingBase target = Client.INST.getTargetStorage().getTarget();
+            EntityLivingBase target = TargetStorage.getTarget();
 
             if (target == null) return;
 
@@ -166,7 +166,7 @@ public class TimerRange extends Module {
     }
 
     private AxisAlignedBB getFixedCashedBB(EntityLivingBase target, Vec3 newPos, Vec3 pos) {
-        BackTrack backTrack = Client.INST.getModules().getModule(BackTrack.class);
+        BackTrack backTrack = Modules.getModule(BackTrack.class);
         if (backTrack.isToggled() && !backTrack.packetBuffer.isEmpty()) {
             return target.getEntityBoundingBox().offset(
                     pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ

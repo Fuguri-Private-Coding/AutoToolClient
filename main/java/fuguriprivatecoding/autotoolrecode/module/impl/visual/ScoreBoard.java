@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.ScoreboardRenderEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -58,7 +57,7 @@ public class ScoreBoard extends Module {
         fonts.setMode("SFProRounded");
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof ScoreboardRenderEvent e) e.cancel();
         if (event instanceof Render2DEvent) {

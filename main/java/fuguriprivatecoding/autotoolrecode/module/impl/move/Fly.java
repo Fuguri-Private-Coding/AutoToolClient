@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.UpdateEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -30,7 +29,7 @@ public class Fly extends Module {
         }
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (mode.getMode().equals("Vanilla")) {
             if (event instanceof UpdateEvent) {

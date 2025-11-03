@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -30,7 +29,7 @@ public class AutoTool extends Module {
         switchBack();
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (mc.objectMouseOver == null)
             return;

@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -19,7 +18,7 @@ public class Test extends Module {
         super.onEnable();
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
 
     }

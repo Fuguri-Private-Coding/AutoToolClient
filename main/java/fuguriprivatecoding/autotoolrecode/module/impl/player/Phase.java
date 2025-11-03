@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -58,7 +57,7 @@ public class Phase extends Module {
         }
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof UpdateEvent) {
             if (mc == null || mc.thePlayer == null || mc.theWorld == null) return;

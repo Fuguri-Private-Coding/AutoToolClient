@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -25,7 +24,7 @@ public class AutoLeave extends Module {
 
     KeyBind key = new KeyBind("Key", this, () -> mode.getMode().equalsIgnoreCase("HotKey"), Keyboard.KEY_M);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         switch (mode.getMode()) {
             case "HotKey" -> {

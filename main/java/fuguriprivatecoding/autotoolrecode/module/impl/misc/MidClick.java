@@ -1,9 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.handle.Friends;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -23,7 +22,7 @@ public class MidClick extends Module {
 
     boolean down;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             if (Mouse.isButtonDown(2)) {
@@ -31,7 +30,7 @@ public class MidClick extends Module {
                     down = true;
                     Entity entity = RayCastUtils.raycastEntity(range.getValue(), mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, entity1 -> entity1 instanceof EntityPlayer);
                     if (entity instanceof EntityPlayer entity2) {
-                        Client.INST.getFriends().onClick(entity2.getName());
+                        Friends.onClick(entity2.getName());
                     }
                 }
             } else {

@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
@@ -28,7 +27,7 @@ public class Booster extends Module {
 
     int balance;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (teleporting) return;
         if (event instanceof KeyEvent e && e.getKey() == key.getKey()) active = true;

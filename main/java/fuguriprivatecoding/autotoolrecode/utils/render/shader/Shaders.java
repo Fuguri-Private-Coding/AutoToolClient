@@ -1,22 +1,17 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader;
 
-import lombok.Getter;
+import lombok.experimental.UtilityClass;
 import net.minecraft.util.ResourceLocation;
 
-@Getter
+@UtilityClass
 public class Shaders {
 
-	Shader rounded, background, bloom, gaussianBlur, bloomReal, alpha;
-
-	public Shaders() {
-		init();
-	}
+	public Shader rounded, background, bloom, gaussianBlur, bloomReal, alpha;
 
 	public void init() {
 		rounded = new Shader(getShaderSource("rounded.glsl"), getShaderSource("vertex.txt"));
 
 		bloom = new Shader(getShaderSource("bloom.glsl"), getShaderSource("vertex.txt"));
-
 		bloomReal = new Shader(getShaderSource("bloomreal.glsl"), getShaderSource("vertex.txt"));
 
 		alpha = new Shader(getShaderSource("alpha.glsl"), getShaderSource("vertex.txt"));

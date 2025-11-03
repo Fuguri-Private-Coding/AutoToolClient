@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -27,7 +26,7 @@ public class NoSlow extends Module {
         stage = 0;
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (mc.thePlayer.inventory.getCurrentItem() == null) return;
         if (mc.thePlayer.motionX == 0.0 && mc.thePlayer.motionZ == 0.0) return;

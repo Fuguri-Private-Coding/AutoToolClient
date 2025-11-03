@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -21,7 +20,7 @@ public class BridgeAssist extends Module {
 
     DoubleSlider pitch = new DoubleSlider("Pitch",this, pitchCheck::isToggled, 0,90, 90,0.1f);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof MoveButtonEvent e) {
             if (pitchCheck.isToggled() && (mc.thePlayer.rotationPitch < pitch.getMinValue() || mc.thePlayer.rotationPitch > pitch.getMaxValue())) return;

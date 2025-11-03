@@ -1,8 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.gui.imgui;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import imgui.ImGui;
 import imgui.type.ImInt;
@@ -11,6 +11,7 @@ import org.lwjgl.input.Keyboard;
 import java.util.Arrays;
 
 public class ClickGuiWindow extends ImGuiWindow {
+
     public ClickGuiWindow() {
         super("ClickGui");
     }
@@ -35,7 +36,7 @@ public class ClickGuiWindow extends ImGuiWindow {
             }
 
             ImGui.separator();
-            for (Module feature : Client.INST.getModules().getModules()) {
+            for (Module feature : Modules.getModules()) {
                 if (feature.getCategory() != selectedCategory) continue;
                 ImGui.pushID(feature.hashCode());
 

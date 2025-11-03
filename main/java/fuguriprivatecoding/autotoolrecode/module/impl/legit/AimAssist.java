@@ -1,7 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
-import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
@@ -14,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -34,15 +33,15 @@ public class AimAssist extends Module {
     @Override
     public void onDisable() {
         super.onDisable();
-        Client.INST.getTargetStorage().setTarget(null);
+        TargetStorage.setTarget(null);
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof MotionEvent) {
-            Client.INST.getTargetStorage().setTarget(TargetFinder.findTarget(distance.getValue(), true, false, false));
+            TargetStorage.setTarget(TargetFinder.findTarget(distance.getValue(), true, false, false));
 
-            EntityLivingBase target = Client.INST.getTargetStorage().getTarget();
+            EntityLivingBase target = TargetStorage.getTarget();
 
             if (target == null || mc.currentScreen != null) return;
             if (RotUtils.getFovToEntity(target) > fov.getValue()) return;

@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveFlyingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.UpdateEvent;
@@ -12,8 +11,6 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
-
-import static fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils.strafe;
 
 @ModuleInfo(name = "Speed", category = Category.MOVE, description = "Позволяет вам двигаться быстрее.")
 public class Speed extends Module {
@@ -36,7 +33,7 @@ public class Speed extends Module {
 		ticks = 0;
 	}
 
-	@EventTarget
+	@Override
 	public void onEvent(Event event) {
 		if (mc.thePlayer == null || mc.theWorld == null) return;
 		switch (mode.getMode()) {

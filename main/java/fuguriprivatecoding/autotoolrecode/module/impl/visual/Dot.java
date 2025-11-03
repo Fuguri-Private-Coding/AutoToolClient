@@ -1,8 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
-import fuguriprivatecoding.autotoolrecode.event.events.MotionEventPost;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -31,7 +29,7 @@ public class Dot extends Module {
     Rot prevPos = new Rot();
     Rot pos = new Rot();
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (!Rot.isChanged() && onlyChangeRotationModules.isToggled()) { return; }
         if (event instanceof Render3DEvent) {

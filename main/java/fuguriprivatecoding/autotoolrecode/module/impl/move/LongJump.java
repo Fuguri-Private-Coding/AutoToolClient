@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -35,7 +34,7 @@ public class LongJump extends Module {
         if(mc.thePlayer != null) vec0 = mc.thePlayer.getPositionVector();
     }
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof MoveEvent e) {
             if (MoveUtils.isMoving()) {

@@ -1,10 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
-import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.GaussianKernel;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Uniform;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
@@ -29,9 +30,9 @@ public class GaussianBlurUtils implements Imports {
     }
 
     public static void draw() {
-        if (blur == null) blur = Client.INST.getModules().getModule(Blur.class);
+        if (blur == null) blur = Modules.getModule(Blur.class);
         if (!Display.isActive() || !Display.isVisible() || !blur.isToggled()) return;
-        Shader program = Client.INST.getShaders().getGaussianBlur();
+        Shader program = Shaders.gaussianBlur;
 
         inputFramebuffer.bindFramebuffer(true);
 

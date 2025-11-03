@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -11,7 +10,6 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.ScaledResolution;
-
 
 @ModuleInfo(name = "CustomCrosshair", category = Category.VISUAL)
 public class CustomCrosshair extends Module {
@@ -26,7 +24,7 @@ public class CustomCrosshair extends Module {
     FloatSetting length = new FloatSetting("Length", this, () -> mode.is("Cross"), 1, 20, 4, 0.1f);
     FloatSetting scale = new FloatSetting("Scale", this, 0,20,2, 0.1f);
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = new ScaledResolution(mc);

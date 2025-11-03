@@ -3,16 +3,17 @@ package fuguriprivatecoding.autotoolrecode.utils.sound;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
+import lombok.experimental.UtilityClass;
 
 import java.io.File;
 import java.io.IOException;
 
-@Getter
+@UtilityClass
 public class Sounds {
 
-    Sound enableSound, disableSound, killedSound, neverLoseSound, skeetSound;
+    @Getter static Sound enableSound, disableSound, killedSound, neverLoseSound, skeetSound;
 
-    public Sounds() throws IOException {
+    public void init() throws IOException {
         File directory = Client.INST.getSoundsDir();
         File enableSoundFile = new File(directory, "enable.wav");
         File disableSoundFile = new File(directory, "disable.wav");

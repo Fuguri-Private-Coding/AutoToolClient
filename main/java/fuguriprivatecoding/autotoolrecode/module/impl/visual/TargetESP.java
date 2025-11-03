@@ -1,8 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -11,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
@@ -42,7 +41,7 @@ public class TargetESP extends Module {
 
     Color fadeColor;
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
         if (event instanceof Render3DEvent) {
             switch (mode.getMode()) {
@@ -66,7 +65,7 @@ public class TargetESP extends Module {
     private void renderSigma(Color color1, Color color2) {
         double animationTranslate = sin(System.currentTimeMillis() / 1000.0 * speed.getValue());
 
-        final EntityLivingBase target = Client.INST.getTargetStorage().getTarget();
+        final EntityLivingBase target = TargetStorage.getTarget();
 
         if (target == null) return;
 
@@ -131,7 +130,7 @@ public class TargetESP extends Module {
     }
 
     private void renderSigma2(Color color1, Color color2) {
-        final EntityLivingBase target = Client.INST.getTargetStorage().getTarget();
+        final EntityLivingBase target = TargetStorage.getTarget();
 
         if (target == null) return;
 

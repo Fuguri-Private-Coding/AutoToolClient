@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.font;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.NameProtect;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
@@ -90,7 +91,7 @@ public class ClientFontRenderer implements Imports {
             return 0;
         }
 
-        if (Client.INST.getModules() != null && Client.INST.getModules().getModule(NameProtect.class).isToggled()) {
+        if (Modules.getModule(NameProtect.class).isToggled()) {
             text = text.replaceAll(mc.getSession().getUsername(), Client.INST.getProfile().getUsername());
         }
 
@@ -202,7 +203,7 @@ public class ClientFontRenderer implements Imports {
             return 0.0f;
         }
 
-        if (Client.INST.getModules() != null && Client.INST.getModules().getModule(NameProtect.class).isToggled()) {
+        if (Modules.getModule(NameProtect.class).isToggled()) {
             text = text.replaceAll(mc.getSession().getUsername(), Client.INST.getProfile().getUsername());
         }
 

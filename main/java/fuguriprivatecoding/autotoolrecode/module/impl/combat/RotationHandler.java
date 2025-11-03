@@ -1,12 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.AntiFireball;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Fucker;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
@@ -17,6 +16,7 @@ import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.util.MathHelper;
 
 @ModuleInfo(name = "RotationHandler", category = Category.COMBAT, description = "Плавно поворачиватся обратно после изменения ротации.")
@@ -27,14 +27,14 @@ public class RotationHandler extends Module {
 
     final FloatSetting stopThreshold = new FloatSetting("StopThreshold", this, 1f, 10f, 0.1f, 0.1f) {};
 
-    @EventTarget
+    @Override
     public void onEvent(Event event) {
-        boolean handle = (Client.INST.getTargetStorage().getTarget() == null
-            || DistanceUtils.getDistance(Client.INST.getTargetStorage().getTarget()) > Client.INST.getModules().getModule(KillAura.class).rotateDistance.getValue())
-            && !Client.INST.getModules().getModule(Scaffold.class).isToggled()
-            && Client.INST.getModules().getModule(AntiFireball.class).target == null &&
-            !Client.INST.getModules().getModule(Fucker.class).rotate &&
-            Client.INST.getModules().getModule(Fucker.class).bedPos == null;
+        boolean handle = (TargetStorage.getTarget() == null
+            || DistanceUtils.getDistance(TargetStorage.getTarget()) > Modules.getModule(KillAura.class).rotateDistance.getValue())
+            && !Modules.getModule(Scaffold.class).isToggled()
+            && Modules.getModule(AntiFireball.class).target == null &&
+            !Modules.getModule(Fucker.class).rotate &&
+            Modules.getModule(Fucker.class).bedPos == null;
         if (handle) {
             if (Rot.isChanged()) {
                 if (event instanceof MotionEvent motionEvent) {

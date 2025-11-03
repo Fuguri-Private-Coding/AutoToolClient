@@ -4,8 +4,10 @@ import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.AtomicDouble;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.EventTarget;
+import fuguriprivatecoding.autotoolrecode.event.EventListener;
+import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.UpdateEvent;
+import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
@@ -27,7 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class InventoryUtil implements Imports {
+public class InventoryUtil implements Imports, EventListener {
 
     private static boolean selector;
 
@@ -36,13 +38,11 @@ public class InventoryUtil implements Imports {
     }
 
     public InventoryUtil() {
-        Client.INST.getEvents().register(this);
+        Events.register(this);
     }
-
 
     public static final int INCLUDE_ARMOR_BEGIN = 5;
     public static final int EXCLUDE_ARMOR_BEGIN = 9;
-    public static final int ONLY_HOT_BAR_BEGIN = 36;
     public static final int END = 45;
 
     public static final List<Block> blacklistedBlocks = Arrays.asList(
@@ -319,7 +319,12 @@ public class InventoryUtil implements Imports {
 
     public record Tool(int slot, double efficiency, ItemStack stack) {}
 
-    @EventTarget
+    @Override
+    public boolean listen() {
+        return Utils.isWorldLoaded();
+    }
+
+    @Override
     public void onEvent(Event event) {
         if (event instanceof UpdateEvent) {
             if (getItemStack() != null) {

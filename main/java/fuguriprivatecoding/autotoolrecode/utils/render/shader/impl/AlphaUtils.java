@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Uniform;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
@@ -28,7 +28,7 @@ public class AlphaUtils implements Imports {
     }
 
     public static void draw(float alpha) {
-        if (program == null) program = Client.INST.getShaders().getAlpha();
+        if (program == null) program = Shaders.alpha;
         if (!Display.isVisible()) return;
 
         final int programID = program.getProgramId();
