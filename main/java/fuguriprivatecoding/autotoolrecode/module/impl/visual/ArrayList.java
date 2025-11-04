@@ -153,7 +153,7 @@ public class ArrayList extends Module {
             Gui.drawRect((int) backgroundStartX, (int) (yOffset + backgroundHeight), (int) backgroundEndX, (int) yOffset, bgMainColor.getRGB());
         }
 
-        font.drawString(moduleText, textX, textY, fadeTextColor, shadow.isToggled());
+        font.drawString(moduleText, textX, textY, textColor.getColor(), textColor.getFadeColor(), textColor.getOffset(), textColor.getSpeed(), shadow.isToggled());
 
         if (suffixCondition) {
             String suffixText = " - " + module.getSuffix();
@@ -221,7 +221,7 @@ public class ArrayList extends Module {
             font.drawString(" - " + module.getSuffix(), suffixX, textY, suffixColor.getFadedColor(), shadow.isToggled());
         }
 
-        font.drawString(moduleText, textX, textY, fadeTextColor, shadow.isToggled());
+        font.drawString(moduleText, textX, textY, textColor.getColor(), textColor.getFadeColor(), textColor.getOffset(), textColor.getSpeed(), shadow.isToggled());
 
         if (line.isToggled()) {
             Gui.drawRect((int) (backgroundStartX - 2), (int) (yOffset + backgroundHeight), (int) backgroundStartX, (int) yOffset, fadeLineColor.getRGB());

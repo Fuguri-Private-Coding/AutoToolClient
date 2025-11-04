@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.NameProtect;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
@@ -11,6 +12,9 @@ import org.lwjgl.opengl.GL14;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ClientFontRenderer implements Imports {
 
@@ -186,19 +190,23 @@ public class ClientFontRenderer implements Imports {
         return bufferedImage;
     }
 
+    public float drawString(String text, double x, double y, Color color1, Color color2, float offset, float speed, boolean shadow) {
+        return drawString(text, x, y, color1.getRGB(), color2.getRGB(), offset, speed, shadow);
+    }
+
     public float drawString(String text, double x, double y, Color color) {
-        return drawString(text, x, y, color.getRGB(), false);
+        return drawString(text, x, y, color.getRGB(), color.getRGB(), 0, 0, false);
     }
 
     public float drawCenteredString(String text, double x, double y, Color color) {
-        return drawString(text, x - getStringWidth(text) / 2f, y, color.getRGB(), false);
+        return drawString(text, x - getStringWidth(text) / 2f, y, color.getRGB(), color.getRGB(), 0, 0, false);
     }
 
     public float drawString(String text, double x, double y, Color color, boolean shadow) {
-        return drawString(text, x, y, color.getRGB(), shadow);
+        return drawString(text, x, y, color.getRGB(), color.getRGB(), 0, 0, shadow);
     }
 
-    public float drawString(String text, double x, double y, int color, boolean shadow) {
+    public float drawString(String text, double x, double y, int color, int color2, float offset, float speed, boolean shadow) {
         if (text == null) {
             return 0.0f;
         }
@@ -210,7 +218,8 @@ public class ClientFontRenderer implements Imports {
         x -= 1.0;
 
         CharData[] currentData = this.charData;
-        float alpha = (float) (color >> 24 & 255) / 255.0f;
+        float alpha1 = (float) (color >> 24 & 255) / 255.0f;
+        float alpha2 = (float) (color2 >> 24 & 255) / 255.0f;
         x *= 2.0 * fontScaleOffset;
         y = (y - 3.0) * 2.0 * fontScaleOffset;
 
@@ -221,7 +230,7 @@ public class ClientFontRenderer implements Imports {
 
         GlStateManager.color((float) (color >> 16 & 255) / 255.0f,
                 (float) (color >> 8 & 255) / 255.0f,
-                (float) (color & 255) / 255.0f, alpha);
+                (float) (color & 255) / 255.0f, alpha1);
 
         int size = text.length();
         GlStateManager.enableTexture2D();
@@ -236,7 +245,6 @@ public class ClientFontRenderer implements Imports {
         for (int i = 0; i < size; i++) {
             char character = text.charAt(i);
 
-
             if (character == '\n') {
                 x = startX;
                 y += FONT_HEIGHT * 4;
@@ -250,26 +258,31 @@ public class ClientFontRenderer implements Imports {
                         int colorcode = this.colorCode[colorIndex + (shadow ? 16 : 0)];
                         GlStateManager.color((float) (colorcode >> 16 & 255) / 255.0f,
                                 (float) (colorcode >> 8 & 255) / 255.0f,
-                                (float) (colorcode & 255) / 255.0f, alpha);
+                                (float) (colorcode & 255) / 255.0f, alpha1);
 
                         GlStateManager.bindTexture(this.tex.getGlTextureId());
                         currentData = this.charData;
                     } else if (colorIndex == 20) {
                         GlStateManager.color((float) (color >> 16 & 255) / 255.0f,
                                 (float) (color >> 8 & 255) / 255.0f,
-                                (float) (color & 255) / 255.0f, alpha);
+                                (float) (color & 255) / 255.0f, alpha1);
                         GlStateManager.bindTexture(this.tex.getGlTextureId());
                         currentData = this.charData;
                     }
                 }
             } else if (character < currentData.length && currentData[character] != null) {
                 if (shadow) {
-                    GlStateManager.color(0, 0, 0, alpha);
+                    ColorUtils.glColor(Color.BLACK);
                     this.drawChar(currentData, character, (float) x + 1.5f, (float) y + 1.5f);
-                    GlStateManager.color((float) (color >> 16 & 255) / 255.0f,
-                            (float) (color >> 8 & 255) / 255.0f,
-                            (float) (color & 255) / 255.0f, alpha);
                 }
+
+                Color co1 = new Color(color);
+                Color co2 = new Color(color2);
+
+                Color colorOne = new Color(co1.getRed(), co1.getGreen(), co1.getBlue(), alpha1);
+                Color colorTwo = new Color(co2.getRed(), co2.getGreen(), co2.getBlue(), alpha2);
+
+                ColorUtils.glColor(ColorUtils.mixColor(colorOne, colorTwo, i, offset, speed));
 
                 this.drawChar(currentData, character, (float) x, (float) y);
 
@@ -281,6 +294,7 @@ public class ClientFontRenderer implements Imports {
         GL11.glPopMatrix();
         GlStateManager.enableBlend();
         GlStateManager.color(1f, 1f, 1f, 1f);
+        ColorUtils.resetColor();
 
         return (float) x / 2.0f;
     }

@@ -21,7 +21,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurU
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.EntityLivingBase;
@@ -49,6 +48,7 @@ public class TargetHUD extends Module {
     public final ColorSetting textColor = new ColorSetting("Text Color", this, () -> render.get("Name"));
     public final ColorSetting bgColor = new ColorSetting("Background Color", this, () -> render.get("Background"));
 
+    public final CheckBox textShadow = new CheckBox("Text Shadow", this, () -> render.get("Name"));
     FloatSetting bgRadius = new FloatSetting("Background Radius", this, 0f, 20f, 10f, 0.1f);
 
     public final ColorSetting healthColor = new ColorSetting("Health Color", this, () -> render.get("Health"));
@@ -131,7 +131,7 @@ public class TargetHUD extends Module {
         StencilUtils.setUpTexture(posX, posY, width, height, radius);
 
         StencilUtils.writeTexture();
-        if (render.get("Name")) font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, textColor.getFadedColor());
+        if (render.get("Name")) font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, textColor.getColor(), textColor.getFadeColor(), textColor.getOffset(), textColor.getSpeed(), textShadow.isToggled());
 
         if (render.get("Health")) {
             float maxHealth = target.getMaxHealth();

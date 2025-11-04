@@ -36,7 +36,10 @@ public class NameTags extends Module {
 
     FloatSetting radius = new FloatSetting("Radius", this, 0,10,0,0.1f);
 
-    public final ColorSetting color = new ColorSetting("Color", this);
+    public final ColorSetting textColor = new ColorSetting("TextColor", this);
+    public final ColorSetting color = new ColorSetting("BackgroundColor", this);
+    public final CheckBox textShadow = new CheckBox("TextShadow", this);
+
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this);
 
@@ -100,7 +103,7 @@ public class NameTags extends Module {
 
         RoundedUtils.drawRect(backgroundX, backgroundY, backgroundWidth, backgroundHeight, radius.getValue(), color.getFadedColor());
 
-        fontRenderer.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 5 + textYOffset.getValue(), Color.WHITE);
+        fontRenderer.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 5 + textYOffset.getValue(), textColor.getColor(), textColor.getFadeColor(), textColor.getOffset(), textColor.getSpeed(), textShadow.isToggled());
 
         if (glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> RoundedUtils.drawRect(backgroundX, backgroundY, backgroundWidth, backgroundHeight, radius.getValue(), glowColor.getFadedColor()));
