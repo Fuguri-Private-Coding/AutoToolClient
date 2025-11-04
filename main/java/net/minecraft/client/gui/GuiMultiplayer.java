@@ -83,14 +83,14 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
     }
 
     public void createButtons() {
-        this.buttonList.add(this.btnEditServer = new Button(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit")));
-        this.buttonList.add(this.btnDeleteServer = new Button(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete")));
-        this.buttonList.add(this.btnSelectServer = new Button(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select")));
-        this.buttonList.add(new Button(4, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("selectServer.direct")));
-        this.buttonList.add(new Button(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add")));
-        this.buttonList.add(new Button(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh")));
-        this.buttonList.add(new Button(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel")));
-        this.buttonList.add(new Button(69, 5, 5, 90, 20, "Version"));
+        this.buttonList.add(this.btnEditServer = new Button(7, I18n.format("selectServer.edit"), this.width / 2 - 154, this.height - 28, 70, 20));
+        this.buttonList.add(this.btnDeleteServer = new Button(2, I18n.format("selectServer.delete"), this.width / 2 - 74, this.height - 28, 70, 20));
+        this.buttonList.add(this.btnSelectServer = new Button(1, I18n.format("selectServer.select"), this.width / 2 - 154, this.height - 52, 100, 20));
+        this.buttonList.add(new Button(4, I18n.format("selectServer.direct"), this.width / 2 - 50, this.height - 52, 100, 20));
+        this.buttonList.add(new Button(3, I18n.format("selectServer.add"), this.width / 2 + 4 + 50, this.height - 52, 100, 20));
+        this.buttonList.add(new Button(8, I18n.format("selectServer.refresh"), this.width / 2 + 4, this.height - 28, 70, 20));
+        this.buttonList.add(new Button(0, I18n.format("gui.cancel"), this.width / 2 + 4 + 76, this.height - 28, 75, 20));
+        this.buttonList.add(new Button(69, "Version", 5, 5, 90, 20));
         this.selectServer(this.serverListSelector.func_148193_k());
     }
 

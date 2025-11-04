@@ -21,7 +21,6 @@ public class MainScreen extends GuiScreen {
 
     public static MainScreen INST;
 
-
     public static void init() {
         INST = new MainScreen();
     }
@@ -37,11 +36,11 @@ public class MainScreen extends GuiScreen {
     @Override
     public void initGui() {
         final ScaledResolution sc = new ScaledResolution(mc);
-        buttonList.add(new fuguriprivatecoding.autotoolrecode.gui.buttons.Button(0, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25,"SinglePlayer"));
-        buttonList.add(new fuguriprivatecoding.autotoolrecode.gui.buttons.Button(1, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25, "MultiPlayer"));
-        buttonList.add(new fuguriprivatecoding.autotoolrecode.gui.buttons.Button(2, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25 + 25, "MinecraftSetting"));
-        buttonList.add(new Button(3, sc.getScaledWidth() / 2 - 100, sc.getScaledHeight() / 2 + 25 + 25 + 25 + 25, "AltManager"));
-        buttonList.add(new ImgButton(5, sc.getScaledWidth() - 15 - 5, 5, 15,15, exitLogo));
+        buttonList.add(new Button(0,"Single Player", sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10, 150, 20));
+        buttonList.add(new Button(1,"Multi Player", sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10 + 25, 150, 20));
+        buttonList.add(new Button(2,"Minecraft Settings", sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10 + 25 + 25, 150, 20));
+        buttonList.add(new Button(3,"Alt Manager", sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10 + 25 + 25 + 25, 150, 20));
+        buttonList.add(new ImgButton(4, exitLogo, sc.getScaledWidth() - 20,5, 15, 15));
     }
 
     @Override
@@ -57,7 +56,7 @@ public class MainScreen extends GuiScreen {
 
         AlphaUtils.startWrite();
 
-        font.drawCenteredString(userText, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f + 2, Color.WHITE);
+        font.drawCenteredString(userText, sc.getScaledWidth() / 2f + 2, sc.getScaledHeight() / 2f - 5, Color.WHITE);
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         AlphaUtils.endWrite();
@@ -80,7 +79,7 @@ public class MainScreen extends GuiScreen {
             case 1 -> mc.displayGuiScreen(new GuiMultiplayer(this));
             case 2 -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
             case 3 -> mc.displayGuiScreen(AltScreen.INST);
-            case 5 -> mc.shutdownMinecraftApplet();
+            case 4 -> mc.shutdownMinecraftApplet();
         }
     }
 }

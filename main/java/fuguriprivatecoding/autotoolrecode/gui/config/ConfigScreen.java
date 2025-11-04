@@ -70,7 +70,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
         pos = new Vector2f(50f, 50f);
         lastMouse = new Vector2f(0, 0);
 
-        textField = new TextButton(1, mc.fontRendererObj, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
+        textField = new TextButton(1, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
 
         background = new Animation2D();
         sizeBackground = new Animation2D();

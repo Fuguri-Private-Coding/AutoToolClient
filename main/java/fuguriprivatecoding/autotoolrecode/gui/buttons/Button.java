@@ -1,5 +1,9 @@
 package fuguriprivatecoding.autotoolrecode.gui.buttons;
 
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -9,24 +13,47 @@ import net.minecraft.client.gui.GuiButton;
 import java.awt.*;
 
 public class Button extends GuiButton {
+    String name;
 
-    public Button(int buttonId, int x, int y, String buttonText) {
-        super(buttonId, x, y, buttonText);
-    }
+    float x, y, width, height;
+    float prevX, prevY, prevWidth, prevHeight;
 
-    public Button(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText) {
-        super(buttonId, x, y, widthIn, heightIn, buttonText);
+    EasingAnimation hoverAnim = new EasingAnimation();
+
+    public Button(int id, String name, float x, float y, float width, float height) {
+        super(id, (int) x, (int) y, (int) width, (int) height, name);
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.prevX = x;
+        this.prevY = y;
+        this.prevWidth = width;
+        this.prevHeight = height;
     }
 
     @Override
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-        this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+        boolean hovered = GuiUtils.isHovered(mouseX, mouseY, x, y, width, height);
 
-        final ClientFontRenderer fonts = Fonts.fonts.get("SFProRounded");
+        ClientFontRenderer fontRenderer = Fonts.fonts.get("SFProRounded");
 
-        RoundedUtils.drawRect(xPosition, yPosition, width, height, height / 2.5f, hovered ? new Color(0,0,0,0.5f) : new Color(0,0,0,0.7f));
+        hoverAnim.update(0.7f, Easing.OUT_ELASTIC);
+        hoverAnim.setEnd(hovered ? 1 : 0);
 
-        final Color color = Color.WHITE;
-        fonts.drawString(displayString, xPosition + width / 2f - fonts.getStringWidth(displayString) / 2f, yPosition + 2 + (height - 8) / 2f, hovered ? color.darker() : color, true);
+        float x = prevX - hoverAnim.getValue() * 1;
+        float y = prevY - hoverAnim.getValue() * 1;
+        float width = prevWidth + hoverAnim.getValue() * 2;
+        float height = prevHeight + hoverAnim.getValue() * 2;
+
+        Color rectColor = ColorUtils.interpolateColor(new Color(0,0,0,0.7f), new Color(0,0,0,0.8f), hoverAnim.getValue());
+
+        RoundedUtils.drawRect(x, y, width, height, height / 2f, rectColor);
+
+        float textX = x + width / 2f;
+        float textY = y + 2 + (height - 8) / 2f;
+
+        fontRenderer.drawCenteredString(name, textX, textY, Color.WHITE);
     }
 }

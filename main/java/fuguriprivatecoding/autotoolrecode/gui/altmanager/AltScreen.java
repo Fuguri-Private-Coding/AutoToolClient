@@ -72,10 +72,10 @@ public class AltScreen extends GuiScreen {
         super.initGui();
         ScaledResolution sc = new ScaledResolution(mc);
         Accounts.loadAccounts();
-        textButton = new TextButton(0, mc.fontRendererObj, 75, sc.getScaledHeight() - 100, 100, 20);
-        buttonList.add(new Button(1, 75,  sc.getScaledHeight() - 75, 100, 20, "Login"));
-        buttonList.add(new Button(2, 75, sc.getScaledHeight() - 50, 100, 20, "Delete"));
-        buttonList.add(new Button(3, 75, sc.getScaledHeight() - 25, 100, 20, "Microsoft"));
+        textButton = new TextButton(0, 75, sc.getScaledHeight() - 100, 100, 20);
+        buttonList.add(new Button(1, "Login", 75,  sc.getScaledHeight() - 75, 100, 20));
+        buttonList.add(new Button(2, "Delete", 75, sc.getScaledHeight() - 50, 100, 20));
+        buttonList.add(new Button(3, "Microsoft", 75, sc.getScaledHeight() - 25, 100, 20));
         alphaAnim.setValue(0);
         textButton.setMaxStringLength(16);
     }
