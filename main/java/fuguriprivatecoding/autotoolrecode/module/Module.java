@@ -98,7 +98,7 @@ public class Module implements Imports, SettingAble, EventListener {
 
     public JsonObject getObject() {
         JsonObject object = new JsonObject();
-        object.addProperty("toggled", toggled);
+        object.addProperty("toggl", toggled);
         object.addProperty("hide", hide);
 
         for (Setting setting : settings) {
@@ -111,7 +111,7 @@ public class Module implements Imports, SettingAble, EventListener {
 
     public void setObject(JsonObject object, boolean includeStates) {
         if (includeStates) {
-            setToggled(object.get("toggled").getAsBoolean());
+            setToggled(object.get("toggl").getAsBoolean());
             setHide(object.get("hide").getAsBoolean());
         }
 

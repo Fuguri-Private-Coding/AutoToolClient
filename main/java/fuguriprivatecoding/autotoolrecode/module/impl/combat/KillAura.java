@@ -6,7 +6,6 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -40,7 +39,7 @@ public class KillAura extends Module {
         .addModes("Players", "Mobs", "Animals", "Villagers");
 
     final Mode sortType = new Mode("SortType", this)
-        .addModes("Distance", "FOV", "HurtTime", "Switch")
+        .addModes("Distance", "FOV", "HurtTime")
         .setMode("FOV");
 
     final Mode hitVec = new Mode("HitVec", this)
@@ -54,26 +53,23 @@ public class KillAura extends Module {
     DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0, 180, 90, 1);
     DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0, 180, 90, 1);
 
-    final CheckBox gcd = new CheckBox("GCD (FIX)", this);
-    final CheckBox smartAim = new CheckBox("Smart Aim", this);
+    final CheckBox gcd = new CheckBox("GCDFix", this);
+    final CheckBox throughWalls = new CheckBox("ThroughWalls", this);
+    final CheckBox smartAim = new CheckBox("SmartAim", this);
 
-    final CheckBox teleportPredictFix = new CheckBox("Teleport Predict Fix", this);
+    final CheckBox teleportPredictFix = new CheckBox("TeleportPredictFix", this);
 
-    final Mode smoothMode = new Mode("SmoothMode", this)
-        .addModes("Linear")
-        .setMode("Linear");
+    final MultiMode smoothMode = new MultiMode("SmoothModes", this)
+        .addModes("Linear", "Basic", "MixDelta");
 
-    BooleanSupplier linearVisible = () -> smoothMode.getMode().equalsIgnoreCase("Linear");
+    DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
+    DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
 
-    DoubleSlider mixYawDelta = new DoubleSlider("Mix Yaw Delta", this, 0, 1, 1, 0.01f);
-    DoubleSlider mixPitchDelta = new DoubleSlider("Mix Pitch Delta", this, 0, 1, 1, 0.01f);
-
-    CheckBox basicRandomize = new CheckBox("Basic Randomize", this, linearVisible, false);
-    FloatSetting randomizeStrength = new FloatSetting("Randomize Strength", this, () -> basicRandomize.isToggled() && linearVisible.getAsBoolean(), 0, 20, 5, 0.1f);
+    FloatSetting randomizeStrength = new FloatSetting("RandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
 
     final FloatSetting linearSmoothStrength = new FloatSetting(
         "LinearSmoothStrength", this,
-        () -> smoothMode.getMode().equalsIgnoreCase("Linear"),
+        () -> smoothMode.get("Linear"),
         1, 5, 1.5f, 0.1f
     );
 
@@ -88,9 +84,8 @@ public class KillAura extends Module {
     final StopWatch clickTimer = new StopWatch();
     private long delay;
 
-    EntityLivingBase target;
-
     Rot lastDelta = new Rot();
+    Rot needRotation = new Rot();
 
     @Override
     public void onDisable() {
@@ -100,9 +95,8 @@ public class KillAura extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) TargetStorage.setTarget(findNewTarget());
-        if (TargetStorage.getTarget() == null) return;
-        target = TargetStorage.getTarget();
-        if (Modules.getModule(Scaffold.class).isToggled()) return;
+        EntityLivingBase target = TargetStorage.getTarget();
+        if (Modules.getModule(Scaffold.class).isToggled() || target == null) return;
 
         if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
             if (TimerRange.balance == 0) {
@@ -119,14 +113,14 @@ public class KillAura extends Module {
 
             if (event instanceof TickEvent) {
                 AxisAlignedBB box = getHitBox(target);
-                Rot needRotation = getRotation(lr, box);
+                Rot needRotation = getRotation(target, lr, box);
 
                 if (needRotation == null) return;
 
                 if (!mc.thePlayer.canVecBeSeen(RotUtils.getVectorForRotation(needRotation)) && smartAim.isToggled()) {
                     needRotation = RotUtils.getPosibleBestRotation(lr, box.expand(0.1f,0.1f,0.1f));
 
-                    if (needRotation == null) needRotation = getRotation(lr, box);
+                    if (needRotation == null) needRotation = getRotation(target, lr, box);
                 }
 
                 Rot delta = RotUtils.getDelta(lr, needRotation);
@@ -138,29 +132,29 @@ public class KillAura extends Module {
 
                 RotUtils.limitDelta(delta, speed);
 
-                switch (smoothMode.getMode()) {
-                    case "Linear" -> {
-                        if ((TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled()) break;
+                if (smoothMode.get("Basic")) {
+                    Rot rot = new Rot(
+                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
+                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
+                    );
 
-                        if (basicRandomize.isToggled()) {
-                            Rot rot = new Rot(
-                                needRotation.getYaw() - RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
-                                needRotation.getPitch() - RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
-                            );
+                    delta.subtract(rot);
+                }
 
-                            delta = RotUtils.getDelta(lr, rot);
-                        }
+                if (smoothMode.get("Linear")) {
+                    if ((TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled()) return;
 
-                        delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
-                        delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
-                    }
+                    delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
+                    delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
                 }
 
                 RotUtils.limitDelta(delta, speed);
 
-                if (TimerRange.balance <= 0 && !TimerRange.teleporting) {
-                    delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
-                    delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
+                if (smoothMode.get("MixDelta")) {
+                    if (TimerRange.balance <= 0 && !TimerRange.teleporting) {
+                        delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
+                        delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
+                    }
                 }
 
                 lastDelta = new Rot(delta.getYaw(), delta.getPitch());
@@ -209,7 +203,7 @@ public class KillAura extends Module {
         }
     }
 
-    private Rot getRotation(Rot lr ,AxisAlignedBB box) {
+    private Rot getRotation(EntityLivingBase target, Rot lr ,AxisAlignedBB box) {
         return (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ?
             RotUtils.getBestRotation(box.expand(0.1f,0f,0.1f)) :
             switch (hitVec.getMode()) {
@@ -264,22 +258,12 @@ public class KillAura extends Module {
             case "Distance" -> entityList.sort(Comparator.comparingDouble(DistanceUtils::getDistance));
             case "FOV" -> entityList.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
             case "HurtTime" -> entityList.sort(Comparator.comparingDouble(ent -> ent.hurtTime));
-            case "Switch" -> entityList.sort(Comparator.comparingDouble(this::switchTarget));
         }
 
         target = entityList.getFirst();
 
-        return target;
-    }
+        if (DistanceUtils.getDistance(target) > findDistance.getValue()) target = null;
 
-    private double switchTarget(Entity entity) {
-        if (!(entity instanceof EntityLivingBase)
-            || (RayCastUtils.rayCast(3,0, Rot.getServerRotation()).typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY)) {
-            return 1000.0;
-        } else {
-            double distance = mc.thePlayer.getDistanceToEntity(entity);
-            double hurtTime = ((EntityLivingBase)entity).hurtTime * 6;
-            return hurtTime + distance;
-        }
+        return target;
     }
 }
