@@ -1,12 +1,12 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -19,13 +19,14 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.*;
-
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, description = "Автоматически целится и бьет противника.")
@@ -244,56 +245,41 @@ public class KillAura extends Module {
     }
 
     private EntityLivingBase findNewTarget() {
-        EntityLivingBase target = null;
-
-        double bestValue = Double.MAX_VALUE;
+        EntityLivingBase target;
+        List<EntityLivingBase> entityList = new ArrayList<>();
 
         for (Entity entity : mc.theWorld.loadedEntityList) {
-            if (entity == mc.thePlayer) continue;
-            if (DistanceUtils.getDistance(entity) > findDistance.getValue()) continue;
-            if (!(entity instanceof EntityLivingBase ent)) continue;
-            if (entity instanceof EntityPlayer player && (player.isFriend() || player.isTeam())) continue;
-            switch (ent) {
-                case EntityPlayer _ when !targets.get("Players") -> {
-                    continue;
-                }
-                case EntityMob _ when !targets.get("Mobs") -> {
-                    continue;
-                }
-                case EntityAnimal _ when !targets.get("Animals") -> {
-                    continue;
-                }
-                case EntityVillager _ when !targets.get("Villagers") -> {
-                    continue;
-                }
-                case EntityArmorStand _ -> {
-                    continue;
-                }
-                default -> {
-                }
-            }
+            if (entity == mc.thePlayer || DistanceUtils.getDistance(entity) > findDistance.getValue()) continue;
+            switch (entity) {
+                case EntityPlayer entityPlayer when targets.get("Players") -> entityList.add(entityPlayer);
+                case EntityMob entityMob when targets.get("Mobs") -> entityList.add(entityMob);
+                case EntityAnimal entityAnimal when targets.get("Animals") -> entityList.add(entityAnimal);
+                case EntityVillager entityVillager when targets.get("Villagers") -> entityList.add(entityVillager);
 
-            double value = Double.MAX_VALUE;
-
-            switch (sortType.getMode()) {
-                case "Distance" -> value = DistanceUtils.getDistance(entity);
-                case "FOV" -> value = RotUtils.getFovToEntity(entity);
-                case "HurtTime" -> value = DistanceUtils.getDistance(entity) + ent.hurtTime;
-                case "Switch" -> {
-                    if (DistanceUtils.getDistance(entity) > 3) {
-                        value = DistanceUtils.getDistance(entity);
-                    } else if (DistanceUtils.getDistance(entity) <= 3) {
-                        value = ent.hurtTime;
-                    }
-                }
-            }
-
-            if (value < bestValue) {
-                bestValue = value;
-                target = ent;
+                default -> {}
             }
         }
 
+        switch (sortType.getMode()) {
+            case "Distance" -> entityList.sort(Comparator.comparingDouble(DistanceUtils::getDistance));
+            case "FOV" -> entityList.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
+            case "HurtTime" -> entityList.sort(Comparator.comparingDouble(ent -> ent.hurtTime));
+            case "Switch" -> entityList.sort(Comparator.comparingDouble(this::switchTarget));
+        }
+
+        target = entityList.getFirst();
+
         return target;
+    }
+
+    private double switchTarget(Entity entity) {
+        if (!(entity instanceof EntityLivingBase)
+            || (RayCastUtils.rayCast(3,0, Rot.getServerRotation()).typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY)) {
+            return 1000.0;
+        } else {
+            double distance = mc.thePlayer.getDistanceToEntity(entity);
+            double hurtTime = ((EntityLivingBase)entity).hurtTime * 6;
+            return hurtTime + distance;
+        }
     }
 }

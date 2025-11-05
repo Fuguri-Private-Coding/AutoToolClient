@@ -415,7 +415,7 @@ public class Scaffold extends Module {
         }
 
         if (validRotations.isEmpty()) {
-            lastRotation = new Rot(finalOffsetYaw, lastRotation.getPitch());
+            if (sortOffset) lastRotation = new Rot(finalOffsetYaw, lastRotation.getPitch());
             return lastRotation;
         }
 
