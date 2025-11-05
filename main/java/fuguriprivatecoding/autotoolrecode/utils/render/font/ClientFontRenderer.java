@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.render.font;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.NameProtect;
+import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import net.minecraft.client.renderer.GlStateManager;
@@ -190,6 +191,10 @@ public class ClientFontRenderer implements Imports {
         return bufferedImage;
     }
 
+    public float drawString(String text, double x, double y, ColorSetting color, boolean shadow) {
+        return drawString(text, x, y, color.getColor(), color.getFadeColor(), color.getOffset(), color.getSpeed(), shadow);
+    }
+
     public float drawString(String text, double x, double y, Color color1, Color color2, float offset, float speed, boolean shadow) {
         return drawString(text, x, y, color1.getRGB(), color2.getRGB(), offset, speed, shadow);
     }
@@ -279,8 +284,8 @@ public class ClientFontRenderer implements Imports {
                 Color co1 = new Color(color);
                 Color co2 = new Color(color2);
 
-                Color colorOne = new Color(co1.getRed(), co1.getGreen(), co1.getBlue(), alpha1);
-                Color colorTwo = new Color(co2.getRed(), co2.getGreen(), co2.getBlue(), alpha2);
+                Color colorOne = new Color(co1.getRed() / 255f, co1.getGreen() / 255f, co1.getBlue() / 255f, alpha1);
+                Color colorTwo = new Color(co2.getRed() / 255f, co2.getGreen() / 255f, co2.getBlue() / 255f, alpha2);
 
                 ColorUtils.glColor(ColorUtils.mixColor(colorOne, colorTwo, i, offset, speed));
 

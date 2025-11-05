@@ -54,6 +54,7 @@ public class KillAura extends Module {
     DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0, 180, 90, 1);
 
     final CheckBox gcd = new CheckBox("GCD (FIX)", this);
+    final CheckBox smartAim = new CheckBox("Smart Aim", this);
 
     final CheckBox teleportPredictFix = new CheckBox("Teleport Predict Fix", this);
 
@@ -117,17 +118,15 @@ public class KillAura extends Module {
 
             if (event instanceof TickEvent) {
                 AxisAlignedBB box = getHitBox(target);
-                Rot needRotation = (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ?
-                    RotUtils.getBestRotation(box.expand(0.1f,0f,0.1f)) :
-                    switch (hitVec.getMode()) {
-                    case "Best" -> RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f));
-                    case "Nearest" -> RotUtils.getNearestRotations(lr, box);
-                    case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
-                    case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
-                    default -> throw new IllegalStateException("Unexpected value: " + hitVec.getMode());
-                };
+                Rot needRotation = getRotation(lr, box);
 
                 if (needRotation == null) return;
+
+                if (!mc.thePlayer.canVecBeSeen(RotUtils.getVectorForRotation(needRotation)) && smartAim.isToggled()) {
+                    needRotation = RotUtils.getPosibleBestRotation(lr, box.expand(0.1f,0.1f,0.1f));
+
+                    if (needRotation == null) needRotation = getRotation(lr, box);
+                }
 
                 Rot delta = RotUtils.getDelta(lr, needRotation);
 
@@ -207,6 +206,18 @@ public class KillAura extends Module {
                 }
             }
         }
+    }
+
+    private Rot getRotation(Rot lr ,AxisAlignedBB box) {
+        return (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ?
+            RotUtils.getBestRotation(box.expand(0.1f,0f,0.1f)) :
+            switch (hitVec.getMode()) {
+                case "Best" -> RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f));
+                case "Nearest" -> RotUtils.getNearestRotations(lr, box);
+                case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
+                case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
+                default -> throw new IllegalStateException("Unexpected value: " + hitVec.getMode());
+            };
     }
 
     private AxisAlignedBB getHitBox(EntityLivingBase target) {

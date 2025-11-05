@@ -102,7 +102,7 @@ public class TargetHUD extends Module {
 
                 if (positions == null || positions[2] > 1) return;
 
-                float scale = this.scale.getValue() * currentScale.getValue();
+                float scale = this.scale.getValue() * Math.clamp(currentScale.getValue(), 0, 2);
 
                 pos.set(
                     (positions[0] / scale) - width / 2f,
@@ -116,7 +116,7 @@ public class TargetHUD extends Module {
                     (e.getSc().getScaledHeight() / 100f) * yPos.getValue() / currentScale.getValue() - height / 2f
                 );
 
-                double scale = this.scale.getValue() * currentScale.getValue();
+                double scale = this.scale.getValue() * Math.clamp(currentScale.getValue(), 0, 2);;
 
                 renderHUD(pos.x, pos.y, width, height, bgRadius.getValue(), font, target, scale);
             }

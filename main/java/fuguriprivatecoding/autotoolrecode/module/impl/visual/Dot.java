@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.MotionEventPost;
 import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -40,9 +41,9 @@ public class Dot extends Module {
             RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, color.getFadedColor());
         }
 
-        if (event instanceof TickEvent) {
+        if (event instanceof MotionEventPost e) {
             prevPos = new Rot(pos.getYaw(), pos.getPitch());
-            pos = Rot.getServerRotation();
+            pos = new Rot(e.getYaw(), e.getPitch());
         }
     }
 }

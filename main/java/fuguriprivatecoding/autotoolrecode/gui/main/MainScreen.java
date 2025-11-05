@@ -56,7 +56,7 @@ public class MainScreen extends GuiScreen {
 
         AlphaUtils.startWrite();
 
-        font.drawCenteredString(userText, sc.getScaledWidth() / 2f + 2, sc.getScaledHeight() / 2f - 5, Color.WHITE);
+        font.drawString(userText, sc.getScaledWidth() / 2f + 2 - font.getStringWidth(userText) / 2f, sc.getScaledHeight() / 2f - 5, Color.WHITE, Color.WHITE.darker().darker(), 20, 5, false);
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         AlphaUtils.endWrite();

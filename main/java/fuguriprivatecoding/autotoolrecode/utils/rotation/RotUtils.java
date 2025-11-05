@@ -147,6 +147,34 @@ public class RotUtils implements Imports {
 		return possibleRotations.isEmpty() ? null : possibleRotations.stream().findFirst().orElse(null);
 	}
 
+    public static Rot getPosibleBestRotation(Rot from, AxisAlignedBB box) {
+        double accuracy = 5.0F;
+        double stepX = box.getLengthX() / accuracy;
+        double stepY = box.getLengthY() / accuracy;
+        double stepZ = box.getLengthZ() / accuracy;
+        double nearest = 15.0;
+
+        Vec3 best = null;
+
+        for(double x = box.minX; x <= box.maxX; x += stepX) {
+            for (double z = box.minZ; z <= box.maxZ; z += stepY) {
+                for (double y = box.minY; y <= box.maxY; y += stepZ) {
+                    Vec3 pos = new Vec3(x, y, z);
+                    if (mc.thePlayer.canVecBeSeen(pos)) {
+                        Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
+                        double dist = Math.sqrt(Math.pow(x - eyes.xCoord, 2.0) + Math.pow(y - eyes.yCoord, 2.0) + Math.pow(z - eyes.zCoord, 2.0));
+                        if (dist <= nearest) {
+                            nearest = dist;
+                            best = pos;
+                        }
+                    }
+                }
+            }
+        }
+
+        return best != null ? getRotationToPoint(best) : null;
+    }
+
 	public static List<Rot> getPossibleRotations(AxisAlignedBB box, boolean removeInvisible) {
 		List<Rot> rotations = new ArrayList<>();
 		double accuracy = 5.0F;
