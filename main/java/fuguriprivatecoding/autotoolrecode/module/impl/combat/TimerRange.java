@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
@@ -53,6 +54,7 @@ public class TimerRange extends Module {
 
     @Override
     public void onEvent(Event event) {
+        EntityLivingBase target = TargetStorage.getTarget();
         if (event instanceof RunGameLoopEvent && balance > 0) {
             mc.timer.renderPartialTicks = partialTicks.getValue();
         }
@@ -60,7 +62,10 @@ public class TimerRange extends Module {
         if (teleporting) return;
 
         if (event instanceof TickEvent e) {
-            EntityLivingBase target = TargetStorage.getTarget();
+            if (target.hurtTime == 0 && click && balance > 0) {
+                mc.clickMouse();
+                click = false;
+            }
 
             if (balance > 0) {
                 e.cancel();
@@ -68,14 +73,15 @@ public class TimerRange extends Module {
                 return;
             }
 
-            if (target == null) return;
+            AxisAlignedBB box = RotUtils.getHitBox(target, 0, 80);
 
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, RotUtils.getBestRotation(target).getYaw());
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, RotUtils.getBestRotation(box).getYaw());
 
             pos = new Vec3(target.posX, target.posY, target.posZ);
             targetPos = new Vec3(target.newPosX, target.newPosY, target.newPosZ);
             posRotIncrement = target.newPosRotationIncrements;
 
+            click = false;
             teleportTicks = 0;
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 updateCashedIncrementPos();
@@ -103,7 +109,7 @@ public class TimerRange extends Module {
                     mc.runTick();
                     balance++;
                     if (i == teleportTicks - 1) {
-                        Clicks.addClick();
+                        click = true;
                         balance += additionalTicks.getValue();
                     }
                     if (RayCastUtils.rayCast(3, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
@@ -115,8 +121,6 @@ public class TimerRange extends Module {
         }
 
         if (event instanceof Render3DEvent && renderRealPlayerPosition.isToggled()) {
-            EntityLivingBase target = TargetStorage.getTarget();
-
             if (target == null) return;
 
             Vec3 realPositon = new Vec3(

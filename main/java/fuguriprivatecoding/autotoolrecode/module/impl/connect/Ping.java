@@ -43,7 +43,7 @@ public class Ping extends Module {
     DoubleSlider addingDelayPerTick = new DoubleSlider("AddingDelayPerTick", this, () -> delayIncreaseType.is("Smooth"), 0,100,20,1);
 
     CheckBox resetIfDistance = new CheckBox("ResetIfDistance", this);
-    FloatSetting resetDistance = new FloatSetting("ResetDistance", this, resetIfDistance::isToggled, 2.5f, 6f,3f,0.01f);
+    FloatSetting distance = new FloatSetting("Distance", this, resetIfDistance::isToggled, 2.5f, 6f,3f,0.01f);
 
     private final MultiMode actions = new MultiMode("ActionsToReset", this)
         .add("Attack", true)
@@ -100,6 +100,10 @@ public class Ping extends Module {
         switch (event) {
             case ChangeSprintEvent _ when actions.get("ChangeSprint") -> reset(changeSprintTimeCondition.getValue());
 
+            case WorldChangeEvent _ -> {
+                reset(3000);
+            }
+
             case PacketEvent e -> {
                 if (currentTime - lastResetTime < delayBeforeNextLag) {
                     resetAllPackets();
@@ -152,7 +156,7 @@ public class Ping extends Module {
                 if (resetIfDistance.isToggled()) {
                     EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
 
-                    if (target != null && DistanceUtils.getDistance(target) <= resetDistance.getValue()) {
+                    if (target != null && DistanceUtils.getDistance(target) <= distance.getValue()) {
                         reset(50);
                     }
                 }
@@ -161,7 +165,7 @@ public class Ping extends Module {
                 currentPos = posBuffer.isEmpty() ? mc.thePlayer.getPositionVector() : posBuffer.getFirst().pos();
             }
 
-            case Render3DEvent _ when !(mc.gameSettings.thirdPersonView == 0 || lastPos == null || currentPos == null || renderModes.getMode().equalsIgnoreCase("OFF")) -> {
+            case Render3DEvent _ when !(mc.gameSettings.thirdPersonView == 0 || currentTime - lastResetTime < delayBeforeNextLag || lastPos == null || currentPos == null || renderModes.getMode().equalsIgnoreCase("OFF")) -> {
                 EntityPlayerSP player = mc.thePlayer;
 
                 double x = lastPos.xCoord + (currentPos.xCoord - lastPos.xCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;

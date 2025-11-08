@@ -6,7 +6,5 @@ import net.minecraft.util.Vec3;
 
 public record RotationData(Rot rotation, Vec3 hitPos, MovingObjectPosition mouse) {
 
-
-
 }
 

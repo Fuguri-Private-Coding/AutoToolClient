@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import net.minecraft.client.gui.GuiScreen;
@@ -40,6 +41,8 @@ public class ClickGuiScreenNew extends GuiScreen {
         super.initGui();
         ScaledResolution sc = ScaleUtils.getScaledResolution();
 
+        xAnim.setEnd(20);
+        yAnim.setEnd(20);
         widthAnim.setValue(sc.getScaledWidth() - 40);
         heightAnim.setValue(sc.getScaledHeight() - 40);
 
@@ -52,23 +55,26 @@ public class ClickGuiScreenNew extends GuiScreen {
 
         updateGuiAnimations();
 
-        Color rectColor = new Color(0,0,0,(clickGui.backgroundAlpha.getValue() / 255f) * openAnim.getValue());
+        if (closing && openAnim.getValue() == 0) {
+            mc.displayGuiScreen(null);
+        }
 
-        float radius = clientSettings.backgroundRadius.getValue();
+        Color rectColor = Colors.BLACK.withAlpha((clickGui.backgroundAlpha.getValue() / 255f) * openAnim.getValue());
+
+        float radius = 10;
 
         RoundedUtils.drawRect(x, y, width, height, radius, rectColor);
-        RoundedUtils.drawRect(x, y, width, 15, radius, rectColor);
+        RoundedUtils.drawRect(x, y, width, 15, 0, radius, radius, 0, rectColor);
 
         boolean hoverExit = GuiUtils.isHovered(mouseX, mouseY, x + width - 20, y, 15, 15);
 
-        ColorUtils.glColor(hoverExit ? Color.RED : Color.WHITE);
+        ColorUtils.glColor(hoverExit ? Colors.RED.withAlpha(openAnim.getValue()) : Colors.WHITE.withAlpha(openAnim.getValue()));
         RenderUtils.drawImage(exitLogo, x + width - 20, y, 15, 15, true);
 
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
 
         boolean hoverExit = GuiUtils.isHovered(mouseX, mouseY, x + width - 20, y, 15, 15);
 
@@ -76,7 +82,7 @@ public class ClickGuiScreenNew extends GuiScreen {
             openAnim.setEnd(0);
             closing = true;
         }
-
+        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
@@ -97,10 +103,11 @@ public class ClickGuiScreenNew extends GuiScreen {
         yAnim.update(7f, Easing.OUT_CUBIC);
         widthAnim.update(7f, Easing.OUT_CUBIC);
         heightAnim.update(7f, Easing.OUT_CUBIC);
+        openAnim.update(5, Easing.OUT_CUBIC);
 
-        x = xAnim.getValue();
-        y = yAnim.getValue();
-        width = widthAnim.getValue();
-        height = heightAnim.getValue();
+        x = xAnim.getValue() + openAnim.getValue() * 2;
+        y = yAnim.getValue() + openAnim.getValue() * 2;
+        width = widthAnim.getValue() - openAnim.getValue() * 4;
+        height = heightAnim.getValue() - openAnim.getValue() * 4;
     }
 }

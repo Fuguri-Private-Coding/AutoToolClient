@@ -154,7 +154,7 @@ public class ArrayList extends Module {
         }
 
         if (horizontalOffset.isToggled()) {
-            font.drawString(moduleText, textX, textY, textColor, shadow.isToggled());
+            font.drawString(moduleText, textX, textY, textColor.getMixedColor(moduleList.indexOf(module)), lineColor.getMixedColor(moduleList.indexOf(module)), textColor.getOffset(), textColor.getSpeed(), shadow.isToggled());
         } else {
             font.drawString(moduleText, textX, textY, textColor.getMixedColor(moduleList.indexOf(module)), shadow.isToggled());
         }

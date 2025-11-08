@@ -10,7 +10,7 @@
 //import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.EnumFacingOffset;
 //import fuguriprivatecoding.autotoolrecode.settings.impl.*;
 //import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
-//import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
+//import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtil;
 //import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 //import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 //import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtil;

@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.RotationData;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
@@ -115,6 +116,8 @@ public class Scaffold extends Module {
 
     Rot rotation, lastRotation;
 
+    BlockPos targetBlock;
+
     double lastDelta = 0;
     float lastPitch = 80;
 
@@ -135,6 +138,8 @@ public class Scaffold extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
+            targetBlock = PlayerUtils.getPossibleBlockPos();
+
             rotate();
         }
 
@@ -147,15 +152,14 @@ public class Scaffold extends Module {
                 }
             }
 
-            mc.rightClickDelayTimer = 10;
             legitPlace();
         }
 
-        if (event instanceof Render3DEvent && mouse.getBlockPos() != null && render.isToggled()) {
+        if (event instanceof Render3DEvent && targetBlock != null && render.isToggled()) {
             RenderUtils.start3D();
 
-            if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(mouse.getBlockPos(), glowColor.getFadedFloatColor()));
-            RenderUtils.drawBlockESP(mouse.getBlockPos(), color.getFadedFloatColor());
+            if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(targetBlock, glowColor.getFadedFloatColor()));
+            RenderUtils.drawBlockESP(targetBlock, color.getFadedFloatColor());
 
             ColorUtils.resetColor();
             RenderUtils.stop3D();
@@ -233,10 +237,10 @@ public class Scaffold extends Module {
     void legitPlace() {
         MovingObjectPosition mouseOver = RayCastUtils.rayCast(6, 4.5f, Rot.getServerRotation());
 
-        if (mouse.sideHit == mouseOver.sideHit &&
+        if (mouseOver.sideHit == mouse.sideHit &&
             mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
             && isSameY(mouse)
-            && mouse.getBlockPos().equals(mouseOver.getBlockPos())
+            && targetBlock.equals(mouseOver.getBlockPos())
             && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
 
             mc.rightClickMouse(false);
@@ -322,6 +326,8 @@ public class Scaffold extends Module {
         return mouse.sideHit != EnumFacing.DOWN;
     }
 
+
+
     boolean isTelly() {
         if (MoveUtils.isMoving()) {
             if (mc.gameSettings.keyBindJump.isKeyDown()) return mc.thePlayer.onGround || Player.airTicks < (speedTelly.isToggled() ? 0 : airTicks.getRandomizedIntValue());
@@ -357,35 +363,45 @@ public class Scaffold extends Module {
     }
 
     private float getPitch(float yaw, boolean handleMouse) {
-        Map<Float, MovingObjectPosition> positionHashMap = new HashMap<>();
+        List<RotationData> dataList = new ArrayList<>();
 
         float minPitch = (float) pitchCorrectionSearch.getMinValue();
         float maxPitch = (float) pitchCorrectionSearch.getMaxValue();
 
         float step = stepPitchCorrection.getValue();
-        for (float i = minPitch; i < maxPitch; i += step) {
-            MovingObjectPosition mouses = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, i));
-            if (mouses == null || mouses.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                    || positionHashMap.containsValue(mouses)
-                    || mouses.sideHit == EnumFacing.DOWN
-            ) continue;
-            positionHashMap.put(i, mouses);
+        for (float pitch = minPitch; pitch < maxPitch; pitch += step) {
+            MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, pitch));
+            if (hit != null) {
+                RotationData data = new RotationData(new Rot(yaw, pitch), hit.hitVec, hit);
+
+                if (hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+                    || dataList.contains(data)
+                    || hit.sideHit == EnumFacing.DOWN
+                    || !hit.getBlockPos().equals(targetBlock)
+                ) continue;
+
+                dataList.add(data);
+            }
         }
 
-        if (positionHashMap.isEmpty()) {
+        if (dataList.isEmpty()) {
             return lastPitch;
         }
 
-        List<Float> pitches = new ArrayList<>(positionHashMap.keySet());
+        dataList.sort(Comparator.comparingDouble(data -> {
+            float pitchDiff = Math.abs(Rot.getServerRotation().getPitch()) - data.rotation().getPitch();
 
-        pitches.sort(Comparator.comparingDouble(pitch -> Math.abs(Rot.getServerRotation().getPitch()) - pitch));
+            return pitchDiff;
+        }));
+
+        RotationData rotationData = dataList.getFirst();
 
         if (handleMouse) {
-            mouse = positionHashMap.get(pitches.getFirst());
-            lastPitch = pitches.getFirst();
+            mouse = rotationData.mouse();
+            lastPitch = rotationData.rotation().getPitch();
         }
 
-        return pitches.getFirst();
+        return rotationData.rotation().getPitch();
     }
 
     private Rot getBestRotation(float yawOffset, float offset, boolean sortOffset) {
@@ -397,21 +413,19 @@ public class Scaffold extends Module {
         for (float possibleYaw = 0; possibleYaw < 360; possibleYaw += step) {
             float yaw = MathHelper.wrapDegree(possibleYaw);
             float pitch = getPitch(yaw, false);
+
             MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, pitch));
+            if (hit != null) {
+                RotationData data = new RotationData(new Rot(yaw, pitch), hit.hitVec, hit);
 
-            if (hit == null
-                || hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                || hit.sideHit == EnumFacing.DOWN
-                || hit.hitVec.yCoord >= mc.thePlayer.posY
-            ) {
-                continue;
+                if (hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+                    || hit.sideHit == EnumFacing.DOWN
+                    || hit.hitVec.yCoord >= mc.thePlayer.posY
+                    || !hit.getBlockPos().equals(targetBlock)
+                ) continue;
+
+                validRotations.add(data);
             }
-
-            validRotations.add(new RotationData(
-                new Rot(yaw, pitch),
-                hit.hitVec,
-                hit
-            ));
         }
 
         if (validRotations.isEmpty()) {

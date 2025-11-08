@@ -54,7 +54,6 @@ public class KillAura extends Module {
     DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0, 180, 90, 1);
 
     final CheckBox gcd = new CheckBox("GCDFix", this);
-    final CheckBox throughWalls = new CheckBox("ThroughWalls", this);
     final CheckBox smartAim = new CheckBox("SmartAim", this);
 
     final CheckBox teleportPredictFix = new CheckBox("TeleportPredictFix", this);
@@ -85,7 +84,6 @@ public class KillAura extends Module {
     private long delay;
 
     Rot lastDelta = new Rot();
-    Rot needRotation = new Rot();
 
     @Override
     public void onDisable() {
@@ -112,15 +110,17 @@ public class KillAura extends Module {
             Rot lr = Rot.getServerRotation();
 
             if (event instanceof TickEvent) {
-                AxisAlignedBB box = getHitBox(target);
+                AxisAlignedBB box = RotUtils.getHitBox(
+                    target,
+                    (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 100 : horizontalHitBoxSize.getValue(),
+                    (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 100 : verticalHitBoxSize.getValue()
+                );
                 Rot needRotation = getRotation(target, lr, box);
 
                 if (needRotation == null) return;
 
                 if (!mc.thePlayer.canVecBeSeen(RotUtils.getVectorForRotation(needRotation)) && smartAim.isToggled()) {
-                    needRotation = RotUtils.getPosibleBestRotation(lr, box.expand(0.1f,0.1f,0.1f));
-
-                    if (needRotation == null) needRotation = getRotation(target, lr, box);
+                    needRotation = RotUtils.getPossibleBestRotation(needRotation, box.expand(0.1f,0.1f,0.1f));
                 }
 
                 Rot delta = RotUtils.getDelta(lr, needRotation);
@@ -130,15 +130,14 @@ public class KillAura extends Module {
                     (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 180 : pitchSpeed.getRandomizedIntValue()
                 );
 
-                RotUtils.limitDelta(delta, speed);
-
                 if (smoothMode.get("Basic")) {
                     Rot rot = new Rot(
                         RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
                         RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
                     );
 
-                    delta.subtract(rot);
+                    delta.setYaw(MathHelper.wrapDegree(delta.getYaw() - rot.getYaw()));
+                    delta.setPitch(MathHelper.wrapDegree(delta.getPitch() - rot.getPitch()));
                 }
 
                 if (smoothMode.get("Linear")) {
@@ -161,7 +160,7 @@ public class KillAura extends Module {
 
                 if (gcd.isToggled()) delta = RotUtils.fixDelta(delta);
                 lr = lr.add(delta);
-                lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
+
                 Rot.setServerRotation(lr);
 
                 if (lockView.isToggled()) {
@@ -203,9 +202,9 @@ public class KillAura extends Module {
         }
     }
 
-    private Rot getRotation(EntityLivingBase target, Rot lr ,AxisAlignedBB box) {
+    private Rot getRotation(EntityLivingBase target, Rot lr, AxisAlignedBB box) {
         return (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ?
-            RotUtils.getBestRotation(box.expand(0.1f,0f,0.1f)) :
+            RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f)) :
             switch (hitVec.getMode()) {
                 case "Best" -> RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f));
                 case "Nearest" -> RotUtils.getNearestRotations(lr, box);
@@ -215,29 +214,6 @@ public class KillAura extends Module {
             };
     }
 
-    private AxisAlignedBB getHitBox(EntityLivingBase target) {
-        AxisAlignedBB box = target.getEntityBoundingBox();
-
-        double horizontalPercent = ((TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 100 : horizontalHitBoxSize.getValue()) / 200d;
-        double verticalPercent = ((TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 100 : verticalHitBoxSize.getValue()) / 200d;
-
-        Vec3 center = new Vec3(
-            (box.maxX + box.minX) / 2,
-            (box.maxY + box.minY) / 2,
-            (box.maxZ + box.minZ) / 2
-        );
-
-        box = new AxisAlignedBB(
-            center.xCoord - box.getLengthX() * horizontalPercent,
-            center.yCoord - box.getLengthY() * verticalPercent,
-            center.zCoord - box.getLengthZ() * horizontalPercent,
-            center.xCoord + box.getLengthX() * horizontalPercent,
-            center.yCoord + box.getLengthY() * verticalPercent,
-            center.zCoord + box.getLengthZ() * horizontalPercent
-        );
-        return box;
-    }
-
     private EntityLivingBase findNewTarget() {
         EntityLivingBase target;
         List<EntityLivingBase> entityList = new ArrayList<>();
@@ -245,7 +221,7 @@ public class KillAura extends Module {
         for (Entity entity : mc.theWorld.loadedEntityList) {
             if (entity == mc.thePlayer || DistanceUtils.getDistance(entity) > findDistance.getValue()) continue;
             switch (entity) {
-                case EntityPlayer entityPlayer when targets.get("Players") -> entityList.add(entityPlayer);
+                case EntityPlayer entityPlayer when targets.get("Players") && !entityPlayer.isFriend() && !entityPlayer.isTeam() -> entityList.add(entityPlayer);
                 case EntityMob entityMob when targets.get("Mobs") -> entityList.add(entityMob);
                 case EntityAnimal entityAnimal when targets.get("Animals") -> entityList.add(entityAnimal);
                 case EntityVillager entityVillager when targets.get("Villagers") -> entityList.add(entityVillager);

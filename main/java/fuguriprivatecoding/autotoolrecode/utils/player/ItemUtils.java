@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.utils.inventory;
+package fuguriprivatecoding.autotoolrecode.utils.player;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.block.*;
@@ -16,7 +16,7 @@ import java.util.List;
  * @since 09/07/2022
  */
 @UtilityClass
-public class ItemUtil {
+public class ItemUtils {
 
     private final List<Item> WHITELISTED_ITEMS = Arrays.asList(Items.fishing_rod, Items.water_bucket, Items.bucket, Items.arrow, Items.bow, Items.snowball, Items.egg, Items.ender_pearl);
 
@@ -24,7 +24,7 @@ public class ItemUtil {
         final Item item = stack.getItem();
 
         if (item instanceof ItemPotion potion) {
-            return ItemPotion.isSplash(stack.getMetadata()) && PlayerUtil.goodPotion(potion.getEffects(stack).getFirst().getPotionID());
+            return ItemPotion.isSplash(stack.getMetadata()) && PlayerUtils.goodPotion(potion.getEffects(stack).getFirst().getPotionID());
         }
 
         if (item instanceof ItemBlock) {

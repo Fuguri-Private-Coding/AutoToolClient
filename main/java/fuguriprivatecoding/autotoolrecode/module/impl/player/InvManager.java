@@ -9,8 +9,8 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtil;
-import fuguriprivatecoding.autotoolrecode.utils.inventory.ItemUtil;
-import fuguriprivatecoding.autotoolrecode.utils.inventory.PlayerUtil;
+import fuguriprivatecoding.autotoolrecode.utils.player.ItemUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -90,7 +90,7 @@ public class InvManager extends Module {
 
                 final Item item = stack.getItem();
 
-                if (!ItemUtil.useful(stack)) {
+                if (!ItemUtils.useful(stack)) {
                     this.throwItem(i);
                 }
 
@@ -207,7 +207,7 @@ public class InvManager extends Module {
                         }
 
                         if (itemPotion.getEffects(stack) != null && currentItemPotion.getEffects(currentStack) != null) {
-                            if ((PlayerUtil.potionRanking(itemPotion.getEffects(stack).getFirst().getPotionID()) > PlayerUtil.potionRanking(currentItemPotion.getEffects(currentStack).getFirst().getPotionID()) || foundCurrent) && !found) {
+                            if ((PlayerUtils.potionRanking(itemPotion.getEffects(stack).getFirst().getPotionID()) > PlayerUtils.potionRanking(currentItemPotion.getEffects(currentStack).getFirst().getPotionID()) || foundCurrent) && !found) {
                                 potion = i;
                             }
                         }

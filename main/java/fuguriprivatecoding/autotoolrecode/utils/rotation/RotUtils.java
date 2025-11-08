@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.rotation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
 
 import java.util.ArrayList;
@@ -55,6 +56,29 @@ public class RotUtils implements Imports {
         y += (double) enumFacing.getDirectionVec().getY() * 0.5D;
         z += (double) enumFacing.getDirectionVec().getZ() * 0.5D;
         return calculate(new Vector3d(x, y, z));
+    }
+
+    public static AxisAlignedBB getHitBox(EntityLivingBase target, double horizontal, double vertical) {
+        AxisAlignedBB box = target.getEntityBoundingBox();
+
+        double horizontalPercent = horizontal / 200d;
+        double verticalPercent = vertical / 200d;
+
+        Vec3 center = new Vec3(
+            (box.maxX + box.minX) / 2,
+            (box.maxY + box.minY) / 2,
+            (box.maxZ + box.minZ) / 2
+        );
+
+        box = new AxisAlignedBB(
+            center.xCoord - box.getLengthX() * horizontalPercent,
+            center.yCoord - box.getLengthY() * verticalPercent,
+            center.zCoord - box.getLengthZ() * horizontalPercent,
+            center.xCoord + box.getLengthX() * horizontalPercent,
+            center.yCoord + box.getLengthY() * verticalPercent,
+            center.zCoord + box.getLengthZ() * horizontalPercent
+        );
+        return box;
     }
 
 	public static float[] faceTrajectory(Entity target, boolean predict, float predictSize, float gravity, float velocity) {
@@ -147,7 +171,7 @@ public class RotUtils implements Imports {
 		return possibleRotations.isEmpty() ? null : possibleRotations.stream().findFirst().orElse(null);
 	}
 
-    public static Rot getPosibleBestRotation(Rot from, AxisAlignedBB box) {
+    public static Rot getPossibleBestRotation(Rot startRot, AxisAlignedBB box) {
         double accuracy = 5.0F;
         double stepX = box.getLengthX() / accuracy;
         double stepY = box.getLengthY() / accuracy;
@@ -172,7 +196,7 @@ public class RotUtils implements Imports {
             }
         }
 
-        return best != null ? getRotationToPoint(best) : null;
+        return best != null ? getRotationToPoint(best) : startRot;
     }
 
 	public static List<Rot> getPossibleRotations(AxisAlignedBB box, boolean removeInvisible) {

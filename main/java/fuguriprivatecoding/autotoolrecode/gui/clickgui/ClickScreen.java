@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.config.Configs;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
+import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.gui.config.ConfigScreen;
 import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
@@ -87,6 +88,8 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		pos = new Vector2f(50f, 50f);
 
 		BACKGROUND_COLOR = new Color(0, 0, 0, clickGui.backgroundAlpha.getValue());
+
+        Events.register(this);
 
 		sizeBackground = new Animation2D();
 		background = new Animation2D();
