@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -33,14 +32,13 @@ public class Teams extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
+            teamList.clear();
             for (Entity entity : mc.theWorld.playerEntities) {
                 if (isTeammate(entity) && entity instanceof EntityPlayer entityPlayer) {
                     teamList.add(entityPlayer);
                 }
             }
         }
-
-        if (event instanceof WorldChangeEvent && !teamList.isEmpty()) teamList.clear();
     }
 
     private boolean isTeammate(Entity entity) {

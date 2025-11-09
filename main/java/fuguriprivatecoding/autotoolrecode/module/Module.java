@@ -110,14 +110,16 @@ public class Module implements Imports, SettingAble, EventListener {
     }
 
     public void setObject(JsonObject object, boolean includeStates) {
-        if (includeStates) {
-            setToggled(object.get("toggl").getAsBoolean());
-            setHide(object.get("hide").getAsBoolean());
-        }
+        if (object != null) {
+            if (includeStates) {
+                setToggled(object.get("toggl").getAsBoolean());
+                setHide(object.get("hide").getAsBoolean());
+            }
 
-        for (Setting setting : settings) {
-            JsonObject settingObject = object.getAsJsonObject(setting.getName());
-            setting.setObject(settingObject);
+            for (Setting setting : settings) {
+                JsonObject settingObject = object.getAsJsonObject(setting.getName());
+                if (settingObject != null) setting.setObject(settingObject);
+            }
         }
     }
 }

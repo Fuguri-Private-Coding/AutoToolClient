@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.MotionEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -16,7 +17,8 @@ public class Fixes extends Module {
     MultiMode fixes = new MultiMode("Fixes", this)
             .add("ClickDelay", true)
             .add("SaveMoveKeys", true)
-            .add("JumpDelay", true);
+            .add("JumpDelay", true)
+            .add("Memory", true);
 
     boolean wasInGui = false;
 
@@ -37,6 +39,9 @@ public class Fixes extends Module {
             if (fixes.get("JumpDelay") && !Modules.getModule(Scaffold.class).isToggled()) {
                 mc.thePlayer.jumpTicks = 0;
             }
+        }
+        if (event instanceof WorldChangeEvent && fixes.get("Memory")) {
+            System.gc();
         }
     }
 }

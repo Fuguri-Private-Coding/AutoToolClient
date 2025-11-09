@@ -1,16 +1,21 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.input.Mouse;
 
@@ -22,6 +27,7 @@ public class AutoClicker extends Module {
         ;
 
     DoubleSlider leftCPS = new DoubleSlider("LeftCPS", this, () -> buttons.get("Left"), 0, 40, 20, 1);
+    CheckBox breakBlocks = new CheckBox("BreakBlocks", this, () -> buttons.get("Left"), true);
 
     long leftDelay;
 
@@ -29,10 +35,10 @@ public class AutoClicker extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (buttons.get("Left")) {
-            if (event instanceof RunGameLoopEvent) {
+        if (event instanceof RunGameLoopEvent) {
+            if (buttons.get("Left")) {
                 if (!Mouse.isButtonDown(0) || mc.thePlayer.isUsingItem() || Mouse.isButtonDown(1) || mc.currentScreen != null) return;
-                if (RayCastUtils.rayCast(3, 4.5, new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) return;
+                if (RayCastUtils.rayCast(3, 4.5, new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && breakBlocks.isToggled()) return;
 
                 if (leftStopWatch.reachedMS(leftDelay)) {
                     Clicks.addClick();
@@ -46,27 +52,4 @@ public class AutoClicker extends Module {
     private long getLeftDelay() {
         return (long) (1000D / leftCPS.getRandomizedDoubleValue());
     }
-
-    //
-//    int delay;
-//
-//    DoubleSlider CPS = new DoubleSlider("CPS", this, 1,80,20,1f);
-//
-//    final CheckBox allowBreakBlock = new CheckBox("AllowBreakBlock", this, true);
-//
-//    public AutoClicker() {
-//        stopWatch = new StopWatch();
-//    }
-//
-//    @EventTarget
-//    public void onEvent(Event event) {
-//        if (event instanceof RunGameLoopEvent) {
-//
-//            if (stopWatch.reachedMS(delay)) {
-//                stopWatch.reset();
-//                Client.INST.getClickManager().addClick();
-//                delay = Math.round(1000f / CPS.getRandomizedIntValue());
-//            }
-//        }
-//    }
 }

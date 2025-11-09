@@ -1,9 +1,9 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.MoveEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.MoveFlyingEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.UpdateEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
@@ -11,13 +11,16 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
+import net.minecraft.util.MathHelper;
 
 @ModuleInfo(name = "Speed", category = Category.MOVE, description = "Позволяет вам двигаться быстрее.")
 public class Speed extends Module {
 
 	int ticks;
 
-	Mode mode = new Mode("Mode", this)
+	public Mode mode = new Mode("Mode", this)
 			.addModes("45Degree", "Vanilla", "FunnyMcSkyPvp")
 			.setMode("45Degree");
 
@@ -38,13 +41,41 @@ public class Speed extends Module {
 		if (mc.thePlayer == null || mc.theWorld == null) return;
 		switch (mode.getMode()) {
 			case "45Degree" -> {
-				if (event instanceof MoveFlyingEvent moveFlyingEvent && moveFlyingEvent.getForward() > 0f) {
-					moveFlyingEvent.setYaw(mc.thePlayer.rotationYaw - 45f);
-				}
+                if (Modules.getModule(Scaffold.class).isToggled() || TargetStorage.getTarget() != null) return;
 
-				if (event instanceof MoveEvent moveEvent && moveEvent.getForward() > 0f) {
-					moveEvent.setStrafe(moveEvent.getStrafe() - 1f);
-				}
+                if (event instanceof TickEvent) {
+                    float yaw = mc.thePlayer.onGround ? MoveUtils.getDir() : MoveUtils.getDir() + 45;
+
+                    Rot rotation = new Rot(MathHelper.wrapDegree(yaw), mc.thePlayer.rotationPitch);
+
+                    Rot.setServerRotation(rotation.fix());
+                }
+
+				if (event instanceof MoveEvent e) {
+                    MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
+                }
+
+                if (event instanceof MotionEvent e) {
+                    e.setYaw(Rot.getServerRotation().getYaw());
+                    e.setPitch(Rot.getServerRotation().getPitch());
+                }
+
+                if (event instanceof LookEvent e) {
+                    e.setYaw(Rot.getServerRotation().getYaw());
+                    e.setPitch(Rot.getServerRotation().getPitch());
+                }
+
+                if (event instanceof ChangeHeadRotationEvent e) {
+                    e.setYaw(Rot.getServerRotation().getYaw());
+                    e.setPitch(Rot.getServerRotation().getPitch());
+                }
+
+                if (event instanceof UpdateBodyRotationEvent e) {
+                    e.setYaw(Rot.getServerRotation().getYaw());
+                }
+
+                if (event instanceof MoveFlyingEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+                if (event instanceof JumpEvent e) e.setYaw(Rot.getServerRotation().getYaw());
 			}
 			case "Vanilla" -> {
 				if (MoveUtils.isMoving()) {

@@ -38,7 +38,6 @@ public class MultiMode extends Setting {
         values = new CopyOnWriteArrayList<>();
     }
 
-
     @Override
     public void render() {
         ImGui.pushID(hashCode());
@@ -91,7 +90,7 @@ public class MultiMode extends Setting {
     @Override
     public void setObject(JsonObject object) {
         for (Doubles<String, Boolean> value : values) {
-            value.setSecond(object.get(value.getFirst()).getAsBoolean());
+            if (object.has(value.getFirst())) value.setSecond(object.get(value.getFirst()).getAsBoolean());
         }
     }
 

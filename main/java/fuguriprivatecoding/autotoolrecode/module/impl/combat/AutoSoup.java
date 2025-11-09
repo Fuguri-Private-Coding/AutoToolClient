@@ -19,12 +19,12 @@ public class AutoSoup extends Module {
 
     DoubleSlider health = new DoubleSlider("Health", this, 1, 20, 9, 1);
 
-    DoubleSlider useDelay = new DoubleSlider("UseDelay", this, 1, 20, 9, 1);
-    DoubleSlider dropDelay = new DoubleSlider("DropDelay", this, 1, 20, 9, 1);
-    DoubleSlider switchDelay = new DoubleSlider("SwitchDelay", this, 1, 20, 9, 1);
+    DoubleSlider useDelay = new DoubleSlider("UseDelay", this, 0, 20, 9, 1);
+    DoubleSlider dropDelay = new DoubleSlider("DropDelay", this, 0, 20, 9, 1);
+    DoubleSlider switchDelay = new DoubleSlider("SwitchDelay", this, 0, 20, 9, 1);
 
     final CheckBox refill = new CheckBox("Refill", this, true);
-    DoubleSlider refillDelay = new DoubleSlider("RefillDelay", this, 1, 20, 9, 1);
+    DoubleSlider refillDelay = new DoubleSlider("RefillDelay", this, refill::isToggled, 0, 20, 9, 1);
 
     private final StopWatch soupTimer = new StopWatch();
     private final StopWatch refillTimer = new StopWatch();

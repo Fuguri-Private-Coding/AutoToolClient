@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.move.Speed;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.AntiFireball;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Fucker;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
@@ -33,7 +34,8 @@ public class RotationHandler extends Module {
             || DistanceUtils.getDistance(TargetStorage.getTarget()) > Modules.getModule(KillAura.class).rotateDistance.getValue())
             && !Modules.getModule(Scaffold.class).isToggled()
             && Modules.getModule(AntiFireball.class).target == null &&
-            Modules.getModule(Fucker.class).bedPos == null;
+            Modules.getModule(Fucker.class).bedPos == null
+            && (!Modules.getModule(Speed.class).isToggled() && Modules.getModule(Speed.class).mode.is("45Degree"));
         if (handle) {
             if (Rot.isChanged()) {
                 if (event instanceof MotionEvent motionEvent) {

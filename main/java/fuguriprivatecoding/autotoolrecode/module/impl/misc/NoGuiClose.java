@@ -31,21 +31,17 @@ public class NoGuiClose extends Module {
 
     private boolean guiClosed(GuiScreen currentScreen) {
         switch (currentScreen) {
-            case ClickScreen _ -> {
-                if (modes.get("ClickGui")) return true;
+            case ClickScreen _ when modes.get("ClickGui") -> {
+                return true;
             }
-
-
-            case ConfigScreen _ -> {
-                if (modes.get("ConfigGui")) return true;
+            case ConfigScreen _ when modes.get("ConfigGui") -> {
+                return true;
             }
-
-            case ConsoleScreen _ -> {
-                if (modes.get("ConsoleGui")) return true;
+            case ConsoleScreen _ when modes.get("ConsoleGui") -> {
+                return true;
             }
-
-            case GuiChat _ -> {
-                if (modes.get("ChatGui")) return true;
+            case GuiChat _ when modes.get("ChatGui") -> {
+                return true;
             }
 
             default -> {}

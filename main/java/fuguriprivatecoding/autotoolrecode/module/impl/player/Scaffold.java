@@ -76,6 +76,8 @@ public class Scaffold extends Module {
         .setMode("Legit")
         ;
 
+    CheckBox jumpFix = new CheckBox("JumpFix", this);
+
     final CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this);
 
     final CheckBox speedTelly = new CheckBox("SpeedTelly", this, tellyVisible, true);
@@ -192,8 +194,11 @@ public class Scaffold extends Module {
         if (event instanceof SprintEvent) {
             switch (sprintMode.getMode()) {
                 case "AllDirection" -> {
-                    if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.isSneaking())
+                    if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.isSneaking() && MoveUtils.isMoving()) {
                         mc.thePlayer.setSprinting(true);
+                    } else if (!jumpFix.isToggled() && MoveUtils.isMoving()) {
+                        mc.thePlayer.setSprinting(true);
+                    }
                 }
                 case "None" -> mc.thePlayer.setSprinting(false);
             }
@@ -212,7 +217,10 @@ public class Scaffold extends Module {
             }
         }
 
-        if (event instanceof JumpEvent e) e.setYaw(Rot.getServerRotation().getYaw());
+        if (event instanceof JumpEvent e) {
+            float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : mc.thePlayer.rotationYaw;
+            e.setYaw(jumpFix.isToggled() ? Rot.getServerRotation().getYaw() : yaw);
+        }
         if (event instanceof UpdateBodyRotationEvent e) e.setYaw(Rot.getServerRotation().getYaw());
         if (event instanceof MoveFlyingEvent e) e.setYaw(Rot.getServerRotation().getYaw());
         if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.RIGHT) e.cancel();

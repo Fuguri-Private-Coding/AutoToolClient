@@ -190,17 +190,7 @@ public class Fucker extends Module {
     public void destroy() {
         if (bedPos != null) {
             Rot needRot = RotUtils.calculate(new Vector3d(bedPos.getX(), bedPos.getY(), bedPos.getZ()), getEnumFacing(bedPos));
-
-            Delta delta = RotUtils.getDelta(Rot.getServerRotation(), needRot);
-
-            delta = RotUtils.fixDelta(delta);
-
-            Rot rot = new Rot(
-                Rot.getServerRotation().getYaw() + delta.getYaw(),
-                Rot.getServerRotation().getPitch() + delta.getPitch()
-            );
-
-            Rot.setServerRotation(rot);
+            Rot.setServerRotation(needRot.fix());
 
             mine(bedPos);
         } else {

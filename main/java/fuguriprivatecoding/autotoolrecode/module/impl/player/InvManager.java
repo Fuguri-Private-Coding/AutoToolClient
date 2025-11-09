@@ -5,13 +5,11 @@ import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.inventory.InventoryUtil;
 import fuguriprivatecoding.autotoolrecode.utils.player.ItemUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
-import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.enchantment.Enchantment;
@@ -26,9 +24,6 @@ public class InvManager extends Module {
     DoubleSlider startDelay = new DoubleSlider("StartDelay", this, 0,500,200,1);
 
     DoubleSlider delay = new DoubleSlider("Delay", this, 0,500,200,1);
-
-    private final CheckBox spoof = new CheckBox("Spoof", this);
-    private final CheckBox stopWalkingIfSpoof = new CheckBox("StopSpoofIfWalking", this);
 
     private final IntegerSetting swordSlot = new IntegerSetting("Sword Slot", this, 1, 9, 1);
     private final IntegerSetting pickaxeSlot = new IntegerSetting("Pickaxe Slot", this,1, 9, 1);
@@ -51,12 +46,10 @@ public class InvManager extends Module {
                 return;
             }
 
-            if (!spoof.isToggled() && !(mc.currentScreen instanceof GuiInventory)) {
+            if (!(mc.currentScreen instanceof GuiInventory)) {
                 this.stopwatch.reset();
                 this.startTimer.reset();
                 return;
-            } else if (spoof.isToggled() && stopWalkingIfSpoof.isToggled()) {
-                if (MoveUtils.isMoving()) return;
             }
 
             if (!startTimer.reachedMS(startDelay.getRandomizedIntValue()) || !stopwatch.reachedMS(delay.getRandomizedIntValue())) return;

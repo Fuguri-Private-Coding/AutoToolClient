@@ -31,6 +31,7 @@ public class Modules {
 			new BridgeAssist(),
 			new FovModifier(),
 			new Trajectory(),
+            new FastBreak(),
 			new Regen(),
 			new Reach(),
             new Teams(),

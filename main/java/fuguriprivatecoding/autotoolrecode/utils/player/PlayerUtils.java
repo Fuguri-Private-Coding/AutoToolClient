@@ -120,9 +120,9 @@ public class PlayerUtils implements Imports {
         ArrayList<Vec3> positions = new ArrayList<>();
         HashMap<Vec3, BlockPos> hashMap = new HashMap<>();
 
-        for (int x = playerPos.getX() - 5; x <= playerPos.getX() + 5; ++x) {
-            for (int y = playerPos.getY() - 1; y <= playerPos.getY(); ++y) {
-                for (int z = playerPos.getZ() - 5; z <= playerPos.getZ() + 5; ++z) {
+        for (float x = playerPos.getX() - 5; x <= playerPos.getX() + 5; ++x) {
+            for (float y = playerPos.getY() - 3; y <= playerPos.getY(); ++y) {
+                for (float z = playerPos.getZ() - 5; z <= playerPos.getZ() + 5; ++z) {
                     if (!PlayerUtils.isReplaceable(new BlockPos(x, y, z))) {
                         BlockPos blockPos = new BlockPos(x, y, z);
                         Block block = mc.theWorld.getBlockState(blockPos).getBlock();
@@ -138,7 +138,7 @@ public class PlayerUtils implements Imports {
         }
 
         if (!positions.isEmpty()) {
-            positions.sort(Comparator.comparingDouble(DistanceUtils::getDistance));
+            positions.sort(Comparator.comparingDouble(pos -> mc.thePlayer.getDistanceSq(pos.xCoord, pos.yCoord, pos.zCoord)));
             return hashMap.get(positions.getFirst());
         }
 
