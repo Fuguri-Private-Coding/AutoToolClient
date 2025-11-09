@@ -40,10 +40,11 @@ public class Scaffold extends Module {
     DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
     DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
 
-    BooleanSupplier tellyVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge");
-    BooleanSupplier godVisible = () -> rotMode.getMode().equalsIgnoreCase("GodBridge");
-    BooleanSupplier tellyGodVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("GodBridge");
-    BooleanSupplier tellyNormalVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("Normal");
+    BooleanSupplier tellyVisible = () -> rotMode.is("TellyBridge");
+    BooleanSupplier godVisible = () -> rotMode.is("GodBridge");
+    BooleanSupplier godNormalVisible = () -> rotMode.is("GodBridge") || rotMode.is("Normal");
+    BooleanSupplier tellyGodVisible = () -> rotMode.is("TellyBridge") || rotMode.is("GodBridge");
+    BooleanSupplier tellyNormalVisible = () -> rotMode.is("TellyBridge") || rotMode.is("Normal");
 
     BooleanSupplier tellyGodNormalVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("GodBridge") || rotMode.getMode().equalsIgnoreCase("Normal");
 
@@ -82,10 +83,10 @@ public class Scaffold extends Module {
 
     final CheckBox sameY = new CheckBox("SameY", this, true);
 
-    MultiMode sneakIf = new MultiMode("SneakIf", this, godVisible)
+    MultiMode sneakIf = new MultiMode("SneakIf", this, godNormalVisible)
         .addModes("Clutching", "Rotate", "Zero Blocks", "Ninja Bridge");
 
-    final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, () -> godVisible.getAsBoolean() && sneakIf.get("Ninja Bridge"), 0f,0.1f,0.05f, 0.01f);
+    final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, () -> godNormalVisible.getAsBoolean() && sneakIf.get("Ninja Bridge"), 0f,0.1f,0.05f, 0.01f);
 
     final CheckBox render = new CheckBox("Render", this, true);
     final ColorSetting color = new ColorSetting("Color", this);
@@ -169,7 +170,7 @@ public class Scaffold extends Module {
             MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
 
             switch (rotMode.getMode()) {
-                case "GodBridge" -> {
+                case "GodBridge", "Normal" -> {
                     if (sneakIf.get("Rotate") && lastDelta > 5) {
                         if (isClutch() && !sneakIf.get("Clutching")) {
                             return;
@@ -239,7 +240,7 @@ public class Scaffold extends Module {
 
         if (mouseOver.sideHit == mouse.sideHit &&
             mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
-            && isSameY(mouse)
+            && isSameY(mouseOver)
             && targetBlock.equals(mouseOver.getBlockPos())
             && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
 
@@ -326,8 +327,6 @@ public class Scaffold extends Module {
         return mouse.sideHit != EnumFacing.DOWN;
     }
 
-
-
     boolean isTelly() {
         if (MoveUtils.isMoving()) {
             if (mc.gameSettings.keyBindJump.isKeyDown()) return mc.thePlayer.onGround || Player.airTicks < (speedTelly.isToggled() ? 0 : airTicks.getRandomizedIntValue());
@@ -389,9 +388,7 @@ public class Scaffold extends Module {
         }
 
         dataList.sort(Comparator.comparingDouble(data -> {
-            float pitchDiff = Math.abs(Rot.getServerRotation().getPitch()) - data.rotation().getPitch();
-
-            return pitchDiff;
+            return Math.abs(Rot.getServerRotation().getPitch()) - data.rotation().getPitch();
         }));
 
         RotationData rotationData = dataList.getFirst();
