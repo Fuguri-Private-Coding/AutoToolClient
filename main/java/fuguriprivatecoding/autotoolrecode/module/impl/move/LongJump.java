@@ -16,7 +16,7 @@ import net.minecraft.util.Vec3;
 
 @ModuleInfo(name = "LongJump",category = Category.MOVE)
 public class LongJump extends Module {
-
+//
 //
 //    int stage = 0;
 //    boolean bool0 = false;
@@ -62,15 +62,7 @@ public class LongJump extends Module {
 //                if(!bool2) stage++;
 //                if(bool0) {
 //                    mc.thePlayer.motionY = (0.42);
-//                    double strafe = 2.7100000;
-//                            if(MoveUtils.getSpeedNew() > 0.4) strafe = 3.7000;
-//                            if(MoveUtils.getSpeedNew() > 0.5) strafe = 4.6200;
-//                            if(MoveUtils.getSpeedNew() > 0.55) strafe = 4.9000;
-//                            if(MoveUtils.getSpeedNew() > 0.6) strafe = 5.3000;
-//                            if(MoveUtils.getSpeedNew() > 0.65) strafe = 5.8100;
-//                            if(MoveUtils.getSpeedNew() > 0.8) strafe = 6.8000;
-//                            if(MoveUtils.getSpeedNew() > 0.9) strafe = 7.8000;
-//                            if(MoveUtils.getSpeedNew() > 1.0) strafe = 8.8000;
+//                    double strafe = getStrafe();
 //                    MoveUtils.strafe2(strafe);
 //                    this.setToggled(false);
 //                }
@@ -87,5 +79,18 @@ public class LongJump extends Module {
 //                bool0 = true;
 //            }
 //        }
+//    }
+//
+//    private static double getStrafe() {
+//        double strafe = 2.7100000;
+//        if(MoveUtils.getSpeedNew() > 0.4) strafe = 3.7000;
+//        if(MoveUtils.getSpeedNew() > 0.5) strafe = 4.6200;
+//        if(MoveUtils.getSpeedNew() > 0.55) strafe = 4.9000;
+//        if(MoveUtils.getSpeedNew() > 0.6) strafe = 5.3000;
+//        if(MoveUtils.getSpeedNew() > 0.65) strafe = 5.8100;
+//        if(MoveUtils.getSpeedNew() > 0.8) strafe = 6.8000;
+//        if(MoveUtils.getSpeedNew() > 0.9) strafe = 7.8000;
+//        if(MoveUtils.getSpeedNew() > 1.0) strafe = 8.8000;
+//        return strafe;
 //    }
 }

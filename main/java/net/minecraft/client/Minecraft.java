@@ -1755,20 +1755,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
         this.loadingScreen.displaySavingString(I18n.format("menu.loadingLevel"));
 
-        while (!this.theIntegratedServer.serverIsInRunLoop()) {
-            String s = this.theIntegratedServer.getUserMessage();
-
-            if (s != null) {
-                this.loadingScreen.displayLoadingString(I18n.format(s));
-            } else {
-                this.loadingScreen.displayLoadingString("");
-            }
-
-            try {
-                Thread.sleep(200L);
-            } catch (InterruptedException _) {}
-        }
-
         this.displayGuiScreen(null);
         SocketAddress socketaddress = this.theIntegratedServer.getNetworkSystem().addLocalEndpoint();
         NetworkManager networkmanager = NetworkManager.provideLocalClient(socketaddress);
@@ -1803,10 +1789,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         this.renderViewEntity = null;
         this.myNetworkManager = null;
 
-        if (this.loadingScreen != null) {
-            this.loadingScreen.resetProgressAndMessage(loadingMessage);
-            this.loadingScreen.displayLoadingString("");
-        }
+//        if (this.loadingScreen != null) {
+//            this.loadingScreen.resetProgressAndMessage(loadingMessage);
+//            this.loadingScreen.displayLoadingString("");
+//        }
 
         if (worldClientIn == null && this.theWorld != null) {
             this.mcResourcePackRepository.clearResourcePack();
