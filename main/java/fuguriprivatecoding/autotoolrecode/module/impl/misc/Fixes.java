@@ -36,7 +36,7 @@ public class Fixes extends Module {
                 }
             }
 
-            if (fixes.get("JumpDelay") && !Modules.getModule(Scaffold.class).isToggled()) {
+            if (fixes.get("JumpDelay")) {
                 mc.thePlayer.jumpTicks = 0;
             }
         }

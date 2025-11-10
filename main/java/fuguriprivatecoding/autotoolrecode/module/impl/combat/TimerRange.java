@@ -59,14 +59,16 @@ public class TimerRange extends Module {
             mc.timer.renderPartialTicks = partialTicks.getValue();
         }
 
-        if (teleporting) return;
-
-        if (event instanceof TickEvent e) {
-            if (target.hurtTime == 0 && click && balance > 0) {
+        if (event instanceof LegitClickTimingEvent) {
+            if (click) {
                 mc.clickMouse();
                 click = false;
             }
+        }
 
+        if (teleporting) return;
+
+        if (event instanceof TickEvent e) {
             if (balance > 0) {
                 e.cancel();
                 balance--;
@@ -111,9 +113,6 @@ public class TimerRange extends Module {
                     if (i == teleportTicks - 1) {
                         click = true;
                         balance += additionalTicks.getValue();
-                    }
-                    if (RayCastUtils.rayCast(3, 0, Rot.getServerRotation()).typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
-                        break;
                     }
                 } catch (Exception ignored) {}
             }
