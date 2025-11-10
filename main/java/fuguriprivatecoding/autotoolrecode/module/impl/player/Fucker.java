@@ -7,12 +7,12 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -29,6 +29,7 @@ import java.awt.*;
 public class Fucker extends Module {
 
     FloatSetting breakDistance = new FloatSetting("BreakDistance", this, 1f,6f,4.5f,0.1f);
+    DoubleSlider destroyDelayTicks = new DoubleSlider("DestroyDelayTicks", this, 0,5,5,1f);
 
     CheckBox whiteListOwnBed = new CheckBox("WhiteListOwnBed", this);
 
@@ -179,7 +180,7 @@ public class Fucker extends Module {
     private void reset() {
         if (bedPos != null) mc.theWorld.sendBlockBreakProgress(mc.thePlayer.getEntityId(), bedPos, -1);
         breakTicks = 0;
-        delayTicks = 5;
+        delayTicks = destroyDelayTicks.getRandomizedIntValue();
         bedPos = null;
     }
 

@@ -33,7 +33,9 @@ public class Player implements Imports, EventListener {
         if (!mc.thePlayer.onGround) {
             airTicks++;
             groundTicks = 0;
-        } else {
+        }
+
+        if (mc.thePlayer.onGround) {
             groundTicks++;
             airTicks = 0;
         }
