@@ -123,6 +123,10 @@ public class KillAura extends Module {
                     needRotation = RotUtils.getPossibleBestRotation(needRotation, box.expand(0.1f,0.1f,0.1f));
                 }
 
+                if ((TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled()) {
+                    needRotation = getRotation(target, lr, box);
+                }
+
                 Rot delta = RotUtils.getDelta(lr, needRotation);
 
                 Rot speed = new Rot(
@@ -215,20 +219,22 @@ public class KillAura extends Module {
     }
 
     private EntityLivingBase findNewTarget() {
-        EntityLivingBase target;
         List<EntityLivingBase> entityList = new ArrayList<>();
 
         for (Entity entity : mc.theWorld.loadedEntityList) {
-            if (entity == mc.thePlayer || DistanceUtils.getDistance(entity) > findDistance.getValue()) continue;
-            switch (entity) {
-                case EntityPlayer entityPlayer when targets.get("Players") && !entityPlayer.isFriend() && !entityPlayer.isTeam() -> entityList.add(entityPlayer);
-                case EntityMob entityMob when targets.get("Mobs") -> entityList.add(entityMob);
-                case EntityAnimal entityAnimal when targets.get("Animals") -> entityList.add(entityAnimal);
-                case EntityVillager entityVillager when targets.get("Villagers") -> entityList.add(entityVillager);
+            if (entity != mc.thePlayer && DistanceUtils.getDistance(entity) < findDistance.getValue()) {
+                switch (entity) {
+                    case EntityPlayer entityPlayer when targets.get("Players") && !entityPlayer.isFriend() && !entityPlayer.isTeam() -> entityList.add(entityPlayer);
+                    case EntityMob entityMob when targets.get("Mobs") -> entityList.add(entityMob);
+                    case EntityAnimal entityAnimal when targets.get("Animals") -> entityList.add(entityAnimal);
+                    case EntityVillager entityVillager when targets.get("Villagers") -> entityList.add(entityVillager);
 
-                default -> {}
+                    default -> {}
+                }
             }
         }
+
+        entityList.removeIf(ent -> DistanceUtils.getDistance(ent) > findDistance.getValue());
 
         switch (sortType.getMode()) {
             case "Distance" -> entityList.sort(Comparator.comparingDouble(DistanceUtils::getDistance));
@@ -236,10 +242,6 @@ public class KillAura extends Module {
             case "HurtTime" -> entityList.sort(Comparator.comparingDouble(ent -> ent.hurtTime));
         }
 
-        target = entityList.getFirst();
-
-        if (DistanceUtils.getDistance(target) > findDistance.getValue()) target = null;
-
-        return target;
+        return entityList.getFirst();
     }
 }

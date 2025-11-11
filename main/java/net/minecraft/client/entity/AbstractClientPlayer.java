@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.LookEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCape;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomSkin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.ImageBufferDownload;
@@ -80,6 +81,13 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     }
 
     public ResourceLocation getLocationSkin() {
+        CustomSkin customSkin = Modules.getModule(CustomSkin.class);
+
+        if (customSkin.isToggled()) {
+            ResourceLocation skin = customSkin.getSkin();
+            if (skin != null) return skin;
+        }
+
         NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
         return networkplayerinfo == null ? DefaultPlayerSkin.getDefaultSkin(this.getUniqueID()) : networkplayerinfo.getLocationSkin();
     }

@@ -48,6 +48,11 @@ public class AntiFireball extends Module {
     public EntityFireball target;
 
     @Override
+    public void onDisable() {
+        target = null;
+    }
+
+    @Override
     public void onEvent(Event event) {
         if (mc.thePlayer.ticksExisted < 40 || (Modules.getModule(Scaffold.class).isToggled() && rotate.isToggled()))
             return;

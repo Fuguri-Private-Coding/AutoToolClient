@@ -44,7 +44,13 @@ public class Speed extends Module {
                 if (Modules.getModule(Scaffold.class).isToggled() || TargetStorage.getTarget() != null) return;
 
                 if (event instanceof TickEvent) {
-                    float yaw = mc.thePlayer.onGround ? MoveUtils.getDir() : MoveUtils.getDir() + 45;
+                    float yaw = MoveUtils.getDir();
+
+                    if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown()) {
+                        yaw += 45;
+                    } else if (mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.onGround){
+                        yaw += 45;
+                    }
 
                     Rot rotation = new Rot(MathHelper.wrapDegree(yaw), mc.thePlayer.rotationPitch);
 

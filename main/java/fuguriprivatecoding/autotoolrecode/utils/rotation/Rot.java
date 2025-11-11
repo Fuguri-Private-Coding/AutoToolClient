@@ -92,7 +92,7 @@ public class Rot {
 		delta = RotUtils.fixDelta(delta);
 		return new Rot(
 				serverRotation.getYaw() + delta.getYaw(),
-				serverRotation.getPitch() + delta.getPitch()
+				Math.clamp(serverRotation.getPitch() + delta.getPitch(), -90, 90)
 		);
 	}
 }

@@ -202,6 +202,10 @@ public abstract class Entity implements ICommandSender
         }
     }
 
+    public Rot getRotations() {
+        return new Rot(rotationYaw, rotationPitch);
+    }
+
     public void setDead()
     {
         this.isDead = true;

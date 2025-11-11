@@ -448,8 +448,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private void updateFovModifierHand() {
         float f = 1.0F;
 
-        if (this.mc.getRenderViewEntity() instanceof AbstractClientPlayer) {
-            AbstractClientPlayer abstractclientplayer = (AbstractClientPlayer) this.mc.getRenderViewEntity();
+        if (this.mc.getRenderViewEntity() instanceof AbstractClientPlayer abstractclientplayer) {
             f = abstractclientplayer.getFovModifier();
         }
 
@@ -1105,7 +1104,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.bindTexture(0);
 
                     GlStateManager.pushMatrix();
-                    new Render2DEvent(new ScaledResolution(mc), k1, l1).call();
+                    Render2DEvent.INST.setSc(scaledresolution);
+                    Render2DEvent.INST.setMouseX(k1);
+                    Render2DEvent.INST.setMouseY(l1);
+                    Render2DEvent.INST.call();
                     GlStateManager.popMatrix();
 
                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1581,7 +1583,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Reflector.callVoid(Reflector.ForgeHooksClient_dispatchRenderLast, renderglobal, partialTicks);
         }
 
-        new Render3DEvent().call();
+        Render3DEvent.INST.call();
 
         this.mc.mcProfiler.endStartSection("hand");
 

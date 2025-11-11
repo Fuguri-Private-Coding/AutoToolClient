@@ -54,7 +54,7 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     }
 
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        if (entity instanceof EntityPlayer && Modules.getModule(NameTags.class).isToggled()) {
+        if (Modules.getModule(NameTags.class).isToggled()) {
             return;
         }
         this.renderName(entity, x, y, z);

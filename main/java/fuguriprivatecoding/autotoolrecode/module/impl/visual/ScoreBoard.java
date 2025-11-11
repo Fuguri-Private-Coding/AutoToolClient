@@ -94,7 +94,7 @@ public class ScoreBoard extends Module {
                     if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE));
 
                     RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), color.getFadedColor());
-                    RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, color.getFadedColor());
+                    RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, roundFactor.getValue(), roundFactor.getValue(),0, color.getFadedColor());
 
                     StencilUtils.setUpTexture(pos.x, pos.y, finalWidth, height, roundFactor.getValue());
                     StencilUtils.writeTexture();

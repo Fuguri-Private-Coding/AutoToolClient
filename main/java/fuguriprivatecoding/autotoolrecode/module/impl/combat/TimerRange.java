@@ -75,7 +75,7 @@ public class TimerRange extends Module {
                 return;
             }
 
-            AxisAlignedBB box = RotUtils.getHitBox(target, 0, 80);
+            AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100).expand(0.1f, 0.1f, 0.1f);
 
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, RotUtils.getBestRotation(box).getYaw());
 
@@ -93,7 +93,7 @@ public class TimerRange extends Module {
 
                 AxisAlignedBB targetBox = getFixedCashedBB(target, newPos, position);
 
-                boolean skipTickDistance = DistanceUtils.getDistance(simulatedPlayer, targetBox) > minDistanceToSkipTick.getValue();
+                boolean skipTickDistance = DistanceUtils.getDistance(simulatedPlayer, targetBox.expand(0.1f, 0.1f, 0.1f)) > minDistanceToSkipTick.getValue();
 
                 if (skipTickDistance) {
                     simulatedPlayer.tick();

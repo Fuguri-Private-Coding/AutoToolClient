@@ -68,7 +68,6 @@ public class Phase extends Module {
                     mc.thePlayer.motionY = mc.gameSettings.keyBindJump.isKeyDown() ? ySpeed : (mc.gameSettings.keyBindSneak.isKeyDown() ? -ySpeed : 0.0);
                 }
                 if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox()).isEmpty() && speedInBlock.getValue() > 0) {
-                    mc.thePlayer.motionY = 0.0;
                     double forward = mc.thePlayer.movementInput.moveForward;
                     double strafe = mc.thePlayer.movementInput.moveStrafe;
                     float yaw = mc.thePlayer.rotationYaw;

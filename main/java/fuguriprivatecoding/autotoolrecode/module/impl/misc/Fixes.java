@@ -40,8 +40,5 @@ public class Fixes extends Module {
                 mc.thePlayer.jumpTicks = 0;
             }
         }
-        if (event instanceof WorldChangeEvent && fixes.get("Memory")) {
-            System.gc();
-        }
     }
 }
