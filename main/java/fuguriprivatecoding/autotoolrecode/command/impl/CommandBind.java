@@ -6,9 +6,9 @@ import org.lwjgl.input.Keyboard;
 import fuguriprivatecoding.autotoolrecode.command.Command;
 
 public class CommandBind extends Command {
-	public CommandBind() {
-		super("Bind", "/bind clear/<module> <key>", "b", "bind");
-	}
+    public CommandBind() {
+        super("Bind", "/bind clear/<module> <key>", "b", "bind");
+    }
 
 	@Override
 	public void execute(String[] args) {
