@@ -56,6 +56,11 @@ public class Colors extends Color {
         this.color = new Color(rgb);
     }
 
+    public Colors(Color color) {
+        super(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        this.color = color;
+    }
+
     public Colors(int rgba, boolean hasalpha) {
         super(rgba, hasalpha);
         this.color = new Color(rgba, hasalpha);

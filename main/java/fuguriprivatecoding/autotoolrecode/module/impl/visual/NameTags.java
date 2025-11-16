@@ -36,8 +36,7 @@ public class NameTags extends Module {
 
     FloatSetting radius = new FloatSetting("Radius", this, 0,10,0,0.1f);
 
-    public final ColorSetting textColor = new ColorSetting("TextColor", this);
-    public final ColorSetting color = new ColorSetting("BackgroundColor", this);
+    public final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this);
     public final CheckBox textShadow = new CheckBox("TextShadow", this);
 
     final CheckBox glow = new CheckBox("Glow", this);
@@ -101,9 +100,9 @@ public class NameTags extends Module {
         float backgroundWidth = nameWidth + 5;
         float backgroundHeight = fontRenderer.FONT_HEIGHT + 4;
 
-        RoundedUtils.drawRect(backgroundX, backgroundY, backgroundWidth, backgroundHeight, radius.getValue(), color.getFadedColor());
+        RoundedUtils.drawRect(backgroundX, backgroundY, backgroundWidth, backgroundHeight, radius.getValue(), backgroundColor.getFadedColor());
 
-        fontRenderer.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 5 + textYOffset.getValue(), textColor.getColor(), textColor.getFadeColor(), textColor.getOffset(), textColor.getSpeed(), textShadow.isToggled());
+        fontRenderer.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 5 + textYOffset.getValue(), Color.white, textShadow.isToggled());
 
         if (glow.isToggled()) {
             BloomRealUtils.addToDraw(() -> RoundedUtils.drawRect(backgroundX, backgroundY, backgroundWidth, backgroundHeight, radius.getValue(), glowColor.getFadedColor()));

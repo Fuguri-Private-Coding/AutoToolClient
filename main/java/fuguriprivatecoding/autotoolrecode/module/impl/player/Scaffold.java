@@ -396,10 +396,6 @@ public class Scaffold extends Module {
             return lastPitch;
         }
 
-        dataList.sort(Comparator.comparingDouble(data -> {
-            return Math.abs(Rot.getServerRotation().getPitch()) - data.rotation().getPitch();
-        }));
-
         RotationData rotationData = dataList.getFirst();
 
         if (handleMouse) {

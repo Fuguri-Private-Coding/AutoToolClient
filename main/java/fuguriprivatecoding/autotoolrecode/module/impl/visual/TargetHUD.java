@@ -42,18 +42,18 @@ public class TargetHUD extends Module {
 
     FloatSetting yOffset = new FloatSetting("Y-Offset", this, follow::isToggled, -2, 2, 0, 0.1f);
 
-    IntegerSetting xPos = new IntegerSetting("X-Pos", this, () -> !follow.isToggled(), 0, 100, 0);
-    IntegerSetting yPos = new IntegerSetting("Y-Pos", this, () -> !follow.isToggled(), 0, 100, 0);
+    IntegerSetting xPos = new IntegerSetting("XPos", this, () -> !follow.isToggled(), 0, 100, 0);
+    IntegerSetting yPos = new IntegerSetting("YPos", this, () -> !follow.isToggled(), 0, 100, 0);
 
-    public final ColorSetting textColor = new ColorSetting("Text Color", this, () -> render.get("Name"));
-    public final ColorSetting bgColor = new ColorSetting("Background Color", this, () -> render.get("Background"));
+    public final ColorSetting textColor = new ColorSetting("TextColor", this, () -> render.get("Name"));
+    public final ColorSetting bgColor = new ColorSetting("BackgroundColor", this, () -> render.get("Background"));
 
-    public final CheckBox textShadow = new CheckBox("Text Shadow", this, () -> render.get("Name"));
-    FloatSetting bgRadius = new FloatSetting("Background Radius", this, 0f, 20f, 10f, 0.1f);
+    public final CheckBox textShadow = new CheckBox("TextShadow", this, () -> render.get("Name"));
+    FloatSetting bgRadius = new FloatSetting("BackgroundRadius", this, 0f, 20f, 10f, 0.1f);
 
-    public final ColorSetting healthColor = new ColorSetting("Health Color", this, () -> render.get("Health"));
+    public final ColorSetting healthColor = new ColorSetting("HealthColor", this, () -> render.get("Health"));
 
-    FloatSetting headRadius = new FloatSetting("Head Radius", this, () -> render.get("Head"), 0f, 15f, 7.5f, 0.1f);
+    FloatSetting headRadius = new FloatSetting("HeadRadius", this, () -> render.get("Head"), 0f, 15f, 7.5f, 0.1f);
 
     private final FloatSetting scale = new FloatSetting("Scale", this, 0.5f, 3f, 1.5f, 0.05f);
 
@@ -131,7 +131,7 @@ public class TargetHUD extends Module {
         StencilUtils.setUpTexture(posX, posY, width, height, radius);
 
         StencilUtils.writeTexture();
-        if (render.get("Name")) font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, textColor.getColor(), textColor.getFadeColor(), textColor.getOffset(), textColor.getSpeed(), textShadow.isToggled());
+        if (render.get("Name")) font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, textColor.getFadedColor(), textShadow.isToggled());
 
         if (render.get("Health")) {
             float maxHealth = target.getMaxHealth();

@@ -34,15 +34,14 @@ public class ScoreBoard extends Module {
 
     BooleanSupplier visible = () -> !remove.isToggled();
 
-    public IntegerSetting posX = new IntegerSetting("Pos-X", this, visible, 0,100,0);
-    public IntegerSetting posY = new IntegerSetting("Pos-Y", this, visible, 0,100,0);
+    public IntegerSetting posX = new IntegerSetting("PosX", this, visible, 0,100,0);
+    public IntegerSetting posY = new IntegerSetting("PosY", this, visible, 0,100,0);
 
     public FloatSetting scale = new FloatSetting("Scale", this, 0.1f, 2f, 1f, 0.1f);
 
     CheckBox roundedRect = new CheckBox("Rounded", this, visible);
-    public FloatSetting roundFactor = new FloatSetting("Round Factor", this, () -> visible.getAsBoolean() && roundedRect.isToggled(),0, 10, 5, 0.1f);
+    public FloatSetting roundFactor = new FloatSetting("RoundFactor", this, () -> visible.getAsBoolean() && roundedRect.isToggled(),0, 10, 5, 0.1f);
 
-    public final ColorSetting textColor = new ColorSetting("TextColor", this);
     public CheckBox textShadow = new CheckBox("TextShadow", this, visible);
 
     public final ColorSetting color = new ColorSetting("Color", this);
@@ -52,7 +51,7 @@ public class ScoreBoard extends Module {
 
     BooleanSupplier shadow = () -> glow.isToggled();
 
-    public final ColorSetting colorShadow = new ColorSetting("Shadow Color", this, shadow);
+    public final ColorSetting colorShadow = new ColorSetting("GlowColor", this, shadow);
 
     public ScoreBoard() {
         Fonts.fonts.forEach((fontName, _) -> fonts.addMode(fontName));
@@ -101,7 +100,7 @@ public class ScoreBoard extends Module {
                     StencilUtils.setUpTexture(pos.x, pos.y, finalWidth, height, roundFactor.getValue());
                     StencilUtils.writeTexture();
 
-                    fontRenderer.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - fontRenderer.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f + 2, textColor, textShadow.isToggled());
+                    fontRenderer.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - fontRenderer.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f + 2, Color.WHITE, textShadow.isToggled());
                     StencilUtils.endWriteTexture();
                 } else {
                     if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, 0, colorShadow.getFadedColor()));
@@ -110,7 +109,7 @@ public class ScoreBoard extends Module {
                     RoundedUtils.drawRect(pos.x, pos.y, width, height, 0, color.getFadedColor());
                     RoundedUtils.drawRect(pos.x, pos.y, width, 12, 0, color.getFadedColor());
 
-                    fontRenderer.drawString(objective.getDisplayName(), (int) ((pos.x + width / 2f) - fontRenderer.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f + 2, textColor, textShadow.isToggled());
+                    fontRenderer.drawString(objective.getDisplayName(), (int) ((pos.x + width / 2f) - fontRenderer.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f + 2, Color.WHITE, textShadow.isToggled());
                 }
                 int j = 0;
 
@@ -118,7 +117,7 @@ public class ScoreBoard extends Module {
                     ++j;
                     ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score1.getPlayerName());
                     String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score1.getPlayerName());
-                    fontRenderer.drawString(s1, pos.x + 3.0F, pos.y + height - (9 * j) + 2, textColor, textShadow.isToggled());
+                    fontRenderer.drawString(s1, pos.x + 3.0F, pos.y + height - (9 * j) + 2, Color.WHITE, textShadow.isToggled());
                 }
             }
             GL11.glPopMatrix();

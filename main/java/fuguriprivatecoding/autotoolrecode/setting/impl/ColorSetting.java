@@ -25,22 +25,6 @@ public class ColorSetting extends Setting {
     private Vector4f targetRadius = new Vector4f(1, 5, 5, 1);
     private final float animationSpeed = 0.15f;
 
-    public ColorSetting(String name, SettingAble parent, float red, float green, float blue, float alpha) {
-        super(name, parent);
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
-        this.fadeRed = red;
-        this.fadeGreen = green;
-        this.fadeBlue = blue;
-        this.fadeAlpha = alpha;
-        this.offset = 0.5f;
-        this.speed = 1.0f;
-        this.fade = false;
-        this.hide = false;
-    }
-
     public ColorSetting(String name, SettingAble parent, BooleanSupplier visible) {
         super(name, parent, visible);
         this.red = 1;
@@ -51,7 +35,7 @@ public class ColorSetting extends Setting {
         this.fadeGreen = 1;
         this.fadeBlue = 1;
         this.fadeAlpha = 1;
-        this.offset = 0.5f;
+        this.offset = 1f;
         this.speed = 1.0f;
         this.fade = false;
         this.hide = false;
@@ -67,57 +51,41 @@ public class ColorSetting extends Setting {
         this.fadeGreen = 1;
         this.fadeBlue = 1;
         this.fadeAlpha = 1;
-        this.offset = 0.5f;
+        this.offset = 1f;
         this.speed = 1.0f;
         this.fade = false;
         this.hide = false;
     }
 
-    public ColorSetting(String name, SettingAble parent, BooleanSupplier visible, float red, float green, float blue, float alpha) {
-        super(name, parent, visible);
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
-        this.fadeRed = red;
-        this.fadeGreen = green;
-        this.fadeBlue = blue;
-        this.fadeAlpha = alpha;
-        this.offset = 0.5f;
-        this.speed = 1.0f;
-        this.fade = false;
-        this.hide = false;
-    }
-
-    public ColorSetting(String name, SettingAble parent, float red, float green, float blue, float alpha, float fadeRed, float fadeGreen, float fadeBlue, float fadeAlpha, float offset, float speed, boolean fade) {
+    public ColorSetting(String name, SettingAble parent, Color color, Color fadeColor) {
         super(name, parent);
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
-        this.fadeRed = fadeRed;
-        this.fadeGreen = fadeGreen;
-        this.fadeBlue = fadeBlue;
-        this.fadeAlpha = fadeAlpha;
-        this.offset = offset;
-        this.speed = speed;
-        this.fade = fade;
+        this.red = color.getRed() / 255f;
+        this.green = color.getGreen() / 255f;
+        this.blue = color.getBlue() / 255f;
+        this.alpha = color.getAlpha() / 255f;
+        this.fadeRed = fadeColor.getRed() / 255f;
+        this.fadeGreen = fadeColor.getGreen() / 255f;
+        this.fadeBlue = fadeColor.getBlue() / 255f;
+        this.fadeAlpha = fadeColor.getAlpha() / 255f;
+        this.offset = 1f;
+        this.speed = 1.0f;
+        this.fade = false;
         this.hide = false;
     }
 
-    public ColorSetting(String name, SettingAble parent, BooleanSupplier visible, float red, float green, float blue, float alpha, float fadeRed, float fadeGreen, float fadeBlue, float fadeAlpha, float offset, float speed, boolean fade) {
+    public ColorSetting(String name, SettingAble parent, BooleanSupplier visible, Color color, Color fadeColor) {
         super(name, parent, visible);
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
-        this.fadeRed = fadeRed;
-        this.fadeGreen = fadeGreen;
-        this.fadeBlue = fadeBlue;
-        this.fadeAlpha = fadeAlpha;
-        this.offset = offset;
-        this.speed = speed;
-        this.fade = fade;
+        this.red = color.getRed() / 255f;
+        this.green = color.getGreen() / 255f;
+        this.blue = color.getBlue() / 255f;
+        this.alpha = color.getAlpha() / 255f;
+        this.fadeRed = fadeColor.getRed() / 255f;
+        this.fadeGreen = fadeColor.getGreen() / 255f;
+        this.fadeBlue = fadeColor.getBlue() / 255f;
+        this.fadeAlpha = fadeColor.getAlpha() / 255f;
+        this.offset = 1f;
+        this.speed = 1.0f;
+        this.fade = false;
         this.hide = false;
     }
 

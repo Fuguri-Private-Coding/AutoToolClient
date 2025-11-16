@@ -191,40 +191,27 @@ public class ClientFontRenderer implements Imports {
         return bufferedImage;
     }
 
-    public float drawString(String text, double x, double y, ColorSetting color, boolean shadow) {
-        return drawString(text, x, y, color.getColor(), color.getFadeColor(), color.getOffset(), color.getSpeed(), shadow);
-    }
-
-    public float drawString(String text, double x, double y, Color color1, Color color2, float offset, float speed, boolean shadow) {
-        return drawString(text, x, y, color1.getRGB(), color2.getRGB(), offset, speed, shadow);
-    }
-
     public float drawString(String text, double x, double y, Color color) {
-        return drawString(text, x, y, color.getRGB(), color.getRGB(), 0, 0, false);
+        return drawString(text, x, y, color.getRGB(), false);
     }
 
     public float drawCenteredString(String text, double x, double y, Color color) {
-        return drawString(text, x - getStringWidth(text) / 2f, y, color.getRGB(), color.getRGB(), 0, 0, false);
+        return drawString(text, x - getStringWidth(text) / 2f, y, color.getRGB(), true);
     }
 
     public float drawString(String text, double x, double y, Color color, boolean shadow) {
-        return drawString(text, x, y, color.getRGB(), color.getRGB(), 0, 0, shadow);
+        return drawString(text, x, y, color.getRGB(), shadow);
     }
 
-    public float drawString(String text, double x, double y, int color, int color2, float offset, float speed, boolean shadow) {
+    public float drawString(String text, double x, double y, int color, boolean shadow) {
         if (text == null) {
             return 0.0f;
-        }
-
-        if (Modules.getModule(NameProtect.class).isToggled()) {
-            text = text.replaceAll(mc.getSession().getUsername(), Client.INST.getProfile().getUsername());
         }
 
         x -= 1.0;
 
         CharData[] currentData = this.charData;
-        float alpha1 = (float) (color >> 24 & 255) / 255.0f;
-        float alpha2 = (float) (color2 >> 24 & 255) / 255.0f;
+        float alpha = (float) (color >> 24 & 255) / 255.0f;
         x *= 2.0 * fontScaleOffset;
         y = (y - 3.0) * 2.0 * fontScaleOffset;
 
@@ -234,8 +221,8 @@ public class ClientFontRenderer implements Imports {
         GL14.glBlendEquation(GL14.GL_FUNC_ADD);
 
         GlStateManager.color((float) (color >> 16 & 255) / 255.0f,
-                (float) (color >> 8 & 255) / 255.0f,
-                (float) (color & 255) / 255.0f, alpha1);
+            (float) (color >> 8 & 255) / 255.0f,
+            (float) (color & 255) / 255.0f, alpha);
 
         int size = text.length();
         GlStateManager.enableTexture2D();
@@ -250,6 +237,7 @@ public class ClientFontRenderer implements Imports {
         for (int i = 0; i < size; i++) {
             char character = text.charAt(i);
 
+
             if (character == '\n') {
                 x = startX;
                 y += FONT_HEIGHT * 4;
@@ -262,32 +250,27 @@ public class ClientFontRenderer implements Imports {
                     if (colorIndex >= 0 && colorIndex <= 15) {
                         int colorcode = this.colorCode[colorIndex + (shadow ? 16 : 0)];
                         GlStateManager.color((float) (colorcode >> 16 & 255) / 255.0f,
-                                (float) (colorcode >> 8 & 255) / 255.0f,
-                                (float) (colorcode & 255) / 255.0f, alpha1);
+                            (float) (colorcode >> 8 & 255) / 255.0f,
+                            (float) (colorcode & 255) / 255.0f, alpha);
 
                         GlStateManager.bindTexture(this.tex.getGlTextureId());
                         currentData = this.charData;
                     } else if (colorIndex == 20) {
                         GlStateManager.color((float) (color >> 16 & 255) / 255.0f,
-                                (float) (color >> 8 & 255) / 255.0f,
-                                (float) (color & 255) / 255.0f, alpha1);
+                            (float) (color >> 8 & 255) / 255.0f,
+                            (float) (color & 255) / 255.0f, alpha);
                         GlStateManager.bindTexture(this.tex.getGlTextureId());
                         currentData = this.charData;
                     }
                 }
             } else if (character < currentData.length && currentData[character] != null) {
                 if (shadow) {
-                    ColorUtils.glColor(Color.BLACK);
+                    GlStateManager.color(0, 0, 0, alpha);
                     this.drawChar(currentData, character, (float) x + 1.5f, (float) y + 1.5f);
+                    GlStateManager.color((float) (color >> 16 & 255) / 255.0f,
+                        (float) (color >> 8 & 255) / 255.0f,
+                        (float) (color & 255) / 255.0f, alpha);
                 }
-
-                Color co1 = new Color(color);
-                Color co2 = new Color(color2);
-
-                Color colorOne = new Color(co1.getRed() / 255f, co1.getGreen() / 255f, co1.getBlue() / 255f, alpha1);
-                Color colorTwo = new Color(co2.getRed() / 255f, co2.getGreen() / 255f, co2.getBlue() / 255f, alpha2);
-
-                ColorUtils.glColor(ColorUtils.mixColor(colorOne, colorTwo, i, offset, speed));
 
                 this.drawChar(currentData, character, (float) x, (float) y);
 
@@ -299,7 +282,6 @@ public class ClientFontRenderer implements Imports {
         GL11.glPopMatrix();
         GlStateManager.enableBlend();
         GlStateManager.color(1f, 1f, 1f, 1f);
-        ColorUtils.resetColor();
 
         return (float) x / 2.0f;
     }

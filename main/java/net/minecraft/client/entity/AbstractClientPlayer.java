@@ -83,13 +83,15 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     ResourceLocation skin;
 
     public ResourceLocation getLocationSkin() {
-        CustomSkin customSkin = Modules.getModule(CustomSkin.class);
-        if (!customSkin.selectedSkin.equalsIgnoreCase(customSkin.skinMode.getMode())) {
-            skin = customSkin.getSkin();
-        }
+        if (this instanceof EntityPlayerSP) {
+            CustomSkin customSkin = Modules.getModule(CustomSkin.class);
+            if (!customSkin.selectedSkin.equalsIgnoreCase(customSkin.skinMode.getMode())) {
+                skin = customSkin.getSkin();
+            }
 
-        if (customSkin.isToggled() && skin != null) {
-            return skin;
+            if (customSkin.isToggled() && skin != null) {
+                return skin;
+            }
         }
 
         NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
