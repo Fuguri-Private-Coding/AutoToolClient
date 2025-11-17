@@ -6,7 +6,6 @@ import fuguriprivatecoding.autotoolrecode.handle.Player;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.RotationData;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
@@ -395,6 +394,10 @@ public class Scaffold extends Module {
         if (dataList.isEmpty()) {
             return lastPitch;
         }
+
+        dataList.sort(Comparator.comparingDouble(data -> {
+            return Math.abs(Rot.getServerRotation().getPitch()) - data.rotation().getPitch();
+        }));
 
         RotationData rotationData = dataList.getFirst();
 
