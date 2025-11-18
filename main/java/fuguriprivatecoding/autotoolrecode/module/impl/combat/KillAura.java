@@ -145,8 +145,6 @@ public class KillAura extends Module {
                 }
 
                 if (smoothMode.get("Linear")) {
-                    if ((TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled()) return;
-
                     delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
                     delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
                 }

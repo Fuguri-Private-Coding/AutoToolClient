@@ -17,8 +17,7 @@ public class Fixes extends Module {
     MultiMode fixes = new MultiMode("Fixes", this)
             .add("ClickDelay", true)
             .add("SaveMoveKeys", true)
-            .add("JumpDelay", true)
-            .add("Memory", true);
+            .add("JumpDelay", true);
 
     boolean wasInGui = false;
 

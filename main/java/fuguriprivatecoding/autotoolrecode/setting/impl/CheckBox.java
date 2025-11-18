@@ -2,11 +2,16 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import imgui.ImGui;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
+import java.awt.*;
 import java.util.function.BooleanSupplier;
 
 @Getter
@@ -38,13 +43,46 @@ public class CheckBox extends Setting {
 		this.toggled = toggled;
 	}
 
+//    @Override
+//    public void render() {
+//        ImGui.pushID(hashCode());
+//        if (ImGui.checkbox(getName(), toggled)) {
+//            toggled = !toggled;
+//        }
+//        ImGui.popID();
+//    }
+
+
     @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        if (ImGui.checkbox(getName(), toggled)) {
-            toggled = !toggled;
-        }
-        ImGui.popID();
+    public float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha) {
+        float offset = 0;
+
+        float nameWidth = (float) font.getStringWidth(getName());
+
+        toggleAnimation.update(4f, Easing.OUT_CUBIC);
+        toggleAnimation.setEnd(toggled);
+
+        font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
+
+        RoundedUtils.drawRect(x + nameWidth, y, 40, 10, 5, Colors.BLACK.withAlphaClamp(alpha));
+        RoundedUtils.drawRect(x + nameWidth, y, 40 * toggleAnimation.getValue(), 10, 5, elementColor);
+        RoundedUtils.drawRect(x + nameWidth + (35 * toggleAnimation.getValue()), y, 10, 10, 5, Color.WHITE);
+        offset += 15;
+
+        return offset;
+    }
+
+    @Override
+    public void mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+        float nameWidth = (float) font.getStringWidth(getName());
+        boolean hovered = GuiUtils.isHovered(mouseX, mouseY, x + nameWidth, y, 40, 10);
+
+        if (hovered && key == 0) toggled = !toggled;
+    }
+
+    @Override
+    public void keyTyped(int key) {
+
     }
 
     @Override

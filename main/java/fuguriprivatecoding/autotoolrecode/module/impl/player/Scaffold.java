@@ -122,7 +122,6 @@ public class Scaffold extends Module {
     BlockPos targetBlock;
 
     double lastDelta = 0;
-    float lastPitch = 80;
 
     int blocksLeft;
 
@@ -206,15 +205,7 @@ public class Scaffold extends Module {
 
         if (event instanceof MotionEvent e) {
             e.setYaw(Rot.getServerRotation().getYaw());
-
-            switch (rotMode.getMode()) {
-                case "TellyBridge" -> {
-                    if (speedTelly.isToggled()) mc.thePlayer.jumpTicks = 0;
-                    e.setPitch(Rot.getServerRotation().getPitch());
-                }
-
-                default -> e.setPitch(Rot.getServerRotation().getPitch());
-            }
+            e.setPitch(Rot.getServerRotation().getPitch());
         }
 
         if (event instanceof JumpEvent e) {
@@ -392,18 +383,16 @@ public class Scaffold extends Module {
         }
 
         if (dataList.isEmpty()) {
-            return lastPitch;
+            return lastRotation.getPitch();
         }
 
-        dataList.sort(Comparator.comparingDouble(data -> {
-            return Math.abs(Rot.getServerRotation().getPitch()) - data.rotation().getPitch();
-        }));
+        dataList.sort(Comparator.comparingDouble(data -> Math.abs(Rot.getServerRotation().getPitch()) - data.rotation().getPitch()));
 
         RotationData rotationData = dataList.getFirst();
 
         if (handleMouse) {
             mouse = rotationData.mouse();
-            lastPitch = rotationData.rotation().getPitch();
+            lastRotation = rotationData.rotation();
         }
 
         return rotationData.rotation().getPitch();

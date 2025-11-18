@@ -41,7 +41,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
 
     ClickGui clickGui = Modules.getModule(ClickGui.class);
     ClientSettings clientSettings = Modules.getModule(ClientSettings.class);
-    private final TextButton textField;
+    public final TextButton textField;
 
     Vector2f pos, size, lastMouse, lastSize, lastPos;
     boolean moving, closing, creatingConfig;

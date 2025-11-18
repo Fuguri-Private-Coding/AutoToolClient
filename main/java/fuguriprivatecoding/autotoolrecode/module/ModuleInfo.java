@@ -15,5 +15,5 @@ public @interface ModuleInfo {
 	int key() default 0;
 	boolean toggled() default false;
 	boolean hide() default false;
-	String description() default "";
+	String description() default "Отсутствует описание.";
 }

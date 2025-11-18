@@ -3,8 +3,10 @@ package fuguriprivatecoding.autotoolrecode.setting;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import lombok.Getter;
 
+import java.awt.*;
 import java.util.function.BooleanSupplier;
 
 public abstract class Setting implements ISetting {
@@ -26,8 +28,10 @@ public abstract class Setting implements ISetting {
 		parent.addSetting(this);
 	}
 
-    public void render() {}
-    
+    public abstract float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha);
+    public abstract void mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font);
+    public abstract void keyTyped(int key);
+
 	@Override
 	public String getName() {
 		return name;

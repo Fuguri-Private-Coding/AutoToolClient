@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.module.impl.player;
+package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
@@ -10,11 +10,11 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
-@ModuleInfo(name = "AirStuck", category = Category.PLAYER, description = "Позволяет вам зависнуть в воздухе.")
+@ModuleInfo(name = "AirStuck", category = Category.MOVE, description = "Позволяет вам зависнуть в воздухе.")
 public class AirStuck extends Module {
 
     Mode mode = new Mode("Mode", this)
-            .addModes("Default")
+            .addModes("Default", "Tick")
             .setMode("Default");
 
     @Override
@@ -37,5 +37,9 @@ public class AirStuck extends Module {
                 }
             }
         }
+//
+//        if (mode.is("Tick") && event instanceof TickEvent e) {
+//            e.cancel();
+//        }
     }
 }

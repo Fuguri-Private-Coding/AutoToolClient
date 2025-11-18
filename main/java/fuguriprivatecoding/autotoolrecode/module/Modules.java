@@ -7,7 +7,6 @@ import fuguriprivatecoding.autotoolrecode.module.impl.move.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.exploit.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.legit.*;
@@ -38,7 +37,6 @@ public class Modules {
 			new CustomItemPos(),
 			new Hitbox(),
             new Blur(),
-            new TEZD(),
             new Dot(),
             new FastPlace(),
             new NameProtect(),
@@ -64,7 +62,7 @@ public class Modules {
 			new ChestESP(),
 			new DiscordRPC(),
 			new Phase(),
-			new NoGuiClose(),
+			new NoScreenClose(),
 			new AirStuck(),
 			new VClip(),
 			new NoSlow(),

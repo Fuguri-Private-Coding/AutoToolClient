@@ -982,12 +982,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     }
 
     public int getLimitFramerate() {
-        if (!Display.isActive()) {
-            return 50;
-        }
-        if (currentScreen != null) {
-            return 150;
-        }
+        if (!Display.isActive()) return 30;
+        if (currentScreen != null) return 144;
         return gameSettings.limitFramerate;
     }
 

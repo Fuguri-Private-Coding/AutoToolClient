@@ -45,7 +45,10 @@ import static java.lang.Math.*;
 public class ClickScreen extends GuiScreen implements EventListener {
 
 	int delay = 10;
-	boolean resizing, moving, binding, closing;
+	boolean resizing, moving, closing;
+
+    public boolean binding;
+
 	boolean showConsoleAfterClose, showConfigAfterClose;
 	int settingsScroll, settingsTotalHeight, modulesScroll, modulesTotalHeight;
 
@@ -58,7 +61,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 	Color MAIN_COLOR = new Color(255, 255, 209, 255);
 	final Color CATEGORY_COLOR = new Color(255, 255, 255, 255);
 
-	KeyBind activeKeyBind;
+	public KeyBind activeKeyBind;
 	Category selectedCategory = Category.COMBAT;
 	Module selectedModule = null;
 	Category clickedCategory;

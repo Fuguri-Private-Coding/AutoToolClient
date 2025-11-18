@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.module.impl.exploit;
+package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 
-@ModuleInfo(name = "Disabler", category = Category.EXPLOIT, description = "Позволяет ослаблять/отключать античит.")
+@ModuleInfo(name = "Disabler", category = Category.PLAYER, description = "Позволяет ослаблять/отключать античит.")
 public class Disabler extends Module {
 
 	CheckBox breaking = new CheckBox("Breaking", this, false);

@@ -3,11 +3,14 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import org.lwjgl.input.Keyboard;
 
+import java.awt.*;
 import java.util.function.BooleanSupplier;
 
 @Getter
@@ -28,27 +31,51 @@ public class KeyBind extends Setting {
         this.key = key;
     }
 
-    @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        ImGui.text(getName());
-        ImGui.sameLine();
-        String keyName = Keyboard.getKeyName(key);
-        if (keyName == null) keyName = "UNKNOWN";
+//    @Override
+//    public void render() {
+//        ImGui.pushID(hashCode());
+//        ImGui.text(getName());
+//        ImGui.sameLine();
+//        String keyName = Keyboard.getKeyName(key);
+//        if (keyName == null) keyName = "UNKNOWN";
+//
+//        if (listeningForKey) {
+//            ImGui.text("[Press a key]"); // Индикатор ожидания
+//            for (int i = 0; i < Keyboard.KEYBOARD_SIZE; i++) {
+//                if (ImGui.isKeyPressed(i)) {
+//                    key = i;
+//                    listeningForKey = false;
+//                    break;
+//                }
+//            }
+//        } else if (ImGui.button(keyName)) {
+//            listeningForKey = true;
+//        }
+//        ImGui.popID();
+//    }
 
-        if (listeningForKey) {
-            ImGui.text("[Press a key]"); // Индикатор ожидания
-            for (int i = 0; i < Keyboard.KEYBOARD_SIZE; i++) {
-                if (ImGui.isKeyPressed(i)) {
-                    key = i;
-                    listeningForKey = false;
-                    break;
-                }
-            }
-        } else if (ImGui.button(keyName)) {
-            listeningForKey = true;
-        }
-        ImGui.popID();
+
+    @Override
+    public float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha) {
+        float offset = 0;
+        float nameWidth = (float) font.getStringWidth(getName());
+
+        font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
+        font.drawString(Keyboard.getKeyName(key), x + nameWidth, y, Colors.WHITE.withAlphaClamp(alpha));
+
+        offset += 15;
+
+        return offset;
+    }
+
+    @Override
+    public void mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+
+    }
+
+    @Override
+    public void keyTyped(int key) {
+
     }
 
     @Override

@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.module.impl.exploit;
+package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import net.minecraft.network.play.client.C03PacketPlayer;
 
-@ModuleInfo(name = "Regen", category = Category.EXPLOIT)
+@ModuleInfo(name = "Regen", category = Category.PLAYER)
 public class Regen extends Module {
 
     public final IntegerSetting health = new IntegerSetting("Health", this, 0, 20, 20);

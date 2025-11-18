@@ -13,12 +13,11 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
 
-@ModuleInfo(name = "NoGuiClose", category = Category.MISC, description = "ЗАПРЕТ НА ЗАКРЫТИЕ ОКОН.")
-public class NoGuiClose extends Module {
+@ModuleInfo(name = "NoScreenClose", category = Category.MISC, description = "ЗАПРЕТ НА ЗАКРЫТИЕ ОКОН.")
+public class NoScreenClose extends Module {
 
     MultiMode modes = new MultiMode("Modes", this)
-            .addModes("ClickGui", "ConfigGui", "ConsoleGui", "ChatGui")
-            ;
+        .addModes("ClickScreen", "ConfigScreen", "ConsoleScreen", "GuiChat");
 
     @Override
     public void onEvent(Event event) {
@@ -30,22 +29,12 @@ public class NoGuiClose extends Module {
     }
 
     private boolean guiClosed(GuiScreen currentScreen) {
-        switch (currentScreen) {
-            case ClickScreen _ when modes.get("ClickGui") -> {
-                return true;
-            }
-            case ConfigScreen _ when modes.get("ConfigGui") -> {
-                return true;
-            }
-            case ConsoleScreen _ when modes.get("ConsoleGui") -> {
-                return true;
-            }
-            case GuiChat _ when modes.get("ChatGui") -> {
-                return true;
-            }
-
-            default -> {}
-        }
-        return false;
+        return switch (currentScreen) {
+            case ClickScreen _ -> modes.get("ClickScreen");
+            case ConfigScreen _ -> modes.get("ConfigScreen");
+            case ConsoleScreen _ -> modes.get("ConsoleScreen");
+            case GuiChat _ -> modes.get("GuiChat");
+            default -> false;
+        };
     }
 }

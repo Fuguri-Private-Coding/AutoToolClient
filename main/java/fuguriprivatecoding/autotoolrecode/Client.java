@@ -91,6 +91,7 @@ public enum Client implements Imports, EventListener {
 
         AltScreen.init();
         ClickScreen.init();
+        ClickGuiScreenNew.init();
         ConsoleScreen.init();
 		ConfigScreen.init();
         MainScreen.init();
