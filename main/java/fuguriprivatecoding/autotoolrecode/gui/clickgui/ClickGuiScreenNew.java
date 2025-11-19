@@ -16,6 +16,8 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
@@ -74,8 +76,8 @@ public class ClickGuiScreenNew extends GuiScreen {
         Colors rectColor = Colors.BLACK.withAlphaClamp(openAnim.getValue());
         Colors elementColor = new Colors(clickGui.color.getFadedColor()).withAlphaClamp(openAnim.getValue());
         Colors elementTextColor = Colors.WHITE.withAlphaClamp(openAnim.getValue());
-//        Colors elementColor = Colors.CORAL.withAlphaClamp(openAnim.getValue());
         Colors elementGrayColor = new Colors(15,15,15,255).withAlphaClamp(openAnim.getValue());
+        Colors elementGlowColor = new Colors(clickGui.colorShadow.getFadedColor()).withAlphaClamp(openAnim.getValue());
 
         ClientFontRenderer font = Fonts.fonts.get("SFPro");
 
@@ -99,6 +101,15 @@ public class ClickGuiScreenNew extends GuiScreen {
 
         RoundedUtils.drawRect(x + 100, y, width - 100, height, 0, 0, 10, 10, rectColor);
         RoundedUtils.drawRect(x, y, 100, height, 10, 10, 0, 0, rectColor.withAlpha(0.5f));
+
+        BloomRealUtils.addToDraw(() -> {
+            RenderUtils.drawMixedRoundedRect(x + 100, y, width - 100, height, 10f * 1.7f, elementGlowColor, elementGrayColor.withAlpha(0), 90, 180, 270, 90, 5f);
+            RoundedUtils.drawRect(x + 1, y + 1, 100 - 2, height - 2, 8, 8, 0, 0, elementGlowColor);
+        });
+
+        GaussianBlurUtils.addToDraw(() -> {
+            RoundedUtils.drawRect(x, y, 100, height, 10, 10, 0, 0, rectColor);
+        });
 
         GL11.glPushMatrix();
         GL11.glScaled(1.5,1.5,0);
@@ -125,25 +136,25 @@ public class ClickGuiScreenNew extends GuiScreen {
             categoryOffset += 17.5f;
         }
 
-        ClientFontRenderer settingsFont = Fonts.fonts.get("SFProRegular");
-        if (selectedModule != null) {
-            float settingsOffset = 0;
-            for (Setting setting : selectedModule.getSettings()) {
-                EasingAnimation visibleAnim = setting.getVisibleAnim();
-                visibleAnim.update(4f, Easing.OUT_CUBIC);
-                visibleAnim.setEnd(setting.isVisible());
-
-                if (visibleAnim.getValue() <= 0) continue;
-
-                float settingX = x + 100 + 5;
-                float settingY = y + 5 + settingsOffset;
-
-                settingsOffset += setting.draw(settingX, settingY, settingsFont, elementColor,openSettingsAnim.getValue() * openAnim.getValue()) * visibleAnim.getValue();
-            }
-        }
+//        ClientFontRenderer settingsFont = Fonts.fonts.get("SFProRegular");
+//        if (selectedModule != null) {
+//            float settingsOffset = 0;
+//            for (Setting setting : selectedModule.getSettings()) {
+//                EasingAnimation visibleAnim = setting.getVisibleAnim();
+//                visibleAnim.update(4f, Easing.OUT_CUBIC);
+//                visibleAnim.setEnd(setting.isVisible());
+//
+//                if (visibleAnim.getValue() <= 0) continue;
+//
+//                float settingX = x + 100 + 5;
+//                float settingY = y + 5 + settingsOffset;
+//
+//                settingsOffset += setting.draw(settingX, settingY, settingsFont, elementColor,openSettingsAnim.getValue() * openAnim.getValue()) * visibleAnim.getValue();
+//            }
+//        }
 
         if (selectedCategory != null) {
-            StencilUtils.setUpTexture(x + 100, y, width - 100, height, 5f);
+            StencilUtils.setUpTexture(x + 100 + 2, y + 2, width - 100 - 4, height - 4, 7.5f);
             StencilUtils.writeTexture();
 
             moduleScrollTotalHeight = 0;
@@ -154,14 +165,12 @@ public class ClickGuiScreenNew extends GuiScreen {
                 toggleAnim.setEnd(module.isToggled());
 
                 Colors moduleNameColor = new Colors(clickGui.color.getMixedColor(Modules.getModulesByCategory(selectedCategory).indexOf(module))).withAlphaClamp(openAnim.getValue());
-
                 Colors moduleColor = new Colors(ColorUtils.interpolateColor(elementGrayColor, moduleNameColor, toggleAnim.getValue()));
-                Colors moduleTextColor = new Colors(ColorUtils.interpolateColor(moduleNameColor, elementGrayColor, toggleAnim.getValue()));
-                Colors moduleTextDescColor = new Colors(ColorUtils.interpolateColor(elementTextColor, elementGrayColor, toggleAnim.getValue()));
 
-                RoundedUtils.drawRect(x + 100 + 5, y + 5 + moduleOffset, width - 100 - 10, 25, 7.5f, moduleColor);
-                font.drawString(module.getName(), x + 100 + 5 + 5, y + 5 + 5 + moduleOffset, moduleTextColor);
-                catFonts.drawString(module.getDescription(), x + 100 + 5 + 5, y + 5 + 15 + moduleOffset, moduleTextDescColor);
+                RenderUtils.drawRoundedOutLineRectangle(x + 100 + 5, y + 5 + moduleOffset, width - 100 - 10, 25, 7.5f * 1.7f, elementGrayColor.withAlpha(toggleAnim.getValue()).getRGB(), moduleColor.getRGB(), moduleColor.getRGB());
+                font.drawString(module.getName(), x + 100 + 5 + 5, y + 5 + 5 + moduleOffset, moduleNameColor);
+                catFonts.drawString(module.getDescription(), x + 100 + 5 + 5, y + 5 + 15 + moduleOffset, elementTextColor);
+
                 moduleOffset += 30;
                 moduleScrollTotalHeight += 30;
             }
@@ -188,19 +197,22 @@ public class ClickGuiScreenNew extends GuiScreen {
         }
 
         if (selectedCategory != null) {
-            float moduleOffset = moduleScroll.getScrollAnim().getValue();
-            for (Module module : Modules.getModulesByCategory(selectedCategory)) {
-                boolean hovered = GuiUtils.isHovered(mouseX, mouseY, x + 100 + 5, y + 2.5f + moduleOffset, width - 100 - 10, 27.5f);
+            boolean moduleListHovered = GuiUtils.isHovered(mouseX, mouseY, x + 100, y + 2, width - 100, height - 4);
 
-                if (hovered) {
-                    switch (mouseButton) {
-                        case 0 -> module.toggle();
-                        case 1 -> selectedModule = module;
+            if (moduleListHovered) {
+                float moduleOffset = moduleScroll.getScrollAnim().getValue();
+                for (Module module : Modules.getModulesByCategory(selectedCategory)) {
+                    boolean hovered = GuiUtils.isHovered(mouseX, mouseY, x + 100 + 5, y + 5 + moduleOffset, width - 100 - 10, 25f);
+
+                    if (hovered) {
+                        switch (mouseButton) {
+                            case 0 -> module.toggle();
+                            case 1 -> selectedModule = module;
+                        }
                     }
+                    moduleOffset += 30;
                 }
-                moduleOffset += 30;
             }
-
         }
 
         super.mouseClicked(mouseX, mouseY, mouseButton);
