@@ -20,6 +20,9 @@ public class AutoTool extends Module {
 
     boolean flag;
 
+    boolean switchSlot;
+    boolean switchBack;
+
     StopWatch switchTimer = new StopWatch();
     StopWatch backSwitchTimer = new StopWatch();
 

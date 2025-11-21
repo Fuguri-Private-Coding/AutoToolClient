@@ -19,9 +19,11 @@ import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 

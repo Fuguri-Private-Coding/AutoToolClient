@@ -116,8 +116,6 @@ public class Scaffold extends Module {
 
     double lastDelta = 0;
 
-    int blocksLeft;
-
     @Override
     public void onDisable() {
         resetValues();
@@ -221,7 +219,6 @@ public class Scaffold extends Module {
     }
 
     private void resetValues() {
-        blocksLeft = 0;
         mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
 
         targetBlock = null;
@@ -244,8 +241,6 @@ public class Scaffold extends Module {
             if (!removeSwing.get("On Server")) {
                 mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
             }
-
-            blocksLeft++;
         }
     }
 
