@@ -2,26 +2,21 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
-import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
-import fuguriprivatecoding.autotoolrecode.utils.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import java.awt.*;
 import java.util.function.BooleanSupplier;
@@ -59,23 +54,19 @@ public class TimerRange extends Module {
             mc.timer.renderPartialTicks = partialTicks.getValue();
         }
 
-        if (event instanceof LegitClickTimingEvent) {
-            if (click) {
-                mc.clickMouse();
-                click = false;
-            }
+        if (event instanceof LegitClickTimingEvent && click) {
+            mc.clickMouse();
+            click = false;
         }
 
-        if (teleporting) return;
-
-        if (event instanceof TickEvent e) {
+        if (event instanceof TickEvent e && !teleporting) {
             if (balance > 0) {
                 e.cancel();
                 balance--;
                 return;
             }
 
-            AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100).expand(0.1f, 0.1f, 0.1f);
+            AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100);
 
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, RotUtils.getBestRotation(box).getYaw());
 
@@ -83,7 +74,6 @@ public class TimerRange extends Module {
             targetPos = new Vec3(target.newPosX, target.newPosY, target.newPosZ);
             posRotIncrement = target.newPosRotationIncrements;
 
-            click = false;
             teleportTicks = 0;
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 updateCashedIncrementPos();
@@ -93,7 +83,7 @@ public class TimerRange extends Module {
 
                 AxisAlignedBB targetBox = getFixedCashedBB(target, newPos, position);
 
-                boolean skipTickDistance = DistanceUtils.getDistance(simulatedPlayer, targetBox.expand(0.1f, 0.1f, 0.1f)) > minDistanceToSkipTick.getValue();
+                boolean skipTickDistance = DistanceUtils.getDistance(simulatedPlayer, targetBox) > 3.0D;
 
                 if (skipTickDistance) {
                     simulatedPlayer.tick();

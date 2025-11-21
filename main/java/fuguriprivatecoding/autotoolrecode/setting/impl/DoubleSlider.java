@@ -6,9 +6,12 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.awt.*;
 import java.util.function.BooleanSupplier;
 
 @Getter
@@ -73,24 +76,39 @@ public class DoubleSlider extends Setting {
         return RandomUtils.nextDouble(minValue, maxValue);
     }
 
+//    @Override
+//    public void render() {
+//        ImGui.pushID(hashCode());
+//        float[] minV = new float[] { (float) minValue };
+//        float[] maxV = new float[] { (float) maxValue };
+//
+//        if (ImGui.collapsingHeader(getName())) {
+//            ImGui.indent();
+//            if (ImGui.sliderFloat("Min", minV, (float) min, (float) max)) {
+//                setMinValue(minV[0]);
+//            }
+//            if (ImGui.sliderFloat("Max", maxV, (float) min, (float) max)) {
+//                setMaxValue(maxV[0]);
+//            }
+//            ImGui.unindent();
+//        }
+//
+//        ImGui.popID();
+//    }
+
     @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        float[] minV = new float[] { (float) minValue };
-        float[] maxV = new float[] { (float) maxValue };
+    public float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha) {
+        return 0;
+    }
 
-        if (ImGui.collapsingHeader(getName())) {
-            ImGui.indent();
-            if (ImGui.sliderFloat("Min", minV, (float) min, (float) max)) {
-                setMinValue(minV[0]);
-            }
-            if (ImGui.sliderFloat("Max", maxV, (float) min, (float) max)) {
-                setMaxValue(maxV[0]);
-            }
-            ImGui.unindent();
-        }
+    @Override
+    public void mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
 
-        ImGui.popID();
+    }
+
+    @Override
+    public void keyTyped(int key) {
+
     }
 
     @Override

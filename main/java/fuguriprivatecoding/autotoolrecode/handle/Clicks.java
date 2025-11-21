@@ -4,7 +4,6 @@ import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.combat.TimerRange;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import lombok.Getter;
@@ -65,7 +64,7 @@ public class Clicks implements Imports, EventListener {
         if (target == null) { return true; }
         if (target.hurtTime <= startRandomizedHurtTime) { return true; }
         if (!clickSettings.isToggled()) return true;
-        return mc.thePlayer.hurtTime >= endRandomizeHurtTime || (TimerRange.teleporting || TimerRange.balance > 0);
+        return mc.thePlayer.hurtTime >= endRandomizeHurtTime;
     }
 
     public static void addClick() { clicks++; }

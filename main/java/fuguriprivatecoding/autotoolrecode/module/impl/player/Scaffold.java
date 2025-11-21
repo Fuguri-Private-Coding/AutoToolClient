@@ -43,10 +43,7 @@ public class Scaffold extends Module {
     BooleanSupplier tellyVisible = () -> rotMode.is("TellyBridge");
     BooleanSupplier godVisible = () -> rotMode.is("GodBridge");
     BooleanSupplier godNormalVisible = () -> rotMode.is("GodBridge") || rotMode.is("Normal");
-    BooleanSupplier tellyGodVisible = () -> rotMode.is("TellyBridge") || rotMode.is("GodBridge");
     BooleanSupplier tellyNormalVisible = () -> rotMode.is("TellyBridge") || rotMode.is("Normal");
-
-    BooleanSupplier tellyGodNormalVisible = () -> rotMode.getMode().equalsIgnoreCase("TellyBridge") || rotMode.getMode().equalsIgnoreCase("GodBridge") || rotMode.getMode().equalsIgnoreCase("Normal");
 
     DoubleSlider yawClutchSpeed = new DoubleSlider("YawClutchSpeed", this, godVisible, 0,180,90,1);
     DoubleSlider pitchClutchSpeed = new DoubleSlider("PitchClutchSpeed", this, godVisible, 0,180,90,1);
@@ -64,8 +61,6 @@ public class Scaffold extends Module {
         .setMode("Custom");
 
     DoubleSlider forwardTellyPitch = new DoubleSlider("ForwardTellyPitch", this, () -> forwardTellyPitchMode.is("Custom") && tellyVisible.getAsBoolean(), -90, 90, 60, 1);
-
-    IntegerSetting sortingDistanceStrength = new IntegerSetting("SortingDistanceStrength", this, tellyGodNormalVisible, 0,100,0);
 
     MultiMode removeSwing = new MultiMode("RemoveSwing", this)
         .addModes("On Client", "On Server")
@@ -114,8 +109,6 @@ public class Scaffold extends Module {
             Blocks.wall_banner, Blocks.deadbush, Blocks.slime_block, Blocks.acacia_fence_gate, Blocks.birch_fence_gate, Blocks.dark_oak_fence_gate,
             Blocks.jungle_fence_gate, Blocks.spruce_fence_gate, Blocks.oak_fence_gate
     );
-
-    private MovingObjectPosition mouse;
 
     Rot rotation, lastRotation;
 
@@ -231,14 +224,13 @@ public class Scaffold extends Module {
         blocksLeft = 0;
         mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
 
-        mouse = null;
+        targetBlock = null;
     }
 
     void legitPlace() {
         MovingObjectPosition mouseOver = RayCastUtils.rayCast(6, 4.5f, Rot.getServerRotation());
 
-        if (mouseOver.sideHit == mouse.sideHit &&
-            mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
+        if (mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
             && isSameY(mouseOver)
             && targetBlock.equals(mouseOver.getBlockPos())
             && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
@@ -370,7 +362,7 @@ public class Scaffold extends Module {
         for (float pitch = minPitch; pitch < maxPitch; pitch += step) {
             MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, pitch));
             if (hit != null) {
-                RotationData data = new RotationData(new Rot(yaw, pitch), hit.hitVec, hit);
+                RotationData data = new RotationData(new Rot(yaw, pitch), hit.hitVec);
 
                 if (hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
                     || dataList.contains(data)
@@ -391,7 +383,6 @@ public class Scaffold extends Module {
         RotationData rotationData = dataList.getFirst();
 
         if (handleMouse) {
-            mouse = rotationData.mouse();
             lastRotation = rotationData.rotation();
         }
 
@@ -410,7 +401,7 @@ public class Scaffold extends Module {
 
             MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, pitch));
             if (hit != null) {
-                RotationData data = new RotationData(new Rot(yaw, pitch), hit.hitVec, hit);
+                RotationData data = new RotationData(new Rot(yaw, pitch), hit.hitVec);
 
                 if (hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
                     || hit.sideHit == EnumFacing.DOWN
@@ -429,17 +420,17 @@ public class Scaffold extends Module {
 
         validRotations.sort(Comparator.comparingDouble(data -> {
             double sortYawOffset = sortOffset ? finalOffsetYaw : Rot.getServerRotation().getYaw();
+            double sortDistance = sortOffset ? 0 : DistanceUtils.getDistance(data.hitPos()) * 50;
 
             double yawDiff = MathHelper.wrapDegree(sortYawOffset - data.rotation().getYaw());
             double pitchDiff = Rot.getServerRotation().getPitch() - data.rotation().getPitch();
 
-            return Math.hypot(yawDiff, pitchDiff) + DistanceUtils.getDistance(data.hitPos()) * (sortingDistanceStrength.getValue() * 10);
+            return Math.hypot(yawDiff, pitchDiff) + sortDistance;
         }));
 
         RotationData rotationData = validRotations.getFirst();
 
         lastRotation = rotationData.rotation();
-        mouse = rotationData.mouse();
         return lastRotation;
     }
 

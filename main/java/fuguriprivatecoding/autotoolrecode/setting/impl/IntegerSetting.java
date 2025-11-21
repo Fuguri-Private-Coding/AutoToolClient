@@ -75,7 +75,7 @@ public class IntegerSetting extends Setting {
 
         RoundedUtils.drawRect(x, y, 150, 10, 5, elementColor);
 
-        RoundedUtils.drawRect(x +);
+//        RoundedUtils.drawRect(x +);
 
         offset += 15;
 

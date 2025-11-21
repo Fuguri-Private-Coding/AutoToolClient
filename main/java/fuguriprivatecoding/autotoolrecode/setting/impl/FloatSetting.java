@@ -3,12 +3,14 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 
+import java.awt.*;
 import java.util.function.BooleanSupplier;
 
 @Getter
@@ -52,14 +54,29 @@ public class FloatSetting extends Setting {
         return (animatedValue - min) / (max - min);
     }
 
+//    @Override
+//    public void render() {
+//        ImGui.pushID(hashCode());
+//        float[] v = new float[] {value};
+//        if (ImGui.sliderFloat(getName(), v, min, max)) {
+//            setValue(v[0]);
+//        }
+//        ImGui.popID();
+//    }
+
     @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        float[] v = new float[] {value};
-        if (ImGui.sliderFloat(getName(), v, min, max)) {
-            setValue(v[0]);
-        }
-        ImGui.popID();
+    public float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha) {
+        return 0;
+    }
+
+    @Override
+    public void mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+
+    }
+
+    @Override
+    public void keyTyped(int key) {
+
     }
 
     @Override

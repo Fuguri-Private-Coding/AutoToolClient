@@ -68,7 +68,7 @@ public class ClickGuiWindow extends ImGuiWindow {
 
                     for (Setting setting : feature.getSettings()) {
                         if (setting.isVisible()) {
-                            setting.render();
+//                            setting.render();
                         }
                     }
 
