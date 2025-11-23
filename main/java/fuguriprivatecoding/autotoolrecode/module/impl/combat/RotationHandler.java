@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.move.Speed;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.AntiFireball;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Fucker;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
+import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
@@ -21,8 +22,8 @@ import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 @ModuleInfo(name = "RotationHandler", category = Category.COMBAT, description = "Плавно поворачиватся обратно после изменения ротации.")
 public class RotationHandler extends Module {
 
-    final IntegerSetting yawSpeed = new IntegerSetting("YawSpeed", this, 0, 180, 30);
-    final IntegerSetting pitchSpeed = new IntegerSetting("PitchSpeed", this, 0, 180, 30);
+    final DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 1, 180, 30, 1);
+    final DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 1, 180, 30, 1);
 
     final FloatSetting stopThreshold = new FloatSetting("StopThreshold", this, 1f, 10f, 0.1f, 0.1f) {};
 
@@ -46,8 +47,8 @@ public class RotationHandler extends Module {
                     }
 
                     Rot rotateSpeed = new Rot(
-                        yawSpeed.getValue(),
-                        pitchSpeed.getValue()
+                        yawSpeed.getRandomizedIntValue(),
+                        pitchSpeed.getRandomizedIntValue()
                     );
 
                     RotUtils.limitDelta(delta, rotateSpeed);
