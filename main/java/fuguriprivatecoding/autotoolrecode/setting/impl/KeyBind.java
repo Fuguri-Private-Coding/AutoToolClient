@@ -3,12 +3,9 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
-import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
-import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.util.function.BooleanSupplier;
@@ -57,20 +54,23 @@ public class KeyBind extends Setting {
 
     @Override
     public float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha) {
-        float offset = 0;
-        float nameWidth = (float) font.getStringWidth(getName());
+//        float offset = 0;
+//        float nameWidth = (float) font.getStringWidth(getName());
+//
+//        font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
+//        font.drawString(Keyboard.getKeyName(key), x + nameWidth, y, Colors.WHITE.withAlphaClamp(alpha));
+//
+//        offset += 15;
+//
+//        return offset;
 
-        font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
-        font.drawString(Keyboard.getKeyName(key), x + nameWidth, y, Colors.WHITE.withAlphaClamp(alpha));
-
-        offset += 15;
-
-        return offset;
+        return 0;
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
 
+        return 0;
     }
 
     @Override

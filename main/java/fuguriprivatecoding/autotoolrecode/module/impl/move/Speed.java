@@ -46,9 +46,7 @@ public class Speed extends Module {
                 if (event instanceof TickEvent) {
                     float yaw = MoveUtils.getDir();
 
-                    if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown()) {
-                        yaw += 45;
-                    } else if (mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.onGround){
+                    if (mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.onGround){
                         yaw += 45;
                     }
 

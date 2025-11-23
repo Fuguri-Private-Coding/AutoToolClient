@@ -23,6 +23,8 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
+import org.lwjgl.opengl.GL11;
+
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -185,6 +187,8 @@ public class BackTrack extends Module {
     }
 
     private void renderPlayer(Vec3 pos, Entity target, float rotationYawHead, float partialTicks) {
+        mc.entityRenderer.enableLightmap();
+        RenderHelper.enableStandardItemLighting();
         mc.getRenderManager().doRenderEntity(target, pos.xCoord, pos.yCoord, pos.zCoord, rotationYawHead, partialTicks, true);
         mc.entityRenderer.disableLightmap();
         RenderHelper.disableStandardItemLighting();

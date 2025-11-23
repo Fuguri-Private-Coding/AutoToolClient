@@ -7,7 +7,6 @@ import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
-import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -102,8 +101,9 @@ public class DoubleSlider extends Setting {
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
 
+        return 0;
     }
 
     @Override

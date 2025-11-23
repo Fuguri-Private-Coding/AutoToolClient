@@ -8,9 +8,12 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
@@ -24,29 +27,22 @@ public class ESP extends Module {
     final MultiMode modes = new MultiMode("Modes", this)
         .add("HitBox")
         .add("Glow")
-        //.add("")
         ;
 
     BooleanSupplier renderBox = () -> (modes.get("HitBox"));
 
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
-
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f, 5f, 1f, 0.1f);
-
-    Color fadeColor;
 
     @Override
     public void onEvent(Event event) {
         if (event instanceof Render3DEvent) {
             if (modes.get("HitBox")) {
                 RenderUtils.start3D();
-                GL11.glTranslated(-mc.getRenderManager().viewerPosX, -mc.getRenderManager().viewerPosY, -mc.getRenderManager().viewerPosZ);
+                GL11.glTranslated(-RenderManager.renderPosX, -RenderManager.renderPosY, -RenderManager.renderPosZ);
                 for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
-                    if (playerEntity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) {
+                    if (mc.getRenderManager() == null || (playerEntity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || playerEntity.isDead)
                         continue;
-                    }
-
-                    fadeColor = color.getMixedColor(mc.theWorld.playerEntities.indexOf(playerEntity));
 
                     Vec3 smoothPos = new Vec3(
                         playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * mc.timer.renderPartialTicks,
@@ -56,11 +52,9 @@ public class ESP extends Module {
 
                     Vec3 diff = smoothPos.subtract(playerEntity.getPositionVector());
 
-                    if (!playerEntity.equals(mc.thePlayer)) {
-                        RenderUtils.drawHitBox(playerEntity.getEntityBoundingBox().offset(diff), fadeColor, lineWidth.getValue());
-                    }
+                    RenderUtils.drawHitBox(playerEntity.getEntityBoundingBox().offset(diff), color.getFadedColor(), lineWidth.getValue());
                 }
-                GL11.glTranslated(mc.getRenderManager().viewerPosX, mc.getRenderManager().viewerPosY, mc.getRenderManager().viewerPosZ);
+                GL11.glTranslated(RenderManager.renderPosX, RenderManager.renderPosY, RenderManager.renderPosZ);
                 RenderUtils.stop3D();
             }
 

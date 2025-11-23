@@ -22,12 +22,14 @@ public class MotionBlur extends Module {
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             try {
-                if (mc.entityRenderer.getShaderGroup() == null) mc.entityRenderer.loadShader(new ResourceLocation("minecraft", "shaders/post/motion_blur.json"));
+                if (mc.entityRenderer.getShaderGroup() == null)
+                    mc.entityRenderer.loadShader(new ResourceLocation("minecraft", "shaders/post/motion_blur.json"));
 
                 float uniform = 1f - blurAmount.getValue() / 100f;
 
                 mc.entityRenderer.getShaderGroup().listShaders.getFirst().getShaderManager().getShaderUniform("Phosphor").set(uniform, 0f, 0f);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 }

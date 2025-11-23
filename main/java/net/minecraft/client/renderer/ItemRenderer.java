@@ -318,7 +318,16 @@ public class ItemRenderer {
             if (this.itemToRender != null) {
                 EnumAction enumaction = this.itemToRender.getItemUseAction();
                 Animations animations = Modules.getModule(Animations.class);
-                boolean animate = (f1 > 0 && Animations.isAnimate() && animations.isToggled() && enumaction.equals(EnumAction.BLOCK)) || (animations.isToggled() && animations.always.isToggled() && f1 > 0 && enumaction.equals(EnumAction.BLOCK)) || (animations.isToggled() && abstractclientplayer.getItemInUseCount() > 0 && enumaction.equals(EnumAction.BLOCK));
+                boolean animate = (f1 > 0 && Animations.isAnimate()
+                    && animations.isToggled() &&
+                    enumaction.equals(EnumAction.BLOCK))
+                    || (animations.isToggled() &&
+                    animations.always.isToggled() &&
+                    f1 > 0
+                    && enumaction.equals(EnumAction.BLOCK))
+                    || (animations.isToggled()
+                    && abstractclientplayer.getItemInUseCount() > 0 &&
+                    enumaction.equals(EnumAction.BLOCK));
 
                 if (this.itemToRender.getItem() instanceof ItemMap) {
                     this.renderItemMap(abstractclientplayer, f2, f, f1);

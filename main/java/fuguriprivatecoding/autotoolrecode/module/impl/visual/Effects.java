@@ -27,8 +27,8 @@ public class Effects extends Module {
     CheckBox effect = new CheckBox("Effect", this);
 
     Mode effects = new Mode("Effects", this, effect::isToggled)
-            .addModes("MinecraftLightning")
-            .setMode("MinecraftLightning")
+            .addModes("Lightning")
+            .setMode("Lightning")
             ;
 
     Entity target;
@@ -56,7 +56,7 @@ public class Effects extends Module {
                 if (effect.isToggled()) {
                     if (mc.theWorld.getLoadedEntityList().contains(target)) targetPos = new Vec3(target.posX,target.posY,target.posZ);
                     if (!mc.theWorld.getLoadedEntityList().contains(target)) {
-                        if (effects.getMode().equals("MinecraftLightning")) {
+                        if (effects.getMode().equals("Lightning")) {
                             bolt = new EntityLightningBolt(mc.theWorld, targetPos.xCoord, targetPos.yCoord, targetPos.zCoord);
                             bolt.setEntityId(-777);
                             mc.theWorld.addEntityToWorld(bolt.getEntityId(), bolt);

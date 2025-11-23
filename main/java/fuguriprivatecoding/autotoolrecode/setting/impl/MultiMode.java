@@ -4,14 +4,11 @@ import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
-import imgui.ImGui;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.value.Doubles;
 import lombok.Setter;
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.HashMap;
@@ -45,8 +42,9 @@ public class MultiMode extends Setting {
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
 
+        return 0;
     }
 
     @Override

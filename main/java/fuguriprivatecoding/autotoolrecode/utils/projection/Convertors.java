@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.projection;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
@@ -28,5 +29,9 @@ public class Convertors {
         }
 
         return null;
+    }
+
+    public static float[] convert2D(Vec3 vec, int scaleFactor) {
+        return convert2D((float) vec.xCoord, (float) vec.yCoord, (float) vec.zCoord, scaleFactor);
     }
 }

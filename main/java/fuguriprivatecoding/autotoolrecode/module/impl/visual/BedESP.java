@@ -15,12 +15,8 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtil
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
-import org.lwjgl.opengl.GL11;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +59,9 @@ public class BedESP extends Module {
 
             RenderUtils.start3D();
             for (BlockPos[] bed : beds) {
-                if (glow.isToggled()) BloomRealUtils.addToDraw(() -> renderBed(bed, glowColor.getFadedFloatColor()));
-                if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> renderBed(bed, Color.white));
-                renderBed(bed, color.getFadedFloatColor());
+                if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.renderBed(bed, glowColor.getFadedFloatColor()));
+                if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.renderBed(bed, Color.white));
+                RenderUtils.renderBed(bed, color.getFadedFloatColor());
             }
             RenderUtils.stop3D();
         }
@@ -108,26 +104,5 @@ public class BedESP extends Module {
 
     public boolean isSamePos(BlockPos blockPos, BlockPos blockPos2) {
         return blockPos == blockPos2 || (blockPos.getX() == blockPos2.getX() && blockPos.getY() == blockPos2.getY() && blockPos.getZ() == blockPos2.getZ());
-    }
-
-    private void renderBed(final BlockPos[] blockPos, Color color) {
-        double posX = blockPos[0].getX() - mc.getRenderManager().viewerPosX;
-        double posY = blockPos[0].getY() - mc.getRenderManager().viewerPosY;
-        double posZ = blockPos[0].getZ() - mc.getRenderManager().viewerPosZ;
-        GL11.glDepthMask(false);
-        AxisAlignedBB axisAlignedBB;
-        if (blockPos[0].getX() != blockPos[1].getX()) {
-            if (blockPos[0].getX() > blockPos[1].getX()) {
-                axisAlignedBB = new AxisAlignedBB(posX - 1.0, posY, posZ, posX + 1.0, posY + 0.5625F, posZ + 1.0);
-            } else {
-                axisAlignedBB = new AxisAlignedBB(posX, posY, posZ, posX + 2.0, posY + 0.5625F, posZ + 1.0);
-            }
-        } else if (blockPos[0].getZ() > blockPos[1].getZ()) {
-            axisAlignedBB = new AxisAlignedBB(posX, posY, posZ - 1.0, posX + 1.0, posY + 0.5625F, posZ + 1.0);
-        } else {
-            axisAlignedBB = new AxisAlignedBB(posX, posY, posZ, posX + 1.0, posY + 0.5625F, posZ + 2.0);
-        }
-        RenderUtils.drawBoundingBox(axisAlignedBB, color);
-        GlStateManager.resetColor();
     }
 }

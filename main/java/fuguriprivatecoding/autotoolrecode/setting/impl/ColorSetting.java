@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
-import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
@@ -48,8 +47,9 @@ public class ColorSetting extends Setting {
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
 
+        return 0;
     }
 
     @Override
@@ -67,38 +67,6 @@ public class ColorSetting extends Setting {
         this.fadeGreen = 1;
         this.fadeBlue = 1;
         this.fadeAlpha = 1;
-        this.offset = 1f;
-        this.speed = 1.0f;
-        this.fade = false;
-        this.hide = false;
-    }
-
-    public ColorSetting(String name, SettingAble parent, Color color, Color fadeColor) {
-        super(name, parent);
-        this.red = color.getRed() / 255f;
-        this.green = color.getGreen() / 255f;
-        this.blue = color.getBlue() / 255f;
-        this.alpha = color.getAlpha() / 255f;
-        this.fadeRed = fadeColor.getRed() / 255f;
-        this.fadeGreen = fadeColor.getGreen() / 255f;
-        this.fadeBlue = fadeColor.getBlue() / 255f;
-        this.fadeAlpha = fadeColor.getAlpha() / 255f;
-        this.offset = 1f;
-        this.speed = 1.0f;
-        this.fade = false;
-        this.hide = false;
-    }
-
-    public ColorSetting(String name, SettingAble parent, BooleanSupplier visible, Color color, Color fadeColor) {
-        super(name, parent, visible);
-        this.red = color.getRed() / 255f;
-        this.green = color.getGreen() / 255f;
-        this.blue = color.getBlue() / 255f;
-        this.alpha = color.getAlpha() / 255f;
-        this.fadeRed = fadeColor.getRed() / 255f;
-        this.fadeGreen = fadeColor.getGreen() / 255f;
-        this.fadeBlue = fadeColor.getBlue() / 255f;
-        this.fadeAlpha = fadeColor.getAlpha() / 255f;
         this.offset = 1f;
         this.speed = 1.0f;
         this.fade = false;

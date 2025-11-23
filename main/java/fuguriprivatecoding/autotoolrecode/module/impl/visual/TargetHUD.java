@@ -23,8 +23,10 @@ import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.Vec3;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
 
@@ -94,10 +96,13 @@ public class TargetHUD extends Module {
                 EntityRenderer entityRenderer = mc.entityRenderer;
 
                 entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
-                float[] positions = Convertors.convert2D(
-                    (float) (target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX),
-                    (float) (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY) + target.height / 2f + yOffset.getValue(),
-                    (float) (target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ), mc.gameSettings.guiScale);
+                Vec3 entityPos = new Vec3(
+                    (float) (target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - RenderManager.renderPosX),
+                    (float) (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - RenderManager.renderPosY) + target.height / 2f + yOffset.getValue(),
+                    (float) (target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - RenderManager.renderPosZ)
+                );
+
+                float[] positions = Convertors.convert2D(entityPos, mc.gameSettings.guiScale);
                 entityRenderer.setupOverlayRendering();
 
                 if (positions == null || positions[2] > 1) return;

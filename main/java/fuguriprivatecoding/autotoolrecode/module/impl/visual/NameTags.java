@@ -17,7 +17,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,8 +33,6 @@ public class NameTags extends Module {
 
     FloatSetting yOffset = new FloatSetting("YOffset", this, 0f,5f,1f,0.1f);
     FloatSetting textYOffset = new FloatSetting("TextYOffset", this, -5,5f,0f,0.01f);
-
-    FloatSetting radius = new FloatSetting("Radius", this, 0,10,0,0.1f);
 
     public final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this);
     public final CheckBox textShadow = new CheckBox("TextShadow", this);
@@ -66,18 +64,18 @@ public class NameTags extends Module {
         }
     }
 
-    private String getText(Entity entity) {
-        boolean friend = entity instanceof EntityPlayer ent && midClick.showInName.isToggled() && ent.isFriend();
-        boolean murder = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.murders.contains(ent.getName());
-        boolean detective = entity instanceof EntityPlayer ent && murderDetector.isToggled() && murderDetector.detectives.contains(ent.getName());
-        boolean user = entity instanceof EntityPlayer ent && IRC.usersOnline.get(ent.getName()) != null;
+    private String getText(EntityPlayer ent) {
+        boolean friend = midClick.showInName.isToggled() && ent.isFriend();
+        boolean murder = MurderMystery.isMurder(ent);
+        boolean detective = MurderMystery.isDetective(ent);
+        boolean user = IRC.isClientUser(ent);
 
         String detectiveText = detective ? "§6[Detective]§6 " : "";
         String murderText = murder ? "§4[Murder]§4 " : "";
         String friendText = friend ? "§2[Friend]§a " : "";
-        String userText = user ? IRC.usersOnline.get(entity.getName()).toColoredString() + " " : "";
+        String userText = user ? IRC.usersOnline.get(ent.getName()).toColoredString() + " " : "";
 
-        return detectiveText + murderText + friendText + userText + entity.getDisplayName().getFormattedText();
+        return detectiveText + murderText + friendText + userText + ent.getDisplayName().getFormattedText();
     }
 
     private void renderNameTag(Entity entity, String name, Vec3 pos) {
@@ -100,12 +98,12 @@ public class NameTags extends Module {
         float backgroundWidth = nameWidth + 5;
         float backgroundHeight = fontRenderer.FONT_HEIGHT + 4;
 
-        RoundedUtils.drawRect(backgroundX, backgroundY, backgroundWidth, backgroundHeight, radius.getValue(), backgroundColor.getFadedColor());
+        Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, backgroundColor.getFadedColor().getRGB());
 
         fontRenderer.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 5 + textYOffset.getValue(), Color.white, textShadow.isToggled());
 
         if (glow.isToggled()) {
-            BloomRealUtils.addToDraw(() -> RoundedUtils.drawRect(backgroundX, backgroundY, backgroundWidth, backgroundHeight, radius.getValue(), glowColor.getFadedColor()));
+            BloomRealUtils.addToDraw(() -> Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glowColor.getFadedColor().getRGB()));
         }
 
         glPopMatrix();

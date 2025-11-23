@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,7 +23,7 @@ public class MurderMystery extends Module {
 
     CheckBox debug = new CheckBox("Debug", this);
 
-    public List<String> murders, detectives;
+    public static List<String> murders, detectives;
 
     public MurderMystery() {
         murders = new ArrayList<>();
@@ -57,5 +58,13 @@ public class MurderMystery extends Module {
                 }
             }
         }
+    }
+
+    public static boolean isMurder(EntityPlayer entity) {
+        return Modules.getModule(MurderMystery.class).isToggled() && !murders.isEmpty() && murders.contains(entity.getName());
+    }
+
+    public static boolean isDetective(EntityPlayer entity) {
+        return Modules.getModule(MurderMystery.class).isToggled() && !detectives.isEmpty() && detectives.contains(entity.getName());
     }
 }

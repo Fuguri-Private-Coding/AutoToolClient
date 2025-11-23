@@ -3,15 +3,10 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.util.function.BooleanSupplier;
@@ -68,23 +63,25 @@ public class IntegerSetting extends Setting {
 
     @Override
     public float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha) {
-        float offset = 0;
-        float nameWidth = (float) font.getStringWidth(getName());
-
-        font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
-
-        RoundedUtils.drawRect(x, y, 150, 10, 5, elementColor);
-
-//        RoundedUtils.drawRect(x +);
-
-        offset += 15;
-
-        return offset;
+//        float offset = 0;
+//        float nameWidth = (float) font.getStringWidth(getName());
+//
+//        font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
+//
+//        RoundedUtils.drawRect(x, y, 150, 10, 5, elementColor);
+//
+////        RoundedUtils.drawRect(x +);
+//
+//        offset += 15;
+//
+//        return offset;
+        return 0;
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
 
+        return 0;
     }
 
     @Override

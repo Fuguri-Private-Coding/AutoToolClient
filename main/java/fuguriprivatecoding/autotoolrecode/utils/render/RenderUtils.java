@@ -38,6 +38,27 @@ public class RenderUtils implements Imports {
         GlStateManager.disableBlend();
     }
 
+    public static void renderBed(final BlockPos[] blockPos, Color color) {
+        double posX = blockPos[0].getX() - mc.getRenderManager().viewerPosX;
+        double posY = blockPos[0].getY() - mc.getRenderManager().viewerPosY;
+        double posZ = blockPos[0].getZ() - mc.getRenderManager().viewerPosZ;
+        GL11.glDepthMask(false);
+        AxisAlignedBB axisAlignedBB;
+        if (blockPos[0].getX() != blockPos[1].getX()) {
+            if (blockPos[0].getX() > blockPos[1].getX()) {
+                axisAlignedBB = new AxisAlignedBB(posX - 1.0, posY, posZ, posX + 1.0, posY + 0.5625F, posZ + 1.0);
+            } else {
+                axisAlignedBB = new AxisAlignedBB(posX, posY, posZ, posX + 2.0, posY + 0.5625F, posZ + 1.0);
+            }
+        } else if (blockPos[0].getZ() > blockPos[1].getZ()) {
+            axisAlignedBB = new AxisAlignedBB(posX, posY, posZ - 1.0, posX + 1.0, posY + 0.5625F, posZ + 1.0);
+        } else {
+            axisAlignedBB = new AxisAlignedBB(posX, posY, posZ, posX + 1.0, posY + 0.5625F, posZ + 2.0);
+        }
+        RenderUtils.drawBoundingBox(axisAlignedBB, color);
+        GlStateManager.resetColor();
+    }
+
     public static void drawRoundedOutLineRectangle(float x, float y, float width, float height, float radius, Color bgColor, Color outLineColor1, Color outLineColor2) {
         drawRoundedGradientOutlinedRectangle(x,y,x + width,y + height, radius, bgColor.getRGB(), outLineColor1.getRGB(), outLineColor2.getRGB());
     }

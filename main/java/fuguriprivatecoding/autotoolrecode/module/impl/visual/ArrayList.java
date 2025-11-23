@@ -41,7 +41,7 @@ public class ArrayList extends Module {
 
     CheckBox background = new CheckBox("Background", this);
     ColorSetting backgroundColor = new ColorSetting("BgsColor", this, background::isToggled);
-    IntegerSetting verticalSpacing = new IntegerSetting("VerticalSpacing", this, background::isToggled, 1,25,0);
+    IntegerSetting verticalSpacing = new IntegerSetting("VerticalSpacing", this, 1,25,0);
     IntegerSetting horizontalSpacing = new IntegerSetting("HorizontalSpacing", this, background::isToggled, -10,10,0);
 
     CheckBox glow = new CheckBox("Glow", this, false);

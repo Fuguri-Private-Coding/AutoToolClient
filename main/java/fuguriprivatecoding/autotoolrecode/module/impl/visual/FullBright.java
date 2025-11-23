@@ -36,7 +36,7 @@ public class FullBright extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            if (mode.getMode().equals("NightVision") && !mc.thePlayer.isPotionActive(Potion.nightVision)) {
+            if (mode.is("NightVision") && !mc.thePlayer.isPotionActive(Potion.nightVision)) {
                 mc.thePlayer.addPotionEffect(new PotionEffect(Potion.nightVision.id, Integer.MAX_VALUE, 255, false, false));
             }
         }

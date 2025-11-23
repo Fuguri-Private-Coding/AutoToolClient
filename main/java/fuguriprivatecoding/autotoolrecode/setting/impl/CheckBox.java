@@ -55,29 +55,28 @@ public class CheckBox extends Setting {
 
     @Override
     public float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha) {
-        float offset = 0;
-
-        float nameWidth = (float) font.getStringWidth(getName());
+        float nameWidth = (float) font.getStringWidth(getName() + "->");
 
         toggleAnimation.update(4f, Easing.OUT_CUBIC);
         toggleAnimation.setEnd(toggled);
 
         font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
 
-        RoundedUtils.drawRect(x + nameWidth, y, 40, 10, 5, Colors.BLACK.withAlphaClamp(alpha));
-        RoundedUtils.drawRect(x + nameWidth, y, 40 * toggleAnimation.getValue(), 10, 5, elementColor);
-        RoundedUtils.drawRect(x + nameWidth + (35 * toggleAnimation.getValue()), y, 10, 10, 5, Color.WHITE);
-        offset += 15;
+        RoundedUtils.drawRect(x + nameWidth, y, 20, 10, 5, Colors.BLACK.withAlphaClamp(alpha));
+        RoundedUtils.drawRect(x + nameWidth, y, 20 * toggleAnimation.getValue(), 10, 5, elementColor);
+        RoundedUtils.drawRect(x + nameWidth + (15 * toggleAnimation.getValue()), y, 10, 10, 5, Color.WHITE);
 
-        return offset;
+        return 15;
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
         float nameWidth = (float) font.getStringWidth(getName());
         boolean hovered = GuiUtils.isHovered(mouseX, mouseY, x + nameWidth, y, 40, 10);
 
         if (hovered && key == 0) toggled = !toggled;
+
+        return 15;
     }
 
     @Override

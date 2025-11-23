@@ -136,24 +136,22 @@ public class ClickGuiScreenNew extends GuiScreen {
             categoryOffset += 17.5f;
         }
 
-//        ClientFontRenderer settingsFont = Fonts.fonts.get("SFProRegular");
-//        if (selectedModule != null) {
-//            float settingsOffset = 0;
-//            for (Setting setting : selectedModule.getSettings()) {
-//                EasingAnimation visibleAnim = setting.getVisibleAnim();
-//                visibleAnim.update(4f, Easing.OUT_CUBIC);
-//                visibleAnim.setEnd(setting.isVisible());
-//
-//                if (visibleAnim.getValue() <= 0) continue;
-//
-//                float settingX = x + 100 + 5;
-//                float settingY = y + 5 + settingsOffset;
-//
-//                settingsOffset += setting.draw(settingX, settingY, settingsFont, elementColor,openSettingsAnim.getValue() * openAnim.getValue()) * visibleAnim.getValue();
-//            }
-//        }
+        ClientFontRenderer settingsFont = Fonts.fonts.get("SFProRegular");
+        if (selectedModule != null) {
+            float settingsOffset = 0;
+            for (Setting setting : selectedModule.getSettings()) {
+                EasingAnimation visibleAnim = setting.getVisibleAnim();
+                visibleAnim.update(4f, Easing.OUT_CUBIC);
+                visibleAnim.setEnd(setting.isVisible());
 
-        if (selectedCategory != null) {
+                if (visibleAnim.getValue() <= 0) continue;
+
+                float settingX = x + 100 + 5;
+                float settingY = y + 5 + settingsOffset;
+
+                settingsOffset += setting.draw(settingX, settingY, settingsFont, elementColor.withAlpha(openSettingsAnim.getValue() * openAnim.getValue()),openSettingsAnim.getValue() * openAnim.getValue()) * visibleAnim.getValue();
+            }
+        } else if (selectedCategory != null) {
             StencilUtils.setUpTexture(x + 100 + 2, y + 2, width - 100 - 4, height - 4, 7.5f);
             StencilUtils.writeTexture();
 
@@ -196,7 +194,23 @@ public class ClickGuiScreenNew extends GuiScreen {
             categoryOffset += 17.5f;
         }
 
-        if (selectedCategory != null) {
+        ClientFontRenderer font = Fonts.fonts.get("SFProRegular");
+        if (selectedModule != null) {
+            float settingsOffset = 0;
+            for (Setting setting : selectedModule.getSettings()) {
+                EasingAnimation visibleAnim = setting.getVisibleAnim();
+                visibleAnim.update(4f, Easing.OUT_CUBIC);
+                visibleAnim.setEnd(setting.isVisible());
+
+                if (visibleAnim.getValue() <= 0) continue;
+
+                float settingX = x + 100 + 5;
+                float settingY = y + 5 + settingsOffset;
+
+                settingsOffset += setting.mouseClicked(mouseX, mouseY, settingX, settingY, mouseButton, font) * visibleAnim.getValue();
+
+            }
+        } else if (selectedCategory != null) {
             boolean moduleListHovered = GuiUtils.isHovered(mouseX, mouseY, x + 100, y + 2, width - 100, height - 4);
 
             if (moduleListHovered) {
@@ -207,7 +221,10 @@ public class ClickGuiScreenNew extends GuiScreen {
                     if (hovered) {
                         switch (mouseButton) {
                             case 0 -> module.toggle();
-                            case 1 -> selectedModule = module;
+                            case 1 -> {
+                                openSettingsAnim.setEnd(1f);
+                                selectedModule = module;
+                            }
                         }
                     }
                     moduleOffset += 30;

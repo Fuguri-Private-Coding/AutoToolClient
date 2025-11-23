@@ -31,10 +31,12 @@ public class TargetESP extends Module {
     final FloatSetting length = new FloatSetting("Length", this, 0.2f, 2.5f, 0.6f, 0.1f) {};
     final FloatSetting radius = new FloatSetting("Radius", this, 0.1f, 2f, 0.7f, 0.1f) {};
 
-    CheckBox glow = new CheckBox("Glow", this);
-
     public final ColorSetting color = new ColorSetting("Color", this);
 
+    CheckBox changeHitColor = new CheckBox("ChangeHitColor", this);
+    public final ColorSetting hitColor = new ColorSetting("HitColor", this, changeHitColor::isToggled);
+
+    CheckBox glow = new CheckBox("Glow", this);
     public final ColorSetting colorShadow = new ColorSetting("Shadow Color", this, glow::isToggled);
 
     private final List<Sigma2> poses = new ArrayList<>();
@@ -44,30 +46,35 @@ public class TargetESP extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof Render3DEvent) {
+            EntityLivingBase target = TargetStorage.getTarget();
+
+            if (target == null) return;
+
+            float hurt = target.hurtTime / 10f;
+
+            Color tColor = hurt > 0 && changeHitColor.isToggled() ? ColorUtils.interpolateColor(color.getColor(), hitColor.getColor(), hurt) : color.getColor();
+            Color tFadeColor = hurt > 0 && changeHitColor.isToggled() ? ColorUtils.interpolateColor(color.getFadeColor(), hitColor.getFadeColor(), hurt) : color.getFadeColor();
+
             switch (mode.getMode()) {
                 case "Sigma" -> {
                     if (glow.isToggled()) {
-                        BloomRealUtils.addToDraw(() -> renderSigma(colorShadow.getColor(), colorShadow.getFadeColor()));
+                        BloomRealUtils.addToDraw(() -> renderSigma(target, colorShadow.getColor(), colorShadow.getFadeColor()));
                     }
-                    renderSigma(color.getColor(), color.getFadeColor());
+                    renderSigma(target, tColor, tFadeColor);
                 }
 
                 case "Sigma2" -> {
                     if (glow.isToggled()) {
-                        BloomRealUtils.addToDraw(() -> renderSigma2(colorShadow.getColor(), colorShadow.getFadeColor()));
+                        BloomRealUtils.addToDraw(() -> renderSigma2(target, colorShadow.getColor(), colorShadow.getFadeColor()));
                     }
-                    renderSigma2(color.getColor(), color.getFadeColor());
+                    renderSigma2(target, tColor, tFadeColor);
                 }
             }
         }
     }
 
-    private void renderSigma(Color color1, Color color2) {
+    private void renderSigma(EntityLivingBase target, Color color1, Color color2) {
         double animationTranslate = sin(System.currentTimeMillis() / 1000.0 * speed.getValue());
-
-        final EntityLivingBase target = TargetStorage.getTarget();
-
-        if (target == null) return;
 
         final RenderManager renderManager = mc.getRenderManager();
         final double viewerPosX = renderManager.viewerPosX;
@@ -129,11 +136,7 @@ public class TargetESP extends Module {
         glEnable(GL_TEXTURE_2D);
     }
 
-    private void renderSigma2(Color color1, Color color2) {
-        final EntityLivingBase target = TargetStorage.getTarget();
-
-        if (target == null) return;
-
+    private void renderSigma2(EntityLivingBase target, Color color1, Color color2) {
         double x = target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
         double y = target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
         double z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;

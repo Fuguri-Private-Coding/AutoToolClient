@@ -33,12 +33,13 @@ public class CustomSkin extends Module {
     File skinFile;
 
     public CustomSkin() {
-        skinDirectory.mkdirs();
+        if (!skinDirectory.mkdirs()) System.out.println("Failed create skinDirectory.");
         updateSkins();
     }
 
     @Override
     public void onEnable() {
+        selectedSkin = "";
         updateSkins();
     }
 

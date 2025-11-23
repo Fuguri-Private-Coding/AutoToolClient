@@ -28,12 +28,11 @@ public class BlockOverlay extends Module {
     public void onEvent(Event event) {
         if (Modules.getModule(Scaffold.class).isToggled()) return;
         if (event instanceof DrawBlockHighlightEvent) {
-            MovingObjectPosition renderRayCast = mc.objectMouseOver;
-            if (renderRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 RenderUtils.start3D();
-                if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), glowColor.getFadedFloatColor()));
-                if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), 1,1,1,1));
-                RenderUtils.drawBlockESP(renderRayCast.getBlockPos(), color.getFadedFloatColor());
+                if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(mc.objectMouseOver.getBlockPos(), glowColor.getFadedFloatColor()));
+                if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(mc.objectMouseOver.getBlockPos(), 1,1,1,1));
+                RenderUtils.drawBlockESP(mc.objectMouseOver.getBlockPos(), color.getFadedFloatColor());
                 GlStateManager.resetColor();
                 RenderUtils.stop3D();
             }

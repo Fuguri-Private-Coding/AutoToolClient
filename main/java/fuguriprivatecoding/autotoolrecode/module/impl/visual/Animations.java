@@ -37,7 +37,7 @@ public class Animations extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof RenderItemEvent renderItemEvent) {
-            GL11.glScaled(scale.getValue(), scale.getValue(), 1);
+            GL11.glScaled(scale.getValue(), scale.getValue(), scale.getValue());
             GlStateManager.translate(X.getValue(), Y.getValue(), Z.getValue());
             ItemRenderer itemRenderer = mc.getItemRenderer();
             float animationProgression = renderItemEvent.getEquipProgress();
@@ -123,7 +123,7 @@ public class Animations extends Module {
                     GlStateManager.rotate(-convertedProgress * 135.0F / 4.0F, 1.0F, 1.0F, 0.0F);
                 }
             }
-            GL11.glScaled(1f / scale.getValue(), 1f / scale.getValue(), 1);
+            GL11.glScaled(1f / scale.getValue(),1f /  scale.getValue(), 1f /  scale.getValue());
         }
     }
 }

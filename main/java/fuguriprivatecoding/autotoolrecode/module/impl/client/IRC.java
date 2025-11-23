@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.profile.Role;
 import net.dv8tion.jda.api.entities.Message;
+import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,5 +56,9 @@ public class IRC extends Module {
             }).start();
             lastTime = System.currentTimeMillis();
         }
+    }
+
+    public static boolean isClientUser(EntityPlayer ent) {
+        return usersOnline.get(ent.getName()) != null;
     }
 }

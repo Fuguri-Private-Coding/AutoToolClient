@@ -47,6 +47,7 @@ public class CustomCape extends Module {
 
     @Override
     public void onEnable() {
+        selectedCape = "";
         updateCape();
     }
 

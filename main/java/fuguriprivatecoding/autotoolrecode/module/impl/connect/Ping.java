@@ -196,6 +196,8 @@ public class Ping extends Module {
     }
 
     private void renderPlayer(Entity target, Vec3 pos, float rotationYawHead, float partialTicks) {
+        mc.entityRenderer.enableLightmap();
+        RenderHelper.enableStandardItemLighting();
         mc.getRenderManager().doRenderEntity(target, pos.xCoord, pos.yCoord, pos.zCoord, rotationYawHead, partialTicks, true);
         mc.entityRenderer.disableLightmap();
         RenderHelper.disableStandardItemLighting();
