@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.RenderItemEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.RenderItemEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -28,7 +28,7 @@ public class Animations extends Module {
     FloatSetting Y = new FloatSetting("Y", this, -1f, 1f, 0f, 0.1f) {};
     FloatSetting Z = new FloatSetting("Z", this, -1f, 1f, 0f, 0.1f) {};
 
-    FloatSetting scale = new FloatSetting("Scale", this, 0.1f, 2f, 1f, 0.1f);
+    FloatSetting scale = new FloatSetting("Scale", this, -1, 1f, 0f, 0.1f);
 
     public FloatSetting speed = new FloatSetting("Speed", this, 0.1f, 4f,1f,0.1f);
 
@@ -37,7 +37,8 @@ public class Animations extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof RenderItemEvent renderItemEvent) {
-            GL11.glScaled(scale.getValue(), scale.getValue(), scale.getValue());
+            float scales = 1 - scale.getValue();
+            GL11.glScaled(scales,scales,scales);
             GlStateManager.translate(X.getValue(), Y.getValue(), Z.getValue());
             ItemRenderer itemRenderer = mc.getItemRenderer();
             float animationProgression = renderItemEvent.getEquipProgress();
@@ -123,7 +124,7 @@ public class Animations extends Module {
                     GlStateManager.rotate(-convertedProgress * 135.0F / 4.0F, 1.0F, 1.0F, 0.0F);
                 }
             }
-            GL11.glScaled(1f / scale.getValue(),1f /  scale.getValue(), 1f /  scale.getValue());
+            GL11.glScaled(1f / scales,1f / scales, 1f / scales);
         }
     }
 }

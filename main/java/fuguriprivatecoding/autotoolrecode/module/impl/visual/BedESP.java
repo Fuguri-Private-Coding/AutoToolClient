@@ -1,9 +1,9 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -11,8 +11,8 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -59,8 +59,8 @@ public class BedESP extends Module {
 
             RenderUtils.start3D();
             for (BlockPos[] bed : beds) {
-                if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.renderBed(bed, glowColor.getFadedFloatColor()));
-                if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.renderBed(bed, Color.white));
+                if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.renderBed(bed, glowColor.getFadedFloatColor()));
+                if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.renderBed(bed, Color.white));
                 RenderUtils.renderBed(bed, color.getFadedFloatColor());
             }
             RenderUtils.stop3D();

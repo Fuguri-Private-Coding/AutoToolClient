@@ -1,122 +1,116 @@
 package fuguriprivatecoding.autotoolrecode;
 
-import fuguriprivatecoding.autotoolrecode.alt.Accounts;
-import fuguriprivatecoding.autotoolrecode.gui.altmanager.*;
-import fuguriprivatecoding.autotoolrecode.gui.config.*;
-import fuguriprivatecoding.autotoolrecode.config.*;
-import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
-import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
+import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
+import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
+import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWIDUtils;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.utils.sound.*;
-import fuguriprivatecoding.autotoolrecode.command.*;
-import fuguriprivatecoding.autotoolrecode.event.*;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
+import fuguriprivatecoding.autotoolrecode.profile.Profile;
+import fuguriprivatecoding.autotoolrecode.config.Configs;
+import fuguriprivatecoding.autotoolrecode.bind.KeyBinds;
+import fuguriprivatecoding.autotoolrecode.module.Module;
+import fuguriprivatecoding.autotoolrecode.alt.Accounts;
+
+import fuguriprivatecoding.autotoolrecode.gui.altmanager.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.sound.*;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.*;
+import fuguriprivatecoding.autotoolrecode.utils.packet.*;
 import fuguriprivatecoding.autotoolrecode.gui.console.*;
+import fuguriprivatecoding.autotoolrecode.gui.config.*;
 import fuguriprivatecoding.autotoolrecode.gui.main.*;
-import fuguriprivatecoding.autotoolrecode.irc.*;
+import fuguriprivatecoding.autotoolrecode.command.*;
 import fuguriprivatecoding.autotoolrecode.handle.*;
 import fuguriprivatecoding.autotoolrecode.module.*;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
-import fuguriprivatecoding.autotoolrecode.utils.file.*;
-import fuguriprivatecoding.autotoolrecode.utils.packet.*;
-import fuguriprivatecoding.autotoolrecode.profile.Profile;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
-import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
-import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
-import fuguriprivatecoding.autotoolrecode.module.Module;
+import fuguriprivatecoding.autotoolrecode.event.*;
+import fuguriprivatecoding.autotoolrecode.irc.*;
+
 import net.dv8tion.jda.api.entities.Message;
-import org.lwjgl.opengl.Display;
 import de.florianmichael.viamcp.ViaMCP;
-import lombok.Getter;
-import lombok.Setter;
+import org.lwjgl.opengl.Display;
 import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
+import lombok.*;
+import java.io.*;
 
 @Getter
 public enum Client implements Imports, EventListener {
 	INST;
 
-	String name = "AutoTool";
-	final ClientVersion version = new ClientVersion(4, 5,2);
+	public final String CLIENT_NAME = "AutoTool";
+    public final ClientVersion CLIENT_VERSION = new ClientVersion(4, 5,2);
 
-	@Setter
-	Profile profile;
-
-	File clientDir;
-	File soundsDir;
+    final File CLIENT_DIR = new File(CLIENT_NAME);
 
 	@Setter ClientIRC irc;
+	@Setter Profile profile;
 
 	boolean starting = true;
+
+    private long lastTime;
 
 	public void init() throws IOException {
 		long start = System.nanoTime();
 		starting = true;
 
-        setDisplayInfo();
+        Display.setTitle(getFullName());
 		updateClient();
 
         irc.connectClient();
 
-		clientDir = new File(name);
-		soundsDir = new File(name + "/sounds");
-
-		FileUtils.createDirectoriesIfNotExists(clientDir, soundsDir);
+        if (CLIENT_DIR.mkdirs()) System.out.println("Successful created clientDirectory.");
 
 		Events.register(this);
 
 		ConsoleScreen.init();
 
-        Fonts.init();
-        Sounds.init();
-        Shaders.init();
         Accounts.init();
+        KeyBinds.init();
+        Shaders.init();
+        Sounds.init();
+        Fonts.init();
 
         Modules.init();
 
 		Configs.init();
-		Configs.loadBinds();
+        KeyBinds.loadBinds();
 
         NameGenerator.init("names.txt");
 
         Commands.init();
+        new PositionResolverComponent();
 		new Clicks();
         new Player();
-        new PositionResolverComponent();
 
 		ViaMCP.create();
 
-        AltScreen.init();
-        ClickScreen.init();
         ClickGuiScreenNew.init();
         ConsoleScreen.init();
 		ConfigScreen.init();
+        ClickScreen.init();
         MainScreen.init();
+        AltScreen.init();
 
 		mc.gameSettings.ofFastRender = false;
 
-        new Discord();
+        Discord.init();
 
 		Configs.loadConfig(Configs.getDefaultConfig());
 
 		starting = false;
 
 		double elapsedNanos = System.nanoTime() - start;
-		ConsoleScreen.log("Started client in " + (float) (elapsedNanos / 1000000000D) + " seconds");
+		ConsoleScreen.log("Client initialized in " + (float) (elapsedNanos / 1000000000D) + " seconds.");
 	}
-
-    private void setDisplayInfo() {
-        name = "AutoTool";
-        Display.setTitle(getFullName());
-    }
 
 	private void updateClient() {
 		for (Message message : irc.getClientVersionChannel().getIterableHistory().stream().toList()) {
-			if (!message.getContentRaw().equalsIgnoreCase(version.toString())) {
-				JOptionPane.showMessageDialog(null, "Твоя версия клиента устарела: " + version + ", Пожалуйста обновите клиент до: " + message.getContentRaw());
+			if (!message.getContentRaw().equalsIgnoreCase(CLIENT_VERSION.toString())) {
+				JOptionPane.showMessageDialog(null, "Ваша версия клиента устарела: " + CLIENT_VERSION + ", Пожалуйста обновите клиент до: " + message.getContentRaw());
 				System.exit(-1);
 			}
 		}
@@ -124,35 +118,31 @@ public enum Client implements Imports, EventListener {
 
 	public void onClose() {
 		Configs.saveConfig(Configs.getDefaultConfig());
-		Configs.saveBinds();
+		KeyBinds.saveBinds();
         irc.disconnectClient();
 	}
 
-	public String getFullName() {
-		return getName() + " " + getVersion();
+    @Override
+	public void onEvent(Event event) {
+		if (event instanceof ServerJoinEvent && Modules.getModule(IRC.class).isToggled()) irc.connectServer();
+		if (event instanceof KeyEvent keyEvent) {
+            for (Module module : Modules.getModules()) {
+                if (module.getKey() == keyEvent.getKey()) module.toggle();
+            }
+        }
+
+		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
+			lastTime = System.currentTimeMillis();
+            new Thread(HWIDUtils::check).start();
+		}
 	}
 
-	private long lastTime;
+    public String getFullName() {
+        return CLIENT_NAME + " " + CLIENT_VERSION;
+    }
 
     @Override
     public boolean listen() {
         return true;
     }
-
-    @Override
-	public void onEvent(Event event) {
-		if (event instanceof ServerJoinEvent && Modules.getModule(IRC.class).isToggled()) irc.connectServer();
-		if (event instanceof KeyEvent keyEvent) handleKeyEventForModules(keyEvent);
-		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
-			lastTime = System.currentTimeMillis();
-			new Thread(HWIDUtils::check).start();
-		}
-	}
-
-	private void handleKeyEventForModules(KeyEvent keyEvent) {
-		for (Module module : Modules.getModules()) {
-			if (module.getKey() == keyEvent.getKey()) module.toggle();
-		}
-	}
-
 }

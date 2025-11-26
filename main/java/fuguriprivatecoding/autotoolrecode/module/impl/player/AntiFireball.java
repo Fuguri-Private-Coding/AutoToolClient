@@ -1,7 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.event.events.player.*;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -11,15 +12,14 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
-import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
-import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
 
 import java.util.function.BooleanSupplier;
 
@@ -34,10 +34,6 @@ public class AntiFireball extends Module {
 
     DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, rotateVisible, 0, 180, 90, 1);
     DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, rotateVisible, 0, 180, 90, 1);
-
-    final FloatSetting smooth = new FloatSetting("Smooth", this, rotateVisible, 1f, 5f, 2f, 0.1f);
-
-    final CheckBox lockView = new CheckBox("LockView", this, rotateVisible, false);
 
     final IntegerSetting delay = new IntegerSetting("Delay", this, 0, 500, 0);
     final FloatSetting distance = new FloatSetting("Distance", this, 3f, 12f, 4.5f, 0.1f);
@@ -74,33 +70,37 @@ public class AntiFireball extends Module {
             if (target == null) return;
 
             Rot lr = Rot.getServerRotation().copy();
-            if (event instanceof MotionEvent e) {
-                e.setYaw(lr.getYaw());
-                e.setPitch(lr.getPitch());
+            if (event instanceof TickEvent) {
                 AxisAlignedBB box = getHitBox(target);
 
                 Rot needRotation = RotUtils.getBestRotation(box.expand(0.1f, 0.1f, 0.1f));
                 Rot delta = RotUtils.getDelta(lr, needRotation);
 
                 Rot speed = new Rot(
-                        yawSpeed.getRandomizedIntValue(),
-                        pitchSpeed.getRandomizedIntValue()
+                    yawSpeed.getRandomizedIntValue(),
+                    pitchSpeed.getRandomizedIntValue()
                 );
 
                 RotUtils.limitDelta(delta, speed);
-
-                delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / smooth.getValue()));
-                delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / smooth.getValue()));
 
                 delta = RotUtils.fixDelta(delta);
                 lr = lr.add(delta);
                 lr.setPitch(Math.clamp(lr.getPitch(), -90, 90));
                 Rot.setServerRotation(lr);
+            }
 
-                if (lockView.isToggled()) {
-                    mc.thePlayer.rotationYaw = Rot.getServerRotation().getYaw();
-                    mc.thePlayer.rotationPitch = Rot.getServerRotation().getPitch();
+            if (event instanceof LegitClickTimingEvent && stopWatch.reachedMS(delay.getValue())) {
+                if (rotate.isToggled()) {
+                    mc.clickMouse();
+                } else {
+                    mc.playerController.attackEntity(mc.thePlayer, target);
                 }
+                stopWatch.reset();
+            }
+
+            if (event instanceof MotionEvent e) {
+                e.setYaw(lr.getYaw());
+                e.setPitch(lr.getPitch());
             }
 
             if (event instanceof LookEvent e) {
@@ -122,19 +122,6 @@ public class AntiFireball extends Module {
 
             if (event instanceof MoveEvent e) {
                 MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
-            }
-
-            if (event instanceof TickEvent) {
-                if (target == null) return;
-
-                if (stopWatch.reachedMS(delay.getValue())) {
-                    if (rotate.isToggled()) {
-                        mc.clickMouse();
-                    } else {
-                        mc.playerController.attackEntity(mc.thePlayer, target);
-                    }
-                    stopWatch.reset();
-                }
             }
         }
     }

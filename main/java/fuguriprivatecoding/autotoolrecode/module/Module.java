@@ -13,7 +13,7 @@ import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import java.util.ArrayList;
 import java.util.List;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import fuguriprivatecoding.autotoolrecode.utils.sound.Sounds;
+import fuguriprivatecoding.autotoolrecode.utils.client.sound.Sounds;
 import lombok.Getter;
 import lombok.Setter;
 

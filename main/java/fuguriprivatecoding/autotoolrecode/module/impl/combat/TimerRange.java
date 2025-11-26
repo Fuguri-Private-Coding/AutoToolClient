@@ -2,23 +2,25 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
-import java.awt.*;
+
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
@@ -29,7 +31,6 @@ public class TimerRange extends Module {
     FloatSetting partialTicks = new FloatSetting("Partial Ticks", this, -2.5f, 2.5f, 1, 0.1f);
 
     IntegerSetting additionalTicks = new IntegerSetting("Additional Ticks", this, -5,5,1);
-    FloatSetting minDistanceToSkipTick = new FloatSetting("Min Distance To Skip Tick", this, 2.5f, 6, 3, 0.1f);
 
     CheckBox renderRealPlayerPosition = new CheckBox("Render Real Player Position", this);
     Mode render = new Mode("Render", this, renderRealPlayerPosition::isToggled)
@@ -87,10 +88,11 @@ public class TimerRange extends Module {
 
                 if (skipTickDistance) {
                     simulatedPlayer.tick();
-                } else {
-                    teleportTicks = i;
-                    break;
+                    continue;
                 }
+
+                teleportTicks = i;
+                break;
             }
 
             if (target.hurtTime > maxTargetHurtTime.getValue()) return;
@@ -109,41 +111,30 @@ public class TimerRange extends Module {
             teleporting = false;
         }
 
-        if (event instanceof Render3DEvent && renderRealPlayerPosition.isToggled()) {
-            if (target == null) return;
-
+        if (event instanceof Render3DEvent && renderRealPlayerPosition.isToggled() && target != null) {
             Vec3 realPositon = new Vec3(
-                    target.lrx + (target.rx - target.lrx) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX,
-                    target.lry + (target.ry - target.lry) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY,
-                    target.lrz + (target.rz - target.lrz) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ
+                    target.lrx + (target.rx - target.lrx) * mc.timer.renderPartialTicks - RenderManager.renderPosX,
+                    target.lry + (target.ry - target.lry) * mc.timer.renderPartialTicks - RenderManager.renderPosY,
+                    target.lrz + (target.rz - target.lrz) * mc.timer.renderPartialTicks - RenderManager.renderPosZ
             );
 
             AxisAlignedBB bb = target.getEntityBoundingBox().offset(realPositon.xCoord - target.posX, realPositon.yCoord - target.posY, realPositon.zCoord - target.posZ);
 
             switch (render.getMode()) {
-                case "Player" -> renderPlayer(realPositon, target, target.rotationYawHead, mc.timer.renderPartialTicks);
-                case "Box" -> renderBox(bb, color.getFadedColor());
-                case "HitBox" -> renderHitBox(bb, color.getFadedColor(), lineWidth.getValue());
+                case "Player" -> RenderUtils.renderPlayer(target, realPositon, target.rotationYawHead, mc.timer.renderPartialTicks);
+                case "Box" -> {
+                    RenderUtils.start3D();
+                    RenderUtils.drawBoundingBox(bb, color.getFadedColor());
+                    RenderUtils.stop3D();
+                }
+
+                case "HitBox" -> {
+                    RenderUtils.start3D();
+                    RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());
+                    RenderUtils.stop3D();
+                }
             }
         }
-    }
-
-    private void renderHitBox(AxisAlignedBB bb, Color color, float lineWidth) {
-        RenderUtils.start3D();
-        RenderUtils.drawHitBox(bb,color, lineWidth);
-        RenderUtils.stop3D();
-    }
-
-    private void renderBox(AxisAlignedBB bb, Color color) {
-        RenderUtils.start3D();
-        RenderUtils.drawBoundingBox(bb,color);
-        RenderUtils.stop3D();
-    }
-
-    private void renderPlayer(Vec3 pos, Entity target, float rotationYawHead, float partialTicks) {
-        mc.getRenderManager().doRenderEntity(target, pos.xCoord, pos.yCoord, pos.zCoord, rotationYawHead, partialTicks, true);
-        mc.entityRenderer.disableLightmap();
-        RenderHelper.disableStandardItemLighting();
     }
 
     private void updateCashedIncrementPos() {
@@ -163,18 +154,10 @@ public class TimerRange extends Module {
         if (backTrack.isToggled() && !backTrack.packetBuffer.isEmpty()) {
             return target.getEntityBoundingBox().offset(
                     pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ
-            ).expand(
-                    target.getCollisionBorderSize(),
-                    target.getCollisionBorderSize(),
-                    target.getCollisionBorderSize()
             );
         }
         return target.getEntityBoundingBox().offset(
                 newPos.xCoord - target.posX, newPos.yCoord - target.posY, newPos.zCoord - target.posZ
-        ).expand(
-                target.getCollisionBorderSize(),
-                target.getCollisionBorderSize(),
-                target.getCollisionBorderSize()
         );
     }
 }

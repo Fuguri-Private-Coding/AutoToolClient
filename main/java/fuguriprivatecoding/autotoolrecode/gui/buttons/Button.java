@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -47,13 +48,13 @@ public class Button extends GuiButton {
         float width = prevWidth + hoverAnim.getValue() * 2;
         float height = prevHeight + hoverAnim.getValue() * 2;
 
-        Color rectColor = ColorUtils.interpolateColor(new Color(0,0,0,0.7f), new Color(0,0,0,0.8f), hoverAnim.getValue());
+        Color rectColor = ColorUtils.interpolateColor(Colors.BLACK.withAlpha(0.7f), Colors.BLACK.withAlpha(0.8f), hoverAnim.getValue());
 
         RoundedUtils.drawRect(x, y, width, height, height / 2f, rectColor);
 
         float textX = x + width / 2f;
         float textY = y + 2 + (height - 8) / 2f;
 
-        fontRenderer.drawCenteredString(name, textX, textY, Color.WHITE);
+        fontRenderer.drawCenteredString(name, textX, textY, Colors.WHITE);
     }
 }

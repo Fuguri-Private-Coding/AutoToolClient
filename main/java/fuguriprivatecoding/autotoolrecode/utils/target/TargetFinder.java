@@ -1,6 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.target;
 
-import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.entity.Entity;

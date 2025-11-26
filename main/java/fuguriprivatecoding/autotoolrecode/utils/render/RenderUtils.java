@@ -5,10 +5,12 @@ import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
@@ -224,6 +226,7 @@ public class RenderUtils implements Imports {
         Tessellator ts = Tessellator.getInstance();
         WorldRenderer vb = ts.getWorldRenderer();
         GlStateManager.color(r, g, b, a);
+
         vb.begin(7, DefaultVertexFormats.POSITION_COLOR);
         vb.pos(abb.minX, abb.minY, abb.minZ).color(r, g, b, a).endVertex();
         vb.pos(abb.minX, abb.maxY, abb.minZ).color(r, g, b, a).endVertex();
@@ -285,6 +288,20 @@ public class RenderUtils implements Imports {
         vb.pos(abb.maxX, abb.minY, abb.maxZ).color(r, g, b, a).endVertex();
         ts.draw();
         GlStateManager.resetColor();
+    }
+
+    public static void renderPlayer(Entity target, Vec3 pos, float rotationYawHead, float partialTicks, Color color) {
+        ColorUtils.glColor(color);
+        renderPlayer(target, pos, rotationYawHead, partialTicks);
+        ColorUtils.resetColor();
+    }
+
+    public static void renderPlayer(Entity target, Vec3 pos, float rotationYawHead, float partialTicks) {
+        mc.entityRenderer.enableLightmap();
+        RenderHelper.enableStandardItemLighting();
+        mc.getRenderManager().doRenderEntity(target, pos.xCoord, pos.yCoord, pos.zCoord, rotationYawHead, partialTicks, true);
+        mc.entityRenderer.disableLightmap();
+        RenderHelper.disableStandardItemLighting();
     }
 
     public static void drawBoundingBox(AxisAlignedBB var0) {

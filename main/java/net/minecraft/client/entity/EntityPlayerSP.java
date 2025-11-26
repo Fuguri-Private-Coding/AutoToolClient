@@ -1,10 +1,13 @@
 package net.minecraft.client.entity;
 
 import fuguriprivatecoding.autotoolrecode.command.Commands;
-import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.event.events.player.ChangeSprintEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEventPost;
+import fuguriprivatecoding.autotoolrecode.event.events.player.SprintEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.UpdateEvent;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.Client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;

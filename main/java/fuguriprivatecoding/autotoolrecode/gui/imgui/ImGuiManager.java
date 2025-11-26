@@ -2,12 +2,11 @@ package fuguriprivatecoding.autotoolrecode.gui.imgui;
 
 import com.github.koxx12dev.fuckyou.ImGuiGL3;
 import com.github.koxx12dev.fuckyou.ImGuiLwjgl2;
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
-import fuguriprivatecoding.autotoolrecode.event.events.KeyEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import imgui.ImGui;

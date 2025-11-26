@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import fuguriprivatecoding.autotoolrecode.event.events.ScoreboardRenderEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.ScoreboardRenderEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCrosshair;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
@@ -75,7 +75,7 @@ public class GuiIngame extends Gui {
     private long lastSystemTime = 0L;
     private long healthUpdateCounter = 0L;
 
-    Glow shadows;
+    Glow glow;
 
     public GuiIngame(Minecraft mcIn) {
         this.mc = mcIn;
@@ -95,7 +95,7 @@ public class GuiIngame extends Gui {
     }
 
     public void renderGameOverlay(float partialTicks) {
-        if (shadows == null) shadows = Modules.getModule(Glow.class);
+        if (glow == null) glow = Modules.getModule(Glow.class);
         ScaledResolution scaledresolution = new ScaledResolution(this.mc);
         int i = scaledresolution.getScaledWidth();
         int j = scaledresolution.getScaledHeight();
@@ -281,7 +281,9 @@ public class GuiIngame extends Gui {
         GlStateManager.translate(0.0F, (float) (j - 48), 0.0F);
         this.mc.mcProfiler.startSection("chat");
 
-        if (shadows.isToggled() && shadows.module.get("Chat")) BloomUtils.addToDraw(() -> this.persistantChatGUI.drawChat(this.updateCounter));
+        if (glow.isToggled() && glow.module.get("Chat")) BloomUtils.addToDraw(() -> {
+            this.persistantChatGUI.drawChat(this.updateCounter, glow.chatColor.getFadedColor().getRGB());
+        });
 
         this.persistantChatGUI.drawChat(this.updateCounter);
         this.mc.mcProfiler.endSection();

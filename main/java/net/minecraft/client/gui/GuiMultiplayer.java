@@ -6,7 +6,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
-import fuguriprivatecoding.autotoolrecode.event.events.ServerJoinEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
 import fuguriprivatecoding.autotoolrecode.gui.multiplayer.ViaVersionScreen;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;

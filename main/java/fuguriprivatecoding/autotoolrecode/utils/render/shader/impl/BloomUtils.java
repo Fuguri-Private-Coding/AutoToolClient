@@ -2,19 +2,17 @@ package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.GaussianKernel;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Uniform;
-import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-
-import java.awt.*;
 import java.nio.FloatBuffer;
 
 public class BloomUtils implements Imports {
@@ -58,9 +56,6 @@ public class BloomUtils implements Imports {
             Uniform.uniform1i(programId, "image2", 20);
         }
 
-        Color color = shadows.color.getFadedColor();
-
-        Uniform.uniform4f(programId, "color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
         Uniform.uniform1f(programId,"brightness", shadows.brightness.getValue());
         Uniform.uniform2f(programId, "texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
         Uniform.uniform2f(programId, "direction", shadows.offset1.getValue(), 0);
@@ -101,5 +96,4 @@ public class BloomUtils implements Imports {
         inputFramebuffer.setFramebufferColor(0.0F, 0.0F, 0.0F, 0.0F);
         outputFramebuffer.setFramebufferColor(0.0F, 0.0F, 0.0F, 0.0F);
     }
-
 }

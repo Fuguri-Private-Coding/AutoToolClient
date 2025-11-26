@@ -1,16 +1,16 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.ScoreboardRenderEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.ScoreboardRenderEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
@@ -91,8 +91,8 @@ public class ScoreBoard extends Module {
 
                 float finalWidth = width;
                 if (roundedRect.isToggled()) {
-                    if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getFadedColor()));
-                    if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE));
+                    if (glow.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getFadedColor()));
+                    if (blur.isToggled()) BlurUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE));
 
                     RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), color.getFadedColor());
                     RoundedUtils.drawRect(pos.x, pos.y, finalWidth, 12, 0, roundFactor.getValue(), roundFactor.getValue(),0, color.getFadedColor());
@@ -103,8 +103,8 @@ public class ScoreBoard extends Module {
                     fontRenderer.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - fontRenderer.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f + 2, Color.WHITE, textShadow.isToggled());
                     StencilUtils.endWriteTexture();
                 } else {
-                    if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, 0, colorShadow.getFadedColor()));
-                    if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE));
+                    if (glow.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, 0, colorShadow.getFadedColor()));
+                    if (blur.isToggled()) BlurUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE));
 
                     RoundedUtils.drawRect(pos.x, pos.y, width, height, 0, color.getFadedColor());
                     RoundedUtils.drawRect(pos.x, pos.y, width, 12, 0, color.getFadedColor());

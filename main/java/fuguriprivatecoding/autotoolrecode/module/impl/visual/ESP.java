@@ -1,24 +1,21 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
-import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "ESP", category = Category.VISUAL, description = "Отображение игроков сквозь стены.")
@@ -39,22 +36,19 @@ public class ESP extends Module {
         if (event instanceof Render3DEvent) {
             if (modes.get("HitBox")) {
                 RenderUtils.start3D();
-                GL11.glTranslated(-RenderManager.renderPosX, -RenderManager.renderPosY, -RenderManager.renderPosZ);
                 for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
                     if (mc.getRenderManager() == null || (playerEntity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || playerEntity.isDead)
                         continue;
 
-                    Vec3 smoothPos = new Vec3(
-                        playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * mc.timer.renderPartialTicks,
-                        playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * mc.timer.renderPartialTicks,
-                        playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * mc.timer.renderPartialTicks
+                    Vec3 pos = new Vec3(
+                        playerEntity.lrx + (playerEntity.rx - playerEntity.lrx) * mc.timer.renderPartialTicks - RenderManager.renderPosX,
+                        playerEntity.lry + (playerEntity.ry - playerEntity.lry) * mc.timer.renderPartialTicks - RenderManager.renderPosY,
+                        playerEntity.lrz + (playerEntity.rz - playerEntity.lrz) * mc.timer.renderPartialTicks - RenderManager.renderPosZ
                     );
 
-                    Vec3 diff = smoothPos.subtract(playerEntity.getPositionVector());
-
-                    RenderUtils.drawHitBox(playerEntity.getEntityBoundingBox().offset(diff), color.getFadedColor(), lineWidth.getValue());
+                    AxisAlignedBB bb = playerEntity.getEntityBoundingBox().offset(pos.xCoord - playerEntity.posX, pos.yCoord - playerEntity.posY, pos.zCoord - playerEntity.posZ);
+                    RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());
                 }
-                GL11.glTranslated(RenderManager.renderPosX, RenderManager.renderPosY, RenderManager.renderPosZ);
                 RenderUtils.stop3D();
             }
 

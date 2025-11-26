@@ -1,7 +1,7 @@
 package net.minecraft.util;
 
-import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.MoveEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MoveButtonEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MoveEvent;
 import net.minecraft.client.settings.GameSettings;
 
 public class MovementInputFromOptions extends MovementInput

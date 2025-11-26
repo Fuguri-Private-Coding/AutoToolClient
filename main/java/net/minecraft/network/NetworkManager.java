@@ -41,7 +41,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.SecretKey;
 
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
-import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.CryptManager;

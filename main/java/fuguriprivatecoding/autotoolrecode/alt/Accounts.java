@@ -14,11 +14,11 @@ import java.util.Map;
 @UtilityClass
 public class Accounts {
 
-    File accountDirectory = new File(Client.INST.getName() + "/account");
-    File accountFile = new File(accountDirectory, "accounts.json");
+    File accountsDirectory = new File(Client.INST.getCLIENT_DIR() + "/account");
+    File accountFile = new File(accountsDirectory, "accounts.json");
 
     public void init() {
-        if (!accountDirectory.exists()) accountDirectory.mkdirs();
+        if (accountsDirectory.mkdirs()) System.out.println("Successful created accountsDirectory.");
     }
 
     public void loadAccounts() {

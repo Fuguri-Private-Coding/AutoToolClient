@@ -2,9 +2,9 @@ package fuguriprivatecoding.autotoolrecode.module.impl.connect;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
-import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -13,7 +13,6 @@ import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.Vec3;
@@ -96,15 +95,8 @@ public class Blink extends Module {
                 }
 
                 case "Player" -> {
-                    mc.getRenderManager().doRenderEntity(
-                            player,
-                            x,y,z,
-                            player.getRotationYawHead(),
-                            mc.timer.renderPartialTicks,
-                            true
-                    );
-                    mc.entityRenderer.disableLightmap();
-                    RenderHelper.disableStandardItemLighting();
+                    Vec3 pos = new Vec3(x, y, z);
+                    RenderUtils.renderPlayer(player, pos, player.getRotationYawHead(), mc.timer.renderPartialTicks);
                 }
                 default -> {}
             }

@@ -7,10 +7,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.event.events.AttackEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.ChangeHeadRotationEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.HitSlowDownEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.AttackEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.ChangeHeadRotationEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.HitSlowDownEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Friends;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Teams;

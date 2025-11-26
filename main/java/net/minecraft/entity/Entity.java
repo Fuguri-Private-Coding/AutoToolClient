@@ -5,12 +5,11 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.FreeLook;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.event.events.MoveFlyingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MoveFlyingEvent;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;

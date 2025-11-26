@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11;
 
 public class WorldRenderer
 {
-    private ByteBuffer byteBuffer;
+    public ByteBuffer byteBuffer;
     public IntBuffer rawIntBuffer;
     private ShortBuffer rawShortBuffer;
     public FloatBuffer rawFloatBuffer;

@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.config;
 
 import lombok.Getter;
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import lombok.Setter;
 

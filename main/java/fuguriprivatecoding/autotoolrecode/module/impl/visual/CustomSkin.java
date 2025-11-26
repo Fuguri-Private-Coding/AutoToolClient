@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -25,7 +25,7 @@ public class CustomSkin extends Module {
         .setMode("None")
         ;
 
-    @Getter File skinDirectory = new File(Client.INST.getName() + "/skins");
+    @Getter File skinDirectory = new File(Client.INST.getCLIENT_DIR() + "/skins");
 
     DynamicTexture dynamicTexture;
     BufferedImage skinImage;
@@ -33,7 +33,7 @@ public class CustomSkin extends Module {
     File skinFile;
 
     public CustomSkin() {
-        if (!skinDirectory.mkdirs()) System.out.println("Failed create skinDirectory.");
+        if (skinDirectory.mkdirs()) System.out.println("Successful created skinDirectory.");
         updateSkins();
     }
 

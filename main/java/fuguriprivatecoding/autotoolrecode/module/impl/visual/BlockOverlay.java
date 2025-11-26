@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.DrawBlockHighlightEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -9,9 +9,9 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -30,8 +30,8 @@ public class BlockOverlay extends Module {
         if (event instanceof DrawBlockHighlightEvent) {
             if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 RenderUtils.start3D();
-                if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(mc.objectMouseOver.getBlockPos(), glowColor.getFadedFloatColor()));
-                if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(mc.objectMouseOver.getBlockPos(), 1,1,1,1));
+                if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(mc.objectMouseOver.getBlockPos(), glowColor.getFadedFloatColor()));
+                if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(mc.objectMouseOver.getBlockPos(), 1,1,1,1));
                 RenderUtils.drawBlockESP(mc.objectMouseOver.getBlockPos(), color.getFadedFloatColor());
                 GlStateManager.resetColor();
                 RenderUtils.stop3D();

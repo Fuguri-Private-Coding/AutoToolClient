@@ -3,8 +3,7 @@ package net.minecraft.client.entity;
 import com.mojang.authlib.GameProfile;
 import java.io.File;
 
-import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.event.events.LookEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.LookEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCape;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomSkin;

@@ -3,11 +3,12 @@ package fuguriprivatecoding.autotoolrecode.utils.client;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.DiscordRPCModule;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
-import fuguriprivatecoding.autotoolrecode.gui.main.MainScreen;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.arikia.dev.drpc.DiscordEventHandlers;
 import net.arikia.dev.drpc.DiscordRPC;
@@ -16,23 +17,27 @@ import net.minecraft.client.gui.GuiMultiplayer;
 
 public class Discord implements Imports, EventListener {
 
-    public Discord() {
-        init();
+    public static Discord INST;
+
+    public static void init() {
+        INST = new Discord();
+    }
+
+    private Discord() {
         Events.register(this);
     }
 
     static long timestamp, lastTime;
 
-    @Getter
-    private static String name, id;
+    @Getter private static String name, id;
 
-    public static boolean run = false;
+    String state;
+    String details;
 
-    public static void init() {
-        run = true;
+    public static void start() {
         DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler(discordUser -> {
-            ConsoleScreen.log("§a[§9Discord§a]§e Connected to user " + discordUser.username + ".");
-            ConsoleScreen.log("§a[§9Discord§a]§a Rich Presence is started.");
+            ConsoleScreen.log("§a[§9Discord§a]§e Подключен к " + discordUser.username + ".");
+            ConsoleScreen.log("§a[§9Discord§a]§a Активность запущенна.");
             timestamp = System.currentTimeMillis();
             if (discordUser.userId != null) {
                 name = discordUser.username;
@@ -44,8 +49,18 @@ public class Discord implements Imports, EventListener {
 
         DiscordRPC.discordInitialize("1356982126746140713", handlers, true);
 
-        update("Starting Game...", "YOOO!");
+        update("Запускается игра.", "А пока поешьте печенье.");
         DiscordRPC.discordRunCallbacks();
+    }
+
+    @Override
+    public void onEvent(Event event) {
+        if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 1000) {
+            updateInformation();
+
+            DiscordRPC.discordRunCallbacks();
+            lastTime = System.currentTimeMillis();
+        }
     }
 
     @Override
@@ -53,41 +68,35 @@ public class Discord implements Imports, EventListener {
         return true;
     }
 
-    @Override
-    public void onEvent(Event event) {
-        if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 1000) {
-            if (run) {
-                if (mc.thePlayer != null) {
-                    if (mc.isSingleplayer()) {
-                        update("Playing Singleplayer Odini4ka ebani", "In game.");
-                    } else if (mc.getCurrentServerData() != null) {
-                        update("AutoTool fucks " + mc.getCurrentServerData().serverIP, "In game.");
-                    }
-                } else {
-                    if (mc.currentScreen instanceof GuiMultiplayer) {
-                        update("Vibiraet server", "Idle.");
-                    } else if (mc.currentScreen instanceof MainScreen) {
-                        update("Zakontril main menu", "Idle.");
-                    }
-                }
+    public void updateInformation() {
+        DiscordRPCModule discordRPCModule = Modules.getModule(DiscordRPCModule.class);
 
-                DiscordRPC.discordRunCallbacks();
-                lastTime = System.currentTimeMillis();
+        if (discordRPCModule != null && discordRPCModule.isToggled()) {
+            if (mc.thePlayer != null) {
+                state = mc.isSingleplayer() ?
+                    "В одиночной игре." :
+                    "На сервере: " + mc.getCurrentServerData().serverIP;
+                details = "В игре.";
+            } else {
+                state = mc.currentScreen instanceof GuiMultiplayer ? "Выбор сервера." : "Главное меню";
+                details = "Без действует.";
             }
         }
+
+        update(state, details);
     }
 
     public static void stop() {
-        ConsoleScreen.log("§a[§9Discord§a]§4 Rich Presence was offline.");
+        ConsoleScreen.log("§a[§9Discord§a]§4 Активность остановлена.");
         DiscordRPC.discordShutdown();
-        run = false;
     }
 
     public static void update(String line1, String line2) {
-        DiscordRichPresence.Builder rpc = new DiscordRichPresence.Builder(line2);
-        rpc.setDetails(line1);
-        rpc.setBigImage("logo", "AutoTool " + Client.INST.getVersion());
-        rpc.setStartTimestamps(timestamp);
+        DiscordRichPresence.Builder rpc = new DiscordRichPresence.Builder(line2)
+            .setDetails(line1)
+            .setBigImage("logo", "AutoTool " + Client.INST.getCLIENT_VERSION())
+            .setStartTimestamps(timestamp);
+
         DiscordRPC.discordUpdatePresence(rpc.build());
     }
 }

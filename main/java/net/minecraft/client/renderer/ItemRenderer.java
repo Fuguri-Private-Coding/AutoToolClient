@@ -4,12 +4,11 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomItemPos;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.event.events.RenderItemEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.UpdateRenderingItem;
+import fuguriprivatecoding.autotoolrecode.event.events.render.RenderItemEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.UpdateRenderingItem;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Animations;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.NoRender;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -357,10 +356,6 @@ public class ItemRenderer {
                 } else {
                     this.doItemUsedTransformations(f1);
                     this.transformFirstPersonItem(f, f1);
-                }
-
-                if (shadows.isToggled() && shadows.module.get("ItemsFirstPerson")) {
-                    BloomUtils.addToDraw(() -> this.renderItem(abstractclientplayer, this.itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON));
                 }
 
                 this.renderItem(abstractclientplayer, this.itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);

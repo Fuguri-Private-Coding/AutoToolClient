@@ -61,7 +61,7 @@ public class Modules {
 			new AutoTool(),
 			new AntiFireball(),
 			new ChestESP(),
-			new DiscordRPC(),
+			new DiscordRPCModule(),
 			new Phase(),
 			new NoScreenClose(),
 			new AirStuck(),
@@ -88,7 +88,6 @@ public class Modules {
 			new Blink(),
 			new Animations(),
 			new MotionBlur(),
-			new AutoPlace(),
 			new ClickSettings(),
 			new Test(),
 			new NameTags(),
@@ -113,7 +112,7 @@ public class Modules {
 			new Scaffold(),
 			new HighJump(),
 			new LongJump()
-		);
+        );
 	}
 
 	private void register(Module... modulesToRegister) {

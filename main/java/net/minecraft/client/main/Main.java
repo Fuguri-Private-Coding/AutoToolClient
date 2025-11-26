@@ -14,7 +14,7 @@ import java.util.List;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
-import fuguriprivatecoding.autotoolrecode.utils.hwid.HWIDUtils;
+import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWIDUtils;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;

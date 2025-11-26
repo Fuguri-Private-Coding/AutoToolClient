@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -9,8 +9,8 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
@@ -37,16 +37,16 @@ public class ChestESP extends Module {
             for (TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {
                 switch (tileEntity) {
                     case TileEntityChest tileEntityChest -> {
-                        if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityChest.getPos(), glowColor.getFadedFloatColor()));
-                        if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityChest.getPos(), Color.WHITE));
+                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityChest.getPos(), glowColor.getFadedFloatColor()));
+                        if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityChest.getPos(), Color.WHITE));
 
                         RenderUtils.drawBlockESP(tileEntityChest.getPos(), color.getFadedFloatColor());
                         GlStateManager.resetColor();
                     }
 
                     case TileEntityEnderChest tileEntityEnderChest when enderChest.isToggled() -> {
-                        if (glow.isToggled()) BloomRealUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityEnderChest.getPos(), glowColor.getFadedFloatColor()));
-                        if (blur.isToggled()) GaussianBlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityEnderChest.getPos(), Color.WHITE));
+                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityEnderChest.getPos(), glowColor.getFadedFloatColor()));
+                        if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityEnderChest.getPos(), Color.WHITE));
 
                         RenderUtils.drawBlockESP(tileEntityEnderChest.getPos(), color.getFadedFloatColor());
                         GlStateManager.resetColor();

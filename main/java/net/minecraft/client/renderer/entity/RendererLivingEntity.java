@@ -6,10 +6,9 @@ import java.awt.*;
 import java.nio.FloatBuffer;
 import java.util.List;
 
-import fuguriprivatecoding.autotoolrecode.event.events.DrawEntityEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.DrawEntityEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.EntityColor;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;

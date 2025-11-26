@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -63,12 +64,12 @@ public class TextButton extends GuiTextField {
         float cursorWidth = 0.5f;
         float cursorHeight = 9 * hoverAnim.getValue() + keyTypedAnim.getValue() * 2;
 
-        Color rectColor = ColorUtils.interpolateColor(new Color(0,0,0,0.7f), new Color(0,0,0,0.8f), hoverAnim.getValue());
-        Color cursorColor = ColorUtils.interpolateColor(new Color(0,0,0,0), Color.WHITE, hoverAnim.getValue());
+        Color rectColor = ColorUtils.interpolateColor(Colors.BLACK.withAlpha(0.7f), Colors.BLACK.withAlpha(0.8f), hoverAnim.getValue());
+        Color cursorColor = ColorUtils.interpolateColor(Colors.BLACK, Colors.WHITE, hoverAnim.getValue());
 
         RoundedUtils.drawRect(x, y, width, height, height / 2f, rectColor);
         RoundedUtils.drawRect(cursorX, cursorY, cursorWidth, cursorHeight, 0.5f * hoverAnim.getValue(), cursorColor);
-        fontRenderer.drawCenteredString(getText(), textX, textY, Color.WHITE);
+        fontRenderer.drawCenteredString(getText(), textX, textY, Colors.WHITE);
     }
 
     @Override

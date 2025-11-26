@@ -28,7 +28,7 @@ public class MicrosoftAuthCallback implements Closeable {
             server.createContext("/", ex -> {
                 AltScreen.updateStatus("Microsoft authentication callback request: " + ex.getRemoteAddress());
                 try {
-                    final byte[] messageToHTML = "Закрывай страницу братишка все сработало можешь не ссать!!".getBytes(StandardCharsets.UTF_8);
+                    final byte[] messageToHTML = "Аккаунт успешно добавлен, можно закрывать страницу.".getBytes(StandardCharsets.UTF_8);
 
                     progressHandler.accept("Authentication... (%s)", new Object[]{"preparing"});
                     ex.getResponseHeaders().add("Content-Type", "text/html; charset=UTF-8");

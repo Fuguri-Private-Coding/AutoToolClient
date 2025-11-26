@@ -1,32 +1,33 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.connect;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.event.events.player.ChangeSprintEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
-import java.awt.*;
+
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -77,14 +78,15 @@ public class Ping extends Module {
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f,5f,1f,0.1f);
 
+    final CheckBox glow = new CheckBox("Glow", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this);
+
     private int delays = 50;
     private long lastResetTime, delayBeforeNextLag;
     private final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
     private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
 
     Vec3 lastPos, currentPos;
-
-    Glow shadows;
 
     @Override
     public void onDisable() {
@@ -93,7 +95,6 @@ public class Ping extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Modules.getModule(Glow.class);
         if (mc.thePlayer == null || mc.theWorld == null) return;
         if (mc.isIntegratedServerRunning()) return;
         long currentTime = System.currentTimeMillis();
@@ -175,38 +176,26 @@ public class Ping extends Module {
                 Vec3 pos = new Vec3(x, y, z);
                 switch (renderModes.getMode()) {
                     case "HitBox" -> {
+                        RenderUtils.start3D();
                         Vec3 diff = pos.subtract(player.getPositionVector());
                         AxisAlignedBB bb = player.getEntityBoundingBox().offset(diff);
-                        if (shadows.module.get("Ping") && shadows.isToggled()) {
-                            BloomUtils.addToDraw(() -> renderHitBox(bb, Color.white, lineWidth.getValue()));
+                        if (glow.isToggled()) {
+                            BloomUtils.addToDraw(() -> RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue()));
                         }
-                        renderHitBox(bb, color.getFadedColor(), lineWidth.getValue());
+                        RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());
+                        RenderUtils.stop3D();
                     }
 
                     case "Player" -> {
-                        if (shadows.module.get("Ping") && shadows.isToggled()) {
-                            BloomUtils.addToDraw(() -> renderPlayer(player, pos, player.rotationYawHead, mc.timer.renderPartialTicks));
+                        if (glow.isToggled()) {
+                            BloomUtils.addToDraw(() -> RenderUtils.renderPlayer(player, pos, player.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor()));
                         }
-                        renderPlayer(player, pos, player.rotationYawHead, mc.timer.renderPartialTicks);
+                        RenderUtils.renderPlayer(player, pos, player.rotationYawHead, mc.timer.renderPartialTicks);
                     }
                 }
             }
             default -> {}
         }
-    }
-
-    private void renderPlayer(Entity target, Vec3 pos, float rotationYawHead, float partialTicks) {
-        mc.entityRenderer.enableLightmap();
-        RenderHelper.enableStandardItemLighting();
-        mc.getRenderManager().doRenderEntity(target, pos.xCoord, pos.yCoord, pos.zCoord, rotationYawHead, partialTicks, true);
-        mc.entityRenderer.disableLightmap();
-        RenderHelper.disableStandardItemLighting();
-    }
-
-    private void renderHitBox(AxisAlignedBB bb, Color color, float lineWidth) {
-        RenderUtils.start3D();
-        RenderUtils.drawHitBox(bb, color, lineWidth);
-        RenderUtils.stop3D();
     }
 
     private void handlePackets() {
@@ -230,15 +219,13 @@ public class Ping extends Module {
         resetAllPackets();
         lastResetTime = System.currentTimeMillis();
         delayBeforeNextLag = time;
-        if (delayIncreaseType.getMode().equalsIgnoreCase("Smooth")) delays = 0;
-        if (delayIncreaseType.getMode().equalsIgnoreCase("Instant")) delays = delay.getRandomizedIntValue();
+        if (delayIncreaseType.is("Smooth")) delays = 0;
+        if (delayIncreaseType.is("Instant")) delays = delay.getRandomizedIntValue();
     }
 
     private void updateDelay(int addDelay) {
         delays += addDelay;
-        if (delays > delay.getMaxValue()) {
-            delays = (int) delay.getMaxValue();
-        }
+        delays = (int) Math.clamp(delays, delay.getMinValue(), delay.getMaxValue());
     }
 
     private record PacketWithTime(Packet packet, long time) {}

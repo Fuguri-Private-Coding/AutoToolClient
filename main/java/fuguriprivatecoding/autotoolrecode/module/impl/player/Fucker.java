@@ -1,7 +1,9 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.event.events.player.*;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -9,9 +11,9 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
@@ -19,11 +21,9 @@ import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -75,6 +75,13 @@ public class Fucker extends Module {
 
             searchBedPosition();
 
+            if (bedPos != null) {
+                Rot needRot = RotUtils.calculate(new Vector3d(bedPos.getX(), bedPos.getY(), bedPos.getZ()), getEnumFacing(bedPos));
+                Rot.setServerRotation(needRot.fix());
+            }
+        }
+
+        if (event instanceof LegitClickTimingEvent) {
             destroy();
         }
 
@@ -192,9 +199,6 @@ public class Fucker extends Module {
 
     public void destroy() {
         if (bedPos != null) {
-            Rot needRot = RotUtils.calculate(new Vector3d(bedPos.getX(), bedPos.getY(), bedPos.getZ()), getEnumFacing(bedPos));
-            Rot.setServerRotation(needRot.fix());
-
             mine(bedPos);
         } else {
             reset();

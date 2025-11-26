@@ -2,30 +2,24 @@ package fuguriprivatecoding.autotoolrecode.module.impl.connect;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
-import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
-import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
@@ -55,6 +49,9 @@ public class BackTrack extends Module {
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, () -> render.getMode().equalsIgnoreCase("HitBox"), 1f,5f,1f,0.1f);
 
+    final CheckBox glow = new CheckBox("Glow", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this);
+
     CheckBox whileKillAura = new CheckBox("WhileKillAura", this, true);
     CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
 
@@ -65,11 +62,8 @@ public class BackTrack extends Module {
 
     private int delayBetweenBackTracks;
 
-    private Glow shadows;
-
     @Override
     public void onEvent(Event event) {
-        if (shadows == null) shadows = Modules.getModule(Glow.class);
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();
             if (target == null || e.isCanceled() || e.getDirection() != PacketDirection.INCOMING) return;
@@ -150,48 +144,32 @@ public class BackTrack extends Module {
                 AxisAlignedBB bb = target.getEntityBoundingBox().offset(pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ);
                 switch (render.getMode()) {
                     case "Player" -> {
-                        if (shadows.module.get("BackTrack") && shadows.isToggled()) {
-                            BloomUtils.addToDraw(() -> renderPlayer(pos, target, target.rotationYawHead, mc.timer.renderPartialTicks));
+                        if (glow.isToggled()) {
+                            BloomUtils.addToDraw(() -> RenderUtils.renderPlayer(target, pos, target.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor()));
                         }
-                        renderPlayer(pos, target, target.rotationYawHead, mc.timer.renderPartialTicks);
+                        RenderUtils.renderPlayer(target, pos, target.rotationYawHead, mc.timer.renderPartialTicks);
                     }
 
                     case "Box" -> {
-                        if (shadows.module.get("BackTrack") && shadows.isToggled()) {
-                            BloomUtils.addToDraw(() -> renderBox(bb, Color.white));
+                        RenderUtils.start3D();
+                        if (glow.isToggled()) {
+                            BloomUtils.addToDraw(() -> RenderUtils.drawBoundingBox(bb, glowColor.getFadedColor()));
                         }
-                        renderBox(bb, color.getFadedColor());
+                        RenderUtils.drawBoundingBox(bb, color.getFadedColor());
+                        RenderUtils.stop3D();
                     }
 
                     case "HitBox" -> {
-                        if (shadows.module.get("BackTrack") && shadows.isToggled()) {
-                            BloomUtils.addToDraw(() -> renderHitBox(bb, Color.white, lineWidth.getValue()));
+                        RenderUtils.start3D();
+                        if (glow.isToggled()) {
+                            BloomUtils.addToDraw(() -> RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue()));
                         }
-                        renderHitBox(bb, color.getFadedColor(), lineWidth.getValue());
+                        RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());
+                        RenderUtils.stop3D();
                     }
                 }
             }
         }
-    }
-
-    private void renderHitBox(AxisAlignedBB bb, Color color, float lineWidth) {
-        RenderUtils.start3D();
-        RenderUtils.drawHitBox(bb,color, lineWidth);
-        RenderUtils.stop3D();
-    }
-
-    private void renderBox(AxisAlignedBB bb, Color color) {
-        RenderUtils.start3D();
-        RenderUtils.drawBoundingBox(bb,color);
-        RenderUtils.stop3D();
-    }
-
-    private void renderPlayer(Vec3 pos, Entity target, float rotationYawHead, float partialTicks) {
-        mc.entityRenderer.enableLightmap();
-        RenderHelper.enableStandardItemLighting();
-        mc.getRenderManager().doRenderEntity(target, pos.xCoord, pos.yCoord, pos.zCoord, rotationYawHead, partialTicks, true);
-        mc.entityRenderer.disableLightmap();
-        RenderHelper.disableStandardItemLighting();
     }
 
     private void handle(boolean clear) {

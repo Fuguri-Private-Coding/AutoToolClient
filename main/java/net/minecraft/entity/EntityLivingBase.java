@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.event.events.JumpEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.UpdateBodyRotationEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.JumpEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.UpdateBodyRotationEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Animations;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -107,19 +107,17 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     public double newRotationPitch;
     private boolean potionsNeedUpdate = true;
     private EntityLivingBase entityLivingToAttack;
+    @Getter
     private int revengeTimer;
+    @Getter
     private EntityLivingBase lastAttacker;
+    @Getter
     private int lastAttackerTime;
     private float landMovementFactor;
     public int jumpTicks;
     private float absorptionAmount;
-    public double lRealX, lRealY, lRealZ, realX, realY, realZ;
     public double nx, ny, nz, rx, ry, rz, lrx, lry, lrz;
     public int posRotIncrements;
-
-    public Vec3 getRealPos() {
-        return new Vec3(realX, realY, realZ);
-    }
 
     public void onKillCommand() {
         this.attackEntityFrom(DamageSource.outOfWorld, Float.MAX_VALUE);
@@ -170,7 +168,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
             float f = (float) MathHelper.ceiling_float_int(this.fallDistance - 3.0F);
 
             if (block.getMaterial() != Material.air) {
-                double d0 = (double) Math.min(0.2F + f / 15.0F, 10.0F);
+                double d0 = Math.min(0.2F + f / 15.0F, 10.0F);
 
                 if (d0 > 2.5D) {
                     d0 = 2.5D;
@@ -339,21 +337,9 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         return this.entityLivingToAttack;
     }
 
-    public int getRevengeTimer() {
-        return this.revengeTimer;
-    }
-
     public void setRevengeTarget(EntityLivingBase livingBase) {
         this.entityLivingToAttack = livingBase;
         this.revengeTimer = this.ticksExisted;
-    }
-
-    public EntityLivingBase getLastAttacker() {
-        return this.lastAttacker;
-    }
-
-    public int getLastAttackerTime() {
-        return this.lastAttackerTime;
     }
 
     public void setLastAttacker(Entity entityIn) {
@@ -372,7 +358,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
 
     public void writeEntityToNBT(NBTTagCompound tagCompound) {
         tagCompound.setFloat("HealF", this.getHealth());
-        tagCompound.setShort("Health", (short) ((int) Math.ceil((double) this.getHealth())));
+        tagCompound.setShort("Health", (short) ((int) Math.ceil(this.getHealth())));
         tagCompound.setShort("HurtTime", (short) this.hurtTime);
         tagCompound.setInteger("HurtByTimestamp", this.revengeTimer);
         tagCompound.setShort("DeathTime", (short) this.deathTime);
@@ -433,7 +419,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
             } else if (nbtbase.getId() == 5) {
                 this.setHealth(((NBTTagFloat) nbtbase).getFloat());
             } else if (nbtbase.getId() == 2) {
-                this.setHealth((float) ((NBTTagShort) nbtbase).getShort());
+                this.setHealth(((NBTTagShort) nbtbase).getShort());
             }
         }
 
@@ -446,8 +432,8 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         Iterator<Integer> iterator = this.activePotionsMap.keySet().iterator();
 
         while (iterator.hasNext()) {
-            Integer integer = (Integer) iterator.next();
-            PotionEffect potioneffect = (PotionEffect) this.activePotionsMap.get(integer);
+            Integer integer = iterator.next();
+            PotionEffect potioneffect = this.activePotionsMap.get(integer);
 
             if (!potioneffect.onUpdate(this)) {
                 if (!this.worldObj.isRemote) {
@@ -471,7 +457,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         boolean flag1 = this.dataWatcher.getWatchableObjectByte(8) > 0;
 
         if (i > 0) {
-            boolean flag = false;
+            boolean flag;
 
             if (!this.isInvisible()) {
                 flag = this.rand.nextBoolean();
@@ -483,10 +469,10 @@ public abstract class EntityLivingBase extends Entity implements Imports {
                 flag &= this.rand.nextInt(5) == 0;
             }
 
-            if (flag && i > 0) {
+            if (flag) {
                 double d0 = (double) (i >> 16 & 255) / 255.0D;
                 double d1 = (double) (i >> 8 & 255) / 255.0D;
-                double d2 = (double) (i >> 0 & 255) / 255.0D;
+                double d2 = (double) (i & 255) / 255.0D;
                 this.worldObj.spawnParticle(flag1 ? EnumParticleTypes.SPELL_MOB_AMBIENT : EnumParticleTypes.SPELL_MOB, this.posX + (this.rand.nextDouble() - 0.5D) * (double) this.width, this.posY + this.rand.nextDouble() * (double) this.height, this.posZ + (this.rand.nextDouble() - 0.5D) * (double) this.width, d0, d1, d2, new int[0]);
             }
         }
@@ -513,8 +499,8 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         Iterator<Integer> iterator = this.activePotionsMap.keySet().iterator();
 
         while (iterator.hasNext()) {
-            Integer integer = (Integer) iterator.next();
-            PotionEffect potioneffect = (PotionEffect) this.activePotionsMap.get(integer);
+            Integer integer = iterator.next();
+            PotionEffect potioneffect = this.activePotionsMap.get(integer);
 
             if (!this.worldObj.isRemote) {
                 iterator.remove();
@@ -536,14 +522,14 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     }
 
     public PotionEffect getActivePotionEffect(Potion potionIn) {
-        return (PotionEffect) this.activePotionsMap.get(Integer.valueOf(potionIn.id));
+        return this.activePotionsMap.get(Integer.valueOf(potionIn.id));
     }
 
     public void addPotionEffect(PotionEffect potioneffectIn) {
         if (this.isPotionApplicable(potioneffectIn)) {
             if (this.activePotionsMap.containsKey(Integer.valueOf(potioneffectIn.getPotionID()))) {
-                ((PotionEffect) this.activePotionsMap.get(Integer.valueOf(potioneffectIn.getPotionID()))).combine(potioneffectIn);
-                this.onChangedPotionEffect((PotionEffect) this.activePotionsMap.get(Integer.valueOf(potioneffectIn.getPotionID())), true);
+                this.activePotionsMap.get(Integer.valueOf(potioneffectIn.getPotionID())).combine(potioneffectIn);
+                this.onChangedPotionEffect(this.activePotionsMap.get(Integer.valueOf(potioneffectIn.getPotionID())), true);
             } else {
                 this.activePotionsMap.put(Integer.valueOf(potioneffectIn.getPotionID()), potioneffectIn);
                 this.onNewPotionEffect(potioneffectIn);
@@ -572,7 +558,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     }
 
     public void removePotionEffect(int potionId) {
-        PotionEffect potioneffect = (PotionEffect) this.activePotionsMap.remove(Integer.valueOf(potionId));
+        PotionEffect potioneffect = this.activePotionsMap.remove(Integer.valueOf(potionId));
 
         if (potioneffect != null) {
             this.onFinishedPotionEffect(potioneffect);

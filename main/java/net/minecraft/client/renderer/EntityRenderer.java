@@ -9,17 +9,16 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
-import fuguriprivatecoding.autotoolrecode.event.events.DrawBlockHighlightEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.Render2DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.DrawBlockHighlightEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomRealUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GaussianBlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -1097,7 +1096,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
                     this.mc.ingameGUI.renderGameOverlay(partialTicks);
 
-                    if (blur.isToggled()) GaussianBlurUtils.draw();
+                    if (blur.isToggled()) BlurUtils.draw();
                     this.mc.getFramebuffer().bindFramebuffer(false);
                     this.framebuffer.bindFramebufferTexture();
                     Shader.drawQuad();
@@ -1115,7 +1114,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.enableAlpha();
 
                     if (shadows.isToggled()) BloomUtils.draw();
-                    if (shadows.isToggled()) BloomRealUtils.draw();
                     this.mc.getFramebuffer().bindFramebuffer(false);
                     this.framebuffer.bindFramebufferTexture();
                     Shader.drawQuad();
@@ -1519,8 +1517,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         if (flag) {
             Shaders.beginWeather();
         }
-
-        if (shadows.module.get("Weather") && shadows.isToggled()) BloomUtils.addToDraw(() -> this.renderRainSnow(partialTicks));
 
         this.renderRainSnow(partialTicks);
 

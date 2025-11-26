@@ -1,10 +1,10 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.MoveButtonEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.PacketEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MoveButtonEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.AttackEvent;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;

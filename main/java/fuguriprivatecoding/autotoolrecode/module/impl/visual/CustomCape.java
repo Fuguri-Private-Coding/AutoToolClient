@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.WorldChangeEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -28,7 +28,7 @@ public class CustomCape extends Module {
         ;
 
     @Getter
-    File capeDirectory = new File(Client.INST.getName() + "/capes");
+    File capeDirectory = new File(Client.INST.getCLIENT_DIR() + "/capes");
 
     DynamicTexture dynamicTexture;
     BufferedImage capeImage;
@@ -36,7 +36,7 @@ public class CustomCape extends Module {
     File capeFile;
 
     public CustomCape() {
-        if (!capeDirectory.exists()) capeDirectory.mkdirs();
+        if (capeDirectory.mkdirs()) System.out.println("Successful created capeDirectory.");
 
         if (capeDirectory.listFiles() != null && Arrays.stream(capeDirectory.listFiles()).toList().isEmpty()) {
             downloadCapes();

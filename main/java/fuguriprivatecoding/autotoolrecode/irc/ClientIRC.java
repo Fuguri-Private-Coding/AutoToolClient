@@ -96,7 +96,7 @@ public class ClientIRC extends ListenerAdapter implements Imports {
 
     public void connectClient() {
         MessageChannel onlineChannel = getOnlineChannel();
-        String messageContent = Client.INST.getProfile().toString() + " " + Client.INST.getVersion();
+        String messageContent = Client.INST.getProfile().toString() + " " + Client.INST.getCLIENT_VERSION();
 
         onlineChannel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.ONLINE_MESSAGE_ID = sendMessage.getIdLong());
     }

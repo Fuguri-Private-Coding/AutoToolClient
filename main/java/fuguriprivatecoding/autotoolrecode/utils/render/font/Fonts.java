@@ -20,7 +20,7 @@ public class Fonts implements Imports {
 
     public HashMap<String, ClientFontRenderer> fonts = new HashMap<>();
 
-    File fontsDirectory = new File(Client.INST.getName() + "/fonts");
+    File fontsDirectory = new File(Client.INST.getCLIENT_DIR() + "/fonts");
 
     int fontsCount;
 

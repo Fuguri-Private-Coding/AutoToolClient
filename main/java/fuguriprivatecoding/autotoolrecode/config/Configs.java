@@ -25,61 +25,14 @@ import java.util.Map;
 @UtilityClass
 public class Configs implements Imports {
 
-    @Getter File configsDirectory, bindsDirectory;
-    @Getter File bindFile;
+    @Getter File configsDirectory = new File(Client.INST.getCLIENT_DIR() + "/configs");
     @Getter private List<Config> configs = new ArrayList<>();
     @Getter Config defaultConfig = new Config("default");
 
     public void init() {
-        configsDirectory = new File(Client.INST.getName() + "/configs");
-        bindsDirectory = new File(Client.INST.getName() + "/binds");
-        bindFile = new File(bindsDirectory, "binds.json");
-
-        try {
-            FileUtils.createDirectoriesIfNotExists(configsDirectory, bindsDirectory);
-        } catch (IOException e) {
-            System.out.println("Failed create directories.");
-        }
+        if (configsDirectory.mkdirs()) System.out.println("Successful created configsDirectory.");
 
         refreshConfigs();
-    }
-
-    public void loadBinds() {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(bindFile));
-            JsonParser parser = new JsonParser();
-            JsonObject json = (JsonObject) parser.parse(reader);
-            reader.close();
-            for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-                Module module = Modules.getModule(entry.getKey());
-                if (module == null) {
-                    continue;
-                }
-                JsonObject moduleObject = (JsonObject) entry.getValue();
-                module.setKey(moduleObject.get("key").getAsInt());
-
-            }
-        } catch (RuntimeException | IOException e) {
-            e.printStackTrace(System.out);
-        }
-    }
-
-    public void saveBinds() {
-        FileUtils.createIfNotExists(bindFile);
-        JsonObject mainObject = new JsonObject();
-        for (Module module : Modules.getModules()) {
-            JsonObject moduleObject = new JsonObject();
-            moduleObject.addProperty("key", module.getKey());
-            mainObject.add(module.getName(), moduleObject);
-        }
-        try {
-            PrintWriter writer = new PrintWriter(new FileWriter(bindFile));
-            Gson prettyGson = new GsonBuilder().create();
-            writer.println(prettyGson.toJson(mainObject));
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace(System.out);
-        }
     }
 
     private void logError(String message) {
@@ -268,6 +221,7 @@ public class Configs implements Imports {
     }
 
     private Config loadConfigFromFile(File configFile) {
+        if (configFile == null) return null;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(configFile));
             JsonParser parser = new JsonParser();

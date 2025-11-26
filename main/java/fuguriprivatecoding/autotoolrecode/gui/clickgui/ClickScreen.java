@@ -5,7 +5,7 @@ import fuguriprivatecoding.autotoolrecode.config.Configs;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
-import fuguriprivatecoding.autotoolrecode.event.events.TickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.gui.config.ConfigScreen;
 import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -160,7 +160,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 			lastMouse.set(mouseX, mouseY);
 		}
 
-		final float clientNameWidth = (float) fontRenderer.getStringWidth(Client.INST.getName());
+		final float clientNameWidth = (float) fontRenderer.getStringWidth(Client.INST.CLIENT_NAME);
 
 		modulesScrolls.endY	= modulesScroll;
 		settingsScrolls.endY = settingsScroll;
@@ -177,7 +177,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
 		if (clickGui.glow.isToggled()) {
-			BloomRealUtils.addToDraw(() -> {
+			BloomUtils.addToDraw(() -> {
 				RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
 				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.getValue(), 50, 2, 0, clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
 				if (guis.getValue() > 0) RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
@@ -185,7 +185,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		}
 
 		if (clickGui.blur.isToggled()) {
-			GaussianBlurUtils.addToDraw(() -> {
+			BlurUtils.addToDraw(() -> {
 				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
 				RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Color.black);
 			});
@@ -874,7 +874,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 		if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y) return;
 
-		final float clientNameWidth = (float) fontRenderer.getStringWidth(Client.INST.getName());
+		final float clientNameWidth = (float) fontRenderer.getStringWidth(Client.INST.CLIENT_NAME);
 
 		boolean resize = mouseX > background.x + sizeBackground.x - 5 && mouseX < background.x + sizeBackground.x && mouseY > background.y + sizeBackground.y - 5 && mouseY < background.y + sizeBackground.y;
 

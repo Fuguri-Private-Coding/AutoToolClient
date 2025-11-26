@@ -5,11 +5,11 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import net.minecraft.network.play.client.C14PacketTabComplete;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -33,13 +33,8 @@ public class GuiChat extends GuiScreen {
     protected GuiTextField inputField;
     private String defaultInputFieldText = "";
 
-
-    Glow shadows;
-    Animation2D animation2D;
-
-    {
-        animation2D = new Animation2D();
-    }
+    Glow glow;
+    EasingAnimation animation2D = new EasingAnimation();
 
     public GuiChat() {
     }
@@ -218,13 +213,13 @@ public class GuiChat extends GuiScreen {
     }
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (shadows == null) shadows = Modules.getModule(Glow.class);
-        animation2D.endX = fontRendererObj.getStringWidth(inputField.getText() + "_") + 4;
-        animation2D.update(50f);
-        if (shadows.isToggled() && shadows.module.get("Chat")) {
-            BloomUtils.addToDraw(() -> drawRect(2f, this.height - 14f, 2f + animation2D.x, this.height - 2f, Integer.MIN_VALUE));
+        if (glow == null) glow = Modules.getModule(Glow.class);
+        animation2D.setEnd(fontRendererObj.getStringWidth(inputField.getText() + "_") + 4);
+        animation2D.update(6f, Easing.OUT_CUBIC);
+        if (glow.isToggled() && glow.module.get("Chat")) {
+            BloomUtils.addToDraw(() -> drawRect(2f, this.height - 14f, 2f + animation2D.getValue(), this.height - 2f, glow.chatColor.getFadedColor().getRGB()));
         }
-        drawRect(2f, this.height - 14f, 2f + animation2D.x, this.height - 2f, Integer.MIN_VALUE);
+        drawRect(2f, this.height - 14f, 2f + animation2D.getValue(), this.height - 2f, Integer.MIN_VALUE);
 
         this.inputField.drawTextBox();
         IChatComponent ichatcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
