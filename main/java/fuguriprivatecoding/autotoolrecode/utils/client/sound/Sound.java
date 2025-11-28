@@ -9,17 +9,7 @@ import java.io.File;
 /**
  * The type Tip sound player.
  */
-public class Sound {
-    private final File file;
-
-    /**
-     * Instantiates a new Tip sound player.
-     *
-     * @param file the file
-     */
-    public Sound(File file) {
-        this.file = file;
-    }
+public record Sound(File file) {
 
     /**
      * Async play.

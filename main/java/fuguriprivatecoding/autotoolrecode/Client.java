@@ -5,9 +5,9 @@ import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWIDUtils;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
-import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.config.Configs;
@@ -15,9 +15,9 @@ import fuguriprivatecoding.autotoolrecode.bind.KeyBinds;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.alt.Accounts;
 
-import fuguriprivatecoding.autotoolrecode.gui.altmanager.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.sound.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.sound.*;
+import fuguriprivatecoding.autotoolrecode.gui.altmanager.*;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.*;
 import fuguriprivatecoding.autotoolrecode.utils.packet.*;
@@ -32,6 +32,7 @@ import fuguriprivatecoding.autotoolrecode.irc.*;
 
 import net.dv8tion.jda.api.entities.Message;
 import de.florianmichael.viamcp.ViaMCP;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import javax.swing.*;
 import lombok.*;
@@ -44,7 +45,10 @@ public enum Client implements Imports, EventListener {
 	public final String CLIENT_NAME = "AutoTool";
     public final ClientVersion CLIENT_VERSION = new ClientVersion(4, 5,2);
 
-    final File CLIENT_DIR = new File(CLIENT_NAME);
+    private final String RESOURCES_ID = "minecraft";
+    private final String RESOURCES_CLIENT_ID = "autotool/";
+
+    public final File CLIENT_DIR = new File(CLIENT_NAME);
 
 	@Setter ClientIRC irc;
 	@Setter Profile profile;
@@ -62,7 +66,7 @@ public enum Client implements Imports, EventListener {
 
         irc.connectClient();
 
-        if (CLIENT_DIR.mkdirs()) System.out.println("Successful created clientDirectory.");
+        if (CLIENT_DIR.mkdirs()) System.out.println("Successful created Сlient Directory.");
 
 		Events.register(this);
 
@@ -97,11 +101,11 @@ public enum Client implements Imports, EventListener {
 
 		mc.gameSettings.ofFastRender = false;
 
-        Discord.init();
-
 		Configs.loadConfig(Configs.getDefaultConfig());
 
-		starting = false;
+        Discord.init();
+
+        starting = false;
 
 		double elapsedNanos = System.nanoTime() - start;
 		ConsoleScreen.log("Client initialized in " + (float) (elapsedNanos / 1000000000D) + " seconds.");
@@ -139,6 +143,10 @@ public enum Client implements Imports, EventListener {
 
     public String getFullName() {
         return CLIENT_NAME + " " + CLIENT_VERSION;
+    }
+
+    public ResourceLocation of(String path) {
+        return new ResourceLocation(RESOURCES_ID, RESOURCES_CLIENT_ID + path);
     }
 
     @Override

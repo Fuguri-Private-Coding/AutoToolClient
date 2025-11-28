@@ -3,9 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.render.font;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.NameProtect;
-import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
@@ -13,9 +11,6 @@ import org.lwjgl.opengl.GL14;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class ClientFontRenderer implements Imports {
 
@@ -105,9 +100,9 @@ public class ClientFontRenderer implements Imports {
         boolean bold = false;
 
         for (int i = 0; i < text.length(); i++) {
-            char c = text.charAt(i);
+            char charAt = text.charAt(i);
 
-            if (c == COLOR_INVOKER) {
+            if (charAt == COLOR_INVOKER) {
                 i++;
                 if (i < text.length()) {
                     char colorChar = text.charAt(i);
@@ -124,12 +119,12 @@ public class ClientFontRenderer implements Imports {
                 continue;
             }
 
-            if (c == '\n') {
+            if (charAt == '\n') {
                 continue;
             }
 
-            if (c < charData.length && charData[c] != null) {
-                CharData data = bold ? boldChars[c] != null ? boldChars[c] : charData[c] : charData[c];
+            if (charAt < charData.length && charData[charAt] != null) {
+                CharData data = bold ? boldChars[charAt] != null ? boldChars[charAt] : charData[charAt] : charData[charAt];
                 width += (int) (data.width - 8 + charOffset * fontScaleOffset);
             }
         }
@@ -237,7 +232,6 @@ public class ClientFontRenderer implements Imports {
         for (int i = 0; i < size; i++) {
             char character = text.charAt(i);
 
-
             if (character == '\n') {
                 x = startX;
                 y += FONT_HEIGHT * 4;
@@ -315,7 +309,7 @@ public class ClientFontRenderer implements Imports {
         GL11.glVertex2f(x2 + width, y2 + height);
     }
 
-    static class CharData {
+    public static class CharData {
         public int width;
         public int height;
         public int storedX;

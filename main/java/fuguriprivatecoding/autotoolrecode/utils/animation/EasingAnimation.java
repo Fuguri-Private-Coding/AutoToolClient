@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.utils.animation;
 
-import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import lombok.Getter;
 import lombok.Setter;

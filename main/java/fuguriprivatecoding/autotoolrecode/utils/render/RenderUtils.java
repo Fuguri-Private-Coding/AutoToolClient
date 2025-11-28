@@ -46,16 +46,21 @@ public class RenderUtils implements Imports {
         double posZ = blockPos[0].getZ() - mc.getRenderManager().viewerPosZ;
         GL11.glDepthMask(false);
         AxisAlignedBB axisAlignedBB;
+
+        final float HEIGHT = 0.5625F;
+
         if (blockPos[0].getX() != blockPos[1].getX()) {
-            if (blockPos[0].getX() > blockPos[1].getX()) {
-                axisAlignedBB = new AxisAlignedBB(posX - 1.0, posY, posZ, posX + 1.0, posY + 0.5625F, posZ + 1.0);
-            } else {
-                axisAlignedBB = new AxisAlignedBB(posX, posY, posZ, posX + 2.0, posY + 0.5625F, posZ + 1.0);
-            }
-        } else if (blockPos[0].getZ() > blockPos[1].getZ()) {
-            axisAlignedBB = new AxisAlignedBB(posX, posY, posZ - 1.0, posX + 1.0, posY + 0.5625F, posZ + 1.0);
+            boolean isFirstBlockRight = blockPos[0].getX() > blockPos[1].getX();
+            double minX = isFirstBlockRight ? posX - 1.0 : posX;
+            double maxX = isFirstBlockRight ? posX + 1.0 : posX + 2.0;
+
+            axisAlignedBB = new AxisAlignedBB(minX, posY, posZ, maxX, posY + HEIGHT, posZ + 1.0);
         } else {
-            axisAlignedBB = new AxisAlignedBB(posX, posY, posZ, posX + 1.0, posY + 0.5625F, posZ + 2.0);
+            boolean isFirstBlockBack = blockPos[0].getZ() > blockPos[1].getZ();
+            double minZ = isFirstBlockBack ? posZ - 1.0 : posZ;
+            double maxZ = isFirstBlockBack ? posZ + 1.0 : posZ + 2.0;
+
+            axisAlignedBB = new AxisAlignedBB(posX, posY, minZ, posX + 1.0, posY + HEIGHT, maxZ);
         }
         RenderUtils.drawBoundingBox(axisAlignedBB, color);
         GlStateManager.resetColor();
@@ -137,7 +142,7 @@ public class RenderUtils implements Imports {
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
-    public static void glColor(final int n) { // credit to the creator of raven b4
+    public static void glColor(final int n) {
         GL11.glColor4f((float) (n >> 16 & 0xFF) / 255.0f, (float) (n >> 8 & 0xFF) / 255.0f, (float) (n & 0xFF) / 255.0f, (float) (n >> 24 & 0xFF) / 255.0f);
     }
 
@@ -145,26 +150,6 @@ public class RenderUtils implements Imports {
         mc.getTextureManager().bindTexture(skin);
         Gui.drawScaledCustomSizeModalRect(x, y, 8f, 8f, 8, 8, width, height, 64f, 64f);
         Gui.drawScaledCustomSizeModalRect(x, y, 40f, 8f, 8, 8, width, height, 64f, 64f);
-    }
-
-    public static void start3DNameTag() {
-        glPushAttrib(GL_ENABLE_BIT);
-        glDisable(GL_LIGHTING);
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_LINE_SMOOTH);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
-
-    public static void stop3DNameTag() {
-        glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
-        glEnable(GL_LIGHTING);
-        glEnable(GL_DEPTH_TEST);
-
-        glPopAttrib();
-
-        ColorUtils.resetColor();
     }
 
     public static void renderWithAbsolutePosition(Runnable runnable) {
@@ -369,135 +354,12 @@ public class RenderUtils implements Imports {
         var1.draw();
     }
 
-    public static void drawFilledBox(AxisAlignedBB bb, int color) {
-        float alpha = (float)(color >> 24 & 255) / 255.0F;
-        float red = (float)(color >> 16 & 255) / 255.0F;
-        float green = (float)(color >> 8 & 255) / 255.0F;
-        float blue = (float)(color & 255) / 255.0F;
-
-        glPushMatrix();
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_DEPTH_TEST);
-        glDepthMask(false);
-
-        glColor4f(red, green, blue, alpha);
-
-        drawFilledBoundingBox(bb);
-
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_DEPTH_TEST);
-        glDepthMask(true);
-        glDisable(GL_BLEND);
-        glPopMatrix();
-    }
-
-    public static void drawOutlinedBox(AxisAlignedBB bb, float lineWidth, int color) {
-        float alpha = (float)(color >> 24 & 255) / 255.0F;
-        float red = (float)(color >> 16 & 255) / 255.0F;
-        float green = (float)(color >> 8 & 255) / 255.0F;
-        float blue = (float)(color & 255) / 255.0F;
-
-        glPushMatrix();
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_DEPTH_TEST);
-        glDepthMask(false);
-        glLineWidth(lineWidth);
-        glEnable(GL_LINE_SMOOTH);
-
-        glColor4f(red, green, blue, alpha);
-
-        drawOutlinedBoundingBox(bb);
-
-        glDisable(GL_LINE_SMOOTH);
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_DEPTH_TEST);
-        glDepthMask(true);
-        glDisable(GL_BLEND);
-        glPopMatrix();
-    }
-
-    private static void drawFilledBoundingBox(AxisAlignedBB bb) {
-        glBegin(GL_QUADS);
-
-        glVertex3d(bb.minX, bb.minY, bb.minZ);
-        glVertex3d(bb.maxX, bb.minY, bb.minZ);
-        glVertex3d(bb.maxX, bb.minY, bb.maxZ);
-        glVertex3d(bb.minX, bb.minY, bb.maxZ);
-
-        glVertex3d(bb.minX, bb.maxY, bb.minZ);
-        glVertex3d(bb.minX, bb.maxY, bb.maxZ);
-        glVertex3d(bb.maxX, bb.maxY, bb.maxZ);
-        glVertex3d(bb.maxX, bb.maxY, bb.minZ);
-
-        glVertex3d(bb.minX, bb.minY, bb.minZ);
-        glVertex3d(bb.minX, bb.maxY, bb.minZ);
-        glVertex3d(bb.maxX, bb.maxY, bb.minZ);
-        glVertex3d(bb.maxX, bb.minY, bb.minZ);
-
-        glVertex3d(bb.minX, bb.minY, bb.maxZ);
-        glVertex3d(bb.maxX, bb.minY, bb.maxZ);
-        glVertex3d(bb.maxX, bb.maxY, bb.maxZ);
-        glVertex3d(bb.minX, bb.maxY, bb.maxZ);
-
-        glVertex3d(bb.minX, bb.minY, bb.minZ);
-        glVertex3d(bb.minX, bb.minY, bb.maxZ);
-        glVertex3d(bb.minX, bb.maxY, bb.maxZ);
-        glVertex3d(bb.minX, bb.maxY, bb.minZ);
-
-        glVertex3d(bb.maxX, bb.minY, bb.minZ);
-        glVertex3d(bb.maxX, bb.maxY, bb.minZ);
-        glVertex3d(bb.maxX, bb.maxY, bb.maxZ);
-        glVertex3d(bb.maxX, bb.minY, bb.maxZ);
-
-        glEnd();
-    }
-
     public static void glColor(Color color) {
         glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
     }
 
     public static void glColor(Color color, float alpha) {
         glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha);
-    }
-
-    private static void drawOutlinedBoundingBox(AxisAlignedBB bb) {
-        glBegin(GL_LINE_LOOP);
-
-        glVertex3d(bb.minX, bb.minY, bb.minZ);
-        glVertex3d(bb.maxX, bb.minY, bb.minZ);
-        glVertex3d(bb.maxX, bb.minY, bb.maxZ);
-        glVertex3d(bb.minX, bb.minY, bb.maxZ);
-
-        glEnd();
-
-        glBegin(GL_LINE_LOOP);
-
-        glVertex3d(bb.minX, bb.maxY, bb.minZ);
-        glVertex3d(bb.maxX, bb.maxY, bb.minZ);
-        glVertex3d(bb.maxX, bb.maxY, bb.maxZ);
-        glVertex3d(bb.minX, bb.maxY, bb.maxZ);
-
-        glEnd();
-
-        glBegin(GL_LINES);
-
-        glVertex3d(bb.minX, bb.minY, bb.minZ);
-        glVertex3d(bb.minX, bb.maxY, bb.minZ);
-
-        glVertex3d(bb.maxX, bb.minY, bb.minZ);
-        glVertex3d(bb.maxX, bb.maxY, bb.minZ);
-
-        glVertex3d(bb.maxX, bb.minY, bb.maxZ);
-        glVertex3d(bb.maxX, bb.maxY, bb.maxZ);
-
-        glVertex3d(bb.minX, bb.minY, bb.maxZ);
-        glVertex3d(bb.minX, bb.maxY, bb.maxZ);
-
-        glEnd();
     }
 
     public static void renderHitBox(AxisAlignedBB bb, int type) {
@@ -551,15 +413,12 @@ public class RenderUtils implements Imports {
         glEnd();
     }
 
-    public static void renderHitBox(AxisAlignedBB bb) {
-        renderHitBox(bb, GL_LINE_LOOP);
-    }
-
     public static void renderHitBox(AxisAlignedBB bb, float lineWidth) {
         glLineWidth(lineWidth);
         renderHitBox(bb, GL_LINE_LOOP);
         glLineWidth(1f);
     }
+
     public static void drawImage(ResourceLocation image, int x, int y, int width, int height) {
         drawImage(image, x,y,width,height,false);
     }
@@ -578,15 +437,6 @@ public class RenderUtils implements Imports {
         if (resetColor) ColorUtils.resetColor();
     }
 
-    public static void stop2D() {
-        GlStateManager.enableDepth();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableCull();
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
-        GlStateManager.resetColor();
-    }
-
     public static void start2D() {
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(770, 771);
@@ -596,16 +446,21 @@ public class RenderUtils implements Imports {
         GlStateManager.disableDepth();
     }
 
+    public static void stop2D() {
+        GlStateManager.enableDepth();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableCull();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        GlStateManager.resetColor();
+    }
+
     public static void drawMixedRoundedRect(double x, double y, double width, double height, double radius, Color color1, Color color2, double offset1, double offset2, double offset3, double offset4, float speed) {
         drawMixedRoundedRect(x, y, x + width, y + height, color1, color2, radius, offset1, offset2, offset3, offset4, speed);
     }
 
     public static void drawMixedRoundedRect(double x, double y, double width, double height, double radius, Color color1, Color color2, float speed) {
         drawMixedRoundedRect(x, y, x + width, y + height, color1, color2, radius, 90, 180, 270, 360, speed);
-    }
-
-    public static void drawCenteredMixedRoundedRect(double x, double y, double width, double height, double radius, Color color1, Color color2, float speed) {
-        drawMixedRoundedRect(x - width / 2f, y, x + width, y + height, color1, color2, radius, 90, 180, 270, 360, speed);
     }
 
     public static void drawMixedRoundedRect(double x, double y, double x1, double y1, Color color1, Color color2, double radius, double offset1, double offset2, double offset3, double offset4, float speed) {

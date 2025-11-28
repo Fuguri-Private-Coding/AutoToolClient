@@ -25,7 +25,7 @@ public class CustomSkin extends Module {
         .setMode("None")
         ;
 
-    @Getter File skinDirectory = new File(Client.INST.getCLIENT_DIR() + "/skins");
+    @Getter final File SKIN_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/skins");
 
     DynamicTexture dynamicTexture;
     BufferedImage skinImage;
@@ -33,7 +33,7 @@ public class CustomSkin extends Module {
     File skinFile;
 
     public CustomSkin() {
-        if (skinDirectory.mkdirs()) System.out.println("Successful created skinDirectory.");
+        if (SKIN_DIRECTORY.mkdirs()) System.out.println("Successful created Skins Directory.");
         updateSkins();
     }
 
@@ -45,7 +45,7 @@ public class CustomSkin extends Module {
 
     public void updateSkins() {
         skinMode.getModes().clear();
-        for (File skin : skinDirectory.listFiles()) {
+        for (File skin : SKIN_DIRECTORY.listFiles()) {
             skinMode.addMode(skin.getName().replaceAll(".png", ""));
         }
     }
@@ -56,8 +56,9 @@ public class CustomSkin extends Module {
     }
 
     public ResourceLocation getSkin() {
+
         if (!selectedSkin.equalsIgnoreCase(skinMode.getMode())) {
-            skinFile = new File(skinDirectory, skinMode.getMode() + ".png");
+            skinFile = new File(SKIN_DIRECTORY, skinMode.getMode() + ".png");
             if (!skinFile.exists()) return null;
 
             try (InputStream inputStream = new FileInputStream(skinFile)) {

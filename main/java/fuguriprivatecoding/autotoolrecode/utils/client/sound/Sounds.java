@@ -11,14 +11,14 @@ import java.io.IOException;
 @UtilityClass
 public class Sounds {
 
-    File soundsDirectory = new File(Client.INST.getCLIENT_DIR() + "/sounds");;
+    final File SOUND_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/sounds");
 
     @Getter static Sound enableSound, disableSound, killedSound, neverLoseSound, skeetSound;
 
     public void init() throws IOException {
-        if (soundsDirectory.mkdirs()) System.out.println("Successful created soundsDirectory.");
+        if (SOUND_DIRECTORY.mkdirs()) System.out.println("Successful created Sounds Directory.");
 
-        File directory = soundsDirectory;
+        File directory = SOUND_DIRECTORY;
         File enableSoundFile = new File(directory, "enable.wav");
         File disableSoundFile = new File(directory, "disable.wav");
         File killedSoundFile = new File(directory, "killed.wav");

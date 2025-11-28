@@ -21,7 +21,7 @@ public class CommandIRC extends Command {
         if (args[0].equalsIgnoreCase("irc")) {
             ClientIRC irc = Client.INST.getIrc();
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(Client.INST.getProfile().toColoredString()).append(Client.INST.getProfile().getRole().isHigherThenOrEquals(Role.MODERATOR) ? "§4" : "§r").append(" ");
+            stringBuilder.append(Client.INST.getProfile().toColoredString()).append("§r").append(" ");
             for (String arg : args) {
                 if (arg.equalsIgnoreCase(args[0])) continue;
                 stringBuilder.append(arg).append(" ");

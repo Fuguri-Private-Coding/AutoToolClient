@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.ResourceLocation;
 
@@ -22,6 +23,6 @@ public class Shaders {
 	}
 
 	private ResourceLocation getShaderSource(String name) {
-		return new ResourceLocation("minecraft","autotool/shaders/" + name);
+		return Client.INST.of("shaders/" + name);
 	}
 }

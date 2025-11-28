@@ -20,20 +20,20 @@ public class Fonts implements Imports {
 
     public HashMap<String, ClientFontRenderer> fonts = new HashMap<>();
 
-    File fontsDirectory = new File(Client.INST.getCLIENT_DIR() + "/fonts");
+    final File FONT_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/fonts");
 
     int fontsCount;
 
     public void init() {
         checkFonts();
-        if (!fontsDirectory.exists()) {
-            fontsDirectory.mkdirs();
+        if (FONT_DIRECTORY.mkdirs()) {
+            System.out.println("Successful created Fonts Directory.");
             downloadFonts();
             initFonts();
             return;
         }
 
-        if (fontsDirectory.listFiles() != null && fontsDirectory.listFiles().length > 0) {
+        if (FONT_DIRECTORY.listFiles() != null && FONT_DIRECTORY.listFiles().length > 0) {
             initFonts();
         } else {
             downloadFonts();
@@ -61,7 +61,7 @@ public class Fonts implements Imports {
 
                 message.getAttachments().forEach(attachment -> {
                     if (attachment.getFileName().endsWith(".ttf") || attachment.getFileName().endsWith(".otf")) {
-                        CompletableFuture<Void> future = attachment.getProxy().downloadToFile(new File(fontsDirectory + "/" + attachment.getFileName()))
+                        CompletableFuture<Void> future = attachment.getProxy().downloadToFile(new File(FONT_DIRECTORY + "/" + attachment.getFileName()))
                             .thenAccept(_ -> System.out.println("Successful installed: " + attachment.getFileName()));
                         downloadFutures.add(future);
                     }
@@ -86,7 +86,7 @@ public class Fonts implements Imports {
         int attempt = 0;
 
         while (attempt < maxAttempts) {
-            File[] fontFiles = fontsDirectory.listFiles((_, name) -> name.toLowerCase().endsWith(".ttf") || name.toLowerCase().endsWith(".otf"));
+            File[] fontFiles = FONT_DIRECTORY.listFiles((_, name) -> name.toLowerCase().endsWith(".ttf") || name.toLowerCase().endsWith(".otf"));
 
             if (fontFiles != null && fontFiles.length >= fontsCount) {
                 System.out.println("Шрифты успешно загружены, найдено файлов: " + fontFiles.length);
@@ -101,7 +101,7 @@ public class Fonts implements Imports {
             }
         }
 
-        File[] fontFiles = fontsDirectory.listFiles((_, name) ->
+        File[] fontFiles = FONT_DIRECTORY.listFiles((_, name) ->
             name.toLowerCase().endsWith(".ttf") || name.toLowerCase().endsWith(".otf")
         );
 

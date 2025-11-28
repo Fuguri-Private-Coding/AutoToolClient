@@ -27,8 +27,7 @@ public class CustomCape extends Module {
         .setMode("None")
         ;
 
-    @Getter
-    File capeDirectory = new File(Client.INST.getCLIENT_DIR() + "/capes");
+    @Getter final File CAPE_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/capes");
 
     DynamicTexture dynamicTexture;
     BufferedImage capeImage;
@@ -36,9 +35,9 @@ public class CustomCape extends Module {
     File capeFile;
 
     public CustomCape() {
-        if (capeDirectory.mkdirs()) System.out.println("Successful created capeDirectory.");
+        if (CAPE_DIRECTORY.mkdirs()) System.out.println("Successful created Capes Directory.");
 
-        if (capeDirectory.listFiles() != null && Arrays.stream(capeDirectory.listFiles()).toList().isEmpty()) {
+        if (CAPE_DIRECTORY.listFiles() != null && Arrays.stream(CAPE_DIRECTORY.listFiles()).toList().isEmpty()) {
             downloadCapes();
         }
 
@@ -53,7 +52,7 @@ public class CustomCape extends Module {
 
     public void updateCape() {
         capeMode.getModes().clear();
-        for (File cape : capeDirectory.listFiles()) {
+        for (File cape : CAPE_DIRECTORY.listFiles()) {
             capeMode.addMode(cape.getName().replaceAll(".png", ""));
         }
     }
@@ -70,7 +69,7 @@ public class CustomCape extends Module {
                 message.getAttachments().forEach(attachment -> {
                     try {
                         if (attachment.getFileName().endsWith(".png")) {
-                            attachment.getProxy().downloadToFile(new File(capeDirectory + "/" + attachment.getFileName()))
+                            attachment.getProxy().downloadToFile(new File(CAPE_DIRECTORY + "/" + attachment.getFileName()))
                                     .thenAccept(_ -> updateCape());
                         }
                     } catch (Exception _) { }
@@ -88,7 +87,7 @@ public class CustomCape extends Module {
 
     public ResourceLocation getCape() {
         if (!selectedCape.equalsIgnoreCase(capeMode.getMode())) {
-            capeFile = new File(capeDirectory, capeMode.getMode() + ".png");
+            capeFile = new File(CAPE_DIRECTORY, capeMode.getMode() + ".png");
             if (!capeFile.exists()) return null;
 
             try (InputStream inputStream = new FileInputStream(capeFile)) {

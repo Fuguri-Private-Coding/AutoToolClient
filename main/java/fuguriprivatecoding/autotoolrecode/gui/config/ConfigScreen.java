@@ -308,7 +308,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
             }
 
             if (folder) {
-                String s = Configs.getConfigsDirectory().getAbsolutePath();
+                String s = Configs.getCONFIG_DIRECTORY().getAbsolutePath();
 
                 if (Util.getOSType() == Util.EnumOS.OSX) {
                     try {
@@ -370,7 +370,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
                 message.getAttachments().forEach(attachment -> {
                     try {
                         if (attachment.getFileName().endsWith(".json")) {
-                            attachment.getProxy().downloadToFile(new File(Configs.getConfigsDirectory() + "/" + attachment.getFileName()))
+                            attachment.getProxy().downloadToFile(new File(Configs.getCONFIG_DIRECTORY() + "/" + attachment.getFileName()))
                                     .thenAccept(_ -> Configs.refreshConfigs());
                         }
                     } catch (Exception _) {

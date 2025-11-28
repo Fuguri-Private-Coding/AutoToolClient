@@ -56,6 +56,8 @@ public class NameTags extends Module {
         if (event instanceof Render3DEvent) {
             RenderUtils.start3D();
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
+                if (mc.getRenderManager() == null || (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || entity.isDead)
+                    continue;
                 Vec3 pos = calculateTranslatedPos(entity);
 
                 renderNameTag(entity, getText(entity), pos);

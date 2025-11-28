@@ -79,7 +79,7 @@ public class Discord implements Imports, EventListener {
                 details = "В игре.";
             } else {
                 state = mc.currentScreen instanceof GuiMultiplayer ? "Выбор сервера." : "Главное меню";
-                details = "Без действует.";
+                details = "Бездействует.";
             }
         }
 

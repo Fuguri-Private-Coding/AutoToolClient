@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedGradUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -13,7 +14,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.projection.Convertors;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -155,7 +156,7 @@ public class TargetHUD extends Module {
             float healthY = posY + height / 2f + 2;
 
             RoundedUtils.drawRect(healthX, healthY, maxHealthBarWidth, 10, 5, bgColor.getFadedColor());
-            RoundedUtils.drawRect(healthX, healthY, animatedHealthWidth, 10, 5, healthColor.getFadedColor());
+            RoundedGradUtils.drawRect(healthX, healthY, animatedHealthWidth, 10, 5, healthColor.getColor(), healthColor.getFadeColor(), false);
         }
 
         if (render.get("Head") && target instanceof EntityPlayer) {

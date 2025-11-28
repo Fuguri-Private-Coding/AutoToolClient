@@ -1,5 +1,6 @@
 package net.minecraft.client.gui;
 
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -33,6 +34,8 @@ public abstract class GuiSlot
     protected boolean hasListHeader;
     protected int headerPadding;
     private boolean enabled = true;
+
+    EasingAnimation scroll = new EasingAnimation();
 
     public GuiSlot(Minecraft mcIn, int width, int height, int topIn, int bottomIn, int slotHeightIn)
     {

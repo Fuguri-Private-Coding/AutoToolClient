@@ -11,7 +11,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.client.gui.Gui;
@@ -106,7 +106,7 @@ public class ArrayList extends Module {
         float bgWidth = textWidth + horizontalSpacing.getValue() * 2f;
 
         Color alphaTextColor = textColor.getMixedColor(moduleList.indexOf(module));
-        Color alphaBgColor = backgroundColor.getFadedColor();
+        Color alphaBgColor = backgroundColor.getMixedColor(moduleList.indexOf(module));
         Color alphaGlowBgColor = glowColor.getMixedColor(moduleList.indexOf(module));
 
         Color color = new Colors(alphaTextColor).withAlpha(alphaTextColor.getAlpha() / 255f * alpha);

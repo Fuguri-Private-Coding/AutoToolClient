@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.utils.interpolation;
+package fuguriprivatecoding.autotoolrecode.utils.animation;
 
 import lombok.AllArgsConstructor;
 

@@ -14,11 +14,11 @@ import java.util.Map;
 @UtilityClass
 public class KeyBinds {
 
-    @Getter File bindsDirectory = new File(Client.INST.getCLIENT_DIR() + "/binds");
-    @Getter File bindFile = new File(bindsDirectory, "binds.json");
+    @Getter final File BIND_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/binds");
+    @Getter File bindFile = new File(BIND_DIRECTORY, "binds.json");
 
     public void init() {
-        if (bindsDirectory.mkdirs()) System.out.println("Successful created bindsDirectory.");
+        if (BIND_DIRECTORY.mkdirs()) System.out.println("Successful created Binds Directory.");
     }
 
     public void loadBinds() {

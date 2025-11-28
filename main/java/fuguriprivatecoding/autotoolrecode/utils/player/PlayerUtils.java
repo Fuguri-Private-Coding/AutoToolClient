@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import lombok.experimental.UtilityClass;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
@@ -129,8 +130,10 @@ public class PlayerUtils implements Imports {
                         double ey = MathHelper.clamp(mc.thePlayer.posY, blockPos.getY(), (double) blockPos.getY() + block.getBlockBoundsMaxY());
                         double ez = MathHelper.clamp(mc.thePlayer.posZ, blockPos.getZ(), (double) blockPos.getZ() + block.getBlockBoundsMaxZ());
                         Vec3 vec3 = new Vec3(ex, ey, ez);
-                        positions.add(vec3);
-                        hashMap.put(vec3, blockPos);
+                        if (block.getMaterial() != Material.water && block.getMaterial() != Material.lava) {
+                            positions.add(vec3);
+                            hashMap.put(vec3, blockPos);
+                        }
                     }
                 }
             }

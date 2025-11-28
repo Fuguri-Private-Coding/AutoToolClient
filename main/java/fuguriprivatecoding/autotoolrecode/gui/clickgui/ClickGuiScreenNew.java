@@ -11,7 +11,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.Scroll;
-import fuguriprivatecoding.autotoolrecode.utils.interpolation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
@@ -416,7 +416,7 @@ public class ClickGuiScreenNew extends GuiScreen {
     }
 
     private void updateGuiAnimations() {
-        moduleScroll.getScrollAnim().update(3, Easing.OUT_CUBIC);
+        moduleScroll.getScrollAnim().update(3f, Easing.OUT_CUBIC);
         openSettingsAnim.update(2, Easing.OUT_BACK);
         openAnim.update(2f, Easing.OUT_BACK);
     }

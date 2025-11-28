@@ -32,32 +32,9 @@ public class ColorUtils {
     public static Color mix(int c1, int c2, double size, double max) {
         Color col1 = new Color(c1);
         Color col2 = new Color(c2);
-        int diffR = (int)((double)col1.getRed() - (double)(col1.getRed() - col2.getRed()) / max * size);
-        int diffG = (int)((double)col1.getGreen() - (double)(col1.getGreen() - col2.getGreen()) / max * size);
-        int diffB = (int)((double)col1.getBlue() - (double)(col1.getBlue() - col2.getBlue()) / max * size);
-        if (diffR > 255) {
-            diffR = 255;
-        }
-
-        if (diffR < 0) {
-            diffR = 0;
-        }
-
-        if (diffG > 255) {
-            diffG = 255;
-        }
-
-        if (diffG < 0) {
-            diffG = 0;
-        }
-
-        if (diffB > 255) {
-            diffB = 255;
-        }
-
-        if (diffB < 0) {
-            diffB = 0;
-        }
+        int diffR = (int) Math.clamp(((double)col1.getRed() - (double)(col1.getRed() - col2.getRed()) / max * size), 0, 255);
+        int diffG = (int) Math.clamp(((double)col1.getGreen() - (double)(col1.getGreen() - col2.getGreen()) / max * size), 0, 255);
+        int diffB = (int) Math.clamp(((double)col1.getBlue() - (double)(col1.getBlue() - col2.getBlue()) / max * size), 0, 255);
 
         return (new Color(diffR, diffG, diffB));
     }

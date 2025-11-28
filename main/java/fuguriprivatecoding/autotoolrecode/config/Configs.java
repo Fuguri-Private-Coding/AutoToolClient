@@ -25,12 +25,12 @@ import java.util.Map;
 @UtilityClass
 public class Configs implements Imports {
 
-    @Getter File configsDirectory = new File(Client.INST.getCLIENT_DIR() + "/configs");
+    @Getter final File CONFIG_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/configs");
     @Getter private List<Config> configs = new ArrayList<>();
     @Getter Config defaultConfig = new Config("default");
 
     public void init() {
-        if (configsDirectory.mkdirs()) System.out.println("Successful created configsDirectory.");
+        if (CONFIG_DIRECTORY.mkdirs()) System.out.println("Successful created Configs Directory.");
 
         refreshConfigs();
     }
@@ -208,7 +208,7 @@ public class Configs implements Imports {
     }
 
     public void refreshConfigs() {
-        File[] files = configsDirectory.listFiles();
+        File[] files = CONFIG_DIRECTORY.listFiles();
         if (files != null) {
             configs.clear();
             for (File file : files) {
