@@ -61,7 +61,8 @@ public enum Client implements Imports, EventListener {
 		starting = true;
 
         Display.setTitle(getFullName());
-		updateClient();
+
+        VersionCheck.validateClientVersion(irc.getClientVersionChannel());
 
         addHook();
 
@@ -110,10 +111,6 @@ public enum Client implements Imports, EventListener {
 
 		double elapsedNanos = System.nanoTime() - start;
 		ConsoleScreen.log("Client initialized in " + (float) (elapsedNanos / 1000000000D) + " seconds.");
-	}
-
-	private void updateClient() {
-		VersionCheck.validateClientVersion(irc.getClientVersionChannel());
 	}
 
 	public void onClose() {
