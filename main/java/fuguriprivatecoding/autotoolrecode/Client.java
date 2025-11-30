@@ -30,7 +30,6 @@ import fuguriprivatecoding.autotoolrecode.module.*;
 import fuguriprivatecoding.autotoolrecode.event.*;
 import fuguriprivatecoding.autotoolrecode.irc.*;
 
-import net.dv8tion.jda.api.entities.Message;
 import de.florianmichael.viamcp.ViaMCP;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
@@ -114,12 +113,7 @@ public enum Client implements Imports, EventListener {
 	}
 
 	private void updateClient() {
-		for (Message message : irc.getClientVersionChannel().getIterableHistory().stream().toList()) {
-			if (!message.getContentRaw().equalsIgnoreCase(CLIENT_VERSION.toString())) {
-				JOptionPane.showMessageDialog(null, "Ваша версия клиента устарела: " + CLIENT_VERSION + ", Пожалуйста обновите клиент до: " + message.getContentRaw());
-				System.exit(-1);
-			}
-		}
+		VersionCheck.validateClientVersion(irc.getClientVersionChannel());
 	}
 
 	public void onClose() {

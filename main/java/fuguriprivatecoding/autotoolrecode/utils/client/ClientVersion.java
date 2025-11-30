@@ -14,4 +14,8 @@ public class ClientVersion {
     public String toString() {
         return globalVersion + "." + version + "." + microUpdate;
     }
+
+    public boolean isLowerThen(ClientVersion clientVersion) {
+        return globalVersion < clientVersion.globalVersion || version < clientVersion.version || microUpdate < clientVersion.microUpdate;
+    }
 }
