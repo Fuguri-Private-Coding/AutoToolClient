@@ -94,8 +94,13 @@ public class ClickGuiScreenNew extends GuiScreen {
 
         GL11.glPushMatrix();
         double scale = openAnim.getValue();
-        double offsetX = (mc.displayWidth - mc.displayWidth * scale) / 4.0;
-        double offsetY = (mc.displayHeight - mc.displayHeight * scale) / 4.0;
+
+        double centerX = x + width / 2.0;
+        double centerY = y + height / 2.0;
+
+        double offsetX = centerX * (1 - scale);
+        double offsetY = centerY * (1 - scale);
+
         GL11.glTranslated(offsetX, offsetY, 0);
         GL11.glScaled(scale, scale, 1);
 

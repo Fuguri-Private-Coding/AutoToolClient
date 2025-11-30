@@ -64,6 +64,8 @@ public enum Client implements Imports, EventListener {
         Display.setTitle(getFullName());
 		updateClient();
 
+        addHook();
+
         irc.connectClient();
 
         if (CLIENT_DIR.mkdirs()) System.out.println("Successful created Сlient Directory.");
@@ -123,7 +125,7 @@ public enum Client implements Imports, EventListener {
 	public void onClose() {
 		Configs.saveConfig(Configs.getDefaultConfig());
 		KeyBinds.saveBinds();
-        irc.disconnectClient();
+        irc.disconnectClientServer();
 	}
 
     @Override
@@ -140,6 +142,10 @@ public enum Client implements Imports, EventListener {
             new Thread(HWIDUtils::check).start();
 		}
 	}
+
+    public void addHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(this::onClose));
+    }
 
     public String getFullName() {
         return CLIENT_NAME + " " + CLIENT_VERSION;

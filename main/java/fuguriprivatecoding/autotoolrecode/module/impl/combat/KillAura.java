@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
@@ -8,6 +9,8 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -112,55 +115,50 @@ public class KillAura extends Module {
             Rot lr = Rot.getServerRotation();
 
             if (event instanceof TickEvent) {
+                boolean teleport = (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled();
+
                 AxisAlignedBB box = RotUtils.getHitBox(
                     target,
-                    (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 100 : horizontalHitBoxSize.getValue(),
-                    (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 100 : verticalHitBoxSize.getValue()
-                );
+                    teleport ? 100 : horizontalHitBoxSize.getValue(),
+                    teleport ? 100 : verticalHitBoxSize.getValue()
+                ).expand(0.1D, 0.1D, 0.1D);
+
                 Rot needRotation = getRotation(target, lr, box);
 
                 if (needRotation == null) return;
 
-                if (!mc.thePlayer.canVecBeSeen(RotUtils.getVectorForRotation(needRotation)) && smartAim.isToggled()) {
-                    needRotation = RotUtils.getPossibleBestRotation(needRotation, box.expand(0.1f,0.1f,0.1f));
-                }
-
-                if ((TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled()) {
-                    needRotation = getRotation(target, lr, box);
-                }
-
                 Rot delta = RotUtils.getDelta(lr, needRotation);
 
                 Rot speed = new Rot(
-                    (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 180 : yawSpeed.getRandomizedIntValue(),
-                    (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ? 180 : pitchSpeed.getRandomizedIntValue()
+                    yawSpeed.getRandomizedIntValue(),
+                    pitchSpeed.getRandomizedIntValue()
                 );
 
-                if (smoothMode.get("Basic")) {
-                    Rot rot = new Rot(
-                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
-                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
-                    );
+                if (!teleport) {
+                    if (smoothMode.get("Basic")) {
+                        Rot rot = new Rot(
+                            RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
+                            RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
+                        );
 
-                    delta.setYaw(MathHelper.wrapDegree(delta.getYaw() - rot.getYaw()));
-                    delta.setPitch(MathHelper.wrapDegree(delta.getPitch() - rot.getPitch()));
-                }
+                        delta.setYaw(MathHelper.wrapDegree(delta.getYaw() - rot.getYaw()));
+                        delta.setPitch(MathHelper.wrapDegree(delta.getPitch() - rot.getPitch()));
+                    }
 
-                if (smoothMode.get("Linear")) {
-                    delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
-                    delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
-                }
+                    if (smoothMode.get("Linear")) {
+                        delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
+                        delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
+                    }
 
-                RotUtils.limitDelta(delta, speed);
+                    RotUtils.limitDelta(delta, speed);
 
-                if (smoothMode.get("MixDelta")) {
-                    if (TimerRange.balance <= 0 && !TimerRange.teleporting) {
+                    if (smoothMode.get("MixDelta")) {
                         delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
                         delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
                     }
                 }
 
-                lastDelta = new Rot(delta.getYaw(), delta.getPitch());
+                lastDelta = delta.copy();
 
                 if (gcd.isToggled()) delta = RotUtils.fixDelta(delta);
                 lr = lr.add(delta);
@@ -207,22 +205,36 @@ public class KillAura extends Module {
     }
 
     private Rot getRotation(EntityLivingBase target, Rot lr, AxisAlignedBB box) {
-        return (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled() ?
-            RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f)) :
+        boolean teleport = (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled();
+
+        Rot needRot = teleport ?
+            RotUtils.getBestRotation(box) :
             switch (hitVec.getMode()) {
-                case "Best" -> RotUtils.getBestRotation(box.expand(0.1f,0.1f,0.1f));
+                case "Best" -> RotUtils.getBestRotation(box);
                 case "Nearest" -> RotUtils.getNearestRotations(lr, box);
                 case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
                 case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
                 default -> throw new IllegalStateException("Unexpected value: " + hitVec.getMode());
             };
+
+        if (needRot == null) return null;
+
+        if (smartAim.isToggled()) {
+            MovingObjectPosition hit = RayCastUtils.rayCast(needRot, rotateDistance.getValue());
+
+            if (mc.thePlayer.canVecBeSeen(hit.hitVec)) {
+                needRot = RotUtils.getPossibleBestRotation(needRot, box);
+            }
+        }
+
+        return needRot;
     }
 
     private EntityLivingBase findNewTarget() {
         List<EntityLivingBase> entityList = new ArrayList<>();
 
         for (Entity entity : mc.theWorld.loadedEntityList) {
-            if (entity != mc.thePlayer && DistanceUtils.getDistance(entity) < findDistance.getValue()) {
+            if (entity != mc.thePlayer && DistanceUtils.getDistance(entity) < findDistance.getValue() && !entity.isDead) {
                 switch (entity) {
                     case EntityPlayer entityPlayer when targets.get("Players") && !entityPlayer.isFriend() && !entityPlayer.isTeam() -> entityList.add(entityPlayer);
                     case EntityMob entityMob when targets.get("Mobs") -> entityList.add(entityMob);
@@ -241,6 +253,8 @@ public class KillAura extends Module {
             case "FOV" -> entityList.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
             case "HurtTime" -> entityList.sort(Comparator.comparingDouble(ent -> ent.hurtTime));
         }
+
+        if (entityList.isEmpty()) return null;
 
         return entityList.getFirst();
     }

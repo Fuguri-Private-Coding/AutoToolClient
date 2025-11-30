@@ -12,9 +12,8 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.ChunkingFilter;
-import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import java.util.Map;
+import java.util.function.Consumer;
 
 public class ClientIRC extends ListenerAdapter implements Imports {
 
@@ -28,56 +27,21 @@ public class ClientIRC extends ListenerAdapter implements Imports {
 
     String token;
 
-    JDA jda;
+    public JDA jda;
 
     public void init() {
         token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GGhvgp.juE97JuncYJRgH-Rzca0OV2a8ieMd2g6XzV1IA";
 
         try {
-            jda = JDABuilder.createDefault(token)
-                .enableIntents(
-                    GatewayIntent.GUILD_MEMBERS,
-                    GatewayIntent.GUILD_PRESENCES,
-                    GatewayIntent.MESSAGE_CONTENT,
-                    GatewayIntent.GUILD_MESSAGES,
-                    GatewayIntent.DIRECT_MESSAGES,
-                    GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                    GatewayIntent.DIRECT_MESSAGE_REACTIONS,
-                    GatewayIntent.GUILD_VOICE_STATES,
-                    GatewayIntent.GUILD_MODERATION,
-                    GatewayIntent.GUILD_INVITES,
-                    GatewayIntent.GUILD_WEBHOOKS,
-                    GatewayIntent.SCHEDULED_EVENTS
-                )
-                .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .setChunkingFilter(ChunkingFilter.ALL)
-                .addEventListeners(this)
-                .build();
+            jda = JDABuilder.createDefault(token).addEventListeners(this).build();
         } catch (Exception e) {
-            System.out.println("Failed setup intents.");
+            System.out.println("Failed create connection.");
             System.exit(-1);
         }
 
         try {
             jda.awaitReady();
-
-            for (Guild guild : jda.getGuilds()) {
-                for (MessageChannel channel : guild.getTextChannels()) {
-                    switch (channel.getName()) {
-                        case "hwid-list" -> setKeyChannel(channel);
-                        case "online-users" -> setOnlineChannel(channel);
-                        case "change-log" -> setChangeLogChannel(channel);
-                        case "online-configs" -> setOnlineConfigsChannel(channel);
-                        case "client-version" -> setClientVersionChannel(channel);
-                        case "client-capes" -> setClientCapesChannel(channel);
-                        case "login-log" -> setLoginChannel(channel);
-                        case "irc-chat" -> setChatChannel(channel);
-                        case "server-log" -> setServerChannel(channel);
-                        case "fonts" -> setFontsChannel(channel);
-                    }
-                }
-            }
-
+            initializeChannels(jda);
         } catch (InterruptedException e) {
             System.out.println("Failed connect to server.");
             System.exit(-1);
@@ -87,10 +51,38 @@ public class ClientIRC extends ListenerAdapter implements Imports {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (Client.INST.isStarting()) return;
-        if (event.getChannel() == chatChannel) {
+
+        MessageChannel currentChannel = event.getChannel();
+
+        if (currentChannel == chatChannel) {
             String message = event.getMessage().getContentRaw();
             message = message.replaceAll(Client.INST.getProfile().toString(), Client.INST.getProfile().toColoredString());
             ConsoleScreen.history.add("§f[§2IRC§f] " + message);
+        }
+    }
+
+    public void initializeChannels(JDA jda) {
+        Map<String, Consumer<MessageChannel>> channelConfigurators = Map.of(
+            "hwid-list", this::setKeyChannel,
+            "online-users", this::setOnlineChannel,
+            "change-log", this::setChangeLogChannel,
+            "online-configs", this::setOnlineConfigsChannel,
+            "client-version", this::setClientVersionChannel,
+            "client-capes", this::setClientCapesChannel,
+            "login-log", this::setLoginChannel,
+            "irc-chat", this::setChatChannel,
+            "server-log", this::setServerChannel,
+            "fonts", this::setFontsChannel
+        );
+
+        for (Guild guild : jda.getGuilds()) {
+            for (MessageChannel channel : guild.getTextChannels()) {
+                String channelName = channel.getName();
+                Consumer<MessageChannel> configurator = channelConfigurators.get(channelName);
+                if (configurator != null) {
+                    configurator.accept(channel);
+                }
+            }
         }
     }
 
@@ -101,13 +93,13 @@ public class ClientIRC extends ListenerAdapter implements Imports {
         onlineChannel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.ONLINE_MESSAGE_ID = sendMessage.getIdLong());
     }
 
-    public void disconnectClient() {
+    public void disconnectClientServer() {
         if (ClientIRC.ONLINE_MESSAGE_ID != -1) getOnlineChannel().deleteMessageById(ClientIRC.ONLINE_MESSAGE_ID).queue();
         if (ClientIRC.MESSAGE_ID != -1) getServerChannel().deleteMessageById(ClientIRC.MESSAGE_ID).queue();
     }
 
     public void disconnectServer() {
-        if (ClientIRC.MESSAGE_ID != -1) getServerChannel().deleteMessageById(ClientIRC.MESSAGE_ID).queue();
+        if (ClientIRC.MESSAGE_ID != -1) getServerChannel().deleteMessageById(ClientIRC.MESSAGE_ID).queue(_ -> ClientIRC.MESSAGE_ID = -1);
     }
 
     public void connectServer() {

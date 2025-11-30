@@ -28,6 +28,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
 
@@ -83,20 +84,20 @@ public class TargetHUD extends Module {
             updateTarget(mc.currentScreen);
         }
 
-        if (target == null || target.getSkin() == null || target.getName() == null) return;
-
         if (event instanceof Render2DEvent e) {
             currentScale.update(2, Easing.OUT_BACK);
+
+            if (target == null || target.getSkin() == null || target.getName() == null) return;
 
             ClientFontRenderer font = Fonts.fonts.get(fonts.getMode());
 
             float width = 120;
             float height = 40;
 
-            if (follow.isToggled()) {
-                EntityRenderer entityRenderer = mc.entityRenderer;
+            double scale = this.scale.getValue() * Math.clamp(currentScale.getValue(), 0, 2);
 
-                entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
+            if (follow.isToggled()) {
+                mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
                 Vec3 entityPos = new Vec3(
                     (float) (target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - RenderManager.renderPosX),
                     (float) (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - RenderManager.renderPosY) + target.height / 2f + yOffset.getValue(),
@@ -104,34 +105,34 @@ public class TargetHUD extends Module {
                 );
 
                 float[] positions = Convertors.convert2D(entityPos, mc.gameSettings.guiScale);
-                entityRenderer.setupOverlayRendering();
+                mc.entityRenderer.setupOverlayRendering();
 
                 if (positions == null || positions[2] > 1) return;
 
-                float scale = this.scale.getValue() * Math.clamp(currentScale.getValue(), 0, 2);
-
                 pos.set(
-                    (positions[0] / scale) - width / 2f,
-                    (positions[1] / scale) - height / 2f
+                    positions[0] - 60,
+                    positions[1]
                 );
-
-                renderHUD(pos.x, pos.y, width, height, bgRadius.getValue(), font, target, scale);
             } else {
                 pos.set(
-                    (e.getSc().getScaledWidth() / 100f) * xPos.getValue() / currentScale.getValue() - width / 2f,
-                    (e.getSc().getScaledHeight() / 100f) * yPos.getValue() / currentScale.getValue() - height / 2f
+                    (e.getSc().getScaledWidth() / 100f) * xPos.getValue(),
+                    (e.getSc().getScaledHeight() / 100f) * yPos.getValue()
                 );
-
-                double scale = this.scale.getValue() * Math.clamp(currentScale.getValue(), 0, 2);;
-
-                renderHUD(pos.x, pos.y, width, height, bgRadius.getValue(), font, target, scale);
             }
+            renderHUD(pos.x, pos.y, width, height, bgRadius.getValue(), font, target, scale);
         }
     }
 
     private void renderHUD(float posX, float posY, float width, float height, float radius, ClientFontRenderer font, EntityLivingBase target, double scaleFactor) {
         glPushMatrix();
-        glScaled(scaleFactor, scaleFactor, scaleFactor);
+        double centerX = posX + width / 2.0;
+        double centerY = posY + height / 2.0;
+
+        double offsetX = centerX * (1 - scaleFactor);
+        double offsetY = centerY * (1 - scaleFactor);
+
+        glTranslated(offsetX, offsetY, 0);
+        glScaled(scaleFactor, scaleFactor, 1);
 
         if (render.get("Background")) RoundedUtils.drawRect(posX, posY, width, height, radius, bgColor.getFadedColor());
         StencilUtils.setUpTexture(posX, posY, width, height, radius);
@@ -185,22 +186,19 @@ public class TargetHUD extends Module {
 
     private void updateTarget(GuiScreen screen) {
         EntityLivingBase currentTarget = TargetStorage.getTarget();
+
         if (screen instanceof GuiChat || screen instanceof ClickScreen) {
-            currentScale.setEnd(1);
-            target = mc.thePlayer;
+            currentTarget = mc.thePlayer;
+            target = currentTarget;
         } else if (screen == null) {
-            if (target == null && currentTarget != null) {
+
+            if (currentTarget == null) {
+                if (currentScale.getValue() == 0) target = null;
+            } else {
                 target = currentTarget;
-                currentScale.setEnd(1);
-            } else if (target != null) {
-                if (currentTarget == null) {
-                    currentScale.setEnd(0);
-                    if (!currentScale.isAnimating()) target = null;
-                } else {
-                    target = currentTarget;
-                    currentScale.setEnd(1f);
-                }
             }
         }
+
+        currentScale.setEnd(currentTarget != null);
     }
 }

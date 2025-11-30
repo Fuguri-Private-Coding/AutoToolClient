@@ -16,6 +16,8 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import org.lwjgl.opengl.GL11;
+
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -44,6 +46,8 @@ public class ArrayList extends Module {
     IntegerSetting verticalSpacing = new IntegerSetting("VerticalSpacing", this, 1,25,0);
     IntegerSetting horizontalSpacing = new IntegerSetting("HorizontalSpacing", this, background::isToggled, -10,10,0);
 
+    FloatSetting scale = new FloatSetting("Scale", this,0.1f, 2, 1, 0.01f);
+
     CheckBox glow = new CheckBox("Glow", this, false);
     ColorSetting glowColor = new ColorSetting("GlowColor", this, () -> background.isToggled() && glow.isToggled());
     CheckBox blur = new CheckBox("Blur", this, false);
@@ -54,6 +58,8 @@ public class ArrayList extends Module {
     }
 
     ClientFontRenderer font = Fonts.fonts.get(fonts.getMode());
+
+    float width = 0;
 
     @Override
     public void onEvent(Event event) {
@@ -66,12 +72,27 @@ public class ArrayList extends Module {
 
             float xOffset = this.xOffset.getValue() + horizontalSpacing.getValue();
             float yOffset = this.yOffset.getValue();
+
+            GL11.glPushMatrix();
+
+            float x = pos.is("RightUp") ? sc.getScaledWidth() - (xOffset - horizontalSpacing.getValue() * 10) - width : xOffset - horizontalSpacing.getValue() * 10;
+
+            double centerX = x + width / 2.0;
+            double centerY = yOffset / 2.0;
+
+            double offsetX = centerX * (1 - scale.getValue());
+            double offsetY = centerY * (1 - scale.getValue());
+
+            GL11.glTranslated(offsetX, offsetY, 0);
+            GL11.glScaled(scale.getValue(), scale.getValue(), 1);
+
             for (Module module : moduleList) {
                 EasingAnimation anim = module.getArrayListAnimation();
                 anim.update(animSpeed.getValue(), Easing.OUT_CUBIC);
 
                 float width = (float) font.getStringWidth(module.getName()) + horizontalSpacing.getValue() * 2 + 8;
 
+                this.width = width;
                 switch (pos.getMode()) {
                     case "RightUp" -> renderRightUp(
                         xOffset - width + anim.getValue() * width,
@@ -91,6 +112,8 @@ public class ArrayList extends Module {
                 }
                 yOffset += verticalSpacing.getValue() * anim.getValue();
             }
+
+            GL11.glPopMatrix();
 
         }
     }

@@ -12,18 +12,18 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 public class FastBreak extends Module {
 
     Mode breakMode = new Mode("BreakMode", this)
-        .addModes("Legit", "Grim")
-        .setMode("Legit")
+        .addModes("Delay", "DropDelay")
+        .setMode("DropDelay")
         ;
 
-    IntegerSetting delay = new IntegerSetting("Delay", this, () -> breakMode.is("Legit"), 0, 5, 0);
+    IntegerSetting delay = new IntegerSetting("Delay", this, () -> breakMode.is("Delay"), 0, 5, 0);
 
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             switch (breakMode.getMode()) {
-                case "Legit" -> mc.playerController.blockHitDelay = Math.min(mc.playerController.blockHitDelay, delay.getValue());
-                case "Grim" -> {
+                case "Delay" -> mc.playerController.blockHitDelay = delay.getValue();
+                case "DropDelay" -> {
                     if (mc.playerController.blockHitDelay > 0) {
                         mc.clickMouse();
                         mc.playerController.blockHitDelay = 0;

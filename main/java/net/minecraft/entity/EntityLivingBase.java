@@ -1578,7 +1578,6 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         return worldObj.rayTraceBlocks(getPositionEyes(1.0F), vec) == null;
     }
 
-
     public Vec3 getLookVec() {
         return this.getLook(1.0F);
     }
