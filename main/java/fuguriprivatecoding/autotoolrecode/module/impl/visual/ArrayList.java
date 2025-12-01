@@ -87,7 +87,7 @@ public class ArrayList extends Module {
             GL11.glScaled(scale.getValue(), scale.getValue(), 1);
 
             for (Module module : moduleList) {
-                EasingAnimation anim = module.getArrayListAnimation();
+                EasingAnimation anim = module.getSlideAnim();
                 anim.update(animSpeed.getValue(), Easing.OUT_CUBIC);
 
                 float width = (float) font.getStringWidth(module.getName()) + horizontalSpacing.getValue() * 2 + 8;

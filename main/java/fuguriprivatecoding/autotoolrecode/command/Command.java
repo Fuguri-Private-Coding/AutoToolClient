@@ -1,9 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.command;
 
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
-import lombok.Getter;
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
+import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;

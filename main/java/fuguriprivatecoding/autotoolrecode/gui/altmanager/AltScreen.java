@@ -1,25 +1,25 @@
 package fuguriprivatecoding.autotoolrecode.gui.altmanager;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.alt.Account;
 import fuguriprivatecoding.autotoolrecode.alt.Accounts;
 import fuguriprivatecoding.autotoolrecode.alt.microsoft.Auth;
 import fuguriprivatecoding.autotoolrecode.alt.microsoft.MicrosoftAuthCallback;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.TextButton;
-import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
+import fuguriprivatecoding.autotoolrecode.utils.gui.Scroll;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import net.minecraft.client.Minecraft;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -27,34 +27,20 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Session;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AltScreen extends GuiScreen {
 
-    TextButton textButton;
     public static List<Account> accounts = new CopyOnWriteArrayList<>();
 
-    private long lastClickTime = 0;
-    private Account lastClickedAccount = null;
-
-    ResourceLocation removeLogo = new ResourceLocation("minecraft", "autotool/mainmenu/exit.png");
-
-    Account selectedAccount;
-    int scroll, scrollTotalHeight;
-    Animation2D scrolls;
-
-    private boolean isScrolling = false;
-    private float scrollOffsetOnClick = 0;
-
-    static String updatedText;
-
-    EasingAnimation alphaAnim = new EasingAnimation();
+    ResourceLocation removeLogo = Client.INST.of("mainmenu/exit.png");
 
     public static AltScreen INST;
 
@@ -62,159 +48,186 @@ public class AltScreen extends GuiScreen {
         INST = new AltScreen();
     }
 
-    private AltScreen() {
-        mc = Minecraft.getMinecraft();
-        scrolls = new Animation2D();
-    }
+    private AltScreen() {}
+
+    Scroll scroll = new Scroll(30);
+    int scrollTotal;
+
+    Account selectedAccount, lastClickedAccount;
+    long lastClickedTime;
+
+    static String statusText = "";
+
+    TextButton textButton;
 
     @Override
     public void initGui() {
         super.initGui();
         ScaledResolution sc = new ScaledResolution(mc);
+
         Accounts.loadAccounts();
-        textButton = new TextButton(0, 75, sc.getScaledHeight() - 100, 100, 20);
-        buttonList.add(new Button(1, "Login", 75,  sc.getScaledHeight() - 75, 100, 20));
-        buttonList.add(new Button(2, "Delete", 75, sc.getScaledHeight() - 50, 100, 20));
-        buttonList.add(new Button(3, "Microsoft", 75, sc.getScaledHeight() - 25, 100, 20));
-        alphaAnim.setValue(0);
-        textButton.setMaxStringLength(16);
+        textButton = new TextButton(0, 50, sc.getScaledHeight() - 10 - 75, 100, 20);
+        buttonList.add(new Button(1,"Login", 50, sc.getScaledHeight() - 10 - 50, 100, 20));
+        buttonList.add(new Button(2,"Microsoft", 50, sc.getScaledHeight() - 10 - 25, 100, 20));
+
+        textButton.setFocused(true);
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        ClientFontRenderer fontRenderer = Fonts.fonts.get("SFPro");
+
         ScaledResolution sc = new ScaledResolution(mc);
-        scroll += ClientSettings.getScroll();
-
-        ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
-
-        float altVisibleHeight = sc.getScaledHeight() - 35;
-        float maxScroll = Math.max(scrollTotalHeight - altVisibleHeight, 0);
-
-        if (scroll > 0) scroll = 0;
-        if (scroll < -maxScroll) scroll = (int) -maxScroll;
-
-        scrolls.endY = scroll;
-        scrolls.update(15f);
-
-        alphaAnim.update(3, Easing.IN_OUT_QUAD);
-        alphaAnim.setEnd(1f);
 
         BackgroundUtils.run();
 
-        AlphaUtils.startWrite();
+        float rectX = (sc.getScaledWidth() - 200 - 10);
+        float rectY = 20;
+        float rectWidth = 200;
+        float rectHeight = (sc.getScaledHeight() - 30);
 
-        accounts.removeIf(account -> account.isDeleting() && account.getAnim().getValue() == 0);
+        float buttonsX = 45;
+        float buttonsY = sc.getScaledHeight() - 5 - 75 - 10;
+        float buttonsWidth = 110;
+        float buttonsHeight = 80;
 
-        RoundedUtils.drawRect(sc.getScaledWidth() - 285, 15, 250, sc.getScaledHeight() - 30, 7.5f, new Color(0, 0, 0, 0.7f));
-        if (updatedText != null) font.drawCenteredString(updatedText, sc.getScaledWidth() - 285 + 125, 5, Color.WHITE);
+        Color rectsColor = new Color(0,0,0,0.5f);
 
-        ScissorUtils.enableScissor();
-        ScissorUtils.scissor(new ScaledResolution(mc), sc.getScaledWidth() - 285, 15, 250, sc.getScaledHeight() - 30);
+        scroll.update(scrollTotal, sc.getScaledHeight() - 35);
+        scroll.handleScrollInput(GuiUtils.isHovered(mouseX, mouseY, rectX, rectY, rectWidth, rectHeight));
 
-        float offset = scrolls.y;
-        scrollTotalHeight = 0;
+        scroll.getScrollAnim().update(3, Easing.OUT_CUBIC);
+        scroll.getScrollAnim().setEnd(scroll.getScroll());
+
+        RoundedUtils.drawRect(rectX, rectY, rectWidth, rectHeight, 10, rectsColor);
+        RoundedUtils.drawRect(buttonsX, buttonsY, buttonsWidth, buttonsHeight, 15, rectsColor);
+
+        String currentSession = "Current Session: " + mc.getSession().getUsername();
+        String currentType = "Type: " + mc.getSession().getSessionType();
+        fontRenderer.drawString(currentSession, 5,5, Color.WHITE);
+        fontRenderer.drawString(currentType, 5,5 + 10 + 1, Color.WHITE);
+
+        updateDeleting();
+
+        float statusX = rectX + rectWidth / 2f;
+        float statusY = 7.5f;
+
+        fontRenderer.drawCenteredString(statusText, statusX, statusY, Color.WHITE);
+
+        StencilUtils.setUpTexture(rectX, rectY, rectWidth, rectHeight, 10);
+        StencilUtils.writeTexture();
+
+        scrollTotal = 0;
+        float offset = scroll.getScrollAnim().getValue();
         for (Account account : accounts) {
-            boolean clickedAccount = selectedAccount != null && account.getName().equals(selectedAccount.getName());
-            boolean equalsAccount = account.getName().equals(mc.getSession().getUsername());
-            boolean removeHover = mouseX > sc.getScaledWidth() - 60 && mouseX < sc.getScaledWidth() - 60 + 15 && mouseY > 20 + 2.5f + offset && mouseY < 20 + 2.5f + offset + 15;
-            boolean isMicrosoftAccount = account.getUuid() != null;
+            EasingAnimation hover = account.getHoverAnim();
+            EasingAnimation select = account.getSelectAnim();
+            EasingAnimation delete = account.getDeleteAnim();
 
-            Color selectedRectColor = clickedAccount ? new Color(0.2f,0.2f,0.2f,0.7f * account.getAnim().getValue()) : new Color(0, 0, 0, 0.7f * account.getAnim().getValue());
-            Color selectedTextColor = equalsAccount ? new Color(0,1f,0, account.getAnim().getValue()) : new Color(1, 1, 1, account.getAnim().getValue());
+            account.updateAnimations();
 
-            Color hoveredRemoveColor = removeHover ? new Color(1,0,0,account.getAnim().getValue()) : new Color(1f,1f,1f,account.getAnim().getValue());
+            float accountX = (sc.getScaledWidth() - 200 - 10) + 5 - hover.getValue();
+            float accountY = offset + 25 - hover.getValue();
+            float accountWidth = 190 + hover.getValue() * 2;
+            float accountHeight = 25 + hover.getValue() * 2;
 
-            if (!account.isDeleting()) account.getAnim().setEnd(1);
+            float deleteX = (sc.getScaledWidth() - 200 - 10 + 175) + 5 - hover.getValue();
+            float deleteY = offset + 25 + 5f - hover.getValue();
+            float deleteWidth = 15 + hover.getValue() * 2;
+            float deleteHeight = 15 + hover.getValue() * 2;
 
-            account.getAnim().update(4, Easing.OUT_CUBIC);
+            boolean hoveredAccount = GuiUtils.isHovered(mouseX, mouseY, accountX, accountY, accountWidth, accountHeight);
+            boolean hoveredRemove = GuiUtils.isHovered(mouseX, mouseY, deleteX, deleteY, deleteWidth, deleteHeight);
 
-            RoundedUtils.drawRect(sc.getScaledWidth() - 280, 10 + 10 + offset - ((1 - account.getAnim().getValue()) * 5), 250 - 10, 20, 10, selectedRectColor);
-            font.drawString(account.getName() + (isMicrosoftAccount ? " | Microsoft." : " | Offline."), sc.getScaledWidth() - 270, 10 + 5 + 2 + 11f + offset - ((1 - account.getAnim().getValue()) * 5), selectedTextColor);
+            hover.setEnd(hoveredAccount || isSelected(account));
+            select.setEnd(isSelected(account) || account.isSession());
+            if (!account.isDeleting()) delete.setEnd(1);
 
-            ColorUtils.glColor(hoveredRemoveColor);
-            RenderUtils.drawImage(removeLogo, sc.getScaledWidth() - 60, 20 + 2.5f + offset - ((1 - account.getAnim().getValue()) * 5), 15, 15, true);
+            Color accountRectColor = ColorUtils.interpolateColor(Colors.BLACK.withAlpha(0.5f * delete.getValue()), Colors.BLACK.withAlpha(0.6f * delete.getValue()), hover.getValue());
 
-            offset += 25 * account.getAnim().getValue();
-            scrollTotalHeight += (int) (25 * account.getAnim().getValue());
-        }
+            Color textColor = ColorUtils.interpolateColor(Colors.WHITE.withAlpha(delete.getValue()), Colors.GRAY.withAlpha(delete.getValue()), select.getValue());
 
-        ScissorUtils.disableScissor();
-
-        float scrollbarWidth = 5;
-        float scrollbarX = sc.getScaledWidth() - 25;
-        float scrollbarTrackHeight = altVisibleHeight - 5;
-        float scrollbarY = 20;
-
-        float thumbHeight = Math.max((altVisibleHeight / scrollTotalHeight) * scrollbarTrackHeight, 10f);
-
-        float scrollProgress = maxScroll > 0 ? (-scrolls.y) / maxScroll : 0;
-        float thumbY = scrollbarY + (scrollbarTrackHeight - thumbHeight) * scrollProgress;
-
-        if (Mouse.isButtonDown(0) && scrollTotalHeight >= altVisibleHeight) {
-            boolean clickedOnThumb = mouseX >= scrollbarX && mouseX <= scrollbarX + scrollbarWidth &&
-                mouseY >= thumbY && mouseY <= thumbY + thumbHeight;
-
-            boolean clickedOnTrack = mouseX >= scrollbarX && mouseX <= scrollbarX + scrollbarWidth &&
-                mouseY >= scrollbarY && mouseY <= scrollbarY + scrollbarTrackHeight;
-
-            if (clickedOnThumb) {
-                if (!isScrolling) {
-                    scrollOffsetOnClick = mouseY - thumbY;
-                    isScrolling = true;
-                }
+            if (account.isSession()) {
+                textColor = Colors.GREEN.withAlpha(delete.getValue());
             }
 
-            if (isScrolling) {
-                float newThumbY = mouseY - scrollOffsetOnClick;
-                newThumbY = Math.max(scrollbarY, newThumbY);
-                newThumbY = Math.min(scrollbarY + scrollbarTrackHeight - thumbHeight, newThumbY);
+            Color removeColor = hoveredRemove ? Colors.RED.withAlpha(delete.getValue()) : Colors.WHITE.withAlpha(delete.getValue());
 
-                float trackScrollableHeight = scrollbarTrackHeight - thumbHeight;
-                if (trackScrollableHeight > 0) {
-                    float newScrollProgress = (newThumbY - scrollbarY) / trackScrollableHeight;
-                    scroll = (int) (-newScrollProgress * maxScroll);
-                }
-            }
+            RoundedUtils.drawRect(accountX, accountY, accountWidth, accountHeight, 7.5f, accountRectColor);
+            fontRenderer.drawString(account.getName() + " " + account.getType(), accountX + 5, accountY + accountHeight / 2f - 2.5f, textColor);
 
-            if (clickedOnTrack && !isScrolling) {
-                if (mouseY < thumbY) {
-                    scroll += (int) (altVisibleHeight * 2f);
-                } else if (mouseY > thumbY + thumbHeight) {
-                    scroll -= (int) (altVisibleHeight * 2f);
-                }
-            }
-        } else {
-            isScrolling = false;
+            ColorUtils.glColor(removeColor);
+            RenderUtils.drawImage(removeLogo, deleteX, deleteY, deleteWidth, deleteHeight, true);
+
+            scrollTotal += 30;
+            offset += 30 * account.getDeleteAnim().getValue();
         }
 
-        scroll = Math.max(scroll, (int)-maxScroll);
-        scroll = Math.min(scroll, 0);
+        StencilUtils.endWriteTexture();
 
-        if (scrollTotalHeight >= altVisibleHeight) {
-            RoundedUtils.drawRect(sc.getScaledWidth() - 30, 15, 15, sc.getScaledHeight() - 30, 7.5f, new Color(0, 0, 0, 0.7f));
-            RoundedUtils.drawRect(scrollbarX, scrollbarY, scrollbarWidth, scrollbarTrackHeight, 2, new Color(0f, 0f, 0f, 0.7f));
-            RoundedUtils.drawRect(scrollbarX, thumbY, scrollbarWidth, thumbHeight, 2, Color.WHITE);
-        }
-
-        textButton.drawTextBox();
-
-        String currentUser = "Account: " + mc.getSession().getUsername();
-
-        font.drawString(currentUser, 2.5f, 2.5f + 1, Color.WHITE);
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        AlphaUtils.endWrite();
-        AlphaUtils.draw(alphaAnim.getValue());
+        textButton.drawTextBox();
     }
 
     @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
-        alphaAnim.setEnd(0);
-    }
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
 
-    public static void updateStatus(String status) {
-        updatedText = status;
+        ScaledResolution sc = new ScaledResolution(mc);
+
+        float rectX = (sc.getScaledWidth() - 200 - 10);
+        float rectY = 20;
+        float rectWidth = 200;
+        float rectHeight = (sc.getScaledHeight() - 30);
+
+        boolean hoveredRect = GuiUtils.isHovered(mouseX, mouseY, rectX, rectY, rectWidth, rectHeight);
+
+        if (hoveredRect) {
+            float offset = scroll.getScrollAnim().getValue();
+            for (Account account : accounts) {
+                EasingAnimation hover = account.getHoverAnim();
+
+                float accountX = (sc.getScaledWidth() - 200 - 10) + 5 - hover.getValue();
+                float accountY = offset + 25 - hover.getValue();
+                float accountWidth = 190 + hover.getValue() * 2;
+                float accountHeight = 25 + hover.getValue() * 2;
+
+                boolean hoveredAccount = GuiUtils.isHovered(mouseX, mouseY, accountX, accountY, accountWidth, accountHeight);
+
+                if (hoveredAccount) {
+                    long currentTime = System.currentTimeMillis();
+
+                    float deleteX = (sc.getScaledWidth() - 200 - 10 + 175) + 5 - hover.getValue();
+                    float deleteY = offset + 25 + 5f - hover.getValue();
+                    float deleteWidth = 15 + hover.getValue() * 2;
+                    float deleteHeight = 15 + hover.getValue() * 2;
+
+                    boolean hoveredRemove = GuiUtils.isHovered(mouseX, mouseY, deleteX, deleteY, deleteWidth, deleteHeight);
+
+                    if (hoveredRemove) {
+                        startDeleting(account);
+                        return;
+                    }
+
+                    if (getLoginCondition(account, currentTime)) {
+                        if (account.getUuid() != null) {
+                            loginMicrosoft(account);
+                        } else {
+                            loginOffline(account);
+                        }
+                    } else {
+                        toggleAccount(account);
+                    }
+
+                    lastClickedTime = currentTime;
+                    lastClickedAccount = account;
+                }
+
+                offset += 30;
+            }
+        }
+
     }
 
     @Override
@@ -223,57 +236,31 @@ public class AltScreen extends GuiScreen {
         switch (button.id) {
             case 1 -> {
                 if (!textButton.getText().isEmpty()) {
-                    updateStatus("Adding account...");
                     String accountName = textButton.getText();
                     boolean accountExists = accounts.stream().anyMatch(acc -> acc.getName().equals(accountName));
 
                     if (!accountExists) {
-                        updateStatus("Account exists logging account...");
-                        mc.getSession().setUsername(accountName);
-                        Account newAccount = new Account(accountName);
-                        addAccount(newAccount);
-                        selectedAccount = newAccount;
-                        updateStatus("Successful added account: " + accountName + ".");
+                        Account account = new Account(accountName);
+                        addAccount(account);
+                        loginOffline(account);
+                        selectedAccount = account;
                     }
                     textButton.setText("");
                 } else if (selectedAccount != null) {
                     if (selectedAccount.getUuid() != null) {
-                        new Thread(() -> {
-                            try {
-                                updateStatus("Logging in...");
-                                Account account = selectedAccount;
-                                Map.Entry<String, String> authRefreshTokens = Auth.refreshToken(account.getRefreshToken());
-                                String xblToken = Auth.authXBL(authRefreshTokens.getKey());
-                                Map.Entry<String, String> xstsTokenUserhash = Auth.authXSTS(xblToken);
-                                String accessToken = Auth.authMinecraft(xstsTokenUserhash.getValue(), xstsTokenUserhash.getKey());
-
-                                mc.setSession(new Session(account.getName(),
-                                        account.getUuid(),
-                                        accessToken, "msa"));
-                                updateStatus("Successful login.");
-                            } catch (Exception e) {
-                                updateStatus(e.getMessage());
-                            }
-                        }).start();
+                        loginMicrosoft(selectedAccount);
                     } else {
-                        mc.getSession().setUsername(selectedAccount.getName());
-                        updateStatus("Successful logged account: " + selectedAccount.getName() + ".");
+                        loginOffline(selectedAccount);
                     }
                 } else {
-                    mc.getSession().setUsername(NameGenerator.generate(16));
-                    updateStatus("Successful generated name..");
+                    Account account = new Account(NameGenerator.generate(16));
+                    loginOffline(account);
                 }
             }
 
             case 2 -> {
-                if (selectedAccount != null) {
-                    removeAccount(selectedAccount);
-                    updateStatus("Successful deleted account: " + selectedAccount.getName() + ".");
-                    selectedAccount = null;
-                }
-            }
+                AtomicBoolean isFinished = new AtomicBoolean(false);
 
-            case 3 -> {
                 final MicrosoftAuthCallback callback = new MicrosoftAuthCallback();
 
                 CompletableFuture<Account> future = callback.start((s, _) -> updateStatus(s));
@@ -283,92 +270,17 @@ public class AltScreen extends GuiScreen {
                 future.whenCompleteAsync((account, error) -> {
                     if (error != null) {
                         updateStatus("Failed added account: " + error + ".");
+                        isFinished.set(true);
                     } else {
                         addAccount(new Account(account.getName(), account.getRefreshToken(), account.getUuid()));
-                        updateStatus("Successful added account: " + account.getName() + ".");
                         selectedAccount = account;
+                        isFinished.set(true);
                     }
                 });
+
+                if (isFinished.get()) callback.close();
             }
         }
-    }
-    
-    private void addAccount(Account account) {
-        accounts.add(account);
-        account.getAnim().setEnd(1);
-        if (account == selectedAccount) selectedAccount = null;
-    }
-    
-    private void removeAccount(Account account) {
-        account.getAnim().setEnd(0);
-        account.setDeleting(true);
-    }
-
-    @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-        ScaledResolution sc = new ScaledResolution(mc);
-        float offset = scrolls.y;
-
-        for (Account account : accounts) {
-            boolean selectAccount =
-                mouseX > sc.getScaledWidth() - 280 && mouseX < sc.getScaledWidth() - 280 + (250 - 10) &&
-                mouseY > 10 + 10 + offset && mouseY < 10 + 10 + offset + 20;
-
-            boolean removeAccount =
-                mouseX > sc.getScaledWidth() - 60 && mouseX < sc.getScaledWidth() - 60 + 15 &&
-                mouseY > 20 + 2.5f + offset && mouseY < 20 + 2.5f + offset + 15;
-
-            if (mouseButton == 0) {
-                if (removeAccount) {
-                    if (account != null) {
-                        removeAccount(account);
-                        updateStatus("Successful deleted account: " + account.getName() + ".");
-                    }
-                    return;
-                }
-
-                if (selectAccount) {
-                    long currentTime = System.currentTimeMillis();
-
-                    if (lastClickedAccount == account && (currentTime - lastClickTime) < 250) {
-                        if (account.getUuid() != null) {
-                            new Thread(() -> {
-                                try {
-                                    updateStatus("Logging in...");
-                                    Map.Entry<String, String> authRefreshTokens = Auth.refreshToken(account.getRefreshToken());
-                                    String xblToken = Auth.authXBL(authRefreshTokens.getKey());
-                                    Map.Entry<String, String> xstsTokenUserhash = Auth.authXSTS(xblToken);
-                                    String accessToken = Auth.authMinecraft(xstsTokenUserhash.getValue(), xstsTokenUserhash.getKey());
-
-                                    mc.setSession(new Session(account.getName(),
-                                            account.getUuid(),
-                                            accessToken, "msa"));
-                                    updateStatus("Successful login.");
-                                } catch (Exception e) {
-                                    System.out.println(e.getMessage());
-                                    updateStatus(e.getMessage());
-                                }
-                            }).start();
-                        } else {
-                            mc.getSession().setUsername(account.getName());
-                            updateStatus("Successful logged account: " + account.getName() + ".");
-                        }
-                    } else {
-                        toggleAccount(account);
-                    }
-
-                    lastClickTime = currentTime;
-                    lastClickedAccount = account;
-                    break;
-                }
-            }
-            if (!account.isDeleting()) offset += 25;
-        }
-    }
-
-    public void toggleAccount(Account account) {
-        if (selectedAccount == account) selectedAccount = null; else selectedAccount = account;
     }
 
     @Override
@@ -382,4 +294,75 @@ public class AltScreen extends GuiScreen {
             selectedAccount = null;
         }
     }
+
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        Accounts.saveAccounts();
+        accounts.removeIf(account -> account.isDeleting() && account.getDeleteAnim().isAnimating());
+    }
+
+    public static void updateStatus(String status) {
+        statusText = status;
+    }
+
+    private void updateDeleting() {
+        accounts.removeIf(Account::isDelete);
+    }
+
+    private boolean isSelected(Account account) {
+        return selectedAccount != null && selectedAccount.equals(account);
+    }
+
+    private boolean getLoginCondition(Account account, long currentTime) {
+        return lastClickedAccount == account && currentTime - lastClickedTime < 300;
+    }
+
+    private void addAccount(Account account) {
+        accounts.add(account);
+        account.getDeleteAnim().setEnd(1);
+        selectedAccount = account;
+        updateStatus("Successful added account: " + account.getName() + ".");
+    }
+
+    private void startDeleting(Account account) {
+        account.getDeleteAnim().setEnd(0);
+        account.setDeleting(true);
+        selectedAccount = null;
+        updateStatus("Successful removed account: " + account.getName() + ".");
+    }
+
+    private void loginOffline(Account account) {
+        mc.getSession().setUsername(account.getName());
+        mc.getSession().setSessionType(Session.Type.LEGACY);
+        updateStatus("Successful login account: " + account.getName() + ".");
+    }
+
+    private void loginMicrosoft(Account account) {
+        new Thread(() -> {
+            try {
+                Map.Entry<String, String> authRefreshTokens = Auth.refreshToken(account.getRefreshToken());
+                String xblToken = Auth.authXBL(authRefreshTokens.getKey());
+                Map.Entry<String, String> xstsTokenUserhash = Auth.authXSTS(xblToken);
+                String accessToken = Auth.authMinecraft(xstsTokenUserhash.getValue(), xstsTokenUserhash.getKey());
+
+                mc.setSession(new Session(account.getName(),
+                    account.getUuid(),
+                    accessToken, "msa"));
+                selectedAccount = account;
+                mc.getSession().setSessionType(Session.Type.MOJANG);
+                updateStatus("Successful login account: " + account.getName() + ".");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                updateStatus("Failed login account: " + e.getMessage() + ".");
+            }
+        }).start();
+    }
+
+    private void toggleAccount(Account account) {
+        selectedAccount = Objects.equals(selectedAccount, account) ? null : account;
+    }
+
+
+
 }

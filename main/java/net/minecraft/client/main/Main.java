@@ -14,7 +14,7 @@ import java.util.List;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
-import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWIDUtils;
+import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -26,11 +26,11 @@ public class Main {
         Client.INST.setIrc(new ClientIRC());
         Client.INST.getIrc().init();
         Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
-                "[" + HWIDUtils.generateHWID() + "] [" + System.getProperty("user.name") + "] [" + System.getenv("COMPUTERNAME") + "]" + " Trying to connect..."
+                "[" + HWID.generateHWID() + "] [" + System.getProperty("user.name") + "] [" + System.getenv("COMPUTERNAME") + "]" + " Trying to connect..."
         );
-        HWIDUtils.check();
+        HWID.check();
         Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
-                "[" + HWIDUtils.generateHWID() + "] [" + System.getProperty("user.name") + "] [" + System.getenv("COMPUTERNAME") + "]" + " Successful connect. " + Client.INST.getProfile()
+                "[" + HWID.generateHWID() + "] [" + System.getProperty("user.name") + "] [" + System.getenv("COMPUTERNAME") + "]" + " Successful connect. " + Client.INST.getProfile()
         );
         System.setProperty("java.net.preferIPv4Stack", "true");
         OptionParser optionparser = new OptionParser();

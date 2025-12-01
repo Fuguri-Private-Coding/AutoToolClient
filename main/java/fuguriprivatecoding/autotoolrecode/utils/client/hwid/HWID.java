@@ -4,14 +4,14 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.profile.Role;
 import net.dv8tion.jda.api.entities.Message;
-
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
 import java.security.MessageDigest;
 
-public class HWIDUtils {
+public class HWID {
 
     public static void check() {
-        String hwid = generateHWID();
-        if (!isWhiteList(hwid)) System.exit(-1);
+        if (!authenticateUser(generateHWID())) System.exit(-1);
     }
 
     public static String generateHWID() {
@@ -36,17 +36,27 @@ public class HWIDUtils {
         }
     }
 
-    public static boolean isWhiteList(String hwid) {
-        for (Message message : Client.INST.getIrc().getKeyChannel().getIterableHistory().stream().toList()) {
-            String[] args = message.getContentRaw().split(":");
-            if (hwid.equalsIgnoreCase(args[0])) {
-                Client.INST.setProfile(new Profile(args[1], Role.fromRoleName(args[2])));
+    public static boolean authenticateUser(String hwid) {
+        MessageChannel keyChannel = Client.INST.getIrc().getKeyChannel();
+        MessagePaginationAction history = keyChannel.getIterableHistory();
+
+        for (Message message : history.stream().toList()) {
+            String rawContent = message.getContentRaw();
+            String[] args = rawContent.split(":");
+
+            if (args.length >= 3 && hwid.equalsIgnoreCase(args[0])) {
+                String username = args[1];
+                Role userRole = Role.fromRoleName(args[2]);
+
+                Client.INST.setProfile(new Profile(username, userRole));
                 return true;
             }
         }
-        Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
-                "[" + HWIDUtils.generateHWID() + "] " + System.getProperty("user.name") + " This user does not have access to the client."
-        );
+
+        String userName = System.getProperty("user.name");
+        String denialMessage = "[" + hwid + "] " + userName + " This user does not have access to the client.";
+
+        Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(), denialMessage);
         return false;
     }
 }

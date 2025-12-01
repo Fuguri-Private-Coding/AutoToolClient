@@ -3,7 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.predict;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import lombok.Getter;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -41,6 +41,7 @@ public class SimulatedPlayer implements Imports {
     public double motionZ;
     public double motionY;
     public double motionX;
+    @Getter
     private boolean inWater;
     public boolean onGround;
     private boolean isAirBorne;
@@ -72,6 +73,7 @@ public class SimulatedPlayer implements Imports {
     private final int fireResistance;
     private boolean isInWeb;
     private boolean noClip;
+    @Getter
     private boolean isSprinting;
     private final FoodStats foodStats;
 
@@ -355,18 +357,15 @@ public class SimulatedPlayer implements Imports {
         posY = y;
         posZ = z;
         float f = width / 2.0f;
-        float f1 = height;
-        setEntityBoundingBox(new AxisAlignedBB(x - f, y, z - f, x + f, y + f1, z + f));
+        setEntityBoundingBox(new AxisAlignedBB(x - f, y, z - f, x + f, y + height, z + f));
     }
 
     private void setSprinting(boolean state) {
         isSprinting = state;
     }
 
-    private boolean pushOutOfBlocks(double x, double y, double z) {
-        if (noClip) {
-            return false;
-        } else {
+    private void pushOutOfBlocks(double x, double y, double z) {
+        if (!noClip) {
             BlockPos blockPos = new BlockPos(x, y, z);
             double d0 = x - blockPos.getX();
             double d1 = z - blockPos.getZ();
@@ -405,7 +404,6 @@ public class SimulatedPlayer implements Imports {
                     motionZ = f;
                 }
             }
-            return false;
         }
     }
 
@@ -802,7 +800,7 @@ public class SimulatedPlayer implements Imports {
         }
     }
 
-    public boolean handleWaterMovement() {
+    public void handleWaterMovement() {
         if (handleMaterialAcceleration(getEntityBoundingBox().expand(0.0, -0.4000000059604645, 0.0)
                 .contract(0.001, 0.001, 0.001), Material.water)) {
             fallDistance = 0.0f;
@@ -812,7 +810,6 @@ public class SimulatedPlayer implements Imports {
             inWater = false;
         }
 
-        return inWater;
     }
 
     public boolean handleMaterialAcceleration(AxisAlignedBB boundingBox, Material material) {
@@ -932,10 +929,6 @@ public class SimulatedPlayer implements Imports {
         isAirBorne = true;
     }
 
-    public boolean isSprinting() {
-        return isSprinting;
-    }
-
     public boolean isPotionActive(Potion potion) {
         return player.getActivePotionEffect(potion) != null;
     }
@@ -946,10 +939,6 @@ public class SimulatedPlayer implements Imports {
 
     public float getJumpUpwardsMotion() {
         return 0.42f;
-    }
-
-    public boolean isInWater() {
-        return inWater;
     }
 
     public void updateLivingEntityInput() {

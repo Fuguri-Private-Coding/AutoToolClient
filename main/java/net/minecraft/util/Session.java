@@ -3,6 +3,8 @@ package net.minecraft.util;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.util.UUIDTypeAdapter;
+import lombok.Setter;
+
 import java.util.Map;
 import java.util.UUID;
 
@@ -11,7 +13,7 @@ public class Session
     private String username;
     private final String playerID;
     private final String token;
-    private final Session.Type sessionType;
+    @Setter public Session.Type sessionType;
 
     public Session(String usernameIn, String playerIDIn, String tokenIn, String sessionTypeIn)
     {

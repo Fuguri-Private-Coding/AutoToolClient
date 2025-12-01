@@ -1,19 +1,20 @@
 package fuguriprivatecoding.autotoolrecode.module;
 
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import lombok.Getter;
+import fuguriprivatecoding.autotoolrecode.Client;
 import net.minecraft.util.ResourceLocation;
+import lombok.Getter;
 
 @Getter
 public enum Category {
-	COMBAT("Combat", new ResourceLocation("minecraft", "autotool/category/combat.png")),
-	MOVE("Move", new ResourceLocation("minecraft", "autotool/category/move.png")),
-	VISUAL("Visual", new ResourceLocation("minecraft", "autotool/category/visual.png")),
-	CONNECTION("Connect", new ResourceLocation("minecraft", "autotool/category/connection.png")),
-	LEGIT("Legit", new ResourceLocation("minecraft", "autotool/category/legit.png")),
-	PLAYER("Player", new ResourceLocation("minecraft", "autotool/category/player.png")),
-	MISC("Misc", new ResourceLocation("minecraft", "autotool/category/misc.png")),
-	CLIENT("Client", new ResourceLocation("minecraft", "autotool/category/client.png")),
+	COMBAT("Combat", Client.INST.of("category/combat.png")),
+	MOVE("Move", Client.INST.of("category/move.png")),
+	VISUAL("Visual", Client.INST.of("category/visual.png")),
+	CONNECTION("Connect", Client.INST.of("category/connection.png")),
+	LEGIT("Legit", Client.INST.of("category/legit.png")),
+	PLAYER("Player", Client.INST.of("category/player.png")),
+	MISC("Misc", Client.INST.of("category/misc.png")),
+	CLIENT("Client", Client.INST.of("category/client.png")),
 	;
 
 	public final String name;

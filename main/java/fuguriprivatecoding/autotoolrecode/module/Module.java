@@ -31,7 +31,8 @@ public class Module implements Imports, SettingAble, EventListener {
 
 	@Getter @Setter long hoverStartTime;
 	@Getter @Setter boolean isHovered;
-	@Getter EasingAnimation arrayListAnimation = new EasingAnimation(0);
+
+	@Getter EasingAnimation slideAnim = new EasingAnimation(0);
 	@Getter EasingAnimation toggleAnimation = new EasingAnimation();
 
     public Module() {
@@ -44,27 +45,29 @@ public class Module implements Imports, SettingAble, EventListener {
 		float volume = 1;
 		if (Modules.getModule(ClientSettings.class) != null) volume = Modules.getModule(ClientSettings.class).toggleModuleVolume.getValue();
 
-		if (toggled) {
-			playSound(volume);
+        playSound(volume);
+
+        if (toggled) {
 			Events.register(this);
-			arrayListAnimation.setEnd(1);
 			onEnable();
 		} else {
-			playSound(volume);
 			Events.unregister(this);
-			arrayListAnimation.setEnd(0);
 			onDisable();
 		}
+
+        slideAnim.setEnd(toggled);
 	}
 
 	void playSound(float volume) {
 		if (Client.INST.isStarting() || name.equalsIgnoreCase("ClickGui")) return;
-		if (toggled) Sounds.getEnableSound().asyncPlay(volume);else Sounds.getDisableSound().asyncPlay(volume);
+
+        (toggled ? Sounds.getEnableSound() : Sounds.getDisableSound()).asyncPlay(volume);
 	}
 
 	public void onEnable() {
 
 	}
+
 	public void onDisable() {
 
 	}

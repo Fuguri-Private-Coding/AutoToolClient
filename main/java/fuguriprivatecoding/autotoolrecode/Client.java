@@ -3,7 +3,7 @@ package fuguriprivatecoding.autotoolrecode;
 import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
-import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWIDUtils;
+import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
@@ -33,7 +33,6 @@ import fuguriprivatecoding.autotoolrecode.irc.*;
 import de.florianmichael.viamcp.ViaMCP;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
-import javax.swing.*;
 import lombok.*;
 import java.io.*;
 
@@ -110,7 +109,7 @@ public enum Client implements Imports, EventListener {
         starting = false;
 
 		double elapsedNanos = System.nanoTime() - start;
-		ConsoleScreen.log("Client initialized in " + (float) (elapsedNanos / 1000000000D) + " seconds.");
+		ConsoleScreen.log("Клиент инициализировался за " + (float) (elapsedNanos / 1000000000D) + " секунд.");
 	}
 
 	public void onClose() {
@@ -130,7 +129,7 @@ public enum Client implements Imports, EventListener {
 
 		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
 			lastTime = System.currentTimeMillis();
-            new Thread(HWIDUtils::check).start();
+            new Thread(HWID::check).start();
 		}
 	}
 

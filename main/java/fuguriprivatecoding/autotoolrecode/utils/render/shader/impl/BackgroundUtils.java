@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Uniform;
