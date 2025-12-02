@@ -27,6 +27,22 @@ public class MoveUtils implements Imports {
         return Math.round(yaw / 45f) % 2 != 0;
     }
 
+    public void strafe(double speed, double strength) {
+        if (!isMoving()) {
+            mc.thePlayer.motionX = 0;
+            mc.thePlayer.motionZ = 0;
+            return;
+        }
+
+        double prevX = mc.thePlayer.motionX * (1.0 - strength);
+        double prevZ = mc.thePlayer.motionZ * (1.0 - strength);
+        double useSpeed = speed * strength;
+
+        double angle = Math.toRadians(getDir());
+        mc.thePlayer.motionX = (-Math.sin(angle) * useSpeed) + prevX;
+        mc.thePlayer.motionZ = (Math.cos(angle) * useSpeed) + prevZ;
+    }
+
     public static float getDir() {
 
         float rotationYaw = mc.thePlayer.rotationYaw;

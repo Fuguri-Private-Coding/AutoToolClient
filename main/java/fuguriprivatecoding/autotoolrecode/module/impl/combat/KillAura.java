@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
@@ -9,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -64,12 +63,13 @@ public class KillAura extends Module {
     final CheckBox teleportPredictFix = new CheckBox("TeleportPredictFix", this);
 
     final MultiMode smoothMode = new MultiMode("SmoothModes", this)
-        .addModes("Linear", "Basic", "MixDelta");
+        .addModes("Linear", "Basic", "MixDelta", "ReactionTime");
 
     DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
     DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
 
     FloatSetting randomizeStrength = new FloatSetting("RandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
+    FloatSetting reactionTime = new FloatSetting("ReactionTime", this, () -> smoothMode.get("ReactionTime"), 0, 5, 1, 0.1f);
 
     final FloatSetting linearSmoothStrength = new FloatSetting(
         "LinearSmoothStrength", this,
@@ -87,6 +87,8 @@ public class KillAura extends Module {
 
     final StopWatch clickTimer = new StopWatch();
     private long delay;
+
+    boolean startSlowRotation;
 
     Rot lastDelta = new Rot();
 
@@ -148,6 +150,18 @@ public class KillAura extends Module {
                     if (smoothMode.get("Linear")) {
                         delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
                         delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
+                    }
+
+                    if (smoothMode.get("ReactionTime")) {
+                        Rot delta1 = delta.copy();
+
+                        if (startSlowRotation) {
+                            startSlowRotation = false;
+                            delta.setYaw(delta.getYaw() * 0.2f);
+                            delta.setPitch(delta.getPitch() * 0.2f);
+                        }
+
+                        if (delta1.hypot() < reactionTime.getValue()) startSlowRotation = true;
                     }
 
                     RotUtils.limitDelta(delta, speed);

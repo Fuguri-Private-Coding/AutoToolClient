@@ -1,86 +1,112 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
+import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
+import fuguriprivatecoding.autotoolrecode.event.events.player.*;
+import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.UpdateEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
+import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
+import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
 @ModuleInfo(name = "LongJump",category = Category.MOVE)
 public class LongJump extends Module {
-//
-//
-//    int stage = 0;
-//    boolean bool0 = false;
-//    boolean bool1 = false;
-//    boolean bool2;
-//    Vec3 vec0;
-//
-//    @Override
-//    public void onEnable() {
-//        stage = 0;
-//        bool0 = false;
-//        bool1 = false;
-//        bool2 = false;
-//        vec0 = null;
-//        if(mc.thePlayer != null) vec0 = mc.thePlayer.getPositionVector();
-//    }
-//
-//    @Override
-//    public void onEvent(Event event) {
-//        if (event instanceof MoveEvent e) {
-//            if (MoveUtils.isMoving()) {
-//                if(bool1 && mc.thePlayer.onGround) {
-//                    stage = 0;
-//                    bool1 = false;
-//                    bool2 = false;
-//                    bool0 = false;
-//                    vec0 = mc.thePlayer.getPositionVector();
-//                }
-//                if(mc.thePlayer.onGround && stage == 0) {
-//                    mc.thePlayer.jump();
-//                    if(!mc.thePlayer.isSprinting()) {
-//                        MoveUtils.strafe2(0.5);
-//                        MoveUtils.limit2speed(0.4899 + RandomUtils.nextDouble(0.00003, 0.00007));
-//                    }
-//                }
-//                mc.thePlayer.motionY += 0.0034;
-//                if(!bool0 && MathUtils.distance(vec0.xCoord, vec0.zCoord, mc.thePlayer.posX, mc.thePlayer.posZ) <= 2.79 && MoveUtils.getSpeedNew() < 0.27) MoveUtils.limit2speed(0.199);
-//                if(stage >= 2 && MathUtils.distance(vec0.xCoord, vec0.zCoord, mc.thePlayer.posX, mc.thePlayer.posZ) >= 2.71 && !bool2) {
-//                    double strafe = 0.999;
-//                    PacketUtils.sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + MoveUtils.getXT() * strafe, mc.thePlayer.posY + 0.4233, mc.thePlayer.posZ + MoveUtils.getZT() * strafe, false));
-//                    bool2 = true;
-//                }
-//                if(!bool2) stage++;
-//                if(bool0) {
-//                    mc.thePlayer.motionY = (0.42);
-//                    double strafe = getStrafe();
-//                    MoveUtils.strafe2(strafe);
-//                    this.setToggled(false);
-//                }
-//            }
-//        }
-//        if (event instanceof PacketEvent e) {
-//            if(e.getPacket() instanceof C03PacketPlayer packet && !bool0 && MathUtils.distance(vec0.xCoord, vec0.zCoord, mc.thePlayer.posX, mc.thePlayer.posZ) <= 2.79) {
-//                packet.setOnGround(false);
-//            }
-//            if(e.getPacket() instanceof S08PacketPlayerPosLook packet && !bool0 && !bool1) {
-//                e.cancel();
-//                mc.thePlayer.setPosition(packet.getX(), packet.getY(), packet.getZ());
-//                PacketUtils.sendPacket(new C03PacketPlayer.C06PacketPlayerPosLook(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch(), false));
-//                bool0 = true;
-//            }
-//        }
-//    }
-//
-//    private static double getStrafe() {
-//        double strafe = 2.7100000;
-//        if(MoveUtils.getSpeedNew() > 0.4) strafe = 3.7000;
-//        if(MoveUtils.getSpeedNew() > 0.5) strafe = 4.6200;
-//        if(MoveUtils.getSpeedNew() > 0.55) strafe = 4.9000;
-//        if(MoveUtils.getSpeedNew() > 0.6) strafe = 5.3000;
-//        if(MoveUtils.getSpeedNew() > 0.65) strafe = 5.8100;
-//        if(MoveUtils.getSpeedNew() > 0.8) strafe = 6.8000;
-//        if(MoveUtils.getSpeedNew() > 0.9) strafe = 7.8000;
-//        if(MoveUtils.getSpeedNew() > 1.0) strafe = 8.8000;
-//        return strafe;
-//    }
+
+    FloatSetting speed = new FloatSetting("Speed", this, 0, 10, 5, 0.01f);
+    IntegerSetting tick = new IntegerSetting("Ticks", this, 0, 80, 25);
+
+    private boolean canBoost;
+    private boolean flag;
+    private boolean sent;
+    private double x;
+    private double z;
+    private double y;
+    private double firstDir;
+    private int ticks;
+
+    public void onEnable() {
+        this.canBoost = false;
+        this.flag = false;
+        this.sent = false;
+        this.ticks = 0;
+        this.x = mc.thePlayer.posX;
+        this.z = mc.thePlayer.posZ;
+        this.y = mc.thePlayer.posY;
+        this.firstDir = mc.thePlayer.rotationYaw;
+    }
+
+    @Override
+    public void onEvent(Event event) {
+        if (event instanceof MoveEvent e) {
+            if (!this.canBoost) {
+                e.setForward(0);
+                e.setStrafe(0);
+            }
+        }
+
+        if (event instanceof PacketEvent e) {
+            if (e.getDirection() == PacketDirection.OUTGOING) {
+                if (e.getPacket() instanceof C0FPacketConfirmTransaction) {
+                    e.cancel();
+                    return;
+                }
+            }
+
+            if (e.getDirection() == PacketDirection.INCOMING) {
+                if (e.getPacket() instanceof S08PacketPlayerPosLook && this.canBoost) {
+                    this.flag = true;
+                }
+            }
+        }
+
+        if (event instanceof MotionEvent e) {
+            e.setOnGround(false);
+            if (!this.sent) {
+                e.setX(this.x);
+                e.setY(this.y);
+                e.setZ(this.z);
+            }
+        }
+
+        if (event instanceof MotionEventPost) {
+            if (!this.sent) {
+                this.x += -Math.sin(Math.toRadians(this.firstDir)) * (0.2496 - (this.ticks % 3 == 0 ? 0.0806 : (double) 0.0F));
+                this.z += Math.cos(Math.toRadians(this.firstDir)) * (0.2496 - (this.ticks % 3 == 0 ? 0.0806 : (double) 0.0F));
+            }
+        }
+
+        if (event instanceof LookEvent e) {
+            if (!this.sent) {
+                e.setYaw((float) this.firstDir);
+                e.setPitch(1);
+            }
+        }
+
+        if (event instanceof UpdateEvent) {
+            if (!this.sent) {
+                mc.thePlayer.motionX = mc.thePlayer.motionY = mc.thePlayer.motionZ = 0;
+                if (this.ticks > this.tick.getValue()) {
+                    this.sent = true;
+                    this.ticks = 0;
+                    this.canBoost = true;
+                    mc.timer.timerSpeed = 1.0F;
+                }
+            }
+
+            if (this.canBoost) {
+                MoveUtils.strafe((double) this.speed.getValue(), 1);
+                mc.thePlayer.motionY = 0.42;
+                if (this.flag) {
+                    this.toggle();
+                }
+            }
+
+            ++this.ticks;
+        }
+    }
 }
