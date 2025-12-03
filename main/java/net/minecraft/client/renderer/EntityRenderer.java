@@ -12,6 +12,7 @@ import java.util.concurrent.Callable;
 import fuguriprivatecoding.autotoolrecode.event.events.render.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
@@ -1181,6 +1182,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         if (this.mc.gameSettings.ofProfiler) {
             this.mc.gameSettings.showDebugProfilerChart = true;
         }
+
+        RenderScreenEvent.INST.callNoWorldNoPlayer();
     }
 
     public void renderStreamIndicator(float partialTicks) {

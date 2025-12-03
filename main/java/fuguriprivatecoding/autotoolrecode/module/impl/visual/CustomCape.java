@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
+import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -59,7 +60,7 @@ public class CustomCape extends Module {
 
     private void downloadCapes() {
         try {
-            MessageChannel capesChannel = Client.INST.getIrc().getClientCapesChannel();
+            MessageChannel capesChannel = ClientIRC.getClientCapesChannel();
 
             List<Message> messages = capesChannel.getIterableHistory().stream().toList();
 

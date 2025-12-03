@@ -36,8 +36,8 @@ public class Discord implements Imports, EventListener {
 
     public static void start() {
         DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler(discordUser -> {
-            ConsoleScreen.log("§a[§9Discord§a]§e Подключен к " + discordUser.username + ".");
-            ConsoleScreen.log("§a[§9Discord§a]§a Активность запущенна.");
+            ConsoleScreen.logWithoutPrefix("§f[§9Discord§f]§a Подключен к " + discordUser.username + ".");
+            ConsoleScreen.logWithoutPrefix("§f[§9Discord§f]§a Активность запущенна.");
             timestamp = System.currentTimeMillis();
             if (discordUser.userId != null) {
                 name = discordUser.username;
@@ -87,7 +87,7 @@ public class Discord implements Imports, EventListener {
     }
 
     public static void stop() {
-        ConsoleScreen.log("§a[§9Discord§a]§4 Активность остановлена.");
+        ConsoleScreen.logWithoutPrefix("§f[§9Discord§f]§4 Активность остановлена.");
         DiscordRPC.discordShutdown();
     }
 

@@ -18,4 +18,12 @@ public class ClientUtils implements Imports {
             mc.thePlayer.addChatMessage(new ChatComponentText(prefixLog + message));
         }
     }
+
+    public static void chatLogWithoutPrefix(Object message) {
+        if (mc.thePlayer == null) {
+            System.out.println(message);
+        } else {
+            mc.thePlayer.addChatMessage(new ChatComponentText((String) message));
+        }
+    }
 }

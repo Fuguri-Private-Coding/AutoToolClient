@@ -1,11 +1,14 @@
 package fuguriprivatecoding.autotoolrecode;
 
+import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
@@ -31,9 +34,12 @@ import fuguriprivatecoding.autotoolrecode.event.*;
 import fuguriprivatecoding.autotoolrecode.irc.*;
 
 import de.florianmichael.viamcp.ViaMCP;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import lombok.*;
+
+import java.awt.*;
 import java.io.*;
 
 @Getter
@@ -48,7 +54,6 @@ public enum Client implements Imports, EventListener {
 
     public final File CLIENT_DIR = new File(CLIENT_NAME);
 
-	@Setter ClientIRC irc;
 	@Setter Profile profile;
 
 	boolean starting = true;
@@ -61,11 +66,11 @@ public enum Client implements Imports, EventListener {
 
         Display.setTitle(getFullName());
 
-        VersionCheck.validateClientVersion(irc.getClientVersionChannel());
+        VersionCheck.validateClientVersion(ClientIRC.getClientVersionChannel());
 
         addHook();
 
-        irc.connectClient();
+        ClientIRC.connectClient();
 
         if (CLIENT_DIR.mkdirs()) System.out.println("Successful created Сlient Directory.");
 
@@ -115,12 +120,12 @@ public enum Client implements Imports, EventListener {
 	public void onClose() {
 		Configs.saveConfig(Configs.getDefaultConfig());
 		KeyBinds.saveBinds();
-        irc.disconnectClientServer();
+        ClientIRC.disconnectClientServer();
 	}
 
     @Override
 	public void onEvent(Event event) {
-		if (event instanceof ServerJoinEvent && Modules.getModule(IRC.class).isToggled()) irc.connectServer();
+		if (event instanceof ServerJoinEvent && Modules.getModule(IRC.class).isToggled()) ClientIRC.connectServer();
 		if (event instanceof KeyEvent keyEvent) {
             for (Module module : Modules.getModules()) {
                 if (module.getKey() == keyEvent.getKey()) module.toggle();
@@ -131,6 +136,19 @@ public enum Client implements Imports, EventListener {
 			lastTime = System.currentTimeMillis();
             new Thread(HWID::check).start();
 		}
+
+        if (event instanceof RenderScreenEvent && HWID.noConnection) {
+            long time = System.currentTimeMillis() - HWID.lastTimeConnection;
+
+            ClientFontRenderer fontRenderer = Fonts.fonts.get("SFPro");
+            ScaledResolution sc = new ScaledResolution(mc);
+
+            int sec = Integer.parseInt(String.valueOf(time / 1000L));
+
+            String text = "§f[§9AutoTool§f] Нет интернет подключения, клиент закроется при §930 §fсекундах: §9" + sec + "§f s.";
+
+            fontRenderer.drawCenteredString(text, sc.getScaledWidth() / 2f, 5, Color.WHITE);
+        }
 	}
 
     public void addHook() {

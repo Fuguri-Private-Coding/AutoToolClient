@@ -18,32 +18,34 @@ import java.util.function.Consumer;
 public class ClientIRC extends ListenerAdapter implements Imports {
 
     @Getter @Setter
-    public MessageChannel chatChannel, loginChannel, serverChannel, keyChannel,
+    public static MessageChannel chatChannel, loginChannel, serverChannel, keyChannel,
         onlineChannel, changeLogChannel, onlineConfigsChannel, clientVersionChannel,
         clientCapesChannel, fontsChannel;
 
     @Getter @Setter
     public static long MESSAGE_ID = -1, ONLINE_MESSAGE_ID = -1;
 
-    String token;
+    private static JDA jda;
 
-    public JDA jda;
-
-    public void init() {
-        token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GGhvgp.juE97JuncYJRgH-Rzca0OV2a8ieMd2g6XzV1IA";
-
-        try {
-            jda = JDABuilder.createDefault(token).addEventListeners(this).build();
-        } catch (Exception e) {
-            System.out.println("Failed create connection.");
-            System.exit(-1);
-        }
+    public static void init() {
+        new ClientIRC();
 
         try {
             jda.awaitReady();
             initializeChannels(jda);
         } catch (InterruptedException e) {
             System.out.println("Failed connect to server.");
+            System.exit(-1);
+        }
+    }
+
+    private ClientIRC() {
+        String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GGhvgp.juE97JuncYJRgH-Rzca0OV2a8ieMd2g6XzV1IA";
+
+        try {
+            jda = JDABuilder.createDefault(token).addEventListeners(this).build();
+        } catch (Exception e) {
+            System.out.println("Failed create connection.");
             System.exit(-1);
         }
     }
@@ -57,22 +59,22 @@ public class ClientIRC extends ListenerAdapter implements Imports {
         if (currentChannel == chatChannel) {
             String message = event.getMessage().getContentRaw();
             message = message.replaceAll(Client.INST.getProfile().toString(), Client.INST.getProfile().toColoredString());
-            ConsoleScreen.history.add("§f[§2IRC§f] " + message);
+            ConsoleScreen.logWithoutPrefix("§f[§2IRC§f] " + message);
         }
     }
 
-    public void initializeChannels(JDA jda) {
+    private static void initializeChannels(JDA jda) {
         Map<String, Consumer<MessageChannel>> channelConfigurators = Map.of(
-            "hwid-list", this::setKeyChannel,
-            "online-users", this::setOnlineChannel,
-            "change-log", this::setChangeLogChannel,
-            "online-configs", this::setOnlineConfigsChannel,
-            "client-version", this::setClientVersionChannel,
-            "client-capes", this::setClientCapesChannel,
-            "login-log", this::setLoginChannel,
-            "irc-chat", this::setChatChannel,
-            "server-log", this::setServerChannel,
-            "fonts", this::setFontsChannel
+            "hwid-list", ClientIRC::setKeyChannel,
+            "online-users", ClientIRC::setOnlineChannel,
+            "change-log", ClientIRC::setChangeLogChannel,
+            "online-configs", ClientIRC::setOnlineConfigsChannel,
+            "client-version", ClientIRC::setClientVersionChannel,
+            "client-capes", ClientIRC::setClientCapesChannel,
+            "login-log", ClientIRC::setLoginChannel,
+            "irc-chat", ClientIRC::setChatChannel,
+            "server-log", ClientIRC::setServerChannel,
+            "fonts", ClientIRC::setFontsChannel
         );
 
         for (Guild guild : jda.getGuilds()) {
@@ -86,23 +88,23 @@ public class ClientIRC extends ListenerAdapter implements Imports {
         }
     }
 
-    public void connectClient() {
+    public static void connectClient() {
         MessageChannel onlineChannel = getOnlineChannel();
         String messageContent = Client.INST.getProfile().toString() + " " + Client.INST.getCLIENT_VERSION();
 
         onlineChannel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.ONLINE_MESSAGE_ID = sendMessage.getIdLong());
     }
 
-    public void disconnectClientServer() {
+    public static void disconnectClientServer() {
         if (ClientIRC.ONLINE_MESSAGE_ID != -1) getOnlineChannel().deleteMessageById(ClientIRC.ONLINE_MESSAGE_ID).queue();
         if (ClientIRC.MESSAGE_ID != -1) getServerChannel().deleteMessageById(ClientIRC.MESSAGE_ID).queue();
     }
 
-    public void disconnectServer() {
+    public static void disconnectServer() {
         if (ClientIRC.MESSAGE_ID != -1) getServerChannel().deleteMessageById(ClientIRC.MESSAGE_ID).queue(_ -> ClientIRC.MESSAGE_ID = -1);
     }
 
-    public void connectServer() {
+    public static void connectServer() {
         if (ClientIRC.MESSAGE_ID != -1) {
             updateExistingServerConnection();
         } else {
@@ -110,8 +112,8 @@ public class ClientIRC extends ListenerAdapter implements Imports {
         }
     }
 
-    private void updateExistingServerConnection() {
-        MessageChannel serverChannel = Client.INST.getIrc().getServerChannel();
+    private static void updateExistingServerConnection() {
+        MessageChannel serverChannel = ClientIRC.getServerChannel();
 
         serverChannel.deleteMessageById(ClientIRC.MESSAGE_ID).queue(_ -> {
             ClientIRC.MESSAGE_ID = -1;
@@ -119,12 +121,12 @@ public class ClientIRC extends ListenerAdapter implements Imports {
         });
     }
 
-    private void createNewServerConnection() {
-        MessageChannel serverChannel = Client.INST.getIrc().getServerChannel();
+    private static void createNewServerConnection() {
+        MessageChannel serverChannel = ClientIRC.getServerChannel();
         sendServerConnectionMessage(serverChannel);
     }
 
-    private void sendServerConnectionMessage(MessageChannel channel) {
+    private static void sendServerConnectionMessage(MessageChannel channel) {
         String username = mc.getSession().getUsername();
         Profile profile = Client.INST.getProfile();
         String messageContent = username + " " + profile;
@@ -132,11 +134,11 @@ public class ClientIRC extends ListenerAdapter implements Imports {
         channel.sendMessage(messageContent).queue(sendMessage -> ClientIRC.MESSAGE_ID = sendMessage.getIdLong());
     }
 
-    public void sendIRCMessage(String text) {
+    public static void sendIRCMessage(String text) {
         chatChannel.sendMessage(text).queue();
     }
 
-    public void sendMessage(MessageChannel channel, String text) {
+    public static void sendMessage(MessageChannel channel, String text) {
         channel.sendMessage(text).queue();
     }
 }

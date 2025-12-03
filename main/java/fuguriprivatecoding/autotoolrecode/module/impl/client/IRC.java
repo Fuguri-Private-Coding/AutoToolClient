@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.client;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
+import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -24,20 +25,20 @@ public class IRC extends Module {
 
     @Override
     public void onDisable() {
-        Client.INST.getIrc().disconnectServer();
+        ClientIRC.disconnectServer();
         history = new ArrayList<>();
     }
 
     @Override
     public void onEnable() {
-        Client.INST.getIrc().connectServer();
+        ClientIRC.connectServer();
     }
 
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent && System.currentTimeMillis() - lastTime >= 7000) {
             new Thread(() -> {
-                history = Client.INST.getIrc().getServerChannel().getIterableHistory().stream().toList();
+                history = ClientIRC.getServerChannel().getIterableHistory().stream().toList();
                 if (!history.isEmpty()) {
                     for (Message message : history) {
                         String msg = message.getContentRaw();

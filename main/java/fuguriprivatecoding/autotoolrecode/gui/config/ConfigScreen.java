@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.TextButton;
+import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
@@ -360,7 +361,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
     private void downloadOnlineConfigs() {
         try {
             ClientUtils.chatLog("Downloading online configs and models...");
-            MessageChannel configsChannel = Client.INST.getIrc().getOnlineConfigsChannel();
+            MessageChannel configsChannel = ClientIRC.getOnlineConfigsChannel();
 
             List<Message> messages = configsChannel.getIterableHistory().takeAsync(100).get();
 

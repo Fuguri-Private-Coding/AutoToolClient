@@ -8,7 +8,6 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;

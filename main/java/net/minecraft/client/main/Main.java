@@ -23,14 +23,17 @@ import net.minecraft.util.Session;
 
 public class Main {
     public static void main(String[] p_main_0_) {
-        Client.INST.setIrc(new ClientIRC());
-        Client.INST.getIrc().init();
-        Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
-                "[" + HWID.generateHWID() + "] [" + System.getProperty("user.name") + "] [" + System.getenv("COMPUTERNAME") + "]" + " Trying to connect..."
+        ClientIRC.init();
+
+        String hwid = HWID.generateHWID();
+        String user = System.getProperty("user.name");
+        String name = System.getenv("COMPUTERNAME");
+        ClientIRC.sendMessage(ClientIRC.getLoginChannel(),
+                "[" + hwid + "] [" + user + "] [" + name + "]" + " Trying to connect..."
         );
         HWID.check();
-        Client.INST.getIrc().sendMessage(Client.INST.getIrc().getLoginChannel(),
-                "[" + HWID.generateHWID() + "] [" + System.getProperty("user.name") + "] [" + System.getenv("COMPUTERNAME") + "]" + " Successful connect. " + Client.INST.getProfile()
+        ClientIRC.sendMessage(ClientIRC.getLoginChannel(),
+                "[" + hwid + "] [" + user + "] [" + name + "]" + " Successful connect. " + Client.INST.getProfile()
         );
         System.setProperty("java.net.preferIPv4Stack", "true");
         OptionParser optionparser = new OptionParser();

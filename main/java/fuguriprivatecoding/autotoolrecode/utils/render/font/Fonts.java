@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.font;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import lombok.experimental.UtilityClass;
 import net.dv8tion.jda.api.entities.Message;
@@ -33,7 +34,7 @@ public class Fonts implements Imports {
             return;
         }
 
-        if (FONT_DIRECTORY.listFiles() != null && FONT_DIRECTORY.listFiles().length > 0) {
+        if (FONT_DIRECTORY.listFiles() != null && FONT_DIRECTORY.listFiles().length >= fontsCount) {
             initFonts();
         } else {
             downloadFonts();
@@ -42,7 +43,7 @@ public class Fonts implements Imports {
     }
 
     private void checkFonts() {
-        MessageChannel fontsChannel = Client.INST.getIrc().getFontsChannel();
+        MessageChannel fontsChannel = ClientIRC.getFontsChannel();
         List<Message> messages = fontsChannel.getIterableHistory().stream().toList();
         for (Message message : messages) {
             if (!message.getAttachments().isEmpty()) fontsCount++;
@@ -51,7 +52,7 @@ public class Fonts implements Imports {
 
     private void downloadFonts() {
         try {
-            MessageChannel fontsChannel = Client.INST.getIrc().getFontsChannel();
+            MessageChannel fontsChannel = ClientIRC.getFontsChannel();
             List<Message> messages = fontsChannel.getIterableHistory().stream().toList();
 
             List<CompletableFuture<Void>> downloadFutures = new ArrayList<>();

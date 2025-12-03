@@ -19,25 +19,23 @@ public class CommandIRC extends Command {
         }
 
         if (args[0].equalsIgnoreCase("irc")) {
-            ClientIRC irc = Client.INST.getIrc();
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append(Client.INST.getProfile().toColoredString()).append("§r").append(" ");
             for (String arg : args) {
                 if (arg.equalsIgnoreCase(args[0])) continue;
                 stringBuilder.append(arg).append(" ");
             }
-            irc.sendIRCMessage(stringBuilder.toString());
+            ClientIRC.sendIRCMessage(stringBuilder.toString());
         }
 
         if (args[0].equalsIgnoreCase("bc") && Client.INST.getProfile().getRole().isEquals(Role.OWNER)) {
-            ClientIRC irc = Client.INST.getIrc();
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("§f[§7Server§f]§f").append(" ");
             for (String arg : args) {
                 if (arg.equalsIgnoreCase(args[0])) continue;
                 stringBuilder.append(arg).append(" ");
             }
-            irc.sendIRCMessage(stringBuilder.toString());
+            ClientIRC.sendIRCMessage(stringBuilder.toString());
         }
     }
 }
