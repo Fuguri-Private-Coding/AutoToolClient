@@ -68,7 +68,7 @@ public enum Client implements Imports, EventListener {
 
         VersionCheck.validateClientVersion(ClientIRC.getClientVersionChannel());
 
-        addHook();
+        Runtime.getRuntime().addShutdownHook(new Thread(this::onClose));
 
         ClientIRC.connectClient();
 
@@ -150,10 +150,6 @@ public enum Client implements Imports, EventListener {
             fontRenderer.drawCenteredString(text, sc.getScaledWidth() / 2f, 5, Color.WHITE);
         }
 	}
-
-    public void addHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::onClose));
-    }
 
     public String getFullName() {
         return CLIENT_NAME + " " + CLIENT_VERSION;

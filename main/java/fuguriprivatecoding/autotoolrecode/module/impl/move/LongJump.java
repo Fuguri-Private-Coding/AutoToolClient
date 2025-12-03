@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
@@ -38,6 +39,13 @@ public class LongJump extends Module {
         this.z = mc.thePlayer.posZ;
         this.y = mc.thePlayer.posY;
         this.firstDir = mc.thePlayer.rotationYaw;
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+
+
     }
 
     @Override

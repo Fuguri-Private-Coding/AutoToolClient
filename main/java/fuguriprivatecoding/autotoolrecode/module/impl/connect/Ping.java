@@ -14,6 +14,8 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.packet.PacketWithTime;
+import fuguriprivatecoding.autotoolrecode.utils.packet.VecWithTime;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -227,7 +229,4 @@ public class Ping extends Module {
         delays += addDelay;
         delays = (int) Math.clamp(delays, delay.getMinValue(), delay.getMaxValue());
     }
-
-    private record PacketWithTime(Packet packet, long time) {}
-    private record VecWithTime(Vec3 pos, long time) {}
 }

@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.RotationData;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.player.ItemUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
@@ -22,7 +23,6 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.block.*;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
@@ -39,41 +39,31 @@ public class Scaffold extends Module {
             .addModes("TellyBridge", "GodBridge", "Normal")
             .setMode("GodBridge");
 
-    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
-    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
-
     BooleanSupplier tellyVisible = () -> rotMode.is("TellyBridge");
     BooleanSupplier godVisible = () -> rotMode.is("GodBridge");
     BooleanSupplier godNormalVisible = () -> rotMode.is("GodBridge") || rotMode.is("Normal");
     BooleanSupplier tellyNormalVisible = () -> rotMode.is("TellyBridge") || rotMode.is("Normal");
 
+    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
+    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
+
     DoubleSlider yawClutchSpeed = new DoubleSlider("YawClutchSpeed", this, godVisible, 0,180,90,1);
     DoubleSlider pitchClutchSpeed = new DoubleSlider("PitchClutchSpeed", this, godVisible, 0,180,90,1);
-    DoubleSlider yawForwardTellySpeed = new DoubleSlider("YawForwardTellySpeed", this, tellyVisible, 0,180,90,1);
-    DoubleSlider pitchForwardTellySpeed = new DoubleSlider("PitchForwardTellySpeed", this, tellyVisible, 0,180,90,1);
 
-    DoubleSlider pitchCorrectionSearch = new DoubleSlider("PitchCorrectionSearch", this, 0,90,90,0.1f);
-    FloatSetting stepPitchCorrection = new FloatSetting("StepPitchCorrection", this, 0.3f, 10, 1f, 0.01f);
+    DoubleSlider pitchCorrectionSearchRange = new DoubleSlider("PitchCorrectionSearchRange", this, 0,90,90,0.1f);
+    FloatSetting pitchCorrectionMinStep = new FloatSetting("PitchCorrectionMinStep", this, 0.3f, 10, 1f, 0.01f);
 
     CheckBox sortYawOffset = new CheckBox("SortYawOffset", this, tellyNormalVisible);
     FloatSetting yawOffset = new FloatSetting("YawOffset", this, () -> tellyNormalVisible.getAsBoolean() && sortYawOffset.isToggled(), 0, 90, 45, 0.1f);
-
-    Mode forwardTellyPitchMode = new Mode("ForwardTellyPitchMode", this, tellyVisible)
-        .addModes("LastRotation", "Custom")
-        .setMode("Custom");
-
-    DoubleSlider forwardTellyPitch = new DoubleSlider("ForwardTellyPitch", this, () -> forwardTellyPitchMode.is("Custom") && tellyVisible.getAsBoolean(), -90, 90, 60, 1);
 
     MultiMode removeSwing = new MultiMode("RemoveSwing", this)
         .addModes("On Client", "On Server")
         ;
 
     Mode sprintMode = new Mode("SprintMode", this)
-        .addModes("None", "Legit", "AllDirection")
+        .addModes("None", "Legit", "JumpSprint", "AllDirection")
         .setMode("Legit")
         ;
-
-    CheckBox jumpFix = new CheckBox("JumpFix", this);
 
     final CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this);
 
@@ -93,26 +83,7 @@ public class Scaffold extends Module {
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
 
-    private final List<Block> blacklistedBlocks = Arrays.asList(
-            Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava, Blocks.wooden_slab, Blocks.chest, Blocks.flowing_lava,
-            Blocks.enchanting_table, Blocks.carpet, Blocks.glass_pane, Blocks.skull, Blocks.stained_glass_pane, Blocks.iron_bars, Blocks.snow_layer, Blocks.ice, Blocks.packed_ice,
-            Blocks.coal_ore, Blocks.diamond_ore, Blocks.emerald_ore, Blocks.trapped_chest, Blocks.torch, Blocks.anvil,
-            Blocks.noteblock, Blocks.jukebox, Blocks.tnt, Blocks.gold_ore, Blocks.iron_ore, Blocks.lapis_ore, Blocks.lit_redstone_ore, Blocks.quartz_ore, Blocks.redstone_ore,
-            Blocks.wooden_pressure_plate, Blocks.stone_pressure_plate, Blocks.light_weighted_pressure_plate, Blocks.heavy_weighted_pressure_plate,
-            Blocks.stone_button, Blocks.wooden_button, Blocks.lever, Blocks.tallgrass, Blocks.tripwire, Blocks.tripwire_hook, Blocks.rail, Blocks.waterlily, Blocks.red_flower,
-            Blocks.red_mushroom, Blocks.brown_mushroom, Blocks.vine, Blocks.trapdoor, Blocks.yellow_flower, Blocks.ladder, Blocks.furnace, Blocks.sand, Blocks.cactus,
-            Blocks.dispenser, Blocks.noteblock, Blocks.dropper, Blocks.crafting_table, Blocks.pumpkin, Blocks.sapling, Blocks.cobblestone_wall,
-            Blocks.oak_fence, Blocks.activator_rail, Blocks.detector_rail, Blocks.golden_rail, Blocks.redstone_torch, Blocks.acacia_stairs,
-            Blocks.birch_stairs, Blocks.brick_stairs, Blocks.dark_oak_stairs, Blocks.jungle_stairs, Blocks.nether_brick_stairs, Blocks.oak_stairs,
-            Blocks.quartz_stairs, Blocks.red_sandstone_stairs, Blocks.sandstone_stairs, Blocks.spruce_stairs, Blocks.stone_brick_stairs,
-            Blocks.stone_stairs, Blocks.double_wooden_slab, Blocks.stone_slab, Blocks.double_stone_slab, Blocks.stone_slab2, Blocks.double_stone_slab2,
-            Blocks.web, Blocks.gravel, Blocks.daylight_detector_inverted, Blocks.daylight_detector, Blocks.soul_sand, Blocks.piston, Blocks.piston_extension,
-            Blocks.piston_head, Blocks.sticky_piston, Blocks.iron_trapdoor, Blocks.ender_chest, Blocks.end_portal, Blocks.end_portal_frame, Blocks.standing_banner,
-            Blocks.wall_banner, Blocks.deadbush, Blocks.slime_block, Blocks.acacia_fence_gate, Blocks.birch_fence_gate, Blocks.dark_oak_fence_gate,
-            Blocks.jungle_fence_gate, Blocks.spruce_fence_gate, Blocks.oak_fence_gate
-    );
-
-    Rot rotation, lastRotation;
+    Rot rotation, lastRotation = Rot.ZERO;
 
     BlockPos targetBlock;
 
@@ -188,10 +159,10 @@ public class Scaffold extends Module {
                 case "AllDirection" -> {
                     if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.isSneaking() && MoveUtils.isMoving()) {
                         mc.thePlayer.setSprinting(true);
-                    } else if (!jumpFix.isToggled() && MoveUtils.isMoving()) {
-                        mc.thePlayer.setSprinting(true);
                     }
                 }
+
+                case "JumpSprint" -> mc.thePlayer.setSprinting(mc.gameSettings.keyBindJump.isKeyDown() && MoveUtils.isMoving());
                 case "None" -> mc.thePlayer.setSprinting(false);
             }
         }
@@ -203,7 +174,7 @@ public class Scaffold extends Module {
 
         if (event instanceof JumpEvent e) {
             float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : mc.thePlayer.rotationYaw;
-            e.setYaw(jumpFix.isToggled() ? Rot.getServerRotation().getYaw() : yaw);
+            e.setYaw(!sprintMode.is("JumpSprint") ? Rot.getServerRotation().getYaw() : yaw);
         }
         if (event instanceof UpdateBodyRotationEvent e) e.setYaw(Rot.getServerRotation().getYaw());
         if (event instanceof MoveFlyingEvent e) e.setYaw(Rot.getServerRotation().getYaw());
@@ -256,9 +227,7 @@ public class Scaffold extends Module {
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (isTelly()) {
-                    float forwardPitch = forwardTellyPitchMode.is("LastRotation") ? lastRotation.getPitch() : (float) forwardTellyPitch.getRandomizedDoubleValue();
-
-                    rotation = new Rot(yaw, forwardPitch);
+                    rotation = new Rot(yaw, lastRotation.getPitch());
                 } else {
                     float offset = MoveUtils.isMoveDiagonally(yaw) ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
 
@@ -327,7 +296,7 @@ public class Scaffold extends Module {
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (isTelly()) {
-                    return delta.limit(yawForwardTellySpeed.getRandomizedIntValue(), pitchForwardTellySpeed.getRandomizedIntValue());
+                    return delta.limit(180, 180);
                 } else {
                     return delta.limit(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
                 }
@@ -352,36 +321,32 @@ public class Scaffold extends Module {
     private float getPitch(float yaw, boolean handleMouse) {
         List<RotationData> dataList = new ArrayList<>();
 
-        float minPitch = (float) pitchCorrectionSearch.getMinValue();
-        float maxPitch = (float) pitchCorrectionSearch.getMaxValue();
+        float minPitch = (float) pitchCorrectionSearchRange.getMinValue();
+        float maxPitch = (float) pitchCorrectionSearchRange.getMaxValue();
+        float step = pitchCorrectionMinStep.getValue();
 
-        float step = stepPitchCorrection.getValue();
-        for (float pitch = minPitch; pitch < maxPitch; pitch += step) {
-            MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, pitch));
+        for (float pitch = minPitch; pitch <= maxPitch; pitch += step) {
+            Rot rot = new Rot(yaw, pitch);
+
+            MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, rot);
+
             if (hit != null) {
-                RotationData data = new RotationData(new Rot(yaw, pitch), hit.hitVec);
+                RotationData data = new RotationData(rot, hit);
 
-                if (hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                    || dataList.contains(data)
-                    || hit.sideHit == EnumFacing.DOWN
-                    || !hit.getBlockPos().equals(targetBlock)
-                ) continue;
-
-                dataList.add(data);
+                if (hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+                    hit.hitVec.yCoord < mc.thePlayer.posY &&
+                    hit.getBlockPos().equals(targetBlock) &&
+                    hit.sideHit != EnumFacing.DOWN
+                ) dataList.add(data);
             }
         }
 
-        if (dataList.isEmpty()) {
-            return lastRotation.getPitch();
-        }
+        if (dataList.isEmpty()) return lastRotation.getPitch();
 
         dataList.sort(Comparator.comparingDouble(data -> Math.abs(Rot.getServerRotation().getPitch()) - data.rotation().getPitch()));
-
         RotationData rotationData = dataList.getFirst();
 
-        if (handleMouse) {
-            lastRotation = rotationData.rotation();
-        }
+        if (handleMouse) lastRotation = rotationData.rotation();
 
         return rotationData.rotation().getPitch();
     }
@@ -396,17 +361,18 @@ public class Scaffold extends Module {
             float yaw = MathHelper.wrapDegree(possibleYaw);
             float pitch = getPitch(yaw, false);
 
-            MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, new Rot(yaw, pitch));
+            Rot rot = new Rot(yaw, pitch);
+
+            MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, rot);
+
             if (hit != null) {
-                RotationData data = new RotationData(new Rot(yaw, pitch), hit.hitVec);
+                RotationData data = new RotationData(rot, hit);
 
-                if (hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-                    || hit.sideHit == EnumFacing.DOWN
-                    || hit.hitVec.yCoord >= mc.thePlayer.posY
-                    || !hit.getBlockPos().equals(targetBlock)
-                ) continue;
-
-                validRotations.add(data);
+                if (hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+                    hit.sideHit != EnumFacing.DOWN &&
+                    hit.hitVec.yCoord < mc.thePlayer.posY &&
+                    hit.getBlockPos().equals(targetBlock)
+                ) validRotations.add(data);
             }
         }
 
@@ -417,7 +383,7 @@ public class Scaffold extends Module {
 
         validRotations.sort(Comparator.comparingDouble(data -> {
             double sortYawOffset = sortOffset ? finalOffsetYaw : Rot.getServerRotation().getYaw();
-            double sortDistance = sortOffset ? 0 : DistanceUtils.getDistance(data.hitPos()) * 50;
+            double sortDistance = sortOffset ? 0 : DistanceUtils.getDistance(data.hit().hitVec) * 50;
 
             double yawDiff = MathHelper.wrapDegree(sortYawOffset - data.rotation().getYaw());
             double pitchDiff = Rot.getServerRotation().getPitch() - data.rotation().getPitch();
@@ -439,7 +405,9 @@ public class Scaffold extends Module {
 
             final ItemStack is = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
 
-            if (!(is.getItem() instanceof ItemBlock && !blacklistedBlocks.contains(((ItemBlock) is.getItem()).getBlock()))) {
+            final Block block = ((ItemBlock) is.getItem()).getBlock();
+
+            if (!(is.getItem() instanceof ItemBlock && ItemUtils.blackListedBlock(block))) {
                 continue;
             }
 
@@ -459,7 +427,7 @@ public class Scaffold extends Module {
 
             Block block = itemBlock.getBlock();
 
-            if (blacklistedBlocks.contains(block)) continue;
+            if (ItemUtils.blackListedBlock(block)) continue;
 
             bestSlot = i;
         }

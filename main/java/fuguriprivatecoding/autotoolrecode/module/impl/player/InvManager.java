@@ -27,16 +27,16 @@ public class InvManager extends Module {
         .setMode("OpenInv")
         ;
 
-    private final DoubleSlider startDelay = new DoubleSlider("StartDelay", this, 0, 1000, 250, 1f);
+    private final DoubleSlider startDelay = new DoubleSlider("StartDelay", this, 0, 10, 0, 1f);
 
     private final CheckBox autoArmor = new CheckBox("AutoArmor", this);
-    private final DoubleSlider armorDelay = new DoubleSlider("ArmorDelay", this, autoArmor::isToggled, 0, 1000, 250, 1f);
+    private final DoubleSlider armorDelay = new DoubleSlider("ArmorDelay", this, autoArmor::isToggled, 0, 10, 0, 1f);
 
     private final CheckBox sortItems = new CheckBox("SortItems", this);
-    private final DoubleSlider sortDelay = new DoubleSlider("SortDelay", this, sortItems::isToggled, 0, 1000, 250, 1f);
+    private final DoubleSlider sortDelay = new DoubleSlider("SortDelay", this, sortItems::isToggled, 0, 10, 0, 1f);
 
     private final CheckBox dropItems = new CheckBox("DropItems", this);
-    private final DoubleSlider dropDelay = new DoubleSlider("DropDelay", this, dropItems::isToggled, 0, 1000, 250, 1f);
+    private final DoubleSlider dropDelay = new DoubleSlider("DropDelay", this, dropItems::isToggled, 0, 10, 0, 1f);
 
     private final int[] bestArmorPieces = new int[4];
     private final int[] bestToolSlots = new int[3];
@@ -104,7 +104,7 @@ public class InvManager extends Module {
             case TickEvent _ -> {
                 if (!clientOpen) startDelayTimer.reset();
 
-                if ((this.clientOpen && startDelayTimer.reachedMS(startDelay.getRandomizedIntValue())) || (mc.currentScreen == null && !Objects.equals(this.mode.getMode(), "OpenInv"))) {
+                if ((this.clientOpen && startDelayTimer.reachedMS(startDelay.getRandomizedIntValue() * 50L)) || (mc.currentScreen == null && !Objects.equals(this.mode.getMode(), "OpenInv"))) {
                     this.clear();
 
                     for (int slot = InventoryUtils.INCLUDE_ARMOR_BEGIN; slot < InventoryUtils.END; slot++) {
@@ -236,9 +236,9 @@ public class InvManager extends Module {
         dropTimer.reset();
         sortTimer.reset();
 
-        armorWait = armorDelay.getRandomizedIntValue();
-        dropWait = dropDelay.getRandomizedIntValue();
-        sortWait = sortDelay.getRandomizedIntValue();
+        armorWait = armorDelay.getRandomizedIntValue() * 50;
+        dropWait = dropDelay.getRandomizedIntValue() * 50;
+        sortWait = sortDelay.getRandomizedIntValue() * 50;
     }
 
     private boolean sortItems() {
