@@ -15,7 +15,7 @@ public class ClientUtils implements Imports {
         if (mc.thePlayer == null) {
             System.out.println(Client.INST.CLIENT_NAME + " → " + message);
         } else {
-            mc.thePlayer.addChatMessage(new ChatComponentText(prefixLog + message));
+            mc.thePlayer.addChatMessage(new ChatComponentText("§f[§9AutoTool§f] " + message));
         }
     }
 

@@ -45,7 +45,6 @@ public class Fucker extends Module {
         super.onEnable();
         bedPos = null;
 
-
         breakTicks = 0;
     }
 

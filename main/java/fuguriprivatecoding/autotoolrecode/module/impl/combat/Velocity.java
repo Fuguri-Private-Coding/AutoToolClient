@@ -19,8 +19,8 @@ public class Velocity extends Module {
             .addModes("Vanilla", "Jump", "Intave")
             .setMode("Vanilla");
 
-    final FloatSetting vanillaXZ = new FloatSetting("XZ", this,() -> mode.is("Vanilla"), -1, 1, 0, 0.1f);
-    final FloatSetting vanillaY = new FloatSetting("Y", this,() -> mode.is("Vanilla"), 0, 1, 1, 0.1f);
+    final IntegerSetting vanillaXZ = new IntegerSetting("Horizontal", this,() -> mode.is("Vanilla"), -100, 100, 0);
+    final IntegerSetting vanillaY = new IntegerSetting("Vertical", this,() -> mode.is("Vanilla"), 0, 100, 100);
 
     final FloatSetting intaveSprintXZ = new FloatSetting("IntaveXZ", this, () -> mode.is("Intave"),0,1,0.6f, 0.01f);
     final CheckBox intaveJump = new CheckBox("IntaveJump", this, () -> mode.is("Intave"));
@@ -50,9 +50,9 @@ public class Velocity extends Module {
                     double deltaMotionY = needMotionY - mc.thePlayer.motionY;
                     double deltaMotionZ = needMotionZ - mc.thePlayer.motionZ;
 
-                    deltaMotionX *= vanillaXZ.getValue();
-                    deltaMotionY *= vanillaY.getValue();
-                    deltaMotionZ *= vanillaXZ.getValue();
+                    deltaMotionX *= vanillaXZ.getValue() / 100f;
+                    deltaMotionY *= vanillaY.getValue() / 100f;
+                    deltaMotionZ *= vanillaXZ.getValue() / 100f;
 
                     mc.thePlayer.motionX += deltaMotionX;
                     mc.thePlayer.motionY += deltaMotionY;
