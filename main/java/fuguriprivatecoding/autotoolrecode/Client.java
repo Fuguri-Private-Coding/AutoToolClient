@@ -4,10 +4,13 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
@@ -34,10 +37,12 @@ import fuguriprivatecoding.autotoolrecode.event.*;
 import fuguriprivatecoding.autotoolrecode.irc.*;
 
 import de.florianmichael.viamcp.ViaMCP;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import lombok.*;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.*;
@@ -137,17 +142,41 @@ public enum Client implements Imports, EventListener {
             new Thread(HWID::check).start();
 		}
 
-        if (event instanceof RenderScreenEvent && HWID.noConnection) {
-            long time = System.currentTimeMillis() - HWID.lastTimeConnection;
-
+        if (event instanceof RenderScreenEvent && (HWID.noConnection || HWID.noConnectionAnim.getValue() != 0)) {
             ClientFontRenderer fontRenderer = Fonts.fonts.get("SFPro");
             ScaledResolution sc = new ScaledResolution(mc);
 
+            EasingAnimation anim = HWID.noConnectionAnim;
+            anim.update(1f, Easing.OUT_BACK);
+
+            long time = System.currentTimeMillis() - HWID.lastTimeConnection;
             int sec = Integer.parseInt(String.valueOf(time / 1000L));
 
-            String text = "§f[§9AutoTool§f] Нет интернет подключения, клиент закроется при §930 §fсекундах: §9" + sec + "§f s.";
+            int remainingSec = 30 - sec;
 
-            fontRenderer.drawCenteredString(text, sc.getScaledWidth() / 2f, 5, Color.WHITE);
+            String text = "§f[§9AutoTool§f] Нет интернет подключения, клиент закроется через §9" + remainingSec + "§f s.";
+
+            float width = (float) fontRenderer.getStringWidth(text);
+            float height = 15;
+
+            GL11.glPushMatrix();
+            double scale = anim.getValue();
+
+            float x = sc.getScaledWidth() / 2f - width / 2f - 5;
+            float y = 5;
+
+            double centerX = x + width / 2.0;
+            double centerY = y + height / 2.0;
+
+            double offsetX = centerX * (1 - scale);
+            double offsetY = centerY * (1 - scale);
+
+            GL11.glTranslated(offsetX, offsetY, 0);
+            GL11.glScaled(scale, scale, 1);
+
+            RoundedUtils.drawRect(sc.getScaledWidth() / 2f - width / 2f - 5, 5f, width + 5, 15f, 7.5f, Colors.BLACK.withAlphaClamp(0.7f * anim.getValue()));
+            fontRenderer.drawCenteredString(text, sc.getScaledWidth() / 2f, 10, Colors.WHITE.withAlphaClamp(anim.getValue()));
+            GL11.glPopMatrix();
         }
 	}
 

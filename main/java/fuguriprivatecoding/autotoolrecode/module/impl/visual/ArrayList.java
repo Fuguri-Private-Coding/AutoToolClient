@@ -88,7 +88,7 @@ public class ArrayList extends Module {
 
             for (Module module : moduleList) {
                 EasingAnimation anim = module.getSlideAnim();
-                anim.update(animSpeed.getValue(), Easing.OUT_CUBIC);
+                anim.update(animSpeed.getValue(), Easing.OUT_BACK);
 
                 float width = (float) font.getStringWidth(module.getName()) + horizontalSpacing.getValue() * 2 + 8;
 
@@ -132,9 +132,9 @@ public class ArrayList extends Module {
         Color alphaBgColor = backgroundColor.getMixedColor(moduleList.indexOf(module));
         Color alphaGlowBgColor = glowColor.getMixedColor(moduleList.indexOf(module));
 
-        Color color = new Colors(alphaTextColor).withAlpha(alphaTextColor.getAlpha() / 255f * alpha);
-        Color bgColor = new Colors(alphaBgColor).withAlpha(alphaBgColor.getAlpha() / 255f * alpha);
-        Color glowbgColor = new Colors(alphaGlowBgColor).withAlpha(alphaGlowBgColor.getAlpha() / 255f * alpha);
+        Color color = new Colors(alphaTextColor).withAlphaClamp(alphaTextColor.getAlpha() / 255f * alpha);
+        Color bgColor = new Colors(alphaBgColor).withAlphaClamp(alphaBgColor.getAlpha() / 255f * alpha);
+        Color glowbgColor = new Colors(alphaGlowBgColor).withAlphaClamp(alphaGlowBgColor.getAlpha() / 255f * alpha);
 
         if (background.isToggled()) {
             Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, bgColor.getRGB());
@@ -165,9 +165,9 @@ public class ArrayList extends Module {
         Color alphaBgColor = backgroundColor.getFadedColor();
         Color alphaGlowBgColor = glowColor.getMixedColor(moduleList.indexOf(module));
 
-        Color color = new Colors(alphaTextColor).withAlpha(alphaTextColor.getAlpha() / 255f * alpha);
-        Color bgColor = new Colors(alphaBgColor).withAlpha(alphaBgColor.getAlpha() / 255f * alpha);
-        Color glowbgColor = new Colors(alphaGlowBgColor).withAlpha(alphaGlowBgColor.getAlpha() / 255f * alpha);
+        Color color = new Colors(alphaTextColor).withAlphaClamp(alphaTextColor.getAlpha() / 255f * alpha);
+        Color bgColor = new Colors(alphaBgColor).withAlphaClamp(alphaBgColor.getAlpha() / 255f * alpha);
+        Color glowbgColor = new Colors(alphaGlowBgColor).withAlphaClamp(alphaGlowBgColor.getAlpha() / 255f * alpha);
 
         if (background.isToggled()) {
             Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, bgColor.getRGB());

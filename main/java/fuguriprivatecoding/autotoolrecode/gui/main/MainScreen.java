@@ -13,7 +13,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUti
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.gui.*;
 import net.minecraft.util.ResourceLocation;
-
 import java.awt.*;
 import java.io.IOException;
 
@@ -31,7 +30,7 @@ public class MainScreen extends GuiScreen {
 
     ResourceLocation exitLogo = new ResourceLocation("minecraft", "autotool/mainmenu/exit.png");
 
-    EasingAnimation alphaAnim = new EasingAnimation();
+    EasingAnimation openAnim = new EasingAnimation();
 
     @Override
     public void initGui() {
@@ -41,32 +40,37 @@ public class MainScreen extends GuiScreen {
         buttonList.add(new Button(2,"Minecraft Settings", sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10 + 25 + 25, 150, 20));
         buttonList.add(new Button(3,"Alt Manager", sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10 + 25 + 25 + 25, 150, 20));
         buttonList.add(new ImgButton(4, exitLogo, sc.getScaledWidth() - 20,5, 15, 15));
+        openAnim.setEnd(1);
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         final ScaledResolution sc = new ScaledResolution(mc);
-        final ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
-        final String userText = "Hello, " + Client.INST.getProfile().getUsername() + " welcome to AutoTool!";
+        final ClientFontRenderer font = Fonts.fonts.get("SFPro");
+        final String user = "Пользователь: [§9" + Client.INST.getProfile().getUsername() + "§f]";
+        final String role = "Роль: [" + Client.INST.getProfile().getRole().getColorPrefix() + Client.INST.getProfile().getRole() + "§f]";
 
-        alphaAnim.update(3, Easing.IN_OUT_QUAD);
-        alphaAnim.setEnd(1);
+        final String welcome = "Привет.  Добро пожаловать в AutoTool!";
+
+        openAnim.update(3, Easing.IN_OUT_QUAD);
 
         BackgroundUtils.run();
 
         AlphaUtils.startWrite();
 
-        font.drawString(userText, sc.getScaledWidth() / 2f + 2 - font.getStringWidth(userText) / 2f, sc.getScaledHeight() / 2f - 5, Color.WHITE, false);
+        font.drawString(user,5, 5, Color.WHITE);
+        font.drawString(role,5, 5 + 10, Color.WHITE);
+        font.drawCenteredString(welcome, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f - 5, Color.WHITE);
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         AlphaUtils.endWrite();
-        AlphaUtils.draw(alphaAnim.getValue());
+        AlphaUtils.draw(openAnim.getValue());
     }
 
     @Override
     public void onGuiClosed() {
         super.onGuiClosed();
-        alphaAnim.setValue(0f);
+        openAnim.setValue(0f);
     }
 
     @Override

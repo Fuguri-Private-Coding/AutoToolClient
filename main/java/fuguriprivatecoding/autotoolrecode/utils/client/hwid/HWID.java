@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.profile.Role;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
@@ -15,6 +16,8 @@ public class HWID {
     public static long lastTimeConnection;
     public static boolean noConnection;
     static boolean notUser;
+
+    public static EasingAnimation noConnectionAnim = new EasingAnimation(0);
 
     public static void check() {
         if (!authenticateUser(generateHWID())) System.exit(-1);
@@ -57,6 +60,7 @@ public class HWID {
 
                     Client.INST.setProfile(new Profile(username, userRole));
                     noConnection = false;
+                    noConnectionAnim.setEnd(false);
                     return true;
                 }
             }
@@ -70,6 +74,7 @@ public class HWID {
         } catch (Exception e) {
             if (!noConnection) lastTimeConnection = System.currentTimeMillis();
             noConnection = true;
+            noConnectionAnim.setEnd(true);
         }
         return System.currentTimeMillis() - lastTimeConnection < 30000 || !noConnection || !notUser;
     }
