@@ -29,11 +29,11 @@ public class Module implements Imports, SettingAble, EventListener {
 	@Getter @Setter boolean hide = annotation.hide();
 	@Getter String description = annotation.description();
 
-	@Getter @Setter long hoverStartTime;
 	@Getter @Setter boolean isHovered;
 
 	@Getter EasingAnimation slideAnim = new EasingAnimation(0);
 	@Getter EasingAnimation toggleAnimation = new EasingAnimation();
+    @Getter EasingAnimation descAnim = new EasingAnimation();
 
     public Module() {
 		settings = new ArrayList<>();

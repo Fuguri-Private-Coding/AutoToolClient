@@ -17,6 +17,7 @@ import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
@@ -733,29 +734,32 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 		float offsetModuleDesc = modulesScrolls.y;
 
-		for (Module module : moduleList) {
+        ScissorUtils.disableScissor();
+
+        for (Module module : moduleList) {
 			if (mouseX < background.x || mouseX > background.x + sizeBackground.x || mouseY < background.y + 15 || mouseY > background.y + sizeBackground.y) continue;
-			float moduleWidth = (float) fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
+			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc + 9;
-			if (moduleCondition && clickedModule == null) {
-				if (!module.isHovered()) {
-					module.setHoverStartTime(System.currentTimeMillis());
-					module.setHovered(true);
-				} else {
-					long hoverTime = System.currentTimeMillis() - module.getHoverStartTime();
-					if (hoverTime >= 500 && !module.getDescription().equalsIgnoreCase("")) {
-						float descriptionWidth = (float) fontRenderer.getStringWidth(module.getDescription());
-						RenderUtils.drawRoundedOutLineRectangle(mouseX, mouseY - 8, descriptionWidth + 6, 14, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR.getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
-						fontRenderer.drawString(module.getDescription(), mouseX + 3 + 2, mouseY + 2 - 5, Color.WHITE, true);
-					}
-				}
-			} else {
-				module.setHovered(false);
-			}
+            module.setHovered(moduleCondition && clickedModule == null);
+
+            module.getDescAnim().update(1.5f, Easing.OUT_BACK);
+            module.getDescAnim().setEnd(module.isHovered());
+
+            if (!module.getDescription().equalsIgnoreCase("") && module.getDescAnim().getValue() != 0) {
+                float descriptionWidth = fontRenderer.getStringWidth(module.getDescription());
+                ScaleUtils.startScaling(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 10, descriptionWidth + 6, 14, module.getDescAnim().getValue());
+
+                float alphaDesc = module.getDescAnim().getValue();
+
+                Color bgColorWithAlpha = new Colors(BACKGROUND_COLOR).withMultiplyAlphaClamp(alphaDesc);
+
+                RoundedUtils.drawRect(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 10, descriptionWidth + 6, 14, clientSettings.backgroundRadius.getValue(), bgColorWithAlpha);
+                fontRenderer.drawString(module.getDescription(), sc.getScaledWidth() / 2f - descriptionWidth / 2f + 3 + 2, 10 + 5, Colors.WHITE.withAlphaClamp(alphaDesc), true);
+                ScaleUtils.stopScaling();
+            }
+
 			offsetModuleDesc += fontRenderer.FONT_HEIGHT + 2;
 		}
-
-		ScissorUtils.disableScissor();
 
 		boolean sidePanel = mouseY > sc.getScaledHeight() - 25 && mouseY < sc.getScaledHeight() && mouseX > sc.getScaledWidth() / 2f - 50 && mouseX < sc.getScaledWidth() / 2f - 50 + 100;
 
