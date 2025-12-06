@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.utils.render.color;
 
 import lombok.experimental.UtilityClass;
 import org.lwjgl.opengl.GL11;
-
 import java.awt.*;
 
 @UtilityClass
@@ -19,7 +18,7 @@ public class ColorUtils {
     }
 
     public static Color interpolateColor(Color start, Color end, float progress) {
-        progress = Math.max(0, Math.min(1, progress));
+        progress = Math.clamp(progress, 0, 1);
 
         int red = (int) (start.getRed() + (end.getRed() - start.getRed()) * progress);
         int green = (int) (start.getGreen() + (end.getGreen() - start.getGreen()) * progress);

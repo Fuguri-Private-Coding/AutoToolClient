@@ -15,7 +15,7 @@ public class HWID {
 
     public static long lastTimeConnection;
     public static boolean noConnection;
-    static boolean notUser;
+    static boolean user;
 
     public static EasingAnimation noConnectionAnim = new EasingAnimation(0);
 
@@ -59,6 +59,7 @@ public class HWID {
                     Role userRole = Role.fromRoleName(args[2]);
 
                     Client.INST.setProfile(new Profile(username, userRole));
+                    user = true;
                     noConnection = false;
                     noConnectionAnim.setEnd(false);
                     return true;
@@ -68,14 +69,13 @@ public class HWID {
             String userName = System.getProperty("user.name");
             String denialMessage = "[" + hwid + "] " + userName + " This user does not have access to the client.";
 
-            notUser = true;
-
             ClientIRC.sendMessage(ClientIRC.getLoginChannel(), denialMessage);
+            return user = false;
         } catch (Exception e) {
             if (!noConnection) lastTimeConnection = System.currentTimeMillis();
             noConnection = true;
             noConnectionAnim.setEnd(true);
         }
-        return System.currentTimeMillis() - lastTimeConnection < 30000 || !noConnection || !notUser;
+        return System.currentTimeMillis() - lastTimeConnection < 30000 || !noConnection;
     }
 }

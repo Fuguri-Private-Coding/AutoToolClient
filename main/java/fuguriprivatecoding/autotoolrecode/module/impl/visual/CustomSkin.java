@@ -17,7 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-@ModuleInfo(name = "CustomSkin", category = Category.VISUAL)
+@ModuleInfo(name = "CustomSkin", category = Category.VISUAL, description = "Изменяет вам скин.")
 public class CustomSkin extends Module {
 
     public Mode skinMode = new Mode("SkinMode", this)

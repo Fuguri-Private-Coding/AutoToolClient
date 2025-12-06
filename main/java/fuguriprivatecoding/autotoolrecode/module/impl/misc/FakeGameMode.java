@@ -6,7 +6,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import net.minecraft.world.WorldSettings;
 
-@ModuleInfo(name = "FakeGameMode", category = Category.MISC, description = "Фейково меняет вам режим игры.")
+@ModuleInfo(name = "FakeGameMode", category = Category.MISC, description = "Изменяет вам режим игры.")
 public class FakeGameMode extends Module {
 
     Mode mode = new Mode("Mode", this)

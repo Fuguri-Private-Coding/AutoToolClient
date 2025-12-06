@@ -7,7 +7,8 @@ import net.minecraft.client.entity.EntityPlayerSP;
 
 @ModuleInfo(name = "Sprint", category = Category.MOVE, description = "Автоматический спринт.")
 public class Sprint extends Module {
-	@Override
+
+    @Override
 	public void toggle() {
 		super.toggle();
 		EntityPlayerSP.forceSprint = isToggled();

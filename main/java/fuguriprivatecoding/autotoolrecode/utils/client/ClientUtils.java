@@ -6,7 +6,7 @@ import net.minecraft.util.ChatComponentText;
 
 public class ClientUtils implements Imports {
 
-    static String prefixLog = "§3AutoTool §8→§7 ";
+    static String prefixLog = "§f[§9AutoTool§f] ";
 
     /**
      * @param message Объект, который будет выведен в чат игры.
@@ -15,7 +15,7 @@ public class ClientUtils implements Imports {
         if (mc.thePlayer == null) {
             System.out.println(Client.INST.CLIENT_NAME + " → " + message);
         } else {
-            mc.thePlayer.addChatMessage(new ChatComponentText("§f[§9AutoTool§f] " + message));
+            mc.thePlayer.addChatMessage(new ChatComponentText(prefixLog + message));
         }
     }
 

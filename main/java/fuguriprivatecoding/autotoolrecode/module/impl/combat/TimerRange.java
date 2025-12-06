@@ -26,13 +26,13 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
 public class TimerRange extends Module {
 
-    IntegerSetting maxTicks = new IntegerSetting("Max Ticks", this, 0, 20, 2);
-    IntegerSetting maxTargetHurtTime = new IntegerSetting("Max Target Hurt Time", this, 0, 10, 0);
-    FloatSetting partialTicks = new FloatSetting("Partial Ticks", this, -2.5f, 2.5f, 1, 0.1f);
+    IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 0, 20, 4);
+    IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 4);
+    FloatSetting partialTicks = new FloatSetting("PartialTicks", this, -2.5f, 2.5f, 1, 0.1f);
 
-    IntegerSetting additionalTicks = new IntegerSetting("Additional Ticks", this, -5,5,1);
+    IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, -5,5,1);
 
-    CheckBox renderRealPlayerPosition = new CheckBox("Render Real Player Position", this);
+    CheckBox renderRealPlayerPosition = new CheckBox("RenderRealPlayerPosition", this);
     Mode render = new Mode("Render", this, renderRealPlayerPosition::isToggled)
             .addModes("Player", "HitBox", "Box")
             .setMode("Player");
@@ -40,7 +40,7 @@ public class TimerRange extends Module {
     BooleanSupplier renderBox = () -> (render.getMode().equalsIgnoreCase("Box") || render.getMode().equalsIgnoreCase("HitBox")) && renderRealPlayerPosition.isToggled();
 
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
-    FloatSetting lineWidth = new FloatSetting("Line Width", this, () -> renderRealPlayerPosition.isToggled() && renderBox.getAsBoolean(), 0, 5f, 1, 0.1f);
+    FloatSetting lineWidth = new FloatSetting("LineWidth", this, () -> renderRealPlayerPosition.isToggled() && renderBox.getAsBoolean(), 0, 5f, 1, 0.1f);
 
     public static boolean teleporting = false, click = false;
     int teleportTicks, posRotIncrement = 0;

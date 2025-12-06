@@ -7,11 +7,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Role {
 
-    NONE(0, "null", ""),
-    USER(1, "User", "§9"),
-    TESTER(2, "Tester", "§2"),
-    MODERATOR(3, "Moderator", "§c"),
-    OWNER(4, "Owner", "§4");
+    USER(0, "User", "§9"),
+    MODERATOR(1, "Moderator", "§c"),
+    OWNER(2, "Owner", "§4");
 
     private final int level;
     private final String name;
@@ -71,6 +69,6 @@ public enum Role {
                 return value;
             }
         }
-        return NONE;
+        return null;
     }
 }

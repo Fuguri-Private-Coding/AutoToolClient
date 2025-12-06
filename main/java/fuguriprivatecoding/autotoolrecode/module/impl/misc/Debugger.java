@@ -11,7 +11,7 @@ import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
 
-@ModuleInfo(name = "Debugger", category = Category.MISC)
+@ModuleInfo(name = "Debugger", category = Category.MISC, description = "Дебаг какой либо информации.")
 public class Debugger extends Module {
 
     CheckBox checkTransactions = new CheckBox("Check Transactions", this, true);

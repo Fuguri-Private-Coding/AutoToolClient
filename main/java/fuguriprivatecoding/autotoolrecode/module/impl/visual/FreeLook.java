@@ -11,7 +11,7 @@ import org.lwjgl.input.Keyboard;
 @ModuleInfo(name = "FreeLook", category = Category.VISUAL, description = "Позволяет осматриватся во круг.")
 public class FreeLook extends Module {
 
-    CheckBox changePerspective = new CheckBox("Change Perspective", this, true);
+    CheckBox changePerspective = new CheckBox("ChangePerspective", this, true);
 
     public float rotYaw = 0;
     public float rotPitch = 0;

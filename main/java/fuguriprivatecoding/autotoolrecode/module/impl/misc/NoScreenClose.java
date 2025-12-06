@@ -13,7 +13,7 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
 
-@ModuleInfo(name = "NoScreenClose", category = Category.MISC, description = "ЗАПРЕТ НА ЗАКРЫТИЕ ОКОН.")
+@ModuleInfo(name = "NoScreenClose", category = Category.MISC, description = "FLOWSEAL/ZAPRET НА ЗАКРЫТИЕ ОКОН.")
 public class NoScreenClose extends Module {
 
     MultiMode modes = new MultiMode("Modes", this)

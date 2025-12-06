@@ -21,19 +21,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.util.AxisAlignedBB;
 
-import java.util.function.BooleanSupplier;
-
 @ModuleInfo(name = "AntiFireball", category = Category.PLAYER, description = "Автоматически отбивает фаербол противника.")
 public class AntiFireball extends Module {
 
     final CheckBox rotate = new CheckBox("Rotate", this);
 
-    final BooleanSupplier rotateVisible = rotate::isToggled;
-    final IntegerSetting horizontalHitBoxSize = new IntegerSetting("HorizontalHitBoxSize", this, rotateVisible, 1, 100, 100);
-    final IntegerSetting verticalHitBoxSize = new IntegerSetting("VerticalHitBoxSize", this, rotateVisible, 1, 100, 100);
+    final IntegerSetting horizontalHitBoxSize = new IntegerSetting("HorizontalHitBoxSize", this, rotate::isToggled, 1, 100, 100);
+    final IntegerSetting verticalHitBoxSize = new IntegerSetting("VerticalHitBoxSize", this, rotate::isToggled, 1, 100, 100);
 
-    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, rotateVisible, 0, 180, 90, 1);
-    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, rotateVisible, 0, 180, 90, 1);
+    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, rotate::isToggled, 0, 180, 90, 1);
+    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, rotate::isToggled, 0, 180, 90, 1);
 
     final IntegerSetting delay = new IntegerSetting("Delay", this, 0, 500, 0);
     final FloatSetting distance = new FloatSetting("Distance", this, 3f, 12f, 4.5f, 0.1f);

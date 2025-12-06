@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "Blink", category = Category.CONNECTION, description = "При включении вы зависаете от лица других, при выключении вас телепортирует туда куда вы пришли.")
+@ModuleInfo(name = "Blink", category = Category.CONNECTION, description = "Халяль Ломка-Интернета.")
 public class Blink extends Module {
 
     private final CheckBox pulseBlink = new CheckBox("Pulse", this);

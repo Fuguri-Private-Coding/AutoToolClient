@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.util.MathHelper;
 
-@ModuleInfo(name = "HurtCamera", category = Category.VISUAL)
+@ModuleInfo(name = "HurtCamera", category = Category.VISUAL, description = "Позволяет изменить тряску при ударе.")
 public class HurtCamera extends Module {
 
     public FloatSetting strength = new FloatSetting("Strength", this, 0, 1, 0, 0.1f);

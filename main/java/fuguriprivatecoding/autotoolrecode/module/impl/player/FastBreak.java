@@ -8,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 
-@ModuleInfo(name = "FastBreak", category = Category.PLAYER)
+@ModuleInfo(name = "FastBreak", category = Category.PLAYER, description = "Позволяет быстрее ломать блоки.")
 public class FastBreak extends Module {
 
     Mode breakMode = new Mode("BreakMode", this)

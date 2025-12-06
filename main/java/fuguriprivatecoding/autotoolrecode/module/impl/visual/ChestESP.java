@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
+import net.minecraft.util.BlockPos;
 
 import java.awt.*;
 
@@ -37,18 +38,23 @@ public class ChestESP extends Module {
             for (TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {
                 switch (tileEntity) {
                     case TileEntityChest tileEntityChest -> {
-                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityChest.getPos(), glowColor.getFadedFloatColor()));
-                        if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityChest.getPos(), Color.WHITE));
+                        BlockPos pos = tileEntityChest.getPos();
 
-                        RenderUtils.drawBlockESP(tileEntityChest.getPos(), color.getFadedFloatColor());
+
+                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor()));
+                        if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, Color.WHITE));
+
+                        RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
                         GlStateManager.resetColor();
                     }
 
                     case TileEntityEnderChest tileEntityEnderChest when enderChest.isToggled() -> {
-                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityEnderChest.getPos(), glowColor.getFadedFloatColor()));
-                        if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(tileEntityEnderChest.getPos(), Color.WHITE));
+                        BlockPos pos = tileEntityEnderChest.getPos();
 
-                        RenderUtils.drawBlockESP(tileEntityEnderChest.getPos(), color.getFadedFloatColor());
+                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor()));
+                        if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, Color.WHITE));
+
+                        RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
                         GlStateManager.resetColor();
                     }
                     default -> {}

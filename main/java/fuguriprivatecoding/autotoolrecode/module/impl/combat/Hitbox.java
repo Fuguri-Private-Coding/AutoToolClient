@@ -6,7 +6,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 
-@ModuleInfo(name = "HitBox", category = Category.COMBAT)
+@ModuleInfo(name = "HitBox", category = Category.COMBAT, description = "Увеличивает размер хитбокса противников.")
 public class Hitbox extends Module {
     public final FloatSetting expand = new FloatSetting("Expand", this, 0.1f, 1, 0.15f, 0.01f);
 

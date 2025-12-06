@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickGuiScreenNew;
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -14,8 +13,6 @@ public class ClickGui extends Module {
 
     public Mode fonts = new Mode("Fonts", this);
 
-	Mode guiMode = new Mode("GuiMode", this).addModes("ImGui", "JavaGui").setMode("ImGui");
-
 	public FloatSetting animationSpeed = new FloatSetting("AnimationSpeed", this, 1, 20, 10, 0.5f) {};
 	public IntegerSetting backgroundAlpha = new IntegerSetting("BackgroundAlpha", this, 0, 255, 100);
 
@@ -25,7 +22,6 @@ public class ClickGui extends Module {
 	public final ColorSetting color = new ColorSetting("Color", this);
 	public final ColorSetting colorShadow = new ColorSetting("Color Shadow", this);
 
-//	ImGuiScreen imGuiScreen = new ImGuiScreen();
 
     public ClickGui() {
         Fonts.fonts.forEach((fontName, _) -> fonts.addMode(fontName));
@@ -34,14 +30,7 @@ public class ClickGui extends Module {
 
 	@Override
 	public void onEnable() {
-		switch (guiMode.getMode()) {
-			case "ImGui" -> {
-				mc.displayGuiScreen(ClickScreen.INST);
-//				mc.displayGuiScreen(imGuiScreen);
-//				ImGuiManager.addWindow(ImGuiScreen.clickGuiWindow);
-			}
-			case "JavaGui" -> mc.displayGuiScreen(ClickScreen.INST);
-		}
+		mc.displayGuiScreen(ClickScreen.INST);
 		toggle();
 	}
 }

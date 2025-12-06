@@ -27,11 +27,11 @@ public class MoreKB extends Module {
     DoubleSlider delayTicks = new DoubleSlider("DelayTicks", this, 0,20,2,1);
     DoubleSlider resetTicks = new DoubleSlider("ResetTicks", this, 1,20,2,1);
 
-    final MultiMode dontResetWhile = new MultiMode("Don't Reset While", this)
+    final MultiMode notWhile = new MultiMode("NotWhile", this)
             .addModes("Target Eating", "Has KnockBack Enchantment", "Target is Burning", "Target is Leaving")
             ;
 
-    final IntegerSetting maxDiff = new IntegerSetting("Max Diff", this, () -> dontResetWhile.get("Target is Leaving"), 0, 180, 90);
+    final IntegerSetting maxDiff = new IntegerSetting("MaxDiff", this, () -> notWhile.get("Target is Leaving"), 0, 180, 90);
 
     int delay, reset;
 
@@ -39,7 +39,7 @@ public class MoreKB extends Module {
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
-            if (target != null && target.hurtTime == 10 && !dontReset(target)) {
+            if (target != null && target.hurtTime == 10 && !notWhile(target)) {
                 delay = delayTicks.getRandomizedIntValue();
                 reset = resetTicks.getRandomizedIntValue();
             }
@@ -76,14 +76,14 @@ public class MoreKB extends Module {
         }
     }
 
-    boolean dontReset(EntityLivingBase target) {
-        if (dontResetWhile.get("Target Eating") && target.isEating()) return true;
-        if (dontResetWhile.get("Has KnockBack Enchantment") && hasKnockBackEnchantment(mc.thePlayer.inventory.getCurrentItem())) return true;
-        if (dontResetWhile.get("Target is Burning") && target.isBurning()) return true;
+    boolean notWhile(EntityLivingBase target) {
+        if (notWhile.get("Target Eating") && target.isEating()) return true;
+        if (notWhile.get("Has KnockBack Enchantment") && hasKnockBackEnchantment(mc.thePlayer.inventory.getCurrentItem())) return true;
+        if (notWhile.get("Target is Burning") && target.isBurning()) return true;
 
         float targetMoveYaw = RotUtils.getRotationFromDiff(target.getPositionVector().subtract(target.getPrevPositionVector())).getYaw();
         float delta = MathHelper.wrapDegree(mc.thePlayer.rotationYaw - targetMoveYaw);
-        return dontResetWhile.get("Target is Leaving") && delta <= maxDiff.getValue();
+        return notWhile.get("Target is Leaving") && delta <= maxDiff.getValue();
     }
 
     private boolean hasKnockBackEnchantment(ItemStack itemStack) {

@@ -17,7 +17,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.input.Mouse;
 
-@ModuleInfo(name = "Spider", category = Category.MOVE)
+@ModuleInfo(name = "Spider", category = Category.MOVE, description = "Позволяет взбиратся по стенам как POV('Паук')")
 public class Spider extends Module {
 
     Mode mode = new Mode("Mode", this)

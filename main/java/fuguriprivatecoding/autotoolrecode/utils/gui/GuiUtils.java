@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.gui;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.util.vector.Vector2f;
 
 public class GuiUtils implements Imports {
 
@@ -24,6 +25,15 @@ public class GuiUtils implements Imports {
 
     public static boolean isMouseDownMid(int mouseX, int mouseY, float x, float y, float width, float height) {
         return Mouse.isButtonDown(2) && mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height;
+    }
+
+    public static Vector2f getAbsolutePos(float xPercentage, float yPercentage) {
+        ScaledResolution sc = new ScaledResolution(mc);
+
+        return new Vector2f(
+            (sc.getScaledWidth() / 100f) * xPercentage,
+            (sc.getScaledHeight() / 100f) * yPercentage
+        );
     }
 
     public static boolean isMouseHovered(float x, float y, float width, float height) {

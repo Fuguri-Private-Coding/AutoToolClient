@@ -5,7 +5,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 
-@ModuleInfo(name = "CustomItemPos", category = Category.VISUAL)
+@ModuleInfo(name = "CustomItemPos", category = Category.VISUAL, description = "Позволяет двигать предмет в руке.")
 public class CustomItemPos extends Module {
 
     public FloatSetting x = new FloatSetting("X", this, -2,2,0,0.01f);

@@ -32,7 +32,7 @@ import java.util.*;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "Scaffold", category = Category.PLAYER)
+@ModuleInfo(name = "Scaffold", category = Category.PLAYER, description = "Позволяет ХАЛЯЛЬНО строится.")
 public class Scaffold extends Module {
 
     Mode rotMode = new Mode("RotationMode", this)
@@ -66,6 +66,7 @@ public class Scaffold extends Module {
         ;
 
     final CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this);
+    final CheckBox strictYaw = new CheckBox("StrictYaw", this, tellyNormalVisible);
 
     final CheckBox speedTelly = new CheckBox("SpeedTelly", this, tellyVisible, true);
     DoubleSlider airTicks = new DoubleSlider("AirTicks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 0,10,3,1);
@@ -224,14 +225,16 @@ public class Scaffold extends Module {
         boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.6) != Math.floor(mc.thePlayer.posX) ||
             Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(roundedYaw)) * 0.3) != Math.floor(mc.thePlayer.posZ);
 
+        float needYaw = strictYaw.isToggled() ? roundedYaw - 180 : yaw;
+
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (isTelly()) {
                     rotation = new Rot(yaw, lastRotation.getPitch());
                 } else {
-                    float offset = MoveUtils.isMoveDiagonally(yaw) ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
+                    float offset = MoveUtils.isMoveDiagonally(needYaw) ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
 
-                    rotation = getBestRotation(yaw, offset, sortYawOffset.isToggled());
+                    rotation = getBestRotation(needYaw, offset, sortYawOffset.isToggled());
                 }
             }
 
@@ -254,9 +257,9 @@ public class Scaffold extends Module {
             }
 
             case "Normal" -> {
-                float offset = MoveUtils.isMoveDiagonally(yaw) ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
+                float offset = MoveUtils.isMoveDiagonally(needYaw) ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
 
-                rotation = getBestRotation(yaw, offset, sortYawOffset.isToggled());
+                rotation = getBestRotation(needYaw, offset, sortYawOffset.isToggled());
             }
         }
 

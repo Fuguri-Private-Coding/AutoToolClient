@@ -12,7 +12,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 
 @ModuleInfo(name = "BlockOverlay", category = Category.VISUAL, description = "Выделяет блок на который вы смотрите.")
@@ -22,18 +22,21 @@ public class BlockOverlay extends Module {
 
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
+
     final CheckBox blur = new CheckBox("Blur", this);
 
     @Override
     public void onEvent(Event event) {
-        if (Modules.getModule(Scaffold.class).isToggled()) return;
-        if (event instanceof DrawBlockHighlightEvent) {
-            if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+        if (event instanceof DrawBlockHighlightEvent && !Modules.getModule(Scaffold.class).isToggled()) {
+            MovingObjectPosition hit = mc.objectMouseOver;
+
+            if (hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                BlockPos pos = hit.getBlockPos();
+
                 RenderUtils.start3D();
-                if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(mc.objectMouseOver.getBlockPos(), glowColor.getFadedFloatColor()));
-                if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(mc.objectMouseOver.getBlockPos(), 1,1,1,1));
-                RenderUtils.drawBlockESP(mc.objectMouseOver.getBlockPos(), color.getFadedFloatColor());
-                GlStateManager.resetColor();
+                if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor()));
+                if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, 1,1,1,1));
+                RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
                 RenderUtils.stop3D();
             }
         }

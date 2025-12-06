@@ -23,6 +23,7 @@ import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
@@ -35,7 +36,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "Ping", category = Category.CONNECTION, description = "Абьюз интернета для получение преимущевства.")
+@ModuleInfo(name = "Ping", category = Category.CONNECTION, description = "Задерживает пакеты для получения преимущевства.")
 public class Ping extends Module {
 
     DoubleSlider delay = new DoubleSlider("Delay", this, 0,1000,200,1);
@@ -102,10 +103,7 @@ public class Ping extends Module {
         long currentTime = System.currentTimeMillis();
         switch (event) {
             case ChangeSprintEvent _ when actions.get("ChangeSprint") -> reset(changeSprintTimeCondition.getValue());
-
-            case WorldChangeEvent _ -> {
-                reset(3000);
-            }
+            case WorldChangeEvent _ -> reset(3000);
 
             case PacketEvent e -> {
                 if (currentTime - lastResetTime < delayBeforeNextLag) {
@@ -171,9 +169,9 @@ public class Ping extends Module {
             case Render3DEvent _ when !(mc.gameSettings.thirdPersonView == 0 || currentTime - lastResetTime < delayBeforeNextLag || lastPos == null || currentPos == null || renderModes.getMode().equalsIgnoreCase("OFF")) -> {
                 EntityPlayerSP player = mc.thePlayer;
 
-                double x = lastPos.xCoord + (currentPos.xCoord - lastPos.xCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
-                double y = lastPos.yCoord + (currentPos.yCoord - lastPos.yCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
-                double z = lastPos.zCoord + (currentPos.zCoord - lastPos.zCoord) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
+                double x = lastPos.xCoord + (currentPos.xCoord - lastPos.xCoord) * mc.timer.renderPartialTicks - RenderManager.renderPosX;
+                double y = lastPos.yCoord + (currentPos.yCoord - lastPos.yCoord) * mc.timer.renderPartialTicks - RenderManager.renderPosY;
+                double z = lastPos.zCoord + (currentPos.zCoord - lastPos.zCoord) * mc.timer.renderPartialTicks - RenderManager.renderPosZ;
 
                 Vec3 pos = new Vec3(x, y, z);
                 switch (renderModes.getMode()) {

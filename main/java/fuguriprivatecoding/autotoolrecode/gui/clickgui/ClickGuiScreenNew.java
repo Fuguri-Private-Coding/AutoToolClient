@@ -92,17 +92,7 @@ public class ClickGuiScreenNew extends GuiScreen {
         moduleScroll.handleScrollInput(hoverModules);
         moduleScroll.update(moduleScrollTotalHeight + 5, height);
 
-        GL11.glPushMatrix();
-        double scale = openAnim.getValue();
-
-        double centerX = x + width / 2.0;
-        double centerY = y + height / 2.0;
-
-        double offsetX = centerX * (1 - scale);
-        double offsetY = centerY * (1 - scale);
-
-        GL11.glTranslated(offsetX, offsetY, 0);
-        GL11.glScaled(scale, scale, 1);
+        ScaleUtils.startScaling(x, y, width, height, openAnim.getValue());
 
         updateGuiAnimations();
 
@@ -348,7 +338,7 @@ public class ClickGuiScreenNew extends GuiScreen {
             StencilUtils.endWriteTexture();
         }
 
-        GL11.glPopMatrix();
+        ScaleUtils.stopScaling();
     }
 
     @Override

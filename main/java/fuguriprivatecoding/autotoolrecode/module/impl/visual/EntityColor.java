@@ -11,9 +11,9 @@ import java.awt.*;
 
 @ModuleInfo(name = "EntityColor", category = Category.VISUAL, description = "Изменяет цвета игроков.")
 public class EntityColor extends Module {
+    public CheckBox instantHurtColor = new CheckBox("InstantHurtColor", this, false);
     public ColorSetting entityColor = new ColorSetting("EntityColor", this);
     public ColorSetting entityHurtColor = new ColorSetting("EntityHurtColor", this);
-    public CheckBox instantHurtColor = new CheckBox("InstantHurtColor", this, false);
 
     public static Color getEntityColor(int hurtTime) {
         EntityColor entColor = Modules.getModule(EntityColor.class);

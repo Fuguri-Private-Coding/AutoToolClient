@@ -11,7 +11,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.ScaledResolution;
 
-@ModuleInfo(name = "CustomCrosshair", category = Category.VISUAL)
+@ModuleInfo(name = "CustomCrosshair", category = Category.VISUAL, description = "Позволяет сделать свой прицел.")
 public class CustomCrosshair extends Module {
 
     Mode mode = new Mode("Mode",this)

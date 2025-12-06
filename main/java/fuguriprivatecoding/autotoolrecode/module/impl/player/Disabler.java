@@ -82,7 +82,9 @@ public class Disabler extends Module {
                         if (mc.thePlayer.getBps(true) == 0D) {
                             e.cancel();
                         } else {
-                            if (packets.size() > 1) {
+                            if (packets.size() >= 2) {
+                                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packets.getFirst().packet());
+                                packets.removeFirst();
                                 mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packets.getFirst().packet());
                                 packets.removeFirst();
                             }

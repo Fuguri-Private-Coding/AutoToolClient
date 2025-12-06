@@ -8,26 +8,31 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
 
 import java.awt.*;
 
-@ModuleInfo(name = "Fucker", category = Category.PLAYER)
+@ModuleInfo(name = "Fucker", category = Category.PLAYER, description = "Автоматически ломает кровать через стены.")
 public class Fucker extends Module {
 
     FloatSetting breakDistance = new FloatSetting("BreakDistance", this, 1f,6f,4.5f,0.1f);
@@ -35,7 +40,15 @@ public class Fucker extends Module {
 
     CheckBox whiteListOwnBed = new CheckBox("WhiteListOwnBed", this);
 
+    CheckBox renderBreaking = new CheckBox("RenderBreaking", this, true);
+    ColorSetting color = new ColorSetting("Color", this, renderBreaking::isToggled);
+
+    CheckBox glow = new CheckBox("Glow", this, renderBreaking::isToggled, true);
+    ColorSetting glowColor = new ColorSetting("GlowColor", this, () -> renderBreaking.isToggled() && glow.isToggled());
+
     public BlockPos bedPos;
+    public BlockPos[] renderPos;
+
     private int breakTicks;
     private int delayTicks;
     private Vec3 home;
@@ -44,6 +57,7 @@ public class Fucker extends Module {
     public void onEnable() {
         super.onEnable();
         bedPos = null;
+        renderPos = null;
 
         breakTicks = 0;
     }
@@ -84,9 +98,15 @@ public class Fucker extends Module {
             destroy();
         }
 
-        if (event instanceof Render3DEvent && bedPos != null) {
+        if (event instanceof Render3DEvent && renderPos != null && renderBreaking.isToggled()) {
+            Color bedColor = new Colors(color.getFadedColor()).withMultiplyAlphaClamp(breakTicks / 10f);
+            Color bedGlowColor = new Colors(glowColor.getFadedColor()).withMultiplyAlphaClamp(breakTicks / 10f);
+
             RenderUtils.start3D();
-            RenderUtils.drawBlockESP(bedPos, new Color(1,0,0,1f * breakTicks / 10));
+
+            if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.renderBed(renderPos, bedGlowColor));
+            RenderUtils.renderBed(renderPos, bedColor);
+
             ColorUtils.resetColor();
             RenderUtils.stop3D();
         }
@@ -122,6 +142,7 @@ public class Fucker extends Module {
             return;
         }
         bedPos = null;
+        renderPos = null;
         double range = breakDistance.getValue();
         double minDistance = Double.MAX_VALUE;
         BlockPos closestBed = null;
@@ -148,6 +169,12 @@ public class Fucker extends Module {
 
         if (closestBed != null) {
             bedPos = closestBed;
+
+            IBlockState state = mc.theWorld.getBlockState(closestBed);
+            if (state.getBlock() == Blocks.bed && state.getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT) {
+                BlockPos headPos = closestBed.offset(state.getValue(BlockBed.FACING));
+                renderPos = new BlockPos[]{closestBed, headPos};
+            }
         }
     }
 
@@ -190,6 +217,7 @@ public class Fucker extends Module {
         breakTicks = 0;
         delayTicks = destroyDelayTicks.getRandomizedIntValue();
         bedPos = null;
+        renderPos = null;
     }
 
     public boolean handleRotate() {

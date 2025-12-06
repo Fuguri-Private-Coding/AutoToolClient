@@ -25,7 +25,7 @@ import java.awt.*;
 import java.util.Collection;
 import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "Scoreboard", category = Category.VISUAL, description = "Позволяет изменять Scoreboard.")
+@ModuleInfo(name = "Scoreboard", category = Category.VISUAL, description = "ЙОУ ИЗМЕНЯТЬ СКОРЕБОАРД В 2K26 ГОДУ НЕ КРУТО!")
 public class ScoreBoard extends Module {
 
     public CheckBox remove = new CheckBox("Remove", this, true);

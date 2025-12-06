@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import net.minecraft.network.play.server.S03PacketTimeUpdate;
 
-@ModuleInfo(name = "TimeChanger", category = Category.VISUAL, description = "Изменяет погоду/время.")
+@ModuleInfo(name = "TimeChanger", category = Category.VISUAL, description = "Изменяет время.")
 public class TimeChanger extends Module {
 
     IntegerSetting time = new IntegerSetting("Time", this, 0, 20, 20);

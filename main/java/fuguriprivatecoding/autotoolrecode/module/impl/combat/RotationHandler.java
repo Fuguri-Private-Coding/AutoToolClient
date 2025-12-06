@@ -19,7 +19,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 
-@ModuleInfo(name = "RotationHandler", category = Category.COMBAT, description = "Плавно поворачиватся обратно после изменения ротации.")
+@ModuleInfo(name = "RotationHandler", category = Category.COMBAT, description = "Плавный разворот ротации при ее изменении.")
 public class RotationHandler extends Module {
 
     final DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 1, 180, 30, 1);

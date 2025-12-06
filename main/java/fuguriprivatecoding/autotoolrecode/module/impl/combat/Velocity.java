@@ -16,13 +16,13 @@ import java.util.Random;
 public class Velocity extends Module {
 
     final Mode mode = new Mode("Mode", this)
-            .addModes("Vanilla", "Jump", "Intave")
-            .setMode("Vanilla");
+            .addModes("Cancel", "Jump", "Intave")
+            .setMode("Cancel");
 
-    final IntegerSetting vanillaXZ = new IntegerSetting("Horizontal", this,() -> mode.is("Vanilla"), -100, 100, 0);
-    final IntegerSetting vanillaY = new IntegerSetting("Vertical", this,() -> mode.is("Vanilla"), 0, 100, 100);
+    final IntegerSetting horizontal = new IntegerSetting("Horizontal", this,() -> mode.is("Cancel"), -100, 100, 0);
+    final IntegerSetting vertical = new IntegerSetting("Vertical", this,() -> mode.is("Cancel"), 0, 100, 100);
 
-    final FloatSetting intaveSprintXZ = new FloatSetting("IntaveXZ", this, () -> mode.is("Intave"),0,1,0.6f, 0.01f);
+    final FloatSetting intaveXZ = new FloatSetting("IntaveXZ", this, () -> mode.is("Intave"),0,1,0.6f, 0.01f);
     final CheckBox intaveJump = new CheckBox("IntaveJump", this, () -> mode.is("Intave"));
 
     final IntegerSetting jumpChance = new IntegerSetting("Chance", this, () -> mode.is("Jump") || (mode.is("Intave") && intaveJump.isToggled()), 0,100,80);
@@ -37,7 +37,7 @@ public class Velocity extends Module {
     @Override
     public void onEvent(Event event) {
         switch (mode.getMode()) {
-            case "Vanilla" -> {
+            case "Cancel" -> {
                 if (event instanceof PacketEvent e
                         && e.getPacket() instanceof S12PacketEntityVelocity s12
                         && s12.getId() == mc.thePlayer.getEntityId()) {
@@ -50,9 +50,9 @@ public class Velocity extends Module {
                     double deltaMotionY = needMotionY - mc.thePlayer.motionY;
                     double deltaMotionZ = needMotionZ - mc.thePlayer.motionZ;
 
-                    deltaMotionX *= vanillaXZ.getValue() / 100f;
-                    deltaMotionY *= vanillaY.getValue() / 100f;
-                    deltaMotionZ *= vanillaXZ.getValue() / 100f;
+                    deltaMotionX *= horizontal.getValue() / 100f;
+                    deltaMotionY *= vertical.getValue() / 100f;
+                    deltaMotionZ *= horizontal.getValue() / 100f;
 
                     mc.thePlayer.motionX += deltaMotionX;
                     mc.thePlayer.motionY += deltaMotionY;
@@ -62,8 +62,8 @@ public class Velocity extends Module {
             case "Intave" -> {
                 if (event instanceof AttackEvent) {
                     if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.isSprinting()) {
-                        mc.thePlayer.motionX *= intaveSprintXZ.getValue();
-                        mc.thePlayer.motionZ *= intaveSprintXZ.getValue();
+                        mc.thePlayer.motionX *= intaveXZ.getValue();
+                        mc.thePlayer.motionZ *= intaveXZ.getValue();
                         mc.thePlayer.setSprinting(false);
                     }
                 }

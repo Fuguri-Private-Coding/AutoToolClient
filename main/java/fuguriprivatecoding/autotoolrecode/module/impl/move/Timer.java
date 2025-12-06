@@ -19,9 +19,7 @@ public class Timer extends Module {
 	@Override
 	public void onEvent(Event event) {
 		if (event instanceof TickEvent) {
-			if (mc.timer.timerSpeed == 1) {
-				mc.timer.timerSpeed = timerSpeed.getValue();
-			}
+            mc.timer.timerSpeed = timerSpeed.getValue();
 		}
 	}
 

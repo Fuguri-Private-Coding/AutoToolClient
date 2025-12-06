@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -30,6 +30,7 @@ public class AutoSoup extends Module {
     private final StopWatch refillTimer = new StopWatch();
     private final StopWatch useTimer = new StopWatch();
     private final StopWatch dropTimer = new StopWatch();
+
     private int soupSwitchTime = 0;
     private int soupUseTime = 0;
     private int soupDropTime = 0;
@@ -38,7 +39,7 @@ public class AutoSoup extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof MotionEvent) {
+        if (event instanceof TickEvent) {
             if (mc.currentScreen == null) {
                 if (soupTimer.reachedMS(soupSwitchTime * 50L)) {
                     if (switchBack) {

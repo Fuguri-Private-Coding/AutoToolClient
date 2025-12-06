@@ -16,7 +16,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.WorldSettings;
 import org.lwjgl.input.Mouse;
 
-@ModuleInfo(name = "Phase", category = Category.PLAYER, description = "Позволяет ходить через стены.")
+@ModuleInfo(name = "Phase", category = Category.PLAYER, description = "Позволяет ходить сквозь стены.")
 public class Phase extends Module {
     CheckBox sneak = new CheckBox("Sneak", this, true);
     CheckBox intaveClip = new CheckBox("IntaveClip", this, true);

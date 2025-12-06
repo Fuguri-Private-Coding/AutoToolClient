@@ -139,7 +139,7 @@ public class MultiMode extends Setting {
         return value.getSecond();
     }
 
-    public void set(String name, boolean newValue) {
+    public MultiMode set(String name, boolean newValue) {
         for (Doubles<String, Boolean> value : values) {
             if (value == null) {
                 throw new IllegalStateException();
@@ -151,6 +151,7 @@ public class MultiMode extends Setting {
             value.setSecond(newValue);
             break;
         }
+        return this;
     }
 
     public void updateAnimation() {

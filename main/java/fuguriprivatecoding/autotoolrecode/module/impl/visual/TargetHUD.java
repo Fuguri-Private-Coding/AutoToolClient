@@ -4,6 +4,9 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
+import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedGradUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -23,48 +26,45 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
-import java.awt.*;
 
-import static org.lwjgl.opengl.GL11.*;
+import java.awt.*;
 
 @ModuleInfo(name = "TargetHUD", category = Category.VISUAL, description = "Показывает информацию о противнике.")
 public class TargetHUD extends Module {
 
-    MultiMode render = new MultiMode("Render", this)
+    final MultiMode render = new MultiMode("Render", this)
         .addModes("Health", "Background", "Head", "Name");
 
-    Mode fonts = new Mode("Fonts", this, () -> render.get("Name"));
+    final Mode fonts = new Mode("Fonts", this, () -> render.get("Name"));
 
-    CheckBox follow = new CheckBox("Follow", this);
+    final CheckBox follow = new CheckBox("Follow", this);
+    final FloatSetting yOffset = new FloatSetting("YOffset", this, follow::isToggled, -2, 2, 0, 0.1f);
 
-    FloatSetting yOffset = new FloatSetting("Y-Offset", this, follow::isToggled, -2, 2, 0, 0.1f);
+    final IntegerSetting xPos = new IntegerSetting("XPos", this, () -> !follow.isToggled(), 0, 100, 0);
+    final IntegerSetting yPos = new IntegerSetting("YPos", this, () -> !follow.isToggled(), 0, 100, 0);
 
-    IntegerSetting xPos = new IntegerSetting("XPos", this, () -> !follow.isToggled(), 0, 100, 0);
-    IntegerSetting yPos = new IntegerSetting("YPos", this, () -> !follow.isToggled(), 0, 100, 0);
+    final ColorSetting bgColor = new ColorSetting("BackgroundColor", this, () -> render.get("Background"));
+    final FloatSetting bgRadius = new FloatSetting("BackgroundRadius", this, 0f, 20f, 10f, 0.1f);
 
-    public final ColorSetting textColor = new ColorSetting("TextColor", this, () -> render.get("Name"));
-    public final ColorSetting bgColor = new ColorSetting("BackgroundColor", this, () -> render.get("Background"));
+    final ColorSetting textColor = new ColorSetting("TextColor", this, () -> render.get("Name"));
+    final CheckBox textShadow = new CheckBox("TextShadow", this, () -> render.get("Name"));
 
-    public final CheckBox textShadow = new CheckBox("TextShadow", this, () -> render.get("Name"));
-    FloatSetting bgRadius = new FloatSetting("BackgroundRadius", this, 0f, 20f, 10f, 0.1f);
+    final ColorSetting healthColor = new ColorSetting("HealthColor", this, () -> render.get("Health"));
 
-    public final ColorSetting healthColor = new ColorSetting("HealthColor", this, () -> render.get("Health"));
+    final FloatSetting headRadius = new FloatSetting("HeadRadius", this, () -> render.get("Head"), 0f, 15f, 7.5f, 0.1f);
+    final ColorSetting headHitColor = new ColorSetting("HeadHitColor", this, () -> render.get("Head"));
 
-    FloatSetting headRadius = new FloatSetting("HeadRadius", this, () -> render.get("Head"), 0f, 15f, 7.5f, 0.1f);
+    final FloatSetting scale = new FloatSetting("Scale", this, 0.5f, 3f, 1.5f, 0.05f);
 
-    private final FloatSetting scale = new FloatSetting("Scale", this, 0.5f, 3f, 1.5f, 0.05f);
+    final CheckBox glow = new CheckBox("Glow", this);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
 
-    CheckBox glow = new CheckBox("Glow", this);
-    CheckBox blur = new CheckBox("Blur", this);
-
-    public final ColorSetting bgShadowColor = new ColorSetting("Background Glow Color", this, () -> glow.isToggled());
+    final CheckBox blur = new CheckBox("Blur", this);
 
     EntityLivingBase target;
 
@@ -84,7 +84,7 @@ public class TargetHUD extends Module {
             updateTarget(mc.currentScreen);
         }
 
-        if (event instanceof Render2DEvent e) {
+        if (event instanceof Render2DEvent) {
             currentScale.update(2, Easing.OUT_BACK);
 
             if (target == null || target.getSkin() == null || target.getName() == null) return;
@@ -94,7 +94,7 @@ public class TargetHUD extends Module {
             float width = 120;
             float height = 40;
 
-            double scale = this.scale.getValue() * Math.clamp(currentScale.getValue(), 0, 2);
+            float scale = this.scale.getValue() * Math.clamp(currentScale.getValue(), 0, 2);
 
             if (follow.isToggled()) {
                 mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
@@ -109,36 +109,25 @@ public class TargetHUD extends Module {
 
                 if (positions == null || positions[2] > 1) return;
 
-                pos.set(
-                    positions[0] - 60,
-                    positions[1]
-                );
+                pos.set(positions[0] - 60, positions[1]);
             } else {
-                pos.set(
-                    (e.getSc().getScaledWidth() / 100f) * xPos.getValue(),
-                    (e.getSc().getScaledHeight() / 100f) * yPos.getValue()
-                );
+                pos = GuiUtils.getAbsolutePos(xPos.getValue(), yPos.getValue());
             }
-            renderHUD(pos.x, pos.y, width, height, bgRadius.getValue(), font, target, scale);
+            renderHUD(pos.x, pos.y, width, height, font, target, scale);
         }
     }
 
-    private void renderHUD(float posX, float posY, float width, float height, float radius, ClientFontRenderer font, EntityLivingBase target, double scaleFactor) {
-        glPushMatrix();
-        double centerX = posX + width / 2.0;
-        double centerY = posY + height / 2.0;
+    private void renderHUD(float x, float y, float width, float height, ClientFontRenderer font, EntityLivingBase target, float scaleFactor) {
+        ScaleUtils.startScaling(x, y, width, height, scaleFactor);
 
-        double offsetX = centerX * (1 - scaleFactor);
-        double offsetY = centerY * (1 - scaleFactor);
-
-        glTranslated(offsetX, offsetY, 0);
-        glScaled(scaleFactor, scaleFactor, 1);
-
-        if (render.get("Background")) RoundedUtils.drawRect(posX, posY, width, height, radius, bgColor.getFadedColor());
-        StencilUtils.setUpTexture(posX, posY, width, height, radius);
+        if (render.get("Background")) RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), bgColor.getFadedColor());
+        StencilUtils.setUpTexture(x, y, width, height, bgRadius.getValue());
 
         StencilUtils.writeTexture();
-        if (render.get("Name")) font.drawString(target.getName(), posX + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, posY + height / 2f - 10f, textColor.getFadedColor(), textShadow.isToggled());
+
+        if (render.get("Name")) {
+            font.drawString(target.getName(), x + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, y + height / 2f - 10f, textColor.getFadedColor(), textShadow.isToggled());
+        }
 
         if (render.get("Health")) {
             float maxHealth = target.getMaxHealth();
@@ -151,37 +140,39 @@ public class TargetHUD extends Module {
 
             healthAnimation.update(7, Easing.LINEAR);
 
-            float animatedHealthWidth = healthAnimation.getValue();
-
-            float healthX = posX + height;
-            float healthY = posY + height / 2f + 2;
+            float healthX = x + height;
+            float healthY = y + height / 2f + 2;
 
             RoundedUtils.drawRect(healthX, healthY, maxHealthBarWidth, 10, 5, bgColor.getFadedColor());
-            RoundedGradUtils.drawRect(healthX, healthY, animatedHealthWidth, 10, 5, healthColor.getColor(), healthColor.getFadeColor(), false);
+            RoundedGradUtils.drawRect(healthX, healthY, healthAnimation.getValue(), 10, 5, healthColor.getColor(), healthColor.getFadeColor(), false);
         }
 
         if (render.get("Head") && target instanceof EntityPlayer) {
             float hurtTime = target.hurtTime / 10f;
 
-            float headX = posX + 5 + hurtTime / 2f;
-            float headY = posY + 5 + hurtTime / 2f;
+            float headX = x + 5 + hurtTime / 2f;
+            float headY = y + 5 + hurtTime / 2f;
             float headWidth = height - 10 - hurtTime;
             float headHeight = height - 10 - hurtTime;
 
+            Color headColor = ColorUtils.interpolateColor(Colors.WHITE, headHitColor.getFadedColor(), hurtTime);
+
             StencilUtils.setUpTexture(headX, headY, headWidth, headHeight, headRadius.getValue() * currentScale.getValue());
             StencilUtils.writeTexture();
-            glColor4f(1f / hurtTime, 1f - hurtTime, 1f - hurtTime, 1f);
+
+            ColorUtils.glColor(headColor);
             RenderUtils.quickDrawHead(target.getSkin(), headX, headY, headWidth, headHeight);
             ColorUtils.resetColor();
+
             StencilUtils.endWriteTexture();
         }
 
         StencilUtils.endWriteTexture();
 
-        if (glow.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(posX, posY, width, height, radius, bgShadowColor.getFadedColor()));
-        if (blur.isToggled()) BlurUtils.addToDraw(() -> RoundedUtils.drawRect(posX, posY, width, height, radius, Color.WHITE));
+        if (glow.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), glowColor.getFadedColor()));
+        if (blur.isToggled()) BlurUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), Color.WHITE));
 
-        glPopMatrix();
+        ScaleUtils.stopScaling();
     }
 
     private void updateTarget(GuiScreen screen) {
@@ -191,7 +182,6 @@ public class TargetHUD extends Module {
             currentTarget = mc.thePlayer;
             target = currentTarget;
         } else if (screen == null) {
-
             if (currentTarget == null) {
                 if (currentScale.getValue() == 0) target = null;
             } else {

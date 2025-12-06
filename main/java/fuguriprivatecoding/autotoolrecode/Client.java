@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
+import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
@@ -42,7 +43,6 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import lombok.*;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.*;
@@ -142,12 +142,13 @@ public enum Client implements Imports, EventListener {
             new Thread(HWID::check).start();
 		}
 
-        if (event instanceof RenderScreenEvent && (HWID.noConnection || HWID.noConnectionAnim.getValue() != 0)) {
+        if (event instanceof RenderScreenEvent) {
             ClientFontRenderer fontRenderer = Fonts.fonts.get("SFPro");
             ScaledResolution sc = new ScaledResolution(mc);
 
             EasingAnimation anim = HWID.noConnectionAnim;
             anim.update(1f, Easing.OUT_BACK);
+            anim.setEnd(false);
 
             long time = System.currentTimeMillis() - HWID.lastTimeConnection;
             int sec = Integer.parseInt(String.valueOf(time / 1000L));
@@ -156,27 +157,17 @@ public enum Client implements Imports, EventListener {
 
             String text = "§f[§9AutoTool§f] Нет интернет подключения, клиент закроется через §9" + remainingSec + "§f s.";
 
-            float width = (float) fontRenderer.getStringWidth(text);
-            float height = 15;
-
-            GL11.glPushMatrix();
-            double scale = anim.getValue();
-
-            float x = sc.getScaledWidth() / 2f - width / 2f - 5;
+            float x = sc.getScaledWidth() / 2f - fontRenderer.getStringWidth(text) / 2f - 5;
             float y = 5;
 
-            double centerX = x + width / 2.0;
-            double centerY = y + height / 2.0;
+            float width = fontRenderer.getStringWidth(text);
+            float height = 15;
 
-            double offsetX = centerX * (1 - scale);
-            double offsetY = centerY * (1 - scale);
-
-            GL11.glTranslated(offsetX, offsetY, 0);
-            GL11.glScaled(scale, scale, 1);
+            ScaleUtils.startScaling(x, y, width, height, anim.getValue());
 
             RoundedUtils.drawRect(sc.getScaledWidth() / 2f - width / 2f - 5, 5f, width + 5, 15f, 7.5f, Colors.BLACK.withAlphaClamp(0.7f * anim.getValue()));
             fontRenderer.drawCenteredString(text, sc.getScaledWidth() / 2f, 10, Colors.WHITE.withAlphaClamp(anim.getValue()));
-            GL11.glPopMatrix();
+            ScaleUtils.stopScaling();
         }
 	}
 

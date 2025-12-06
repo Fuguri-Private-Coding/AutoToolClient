@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.MovingObjectPosition;
 
-@ModuleInfo(name = "AutoWater", category = Category.PLAYER)
+@ModuleInfo(name = "AutoWater", category = Category.PLAYER, description = "Автоматически ставит воду при падении.")
 public class AutoWater extends Module {
 
     FloatSetting fallDistance = new FloatSetting("Fall Distance", this, 0, 4.5f, 3.5f, 0.1f);

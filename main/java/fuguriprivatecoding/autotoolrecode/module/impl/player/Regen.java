@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import net.minecraft.network.play.client.C03PacketPlayer;
 
-@ModuleInfo(name = "Regen", category = Category.PLAYER)
+@ModuleInfo(name = "Regen", category = Category.PLAYER, description = "Позволяет регенерировать быстрее.")
 public class Regen extends Module {
 
     public final IntegerSetting health = new IntegerSetting("Health", this, 0, 20, 20);

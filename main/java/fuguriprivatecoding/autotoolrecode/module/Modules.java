@@ -42,7 +42,6 @@ public class Modules {
             new FastPlace(),
             new NameProtect(),
             new BedESP(),
-            new ChestAura(),
             new CustomSkin(),
             new Booster(),
             new ChestStealer(),

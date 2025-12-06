@@ -11,7 +11,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 
-@ModuleInfo(name = "HighJump", category = Category.MOVE)
+@ModuleInfo(name = "HighJump", category = Category.MOVE, description = "Позволяет вам высоко прыгать.")
 public class HighJump extends Module {
 
     Mode mode = new Mode("HighMode", this)
@@ -34,7 +34,6 @@ public class HighJump extends Module {
 
     @Override
     public void onEvent(Event event) {
-
         switch (mode.getMode()) {
             case "Matrix" -> {
                 if (event instanceof MotionEvent e) {

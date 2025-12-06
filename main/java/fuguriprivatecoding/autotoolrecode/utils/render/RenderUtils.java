@@ -166,12 +166,24 @@ public class RenderUtils implements Imports {
     }
 
     public static void drawBlockESP(BlockPos blockPos, float red, float green, float blue, float alpha) {
-        glColor4f(red,green,blue,alpha);
-        double x = blockPos.getX() - mc.getRenderManager().viewerPosX;
-        double y = blockPos.getY() - mc.getRenderManager().viewerPosY;
-        double z = blockPos.getZ() - mc.getRenderManager().viewerPosZ;
+        glColor4f(red, green, blue, alpha);
+
+        double x = blockPos.getX() - RenderManager.renderPosX;
+        double y = blockPos.getY() - RenderManager.renderPosY;
+        double z = blockPos.getZ() - RenderManager.renderPosZ;
+
         Block block = mc.theWorld.getBlockState(blockPos).getBlock();
-        drawBoundingBox(new AxisAlignedBB(x + block.getBlockBoundsMinX(), y + block.getBlockBoundsMinY(), z + block.getBlockBoundsMinZ(), x + block.getBlockBoundsMaxX(), y + block.getBlockBoundsMaxY(), z + block.getBlockBoundsMaxZ()));
+
+        AxisAlignedBB bb = new AxisAlignedBB(
+            x + block.getBlockBoundsMinX(),
+            y + block.getBlockBoundsMinY(),
+            z + block.getBlockBoundsMinZ(),
+            x + block.getBlockBoundsMaxX(),
+            y + block.getBlockBoundsMaxY(),
+            z + block.getBlockBoundsMaxZ()
+        );
+
+        drawBoundingBox(bb);
         ColorUtils.resetColor();
     }
 
@@ -289,77 +301,69 @@ public class RenderUtils implements Imports {
         RenderHelper.disableStandardItemLighting();
     }
 
-    public static void drawBoundingBox(AxisAlignedBB var0) {
+    public static void drawBoundingBox(AxisAlignedBB bb) {
         Tessellator var1 = Tessellator.getInstance();
         WorldRenderer var2 = var1.getWorldRenderer();
         var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
-        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
-        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
-        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
-        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
         var1.draw();
         var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
-        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
-        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
-        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
-        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
-        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
         var1.draw();
         var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
-        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
-        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
-        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
-        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
-        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
         var1.draw();
         var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
-        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
-        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
-        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
         var1.draw();
         var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
-        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
-        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
-        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
-        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
         var1.draw();
         var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(var0.minX, var0.maxY, var0.maxZ).endVertex();
-        var2.pos(var0.minX, var0.minY, var0.maxZ).endVertex();
-        var2.pos(var0.minX, var0.maxY, var0.minZ).endVertex();
-        var2.pos(var0.minX, var0.minY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.maxY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.minZ).endVertex();
-        var2.pos(var0.maxX, var0.maxY, var0.maxZ).endVertex();
-        var2.pos(var0.maxX, var0.minY, var0.maxZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
+        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
+        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
+        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
+        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
         var1.draw();
-    }
-
-    public static void glColor(Color color) {
-        glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
-    }
-
-    public static void glColor(Color color, float alpha) {
-        glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha);
     }
 
     public static void renderHitBox(AxisAlignedBB bb, int type) {

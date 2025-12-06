@@ -13,7 +13,7 @@ import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 
-@ModuleInfo(name = "Effects", category = Category.VISUAL, description = "Показывает еффекты и воспроизводит звук при убийстве противника.")
+@ModuleInfo(name = "Effects", category = Category.VISUAL, description = "Показывает эффекты и воспроизводит звук при убийстве противника.")
 public class Effects extends Module {
 
     CheckBox attackEffect = new CheckBox("AttackEffect", this, true);

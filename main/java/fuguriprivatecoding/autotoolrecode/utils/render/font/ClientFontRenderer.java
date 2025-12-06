@@ -86,7 +86,7 @@ public class ClientFontRenderer implements Imports {
         }
     }
 
-    public double getStringWidth(String text) {
+    public float getStringWidth(String text) {
         if (text == null) {
             return 0;
         }
@@ -129,7 +129,7 @@ public class ClientFontRenderer implements Imports {
             }
         }
 
-        return width / (2 * fontScaleOffset);
+        return (float) (width / (2f * fontScaleOffset));
     }
 
     BufferedImage generateFontImage(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
@@ -201,6 +201,10 @@ public class ClientFontRenderer implements Imports {
     public float drawString(String text, double x, double y, int color, boolean shadow) {
         if (text == null) {
             return 0.0f;
+        }
+
+        if (Modules.getModule(NameProtect.class).isToggled()) {
+            text = text.replaceAll(mc.getSession().getUsername(), Client.INST.getProfile().getUsername());
         }
 
         x -= 1.0;

@@ -14,46 +14,45 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "BackTrack", category = Category.CONNECTION, description = "Абьюз интернета для увеличения дистанции удара.")
+@ModuleInfo(name = "BackTrack", category = Category.CONNECTION, description = "Задержкой пакетов увеличивает дальность удара.")
 public class BackTrack extends Module {
 
-    DoubleSlider delay = new DoubleSlider("Delay", this, 0,5000,200,1);
-
-    BooleanSupplier constantRandomSupplier = () -> delay.minValue != delay.maxValue;
-
+    final DoubleSlider delay = new DoubleSlider("Delay", this, 0,5000,200,1);
+    final BooleanSupplier constantRandomSupplier = () -> delay.minValue != delay.maxValue;
     final CheckBox constantRandomize = new CheckBox("ConstantDelayRandomize", this, constantRandomSupplier, true);
 
-    DoubleSlider distance = new DoubleSlider("Distance", this, 0,12,12,0.1f);
-
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenBackTracks", this, 0, 20, 0) ;
+
+    final DoubleSlider distance = new DoubleSlider("Distance", this, 0,12,12,0.1f);
+
     final CheckBox onlyWhenNeed = new CheckBox("OnlyWhenNeed", this, true);
     final IntegerSetting maxHurtTimeWhenWorking = new IntegerSetting("MaxHurtTimeWhenWorking",this, onlyWhenNeed::isToggled, 0, 10, 5);
 
-    CheckBox renderOnlyIfWorking = new CheckBox("RenderOnlyIfWorking", this, true);
-    Mode render = new Mode("Render", this)
+    final CheckBox onlyKillAura = new CheckBox("OnlyKillAura", this, true);
+    final CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
+
+    final CheckBox renderOnlyIfWorking = new CheckBox("RenderOnlyIfWorking", this, true);
+    final Mode render = new Mode("Render", this)
             .addModes("Player", "HitBox", "Box", "OFF")
             .setMode("Player");
 
-    BooleanSupplier renderBox = () -> (render.getMode().equalsIgnoreCase("Box") || render.getMode().equalsIgnoreCase("HitBox"));
+    final BooleanSupplier renderBox = () -> (render.getMode().equalsIgnoreCase("Box") || render.getMode().equalsIgnoreCase("HitBox"));
 
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, () -> render.getMode().equalsIgnoreCase("HitBox"), 1f,5f,1f,0.1f);
 
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this);
-
-    CheckBox whileKillAura = new CheckBox("WhileKillAura", this, true);
-    CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
 
     public final List<TimedVar<Packet>> packetBuffer = new CopyOnWriteArrayList<>();
 
@@ -66,6 +65,7 @@ public class BackTrack extends Module {
     public void onEvent(Event event) {
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();
+
             if (target == null || e.isCanceled() || e.getDirection() != PacketDirection.INCOMING) return;
 
             if ((packet instanceof S06PacketUpdateHealth
@@ -94,9 +94,11 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof Render3DEvent) {
-            if (target != (whileKillAura.isToggled() ? TargetStorage.getTarget() : TargetStorage.getTargetOrSelectedEntity())) {
+            EntityLivingBase needTarget = (onlyKillAura.isToggled() ? TargetStorage.getTarget() : TargetStorage.getTargetOrSelectedEntity());
+
+            if (target != needTarget) {
                 handle(true);
-                target = (whileKillAura.isToggled() ? TargetStorage.getTarget() : TargetStorage.getTargetOrSelectedEntity());
+                target = needTarget;
             }
 
             if (delayBetweenBackTracks > 0) {
@@ -107,11 +109,9 @@ public class BackTrack extends Module {
             handle(false);
 
             if (target != null) {
-                double x = target.nx;
-                double y = target.ny;
-                double z = target.nz;
+                Vec3 targetPos = new Vec3(target.nx, target.ny, target.nz);
 
-                AxisAlignedBB realBox = target.getEntityBoundingBox().offset(x - target.posX, y - target.posY, z - target.posZ).expand(
+                AxisAlignedBB realBox = target.getEntityBoundingBox().offset(targetPos.xCoord - target.posX, targetPos.yCoord - target.posY, targetPos.zCoord - target.posZ).expand(
                         target.getCollisionBorderSize(),
                         target.getCollisionBorderSize(),
                         target.getCollisionBorderSize()
@@ -136,11 +136,13 @@ public class BackTrack extends Module {
                     if (renderOnlyIfWorking.isToggled()) return;
                 }
 
-                x = target.lrx + (target.rx - target.lrx) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
-                y = target.lry + (target.ry - target.lry) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
-                z = target.lrz + (target.rz - target.lrz) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
+                targetPos = new Vec3(
+                    target.lrx + (target.rx - target.lrx) * mc.timer.renderPartialTicks - RenderManager.renderPosX,
+                    target.lry + (target.ry - target.lry) * mc.timer.renderPartialTicks - RenderManager.renderPosY,
+                    target.lrz + (target.rz - target.lrz) * mc.timer.renderPartialTicks - RenderManager.renderPosZ
+                );
 
-                Vec3 pos = new Vec3(x,y,z);
+                Vec3 pos = targetPos;
                 AxisAlignedBB bb = target.getEntityBoundingBox().offset(pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ);
                 switch (render.getMode()) {
                     case "Player" -> {
