@@ -10,7 +10,6 @@ import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -53,7 +52,7 @@ public class AimAssist extends Module {
 
             Vec3 targetPoint = target.getPositionEyes(1.0f);
             Rot playerRotation = new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
-            Delta delta = RotUtils.getDeltaToPoint(playerRotation, targetPoint);
+            Rot delta = RotUtils.getDeltaToPoint(playerRotation, targetPoint);
 
             delta = delta.limit(hSpeed.getValue(), vSpeed.getValue());
 

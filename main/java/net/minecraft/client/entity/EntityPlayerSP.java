@@ -6,7 +6,6 @@ import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEventPost;
 import fuguriprivatecoding.autotoolrecode.event.events.player.SprintEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.UpdateEvent;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import lombok.Getter;
 import lombok.Setter;

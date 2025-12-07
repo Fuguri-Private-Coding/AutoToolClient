@@ -20,7 +20,6 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.block.*;
@@ -250,7 +249,7 @@ public class Scaffold extends Module {
             }
         }
 
-        Delta delta = RotUtils.getDelta(mc.thePlayer.getRotation(), rotation);
+        Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), rotation);
 
         delta = getDeltaSpeed(delta);
         delta = RotUtils.fixDelta(delta);
@@ -280,7 +279,7 @@ public class Scaffold extends Module {
         return false;
     }
 
-    Delta getDeltaSpeed(Delta delta) {
+    Rot getDeltaSpeed(Rot delta) {
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (isTelly()) {

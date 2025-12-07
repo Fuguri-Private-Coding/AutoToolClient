@@ -103,14 +103,14 @@ public class Fucker extends Module {
             destroy();
         }
 
-        if (event instanceof Render3DEvent && renderPos != null && renderBreaking.isToggled()) {
+        if (event instanceof Render3DEvent && bedPos != null && renderBreaking.isToggled()) {
             Color bedColor = new Colors(color.getFadedColor()).withMultiplyAlphaClamp(breakTicks / 10f);
             Color bedGlowColor = new Colors(glowColor.getFadedColor()).withMultiplyAlphaClamp(breakTicks / 10f);
 
             RenderUtils.start3D();
 
-            if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.renderBed(renderPos, bedGlowColor));
-            RenderUtils.renderBed(renderPos, bedColor);
+            if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(bedPos, bedGlowColor));
+            RenderUtils.drawBlockESP(bedPos, bedColor);
 
             ColorUtils.resetColor();
             RenderUtils.stop3D();
@@ -155,12 +155,6 @@ public class Fucker extends Module {
 
         if (closestBed != null) {
             bedPos = closestBed;
-
-            IBlockState state = mc.theWorld.getBlockState(closestBed);
-            if (state.getBlock() == Blocks.bed && state.getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT) {
-                BlockPos headPos = closestBed.offset(state.getValue(BlockBed.FACING));
-                renderPos = new BlockPos[]{closestBed, headPos};
-            }
         }
     }
 

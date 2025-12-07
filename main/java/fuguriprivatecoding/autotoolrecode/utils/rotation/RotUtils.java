@@ -18,10 +18,6 @@ public class RotUtils implements Imports {
 		return getBestHitVec(getEntityExpandedBB(entity));
 	}
 
-	public static Rot getBestRotation(Entity entity) {
-		return getRotationToPoint(getBestHitVec(entity));
-	}
-
 	public static Vec3 getBestHitVec(AxisAlignedBB bb) {
 		Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
 		return bb.clampVecToInside(eyes);
@@ -127,11 +123,7 @@ public class RotUtils implements Imports {
 		return bb.clampVecToInside(from);
 	}
 
-	public static Rot getBestRotation(Vec3 from, AxisAlignedBB bb) {
-		return getRotationToPoint(getBestHitVec(from, bb));
-	}
-
-	public static Delta getDeltaToPoint(Rot startRotation, Vec3 needPoint) {
+	public static Rot getDeltaToPoint(Rot startRotation, Vec3 needPoint) {
 		Rot endRotation = getRotationToPoint(needPoint);
 		return getDelta(startRotation, endRotation);
 	}
@@ -165,7 +157,7 @@ public class RotUtils implements Imports {
 	public static Rot getNearestRotations(Rot from, AxisAlignedBB to) {
 		List<Rot> possibleRotations = getPossibleRotations(to, true);
 		possibleRotations.sort(Comparator.comparingDouble((rotation) -> {
-			Delta delta = getDelta(from, rotation);
+			Rot delta = getDelta(from, rotation);
 			return Math.hypot(Math.abs(delta.getYaw()), Math.abs(delta.getPitch()));
 		}));
 		return possibleRotations.isEmpty() ? null : possibleRotations.stream().findFirst().orElse(null);
@@ -224,41 +216,16 @@ public class RotUtils implements Imports {
 		return (float) (Math.pow(mc.gameSettings.mouseSensitivity * 0.6 + 0.2, 3) * 1.2);
 	}
 
-	public static Delta fixDelta(Rot delta) {
+	public static Rot fixDelta(Rot delta) {
 		final float gcd = getMouseGCD();
-		return new Delta(
+		return new Rot(
                 (float) MathUtils.round(delta.getYaw(), gcd),
                 (float) MathUtils.round(delta.getPitch(), gcd)
         );
 	}
 
-	public static Rot getNearestRotation(Rot current, AxisAlignedBB box) {
-		Vec3[] points = {
-				new Vec3(box.minX, box.minY, box.minZ),
-				new Vec3(box.maxX, box.minY, box.minZ),
-				new Vec3(box.minX, box.maxY, box.minZ),
-				new Vec3(box.minX, box.minY, box.maxZ),
-				new Vec3(box.maxX, box.maxY, box.minZ),
-				new Vec3(box.maxX, box.minY, box.maxZ),
-				new Vec3(box.minX, box.maxY, box.maxZ),
-				new Vec3(box.maxX, box.maxY, box.maxZ)
-		};
-
-		List<Rot> rotations = Arrays.stream(points)
-				.map(RotUtils::getRotationToPoint)
-				.toList();
-
-		double minYaw = rotations.stream().mapToDouble(Rot::getYaw).min().orElse(0D);
-		double maxYaw = rotations.stream().mapToDouble(Rot::getYaw).max().orElse(0D);
-		double minPitch = rotations.stream().mapToDouble(Rot::getPitch).min().orElse(0D);
-		double maxPitch = rotations.stream().mapToDouble(Rot::getPitch).max().orElse(0D);
-
-		return new Rot(Math.clamp(current.getYaw(), (float) minYaw, (float) maxYaw),
-				Math.clamp(current.getPitch(), (float) minPitch, (float) maxPitch));
-	}
-
-	public static Delta getDelta(Rot start, Rot end) {
-		return new Delta(
+	public static Rot getDelta(Rot start, Rot end) {
+		return new Rot(
 				MathHelper.wrapDegree(end.getYaw() - start.getYaw()),
 				end.getPitch() - start.getPitch()
 		);

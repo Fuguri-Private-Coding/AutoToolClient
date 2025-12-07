@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.utils.rotation;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -12,13 +11,6 @@ import org.lwjgl.util.vector.Vector2f;
 public class Rot {
 	public static final Rot ZERO = new Rot(0,0);
 	@Getter float yaw, pitch;
-
-	public static Rot getLastReported() {
-		return new Rot(
-				MathHelper.wrapDegree(Minecraft.getMinecraft().thePlayer.lastReportedYaw),
-				MathHelper.wrapDegree(Minecraft.getMinecraft().thePlayer.lastReportedPitch)
-		);
-	}
 
 	public static Rot fromRotationVec(Vec3 lookVec) {
 		return new Rot(
@@ -66,6 +58,20 @@ public class Rot {
 
     public Rot multiplier(float multiplier) {
         return new Rot(yaw * multiplier, pitch * multiplier);
+    }
+
+    public Rot limit(float yaw, float pitch) {
+        return new Rot(
+            MathHelper.clamp(getYaw(), -yaw, yaw),
+            MathHelper.clamp(getPitch() , -pitch, pitch)
+        );
+    }
+
+    public Rot divine(float yaw, float pitch) {
+        return new Rot(
+            getYaw() / yaw,
+            getPitch() / pitch
+        );
     }
 
 	public Rot copy() {

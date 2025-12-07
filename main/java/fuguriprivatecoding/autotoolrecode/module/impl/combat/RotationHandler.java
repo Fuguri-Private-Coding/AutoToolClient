@@ -8,28 +8,44 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
+import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import net.minecraft.util.MathHelper;
 
 @ModuleInfo(name = "RotationHandler", category = Category.COMBAT, description = "Плавный разворот ротации при ее изменении.")
 public class RotationHandler extends Module {
 
     final DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 1, 180, 30, 1);
     final DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 1, 180, 30, 1);
+    final DoubleSlider mixDelta = new DoubleSlider("MixDelta", this, 0, 1, 1, 0.01f);
+
+    Rot lastDelta = Rot.ZERO;
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof TickEvent && CameraRot.INST.needBackRotate()) {
-            Delta delta = RotUtils.getDelta(mc.thePlayer.getRotation(), CameraRot.INST);
-            if (isToggled()) delta = delta.limit((float) yawSpeed.getRandomizedDoubleValue(), (float) pitchSpeed.getRandomizedDoubleValue());
+        if (CameraRot.INST.needBackRotate()) {
+            if (event instanceof TickEvent) {
+                Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), CameraRot.INST);
+                if (isToggled()) delta = delta.limit((float) yawSpeed.getRandomizedDoubleValue(), (float) pitchSpeed.getRandomizedDoubleValue());
 
-            mc.thePlayer.moveRotation(delta.fix());
+                delta.setYaw(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
+                delta.setPitch(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
 
-            delta = RotUtils.getDelta(mc.thePlayer.getRotation(), CameraRot.INST);
+                lastDelta = delta;
 
-            if (delta.hypot() <= RotUtils.getMouseGCD()) {
-                CameraRot.INST.setUnlocked(false);
+                mc.thePlayer.moveRotation(delta.fix());
+
+                delta = RotUtils.getDelta(mc.thePlayer.getRotation(), CameraRot.INST);
+
+                if (delta.hypot() <= RotUtils.getMouseGCD()) {
+                    CameraRot.INST.setUnlocked(false);
+                }
+            }
+
+            if (event instanceof MoveEvent e) {
+                MoveUtils.moveFix(e, MoveUtils.getDirection(CameraRot.INST.getYaw(), e.getForward(), e.getStrafe()));
             }
         }
     }
