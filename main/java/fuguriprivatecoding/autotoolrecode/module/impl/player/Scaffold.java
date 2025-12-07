@@ -8,8 +8,6 @@ import fuguriprivatecoding.autotoolrecode.handle.Player;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.RotationData;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.player.ItemUtils;
@@ -168,11 +166,16 @@ public class Scaffold extends Module {
                 case "JumpSprint" -> mc.thePlayer.setSprinting(mc.gameSettings.keyBindJump.isKeyDown() && MoveUtils.isMoving());
                 case "None" -> mc.thePlayer.setSprinting(false);
             }
+
         }
 
         if (event instanceof JumpEvent e) {
-            float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : mc.thePlayer.rotationYaw;
-            e.setYaw(!sprintMode.is("JumpSprint") ? mc.thePlayer.rotationYaw : yaw);
+            float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
+            float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw), 45);
+
+            float needYaw = strictYaw.isToggled() ? roundedYaw : yaw;
+
+            e.setYaw(!sprintMode.is("JumpSprint") ? mc.thePlayer.rotationYaw : needYaw);
         }
         if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.RIGHT) e.cancel();
     }
@@ -205,7 +208,7 @@ public class Scaffold extends Module {
     }
 
     void rotate() {
-        float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : mc.thePlayer.rotationYaw;
+        float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
         float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw + 180), 45);
 
         boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.6) != Math.floor(mc.thePlayer.posX) ||
@@ -213,12 +216,14 @@ public class Scaffold extends Module {
 
         float needYaw = strictYaw.isToggled() ? roundedYaw - 180 : yaw;
 
+        boolean isDiagonally = MoveUtils.isMoveDiagonally(needYaw);
+
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (isTelly()) {
-                    rotation = new Rot(yaw, lastRotation.getPitch());
+                    rotation = new Rot(needYaw, lastRotation.getPitch());
                 } else {
-                    float offset = MoveUtils.isMoveDiagonally(needYaw) ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
+                    float offset = isDiagonally ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
 
                     rotation = getBestRotation(needYaw, offset, sortYawOffset.isToggled());
                 }
@@ -243,7 +248,7 @@ public class Scaffold extends Module {
             }
 
             case "Normal" -> {
-                float offset = MoveUtils.isMoveDiagonally(needYaw) ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
+                float offset = isDiagonally ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
 
                 rotation = getBestRotation(needYaw, offset, sortYawOffset.isToggled());
             }
@@ -274,7 +279,7 @@ public class Scaffold extends Module {
 
     boolean isTelly() {
         if (MoveUtils.isMoving()) {
-            if (mc.gameSettings.keyBindJump.isKeyDown()) return mc.thePlayer.onGround || Player.airTicks < (speedTelly.isToggled() ? 0 : airTicks.getRandomizedIntValue());
+            if (mc.gameSettings.keyBindJump.isKeyDown()) return Player.groundTicks > 2 || Player.airTicks < (speedTelly.isToggled() ? 0 : airTicks.getRandomizedIntValue());
             return !mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ));
         }
         return false;
