@@ -8,6 +8,8 @@ import fuguriprivatecoding.autotoolrecode.handle.Player;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.RotationData;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.player.ItemUtils;
@@ -93,7 +95,6 @@ public class Scaffold extends Module {
     @Override
     public void onDisable() {
         resetValues();
-        CameraRot.INST.setWillChange(false);
     }
 
     @Override
@@ -101,8 +102,6 @@ public class Scaffold extends Module {
         if (mc.thePlayer.isUsingItem()) {
             mc.thePlayer.clearItemInUse();
         }
-
-        CameraRot.INST.setUnlocked(true);
     }
 
     @Override
@@ -180,6 +179,7 @@ public class Scaffold extends Module {
 
     private void resetValues() {
         mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+        CameraRot.INST.setWillChange(false);
 
         targetBlock = null;
     }
@@ -256,6 +256,7 @@ public class Scaffold extends Module {
 
         lastDelta = delta.hypot();
 
+        CameraRot.INST.setUnlocked(true);
         mc.thePlayer.moveRotation(delta);
     }
 

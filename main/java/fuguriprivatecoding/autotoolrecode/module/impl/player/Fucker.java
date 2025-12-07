@@ -25,7 +25,6 @@ import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
@@ -66,7 +65,6 @@ public class Fucker extends Module {
     public void onDisable() {
         super.onDisable();
         reset();
-        CameraRot.INST.setWillChange(false);
     }
 
     @Override
@@ -96,6 +94,8 @@ public class Fucker extends Module {
 
                 CameraRot.INST.setUnlocked(true);
                 mc.thePlayer.moveRotation(delta.fix());
+            } else {
+                CameraRot.INST.setWillChange(false);
             }
         }
 

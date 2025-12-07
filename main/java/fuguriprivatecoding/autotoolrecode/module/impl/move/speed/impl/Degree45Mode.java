@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.move.speed.impl;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
 import fuguriprivatecoding.autotoolrecode.module.impl.move.Speed;
 import fuguriprivatecoding.autotoolrecode.module.impl.move.speed.AbstractSpeedMode;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
@@ -11,7 +12,6 @@ import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
-import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -28,12 +28,12 @@ public class Degree45Mode extends AbstractSpeedMode {
 
     @Override
     public void onDisable(Speed speed) {
-        CameraRot.INST.setWillChange(false);
+        if (!Modules.getModule(Scaffold.class).isToggled() && !Modules.getModule(KillAura.class).isToggled()) CameraRot.INST.setWillChange(false);
     }
 
     @Override
     public void handleEvent(Event event, Speed speed) {
-        if (Modules.getModule(Scaffold.class).isToggled() || TargetStorage.getTarget() != null) return;
+        if (Modules.getModule(Scaffold.class).isToggled() || Modules.getModule(KillAura.class).isToggled()) return;
 
         if (event instanceof TickEvent) {
             float yaw = MoveUtils.getDir();

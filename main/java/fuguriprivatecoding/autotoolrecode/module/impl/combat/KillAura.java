@@ -90,7 +90,7 @@ public class KillAura extends Module {
 
     @Override
     public void onDisable() {
-        CameraRot.INST.setWillChange(false);
+        if (!Modules.getModule(Scaffold.class).isToggled()) CameraRot.INST.setWillChange(false);
         TargetStorage.setTarget(null);
     }
 
