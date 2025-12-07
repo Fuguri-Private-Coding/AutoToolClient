@@ -6,15 +6,13 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "FreeLook", category = Category.VISUAL, description = "Позволяет осматриватся во круг.")
 public class FreeLook extends Module {
 
     CheckBox changePerspective = new CheckBox("ChangePerspective", this, true);
-
-    public float rotYaw = 0;
-    public float rotPitch = 0;
 
     private int previousPerspective;
 
@@ -23,6 +21,7 @@ public class FreeLook extends Module {
         if (changePerspective.isToggled()) {
             previousPerspective = mc.gameSettings.thirdPersonView;
         }
+        CameraRot.INST.setUnlocked(true);
     }
 
     @Override
@@ -31,6 +30,7 @@ public class FreeLook extends Module {
             mc.gameSettings.thirdPersonView = previousPerspective;
             previousPerspective = 0;
         }
+        CameraRot.INST.setUnlocked(false);
     }
 
     @Override

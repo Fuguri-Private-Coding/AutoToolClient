@@ -1,6 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.player.move;
 
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import lombok.experimental.UtilityClass;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
@@ -45,7 +45,7 @@ public class MoveUtils implements Imports {
 
     public static float getDir() {
 
-        float rotationYaw = mc.thePlayer.rotationYaw;
+        float rotationYaw = CameraRot.INST.getYaw();
 
         boolean forward = mc.gameSettings.keyBindForward.isKeyDown();
         boolean backward = mc.gameSettings.keyBindBack.isKeyDown();
@@ -172,7 +172,7 @@ public class MoveUtils implements Imports {
                 if (forward == 0f && strafe == 0)
                     continue;
 
-                float diff = Math.abs(MathHelper.wrapDegree(targetYaw - getDirection(Rot.getServerRotation().getYaw(), forward, strafe)));
+                float diff = Math.abs(MathHelper.wrapDegree(targetYaw - getDirection(mc.thePlayer.rotationYaw, forward, strafe)));
                 if (diff < closestDiff) {
                     closestDiff = diff;
                     e.setForward(forward);

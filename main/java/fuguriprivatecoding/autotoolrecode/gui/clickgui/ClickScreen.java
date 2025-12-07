@@ -742,7 +742,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offsetModuleDesc + 9;
             module.setHovered(moduleCondition && clickedModule == null);
 
-            module.getDescAnim().update(1.5f, Easing.OUT_BACK);
+            module.getDescAnim().update(2f, Easing.OUT_BACK);
             module.getDescAnim().setEnd(module.isHovered());
 
             if (!module.getDescription().equalsIgnoreCase("") && module.getDescAnim().getValue() != 0) {

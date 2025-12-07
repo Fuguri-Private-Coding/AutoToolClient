@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -35,7 +36,6 @@ import java.util.function.BooleanSupplier;
 public class KillAura extends Module {
 
     final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 8, 6, 0.1f);
-    final FloatSetting rotateDistance = new FloatSetting("RotateDistance", this, 3, 8, 6, 0.1f);
     final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
 
     final MultiMode targets = new MultiMode("Targets", this)
@@ -56,7 +56,6 @@ public class KillAura extends Module {
     DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0, 180, 90, 1);
     DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0, 180, 90, 1);
 
-    final CheckBox gcd = new CheckBox("GCDFix", this);
     final CheckBox smartAim = new CheckBox("SmartAim", this);
 
     final CheckBox teleportPredictFix = new CheckBox("TeleportPredictFix", this);
@@ -76,12 +75,10 @@ public class KillAura extends Module {
         1, 5, 1.5f, 0.1f
     );
 
-    final CheckBox lockView = new CheckBox("LockView", this);
-
     DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
 
     final Mode moveFix = new Mode("MoveFix", this)
-        .addModes("OFF", "Legit", "Silent", "Target")
+        .addModes("OFF", "Legit", "Silent")
         .setMode("Silent");
 
     final StopWatch clickTimer = new StopWatch();
@@ -93,6 +90,7 @@ public class KillAura extends Module {
 
     @Override
     public void onDisable() {
+        CameraRot.INST.setWillChange(false);
         TargetStorage.setTarget(null);
     }
 
@@ -100,22 +98,22 @@ public class KillAura extends Module {
     public void onEvent(Event event) {
         if (event instanceof TickEvent) TargetStorage.setTarget(findNewTarget());
         EntityLivingBase target = TargetStorage.getTarget();
-        if (Modules.getModule(Scaffold.class).isToggled() || target == null) return;
+        if (Modules.getModule(Scaffold.class).isToggled()) return;
 
-        if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
-            if (TimerRange.balance == 0) {
-                if (clickTimer.reachedMS(delay)) {
-                    clickTimer.reset();
-                    Clicks.addClick();
-                    delay = Math.round(1000f / CPS.getRandomizedIntValue());
+        if (target != null) {
+            if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
+                if (TimerRange.balance == 0) {
+                    if (clickTimer.reachedMS(delay)) {
+                        clickTimer.reset();
+                        Clicks.addClick();
+                        delay = Math.round(1000f / CPS.getRandomizedIntValue());
+                    }
                 }
             }
-        }
-
-        if (DistanceUtils.getDistance(target) < rotateDistance.getValue()) {
-            Rot lr = Rot.getServerRotation();
 
             if (event instanceof TickEvent) {
+                Rot lr = mc.thePlayer.getRotation();
+
                 boolean teleport = (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled();
 
                 AxisAlignedBB box = RotUtils.getHitBox(
@@ -172,47 +170,19 @@ public class KillAura extends Module {
                 }
 
                 lastDelta = delta.copy();
+                delta = RotUtils.fixDelta(delta);
 
-                if (gcd.isToggled()) delta = RotUtils.fixDelta(delta);
-                lr = lr.add(delta);
-
-                Rot.setServerRotation(lr);
-
-                if (lockView.isToggled()) {
-                    mc.thePlayer.rotationYaw = Rot.getServerRotation().getYaw();
-                    mc.thePlayer.rotationPitch = Rot.getServerRotation().getPitch();
-                }
+                CameraRot.INST.setUnlocked(true);
+                mc.thePlayer.moveRotation(delta);
             }
 
-            if (event instanceof MotionEvent e) {
-                e.setYaw(lr.getYaw());
-                e.setPitch(lr.getPitch());
-            }
-
-            if (event instanceof LookEvent e) {
-                e.setYaw(lr.getYaw());
-                e.setPitch(lr.getPitch());
-            }
-
-            if (event instanceof ChangeHeadRotationEvent e) {
-                e.setYaw(lr.getYaw());
-                e.setPitch(lr.getPitch());
-            }
-
-            if (event instanceof UpdateBodyRotationEvent e) {
-                e.setYaw(lr.getYaw());
-            }
-
-            if (!moveFix.getMode().equalsIgnoreCase("OFF")) {
-                if (event instanceof MoveFlyingEvent e) e.setYaw(lr.getYaw());
-                if (event instanceof JumpEvent e) e.setYaw(lr.getYaw());
+            if (moveFix.is("OFF")) {
+                if (event instanceof MoveFlyingEvent e) e.setYaw(CameraRot.INST.getYaw());
+                if (event instanceof JumpEvent e) e.setYaw(CameraRot.INST.getYaw());
             }
 
             if (event instanceof MoveEvent e) {
-                switch (moveFix.getMode()) {
-                    case "Silent" -> MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
-                    case "Target" -> MoveUtils.moveFix(e, RotUtils.getRotationToPoint(target.getPositionVector()).getYaw());
-                }
+                if (moveFix.is("Silent")) MoveUtils.moveFix(e, MoveUtils.getDirection(CameraRot.INST.getYaw(), e.getForward(), e.getStrafe()));
             }
         }
     }
@@ -233,7 +203,7 @@ public class KillAura extends Module {
         if (needRot == null) return null;
 
         if (smartAim.isToggled()) {
-            MovingObjectPosition hit = RayCastUtils.rayCast(needRot, rotateDistance.getValue());
+            MovingObjectPosition hit = RayCastUtils.rayCast(needRot, findDistance.getValue());
 
             if (mc.thePlayer.canVecBeSeen(hit.hitVec)) {
                 needRot = RotUtils.getPossibleBestRotation(needRot, box);
@@ -267,8 +237,14 @@ public class KillAura extends Module {
             case "HurtTime" -> entityList.sort(Comparator.comparingDouble(ent -> ent.hurtTime));
         }
 
-        if (entityList.isEmpty()) return null;
+        EntityLivingBase newTarget = null;
 
-        return entityList.getFirst();
+        if (!entityList.isEmpty()) {
+            newTarget = entityList.getFirst();
+        }
+
+        if (TargetStorage.getTarget() != null && newTarget == null) CameraRot.INST.setWillChange(false);
+
+        return newTarget;
     }
 }

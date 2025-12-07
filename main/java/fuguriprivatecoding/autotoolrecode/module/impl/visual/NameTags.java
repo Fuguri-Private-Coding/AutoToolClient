@@ -17,6 +17,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
@@ -89,8 +90,8 @@ public class NameTags extends Module {
         glPushMatrix();
         glTranslated(pos.xCoord, pos.yCoord, pos.zCoord);
         glNormal3f(0.0f, 1.0f, 0.0f);
-        glRotatef(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f);
-        glRotatef(mc.renderManager.playerViewX, 1.0f, 0.0f, 0.0f);
+        glRotatef(-CameraRot.INST.getYaw(), 0.0f, 1.0f, 0.0f);
+        glRotatef(CameraRot.INST.getPitch(), 1.0f, 0.0f, 0.0f);
         glScalef(-scale, -scale, scale);
 
         float nameWidth = (float) fontRenderer.getStringWidth(name);

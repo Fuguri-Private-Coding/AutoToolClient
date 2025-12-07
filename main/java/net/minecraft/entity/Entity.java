@@ -5,8 +5,10 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.FreeLook;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MoveFlyingEvent;
@@ -44,6 +46,8 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import org.lwjgl.util.vector.Vector3f;
+
+import static fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports.mc;
 
 public abstract class Entity implements ICommandSender
 {
@@ -247,15 +251,12 @@ public abstract class Entity implements ICommandSender
     }
 
     public void setAngles(float yaw, float pitch) {
-        FreeLook freeLook = Modules.getModule(FreeLook.class);
-        if (Minecraft.getMinecraft().thePlayer == this) {
-            if (freeLook.isToggled()) {
-                freeLook.rotYaw += yaw * 0.15f;
-                freeLook.rotPitch = Math.clamp(freeLook.rotPitch - pitch * 0.15f, -90, 90);
+        CameraRot camera = CameraRot.INST;
+        if (this == mc.thePlayer) {
+            if (camera.isUnlocked()) {
+                camera.setYaw(camera.getYaw() + yaw * 0.15f);
+                camera.setPitch(Math.clamp(camera.getPitch() - pitch * 0.15f, -90, 90));
                 return;
-            } else {
-                freeLook.rotYaw = rotationYaw;
-                freeLook.rotPitch = rotationPitch;
             }
         }
 
@@ -266,6 +267,12 @@ public abstract class Entity implements ICommandSender
         this.rotationPitch = MathHelper.clamp(this.rotationPitch, -90.0F, 90.0F);
         this.prevRotationPitch += this.rotationPitch - f;
         this.prevRotationYaw += this.rotationYaw - f1;
+
+        if (!camera.isUnlocked() && this == mc.thePlayer) {
+            float delta = MathHelper.wrapDegree(rotationYaw - camera.getYaw());
+            camera.setYaw(camera.getYaw() + delta);
+            camera.setPitch(rotationPitch);
+        }
     }
 
     public void onUpdate()

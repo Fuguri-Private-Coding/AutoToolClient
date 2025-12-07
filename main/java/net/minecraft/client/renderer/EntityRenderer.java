@@ -20,6 +20,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -656,9 +657,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 GlStateManager.rotate(f6, 0.0F, 1.0F, 0.0F);
             }
         } else if (!this.mc.gameSettings.debugCamEnable) {
-            FreeLook freeLook = Modules.getModule(FreeLook.class);
-            float pitch = freeLook.isToggled() ? freeLook.rotPitch : entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
-            float yaw = freeLook.isToggled() ? freeLook.rotYaw : entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks;
+            CameraRot cameraRot = CameraRot.INST;
+            float pitch = cameraRot.isUnlocked() ? cameraRot.getPitch() : entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+            float yaw = cameraRot.isUnlocked() ? cameraRot.getYaw() : entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks;
 
             GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
 

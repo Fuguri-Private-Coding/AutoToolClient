@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -19,7 +20,6 @@ import net.minecraft.util.MovingObjectPosition;
 public class Dot extends Module {
 
     final FloatSetting size = new FloatSetting("Size", this, 0.1f, 1f, 0.5f, 0.1f) {};
-    final CheckBox onlyChangeRotationModules = new CheckBox("OnlyChangeRotationModules", this, true);
 
     public final ColorSetting color = new ColorSetting("Color", this);
 
@@ -31,7 +31,7 @@ public class Dot extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (!Rot.isChanged() && onlyChangeRotationModules.isToggled()) { return; }
+        if (!CameraRot.INST.isUnlocked()) { return; }
         if (event instanceof Render3DEvent) {
             MovingObjectPosition mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks),6,6, prevPos.add(pos.subtract(prevPos).multiplier(mc.timer.renderPartialTicks)), mc.timer.renderPartialTicks);
             if (mouse == null) return;

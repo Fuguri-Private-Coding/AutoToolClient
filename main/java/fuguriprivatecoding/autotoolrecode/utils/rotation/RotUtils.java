@@ -159,7 +159,7 @@ public class RotUtils implements Imports {
 	public static float getFovToEntity(Entity entity) {
 		Vec3 delta = entity.getPositionVector().subtract(mc.thePlayer.getPositionEyes(1.0F));
 		float yaw = (float) (Math.toDegrees(MathHelper.atan2(delta.zCoord, delta.xCoord))) - 90;
-		return Math.abs(MathHelper.wrapDegree(yaw - mc.thePlayer.rotationYaw));
+		return Math.abs(MathHelper.wrapDegree(yaw - CameraRot.INST.getYaw()));
 	}
 
 	public static Rot getNearestRotations(Rot from, AxisAlignedBB to) {

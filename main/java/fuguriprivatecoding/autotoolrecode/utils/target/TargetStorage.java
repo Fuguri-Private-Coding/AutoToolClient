@@ -20,7 +20,7 @@ public class TargetStorage implements Imports {
             return target;
         }
 
-        MovingObjectPosition movingObjectPosition = RayCastUtils.rayCast(entityReach, blockReach, Rot.getServerRotation());
+        MovingObjectPosition movingObjectPosition = RayCastUtils.rayCast(entityReach, blockReach, mc.thePlayer.getRotation());
         if (movingObjectPosition != null && movingObjectPosition.entityHit instanceof EntityLivingBase base) {
             return base;
         }

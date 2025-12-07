@@ -8,7 +8,6 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
@@ -19,6 +18,7 @@ import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -66,6 +66,7 @@ public class Fucker extends Module {
     public void onDisable() {
         super.onDisable();
         reset();
+        CameraRot.INST.setWillChange(false);
     }
 
     @Override
@@ -90,7 +91,11 @@ public class Fucker extends Module {
 
             if (bedPos != null) {
                 Rot needRot = RotUtils.calculate(new Vector3d(bedPos.getX(), bedPos.getY(), bedPos.getZ()), getEnumFacing(bedPos));
-                Rot.setServerRotation(needRot.fix());
+
+                Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), needRot);
+
+                CameraRot.INST.setUnlocked(true);
+                mc.thePlayer.moveRotation(delta.fix());
             }
         }
 
@@ -112,27 +117,8 @@ public class Fucker extends Module {
         }
 
         if (bedPos != null) {
-            if (event instanceof MotionEvent e) {
-                e.setYaw(Rot.getServerRotation().getYaw());
-                e.setPitch(Rot.getServerRotation().getPitch());
-            }
-
             if (event instanceof MoveEvent e) {
-                MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
-            }
-
-            if (event instanceof JumpEvent e) e.setYaw(Rot.getServerRotation().getYaw());
-            if (event instanceof UpdateBodyRotationEvent e) e.setYaw(Rot.getServerRotation().getYaw());
-            if (event instanceof MoveFlyingEvent e) e.setYaw(Rot.getServerRotation().getYaw());
-
-            if (event instanceof LookEvent e) {
-                e.setYaw(Rot.getServerRotation().getYaw());
-                e.setPitch(Rot.getServerRotation().getPitch());
-            }
-
-            if (event instanceof ChangeHeadRotationEvent e) {
-                e.setYaw(Rot.getServerRotation().getYaw());
-                e.setPitch(Rot.getServerRotation().getPitch());
+                MoveUtils.moveFix(e, MoveUtils.getDirection(CameraRot.INST.getYaw(), e.getForward(), e.getStrafe()));
             }
         }
     }

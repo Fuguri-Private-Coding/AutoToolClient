@@ -6,6 +6,8 @@ import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEventPost;
 import fuguriprivatecoding.autotoolrecode.event.events.player.SprintEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.UpdateEvent;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Delta;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
@@ -98,6 +100,20 @@ public class EntityPlayerSP extends AbstractClientPlayer {
         this.statWriter = statFile;
         this.mc = mcIn;
         this.dimension = 0;
+    }
+
+    public Rot getRotation() {
+        return new Rot(rotationYaw, rotationPitch);
+    }
+
+    public void moveRotation(Rot delta) {
+        moveRotation(delta.getYaw(), delta.getPitch());
+    }
+
+    public void moveRotation(float deltaYaw, float deltaPitch) {
+        rotationYaw += deltaYaw;
+        rotationPitch += deltaPitch;
+        rotationPitch = Math.clamp(rotationPitch, -90, 90);
     }
 
     public void stopMotion() {

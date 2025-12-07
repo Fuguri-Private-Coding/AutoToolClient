@@ -14,7 +14,8 @@ import static org.lwjgl.opengl.GL11.*;
 @Setter
 public class ScissorUtils implements Imports {
 
-    private static boolean debugScissor;
+    @Setter
+    public static boolean debugScissor;
 
     public static void enableScissor() {
         glEnable(GL_SCISSOR_TEST);

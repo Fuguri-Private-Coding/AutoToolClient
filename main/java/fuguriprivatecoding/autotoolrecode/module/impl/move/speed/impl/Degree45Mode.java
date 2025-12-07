@@ -8,16 +8,29 @@ import fuguriprivatecoding.autotoolrecode.module.impl.move.speed.AbstractSpeedMo
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
-import net.minecraft.util.MathHelper;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Degree45Mode extends AbstractSpeedMode {
-    
+
     public Degree45Mode() {
         super("45Degree");
     }
-    
+
+    @Override
+    public void onEnable(Speed speed) {
+
+    }
+
+    @Override
+    public void onDisable(Speed speed) {
+        CameraRot.INST.setWillChange(false);
+    }
+
     @Override
     public void handleEvent(Event event, Speed speed) {
         if (Modules.getModule(Scaffold.class).isToggled() || TargetStorage.getTarget() != null) return;
@@ -29,38 +42,19 @@ public class Degree45Mode extends AbstractSpeedMode {
                 yaw += 45;
             }
 
-            Rot rotation = new Rot(MathHelper.wrapDegree(yaw), mc.thePlayer.rotationPitch);
-            Rot.setServerRotation(rotation.fix());
+            Rot rotation = new Rot(yaw, CameraRot.INST.getPitch());
+
+            Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), rotation);
+            CameraRot.INST.setUnlocked(true);
+            mc.thePlayer.moveRotation(delta.fix());
         }
         
         if (event instanceof MoveEvent e) {
             MoveUtils.moveFix(e, MoveUtils.getDirection(
-                mc.thePlayer.rotationYaw,
+                CameraRot.INST.getYaw(),
                 e.getForward(), 
                 e.getStrafe()
             ));
         }
-
-        if (event instanceof MotionEvent e) {
-            e.setYaw(Rot.getServerRotation().getYaw());
-            e.setPitch(Rot.getServerRotation().getPitch());
-        }
-
-        if (event instanceof LookEvent e) {
-            e.setYaw(Rot.getServerRotation().getYaw());
-            e.setPitch(Rot.getServerRotation().getPitch());
-        }
-
-        if (event instanceof ChangeHeadRotationEvent e) {
-            e.setYaw(Rot.getServerRotation().getYaw());
-            e.setPitch(Rot.getServerRotation().getPitch());
-        }
-
-        if (event instanceof UpdateBodyRotationEvent e) {
-            e.setYaw(Rot.getServerRotation().getYaw());
-        }
-
-        if (event instanceof MoveFlyingEvent e) e.setYaw(Rot.getServerRotation().getYaw());
-        if (event instanceof JumpEvent e) e.setYaw(Rot.getServerRotation().getYaw());
     }
 }

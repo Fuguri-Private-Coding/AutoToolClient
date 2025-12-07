@@ -16,6 +16,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -93,6 +94,7 @@ public class Scaffold extends Module {
     @Override
     public void onDisable() {
         resetValues();
+        CameraRot.INST.setWillChange(false);
     }
 
     @Override
@@ -100,6 +102,8 @@ public class Scaffold extends Module {
         if (mc.thePlayer.isUsingItem()) {
             mc.thePlayer.clearItemInUse();
         }
+
+        CameraRot.INST.setUnlocked(true);
     }
 
     @Override
@@ -133,7 +137,7 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof MoveEvent e) {
-            MoveUtils.moveFix(e, MoveUtils.getDirection(mc.thePlayer.rotationYaw, e.getForward(), e.getStrafe()));
+            MoveUtils.moveFix(e, MoveUtils.getDirection(CameraRot.INST.getYaw(), e.getForward(), e.getStrafe()));
 
             switch (rotMode.getMode()) {
                 case "GodBridge", "Normal" -> {
@@ -168,28 +172,11 @@ public class Scaffold extends Module {
             }
         }
 
-        if (event instanceof MotionEvent e) {
-            e.setYaw(Rot.getServerRotation().getYaw());
-            e.setPitch(Rot.getServerRotation().getPitch());
-        }
-
         if (event instanceof JumpEvent e) {
             float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : mc.thePlayer.rotationYaw;
-            e.setYaw(!sprintMode.is("JumpSprint") ? Rot.getServerRotation().getYaw() : yaw);
+            e.setYaw(!sprintMode.is("JumpSprint") ? mc.thePlayer.rotationYaw : yaw);
         }
-        if (event instanceof UpdateBodyRotationEvent e) e.setYaw(Rot.getServerRotation().getYaw());
-        if (event instanceof MoveFlyingEvent e) e.setYaw(Rot.getServerRotation().getYaw());
         if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.RIGHT) e.cancel();
-
-        if (event instanceof LookEvent e) {
-            e.setYaw(Rot.getServerRotation().getYaw());
-            e.setPitch(Rot.getServerRotation().getPitch());
-        }
-
-        if (event instanceof ChangeHeadRotationEvent e) {
-            e.setYaw(Rot.getServerRotation().getYaw());
-            e.setPitch(Rot.getServerRotation().getPitch());
-        }
     }
 
     private void resetValues() {
@@ -199,7 +186,7 @@ public class Scaffold extends Module {
     }
 
     void legitPlace() {
-        MovingObjectPosition mouseOver = RayCastUtils.rayCast(6, 4.5f, Rot.getServerRotation());
+        MovingObjectPosition mouseOver = RayCastUtils.rayCast(6, 4.5f, mc.thePlayer.getRotation());
 
         if (mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
             && isSameY(mouseOver)
@@ -263,16 +250,14 @@ public class Scaffold extends Module {
             }
         }
 
-        Delta delta = RotUtils.getDelta(Rot.getServerRotation(), rotation);
+        Delta delta = RotUtils.getDelta(mc.thePlayer.getRotation(), rotation);
 
         delta = getDeltaSpeed(delta);
         delta = RotUtils.fixDelta(delta);
 
         lastDelta = delta.hypot();
 
-        Rot rot = Rot.getServerRotation().add(delta);
-
-        Rot.setServerRotation(rot);
+        mc.thePlayer.moveRotation(delta);
     }
 
     boolean isClutch() {
@@ -346,7 +331,7 @@ public class Scaffold extends Module {
 
         if (dataList.isEmpty()) return lastRotation.getPitch();
 
-        dataList.sort(Comparator.comparingDouble(data -> Math.abs(Rot.getServerRotation().getPitch()) - data.rotation().getPitch()));
+        dataList.sort(Comparator.comparingDouble(data -> Math.abs(mc.thePlayer.rotationPitch) - data.rotation().getPitch()));
         RotationData rotationData = dataList.getFirst();
 
         if (handleMouse) lastRotation = rotationData.rotation();
@@ -385,11 +370,11 @@ public class Scaffold extends Module {
         }
 
         validRotations.sort(Comparator.comparingDouble(data -> {
-            double sortYawOffset = sortOffset ? finalOffsetYaw : Rot.getServerRotation().getYaw();
+            double sortYawOffset = sortOffset ? finalOffsetYaw : mc.thePlayer.rotationYaw;
             double sortDistance = sortOffset ? 0 : DistanceUtils.getDistance(data.hit().hitVec) * 50;
 
             double yawDiff = MathHelper.wrapDegree(sortYawOffset - data.rotation().getYaw());
-            double pitchDiff = Rot.getServerRotation().getPitch() - data.rotation().getPitch();
+            double pitchDiff = mc.thePlayer.rotationPitch - data.rotation().getPitch();
 
             return Math.hypot(yawDiff, pitchDiff) + sortDistance;
         }));
