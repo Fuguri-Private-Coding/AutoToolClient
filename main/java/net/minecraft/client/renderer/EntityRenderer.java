@@ -17,6 +17,7 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
+import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
