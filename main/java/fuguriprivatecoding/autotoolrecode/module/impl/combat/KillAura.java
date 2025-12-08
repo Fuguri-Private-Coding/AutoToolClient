@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
@@ -81,6 +82,10 @@ public class KillAura extends Module {
         .addModes("OFF", "Legit", "Silent")
         .setMode("Silent");
 
+    final MultiMode autoDisableIf = new MultiMode("AutoDisableIf", this)
+        .addModes("ChangeWorld", "Death")
+        ;
+
     final StopWatch clickTimer = new StopWatch();
     private long delay;
 
@@ -96,7 +101,15 @@ public class KillAura extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof TickEvent) TargetStorage.setTarget(findNewTarget());
+        if (event instanceof WorldChangeEvent && autoDisableIf.get("ChangeWorld")) {
+            setToggled(false);
+        }
+
+        if (event instanceof TickEvent) {
+            if (mc.thePlayer.isDead && autoDisableIf.get("Death")) setToggled(false);
+            TargetStorage.setTarget(findNewTarget());
+        }
+
         EntityLivingBase target = TargetStorage.getTarget();
         if (Modules.getModule(Scaffold.class).isToggled()) return;
 

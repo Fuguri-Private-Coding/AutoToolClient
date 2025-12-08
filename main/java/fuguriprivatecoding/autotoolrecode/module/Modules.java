@@ -26,7 +26,9 @@ public class Modules {
 		register(
 			new AutoSoup(),
 			new KillAura(),
+            new AspectRatio(),
 			new AutoWater(),
+            new AutoRegister(),
 			new BridgeAssist(),
 			new FovModifier(),
 			new Trajectory(),

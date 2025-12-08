@@ -7,6 +7,7 @@ import com.mojang.authlib.GameProfile;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import fuguriprivatecoding.autotoolrecode.event.events.player.TeleportEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.ChatMessageEvent;
 import fuguriprivatecoding.autotoolrecode.gui.main.MainScreen;
 import io.netty.buffer.Unpooled;
 import java.io.File;
@@ -660,7 +661,10 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         if (packetIn.getType() == 2) {
             this.gameController.ingameGUI.setRecordPlaying(packetIn.getChatComponent(), false);
         } else {
-            this.gameController.ingameGUI.getChatGUI().printChatMessage(packetIn.getChatComponent());
+            ChatMessageEvent messageEvent = new ChatMessageEvent(packetIn.getChatComponent());
+            messageEvent.callNoWorldNoPlayer();
+
+            if (!messageEvent.isCanceled()) this.gameController.ingameGUI.getChatGUI().printChatMessage(messageEvent.getMessage());
         }
     }
 
