@@ -64,6 +64,7 @@ public class Fucker extends Module {
     @Override
     public void onDisable() {
         super.onDisable();
+        CameraRot.INST.setWillChange(false);
         reset();
     }
 
@@ -94,8 +95,6 @@ public class Fucker extends Module {
 
                 CameraRot.INST.setUnlocked(true);
                 mc.thePlayer.moveRotation(delta.fix());
-            } else {
-                CameraRot.INST.setWillChange(false);
             }
         }
 
