@@ -31,6 +31,7 @@ public class Modules {
             new AutoRegister(),
 			new BridgeAssist(),
 			new FovModifier(),
+            new Notifications(),
 			new Trajectory(),
             new FastBreak(),
             new EntityColor(),

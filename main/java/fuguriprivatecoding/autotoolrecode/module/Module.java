@@ -6,10 +6,13 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Notifications;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+
+import java.lang.management.MemoryNotificationInfo;
 import java.util.ArrayList;
 import java.util.List;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
@@ -56,7 +59,8 @@ public class Module implements Imports, SettingAble, EventListener {
 		}
 
         slideAnim.setEnd(toggled);
-	}
+	    if (!Client.INST.isStarting()) Notifications.addNotification("§9" + getName(), toggled);
+    }
 
 	void playSound(float volume) {
 		if (Client.INST.isStarting() || name.equalsIgnoreCase("ClickGui")) return;

@@ -6,7 +6,7 @@ import net.minecraft.util.ChatComponentText;
 
 public class ClientUtils implements Imports {
 
-    static String prefixLog = "§f[§9AutoTool§f] ";
+    public static String prefixLog = "§f[§9AutoTool§f] ";
 
     /**
      * @param message Объект, который будет выведен в чат игры.

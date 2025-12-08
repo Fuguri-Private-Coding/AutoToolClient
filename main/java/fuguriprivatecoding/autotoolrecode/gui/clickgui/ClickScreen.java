@@ -747,14 +747,14 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
             if (!module.getDescription().equalsIgnoreCase("") && module.getDescAnim().getValue() != 0) {
                 float descriptionWidth = fontRenderer.getStringWidth(module.getDescription());
-                ScaleUtils.startScaling(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 10, descriptionWidth + 6, 14, module.getDescAnim().getValue());
+                ScaleUtils.startScaling(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 5, descriptionWidth + 6, 14, module.getDescAnim().getValue());
 
                 float alphaDesc = module.getDescAnim().getValue();
 
                 Color bgColorWithAlpha = new Colors(BACKGROUND_COLOR).withMultiplyAlphaClamp(alphaDesc);
 
-                RoundedUtils.drawRect(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 10, descriptionWidth + 6, 14, clientSettings.backgroundRadius.getValue(), bgColorWithAlpha);
-                fontRenderer.drawString(module.getDescription(), sc.getScaledWidth() / 2f - descriptionWidth / 2f + 3 + 2, 10 + 5, Colors.WHITE.withAlphaClamp(alphaDesc), true);
+                RoundedUtils.drawRect(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 5, descriptionWidth + 6, 14, clientSettings.backgroundRadius.getValue(), bgColorWithAlpha);
+                fontRenderer.drawString(module.getDescription(), sc.getScaledWidth() / 2f - descriptionWidth / 2f + 3 + 2, 5 + 5, Colors.WHITE.withAlphaClamp(alphaDesc), true);
                 ScaleUtils.stopScaling();
             }
 

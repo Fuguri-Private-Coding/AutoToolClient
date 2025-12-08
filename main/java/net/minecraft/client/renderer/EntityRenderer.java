@@ -709,7 +709,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
         AspectRatio aspectRatio = Modules.getModule(AspectRatio.class);
 
-        float aspect = this.mc.displayWidth / this.mc.displayHeight;
+        float aspect = (float) this.mc.displayWidth / (float) this.mc.displayHeight;
 
         if (aspectRatio.isToggled()) {
             aspect *= aspectRatio.aspect.getValue();
@@ -791,7 +791,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             AspectRatio aspectRatio = Modules.getModule(AspectRatio.class);
 
-            float aspect = this.mc.displayWidth / this.mc.displayHeight;
+            float aspect = (float) this.mc.displayWidth / (float) this.mc.displayHeight;
 
             if (aspectRatio.isToggled() && aspectRatio.aspectHand.isToggled()) {
                 aspect *= aspectRatio.aspect.getValue();
@@ -1348,7 +1348,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             AspectRatio aspectRatio = Modules.getModule(AspectRatio.class);
 
-            float aspect = this.mc.displayWidth / this.mc.displayHeight;
+            float aspect = (float) this.mc.displayWidth / (float) this.mc.displayHeight;
 
             if (aspectRatio.isToggled()) {
                 aspect *= aspectRatio.aspect.getValue();
@@ -1641,7 +1641,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             AspectRatio aspectRatio = Modules.getModule(AspectRatio.class);
 
-            float aspect = this.mc.displayWidth / this.mc.displayHeight;
+            float aspect = (float) this.mc.displayWidth / (float) this.mc.displayHeight;
 
             if (aspectRatio.isToggled()) {
                 aspect *= aspectRatio.aspect.getValue();

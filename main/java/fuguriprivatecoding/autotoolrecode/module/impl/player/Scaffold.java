@@ -327,7 +327,7 @@ public class Scaffold extends Module {
                 RotationData data = new RotationData(rot, hit);
 
                 if (hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
-                    hit.hitVec.yCoord < mc.thePlayer.posY &&
+                    hit.hitVec.yCoord <= mc.thePlayer.posY &&
                     hit.getBlockPos().equals(targetBlock) &&
                     hit.sideHit != EnumFacing.DOWN
                 ) dataList.add(data);
@@ -336,7 +336,12 @@ public class Scaffold extends Module {
 
         if (dataList.isEmpty()) return lastRotation.getPitch();
 
-        dataList.sort(Comparator.comparingDouble(data -> Math.abs(mc.thePlayer.rotationPitch) - data.rotation().getPitch()));
+        dataList.sort(Comparator.comparingDouble(data -> {
+            float pitchDiff = Math.abs(mc.thePlayer.rotationPitch) - data.rotation().getPitch();
+
+            return pitchDiff;
+        }));
+
         RotationData rotationData = dataList.getFirst();
 
         if (handleMouse) lastRotation = rotationData.rotation();
@@ -363,7 +368,7 @@ public class Scaffold extends Module {
 
                 if (hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
                     hit.sideHit != EnumFacing.DOWN &&
-                    hit.hitVec.yCoord < mc.thePlayer.posY &&
+                    hit.hitVec.yCoord <= mc.thePlayer.posY &&
                     hit.getBlockPos().equals(targetBlock)
                 ) validRotations.add(data);
             }
