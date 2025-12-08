@@ -279,7 +279,7 @@ public class Scaffold extends Module {
 
     boolean isTelly() {
         if (MoveUtils.isMoving()) {
-            if (mc.gameSettings.keyBindJump.isKeyDown()) return Player.groundTicks > 2 || Player.airTicks < (speedTelly.isToggled() ? 0 : airTicks.getRandomizedIntValue());
+            if (mc.gameSettings.keyBindJump.isKeyDown()) return mc.thePlayer.onGround || Player.airTicks < (speedTelly.isToggled() ? 0 : airTicks.getRandomizedIntValue());
             return !mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ));
         }
         return false;
