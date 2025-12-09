@@ -17,8 +17,12 @@ public class ColorSetting extends Setting {
 
     float red, green, blue, alpha;
     float fadeRed, fadeGreen, fadeBlue, fadeAlpha;
+
     float offset;
     float speed;
+    int maxOffset = 20;
+    int maxSpeed = 20;
+
     boolean fade, hide;
 
     private Vector4f currentRadius = new Vector4f(1, 5, 5, 1);
@@ -37,6 +41,23 @@ public class ColorSetting extends Setting {
         this.fadeAlpha = 1;
         this.offset = 1f;
         this.speed = 1.0f;
+        this.fade = false;
+        this.hide = false;
+    }
+
+    public ColorSetting(String name, SettingAble parent, BooleanSupplier visible, int maxOffset) {
+        super(name, parent, visible);
+        this.red = 1;
+        this.green = 1;
+        this.blue = 1;
+        this.alpha = 1;
+        this.fadeRed = 1;
+        this.fadeGreen = 1;
+        this.fadeBlue = 1;
+        this.fadeAlpha = 1;
+        this.offset = 1f;
+        this.speed = 1.0f;
+        this.maxOffset = maxOffset;
         this.fade = false;
         this.hide = false;
     }
@@ -69,6 +90,23 @@ public class ColorSetting extends Setting {
         this.fadeAlpha = 1;
         this.offset = 1f;
         this.speed = 1.0f;
+        this.fade = false;
+        this.hide = false;
+    }
+
+    public ColorSetting(String name, SettingAble parent, int maxOffset) {
+        super(name, parent);
+        this.red = 1;
+        this.green = 1;
+        this.blue = 1;
+        this.alpha = 1;
+        this.fadeRed = 1;
+        this.fadeGreen = 1;
+        this.fadeBlue = 1;
+        this.fadeAlpha = 1;
+        this.offset = 1f;
+        this.speed = 1.0f;
+        this.maxOffset = maxOffset;
         this.fade = false;
         this.hide = false;
     }

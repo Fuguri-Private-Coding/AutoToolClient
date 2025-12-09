@@ -37,17 +37,17 @@ public class ArrayList extends Module {
     final IntegerSetting yPos = new IntegerSetting("YPos", this,0, 100, 5);
 
     final FloatSetting textYPos = new FloatSetting("TextYPos", this,-5f, 5, 0, 0.01f);
-    final ColorSetting textColor = new ColorSetting("TextColor", this);
+    final ColorSetting textColor = new ColorSetting("TextColor", this, 40);
     final CheckBox textShadow = new CheckBox("TextShadow", this, true);
 
     final CheckBox background = new CheckBox("Background", this);
-    final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, background::isToggled);
+    final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, background::isToggled, 40);
 
     final IntegerSetting verticalSpacing = new IntegerSetting("VerticalSpacing", this, 1,25,12);
     final IntegerSetting horizontalSpacing = new IntegerSetting("HorizontalSpacing", this, background::isToggled, -10,10,2);
 
     final CheckBox glow = new CheckBox("Glow", this, false);
-    final ColorSetting glowColor = new ColorSetting("GlowColor", this, () -> background.isToggled() && glow.isToggled());
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this, () -> background.isToggled() && glow.isToggled(), 40);
 
     final CheckBox blur = new CheckBox("Blur", this, false);
 

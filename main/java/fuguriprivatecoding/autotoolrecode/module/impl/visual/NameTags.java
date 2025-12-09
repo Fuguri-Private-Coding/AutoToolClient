@@ -94,7 +94,7 @@ public class NameTags extends Module {
         glRotatef(CameraRot.INST.getPitch(), 1.0f, 0.0f, 0.0f);
         glScalef(-scale, -scale, scale);
 
-        float nameWidth = (float) fontRenderer.getStringWidth(name);
+        float nameWidth = fontRenderer.getStringWidth(name);
 
         float backgroundX = -nameWidth / 2f - 2.5f;
         float backgroundY = 0;

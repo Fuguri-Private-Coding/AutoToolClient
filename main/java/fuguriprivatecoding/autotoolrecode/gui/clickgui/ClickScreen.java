@@ -643,34 +643,34 @@ public class ClickScreen extends GuiScreen implements EventListener {
 								float controlsX = mixedPreviewAbsoluteX + previewSize * 2 + 10;
 
 								RoundedUtils.drawRect(controlsX, controlsY, controlWidth, controlHeight, 0.5f, BACKGROUND_COLOR);
-								RoundedUtils.drawRect(controlsX, controlsY, controlWidth * (colorSetting.getOffset() / 20f), controlHeight, 0.5f, new Color(220, 180, 255));
+								RoundedUtils.drawRect(controlsX, controlsY, controlWidth * (colorSetting.getOffset() / colorSetting.getMaxOffset()), controlHeight, 0.5f, new Color(220, 180, 255));
 
 								if (mouseX > controlsX && mouseX < controlsX + controlWidth &&
 										mouseY > controlsY && mouseY < controlsY + controlHeight) {
 									if (Mouse.isButtonDown(0)) {
 										float deltaX = mouseX - controlsX;
-										colorSetting.setOffset(round(deltaX / controlWidth * 20));
+										colorSetting.setOffset(round(deltaX / controlWidth * colorSetting.getMaxOffset()));
 									}
 									if (currentScroll != 0 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 										float newOffset = colorSetting.getOffset() + (currentScroll > 0 ? 1 : -1);
-										colorSetting.setOffset(max(0, min(20, newOffset)));
+										colorSetting.setOffset(max(0, min(colorSetting.getMaxOffset(), newOffset)));
 									}
 								}
 
 								fontRenderer.drawString("Offset: " + (int)colorSetting.getOffset(), controlsX + controlWidth + 5, controlsY, new Color(220, 180, 255));
 
 								RoundedUtils.drawRect(controlsX, controlsY + 10, controlWidth, controlHeight, 0.5f, BACKGROUND_COLOR);
-								RoundedUtils.drawRect(controlsX, controlsY + 10, controlWidth * (colorSetting.getSpeed() / 20f), controlHeight, 0.5f, new Color(255, 220, 180));
+								RoundedUtils.drawRect(controlsX, controlsY + 10, controlWidth * (colorSetting.getSpeed() / colorSetting.getMaxSpeed()), controlHeight, 0.5f, new Color(255, 220, 180));
 
 								if (mouseX > controlsX && mouseX < controlsX + controlWidth &&
 										mouseY > controlsY + 10 && mouseY < controlsY + controlHeight + 10) {
 									if (Mouse.isButtonDown(0)) {
 										float deltaX = mouseX - controlsX;
-										colorSetting.setSpeed(round(deltaX / controlWidth * 20));
+										colorSetting.setSpeed(round(deltaX / controlWidth * colorSetting.getMaxSpeed()));
 									}
 									if (currentScroll != 0 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 										float newSpeed = colorSetting.getSpeed() + (currentScroll > 0 ? 1 : -1);
-										colorSetting.setSpeed(max(0, min(20, newSpeed)));
+										colorSetting.setSpeed(max(0, min(colorSetting.getMaxSpeed(), newSpeed)));
 									}
 								}
 

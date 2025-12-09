@@ -28,6 +28,7 @@ public class Modules {
 			new KillAura(),
             new AspectRatio(),
 			new AutoWater(),
+            new BWHelper(),
             new AutoRegister(),
 			new BridgeAssist(),
 			new FovModifier(),
