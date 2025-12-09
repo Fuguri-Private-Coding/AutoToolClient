@@ -26,6 +26,8 @@ public class FastBreak extends Module {
                 case "DropDelay" -> {
                     if (mc.playerController.blockHitDelay > 0) {
                         mc.clickMouse();
+                        mc.clickMouse();
+                        mc.clickMouse();
                         mc.playerController.blockHitDelay = 0;
                     }
                 }

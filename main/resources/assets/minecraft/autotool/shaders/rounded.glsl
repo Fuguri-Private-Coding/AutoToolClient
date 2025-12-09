@@ -1,8 +1,8 @@
 #version 120
 
-uniform vec2 u_size; // rectangle size
-uniform vec4 u_radius; // radius for each vertex
-uniform vec4 u_color; // radius for each vertex
+uniform vec2 u_size;
+uniform vec4 u_radius;
+uniform vec4 u_color;
 uniform float u_smooth;
 
 float rdist(vec2 pos, vec2 size, vec4 radius) {

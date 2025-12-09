@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -39,7 +40,7 @@ public class AutoSoup extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof TickEvent) {
+        if (event instanceof LegitClickTimingEvent) {
             if (mc.currentScreen == null) {
                 if (soupTimer.reachedMS(soupSwitchTime * 50L)) {
                     if (switchBack) {
@@ -77,28 +78,30 @@ public class AutoSoup extends Module {
                 }
 
                 refillTimer.reset();
-            } else if (mc.currentScreen instanceof GuiInventory) {
-                if (refill.isToggled() && refillTimer.reachedMS(refillDelay.getRandomizedIntValue() * 50L)) {
-                    for (int slot = InventoryUtils.EXCLUDE_ARMOR_BEGIN; slot < InventoryUtils.ONLY_HOT_BAR_BEGIN; slot++) {
-                        final ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(slot).getStack();
+            }
+        }
 
-                        if (stack != null) {
-                            if (stack.getItem() instanceof ItemSoup) {
-                                for (int hotbarSlot = InventoryUtils.ONLY_HOT_BAR_BEGIN; hotbarSlot < 45; hotbarSlot++) {
-                                    final ItemStack hotbarStack = mc.thePlayer.inventoryContainer.getSlot(hotbarSlot).getStack();
+        if (event instanceof TickEvent && mc.currentScreen instanceof GuiInventory) {
+            if (refill.isToggled() && refillTimer.reachedMS(refillDelay.getRandomizedIntValue() * 50L)) {
+                for (int slot = InventoryUtils.EXCLUDE_ARMOR_BEGIN; slot < InventoryUtils.ONLY_HOT_BAR_BEGIN; slot++) {
+                    final ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(slot).getStack();
 
-                                    if (hotbarStack == null) {
-                                        mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 0, 1, mc.thePlayer);
+                    if (stack != null) {
+                        if (stack.getItem() instanceof ItemSoup) {
+                            for (int hotbarSlot = InventoryUtils.ONLY_HOT_BAR_BEGIN; hotbarSlot < 45; hotbarSlot++) {
+                                final ItemStack hotbarStack = mc.thePlayer.inventoryContainer.getSlot(hotbarSlot).getStack();
 
-                                        if (refillDelay.getRandomizedIntValue() > 0) {
-                                            refillTimer.reset();
-                                            return;
-                                        }
+                                if (hotbarStack == null) {
+                                    mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 0, 1, mc.thePlayer);
+
+                                    if (refillDelay.getRandomizedIntValue() > 0) {
+                                        refillTimer.reset();
+                                        return;
                                     }
                                 }
-                            } else if (stack.getItem() == Items.bowl) {
-                                mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 1, 4, mc.thePlayer);
                             }
+                        } else if (stack.getItem() == Items.bowl) {
+                            mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 1, 4, mc.thePlayer);
                         }
                     }
                 }

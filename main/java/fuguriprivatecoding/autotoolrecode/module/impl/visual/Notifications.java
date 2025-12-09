@@ -14,6 +14,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
@@ -81,16 +82,17 @@ public class Notifications extends Module {
 
                 ScaleUtils.startScaling(x, y, width + 5, height, openAnim.getValue());
 
-                Color textColor = Colors.WHITE.withMultiplyAlphaClamp(openAnim.getValue());
+                Color textColor = Colors.WHITE.withAlphaClamp(openAnim.getValue());
                 Color backgroundColor = new Colors(this.backgroundColor.getFadedColor()).withMultiplyAlphaClamp(openAnim.getValue());
-                Color backgroundGlowColor = new Colors(this.glowColor.getFadedColor()).withAlphaClamp(openAnim.getValue());
+                Color backgroundGlowColorFirst = new Colors(this.glowColor.getColor()).withAlphaClamp(openAnim.getValue());
+                Color backgroundGlowColorSecond = new Colors(this.glowColor.getFadeColor()).withAlphaClamp(openAnim.getValue());
 
                 if (glow.isToggled()) {
-                    BloomUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width + 5, height, 7.5f, backgroundGlowColor));
+                    BloomUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed()));
                 }
 
                 if (blur.isToggled()) {
-                    BlurUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width + 5, height, 7.5f, backgroundGlowColor));
+                    BlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed()));
                 }
 
                 RoundedUtils.drawRect(x, y, width + 5, height, 7.5f, backgroundColor);
