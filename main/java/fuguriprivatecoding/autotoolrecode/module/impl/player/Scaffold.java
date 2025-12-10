@@ -177,7 +177,12 @@ public class Scaffold extends Module {
 
             e.setYaw(!sprintMode.is("JumpSprint") ? mc.thePlayer.rotationYaw : needYaw);
         }
-        if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.RIGHT) e.cancel();
+
+        if (event instanceof ClickEvent e) {
+            if (e.getButton() == ClickEvent.Button.RIGHT || e.getButton() == ClickEvent.Button.LEFT) {
+                e.cancel();
+            }
+        }
     }
 
     private void resetValues() {

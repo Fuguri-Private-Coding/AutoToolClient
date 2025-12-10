@@ -17,6 +17,7 @@ public class FastBreak extends Module {
         ;
 
     IntegerSetting delay = new IntegerSetting("Delay", this, () -> breakMode.is("Delay"), 0, 5, 0);
+    IntegerSetting clicks = new IntegerSetting("Clicks", this, () -> breakMode.is("DropDelay"), 1,3,1);
 
     @Override
     public void onEvent(Event event) {
@@ -25,9 +26,7 @@ public class FastBreak extends Module {
                 case "Delay" -> mc.playerController.blockHitDelay = delay.getValue();
                 case "DropDelay" -> {
                     if (mc.playerController.blockHitDelay > 0) {
-                        mc.clickMouse();
-                        mc.clickMouse();
-                        mc.clickMouse();
+                        for (int i = 0; i < clicks.getValue(); i++) mc.clickMouse();
                         mc.playerController.blockHitDelay = 0;
                     }
                 }

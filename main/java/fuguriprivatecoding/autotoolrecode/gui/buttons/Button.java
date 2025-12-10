@@ -40,7 +40,7 @@ public class Button extends GuiButton {
 
         ClientFontRenderer fontRenderer = Fonts.fonts.get("SFProRounded");
 
-        hoverAnim.update(0.7f, Easing.OUT_ELASTIC);
+        hoverAnim.update(2, Easing.OUT_BACK);
         hoverAnim.setEnd(hovered ? 1 : 0);
 
         float x = prevX - hoverAnim.getValue() * 1;

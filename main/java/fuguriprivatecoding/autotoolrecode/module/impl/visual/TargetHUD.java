@@ -113,20 +113,26 @@ public class TargetHUD extends Module {
             } else {
                 pos = GuiUtils.getAbsolutePos(xPos.getValue(), yPos.getValue());
             }
-            renderHUD(pos.x, pos.y, width, height, font, target, scale);
+            renderHUD(pos.x, pos.y, width, height, font, target, scale, Math.clamp(currentScale.getValue(), 0, 1));
         }
     }
 
-    private void renderHUD(float x, float y, float width, float height, ClientFontRenderer font, EntityLivingBase target, float scaleFactor) {
+    private void renderHUD(float x, float y, float width, float height, ClientFontRenderer font, EntityLivingBase target, float scaleFactor, float alpha) {
         ScaleUtils.startScaling(x, y, width, height, scaleFactor);
 
-        if (render.get("Background")) RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), bgColor.getFadedColor());
+        Color bgColor = new Colors(this.bgColor.getFadedColor()).withMultiplyAlphaClamp(alpha);
+
+        if (render.get("Background")) {
+            RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), bgColor);
+        }
+
         StencilUtils.setUpTexture(x, y, width, height, bgRadius.getValue());
 
         StencilUtils.writeTexture();
 
         if (render.get("Name")) {
-            font.drawString(target.getName(), x + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, y + height / 2f - 10f, textColor.getFadedColor(), textShadow.isToggled());
+            Color textColor = new Colors(this.textColor.getFadedColor()).withMultiplyAlphaClamp(alpha);
+            font.drawString(target.getName(), x + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, y + height / 2f - 10f, textColor, textShadow.isToggled());
         }
 
         if (render.get("Health")) {
@@ -143,8 +149,11 @@ public class TargetHUD extends Module {
             float healthX = x + height;
             float healthY = y + height / 2f + 2;
 
-            RoundedUtils.drawRect(healthX, healthY, maxHealthBarWidth, 10, 5, bgColor.getFadedColor());
-            RoundedGradUtils.drawRect(healthX, healthY, healthAnimation.getValue(), 10, 5, healthColor.getColor(), healthColor.getFadeColor(), false);
+            Color healthColorFirst = new Colors(healthColor.getColor()).withMultiplyAlphaClamp(alpha);
+            Color healthColorSecond = new Colors(healthColor.getFadeColor()).withMultiplyAlphaClamp(alpha);
+
+            RoundedUtils.drawRect(healthX, healthY, maxHealthBarWidth, 10, 5, bgColor);
+            RoundedGradUtils.drawRect(healthX, healthY, healthAnimation.getValue(), 10, 5, healthColorFirst, healthColorSecond, false);
         }
 
         if (render.get("Head") && target instanceof EntityPlayer) {
@@ -155,12 +164,15 @@ public class TargetHUD extends Module {
             float headWidth = height - 10 - hurtTime;
             float headHeight = height - 10 - hurtTime;
 
-            Color headColor = ColorUtils.interpolateColor(Colors.WHITE, headHitColor.getFadedColor(), hurtTime);
+            Color headHitColor = new Colors(this.headHitColor.getFadedColor()).withMultiplyAlphaClamp(alpha);
+            Color headColor = Colors.WHITE.withAlphaClamp(alpha);
+
+            Color color = ColorUtils.interpolateColor(headColor, headHitColor, hurtTime);
 
             StencilUtils.setUpTexture(headX, headY, headWidth, headHeight, headRadius.getValue() * currentScale.getValue());
             StencilUtils.writeTexture();
 
-            ColorUtils.glColor(headColor);
+            ColorUtils.glColor(color);
             RenderUtils.quickDrawHead(target.getSkin(), headX, headY, headWidth, headHeight);
             ColorUtils.resetColor();
 
@@ -169,8 +181,12 @@ public class TargetHUD extends Module {
 
         StencilUtils.endWriteTexture();
 
-        if (glow.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), glowColor.getFadedColor()));
-        if (blur.isToggled()) BlurUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), Color.WHITE));
+        if (glow.isToggled()) {
+            Color glowColor = new Colors(this.glowColor.getFadedColor()).withMultiplyAlphaClamp(alpha);
+            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), glowColor));
+        }
+
+        if (blur.isToggled()) BlurUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), Colors.WHITE.withAlpha(alpha)));
 
         ScaleUtils.stopScaling();
     }

@@ -1,9 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual.notification;
 
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class Notification {

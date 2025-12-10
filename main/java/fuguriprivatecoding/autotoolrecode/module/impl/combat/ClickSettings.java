@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 
 @ModuleInfo(name = "ClickSettings", category = Category.COMBAT, description = "Позволяет бить в тайминг.")
 public class ClickSettings extends Module {
@@ -13,5 +14,6 @@ public class ClickSettings extends Module {
     public DoubleSlider endHurtTime = new DoubleSlider("EndHurtTime", this, 0,10,3,1);
 
     public CheckBox simulateDoubleClick = new CheckBox("SimulateDoubleClick", this, false);
+    public IntegerSetting chanceDoubleClick = new IntegerSetting("ChanceDoubleClick", this, simulateDoubleClick::isToggled, 0, 100, 100);
 
 }

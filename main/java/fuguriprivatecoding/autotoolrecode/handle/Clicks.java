@@ -6,14 +6,14 @@ import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEv
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
-import lombok.Getter;
-import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.ClickSettings;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import lombok.Getter;
+import lombok.Setter;
 
 public class Clicks implements Imports, EventListener {
 
@@ -24,7 +24,7 @@ public class Clicks implements Imports, EventListener {
     @Getter @Setter boolean clicking;
     @Getter static int clicks;
 
-    ClickSettings clickSettings;
+    ClickSettings clickSettings = Modules.getModule(ClickSettings.class);
 
     @Override
     public boolean listen() {
@@ -33,11 +33,13 @@ public class Clicks implements Imports, EventListener {
 
     @Override
     public void onEvent(Event event) {
-        if (clickSettings == null) clickSettings = Modules.getModule(ClickSettings.class);
-
         if (event instanceof LegitClickTimingEvent) {
-            if (clickSettings.simulateDoubleClick.isToggled() && clicks > 5) {
-                clicks += Math.random() <= 0.5 ? 1 : 0;
+            if (clickSettings.simulateDoubleClick.isToggled()) {
+                float chance = clickSettings.chanceDoubleClick.getValue() / 100f;
+
+                if (Math.random() <= chance) {
+                    clicks++;
+                }
             }
 
             int iters = clicks;
@@ -59,12 +61,14 @@ public class Clicks implements Imports, EventListener {
     }
 
     public boolean needClick(EntityLivingBase target) {
-        int startRandomizedHurtTime = clickSettings.startHurtTime.getRandomizedIntValue();
-        int endRandomizeHurtTime = clickSettings.endHurtTime.getRandomizedIntValue();
-        if (target == null) { return true; }
-        if (target.hurtTime <= startRandomizedHurtTime) { return true; }
-        if (!clickSettings.isToggled()) return true;
-        return mc.thePlayer.hurtTime >= endRandomizeHurtTime;
+        if (target == null || !clickSettings.isToggled()) {
+            return true;
+        }
+
+        int startHurtTime = clickSettings.startHurtTime.getRandomizedIntValue();
+        int endHurtTime = clickSettings.endHurtTime.getRandomizedIntValue();
+
+        return target.hurtTime <= startHurtTime || mc.thePlayer.hurtTime >= endHurtTime;
     }
 
     public static void addClick() { clicks++; }

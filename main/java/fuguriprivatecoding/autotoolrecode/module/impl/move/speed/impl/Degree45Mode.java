@@ -38,7 +38,7 @@ public class Degree45Mode extends AbstractSpeedMode {
         if (event instanceof TickEvent) {
             float yaw = MoveUtils.getDir();
 
-            if (mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.onGround) {
+            if (!mc.thePlayer.onGround) {
                 yaw += 45;
             }
 

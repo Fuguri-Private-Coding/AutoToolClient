@@ -35,7 +35,7 @@ public class Account {
 
     public void updateAnimations() {
         deleteAnim.update(4f, Easing.OUT_CUBIC);
-        hoverAnim.update(0.7f, Easing.OUT_ELASTIC);
+        hoverAnim.update(2, Easing.OUT_BACK);
         selectAnim.update(4f,Easing.OUT_CUBIC);
     }
 

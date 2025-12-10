@@ -38,7 +38,7 @@ public class ImgButton extends GuiButton {
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
         boolean hovered = GuiUtils.isHovered(mouseX, mouseY, x, y, width, height);
 
-        hoverAnim.update(0.7f, Easing.OUT_ELASTIC);
+        hoverAnim.update(2, Easing.OUT_BACK);
         hoverAnim.setEnd(hovered ? 1 : 0);
 
         float x = prevX - hoverAnim.getValue() * 1;

@@ -160,7 +160,7 @@ public class ClickGuiScreenNew extends GuiScreen {
 
                 String name = setting.getName() + ": ";
 
-                float widthName = (float) settingsFont.getStringWidth(name);
+                float widthName = settingsFont.getStringWidth(name);
 
                 float settingX = x + 100 + 5;
                 float settingY = y + 5 + settingsOffset + 20;

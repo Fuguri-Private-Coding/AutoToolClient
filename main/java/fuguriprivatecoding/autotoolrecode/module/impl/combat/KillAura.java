@@ -114,7 +114,7 @@ public class KillAura extends Module {
         if (Modules.getModule(Scaffold.class).isToggled()) return;
 
         if (target != null) {
-            if (event instanceof RunGameLoopEvent && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
+            if (event instanceof RunGameLoopEvent && mc.currentScreen == null && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
                 if (TimerRange.balance == 0) {
                     if (clickTimer.reachedMS(delay)) {
                         clickTimer.reset();
@@ -122,6 +122,10 @@ public class KillAura extends Module {
                         delay = Math.round(1000f / CPS.getRandomizedIntValue());
                     }
                 }
+            }
+
+            if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.LEFT) {
+                e.cancel();
             }
 
             if (event instanceof TickEvent) {
