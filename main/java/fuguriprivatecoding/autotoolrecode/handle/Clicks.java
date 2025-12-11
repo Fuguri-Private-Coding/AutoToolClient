@@ -34,7 +34,7 @@ public class Clicks implements Imports, EventListener {
     @Override
     public void onEvent(Event event) {
         if (event instanceof LegitClickTimingEvent) {
-            if (clickSettings.simulateDoubleClick.isToggled()) {
+            if (clickSettings.simulateDoubleClick.isToggled() && clicks > 0) {
                 float chance = clickSettings.chanceDoubleClick.getValue() / 100f;
 
                 if (Math.random() <= chance) {

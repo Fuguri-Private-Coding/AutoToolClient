@@ -7,10 +7,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notification;
-import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
-import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
@@ -33,7 +30,7 @@ public class Notifications extends Module {
 
     final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this);
 
-    public final IntegerSetting removeTime = new IntegerSetting("RemoveTime", this, 100, 1500, 250);
+    public final FloatSetting removeTime = new FloatSetting("RemoveTime", this, 100, 1500, 250, 50);
 
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
@@ -45,7 +42,7 @@ public class Notifications extends Module {
     public static void addNotification(String name, boolean toggled) {
         if (!Modules.getModule(Notifications.class).isToggled()) return;
 
-        Notification notification = new Notification(name, toggled, System.currentTimeMillis(), Modules.getModule(Notifications.class).removeTime.getValue());
+        Notification notification = new Notification(name, toggled, System.currentTimeMillis(), (long) Modules.getModule(Notifications.class).removeTime.getValue());
         notification.getOpenAnim().setEnd(1);
 
         notifications.add(notification);

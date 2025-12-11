@@ -13,13 +13,9 @@ public class BackgroundUtils implements Imports {
 
     private static Shader program;
 
-    private static Framebuffer tempFBO = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
-
     public static void run() {
         if (program == null) program = Shaders.background;
         if (!Display.isVisible() || !Display.isActive()) return;
-
-        update();
 
         final int programID = program.getProgramId();
 
@@ -33,15 +29,6 @@ public class BackgroundUtils implements Imports {
         Uniform.uniform1f(programID, "time", (System.currentTimeMillis() - mc.getStartMillisTime()) / 1000F);
         Shader.drawQuad();
         Shader.stop();
-    }
-
-    public static void update() {
-        if (mc.displayWidth != tempFBO.framebufferWidth || mc.displayHeight != tempFBO.framebufferHeight) {
-            tempFBO.deleteFramebuffer();
-            tempFBO = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
-        } else {
-            tempFBO.framebufferClear();
-        }
     }
 }
 

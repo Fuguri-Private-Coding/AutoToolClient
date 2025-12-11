@@ -389,7 +389,7 @@ public class Scaffold extends Module {
             double sortDistance = sortOffset ? 0 : DistanceUtils.getDistance(data.hit().hitVec) * 50;
 
             double yawDiff = MathHelper.wrapDegree(sortYawOffset - data.rotation().getYaw());
-            double pitchDiff = mc.thePlayer.rotationPitch - data.rotation().getPitch();
+            double pitchDiff = Math.abs(mc.thePlayer.rotationPitch - data.rotation().getPitch());
 
             return Math.hypot(yawDiff, pitchDiff) + sortDistance;
         }));

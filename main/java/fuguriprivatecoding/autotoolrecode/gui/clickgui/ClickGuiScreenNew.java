@@ -105,7 +105,7 @@ public class ClickGuiScreenNew extends GuiScreen {
         RoundedUtils.drawRect(x, y, 100, height, 10, 10, 0, 0, rectColor.withAlpha(0.5f));
 
         BloomUtils.addToDraw(() -> {
-            RenderUtils.drawMixedRoundedRect(x, y, width, height, 10f, Colors.CORAL, Colors.WHITE, 90, 180, 270, 90, 5f);
+            RenderUtils.drawMixedRoundedRect(x, y, width, height, 10f, Colors.CORAL, Colors.WHITE, 5f);
         });
 
         BlurUtils.addToDraw(() -> {
