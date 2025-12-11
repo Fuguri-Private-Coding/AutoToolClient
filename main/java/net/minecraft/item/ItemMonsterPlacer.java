@@ -19,7 +19,7 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
@@ -119,7 +119,7 @@ public class ItemMonsterPlacer extends Item
         }
         else
         {
-            MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, true);
+            RayTrace movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, true);
 
             if (movingobjectposition == null)
             {
@@ -127,7 +127,7 @@ public class ItemMonsterPlacer extends Item
             }
             else
             {
-                if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+                if (movingobjectposition.typeOfHit == RayTrace.RayType.BLOCK)
                 {
                     BlockPos blockpos = movingobjectposition.getBlockPos();
 

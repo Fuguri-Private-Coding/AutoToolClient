@@ -19,8 +19,8 @@ public class ClientIRC extends ListenerAdapter implements Imports {
 
     @Getter @Setter
     public static MessageChannel chatChannel, loginChannel, serverChannel, keyChannel,
-        onlineChannel, changeLogChannel, onlineConfigsChannel, clientVersionChannel,
-        clientCapesChannel, fontsChannel;
+        onlineChannel, onlineConfigsChannel, clientVersionChannel,
+        fontsChannel;
 
     @Getter @Setter
     public static long MESSAGE_ID = -1, ONLINE_MESSAGE_ID = -1;
@@ -67,10 +67,8 @@ public class ClientIRC extends ListenerAdapter implements Imports {
         Map<String, Consumer<MessageChannel>> channelConfigurators = Map.of(
             "hwid-list", ClientIRC::setKeyChannel,
             "online-users", ClientIRC::setOnlineChannel,
-            "change-log", ClientIRC::setChangeLogChannel,
             "online-configs", ClientIRC::setOnlineConfigsChannel,
             "client-version", ClientIRC::setClientVersionChannel,
-            "client-capes", ClientIRC::setClientCapesChannel,
             "login-log", ClientIRC::setLoginChannel,
             "irc-chat", ClientIRC::setChatChannel,
             "server-log", ClientIRC::setServerChannel,

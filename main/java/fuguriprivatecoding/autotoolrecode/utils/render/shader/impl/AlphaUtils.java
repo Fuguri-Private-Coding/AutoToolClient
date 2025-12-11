@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.Uniform;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
@@ -18,7 +17,6 @@ public class AlphaUtils implements Imports {
 
     public static void startWrite() {
         tempFBO.bindFramebuffer(true);
-
     }
 
     public static void endWrite() {
@@ -31,16 +29,14 @@ public class AlphaUtils implements Imports {
         if (program == null) program = Shaders.alpha;
         if (!Display.isVisible()) return;
 
-        final int programID = program.getProgramId();
-
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.disableAlpha();
 
         mc.getFramebuffer().bindFramebuffer(true);
         program.start();
-        Uniform.uniform1i(programID, "image", 12);
-        Uniform.uniform1f(programID, "alpha", alpha);
+        program.uniform("image", 12);
+        program.uniform("alpha", alpha);
         Shader.drawQuad();
         Shader.stop();
 

@@ -10,7 +10,7 @@ import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 
 @ModuleInfo(name = "AutoTool", category = Category.PLAYER, description = "Автоматически берет инструмент в руку в зависимости от блока.")
 public class AutoTool extends Module {
@@ -34,10 +34,10 @@ public class AutoTool extends Module {
         if (mc.objectMouseOver == null)
             return;
 
-        final MovingObjectPosition mouse = mc.objectMouseOver;
+        final RayTrace mouse = mc.objectMouseOver;
 
         if (event instanceof LegitClickTimingEvent) {
-            if (mouse.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mouse.getBlockPos() == null || !mc.gameSettings.keyBindAttack.isKeyDown()) {
+            if (mouse.typeOfHit != RayTrace.RayType.BLOCK || mouse.getBlockPos() == null || !mc.gameSettings.keyBindAttack.isKeyDown()) {
                 if (flag && backSwitchTimer.reachedMS(backSwitchDelayTick.getRandomizedIntValue() * 50L)) {
                     flag = false;
                     switchBack();

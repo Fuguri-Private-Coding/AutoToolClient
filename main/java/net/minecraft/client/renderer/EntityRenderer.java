@@ -17,7 +17,6 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
-import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
@@ -78,7 +77,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MouseFilter;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
@@ -398,7 +397,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             for (Entity entity1 : list) {
                 float f1 = (float) (entity1.getCollisionBorderSize() + Hitbox.getExpand());
                 AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand(f1, f1, f1);
-                MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
+                RayTrace movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
 
                 if (axisalignedbb.isVecInside(vec3)) {
                     if (d2 >= 0.0D) {
@@ -432,11 +431,11 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             if (pointedEntity != null && flag && vec3.distanceTo(vec33) > 3.0D + Reach.getAddRange()) {
                 pointedEntity = null;
-                this.mc.objectMouseOver = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, vec33, null, new BlockPos(vec33));
+                this.mc.objectMouseOver = new RayTrace(RayTrace.RayType.MISS, vec33, null, new BlockPos(vec33));
             }
 
             if (pointedEntity != null && (d2 < d1 || this.mc.objectMouseOver == null)) {
-                this.mc.objectMouseOver = new MovingObjectPosition(pointedEntity, vec33);
+                this.mc.objectMouseOver = new RayTrace(pointedEntity, vec33);
 
                 if (pointedEntity instanceof EntityLivingBase || pointedEntity instanceof EntityItemFrame) {
                     this.mc.pointedEntity = pointedEntity;
@@ -612,7 +611,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     f3 = f3 * 0.1F;
                     f4 = f4 * 0.1F;
                     f5 = f5 * 0.1F;
-                    MovingObjectPosition movingobjectposition = this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5));
+                    RayTrace movingobjectposition = this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5));
 
                     if (movingobjectposition != null) {
                         double d7 = movingobjectposition.hitVec.distanceTo(new Vec3(d0, d1, d2));
@@ -1218,7 +1217,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             if (flag && !((EntityPlayer) entity).capabilities.allowEdit) {
                 ItemStack itemstack = ((EntityPlayer) entity).getCurrentEquippedItem();
 
-                if (this.mc.objectMouseOver != null && this.mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                if (this.mc.objectMouseOver != null && this.mc.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK) {
                     BlockPos blockpos = this.mc.objectMouseOver.getBlockPos();
                     IBlockState iblockstate = this.mc.theWorld.getBlockState(blockpos);
                     Block block = iblockstate.getBlock();

@@ -4,10 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import lombok.experimental.UtilityClass;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 
 @UtilityClass
 public class TargetStorage implements Imports {
@@ -20,8 +19,8 @@ public class TargetStorage implements Imports {
             return target;
         }
 
-        MovingObjectPosition movingObjectPosition = RayCastUtils.rayCast(entityReach, blockReach, mc.thePlayer.getRotation());
-        if (movingObjectPosition != null && movingObjectPosition.entityHit instanceof EntityLivingBase base) {
+        RayTrace rayTrace = RayCastUtils.rayCast(entityReach, blockReach, mc.thePlayer.getRotation());
+        if (rayTrace != null && rayTrace.entityHit instanceof EntityLivingBase base) {
             return base;
         }
 

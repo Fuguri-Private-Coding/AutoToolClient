@@ -5,9 +5,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.FreeLook;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import lombok.Getter;
 import lombok.Setter;
@@ -1291,7 +1288,7 @@ public abstract class Entity implements ICommandSender
         );
     }
 
-    public MovingObjectPosition rayTrace(double blockReachDistance, float partialTicks)
+    public RayTrace rayTrace(double blockReachDistance, float partialTicks)
     {
         Vec3 vec3 = this.getPositionEyes(partialTicks);
         Vec3 vec31 = this.getLook(partialTicks);
@@ -1299,7 +1296,7 @@ public abstract class Entity implements ICommandSender
         return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true);
     }
 
-    public MovingObjectPosition rayTrace(double blockReachDistance, float partialTicks, Rot rotation)
+    public RayTrace rayTrace(double blockReachDistance, float partialTicks, Rot rotation)
     {
         Vec3 vec3 = this.getPositionEyes(partialTicks);
         Vec3 vec31 = getVectorForRotation(rotation.getPitch(), rotation.getYaw());

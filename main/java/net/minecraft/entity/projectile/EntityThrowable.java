@@ -13,7 +13,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -165,7 +165,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
 
         Vec3 vec3 = new Vec3(this.posX, this.posY, this.posZ);
         Vec3 vec31 = new Vec3(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-        MovingObjectPosition movingobjectposition = this.worldObj.rayTraceBlocks(vec3, vec31);
+        RayTrace movingobjectposition = this.worldObj.rayTraceBlocks(vec3, vec31);
         vec3 = new Vec3(this.posX, this.posY, this.posZ);
         vec31 = new Vec3(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 
@@ -189,7 +189,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
                 {
                     float f = 0.3F;
                     AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand((double)f, (double)f, (double)f);
-                    MovingObjectPosition movingobjectposition1 = axisalignedbb.calculateIntercept(vec3, vec31);
+                    RayTrace movingobjectposition1 = axisalignedbb.calculateIntercept(vec3, vec31);
 
                     if (movingobjectposition1 != null)
                     {
@@ -206,13 +206,13 @@ public abstract class EntityThrowable extends Entity implements IProjectile
 
             if (entity != null)
             {
-                movingobjectposition = new MovingObjectPosition(entity);
+                movingobjectposition = new RayTrace(entity);
             }
         }
 
         if (movingobjectposition != null)
         {
-            if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && this.worldObj.getBlockState(movingobjectposition.getBlockPos()).getBlock() == Blocks.portal)
+            if (movingobjectposition.typeOfHit == RayTrace.RayType.BLOCK && this.worldObj.getBlockState(movingobjectposition.getBlockPos()).getBlock() == Blocks.portal)
             {
                 this.setPortal(movingobjectposition.getBlockPos());
             }
@@ -276,7 +276,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
         return 0.03F;
     }
 
-    protected abstract void onImpact(MovingObjectPosition p_70184_1_);
+    protected abstract void onImpact(RayTrace p_70184_1_);
 
     public void writeEntityToNBT(NBTTagCompound tagCompound)
     {

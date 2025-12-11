@@ -160,7 +160,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MinecraftError;
 import net.minecraft.util.MouseHelper;
 import net.minecraft.util.MovementInputFromOptions;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ScreenShotHelper;
@@ -253,7 +253,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     public GuiAchievement guiAchievement;
     public GuiIngame ingameGUI;
     public boolean skipRenderWorld;
-    public MovingObjectPosition objectMouseOver;
+    public RayTrace objectMouseOver;
     public GameSettings gameSettings;
     public MouseHelper mouseHelper;
     public final File mcDataDir;
@@ -1175,7 +1175,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         }
 
         if (this.leftClickCounter <= 0 && !this.thePlayer.isUsingItem()) {
-            if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK) {
                 BlockPos blockpos = this.objectMouseOver.getBlockPos();
 
                 if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air && this.playerController.onPlayerDamageBlock(blockpos, this.objectMouseOver.sideHit)) {
@@ -1887,7 +1887,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             TileEntity tileentity = null;
             Item item;
 
-            if (this.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            if (this.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK) {
                 BlockPos blockpos = this.objectMouseOver.getBlockPos();
                 Block block = this.theWorld.getBlockState(blockpos).getBlock();
 
@@ -1909,7 +1909,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 i = block1.getDamageValue(this.theWorld, blockpos);
                 flag1 = item.getHasSubtypes();
             } else {
-                if (this.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY || this.objectMouseOver.entityHit == null || !flag) {
+                if (this.objectMouseOver.typeOfHit != RayTrace.RayType.ENTITY || this.objectMouseOver.entityHit == null || !flag) {
                     return;
                 }
 

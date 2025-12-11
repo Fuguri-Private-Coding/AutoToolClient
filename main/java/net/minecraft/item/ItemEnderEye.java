@@ -10,7 +10,7 @@ import net.minecraft.stats.StatList;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.world.World;
 
 public class ItemEnderEye extends Item
@@ -136,9 +136,9 @@ public class ItemEnderEye extends Item
 
     public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
-        MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, false);
+        RayTrace movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, false);
 
-        if (movingobjectposition != null && movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && worldIn.getBlockState(movingobjectposition.getBlockPos()).getBlock() == Blocks.end_portal_frame)
+        if (movingobjectposition != null && movingobjectposition.typeOfHit == RayTrace.RayType.BLOCK && worldIn.getBlockState(movingobjectposition.getBlockPos()).getBlock() == Blocks.end_portal_frame)
         {
             return itemStackIn;
         }

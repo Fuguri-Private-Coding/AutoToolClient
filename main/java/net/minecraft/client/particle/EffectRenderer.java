@@ -26,7 +26,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -506,7 +506,7 @@ public class EffectRenderer
         return "" + i;
     }
 
-    public void addBlockHitEffects(BlockPos p_addBlockHitEffects_1_, MovingObjectPosition p_addBlockHitEffects_2_)
+    public void addBlockHitEffects(BlockPos p_addBlockHitEffects_1_, RayTrace p_addBlockHitEffects_2_)
     {
         IBlockState iblockstate = this.worldObj.getBlockState(p_addBlockHitEffects_1_);
 

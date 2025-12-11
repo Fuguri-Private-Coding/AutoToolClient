@@ -3,22 +3,16 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
-import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Arrays;
-import java.util.List;
 
 @ModuleInfo(name = "CustomCape", category = Category.VISUAL, description = "Изменяет вам плащ.")
 public class CustomCape extends Module {
@@ -38,10 +32,6 @@ public class CustomCape extends Module {
     public CustomCape() {
         if (CAPE_DIRECTORY.mkdirs()) System.out.println("Successful created Capes Directory.");
 
-        if (CAPE_DIRECTORY.listFiles() != null && Arrays.stream(CAPE_DIRECTORY.listFiles()).toList().isEmpty()) {
-            downloadCapes();
-        }
-
         updateCape();
     }
 
@@ -53,31 +43,9 @@ public class CustomCape extends Module {
 
     public void updateCape() {
         capeMode.getModes().clear();
+        capeMode.addMode("None");
         for (File cape : CAPE_DIRECTORY.listFiles()) {
             capeMode.addMode(cape.getName().replaceAll(".png", ""));
-        }
-    }
-
-    private void downloadCapes() {
-        try {
-            MessageChannel capesChannel = ClientIRC.getClientCapesChannel();
-
-            List<Message> messages = capesChannel.getIterableHistory().stream().toList();
-
-            for (Message message : messages) {
-                if (message.getAttachments().isEmpty()) continue;
-
-                message.getAttachments().forEach(attachment -> {
-                    try {
-                        if (attachment.getFileName().endsWith(".png")) {
-                            attachment.getProxy().downloadToFile(new File(CAPE_DIRECTORY + "/" + attachment.getFileName()))
-                                    .thenAccept(_ -> updateCape());
-                        }
-                    } catch (Exception _) { }
-                });
-            }
-        } catch (Exception e) {
-            ClientUtils.chatLog("У ВАС ИНТЕРНЕТ ХУЕТА ПОЛНАЯ ИЛИ ЗАПРЕТ ПОЙДИ СКАЧАЙ ТУПОЙ УЕБАН!");
         }
     }
 

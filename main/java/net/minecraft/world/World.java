@@ -41,7 +41,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.IntHashMap;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.Vec3;
 import net.minecraft.village.VillageCollection;
@@ -760,17 +760,17 @@ public abstract class World implements IBlockAccess
         return this.skylightSubtracted < 4;
     }
 
-    public MovingObjectPosition rayTraceBlocks(Vec3 p_72933_1_, Vec3 p_72933_2_)
+    public RayTrace rayTraceBlocks(Vec3 p_72933_1_, Vec3 p_72933_2_)
     {
         return this.rayTraceBlocks(p_72933_1_, p_72933_2_, false, false, false);
     }
 
-    public MovingObjectPosition rayTraceBlocks(Vec3 start, Vec3 end, boolean stopOnLiquid)
+    public RayTrace rayTraceBlocks(Vec3 start, Vec3 end, boolean stopOnLiquid)
     {
         return this.rayTraceBlocks(start, end, stopOnLiquid, false, false);
     }
 
-    public MovingObjectPosition rayTraceBlocks(Vec3 vec31, Vec3 vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)
+    public RayTrace rayTraceBlocks(Vec3 vec31, Vec3 vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)
     {
         if (!Double.isNaN(vec31.xCoord) && !Double.isNaN(vec31.yCoord) && !Double.isNaN(vec31.zCoord))
         {
@@ -788,7 +788,7 @@ public abstract class World implements IBlockAccess
 
                 if ((!ignoreBlockWithoutBoundingBox || block.getCollisionBoundingBox(this, blockpos, iblockstate) != null) && block.canCollideCheck(iblockstate, stopOnLiquid))
                 {
-                    MovingObjectPosition movingobjectposition = block.collisionRayTrace(this, blockpos, vec31, vec32);
+                    RayTrace movingobjectposition = block.collisionRayTrace(this, blockpos, vec31, vec32);
 
                     if (movingobjectposition != null)
                     {
@@ -796,7 +796,7 @@ public abstract class World implements IBlockAccess
                     }
                 }
 
-                MovingObjectPosition movingobjectposition2 = null;
+                RayTrace movingobjectposition2 = null;
                 int k1 = 200;
 
                 while (k1-- >= 0)
@@ -923,7 +923,7 @@ public abstract class World implements IBlockAccess
                     {
                         if (block1.canCollideCheck(iblockstate1, stopOnLiquid))
                         {
-                            MovingObjectPosition movingobjectposition1 = block1.collisionRayTrace(this, blockpos, vec31, vec32);
+                            RayTrace movingobjectposition1 = block1.collisionRayTrace(this, blockpos, vec31, vec32);
 
                             if (movingobjectposition1 != null)
                             {
@@ -932,7 +932,7 @@ public abstract class World implements IBlockAccess
                         }
                         else
                         {
-                            movingobjectposition2 = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, vec31, enumfacing, blockpos);
+                            movingobjectposition2 = new RayTrace(RayTrace.RayType.MISS, vec31, enumfacing, blockpos);
                         }
                     }
                 }

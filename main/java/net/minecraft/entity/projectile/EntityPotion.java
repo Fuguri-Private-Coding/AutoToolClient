@@ -9,7 +9,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.world.World;
 
 public class EntityPotion extends EntityThrowable
@@ -78,7 +78,7 @@ public class EntityPotion extends EntityThrowable
         return this.potionDamage.getMetadata();
     }
 
-    protected void onImpact(MovingObjectPosition p_70184_1_)
+    protected void onImpact(RayTrace p_70184_1_)
     {
         if (!this.worldObj.isRemote)
         {

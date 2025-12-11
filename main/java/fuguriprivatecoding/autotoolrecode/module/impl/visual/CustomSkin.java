@@ -45,6 +45,7 @@ public class CustomSkin extends Module {
 
     public void updateSkins() {
         skinMode.getModes().clear();
+        skinMode.addMode("None");
         for (File skin : SKIN_DIRECTORY.listFiles()) {
             skinMode.addMode(skin.getName().replaceAll(".png", ""));
         }
@@ -56,7 +57,6 @@ public class CustomSkin extends Module {
     }
 
     public ResourceLocation getSkin() {
-
         if (!selectedSkin.equalsIgnoreCase(skinMode.getMode())) {
             skinFile = new File(SKIN_DIRECTORY, skinMode.getMode() + ".png");
             if (!skinFile.exists()) return null;

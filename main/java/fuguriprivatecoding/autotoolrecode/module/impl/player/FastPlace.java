@@ -10,7 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import org.lwjgl.input.Mouse;
 
 @ModuleInfo(name = "FastPlace", category = Category.PLAYER, description = "Позволяет быстрее ставить блоки.")
@@ -29,7 +29,7 @@ public class FastPlace extends Module {
     public void onEvent(Event event) {
         if (Modules.getModule(Scaffold.class).isToggled()) return;
         if (mc.currentScreen != null) return;
-        boolean needClick = Mouse.isButtonDown(1) && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
+        boolean needClick = Mouse.isButtonDown(1) && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
         if (event instanceof TickEvent) {
             if (stopWatch.reachedMS(delay) && needClick) {
                 mc.rightClickMouse();

@@ -193,9 +193,9 @@ public class Scaffold extends Module {
     }
 
     void legitPlace() {
-        MovingObjectPosition mouseOver = RayCastUtils.rayCast(6, 4.5f, mc.thePlayer.getRotation());
+        RayTrace mouseOver = RayCastUtils.rayCast(6, 4.5f, mc.thePlayer.getRotation());
 
-        if (mouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
+        if (mouseOver.typeOfHit == RayTrace.RayType.BLOCK
             && isSameY(mouseOver)
             && targetBlock.equals(mouseOver.getBlockPos())
             && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
@@ -238,11 +238,11 @@ public class Scaffold extends Module {
                 if (isClutch()) {
                     rotation = getBestRotation(yaw, 0, false);
                 } else {
-                    MovingObjectPosition rightRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw + 45, getPitch(roundedYaw + 45, false)));
-                    MovingObjectPosition leftRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw - 45, getPitch(roundedYaw - 45, false)));
+                    RayTrace rightRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw + 45, getPitch(roundedYaw + 45, false)));
+                    RayTrace leftRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw - 45, getPitch(roundedYaw - 45, false)));
 
-                    boolean isLeftRayCastSide = leftRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK || rightRayCast.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK;
-                    boolean isRightRayCastSide = rightRayCast.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK || leftRayCast.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK;
+                    boolean isLeftRayCastSide = leftRayCast.typeOfHit == RayTrace.RayType.BLOCK || rightRayCast.typeOfHit != RayTrace.RayType.BLOCK;
+                    boolean isRightRayCastSide = rightRayCast.typeOfHit == RayTrace.RayType.BLOCK || leftRayCast.typeOfHit != RayTrace.RayType.BLOCK;
 
                     boolean moveDiagonally = MoveUtils.isMoveDiagonally(roundedYaw);
 
@@ -274,7 +274,7 @@ public class Scaffold extends Module {
         return mc.thePlayer.hurtResistantTime > 0 || Player.airTicks > 12;
     }
 
-    boolean isSameY(MovingObjectPosition mouse) {
+    boolean isSameY(RayTrace mouse) {
         if (sameY.isToggled()) {
             if (Mouse.isButtonDown(1)) return mouse.sideHit != EnumFacing.DOWN;
             return mouse.sideHit != EnumFacing.DOWN && mouse.sideHit != EnumFacing.UP;
@@ -326,12 +326,12 @@ public class Scaffold extends Module {
         for (float pitch = minPitch; pitch <= maxPitch; pitch += step) {
             Rot rot = new Rot(yaw, pitch);
 
-            MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, rot);
+            RayTrace hit = RayCastUtils.rayCast(4.5, 4.5f, rot);
 
             if (hit != null) {
                 RotationData data = new RotationData(rot, hit);
 
-                if (hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+                if (hit.typeOfHit == RayTrace.RayType.BLOCK &&
                     hit.hitVec.yCoord <= mc.thePlayer.posY &&
                     hit.getBlockPos().equals(targetBlock) &&
                     hit.sideHit != EnumFacing.DOWN
@@ -366,12 +366,12 @@ public class Scaffold extends Module {
 
             Rot rot = new Rot(yaw, pitch);
 
-            MovingObjectPosition hit = RayCastUtils.rayCast(4.5, 4.5f, rot);
+            RayTrace hit = RayCastUtils.rayCast(4.5, 4.5f, rot);
 
             if (hit != null) {
                 RotationData data = new RotationData(rot, hit);
 
-                if (hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+                if (hit.typeOfHit == RayTrace.RayType.BLOCK &&
                     hit.sideHit != EnumFacing.DOWN &&
                     hit.hitVec.yCoord <= mc.thePlayer.posY &&
                     hit.getBlockPos().equals(targetBlock)

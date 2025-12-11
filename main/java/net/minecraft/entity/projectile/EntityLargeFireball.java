@@ -4,7 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.world.World;
 
 public class EntityLargeFireball extends EntityFireball
@@ -26,7 +26,7 @@ public class EntityLargeFireball extends EntityFireball
         super(worldIn, shooter, accelX, accelY, accelZ);
     }
 
-    protected void onImpact(MovingObjectPosition movingObject)
+    protected void onImpact(RayTrace movingObject)
     {
         if (!this.worldObj.isRemote)
         {

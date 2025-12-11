@@ -7,7 +7,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import net.minecraft.block.material.Material;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 
 @ModuleInfo(name = "AutoWater", category = Category.PLAYER, description = "Автоматически ставит воду при падении.")
 public class AutoWater extends Module {
@@ -17,8 +17,8 @@ public class AutoWater extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            MovingObjectPosition rayCast = mc.objectMouseOver;
-            if (rayCast.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+            RayTrace rayCast = mc.objectMouseOver;
+            if (rayCast.typeOfHit != RayTrace.RayType.BLOCK
                 || mc.theWorld.getBlockState(rayCast.getBlockPos()).getBlock().getMaterial() == Material.water
                 || mc.thePlayer.isInWater()) return;
 

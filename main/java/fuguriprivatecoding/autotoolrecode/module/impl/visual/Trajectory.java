@@ -19,7 +19,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class Trajectory extends Module {
             updateColors();
 
             ItemStack itemStack = mc.thePlayer.getCurrentEquippedItem();
-            MovingObjectPosition m = null;
+            RayTrace m = null;
             if (itemStack != null
                     && (
                     itemStack.getItem() instanceof ItemSnowball
@@ -118,7 +118,7 @@ public class Trajectory extends Module {
                     ++ticksInAir;
                     Vec3 vec3 = new Vec3(posX, posY, posZ);
                     Vec3 vec31 = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
-                    MovingObjectPosition movingobjectposition = mc.theWorld.rayTraceBlocks(vec3, vec31);
+                    RayTrace movingobjectposition = mc.theWorld.rayTraceBlocks(vec3, vec31);
                     vec3 = new Vec3(posX, posY, posZ);
                     vec31 = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
                     if (movingobjectposition != null) {
@@ -129,9 +129,9 @@ public class Trajectory extends Module {
                         if (entity != mc.thePlayer && entity instanceof EntityLivingBase) {
                             float f = 0.3F;
                             AxisAlignedBB localAxisAlignedBB = entity.getEntityBoundingBox().expand(f, f, f);
-                            MovingObjectPosition localMovingObjectPosition = localAxisAlignedBB.calculateIntercept(vec3, vec31);
-                            if (localMovingObjectPosition != null) {
-                                movingobjectposition = localMovingObjectPosition;
+                            RayTrace localRayTrace = localAxisAlignedBB.calculateIntercept(vec3, vec31);
+                            if (localRayTrace != null) {
+                                movingobjectposition = localRayTrace;
                                 break;
                             }
                         }

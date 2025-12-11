@@ -13,7 +13,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 
 @ModuleInfo(name = "BlockOverlay", category = Category.VISUAL, description = "Выделяет блок на который вы смотрите.")
 public class BlockOverlay extends Module {
@@ -28,9 +28,9 @@ public class BlockOverlay extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof DrawBlockHighlightEvent && !Modules.getModule(Scaffold.class).isToggled()) {
-            MovingObjectPosition hit = mc.objectMouseOver;
+            RayTrace hit = mc.objectMouseOver;
 
-            if (hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            if (hit.typeOfHit == RayTrace.RayType.BLOCK) {
                 BlockPos pos = hit.getBlockPos();
 
                 RenderUtils.start3D();

@@ -220,7 +220,7 @@ public class KillAura extends Module {
         if (needRot == null) return null;
 
         if (smartAim.isToggled()) {
-            MovingObjectPosition hit = RayCastUtils.rayCast(needRot, findDistance.getValue());
+            RayTrace hit = RayCastUtils.rayCast(needRot, findDistance.getValue());
 
             if (mc.thePlayer.canVecBeSeen(hit.hitVec)) {
                 needRot = RotUtils.getPossibleBestRotation(needRot, box);

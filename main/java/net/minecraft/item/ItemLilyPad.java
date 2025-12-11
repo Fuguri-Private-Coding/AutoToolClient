@@ -8,7 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.world.World;
 
 public class ItemLilyPad extends ItemColored
@@ -20,7 +20,7 @@ public class ItemLilyPad extends ItemColored
 
     public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
-        MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, true);
+        RayTrace movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, true);
 
         if (movingobjectposition == null)
         {
@@ -28,7 +28,7 @@ public class ItemLilyPad extends ItemColored
         }
         else
         {
-            if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+            if (movingobjectposition.typeOfHit == RayTrace.RayType.BLOCK)
             {
                 BlockPos blockpos = movingobjectposition.getBlockPos();
 

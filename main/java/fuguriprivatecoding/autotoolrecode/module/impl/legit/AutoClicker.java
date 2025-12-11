@@ -12,7 +12,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import org.lwjgl.input.Mouse;
 
 @ModuleInfo(name = "AutoClicker", category = Category.LEGIT, description = "Автоматически кликает за вас.")
@@ -34,7 +34,7 @@ public class AutoClicker extends Module {
         if (event instanceof RunGameLoopEvent) {
             if (buttons.get("Left")) {
                 if (!Mouse.isButtonDown(0) || mc.thePlayer.isUsingItem() || Mouse.isButtonDown(1) || mc.currentScreen != null) return;
-                if (RayCastUtils.rayCast(3, 4.5, new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)).typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && breakBlocks.isToggled()) return;
+                if (RayCastUtils.rayCast(3, 4.5, new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)).typeOfHit == RayTrace.RayType.BLOCK && breakBlocks.isToggled()) return;
 
                 if (leftStopWatch.reachedMS(leftDelay)) {
                     Clicks.addClick();

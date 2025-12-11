@@ -82,7 +82,7 @@ import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.util.LongHashMap;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Matrix4f;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
@@ -2560,9 +2560,9 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
         }
     }
 
-    public void drawSelectionBox(EntityPlayer player, MovingObjectPosition movingObjectPositionIn, int execute, float partialTicks)
+    public void drawSelectionBox(EntityPlayer player, RayTrace rayTraceIn, int execute, float partialTicks)
     {
-        if (execute == 0 && movingObjectPositionIn.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+        if (execute == 0 && rayTraceIn.typeOfHit == RayTrace.RayType.BLOCK)
         {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
@@ -2577,7 +2577,7 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 
             GlStateManager.depthMask(false);
             float f = 0.002F;
-            BlockPos blockpos = movingObjectPositionIn.getBlockPos();
+            BlockPos blockpos = rayTraceIn.getBlockPos();
             Block block = this.theWorld.getBlockState(blockpos).getBlock();
 
             if (block.getMaterial() != Material.air && this.theWorld.getWorldBorder().contains(blockpos))

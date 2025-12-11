@@ -44,7 +44,6 @@ public class SimulatedPlayer implements Imports {
     @Getter
     private boolean inWater;
     public boolean onGround;
-    private boolean isAirBorne;
     public float rotationYaw;
     private double posX;
     private double posY;
@@ -87,7 +86,6 @@ public class SimulatedPlayer implements Imports {
         this.motionX = motionX;
         this.inWater = inWater;
         this.onGround = onGround;
-        this.isAirBorne = isAirBorne;
         this.rotationYaw = rotationYaw;
         this.posX = posX;
         this.posY = posY;
@@ -925,8 +923,6 @@ public class SimulatedPlayer implements Imports {
             motionX -= (MathHelper.sin(f) * 0.2f);
             motionZ += (MathHelper.cos(f) * 0.2f);
         }
-
-        isAirBorne = true;
     }
 
     public boolean isPotionActive(Potion potion) {

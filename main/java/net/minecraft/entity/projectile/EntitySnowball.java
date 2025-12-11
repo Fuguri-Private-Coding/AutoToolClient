@@ -4,7 +4,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.world.World;
 
 public class EntitySnowball extends EntityThrowable
@@ -24,7 +24,7 @@ public class EntitySnowball extends EntityThrowable
         super(worldIn, x, y, z);
     }
 
-    protected void onImpact(MovingObjectPosition p_70184_1_)
+    protected void onImpact(RayTrace p_70184_1_)
     {
         if (p_70184_1_.entityHit != null)
         {

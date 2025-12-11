@@ -11,7 +11,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -117,7 +117,7 @@ public abstract class EntityFireball extends Entity
 
             Vec3 vec3 = new Vec3(this.posX, this.posY, this.posZ);
             Vec3 vec31 = new Vec3(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            MovingObjectPosition movingobjectposition = this.worldObj.rayTraceBlocks(vec3, vec31);
+            RayTrace movingobjectposition = this.worldObj.rayTraceBlocks(vec3, vec31);
             vec3 = new Vec3(this.posX, this.posY, this.posZ);
             vec31 = new Vec3(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 
@@ -138,7 +138,7 @@ public abstract class EntityFireball extends Entity
                 {
                     float f = 0.3F;
                     AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand((double)f, (double)f, (double)f);
-                    MovingObjectPosition movingobjectposition1 = axisalignedbb.calculateIntercept(vec3, vec31);
+                    RayTrace movingobjectposition1 = axisalignedbb.calculateIntercept(vec3, vec31);
 
                     if (movingobjectposition1 != null)
                     {
@@ -155,7 +155,7 @@ public abstract class EntityFireball extends Entity
 
             if (entity != null)
             {
-                movingobjectposition = new MovingObjectPosition(entity);
+                movingobjectposition = new RayTrace(entity);
             }
 
             if (movingobjectposition != null)
@@ -224,7 +224,7 @@ public abstract class EntityFireball extends Entity
         return 0.95F;
     }
 
-    protected abstract void onImpact(MovingObjectPosition movingObject);
+    protected abstract void onImpact(RayTrace movingObject);
 
     public void writeEntityToNBT(NBTTagCompound tagCompound)
     {

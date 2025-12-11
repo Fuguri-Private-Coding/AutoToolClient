@@ -8,7 +8,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.world.World;
 
 public class EntityEnderPearl extends EntityThrowable
@@ -31,7 +31,7 @@ public class EntityEnderPearl extends EntityThrowable
         super(worldIn, x, y, z);
     }
 
-    protected void onImpact(MovingObjectPosition p_70184_1_)
+    protected void onImpact(RayTrace p_70184_1_)
     {
         EntityLivingBase entitylivingbase = this.getThrower();
 

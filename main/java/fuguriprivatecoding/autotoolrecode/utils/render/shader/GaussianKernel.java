@@ -1,5 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader;
 
+import lombok.Getter;
+
+@Getter
 public class GaussianKernel {
 
 	private final int size;
@@ -22,14 +25,6 @@ public class GaussianKernel {
 		for (int i = 0; i < size; ++i) {
 			this.kernel[i] /= kernelSum;
 		}
-	}
-
-	public int getSize() {
-		return size;
-	}
-
-	public float[] getKernel() {
-		return kernel;
 	}
 }
 

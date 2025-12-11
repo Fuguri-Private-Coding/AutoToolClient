@@ -1,7 +1,7 @@
 package net.minecraft.pathfinding;
 
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.pathfinder.SwimNodeProcessor;
@@ -60,7 +60,7 @@ public class PathNavigateSwimmer extends PathNavigate
 
     protected boolean isDirectPathBetweenPoints(Vec3 posVec31, Vec3 posVec32, int sizeX, int sizeY, int sizeZ)
     {
-        MovingObjectPosition movingobjectposition = this.worldObj.rayTraceBlocks(posVec31, new Vec3(posVec32.xCoord, posVec32.yCoord + (double)this.theEntity.height * 0.5D, posVec32.zCoord), false, true, false);
-        return movingobjectposition == null || movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.MISS;
+        RayTrace movingobjectposition = this.worldObj.rayTraceBlocks(posVec31, new Vec3(posVec32.xCoord, posVec32.yCoord + (double)this.theEntity.height * 0.5D, posVec32.zCoord), false, true, false);
+        return movingobjectposition == null || movingobjectposition.typeOfHit == RayTrace.RayType.MISS;
     }
 }

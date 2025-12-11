@@ -13,7 +13,6 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import lombok.Getter;
-import lombok.Setter;
 
 public class Clicks implements Imports, EventListener {
 
@@ -21,10 +20,9 @@ public class Clicks implements Imports, EventListener {
         Events.register(this);
     }
 
-    @Getter @Setter boolean clicking;
     @Getter static int clicks;
 
-    ClickSettings clickSettings = Modules.getModule(ClickSettings.class);
+    private static final ClickSettings clickSettings = Modules.getModule(ClickSettings.class);
 
     @Override
     public boolean listen() {
@@ -34,19 +32,11 @@ public class Clicks implements Imports, EventListener {
     @Override
     public void onEvent(Event event) {
         if (event instanceof LegitClickTimingEvent) {
-            if (clickSettings.simulateDoubleClick.isToggled() && clicks > 0) {
-                float chance = clickSettings.chanceDoubleClick.getValue() / 100f;
-
-                if (Math.random() <= chance) {
-                    clicks++;
-                }
-            }
-
             int iters = clicks;
             clicks = 0;
 
             EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
-            clicking = needClick(target);
+            boolean clicking = needClick(target);
 
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
 
@@ -71,5 +61,15 @@ public class Clicks implements Imports, EventListener {
         return target.hurtTime <= startHurtTime || mc.thePlayer.hurtTime >= endHurtTime;
     }
 
-    public static void addClick() { clicks++; }
+    public static void addClick() {
+        if (clickSettings.simulateDoubleClick.isToggled() && clicks > 0) {
+            float chance = clickSettings.chanceDoubleClick.getValue() / 100f;
+
+            if (Math.random() <= chance) {
+                clicks++;
+            }
+        }
+
+        clicks++;
+    }
 }

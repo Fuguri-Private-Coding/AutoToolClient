@@ -10,7 +10,7 @@ import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -39,7 +39,7 @@ public class ItemBoat extends Item
         float f8 = f3 * f5;
         double d3 = 5.0D;
         Vec3 vec31 = vec3.addVector((double)f7 * d3, (double)f6 * d3, (double)f8 * d3);
-        MovingObjectPosition movingobjectposition = worldIn.rayTraceBlocks(vec3, vec31, true);
+        RayTrace movingobjectposition = worldIn.rayTraceBlocks(vec3, vec31, true);
 
         if (movingobjectposition == null)
         {
@@ -74,7 +74,7 @@ public class ItemBoat extends Item
             }
             else
             {
-                if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+                if (movingobjectposition.typeOfHit == RayTrace.RayType.BLOCK)
                 {
                     BlockPos blockpos = movingobjectposition.getBlockPos();
 

@@ -5,7 +5,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.world.World;
 
 public class EntitySmallFireball extends EntityFireball
@@ -28,7 +28,7 @@ public class EntitySmallFireball extends EntityFireball
         this.setSize(0.3125F, 0.3125F);
     }
 
-    protected void onImpact(MovingObjectPosition movingObject)
+    protected void onImpact(RayTrace movingObject)
     {
         if (!this.worldObj.isRemote)
         {

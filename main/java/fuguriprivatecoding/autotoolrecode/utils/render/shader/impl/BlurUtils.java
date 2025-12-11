@@ -6,7 +6,6 @@ import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.GaussianKernel;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.Uniform;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.BufferUtils;
@@ -37,7 +36,6 @@ public class BlurUtils implements Imports {
         inputFramebuffer.bindFramebuffer(true);
 
         final int radius = blur.radius.getValue();
-        final int programId = program.getProgramId();
 
         outputFramebuffer.bindFramebuffer(true);
         program.start();
@@ -50,14 +48,14 @@ public class BlurUtils implements Imports {
             buffer.put(gaussianKernel.getKernel());
             buffer.flip();
 
-            Uniform.uniform1f(programId, "u_radius", radius);
-            Uniform.uniformFB(programId, "u_kernel", buffer);
-            Uniform.uniform1i(programId, "u_diffuse_sampler", 0);
-            Uniform.uniform1i(programId, "u_other_sampler", 20);
+            program.uniform("u_radius", (float) radius);
+            program.uniform("u_kernel", buffer);
+            program.uniform("u_diffuse_sampler", 0);
+            program.uniform("u_other_sampler", 20);
         }
 
-        Uniform.uniform2f(programId, "u_texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
-        Uniform.uniform2f(programId, "u_direction", blur.offset1.getValue(), 0);
+        program.uniform("u_texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
+        program.uniform("u_direction", blur.offset1.getValue(), 0);
 
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
@@ -66,7 +64,7 @@ public class BlurUtils implements Imports {
         Shader.drawQuad();
 
         mc.getFramebuffer().bindFramebuffer(true);
-        Uniform.uniform2f(programId, "u_direction", 0, blur.offset2.getValue());
+        program.uniform("u_direction", 0, blur.offset2.getValue());
         outputFramebuffer.bindFramebufferTexture();
         GL13.glActiveTexture(GL13.GL_TEXTURE20);
         inputFramebuffer.bindFramebufferTexture();

@@ -10,7 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -66,7 +66,7 @@ public class PlayerControllerOF extends PlayerControllerMP
         return super.interactWithEntitySendPacket(player, target);
     }
 
-    public boolean isPlayerRightClickingOnEntity(EntityPlayer player, Entity target, MovingObjectPosition ray)
+    public boolean isPlayerRightClickingOnEntity(EntityPlayer player, Entity target, RayTrace ray)
     {
         this.lastClickEntity = target;
         return super.isPlayerRightClickingOnEntity(player, target, ray);

@@ -3,7 +3,7 @@ package net.minecraft.entity.item;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.world.World;
 
 public class EntityExpBottle extends EntityThrowable
@@ -38,7 +38,7 @@ public class EntityExpBottle extends EntityThrowable
         return -20.0F;
     }
 
-    protected void onImpact(MovingObjectPosition p_70184_1_)
+    protected void onImpact(RayTrace p_70184_1_)
     {
         if (!this.worldObj.isRemote)
         {

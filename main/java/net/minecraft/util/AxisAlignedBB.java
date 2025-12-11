@@ -266,7 +266,7 @@ public class AxisAlignedBB
         return new AxisAlignedBB(d0, d1, d2, d3, d4, d5);
     }
 
-    public MovingObjectPosition calculateIntercept(Vec3 vecA, Vec3 vecB)
+    public RayTrace calculateIntercept(Vec3 vecA, Vec3 vecB)
     {
         Vec3 vec3 = vecA.getIntermediateWithXValue(vecB, this.minX);
         Vec3 vec31 = vecA.getIntermediateWithXValue(vecB, this.maxX);
@@ -370,7 +370,7 @@ public class AxisAlignedBB
                 enumfacing = EnumFacing.SOUTH;
             }
 
-            return new MovingObjectPosition(vec36, enumfacing);
+            return new RayTrace(vec36, enumfacing);
         }
     }
 

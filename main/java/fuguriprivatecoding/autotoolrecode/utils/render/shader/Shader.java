@@ -90,37 +90,33 @@ public class Shader implements Imports {
 		GL20.glUseProgram(0);
 	}
 
-	public void uniformFB(final String name, final FloatBuffer floatBuffer) {
-		GL20.glUniform1(getLocation(name), floatBuffer);
-	}
+    public void uniform(final String name, final FloatBuffer floatBuffer) {
+        GL20.glUniform1(getLocation(name), floatBuffer);
+    }
 
-	public void uniform1i(final String name, final int i) {
-		GL20.glUniform1i(getLocation(name), i);
-	}
+    public void uniform(final String name, final int i) {
+        GL20.glUniform1i(getLocation(name), i);
+    }
 
-	public void uniform2i(final String name, final int i, final int j) {
-		GL20.glUniform2i(getLocation(name), i, j);
-	}
+    public void uniform(final String name, final int i, final int j) {
+        GL20.glUniform2i(getLocation(name), i, j);
+    }
 
-	public void uniformMat4(String name, FloatBuffer mat) {
-		GL20.glUniformMatrix4(getLocation(name), false, mat);
-	}
+    public void uniform(final String name, final float f) {
+        GL20.glUniform1f(getLocation(name), f);
+    }
 
-	public void uniform1f(final String name, final float f) {
-		GL20.glUniform1f(getLocation(name), f);
-	}
+    public void uniform(final String name, final float f, final float g) {
+        GL20.glUniform2f(getLocation(name), f, g);
+    }
 
-	public void uniform2f(final String name, final float f, final float g) {
-		GL20.glUniform2f(getLocation(name), f, g);
-	}
+    public void uniform(final String name, final float f, final float g, final float h) {
+        GL20.glUniform3f(getLocation(name), f, g, h);
+    }
 
-	public void uniform3f(final String name, final float f, final float g, final float h) {
-		GL20.glUniform3f(getLocation(name), f, g, h);
-	}
-
-	public void uniform4f(final String name, final float f, final float g, final float h, final float i) {
-		GL20.glUniform4f(getLocation(name), f, g, h, i);
-	}
+    public void uniform(final String name, final float f, final float g, final float h, final float i) {
+        GL20.glUniform4f(getLocation(name), f, g, h, i);
+    }
 
 	public int getLocation(final String name) {
 		return GL20.glGetUniformLocation(programId, name);

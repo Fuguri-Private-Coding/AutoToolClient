@@ -40,15 +40,15 @@ public class RayCastUtils implements Imports {
 
                 final float collisionBorderSize = entity.getCollisionBorderSize();
                 final AxisAlignedBB axisAlignedBB = entity.getEntityBoundingBox().expand(collisionBorderSize, collisionBorderSize, collisionBorderSize);
-                final MovingObjectPosition movingObjectPosition = axisAlignedBB.calculateIntercept(eyePosition, vector);
+                final RayTrace rayTrace = axisAlignedBB.calculateIntercept(eyePosition, vector);
 
                 if (axisAlignedBB.isVecInside(eyePosition)) {
                     if (blockReachDistance >= 0.0D) {
                         pointedEntity = entity;
                         blockReachDistance = 0.0D;
                     }
-                } else if (movingObjectPosition != null) {
-                    final double eyeDistance = eyePosition.distanceTo(movingObjectPosition.hitVec);
+                } else if (rayTrace != null) {
+                    final double eyeDistance = eyePosition.distanceTo(rayTrace.hitVec);
 
                     if (eyeDistance < blockReachDistance || blockReachDistance == 0.0D) {
                         if (entity == renderViewEntity.ridingEntity) {
@@ -68,11 +68,11 @@ public class RayCastUtils implements Imports {
         return null;
     }
 
-    public static MovingObjectPosition rayCast(Vec3 eyesPosition, final double entityRange, final double blockRange, Rot rotation) {
+    public static RayTrace rayCast(Vec3 eyesPosition, final double entityRange, final double blockRange, Rot rotation) {
         return rayCast(eyesPosition, entityRange, blockRange, rotation, 1.0f);
     }
 
-    public static MovingObjectPosition rayCast(Vec3 eyesPosition, final double entityRange, final double blockRange, Rot rotation, float partialTicks) {
+    public static RayTrace rayCast(Vec3 eyesPosition, final double entityRange, final double blockRange, Rot rotation, float partialTicks) {
         if (mc.theWorld == null || mc.getRenderViewEntity() == null) { return null; }
 
         double blockReachDistance = blockRange;
@@ -80,7 +80,7 @@ public class RayCastUtils implements Imports {
 
         final Entity renderViewEntity = mc.getRenderViewEntity();
 
-        MovingObjectPosition mouse = renderViewEntity.rayTrace(blockReachDistance, partialTicks, rotation);
+        RayTrace mouse = renderViewEntity.rayTrace(blockReachDistance, partialTicks, rotation);
 
         Vec3 hittingVector = null;
         final float yawCos = MathHelper.cos(-rotation.getYaw() * 0.017453292F - (float) Math.PI);
@@ -106,25 +106,25 @@ public class RayCastUtils implements Imports {
         for (Entity entity : entityList) {
             final float borderSize = entity.getCollisionBorderSize();
             final AxisAlignedBB hitBox = entity.getEntityBoundingBox().expand(borderSize, borderSize, borderSize);
-            final MovingObjectPosition movingObjectPosition = hitBox.calculateIntercept(eyesPosition, vector);
+            final RayTrace rayTrace = hitBox.calculateIntercept(eyesPosition, vector);
 
             if (hitBox.isVecInside(eyesPosition)) {
                 if (entityBlockReach >= 0d) {
-                    hittingVector = movingObjectPosition != null ? movingObjectPosition.hitVec : eyesPosition;
+                    hittingVector = rayTrace != null ? rayTrace.hitVec : eyesPosition;
                     pointedEntity = entity;
                     entityBlockReach = 0d;
                 }
-            } else if (movingObjectPosition != null) {
-                final double eyeDistance = eyesPosition.distanceTo(movingObjectPosition.hitVec);
+            } else if (rayTrace != null) {
+                final double eyeDistance = eyesPosition.distanceTo(rayTrace.hitVec);
 
                 if (eyeDistance < entityBlockReach || entityBlockReach == 0d) {
                     if (entity == renderViewEntity.ridingEntity) {
                         if (entityBlockReach == 0d) {
                             pointedEntity = entity;
-                            hittingVector = movingObjectPosition.hitVec;
+                            hittingVector = rayTrace.hitVec;
                         }
                     } else {
-                        hittingVector = movingObjectPosition.hitVec;
+                        hittingVector = rayTrace.hitVec;
                         pointedEntity = entity;
                         entityBlockReach = eyeDistance;
                     }
@@ -134,32 +134,32 @@ public class RayCastUtils implements Imports {
 
 
         if (pointedEntity != null && (entityBlockReach < entityRange || mouse == null)) {
-            mouse = new MovingObjectPosition(pointedEntity, hittingVector);
+            mouse = new RayTrace(pointedEntity, hittingVector);
         }
 
         if (pointedEntity != null && eyesPosition.distanceTo(hittingVector) > entityBlockReach) {
-            mouse = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, hittingVector, null, new BlockPos(hittingVector));
+            mouse = new RayTrace(RayTrace.RayType.MISS, hittingVector, null, new BlockPos(hittingVector));
         }
 
         return mouse;
     }
 
-    public static MovingObjectPosition rayCast(final double entityRange, final double blockRange, Rot rotation) {
+    public static RayTrace rayCast(final double entityRange, final double blockRange, Rot rotation) {
         return rayCast(mc.thePlayer.getPositionEyes(1f), entityRange, blockRange, rotation);
     }
 
 
-    public static MovingObjectPosition rayCast(final Rot rotation, final double range) {
+    public static RayTrace rayCast(final Rot rotation, final double range) {
         return rayCast(new Vector2f(rotation.getYaw(), rotation.getPitch()), range, 0);
     }
 
-    public static MovingObjectPosition rayCast(final Vector2f rotation, final double range, final float expand) {
+    public static RayTrace rayCast(final Vector2f rotation, final double range, final float expand) {
         return rayCast(rotation, range, expand, mc.thePlayer);
     }
 
-    public static MovingObjectPosition rayCast(final Vector2f rotation, final double range, final float expand, Entity entity) {
+    public static RayTrace rayCast(final Vector2f rotation, final double range, final float expand, Entity entity) {
         final float partialTicks = mc.timer.renderPartialTicks;
-        MovingObjectPosition objectMouseOver;
+        RayTrace objectMouseOver;
 
         if (entity != null && mc.theWorld != null) {
             objectMouseOver = entity.rayTrace(range, 1f, new Rot(rotation.x, rotation.y));
@@ -181,7 +181,7 @@ public class RayCastUtils implements Imports {
             for (final Entity entity1 : list) {
                 final float f1 = entity1.getCollisionBorderSize() + expand;
                 final AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand(f1, f1, f1);
-                final MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
+                final RayTrace movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
 
                 if (axisalignedbb.isVecInside(vec3)) {
                     if (d2 >= 0.0D) {
@@ -201,7 +201,7 @@ public class RayCastUtils implements Imports {
             }
 
             if (pointedEntity != null && (d2 < d1 || objectMouseOver == null)) {
-                objectMouseOver = new MovingObjectPosition(pointedEntity, vec33);
+                objectMouseOver = new RayTrace(pointedEntity, vec33);
             }
 
             return objectMouseOver;
@@ -211,25 +211,25 @@ public class RayCastUtils implements Imports {
     }
 
     public static boolean overBlock(final Vector2f rotation, final EnumFacing enumFacing, final BlockPos pos, final boolean strict) {
-        final MovingObjectPosition movingObjectPosition = mc.thePlayer.rayTrace(4.5f, mc.timer.renderPartialTicks, new Rot(rotation.x, rotation.y));
+        final RayTrace rayTrace = mc.thePlayer.rayTrace(4.5f, mc.timer.renderPartialTicks, new Rot(rotation.x, rotation.y));
 
-        if (movingObjectPosition == null) return false;
+        if (rayTrace == null) return false;
 
-        final Vec3 hitVec = movingObjectPosition.hitVec;
+        final Vec3 hitVec = rayTrace.hitVec;
         if (hitVec == null) return false;
 
-        return movingObjectPosition.getBlockPos().equals(pos) && (!strict || movingObjectPosition.sideHit == enumFacing);
+        return rayTrace.getBlockPos().equals(pos) && (!strict || rayTrace.sideHit == enumFacing);
     }
 
     public static boolean overBlock(final EnumFacing enumFacing, final BlockPos pos, final boolean strict) {
-        final MovingObjectPosition movingObjectPosition = mc.objectMouseOver;
+        final RayTrace rayTrace = mc.objectMouseOver;
 
-        if (movingObjectPosition == null) return false;
+        if (rayTrace == null) return false;
 
-        final Vec3 hitVec = movingObjectPosition.hitVec;
+        final Vec3 hitVec = rayTrace.hitVec;
         if (hitVec == null) return false;
 
-        return movingObjectPosition.getBlockPos().equals(pos) && (!strict || movingObjectPosition.sideHit == enumFacing);
+        return rayTrace.getBlockPos().equals(pos) && (!strict || rayTrace.sideHit == enumFacing);
     }
 
     public static Boolean overBlock(final Vector2f rotation, final BlockPos pos) {

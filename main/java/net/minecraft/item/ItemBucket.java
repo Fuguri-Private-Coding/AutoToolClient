@@ -11,7 +11,7 @@ import net.minecraft.init.Items;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.world.World;
 
 public class ItemBucket extends Item
@@ -28,7 +28,7 @@ public class ItemBucket extends Item
     public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
         boolean flag = this.isFull == Blocks.air;
-        MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, flag);
+        RayTrace movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, flag);
 
         if (movingobjectposition == null)
         {
@@ -36,7 +36,7 @@ public class ItemBucket extends Item
         }
         else
         {
-            if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+            if (movingobjectposition.typeOfHit == RayTrace.RayType.BLOCK)
             {
                 BlockPos blockpos = movingobjectposition.getBlockPos();
 

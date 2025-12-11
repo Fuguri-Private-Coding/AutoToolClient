@@ -6,7 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.world.World;
 
 public class ItemGlassBottle extends Item
@@ -18,7 +18,7 @@ public class ItemGlassBottle extends Item
 
     public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
     {
-        MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, true);
+        RayTrace movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, true);
 
         if (movingobjectposition == null)
         {
@@ -26,7 +26,7 @@ public class ItemGlassBottle extends Item
         }
         else
         {
-            if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+            if (movingobjectposition.typeOfHit == RayTrace.RayType.BLOCK)
             {
                 BlockPos blockpos = movingobjectposition.getBlockPos();
 

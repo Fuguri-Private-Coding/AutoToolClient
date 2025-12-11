@@ -8,7 +8,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.RayTrace;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
@@ -56,7 +56,7 @@ public class EntityWitherSkull extends EntityFireball
         return f;
     }
 
-    protected void onImpact(MovingObjectPosition movingObject)
+    protected void onImpact(RayTrace movingObject)
     {
         if (!this.worldObj.isRemote)
         {
