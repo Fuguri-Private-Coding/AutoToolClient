@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notifi
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
@@ -63,7 +64,7 @@ public class Notifications extends Module {
 
             float yOffset = 0;
             for (Notification notification : notifications) {
-                String text = "§f[§9AutoTool§f] " + "§fМодуль " + notification.getName() + "§f был" + (notification.isToggled() ? "§a включен" : "§c выключен") + "§f.";
+                String text = ClientUtils.prefixLog + "§fМодуль " + notification.getName() + "§f был" + (notification.isToggled() ? "§a включен" : "§c выключен") + "§f.";
 
                 EasingAnimation openAnim = notification.getOpenAnim();
 

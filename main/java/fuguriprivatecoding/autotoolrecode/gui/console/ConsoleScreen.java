@@ -203,8 +203,8 @@ public class ConsoleScreen extends GuiScreen implements EventListener {
     }
 
     public static void log(String msg) {
-        history.add("§f[§9AutoTool§f] " + msg);
-        ClientUtils.chatLogWithoutPrefix("§f[§9AutoTool§f] " + msg);
+        history.add(ClientUtils.prefixLog + msg);
+        ClientUtils.chatLogWithoutPrefix(ClientUtils.prefixLog + msg);
         System.out.println("[Console]: " + msg);
     }
 
