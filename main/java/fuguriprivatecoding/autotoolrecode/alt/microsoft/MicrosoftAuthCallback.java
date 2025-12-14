@@ -23,7 +23,6 @@ public class MicrosoftAuthCallback implements Closeable {
                 server.stop(0);
                 server = null;
             }
-
             server = HttpServer.create(new InetSocketAddress("localhost", 59125), 0);
             server.createContext("/", ex -> {
                 AltScreen.updateStatus("Microsoft authentication callback request: " + ex.getRemoteAddress());

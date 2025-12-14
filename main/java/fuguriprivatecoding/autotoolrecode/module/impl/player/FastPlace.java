@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -30,7 +31,7 @@ public class FastPlace extends Module {
         if (Modules.getModule(Scaffold.class).isToggled()) return;
         if (mc.currentScreen != null) return;
         boolean needClick = Mouse.isButtonDown(1) && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
-        if (event instanceof TickEvent) {
+        if (event instanceof LegitClickTimingEvent) {
             if (stopWatch.reachedMS(delay) && needClick) {
                 mc.rightClickMouse();
                 delay = (long) (1000D / CPS.getRandomizedIntValue());

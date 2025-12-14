@@ -362,7 +362,4 @@ public class AltScreen extends GuiScreen {
     private void toggleAccount(Account account) {
         selectedAccount = Objects.equals(selectedAccount, account) ? null : account;
     }
-
-
-
 }
