@@ -78,7 +78,8 @@ public class Mode extends Setting {
 
     @Override
     public void setObject(JsonObject object) {
-        setMode(object.get("mode").getAsString());
+        if (object.has("mode"))
+            setMode(object.get("mode").getAsString());
     }
 
     private void initAnimation() {
