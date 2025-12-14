@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 
@@ -16,6 +17,8 @@ public class Fixes extends Module {
             .add("SaveMoveKeys", true)
             .add("JumpDelay", true);
 
+    IntegerSetting jumpChance = new IntegerSetting("JumpChance", this, 0, 100, 100);
+
     boolean wasInGui = false;
 
     @Override
@@ -24,15 +27,11 @@ public class Fixes extends Module {
         if (event instanceof MotionEvent) {
             if (fixes.get("ClickDelay")) mc.leftClickCounter = -1;
             if (fixes.get("SaveMoveKeys")) {
-                if (mc.currentScreen == null) {
-                    if (wasInGui) MoveUtils.updateControls();
-                    wasInGui = false;
-                } else {
-                    wasInGui = true;
-                }
+                if (wasInGui && mc.currentScreen == null) MoveUtils.updateControls();
+                wasInGui = mc.currentScreen == null;
             }
 
-            if (fixes.get("JumpDelay")) {
+            if (fixes.get("JumpDelay") && Math.random() <= jumpChance.getValue() / 100f) {
                 mc.thePlayer.jumpTicks = 0;
             }
         }

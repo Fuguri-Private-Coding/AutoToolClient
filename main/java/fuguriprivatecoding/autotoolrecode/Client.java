@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
@@ -155,7 +156,7 @@ public enum Client implements Imports, EventListener {
 
             int remainingSec = 30 - sec;
 
-            String text = "§f[§9AutoTool§f] Нет интернет подключения, клиент закроется через §9" + remainingSec + "§f s.";
+            String text = ClientUtils.prefixLog + "Нет интернет подключения, клиент закроется через §9" + remainingSec + "§f s.";
 
             float x = sc.getScaledWidth() / 2f - fontRenderer.getStringWidth(text) / 2f - 5;
             float y = 5;

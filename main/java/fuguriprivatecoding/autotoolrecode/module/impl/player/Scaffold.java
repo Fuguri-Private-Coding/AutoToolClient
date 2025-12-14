@@ -332,7 +332,7 @@ public class Scaffold extends Module {
                 RotationData data = new RotationData(rot, hit);
 
                 if (hit.typeOfHit == RayTrace.RayType.BLOCK &&
-                    hit.hitVec.yCoord <= mc.thePlayer.posY &&
+                    hit.hitVec.yCoord < mc.thePlayer.posY &&
                     hit.getBlockPos().equals(targetBlock) &&
                     hit.sideHit != EnumFacing.DOWN
                 ) dataList.add(data);
@@ -373,7 +373,7 @@ public class Scaffold extends Module {
 
                 if (hit.typeOfHit == RayTrace.RayType.BLOCK &&
                     hit.sideHit != EnumFacing.DOWN &&
-                    hit.hitVec.yCoord <= mc.thePlayer.posY &&
+                    hit.hitVec.yCoord < mc.thePlayer.posY &&
                     hit.getBlockPos().equals(targetBlock)
                 ) validRotations.add(data);
             }

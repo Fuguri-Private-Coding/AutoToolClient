@@ -76,13 +76,9 @@ public class HighJump extends Module {
 
             case "Motion" -> {
                 if (event instanceof JumpEvent e) {
-                    e.setHeight((float) motion.getValue());
+                    e.setHeight(motion.getValue());
                 }
             }
-
-
         }
-
-
     }
 }

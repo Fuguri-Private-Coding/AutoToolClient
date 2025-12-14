@@ -20,7 +20,7 @@ public class LongJump extends Module {
         .addModes("Matrix")
         ;
 
-    public final FloatSetting speed = new FloatSetting("Speed", this, () -> jumpMode.is("Matrix"), 0, 10, 5, 0.01f);
+    public final FloatSetting speed = new FloatSetting("Speed", this, () -> jumpMode.is("Matrix"), 0, 10, 5, 0.5f);
     public final IntegerSetting tick = new IntegerSetting("Ticks", this, () -> jumpMode.is("Matrix"), 0, 80, 25);
 
     private final Map<String, LongJumpMode> speedModes = new HashMap<>();
