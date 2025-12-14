@@ -281,10 +281,6 @@ public class GuiIngame extends Gui {
         GlStateManager.translate(0.0F, (float) (j - 48), 0.0F);
         this.mc.mcProfiler.startSection("chat");
 
-        if (glow.isToggled() && glow.module.get("Chat")) BloomUtils.addToDraw(() -> {
-            this.persistantChatGUI.drawChat(this.updateCounter, glow.chatColor.getFadedColor().getRGB());
-        });
-
         this.persistantChatGUI.drawChat(this.updateCounter);
         this.mc.mcProfiler.endSection();
         GlStateManager.popMatrix();

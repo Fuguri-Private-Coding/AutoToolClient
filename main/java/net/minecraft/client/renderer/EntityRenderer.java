@@ -1113,6 +1113,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
                     this.mc.ingameGUI.renderGameOverlay(partialTicks);
 
+                    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                    GlStateManager.disableLighting();
+                    GlStateManager.enableAlpha();
+
                     if (blur.isToggled()) BlurUtils.draw();
                     this.mc.getFramebuffer().bindFramebuffer(false);
                     this.framebuffer.bindFramebufferTexture();

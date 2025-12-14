@@ -75,24 +75,28 @@ public class ArrayList extends Module {
 
                 float width = font.getStringWidth(module.getName()) + horizontalSpacing.getValue() * 2 + 8;
 
+                float animValue = anim.getValue();
+                float alpha = Math.clamp(animValue, 0, 1);
+
                 switch (pos.getMode()) {
                     case "RightUp" -> renderRightUp(
-                        xOffset - width + anim.getValue() * width,
+                        xOffset - width + animValue * width,
                         yOffset,
                         module,
                         sc,
                         moduleList,
-                        anim.getValue()
+                        alpha
                     );
 
-                    case "LeftUp" -> renderLeftUp(xOffset - width + anim.getValue() * width,
+                    case "LeftUp" -> renderLeftUp(
+                        xOffset - width + animValue * width,
                         yOffset,
                         module,
                         moduleList,
-                        anim.getValue()
+                        alpha
                     );
                 }
-                yOffset += verticalSpacing.getValue() * anim.getValue();
+                yOffset += verticalSpacing.getValue() * animValue;
             }
         }
     }

@@ -463,6 +463,10 @@ public class RenderUtils implements Imports {
         drawMixedRoundedRect(x, y, x + width, y + height, color1, color2, radius, speed);
     }
 
+    public static void drawMixedRect(double x, double y, double width, double height, Color color1, Color color2, float speed) {
+        drawMixedRect(x, y, x + width, y + height, speed, color1, color2);
+    }
+
     public static void drawMixedRoundedRect(double x, double y, double x1, double y1, Color color1, Color color2, double radius, float speed) {
         if (x1 < x) {
             double temp = x;
@@ -519,7 +523,7 @@ public class RenderUtils implements Imports {
         stop2D();
     }
 
-    public static void drawMixedRect(double x, double y, double x1, double y1, int color1, int color2) {
+    public static void drawMixedRect(double x, double y, double x1, double y1, float speed, Color color1, Color color2) {
         if (x1 < x) {
             double temp = x;
             x = x1;
@@ -532,16 +536,21 @@ public class RenderUtils implements Imports {
             y1 = temp;
         }
 
+        int colorFirst = color1.getRGB();
+        int colorSecond = color2.getRGB();
+
+        double time = (double) (System.nanoTime() / 1000000L / 10L) * speed;
+
         start2D();
         GL11.glShadeModel(7425);
         GL11.glBegin(7);
-        ColorUtils.glColor(ColorUtils.mix(color1, color2, Math.sin(Math.toRadians((double)(System.nanoTime() / 1000000L / 10L))) + (double)1.0F, 2.0F), 100);
+        ColorUtils.glColor(ColorUtils.mix(colorFirst, colorSecond, Math.sin(Math.toRadians(time)) + (double)1.0F, 2.0F), 100);
         GL11.glVertex2d(x, y);
-        ColorUtils.glColor(ColorUtils.mix(color1, color2, Math.sin(Math.toRadians((double)(System.nanoTime() / 1000000L / 10L + 90L))) + (double)1.0F, 2.0F), 100);
+        ColorUtils.glColor(ColorUtils.mix(colorFirst, colorSecond, Math.sin(Math.toRadians(time + 90L)) + (double)1.0F, 2.0F), 100);
         GL11.glVertex2d(x1, y);
-        ColorUtils.glColor(ColorUtils.mix(color1, color2, Math.sin(Math.toRadians((double)(System.nanoTime() / 1000000L / 10L + 180L))) + (double)1.0F, 2.0F), 100);
+        ColorUtils.glColor(ColorUtils.mix(colorFirst, colorSecond, Math.sin(Math.toRadians(time + 180L)) + (double)1.0F, 2.0F), 100);
         GL11.glVertex2d(x1, y1);
-        ColorUtils.glColor(ColorUtils.mix(color1, color2, Math.sin(Math.toRadians((double)(System.nanoTime() / 1000000L / 10L + 260L))) + (double)1.0F, 2.0F), 100);
+        ColorUtils.glColor(ColorUtils.mix(colorFirst, colorSecond, Math.sin(Math.toRadians(time + 260L)) + (double)1.0F, 2.0F), 100);
         GL11.glVertex2d(x, y1);
         GL11.glEnd();
         stop2D();

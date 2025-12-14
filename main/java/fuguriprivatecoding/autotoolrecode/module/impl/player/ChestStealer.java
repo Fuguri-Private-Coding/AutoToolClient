@@ -48,11 +48,8 @@ public class ChestStealer extends Module {
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             if (mc.currentScreen instanceof GuiChest guiChest) {
-                if (checkName.isToggled()) {
-                    String name = guiChest.getLowerChestInventory().getDisplayName().getUnformattedText().toLowerCase();
-                    for (String str : list) {
-                        if (name.contains(str)) return;
-                    }
+                if (checkName.isToggled() && !guiChest.getLowerChestInventory().getDisplayName().getUnformattedText().contains("Chest")) {
+                    return;
                 }
 
                 if (!startDelayStopWatch.reachedMS(startDelay.getRandomizedIntValue())) return;

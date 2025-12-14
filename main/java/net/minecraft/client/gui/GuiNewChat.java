@@ -2,9 +2,14 @@ package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
 
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,8 +23,7 @@ import org.apache.logging.log4j.Logger;
 public class GuiNewChat extends Gui {
     static final Logger logger = LogManager.getLogger();
     final Minecraft mc;
-    @Getter
-    final List<String> sentMessages = Lists.<String>newArrayList();
+    @Getter final List<String> sentMessages = Lists.<String>newArrayList();
     final List<ChatLine> chatLines = Lists.<ChatLine>newArrayList();
     final List<ChatLine> drawnChatLines = Lists.<ChatLine>newArrayList();
     int scrollPos;
@@ -30,10 +34,6 @@ public class GuiNewChat extends Gui {
     }
 
     public void drawChat(int updateCounter) {
-        drawChat(updateCounter, 0);
-    }
-
-    public void drawChat(int updateCounter, int color) {
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
             int i = this.getLineCount();
             boolean flag = false;
@@ -77,10 +77,17 @@ public class GuiNewChat extends Gui {
                                 int i2 = 0;
                                 int j2 = -i1 * 9;
 
-                                drawRect(i2, j2 - 9, i2 + l + 4, j2, color == 0 ? l1 / 2 << 24 : color);
+                                Glow glow = Modules.getModule(Glow.class);
+
+                                if (glow != null && glow.isToggled() && glow.module.get("Chat")) {
+                                    BloomUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(i2, j2 - 9, l + 4, 9, 0, glow.chatColor.getColor(), glow.chatColor.getFadeColor(), glow.chatColor.getSpeed()));
+                                }
+
+                                drawRect(i2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
+
                                 String s = chatline.getChatComponent().getFormattedText();
                                 GlStateManager.enableBlend();
-                                this.mc.fontRendererObj.drawStringWithShadow(s, (float) i2, (float) (j2 - 8), color == 0 ? 16777215 + (l1 << 24) : color);
+                                this.mc.fontRendererObj.drawStringWithShadow(s, (float) i2, (float) (j2 - 8), 16777215 + (l1 << 24));
                                 GlStateManager.disableAlpha();
                                 GlStateManager.disableBlend();
                             }
@@ -99,8 +106,9 @@ public class GuiNewChat extends Gui {
                     if (l2 != i3) {
                         int k3 = j3 > 0 ? 170 : 96;
                         int l3 = this.isScrolled ? 13382451 : 3355562;
-                        drawRect(0, -j3, 2, -j3 - k1, color == 0 ? l3 + (k3 << 24) : color);
-                        drawRect(2, -j3, 1, -j3 - k1, color == 0 ? 13421772 + (k3 << 24) : color);
+
+                        drawRect(0, -j3, 2, -j3 - k1, l3 + (k3 << 24));
+                        drawRect(2, -j3, 1, -j3 - k1, 13421772 + (k3 << 24));
                     }
                 }
 
@@ -121,7 +129,7 @@ public class GuiNewChat extends Gui {
 
     public void printChatMessageWithOptionalDeletion(IChatComponent chatComponent, int chatLineId) {
         this.setChatLine(chatComponent, chatLineId, this.mc.ingameGUI.getUpdateCounter(), false);
-        logger.info("[CHAT] " + chatComponent.getUnformattedText());
+        logger.info("[CHAT] {}", chatComponent.getUnformattedText());
     }
 
     private void setChatLine(IChatComponent chatComponent, int chatLineId, int updateCounter, boolean displayOnly) {
@@ -139,18 +147,18 @@ public class GuiNewChat extends Gui {
                 this.scroll(1);
             }
 
-            this.drawnChatLines.add(0, new ChatLine(updateCounter, ichatcomponent, chatLineId));
+            this.drawnChatLines.addFirst(new ChatLine(updateCounter, ichatcomponent, chatLineId));
         }
 
         while (this.drawnChatLines.size() > 100) {
-            this.drawnChatLines.remove(this.drawnChatLines.size() - 1);
+            this.drawnChatLines.removeLast();
         }
 
         if (!displayOnly) {
-            this.chatLines.add(0, new ChatLine(updateCounter, chatComponent, chatLineId));
+            this.chatLines.addFirst(new ChatLine(updateCounter, chatComponent, chatLineId));
 
             while (this.chatLines.size() > 100) {
-                this.chatLines.remove(this.chatLines.size() - 1);
+                this.chatLines.removeLast();
             }
         }
     }
@@ -160,13 +168,13 @@ public class GuiNewChat extends Gui {
         this.resetScroll();
 
         for (int i = this.chatLines.size() - 1; i >= 0; --i) {
-            ChatLine chatline = (ChatLine) this.chatLines.get(i);
+            ChatLine chatline = this.chatLines.get(i);
             this.setChatLine(chatline.getChatComponent(), chatline.getChatLineID(), chatline.getUpdatedCounter(), true);
         }
     }
 
     public void addToSentMessages(String message) {
-        if (this.sentMessages.isEmpty() || !((String) this.sentMessages.get(this.sentMessages.size() - 1)).equals(message)) {
+        if (this.sentMessages.isEmpty() || !this.sentMessages.getLast().equals(message)) {
             this.sentMessages.add(message);
         }
     }
@@ -209,7 +217,7 @@ public class GuiNewChat extends Gui {
                     int i1 = k / this.mc.fontRendererObj.FONT_HEIGHT + this.scrollPos;
 
                     if (i1 >= 0 && i1 < this.drawnChatLines.size()) {
-                        ChatLine chatline = (ChatLine) this.drawnChatLines.get(i1);
+                        ChatLine chatline = this.drawnChatLines.get(i1);
                         int j1 = 0;
 
                         for (IChatComponent ichatcomponent : chatline.getChatComponent()) {

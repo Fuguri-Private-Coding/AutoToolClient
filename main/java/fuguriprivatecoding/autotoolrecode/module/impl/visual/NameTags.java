@@ -12,9 +12,6 @@ import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
@@ -30,8 +27,6 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "NameTags", category = Category.VISUAL, description = "Отображение никнейма игроков.")
 public class NameTags extends Module {
 
-    Mode fonts = new Mode("Fonts", this);
-
     FloatSetting yOffset = new FloatSetting("YOffset", this, 0f,5f,1f,0.1f);
     FloatSetting textYOffset = new FloatSetting("TextYOffset", this, -5,5f,0f,0.01f);
 
@@ -43,11 +38,6 @@ public class NameTags extends Module {
 
     MurderMystery murderDetector;
     MidClick midClick;
-
-    public NameTags() {
-        Fonts.fonts.forEach((fontName, _) -> fonts.addMode(fontName));
-        fonts.setMode("SFProRounded");
-    }
 
     @Override
     public void onEvent(Event event) {
@@ -82,8 +72,6 @@ public class NameTags extends Module {
     }
 
     private void renderNameTag(Entity entity, String name, Vec3 pos) {
-        ClientFontRenderer fontRenderer = Fonts.fonts.get(fonts.getMode());
-
         float distance = mc.thePlayer.getDistanceToEntity(entity);
         float scale = Math.max(distance / 2.5f, 5.0f);
         scale /= 200f;
@@ -94,16 +82,16 @@ public class NameTags extends Module {
         glRotatef(CameraRot.INST.getPitch(), 1.0f, 0.0f, 0.0f);
         glScalef(-scale, -scale, scale);
 
-        float nameWidth = fontRenderer.getStringWidth(name);
+        float nameWidth = mc.fontRendererObj.getStringWidth(name);
 
         float backgroundX = -nameWidth / 2f - 2.5f;
         float backgroundY = 0;
         float backgroundWidth = nameWidth + 5;
-        float backgroundHeight = fontRenderer.FONT_HEIGHT + 4;
+        float backgroundHeight = mc.fontRendererObj.FONT_HEIGHT + 4;
 
         Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, backgroundColor.getFadedColor().getRGB());
 
-        fontRenderer.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 5 + textYOffset.getValue(), Color.white, textShadow.isToggled());
+        mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 5 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
 
         if (glow.isToggled()) {
             BloomUtils.addToDraw(() -> Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glowColor.getFadedColor().getRGB()));
