@@ -3,7 +3,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.player;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;

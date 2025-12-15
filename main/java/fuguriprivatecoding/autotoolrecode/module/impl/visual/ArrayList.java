@@ -70,7 +70,7 @@ public class ArrayList extends Module {
             float xOffset = this.xPos.getValue() + horizontalSpacing.getValue();
             float yOffset = this.yPos.getValue();
             for (Module module : moduleList) {
-                EasingAnimation anim = module.getSlideAnim();
+                EasingAnimation anim = module.getArrayListAnim();
                 anim.update(animSpeed.getValue(), Easing.OUT_BACK);
 
                 float width = font.getStringWidth(module.getName()) + horizontalSpacing.getValue() * 2 + 8;

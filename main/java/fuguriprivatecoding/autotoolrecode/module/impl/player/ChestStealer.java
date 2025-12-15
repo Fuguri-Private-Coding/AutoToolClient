@@ -17,11 +17,11 @@ import org.lwjgl.util.vector.Vector2f;
 @ModuleInfo(name = "ChestStealer", category = Category.PLAYER, description = "Автоматически берет вещи из сундука.")
 public class ChestStealer extends Module {
 
-    final DoubleSlider startDelay = new DoubleSlider("StartDelay", this, 0, 1000, 250, 1);
-    DoubleSlider delay = new DoubleSlider("Delay", this, 0,500,200,1);
+    final DoubleSlider startDelay = new DoubleSlider("StartDelay", this, 0, 20, 5, 1);
+    DoubleSlider delay = new DoubleSlider("Delay", this, 0,10,1,1);
 
     final CheckBox autoClose = new CheckBox("AutoClose", this, true);
-    DoubleSlider closeDelay = new DoubleSlider("CloseDelay", this, autoClose::isToggled, 0,500,200,1);
+    DoubleSlider closeDelay = new DoubleSlider("CloseDelay", this, autoClose::isToggled, 0,10,1,1);
 
     final CheckBox checkName = new CheckBox("CheckName", this, true);
 
@@ -47,15 +47,13 @@ public class ChestStealer extends Module {
                     return;
                 }
 
-                if (!startDelayStopWatch.reachedMS(startDelay.getRandomizedIntValue())) return;
+                if (!startDelayStopWatch.reachedMS(startDelay.getRandomizedIntValue() * 50L)) return;
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
                 int availableSlot = getClosestSlotIndex(container, lastPos);
 
-                if (delayStopWatch.reachedMS(delay.getRandomizedIntValue()) && availableSlot != -1) {
-                    Slot slot = mc.thePlayer.openContainer.getSlot(availableSlot);
-
-                    guiChest.activeSlot = slot;
+                if (delayStopWatch.reachedMS(delay.getRandomizedIntValue() * 50L) && availableSlot != -1) {
+                    guiChest.activeSlot = mc.thePlayer.openContainer.getSlot(availableSlot);
 
                     mc.playerController.windowClick(container.windowId, availableSlot, 0, 1, mc.thePlayer);
                     delayStopWatch.reset();
@@ -63,7 +61,7 @@ public class ChestStealer extends Module {
 
                 if (autoClose.isToggled()) {
                     if (InventoryUtils.isInventoryFull() || InventoryUtils.isInventoryEmpty(container.getLowerChestInventory()) || availableSlot == -1) {
-                        if (closeDelayStopWatch.reachedMS(closeDelay.getRandomizedIntValue())) {
+                        if (closeDelayStopWatch.reachedMS(closeDelay.getRandomizedIntValue() * 50L)) {
                             mc.thePlayer.closeScreen();
                         }
                     } else {

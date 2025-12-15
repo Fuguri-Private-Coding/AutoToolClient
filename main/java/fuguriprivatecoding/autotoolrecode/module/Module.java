@@ -32,7 +32,7 @@ public class Module implements Imports, SettingAble, EventListener {
 
 	@Getter @Setter boolean isHovered;
 
-	@Getter EasingAnimation slideAnim = new EasingAnimation(0);
+	@Getter EasingAnimation arrayListAnim = new EasingAnimation(0);
 	@Getter EasingAnimation toggleAnimation = new EasingAnimation();
     @Getter EasingAnimation descAnim = new EasingAnimation();
 
@@ -43,8 +43,9 @@ public class Module implements Imports, SettingAble, EventListener {
 
 	public void toggle() {
 		toggled = !toggled;
-		float volume = 1;
-		if (Modules.getModule(ClientSettings.class) != null) volume = Modules.getModule(ClientSettings.class).toggleModuleVolume.getValue();
+
+        ClientSettings clientSettings = Modules.getModule(ClientSettings.class);
+        float volume = clientSettings != null ? clientSettings.toggleModuleVolume.getValue() : 1;
 
         playSound(volume);
 
@@ -56,13 +57,17 @@ public class Module implements Imports, SettingAble, EventListener {
 			onDisable();
 		}
 
-        slideAnim.setEnd(toggled);
-	    if (!Client.INST.isStarting()) Notifications.addNotification("§9" + getName(), toggled);
+        arrayListAnim.setEnd(toggled);
+        addNotification();
+    }
+
+    void addNotification() {
+        Notifications notifications = Modules.getModule(Notifications.class);
+        if (!Client.INST.isStarting() && notifications != null && notifications.isToggled() && !name.equalsIgnoreCase("ClickGui")) Notifications.addNotification("§9" + getName(), toggled);
     }
 
 	void playSound(float volume) {
 		if (Client.INST.isStarting() || name.equalsIgnoreCase("ClickGui")) return;
-
         (toggled ? Sounds.getEnableSound() : Sounds.getDisableSound()).asyncPlay(volume);
 	}
 

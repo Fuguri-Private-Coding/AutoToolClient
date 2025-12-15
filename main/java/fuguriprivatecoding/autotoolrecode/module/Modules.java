@@ -141,6 +141,6 @@ public class Modules {
     }
 
 	public List<Module> getEnabledModules() {
-		return modules.stream().filter(module -> !module.isHide() && (module.isToggled() || (!module.toggled && module.slideAnim.isAnimating()))).toList();
+		return modules.stream().filter(module -> !module.isHide() && (module.isToggled() || (!module.toggled && module.arrayListAnim.isAnimating()))).toList();
 	}
 }
