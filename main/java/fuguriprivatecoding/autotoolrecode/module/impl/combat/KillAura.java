@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -28,6 +29,8 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.*;
+import org.joml.Vector2f;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -114,7 +117,7 @@ public class KillAura extends Module {
         if (Modules.getModule(Scaffold.class).isToggled()) return;
 
         if (target != null) {
-            if (event instanceof RunGameLoopEvent && mc.currentScreen == null && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
+            if (event instanceof RunGameLoopEvent && mc.currentScreen == null && !mc.thePlayer.isUsingItem() && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
                 if (TimerRange.balance == 0) {
                     if (clickTimer.reachedMS(delay)) {
                         clickTimer.reset();
@@ -207,6 +210,8 @@ public class KillAura extends Module {
     private Rot getRotation(EntityLivingBase target, Rot lr, AxisAlignedBB box) {
         boolean teleport = (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled();
 
+        box.expand(-0.1, -0.1, -0.1);
+
         Rot needRot = teleport ?
             RotUtils.getBestRotation(box) :
             switch (hitVec.getMode()) {
@@ -220,9 +225,9 @@ public class KillAura extends Module {
         if (needRot == null) return null;
 
         if (smartAim.isToggled()) {
-            RayTrace hit = RayCastUtils.rayCast(needRot, findDistance.getValue());
+            RayTrace hit = RayCastUtils.rayCast(new Vector2f(needRot.getYaw(), needRot.getPitch()), findDistance.getValue(), 0.3f);
 
-            if (mc.thePlayer.canVecWallsBeSeen(hit.hitVec)) {
+            if (hit == null || hit.typeOfHit != RayTrace.RayType.ENTITY) {
                 needRot = RotUtils.getPossibleBestRotation(needRot, box);
             }
         }

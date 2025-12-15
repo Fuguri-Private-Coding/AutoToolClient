@@ -182,8 +182,9 @@ public class TargetHUD extends Module {
         StencilUtils.endWriteTexture();
 
         if (glow.isToggled()) {
-            Color glowColor = new Colors(this.glowColor.getFadedColor()).withMultiplyAlphaClamp(alpha);
-            BloomUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), glowColor));
+            Color glowColorFirst = new Colors(this.glowColor.getColor()).withMultiplyAlphaClamp(alpha);
+            Color glowColorSecond = new Colors(this.glowColor.getFadeColor()).withMultiplyAlphaClamp(alpha);
+            BloomUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(x, y, width, height, bgRadius.getValue(), glowColorFirst, glowColorSecond, glowColor.getSpeed()));
         }
 
         if (blur.isToggled()) BlurUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), Colors.WHITE.withAlpha(alpha)));

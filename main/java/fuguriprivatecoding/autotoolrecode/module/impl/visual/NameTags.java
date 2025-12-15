@@ -80,7 +80,7 @@ public class NameTags extends Module {
         glNormal3f(0.0f, 1.0f, 0.0f);
         glRotatef(-CameraRot.INST.getYaw(), 0.0f, 1.0f, 0.0f);
         glRotatef(CameraRot.INST.getPitch(), 1.0f, 0.0f, 0.0f);
-        glScalef(-scale, -scale, scale);
+        glScalef(mc.gameSettings.thirdPersonView == 2 ? scale : -scale, -scale, scale);
 
         float nameWidth = mc.fontRendererObj.getStringWidth(name);
 
@@ -91,10 +91,10 @@ public class NameTags extends Module {
 
         Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, backgroundColor.getFadedColor().getRGB());
 
-        mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 5 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
+        mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
 
         if (glow.isToggled()) {
-            BloomUtils.addToDraw(() -> Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glowColor.getFadedColor().getRGB()));
+            BloomUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(backgroundX, backgroundY, backgroundWidth, backgroundHeight, 0, glowColor.getColor(), glowColor.getFadeColor(), glowColor.getSpeed()));
         }
 
         glPopMatrix();

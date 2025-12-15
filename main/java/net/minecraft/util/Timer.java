@@ -1,5 +1,7 @@
 package net.minecraft.util;
 
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.TimerRange;
 import net.minecraft.client.Minecraft;
 
 public class Timer
