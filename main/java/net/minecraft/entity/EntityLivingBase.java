@@ -16,6 +16,7 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Animations;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -77,8 +78,11 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     public float cameraPitch;
     public float randomUnused2;
     public float randomUnused1;
+    @Setter
     public float renderYawOffset;
     public float prevRenderYawOffset;
+    @Setter
+    @Getter
     public float rotationYawHead;
     public float rotationPitchHead;
     public float prevRotationPitchHead;
@@ -115,6 +119,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     private int lastAttackerTime;
     private float landMovementFactor;
     public int jumpTicks;
+    @Getter
     private float absorptionAmount;
     public double nx, ny, nz, rx, ry, rz, lrx, lry, lrz;
     public int posRotIncrements;
@@ -1565,17 +1570,17 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         }
     }
 
-    /*public boolean canEntityBeSeen(Entity entityIn)
-    {
-        return this.worldObj.rayTraceBlocks(new Vec3(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), new Vec3(entityIn.posX, entityIn.posY + (double)entityIn.getEyeHeight(), entityIn.posZ)) == null;
-    }*/
-
     public boolean canEntityBeSeen(Entity entityIn) {
         return this.worldObj.rayTraceBlocks(getPositionEyes(1.0F), entityIn.getPositionEyes(1.0F)) == null;
     }
 
     public boolean canVecBeSeen(Vec3 vec) {
         return worldObj.rayTraceBlocks(getPositionEyes(1.0F), vec) == null;
+    }
+
+    public boolean canVecWallsBeSeen(Vec3 vec) {
+        RayTrace trace = worldObj.rayTraceBlocks(getPositionEyes(1.0F), vec);
+        return trace == null || trace.typeOfHit != RayTrace.RayType.ENTITY;
     }
 
     public Vec3 getLookVec() {
@@ -1616,22 +1621,6 @@ public abstract class EntityLivingBase extends Entity implements Imports {
 
     protected void setBeenAttacked() {
         this.velocityChanged = this.rand.nextDouble() >= this.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).getAttributeValue();
-    }
-
-    public float getRotationYawHead() {
-        return this.rotationYawHead;
-    }
-
-    public void setRotationYawHead(float rotation) {
-        this.rotationYawHead = rotation;
-    }
-
-    public void setRenderYawOffset(float offset) {
-        this.renderYawOffset = offset;
-    }
-
-    public float getAbsorptionAmount() {
-        return this.absorptionAmount;
     }
 
     public void setAbsorptionAmount(float amount) {

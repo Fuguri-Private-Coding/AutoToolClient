@@ -1,14 +1,14 @@
 package fuguriprivatecoding.autotoolrecode.event.events.render;
 
+import fuguriprivatecoding.autotoolrecode.event.Event;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.event.CancelableEvent;
 import net.minecraft.item.ItemStack;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class UpdateRenderingItem extends CancelableEvent {
+public class UpdateRenderingItem extends Event {
     ItemStack stack;
 }

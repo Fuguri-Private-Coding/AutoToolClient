@@ -1,6 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.event.events.render;
 
-import fuguriprivatecoding.autotoolrecode.event.CancelableEvent;
+import fuguriprivatecoding.autotoolrecode.event.Event;
 
-public class ScoreboardRenderEvent extends CancelableEvent {
+public class ScoreboardRenderEvent extends Event {
 }

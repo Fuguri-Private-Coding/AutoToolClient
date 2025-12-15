@@ -222,7 +222,7 @@ public class KillAura extends Module {
         if (smartAim.isToggled()) {
             RayTrace hit = RayCastUtils.rayCast(needRot, findDistance.getValue());
 
-            if (mc.thePlayer.canVecBeSeen(hit.hitVec)) {
+            if (mc.thePlayer.canVecWallsBeSeen(hit.hitVec)) {
                 needRot = RotUtils.getPossibleBestRotation(needRot, box);
             }
         }

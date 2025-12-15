@@ -11,8 +11,6 @@ import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-
-import java.lang.management.MemoryNotificationInfo;
 import java.util.ArrayList;
 import java.util.List;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;

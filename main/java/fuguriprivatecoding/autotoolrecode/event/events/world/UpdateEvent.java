@@ -1,6 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.event.events.world;
 
-import fuguriprivatecoding.autotoolrecode.event.CancelableEvent;
+import fuguriprivatecoding.autotoolrecode.event.Event;
 
-public class UpdateEvent extends CancelableEvent {
+public class UpdateEvent extends Event {
 }

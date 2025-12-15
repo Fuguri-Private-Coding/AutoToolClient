@@ -39,11 +39,6 @@ public class ChestStealer extends Module {
         closeDelayStopWatch = new StopWatch();
     }
 
-    private final String[] list = new String[]{"mode", "delivery", "menu", "selector", "game", "gui", "server", "inventory", "play", "teleporter",
-            "shop", "melee", "armor", "block", "castle", "mini", "warp", "teleport", "user", "team", "tool", "sure", "trade", "cancel", "accept",
-            "soul", "book", "recipe", "profile", "tele", "port", "map", "kit", "select", "lobby", "vault", "lock", "anticheat", "travel", "settings",
-            "user", "preference", "compass", "cake", "wars", "buy", "upgrade", "ranged", "potions", "utility"};
-
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {

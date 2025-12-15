@@ -1,13 +1,13 @@
 package fuguriprivatecoding.autotoolrecode.event.events.player;
 
+import fuguriprivatecoding.autotoolrecode.event.Event;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.event.CancelableEvent;
 
 @Setter
 @Getter
 @AllArgsConstructor
-public class MoveFlyingEvent extends CancelableEvent {
+public class MoveFlyingEvent extends Event {
 	float yaw, strafe, forward, friction;
 }

@@ -5,6 +5,10 @@ import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.TimerRange;
+import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.ESP;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.entity.Entity;
@@ -21,13 +25,17 @@ public class PositionResolverComponent implements Imports, EventListener {
 
     @Override
     public boolean listen() {
-        return Utils.isWorldLoaded();
+        BackTrack backTrack = Modules.getModule(BackTrack.class);
+        TimerRange timerRange = Modules.getModule(TimerRange.class);
+        ESP esp = Modules.getModule(ESP.class);
+
+        return Utils.isWorldLoaded() && (backTrack.isToggled() || timerRange.isToggled() || esp.isToggled());
     }
 
     @Override
     public void onEvent(Event event) {
         if (event instanceof PacketEvent e) {
-            Packet packet = e.getPacket();
+            Packet<?> packet = e.getPacket();
 
             if (packet instanceof S14PacketEntity s14 && s14.getEntity(mc.theWorld) instanceof EntityLivingBase entityLivingBase) {
                 entityLivingBase.nx += s14.getPositionX() / 32.0;

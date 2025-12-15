@@ -2,12 +2,11 @@ package fuguriprivatecoding.autotoolrecode.utils.rotation;
 
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -95,26 +94,6 @@ public class RotUtils implements Imports {
 		};
 	}
 
-	public static Rot getRotationToBlock(BlockPos blockPos, EnumFacing direction) {
-        double centerX = blockPos.getX() + 0.5 + direction.getFrontOffsetX() * 0.5;
-        double centerY = blockPos.getY() + 0.5 + direction.getFrontOffsetY() * 0.5;
-        double centerZ = blockPos.getZ() + 0.5 + direction.getFrontOffsetZ() * 0.5;
-
-		double playerX = mc.thePlayer.posX;
-		double playerY = mc.thePlayer.posY + mc.thePlayer.getEyeHeight();
-		double playerZ = mc.thePlayer.posZ;
-
-		double deltaX = centerX - playerX;
-		double deltaY = centerY - playerY;
-		double deltaZ = centerZ - playerZ;
-
-		double distanceXZ = sqrt(deltaX * deltaX + deltaZ * deltaZ);
-		float yaw = (float) (toDegrees(atan2(deltaZ, deltaX)) - 90.0F);
-		float pitch = (float) -toDegrees(atan2(deltaY, distanceXZ));
-
-		return new Rot(yaw, pitch);
-	}
-
 	public static Rot getBestRotation(AxisAlignedBB bb) {
 		return getRotationToPoint(getBestHitVec(bb));
 	}
@@ -172,15 +151,14 @@ public class RotUtils implements Imports {
 
         Vec3 best = null;
 
-        for(double x = box.minX; x <= box.maxX; x += stepX) {
+        for (double x = box.minX; x <= box.maxX; x += stepX) {
             for (double z = box.minZ; z <= box.maxZ; z += stepY) {
                 for (double y = box.minY; y <= box.maxY; y += stepZ) {
                     Vec3 pos = new Vec3(x, y, z);
                     if (mc.thePlayer.canVecBeSeen(pos)) {
-                        Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
-                        double dist = Math.sqrt(Math.pow(x - eyes.xCoord, 2.0) + Math.pow(y - eyes.yCoord, 2.0) + Math.pow(z - eyes.zCoord, 2.0));
-                        if (dist <= nearest) {
-                            nearest = dist;
+                        double distance = DistanceUtils.getDistance(pos);
+                        if (distance <= nearest) {
+                            nearest = distance;
                             best = pos;
                         }
                     }

@@ -1,12 +1,12 @@
 package fuguriprivatecoding.autotoolrecode.event.events.player;
 
+import fuguriprivatecoding.autotoolrecode.event.Event;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import fuguriprivatecoding.autotoolrecode.event.CancelableEvent;
 
 @AllArgsConstructor
 @Getter
-public class ClickEvent extends CancelableEvent {
+public class ClickEvent extends Event {
     private final Button button;
 
     public enum Button {
