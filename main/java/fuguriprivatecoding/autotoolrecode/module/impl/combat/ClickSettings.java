@@ -15,5 +15,7 @@ public class ClickSettings extends Module {
 
     public CheckBox simulateDoubleClick = new CheckBox("SimulateDoubleClick", this, false);
     public IntegerSetting chanceDoubleClick = new IntegerSetting("ChanceDoubleClick", this, simulateDoubleClick::isToggled, 0, 100, 100);
+    public CheckBox forceClickReduce = new CheckBox("ForceClickReduce", this);
+    public IntegerSetting minDiffToForce = new IntegerSetting("MinDiffToForce", this, 0, 180, 45);
 
 }

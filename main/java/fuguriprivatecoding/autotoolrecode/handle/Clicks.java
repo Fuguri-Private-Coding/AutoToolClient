@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.ClickSettings;
@@ -13,6 +14,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import lombok.Getter;
+import net.minecraft.util.MathHelper;
 
 public class Clicks implements Imports, EventListener {
 
@@ -53,6 +55,14 @@ public class Clicks implements Imports, EventListener {
     public boolean needClick(EntityLivingBase target) {
         if (target == null || !clickSettings.isToggled()) {
             return true;
+        }
+
+        if (clickSettings.forceClickReduce.isToggled()) {
+            float forceClickToReduce = MathHelper.wrapDegree(mc.thePlayer.rotationYaw - RotUtils.getRotationFromDiff(mc.thePlayer.getMotionVector()).getYaw());
+
+            if (Math.abs(forceClickToReduce) > clickSettings.minDiffToForce.getValue()) {
+                return true;
+            }
         }
 
         int startHurtTime = clickSettings.startHurtTime.getRandomizedIntValue();
