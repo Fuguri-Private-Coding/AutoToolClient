@@ -94,7 +94,7 @@ public class NameTags extends Module {
         mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
 
         if (glow.isToggled()) {
-            BloomUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(backgroundX, backgroundY, backgroundWidth, backgroundHeight, 0, glowColor.getColor(), glowColor.getFadeColor(), glowColor.getSpeed()));
+            BloomUtils.addToDraw(() -> Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glowColor.getFadedColor().getRGB()));
         }
 
         glPopMatrix();

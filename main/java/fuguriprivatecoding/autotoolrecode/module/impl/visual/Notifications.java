@@ -33,6 +33,8 @@ public class Notifications extends Module {
 
     public final FloatSetting removeTime = new FloatSetting("RemoveTime", this, 100, 1500, 250, 50);
 
+    final FloatSetting gapOffset = new FloatSetting("GapOffset", this, 0,50,20,0.1f);
+
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
 
@@ -97,7 +99,7 @@ public class Notifications extends Module {
                 fontRenderer.drawString(text, x + 5, y + 5f, textColor);
 
                 ScaleUtils.stopScaling();
-                yOffset += 20 * openAnim.getValue();
+                yOffset += gapOffset.getValue() * openAnim.getValue();
             }
         }
     }

@@ -347,9 +347,7 @@ public class Scaffold extends Module {
 
         if (dataList.isEmpty()) return lastRotation.getPitch();
 
-        dataList.sort(Comparator.comparingDouble(data -> {
-            return Math.abs(mc.thePlayer.rotationPitch) - data.rotation().getPitch();
-        }));
+        dataList.sort(Comparator.comparingDouble(data -> Math.abs(mc.thePlayer.rotationPitch) - data.rotation().getPitch()));
 
         RotationData rotationData = dataList.getFirst();
 
@@ -442,3 +440,4 @@ public class Scaffold extends Module {
         return bestSlot;
     }
 }
+

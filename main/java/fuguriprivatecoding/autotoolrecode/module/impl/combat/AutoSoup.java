@@ -112,7 +112,7 @@ public class AutoSoup extends Module {
     private int getSoupSlot() {
         int slot = -1;
         ItemStack heldItem = mc.thePlayer.getHeldItem();
-        for (int i = 0; i < 9; ++i) {
+        for (int i = 9; i > 0; --i) {
             final ItemStack itemStack = mc.thePlayer.inventory.mainInventory[i];
             if (itemStack != null && itemStack.getItem() instanceof ItemSoup) {
                 if (heldItem != null && heldItem.getItem() instanceof ItemSoup) {

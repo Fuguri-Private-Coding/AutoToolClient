@@ -83,7 +83,7 @@ public class ScoreBoard extends Module {
                     ScorePlayerTeam scoreplayerteam2 = scoreboard.getPlayersTeam(score2.getPlayerName());
                     String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam2, score2.getPlayerName());
                     if (width < fontRenderer.getStringWidth(s1)) {
-                        width = (float) fontRenderer.getStringWidth(s1 + "    ");
+                        width = fontRenderer.getStringWidth(s1 + "    ");
                     }
                 }
 
