@@ -80,7 +80,7 @@ public class MainScreen extends GuiScreen {
         String discord = "нах ты открыл, ладно нажимай.";
         boolean isHoveredText = GuiUtils.isHovered(mouseX, mouseY, sc.getScaledWidth() / 2f - font.getStringWidth(discord) / 2f, sc.getScaledHeight() / 2f + 2 - heightAnim, font.getStringWidth(discord), 9);
 
-        Color hoveredColor = isHoveredText ? Colors.RED.withAlphaClamp(anim.getValue()) : Colors.WHITE.withAlphaClamp(anim.getValue());
+        Color hoveredColor = isHoveredText && anim.getValue() == 1 ? Colors.RED.withAlphaClamp(anim.getValue()) : Colors.WHITE.withAlphaClamp(anim.getValue());
         font.drawCenteredString(discord, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f + 5 - heightAnim, hoveredColor);
 
         ScissorUtils.disableScissor();
@@ -112,7 +112,7 @@ public class MainScreen extends GuiScreen {
 
         boolean isHoveredText = GuiUtils.isHovered(mouseX, mouseY, sc.getScaledWidth() / 2f - font.getStringWidth(discord) / 2f, sc.getScaledHeight() / 2f + 2 - heightAnim, font.getStringWidth(discord), 9);
 
-        if (isHoveredText && mouseButton == 0) {
+        if (isHoveredText && mouseButton == 0 && anim.getValue() == 1) {
             String url = "https://discord.gg/yuu5f5J8mv";
             try {
                 Desktop.getDesktop().browse(new URI(url));
