@@ -9,12 +9,16 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 @UtilityClass
 public class PlayerUtils implements Imports {
+
+    private final List<Material> blackListMaterial = Arrays.asList(
+        Material.lava, Material.water, Material.cactus, Material.air, Material.anvil, Material.cake,
+        Material.carpet, Material.dragonEgg, Material.fire, Material.grass, Material.portal, Material.redstoneLight,
+        Material.circuits, Material.clay, Material.coral
+    );
 
     private final HashMap<Integer, Integer> GOOD_POTIONS = new HashMap<>() {{
         put(6, 1); // Instant Health
@@ -130,7 +134,7 @@ public class PlayerUtils implements Imports {
                         double ey = MathHelper.clamp(mc.thePlayer.posY, blockPos.getY(), (double) blockPos.getY() + block.getBlockBoundsMaxY());
                         double ez = MathHelper.clamp(mc.thePlayer.posZ, blockPos.getZ(), (double) blockPos.getZ() + block.getBlockBoundsMaxZ());
                         Vec3 vec3 = new Vec3(ex, ey, ez);
-                        if (block.getMaterial() != Material.water && block.getMaterial() != Material.lava) {
+                        if (!blackListMaterial.contains(block.getMaterial())) {
                             positions.add(vec3);
                             hashMap.put(vec3, blockPos);
                         }
@@ -146,7 +150,6 @@ public class PlayerUtils implements Imports {
 
         return null;
     }
-
 
     /**
      * Checks if a potion is good
