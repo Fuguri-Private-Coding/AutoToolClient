@@ -18,7 +18,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -139,7 +139,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 			case 20 -> "_";
 			default -> "§k" + "AutoTool".substring(0, min(delay - 20, 8));
 		};
-		final ClientFontRenderer fontRenderer = Fonts.fonts.get(clickGui.fonts.getMode());
+		final ClientFont fontRenderer = Fonts.fonts.get(clickGui.fonts.getMode());
 
 		Modules.getModules().sort((o1, o2) -> {
 			int width1 = (int) fontRenderer.getStringWidth(o1.getName());
@@ -161,7 +161,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 			lastMouse.set(mouseX, mouseY);
 		}
 
-		final float clientNameWidth = (float) fontRenderer.getStringWidth(Client.INST.CLIENT_NAME);
+		final float clientNameWidth = fontRenderer.getStringWidth(Client.INST.CLIENT_NAME);
 
 		modulesScrolls.endY	= modulesScroll;
 		settingsScrolls.endY = settingsScroll;
@@ -218,7 +218,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 		float widthsModule = 0;
 		for (Module module : Modules.getModules()) {
-			float moduleWidth = (float) fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
+			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			if (moduleWidth > widthsModule) widthsModule = moduleWidth;
 		}
 
@@ -297,7 +297,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
             Color toggleColor = ColorUtils.interpolateColor(category.isHovered() ? CATEGORY_COLOR.darker() : CATEGORY_COLOR, category.isHovered() ? mixedCategoryColor.darker() : mixedCategoryColor, toggleCategoryAnim.getValue());
 
             fontRenderer.drawString(category.name, background.x + verticalLineXOffset + 5 + 5 + offset, background.y + 4 + 1, toggleColor);
-			offset += (float) (fontRenderer.getStringWidth(category.name) + 5);
+			offset += (fontRenderer.getStringWidth(category.name) + 5);
 		}
 
 		RoundedUtils.drawRect(background.x + verticalLineXOffset, background.y + 15, 0.05f, sizeBackground.y - 15, 0f, Color.BLACK);
@@ -317,7 +317,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 			for (Setting setting : selectedModule.getSettings()) {
 				if (!setting.isVisible()) continue;
 
-                float settingWidth = (float) fontRenderer.getStringWidth(setting.getName() + " ");
+                float settingWidth = fontRenderer.getStringWidth(setting.getName() + " ");
 				fontRenderer.drawString(setting.getName() + " ", background.x + verticalLineXOffset + 5, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset - 0.5f, CATEGORY_COLOR);
 
                 MAIN_COLOR = clickGui.color.getMixedColor(selectedModule.getSettings().indexOf(setting));
@@ -349,7 +349,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 							if (notLast) {
 								fontRenderer.drawString(",", background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode), background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset, CATEGORY_COLOR);
 							}
-							xOffset += (float) (fontRenderer.getStringWidth(mode) + 5);
+							xOffset += (fontRenderer.getStringWidth(mode) + 5);
 						}
 						offset += yOffset;
 						settingsTotalHeight += (int) yOffset;
@@ -380,7 +380,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 							if (notLast) {
 								fontRenderer.drawString(",", background.x + verticalLineXOffset + 5 + settingWidth + 1 + xOffset + fontRenderer.getStringWidth(mode), background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset, Color.WHITE);
 							}
-							xOffset += (float) (fontRenderer.getStringWidth(mode) + 5);
+							xOffset += (fontRenderer.getStringWidth(mode) + 5);
 						}
 						offset += yOffset;
 						settingsTotalHeight += (int) yOffset;
@@ -798,7 +798,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		ClientFontRenderer fontRenderer = Fonts.fonts.get(clickGui.fonts.getMode());
+		ClientFont fontRenderer = Fonts.fonts.get(clickGui.fonts.getMode());
 
 		float scale = clientSettings.scale.getValue();
 
@@ -878,7 +878,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 		if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y) return;
 
-		final float clientNameWidth = (float) fontRenderer.getStringWidth(Client.INST.CLIENT_NAME);
+		final float clientNameWidth = fontRenderer.getStringWidth(Client.INST.CLIENT_NAME);
 
 		boolean resize = mouseX > background.x + sizeBackground.x - 5 && mouseX < background.x + sizeBackground.x && mouseY > background.y + sizeBackground.y - 5 && mouseY < background.y + sizeBackground.y;
 
@@ -889,7 +889,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 		float widthsModule = 0;
 		for (Module module : Modules.getModules()) {
-			float moduleWidth = (float) fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
+			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			if (moduleWidth > widthsModule) widthsModule = moduleWidth;
 		}
 
@@ -906,7 +906,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		float offset = modulesScrolls.y;
 
 		for (Module module : Modules.getModulesByCategory(selectedCategory))	{
-			float moduleWidth = (float) fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
+			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 9;
 			if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y || mouseY < background.y + 15) continue;
 			if (moduleCondition) {
@@ -949,7 +949,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 					}
 				}
 			}
-			offset += (float) (fontRenderer.getStringWidth(category.name) + 5);
+			offset += (fontRenderer.getStringWidth(category.name) + 5);
 		}
 
 		offset = settingsScrolls.y;
@@ -964,7 +964,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 				if (!setting.isVisible())
 					continue;
 
-				float settingWidth = (float) fontRenderer.getStringWidth(setting.getName() + " ");
+				float settingWidth = fontRenderer.getStringWidth(setting.getName() + " ");
 				if (setting instanceof MultiMode multiBooleanSetting) {
 					float xOffset = 0;
 					float yOffset = 0;
@@ -982,7 +982,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 						if (clickMode && Mouse.isButtonDown(0) && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 							multiBooleanSetting.set(mode, !isSelected);
 						}
-						xOffset += (float) (fontRenderer.getStringWidth(mode) + 5);
+						xOffset += (fontRenderer.getStringWidth(mode) + 5);
 					}
 					offset += yOffset;
 				}
@@ -1000,7 +1000,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 						&& mouseY < background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + yOffset + 10) {
 							modeSetting.setMode(mode);
 						}
-						xOffset += (float) (fontRenderer.getStringWidth(mode) + 5);
+						xOffset += (fontRenderer.getStringWidth(mode) + 5);
 					}
 					offset += yOffset;
 				}

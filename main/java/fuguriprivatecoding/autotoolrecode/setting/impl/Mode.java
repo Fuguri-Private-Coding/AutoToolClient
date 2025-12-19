@@ -3,7 +3,7 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
@@ -39,12 +39,12 @@ public class Mode extends Setting {
     }
 
     @Override
-    public float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha) {
+    public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
         return 0;
     }
 
     @Override
-    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
 
         return 0;
     }

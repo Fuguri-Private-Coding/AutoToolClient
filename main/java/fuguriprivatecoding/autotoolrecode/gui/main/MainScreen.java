@@ -7,7 +7,7 @@ import fuguriprivatecoding.autotoolrecode.gui.buttons.ImgButton;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
@@ -54,7 +54,7 @@ public class MainScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         final ScaledResolution sc = new ScaledResolution(mc);
-        final ClientFontRenderer font = Fonts.fonts.get("SFPro");
+        final ClientFont font = Fonts.fonts.get("SFPro");
 
         final String hello = "Привет §a" + Client.INST.getProfile().toColoredString() + ".";
 
@@ -105,7 +105,7 @@ public class MainScreen extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         ScaledResolution sc = new ScaledResolution(mc);
-        ClientFontRenderer font = Fonts.fonts.get("SFPro");
+        ClientFont font = Fonts.fonts.get("SFPro");
         String discord = "нах ты открыл, ладно нажимай.";
 
         float heightAnim = 15 * anim.getValue();

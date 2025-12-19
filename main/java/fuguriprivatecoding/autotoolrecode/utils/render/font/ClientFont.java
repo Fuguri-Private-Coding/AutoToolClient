@@ -12,7 +12,7 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-public class ClientFontRenderer implements Imports {
+public class ClientFont implements Imports {
 
     CharData[] charData = new CharData[65536];
     CharData[] boldChars = new CharData[65536];
@@ -36,13 +36,13 @@ public class ClientFontRenderer implements Imports {
     public static double fontScaleOffset = 2;
     private final int[] colorCode = new int[32];
 
-    public ClientFontRenderer(Font font) {
+    public ClientFont(Font font) {
         this(font, true, true);
         this.name = font.getName();
         this.setupMinecraftColorCodes();
     }
 
-    public ClientFontRenderer(Font font, boolean antiAlias, boolean fractionalMetrics) {
+    public ClientFont(Font font, boolean antiAlias, boolean fractionalMetrics) {
         this.font = font;
         this.antiAlias = antiAlias;
         this.fractionalMetrics = fractionalMetrics;

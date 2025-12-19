@@ -1,16 +1,25 @@
 package fuguriprivatecoding.autotoolrecode.setting.impl;
 
 import com.google.gson.JsonObject;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
+import net.minecraft.client.gui.ScaledResolution;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.util.function.BooleanSupplier;
 
+import static fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports.mc;
 import static java.lang.Math.round;
 import static java.lang.Math.signum;
 
@@ -62,26 +71,51 @@ public class IntegerSetting extends Setting {
 //    }
 
     @Override
-    public float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha) {
-//        float offset = 0;
-//        float nameWidth = (float) font.getStringWidth(getName());
-//
-//        font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
-//
-//        RoundedUtils.drawRect(x, y, 150, 10, 5, elementColor);
-//
-////        RoundedUtils.drawRect(x +);
-//
-//        offset += 15;
-//
-//        return offset;
-        return 0;
+    public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
+        float widthName = font.getStringWidth(getName() + ": ");
+
+        font.drawString(getName() + ": ", x, y, Colors.WHITE.withAlphaClamp(alpha));
+
+        EasingAnimation sliderAnim = getSliderAnim();
+
+        sliderAnim.update(4f, Easing.OUT_CUBIC);
+        sliderAnim.setEnd(value);
+
+        setAnimatedValue(sliderAnim.getValue());
+
+        float animatedFilledFactor = getAnimatedNormalize();
+        final float length = 75;
+        final float sliderLength = animatedFilledFactor * length;
+
+        RoundedUtils.drawRect(x + widthName, y, length, 4, 1.5f, Colors.GRAY.withAlphaClamp(0.3f * alpha));
+        RoundedUtils.drawRect(x + widthName, y, sliderLength, 4, 1.5f, elementColor);
+        RoundedUtils.drawRect(x + widthName + sliderLength - 2, y - 1, 6, 6, 3f, Color.WHITE);
+        font.drawString(String.valueOf(getValue()), x + length + 5 + widthName, y, elementColor);
+
+        boolean hovered = GuiUtils.isMouseHovered(x - 2 + widthName, y - 2, length + 4, 8);
+
+        if (hovered) {
+            final ScaledResolution sc = new ScaledResolution(mc);
+            int i1 = sc.getScaledWidth();
+
+            final int mouseX = Mouse.getX() * i1 / mc.displayWidth;
+
+            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+                setValue((int) (getValue() + signum(DeltaTracker.getDeltaScroll())));
+            } else if (Mouse.isButtonDown(0)) {
+                float mx = mouseX - (x + widthName);
+                float p = mx / length;
+                float normalize = getMin() + (getMax() - getMin()) * p;
+                setValue(round(normalize));
+            }
+        }
+        return 15;
     }
 
     @Override
-    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
 
-        return 0;
+        return 15;
     }
 
     @Override

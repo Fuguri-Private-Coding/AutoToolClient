@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.gui.config;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.config.Config;
 import fuguriprivatecoding.autotoolrecode.config.Configs;
 import fuguriprivatecoding.autotoolrecode.event.Event;
@@ -13,7 +12,7 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -120,7 +119,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
             default -> "§k" + "Config".substring(0, min(delay - 20, 6));
         };
 
-        ClientFontRenderer font = Fonts.fonts.get(clickGui.fonts.getMode());
+        ClientFont font = Fonts.fonts.get(clickGui.fonts.getMode());
 
         background.endX = pos.x;
         background.endY = pos.y;

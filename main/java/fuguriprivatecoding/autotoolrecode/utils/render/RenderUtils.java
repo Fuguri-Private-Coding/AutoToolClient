@@ -488,7 +488,7 @@ public class RenderUtils implements Imports {
 
         double time = (double) (System.nanoTime() / 1000000L / 10L) * speed;
 
-        ColorUtils.glColor(ColorUtils.mix(color1.getRGB(), color2.getRGB(), Math.sin(Math.toRadians(time)) + 1.0F, 2.0F), 100);
+        ColorUtils.glColor(ColorUtils.mix(color1.getRGB(), color2.getRGB(), Math.sin(Math.toRadians(time)) + 1.0F, 2.0F));
         for (double i = 270.0F; i < 360.0F; i += 0.1F) {
             GL11.glVertex2d(xs + Math.sin(i * Math.PI / 180.0F) * radius, ys - Math.cos(i * Math.PI / 180.0F) * radius);
         }
@@ -496,7 +496,7 @@ public class RenderUtils implements Imports {
         xs = x1 - radius;
         ys = y + radius;
 
-        ColorUtils.glColor(ColorUtils.mix(color1.getRGB(), color2.getRGB(), Math.sin(Math.toRadians(time + 90L)) + 1.0F, 2.0F), 100);
+        ColorUtils.glColor(ColorUtils.mix(color1.getRGB(), color2.getRGB(), Math.sin(Math.toRadians(time + 90L)) + 1.0F, 2.0F));
         for (double i = 0.0F; i < 90.0F; i += 0.1F) {
             GL11.glVertex2d(xs + Math.sin(i * Math.PI / 180.0F) * radius, ys - Math.cos(i * Math.PI / 180.0F) * radius);
         }
@@ -504,7 +504,7 @@ public class RenderUtils implements Imports {
         xs = x1 - radius;
         ys = y1 - radius;
 
-        ColorUtils.glColor(ColorUtils.mix(color1.getRGB(), color2.getRGB(), Math.sin(Math.toRadians(time + 180L)) + 1.0F, 2.0F), 100);
+        ColorUtils.glColor(ColorUtils.mix(color1.getRGB(), color2.getRGB(), Math.sin(Math.toRadians(time + 180L)) + 1.0F, 2.0F));
         for (double i = 90.0F; i < 180.0F; i += 0.1F) {
             GL11.glVertex2d(xs + Math.sin(i * Math.PI / 180.0F) * radius, ys - Math.cos(i * Math.PI / 180.0F) * radius);
         }
@@ -512,7 +512,7 @@ public class RenderUtils implements Imports {
         xs = x + radius;
         ys = y1 - radius;
 
-        ColorUtils.glColor(ColorUtils.mix(color1.getRGB(), color2.getRGB(), Math.sin(Math.toRadians(time + 260L)) + 1.0F, 2.0F), 100);
+        ColorUtils.glColor(ColorUtils.mix(color1.getRGB(), color2.getRGB(), Math.sin(Math.toRadians(time + 260L)) + 1.0F, 2.0F));
         for (double i = 180.0F; i < 270.0F; i += 0.1F) {
             GL11.glVertex2d(xs + Math.sin(i * Math.PI / 180.0F) * radius, ys - Math.cos(i * Math.PI / 180.0F) * radius);
         }

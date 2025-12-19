@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -56,7 +56,7 @@ public class ArrayList extends Module {
         fonts.setMode("SFProRegular");
     }
 
-    ClientFontRenderer font = Fonts.fonts.get("SFProRegular");
+    ClientFont font = Fonts.fonts.get("SFProRegular");
 
     @Override
     public void onEvent(Event event) {
@@ -167,7 +167,7 @@ public class ArrayList extends Module {
         font.drawString(module.getName(), textX, textY, textColor, textShadow.isToggled());
     }
 
-    void sort(final List<Module> toSort, ClientFontRenderer font) {
+    void sort(final List<Module> toSort, ClientFont font) {
         toSort.sort( (m1, m2) -> {
             final double width1 = font.getStringWidth(m1.getName());
             final double width2 = font.getStringWidth(m2.getName());

@@ -7,7 +7,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
@@ -64,7 +64,7 @@ public class ScoreBoard extends Module {
         if (event instanceof Render2DEvent) {
             if (remove.isToggled()) return;
 
-            ClientFontRenderer fontRenderer = Fonts.fonts.get(fonts.getMode());
+            ClientFont fontRenderer = Fonts.fonts.get(fonts.getMode());
 
             ScaledResolution sc = ScaleUtils.getScaledResolution(scale.getValue());
 

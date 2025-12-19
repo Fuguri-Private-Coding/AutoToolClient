@@ -5,7 +5,7 @@ import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.Minecraft;
@@ -38,7 +38,7 @@ public class Button extends GuiButton {
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
         boolean hovered = GuiUtils.isHovered(mouseX, mouseY, x, y, width, height);
 
-        ClientFontRenderer fontRenderer = Fonts.fonts.get("SFProRounded");
+        ClientFont fontRenderer = Fonts.fonts.get("SFProRounded");
 
         hoverAnim.update(2, Easing.OUT_BACK);
         hoverAnim.setEnd(hovered ? 1 : 0);

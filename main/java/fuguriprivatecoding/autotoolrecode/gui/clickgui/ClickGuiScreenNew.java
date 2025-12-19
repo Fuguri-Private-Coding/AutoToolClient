@@ -15,7 +15,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
@@ -86,7 +86,7 @@ public class ClickGuiScreenNew extends GuiScreen {
         Colors elementGrayColor = new Colors(15,15,15,255).withAlphaClamp(openAnim.getValue());
         Colors elementGlowColor = new Colors(clickGui.colorShadow.getFadedColor()).withAlphaClamp(openAnim.getValue());
 
-        ClientFontRenderer font = Fonts.fonts.get("SFPro");
+        ClientFont font = Fonts.fonts.get("SFPro");
 
         boolean hoverModules = GuiUtils.isHovered(mouseX, mouseY, x + 100, y, width - 100, height);
         moduleScroll.handleScrollInput(hoverModules);
@@ -117,7 +117,7 @@ public class ClickGuiScreenNew extends GuiScreen {
         font.drawString(Client.INST.CLIENT_NAME, x - 2, y - 7.5f, elementColor);
         GL11.glPopMatrix();
 
-        ClientFontRenderer catFonts = Fonts.fonts.get("SFProRegular");
+        ClientFont catFonts = Fonts.fonts.get("SFProRegular");
 
         float categoryOffset = 0;
         for (Category category : Category.values()) {
@@ -137,7 +137,7 @@ public class ClickGuiScreenNew extends GuiScreen {
             categoryOffset += 17.5f;
         }
 
-        ClientFontRenderer settingsFont = Fonts.fonts.get("SFProRegular");
+        ClientFont settingsFont = Fonts.fonts.get("SFProRegular");
         if (selectedModule != null) {
             float settingsOffset = 0;
             RoundedUtils.drawRect(x + 100, y, width - 100, 15, 0, 0, 10, 0, elementGrayColor);
@@ -158,160 +158,10 @@ public class ClickGuiScreenNew extends GuiScreen {
 
                 if (visibleAnim.getValue() <= 0) continue;
 
-                String name = setting.getName() + ": ";
-
-                float widthName = settingsFont.getStringWidth(name);
-
                 float settingX = x + 100 + 5;
                 float settingY = y + 5 + settingsOffset + 20;
 
-                switch (setting) {
-                    case CheckBox checkBox -> {
-                        settingsFont.drawString(name, settingX, settingY, Colors.WHITE.withAlphaClamp(openSettingsAnim.getValue() * openAnim.getValue()));
-
-                        EasingAnimation toggleAnim = checkBox.getToggleAnimation();
-
-                        toggleAnim.update(3f, Easing.OUT_CUBIC);
-                        toggleAnim.setEnd(checkBox.isToggled());
-
-                        Color toggleColor = ColorUtils.interpolateColor(Colors.RED.withAlphaClamp(openSettingsAnim.getValue() * openAnim.getValue()), Colors.GREEN.withAlphaClamp(openSettingsAnim.getValue() * openAnim.getValue()), toggleAnim.getValue());
-
-                        settingsFont.drawString(String.valueOf(checkBox.isToggled()), settingX + widthName, settingY, toggleColor);
-                    }
-
-                    case KeyBind keyBind -> {
-                        settingsFont.drawString(name, settingX, settingY, Colors.WHITE.withAlphaClamp(openSettingsAnim.getValue() * openAnim.getValue()));
-                        settingsFont.drawString(Keyboard.getKeyName(keyBind.getKey()),settingX + widthName, settingY, elementColor);
-                    }
-
-                    case IntegerSetting integerSetting -> {
-                        settingsFont.drawString(name, settingX, settingY, Colors.WHITE.withAlphaClamp(openSettingsAnim.getValue() * openAnim.getValue()));
-
-                        EasingAnimation sliderAnim = integerSetting.getSliderAnim();
-
-                        sliderAnim.update(4f, Easing.OUT_CUBIC);
-                        sliderAnim.setEnd(integerSetting.value);
-
-                        integerSetting.setAnimatedValue(sliderAnim.getValue());
-
-                        float animatedFilledFactor = integerSetting.getAnimatedNormalize();
-                        final float length = 75;
-                        final float sliderLength = animatedFilledFactor * length;
-
-                        RoundedUtils.drawRect(settingX + widthName, settingY, length, 4, 1.5f, elementGrayColor);
-                        RoundedUtils.drawRect(settingX + widthName, settingY, sliderLength, 4, 1.5f, elementColor);
-                        RoundedUtils.drawRect(settingX + widthName + sliderLength - 2, settingY - 1, 6, 6, 3f, Color.WHITE);
-                        settingsFont.drawString(String.valueOf(integerSetting.getValue()), settingX + length + 5 + widthName, settingY, elementTextColor);
-
-                        boolean hovered = GuiUtils.isHovered(mouseX, mouseY, settingX - 2 + widthName, settingY - 2, length + 4, 8);
-
-                        if (hovered) {
-                            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-                                integerSetting.setValue((int) (integerSetting.getValue() + signum(DeltaTracker.getDeltaScroll())));
-                            } else if (Mouse.isButtonDown(0)) {
-                                float mx = mouseX - (settingX + widthName);
-                                float p = mx / length;
-                                float normalize = integerSetting.getMin() + (integerSetting.getMax() - integerSetting.getMin()) * p;
-                                integerSetting.setValue(round(normalize));
-                            }
-                        }
-                    }
-
-                    case FloatSetting floatSetting -> {
-                        settingsFont.drawString(name, settingX, settingY, Colors.WHITE.withAlphaClamp(openSettingsAnim.getValue() * openAnim.getValue()));
-
-                        EasingAnimation sliderAnim = floatSetting.getSliderAnim();
-
-                        sliderAnim.update(4f, Easing.OUT_CUBIC);
-                        sliderAnim.setEnd(floatSetting.value);
-
-                        floatSetting.setAnimatedValue(sliderAnim.getValue());
-
-                        float animatedFilledFactor = floatSetting.getAnimatedNormalize();
-                        final float length = 75;
-                        final float sliderLength = animatedFilledFactor * length;
-
-                        RoundedUtils.drawRect(settingX + widthName, settingY, length, 4, 1.5f, elementGrayColor);
-                        RoundedUtils.drawRect(settingX + widthName, settingY, sliderLength, 4, 1.5f, elementColor);
-                        RoundedUtils.drawRect(settingX + widthName + sliderLength - 2, settingY - 1, 6, 6, 3f, Color.WHITE);
-                        settingsFont.drawString(String.format("%.2f", floatSetting.getValue()), settingX + widthName + length + 5, settingY, elementTextColor);
-
-                        boolean hovered = GuiUtils.isHovered(mouseX, mouseY, settingX + widthName - 2, settingY - 2, length + 4, 8);
-
-                        if (hovered) {
-                            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-                                floatSetting.setValue(floatSetting.getValue() + signum(DeltaTracker.getDeltaScroll()) * floatSetting.getStep());
-                            } else if (Mouse.isButtonDown(0)) {
-                                float mx = mouseX - (settingX + widthName);
-                                float p = mx / length;
-                                float normalize = floatSetting.getMin() + (floatSetting.getMax() - floatSetting.getMin()) * p;
-                                floatSetting.setValue(normalize);
-                            }
-                        }
-                    }
-
-                    case DoubleSlider doubleSlider -> {
-                        settingsFont.drawString(name, settingX, settingY, Colors.WHITE.withAlphaClamp(openSettingsAnim.getValue() * openAnim.getValue()));
-                        EasingAnimation sliderMinAnim = doubleSlider.getSliderMinAnim();
-                        EasingAnimation sliderMaxAnim = doubleSlider.getSliderMaxAnim();
-
-                        sliderMinAnim.update(4f, Easing.OUT_CUBIC);
-                        sliderMinAnim.setEnd((float) doubleSlider.minValue);
-                        sliderMaxAnim.update(4f, Easing.OUT_CUBIC);
-                        sliderMaxAnim.setEnd((float) doubleSlider.maxValue);
-
-                        doubleSlider.setAnimatedValueMin(sliderMinAnim.getValue());
-                        doubleSlider.setAnimatedValueMax(sliderMaxAnim.getValue());
-
-                        final float length = 75;
-                        float animatedFilledFactorMin = (float) doubleSlider.getAnimatedNormalizeMin();
-                        float animatedFilledFactorMax = (float) doubleSlider.getAnimatedNormalizeMax();
-                        final float sliderLengthMin = animatedFilledFactorMin * length;
-                        final float sliderLengthMax = animatedFilledFactorMax * length;
-
-                        RoundedUtils.drawRect(settingX, settingY + 10, length, 4, 1.5f, elementGrayColor);
-                        RoundedUtils.drawRect(settingX, settingY + 10, sliderLengthMin, 4, 1.5f, elementColor);
-                        RoundedUtils.drawRect(settingX + sliderLengthMin - 2, settingY - 1 + 10, 6, 6, 3f, Color.WHITE);
-                        settingsFont.drawString(String.format("%.2f", doubleSlider.getMinValue()), settingX + length + 5, settingY + 10, elementTextColor);
-
-                        RoundedUtils.drawRect(settingX, settingY + 10 + 10, length, 4, 1.5f, elementGrayColor);
-                        RoundedUtils.drawRect(settingX, settingY + 10 + 10, sliderLengthMax, 4, 1.5f, elementColor);
-                        RoundedUtils.drawRect(settingX + sliderLengthMax - 2, settingY - 1 + 10 + 10, 6, 6, 3f, Color.WHITE);
-                        settingsFont.drawString(String.format("%.2f", doubleSlider.getMaxValue()), settingX + length + 5, settingY + 10 + 10, elementTextColor);
-
-                        boolean hoveredMin = GuiUtils.isHovered(mouseX, mouseY, settingX - 2, settingY - 2 + 10, length + 4, 8);
-                        boolean hoveredMax = GuiUtils.isHovered(mouseX, mouseY, settingX - 2, settingY - 2 + 10 + 10, length + 4, 8);
-
-                        if (hoveredMin) {
-                            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-                                doubleSlider.setMinValue(doubleSlider.getMinValue() + signum(DeltaTracker.getDeltaScroll()) * doubleSlider.getStep());
-                            } else if (Mouse.isButtonDown(0)) {
-                                float mx = mouseX - settingX;
-                                float p = mx / length;
-                                float normalize = (float) (doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p);
-                                doubleSlider.setMinValue(normalize);
-                            }
-                        }
-
-                        if (hoveredMax) {
-                            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-                                doubleSlider.setMaxValue(doubleSlider.getMaxValue() + signum(DeltaTracker.getDeltaScroll()) * doubleSlider.getStep());
-                            } else if (Mouse.isButtonDown(0)) {
-                                float mx = mouseX - settingX;
-                                float p = mx / length;
-                                float normalize = (float) (doubleSlider.getMin() + (doubleSlider.getMax() - doubleSlider.getMin()) * p);
-                                doubleSlider.setMaxValue(normalize);
-                            }
-                        }
-
-                        settingsOffset += 20;
-                    }
-                    default -> {}
-                }
-
-                settingsOffset += 15;
-
-//                settingsOffset += setting.draw(settingX, settingY, settingsFont, elementColor.withAlphaClamp(openSettingsAnim.getValue() * openAnim.getValue()),openSettingsAnim.getValue() * openAnim.getValue()) * visibleAnim.getValue();
+                settingsOffset += setting.draw(settingX, settingY, settingsFont, elementColor, visibleAnim.getValue() * openAnim.getValue());
             }
         } else if (selectedCategory != null) {
             StencilUtils.setUpTexture(x + 100 + 2, y + 2, width - 100 - 4, height - 4, 7.5f);
@@ -356,7 +206,7 @@ public class ClickGuiScreenNew extends GuiScreen {
             categoryOffset += 17.5f;
         }
 
-        ClientFontRenderer font = Fonts.fonts.get("SFProRegular");
+        ClientFont font = Fonts.fonts.get("SFProRegular");
         if (selectedModule != null) {
             float settingsOffset = 0;
             for (Setting setting : selectedModule.getSettings()) {
@@ -370,7 +220,6 @@ public class ClickGuiScreenNew extends GuiScreen {
                 float settingY = y + 5 + settingsOffset;
 
                 settingsOffset += setting.mouseClicked(mouseX, mouseY, settingX, settingY, mouseButton, font) * visibleAnim.getValue();
-
             }
         } else if (selectedCategory != null) {
             boolean moduleListHovered = GuiUtils.isHovered(mouseX, mouseY, x + 100, y + 2, width - 100, height - 4);

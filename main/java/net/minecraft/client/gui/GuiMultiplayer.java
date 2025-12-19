@@ -10,7 +10,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
 import fuguriprivatecoding.autotoolrecode.gui.multiplayer.ViaVersionScreen;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
@@ -285,7 +285,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
         alphaAnim.setEnd(1f);
 
         ScaledResolution sc = new ScaledResolution(mc);
-        ClientFontRenderer fontRenderer = Fonts.fonts.get("SFProRounded");
+        ClientFont fontRenderer = Fonts.fonts.get("SFProRounded");
         AlphaUtils.startWrite();
         RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 155, 30, 310, sc.getScaledHeight() - 87, 10, new Color(0,0,0,0.7f));
         ScissorUtils.enableScissor();

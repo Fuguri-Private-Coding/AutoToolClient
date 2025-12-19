@@ -5,8 +5,9 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,25 +55,27 @@ public class CheckBox extends Setting {
 
 
     @Override
-    public float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha) {
-        float nameWidth = (float) font.getStringWidth(getName() + "->");
+    public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
+        float widthName = font.getStringWidth(getName() + ": ");
 
-        toggleAnimation.update(4f, Easing.OUT_CUBIC);
-        toggleAnimation.setEnd(toggled);
+        font.drawString(getName() + ": ", x, y, Colors.WHITE.withAlphaClamp(alpha));
 
-        font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
+        EasingAnimation toggleAnim = toggleAnimation;
 
-        RoundedUtils.drawRect(x + nameWidth, y, 20, 10, 5, Colors.BLACK.withAlphaClamp(alpha));
-        RoundedUtils.drawRect(x + nameWidth, y, 20 * toggleAnimation.getValue(), 10, 5, elementColor);
-        RoundedUtils.drawRect(x + nameWidth + (15 * toggleAnimation.getValue()), y, 10, 10, 5, Color.WHITE);
+        toggleAnim.update(3f, Easing.OUT_CUBIC);
+        toggleAnim.setEnd(toggled);
+
+        Color toggleColor = ColorUtils.interpolateColor(Colors.RED.withAlphaClamp(alpha), Colors.GREEN.withAlphaClamp(alpha), toggleAnim.getValue());
+
+        font.drawString(String.valueOf(toggled), x + widthName, y, toggleColor);
 
         return 15;
     }
 
     @Override
-    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
-        float nameWidth = (float) font.getStringWidth(getName());
-        boolean hovered = GuiUtils.isHovered(mouseX, mouseY, x + nameWidth, y, 40, 10);
+    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
+        float widthName = font.getStringWidth(getName());
+        boolean hovered = GuiUtils.isHovered(mouseX, mouseY, x + widthName, y, font.getStringWidth(String.valueOf(toggled)), 10);
 
         if (hovered && key == 0) toggled = !toggled;
 

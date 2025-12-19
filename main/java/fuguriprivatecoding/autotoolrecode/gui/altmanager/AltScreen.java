@@ -15,7 +15,7 @@ import fuguriprivatecoding.autotoolrecode.utils.gui.Scroll;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -75,7 +75,7 @@ public class AltScreen extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        ClientFontRenderer fontRenderer = Fonts.fonts.get("SFPro");
+        ClientFont fontRenderer = Fonts.fonts.get("SFPro");
 
         ScaledResolution sc = new ScaledResolution(mc);
 

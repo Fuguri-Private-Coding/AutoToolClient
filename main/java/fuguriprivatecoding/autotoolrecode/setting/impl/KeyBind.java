@@ -2,10 +2,14 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import lombok.Getter;
 import lombok.Setter;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.util.function.BooleanSupplier;
@@ -53,29 +57,31 @@ public class KeyBind extends Setting {
 
 
     @Override
-    public float draw(float x, float y, ClientFontRenderer font, Color elementColor, float alpha) {
-//        float offset = 0;
-//        float nameWidth = (float) font.getStringWidth(getName());
-//
-//        font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
-//        font.drawString(Keyboard.getKeyName(key), x + nameWidth, y, Colors.WHITE.withAlphaClamp(alpha));
-//
-//        offset += 15;
-//
-//        return offset;
+    public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
+        float widthName = font.getStringWidth(getName() + ": ");
 
-        return 0;
+        font.drawString(getName() + ": ", x, y, Colors.WHITE.withAlphaClamp(alpha));
+        font.drawString(listeningForKey ? "_" : Keyboard.getKeyName(getKey()),x + widthName, y, elementColor);
+
+        return 15;
     }
 
     @Override
-    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFontRenderer font) {
+    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
+        float widthName = font.getStringWidth(getName() + ": ");
 
-        return 0;
+        boolean hovered = GuiUtils.isHovered(mouseX, mouseY, x + widthName, y, 40, 10);
+
+        listeningForKey = hovered && key == 0;
+
+        return 15;
     }
 
     @Override
     public void keyTyped(int key) {
-
+        if (listeningForKey) {
+            setKey(key);
+        }
     }
 
     @Override

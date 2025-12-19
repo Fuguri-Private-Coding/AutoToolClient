@@ -5,7 +5,7 @@ import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.GuiTextField;
@@ -39,7 +39,7 @@ public class TextButton extends GuiTextField {
     public void drawTextBox() {
         boolean hovered = GuiUtils.isMouseHovered(x, y, width, height) || !"".equals(getText());
 
-        ClientFontRenderer fontRenderer = Fonts.fonts.get("SFProRounded");
+        ClientFont fontRenderer = Fonts.fonts.get("SFProRounded");
 
         hoverAnim.update(2, Easing.OUT_BACK);
         hoverAnim.setEnd(hovered ? 1 : 0);

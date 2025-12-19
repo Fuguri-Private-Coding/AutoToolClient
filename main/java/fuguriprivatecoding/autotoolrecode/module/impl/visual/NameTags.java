@@ -73,7 +73,7 @@ public class NameTags extends Module {
 
     private void renderNameTag(Entity entity, String name, Vec3 pos) {
         float distance = mc.thePlayer.getDistanceToEntity(entity);
-        float scale = Math.max(distance / 2.5f, 5.0f);
+        float scale = Math.max(distance / 1.8f, 5.0f);
         scale /= 200f;
         glPushMatrix();
         glTranslated(pos.xCoord, pos.yCoord, pos.zCoord);

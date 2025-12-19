@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @UtilityClass
 public class Fonts implements Imports {
 
-    public HashMap<String, ClientFontRenderer> fonts = new HashMap<>();
+    public HashMap<String, ClientFont> fonts = new HashMap<>();
 
     final File FONT_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/fonts");
 
@@ -115,7 +115,7 @@ public class Fonts implements Imports {
             try {
                 String fontName = getFileNameWithoutExtension(fontFile);
                 Font font = generateFontFromFile(fontFile, 32, true);
-                if (font != null) fonts.put(fontName, new ClientFontRenderer(font));
+                if (font != null) fonts.put(fontName, new ClientFont(font));
             } catch (Exception e) {
                 System.out.println("Ошибка загрузки шрифта " + fontFile.getName() + ": " + e.getMessage());
             }

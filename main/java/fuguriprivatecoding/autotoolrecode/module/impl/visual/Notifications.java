@@ -14,7 +14,7 @@ import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
@@ -62,11 +62,12 @@ public class Notifications extends Module {
             notifications.removeIf(notification -> notification.isDelete() && notification.getOpenAnim().getValue() == 0);
 
             ScaledResolution sc = new ScaledResolution(mc);
-            ClientFontRenderer fontRenderer = Fonts.fonts.get(fonts.getMode());
+            ClientFont fontRenderer = Fonts.fonts.get(fonts.getMode());
 
             float yOffset = 0;
             for (Notification notification : notifications) {
-                String text = ClientUtils.prefixLog + "§fМодуль " + notification.getName() + "§f был" + (notification.isToggled() ? "§a включен" : "§c выключен") + "§f.";
+                String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
+                String text = ClientUtils.prefixLog + "§fМодуль " + notification.getName() + "§f был" + toggleText + "§f.";
 
                 EasingAnimation openAnim = notification.getOpenAnim();
 

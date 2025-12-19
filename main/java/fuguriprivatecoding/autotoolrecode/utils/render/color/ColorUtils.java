@@ -34,8 +34,9 @@ public class ColorUtils {
         int diffR = (int) Math.clamp(((double)col1.getRed() - (double)(col1.getRed() - col2.getRed()) / max * size), 0, 255);
         int diffG = (int) Math.clamp(((double)col1.getGreen() - (double)(col1.getGreen() - col2.getGreen()) / max * size), 0, 255);
         int diffB = (int) Math.clamp(((double)col1.getBlue() - (double)(col1.getBlue() - col2.getBlue()) / max * size), 0, 255);
+        int diffA = (int) Math.clamp(((double)col1.getAlpha() - (double)(col1.getAlpha() - col2.getAlpha()) / max * size), 0, 255);
 
-        return (new Color(diffR, diffG, diffB));
+        return (new Color(diffR, diffG, diffB, diffA));
     }
 
     public Color mixColor(final Color color1, final Color color2, final int i, final double offset, final double speed) {

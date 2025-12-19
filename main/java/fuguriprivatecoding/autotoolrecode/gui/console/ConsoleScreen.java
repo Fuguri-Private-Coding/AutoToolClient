@@ -9,7 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -127,7 +127,7 @@ public class ConsoleScreen extends GuiScreen implements EventListener {
             default -> "§k" + "Console_".substring(0, min(delay - 20, 8));
         };
 
-        ClientFontRenderer font = Fonts.fonts.get(clickGui.fonts.getMode());
+        ClientFont font = Fonts.fonts.get(clickGui.fonts.getMode());
 
         double widthName = font.getStringWidth(name);
         double width = font.getStringWidth("Clear History");
@@ -243,7 +243,7 @@ public class ConsoleScreen extends GuiScreen implements EventListener {
         mouseX = (int) (mouseX / scale);
         mouseY = (int) (mouseY / scale);
 
-        ClientFontRenderer font = Fonts.fonts.get(clickGui.fonts.getMode());
+        ClientFont font = Fonts.fonts.get(clickGui.fonts.getMode());
 
         double width = font.getStringWidth("Clear History");
 

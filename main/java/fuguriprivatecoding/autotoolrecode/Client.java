@@ -13,7 +13,7 @@ import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
@@ -45,7 +45,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import lombok.*;
 
-import java.awt.*;
 import java.io.*;
 
 @Getter
@@ -144,7 +143,7 @@ public enum Client implements Imports, EventListener {
 		}
 
         if (event instanceof RenderScreenEvent) {
-            ClientFontRenderer fontRenderer = Fonts.fonts.get("SFPro");
+            ClientFont fontRenderer = Fonts.fonts.get("SFPro");
             ScaledResolution sc = new ScaledResolution(mc);
 
             EasingAnimation anim = HWID.noConnectionAnim;

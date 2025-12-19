@@ -1124,7 +1124,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.bindTexture(0);
 
                     GlStateManager.pushMatrix();
-                    Render2DEvent.INST.setSc(scaledresolution);
+                    Render2DEvent.INST.setScaledResolution(scaledresolution);
                     Render2DEvent.INST.setMouseX(k1);
                     Render2DEvent.INST.setMouseY(l1);
                     Render2DEvent.INST.call();

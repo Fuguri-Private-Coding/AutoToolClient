@@ -4,7 +4,7 @@ import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
@@ -56,7 +56,7 @@ public class ViaVersionScreen extends GuiScreen {
 
         AlphaUtils.startWrite();
 
-        ClientFontRenderer font = Fonts.fonts.get("SFProRounded");
+        ClientFont font = Fonts.fonts.get("SFProRounded");
         String currentVersion = "Current Version: " + ViaLoadingBase.getInstance().getTargetVersion().getName();
 
         font.drawString(currentVersion, sc.getScaledWidth() / 2f - font.getStringWidth(currentVersion) / 2f, 5 + 2, Color.WHITE, true);

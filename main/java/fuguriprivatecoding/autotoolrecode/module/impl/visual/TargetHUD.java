@@ -15,7 +15,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFontRenderer;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.projection.Convertors;
@@ -89,7 +89,7 @@ public class TargetHUD extends Module {
 
             if (target == null || target.getSkin() == null || target.getName() == null) return;
 
-            ClientFontRenderer font = Fonts.fonts.get(fonts.getMode());
+            ClientFont font = Fonts.fonts.get(fonts.getMode());
 
             float width = 120;
             float height = 40;
@@ -117,7 +117,7 @@ public class TargetHUD extends Module {
         }
     }
 
-    private void renderHUD(float x, float y, float width, float height, ClientFontRenderer font, EntityLivingBase target, float scaleFactor, float alpha) {
+    private void renderHUD(float x, float y, float width, float height, ClientFont font, EntityLivingBase target, float scaleFactor, float alpha) {
         ScaleUtils.startScaling(x, y, width, height, scaleFactor);
 
         Color bgColor = new Colors(this.bgColor.getFadedColor()).withMultiplyAlphaClamp(alpha);
