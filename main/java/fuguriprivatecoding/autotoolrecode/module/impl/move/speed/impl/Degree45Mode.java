@@ -22,11 +22,6 @@ public class Degree45Mode extends AbstractSpeedMode {
     }
 
     @Override
-    public void onEnable(Speed speed) {
-
-    }
-
-    @Override
     public void onDisable(Speed speed) {
         if (!Modules.getModule(Scaffold.class).isToggled() && !Modules.getModule(KillAura.class).isToggled()) CameraRot.INST.setWillChange(false);
     }
@@ -36,7 +31,7 @@ public class Degree45Mode extends AbstractSpeedMode {
         if (Modules.getModule(Scaffold.class).isToggled() || Modules.getModule(KillAura.class).isToggled()) return;
 
         if (event instanceof TickEvent) {
-            float yaw = MoveUtils.getDir();
+            float yaw = speed.rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
 
             if (!mc.thePlayer.onGround) {
                 yaw += 45;

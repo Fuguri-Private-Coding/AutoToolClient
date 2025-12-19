@@ -19,6 +19,8 @@ public class Speed extends Module {
         .addModes("45Degree", "Vanilla", "FunnyMcSkyPvp")
         .setMode("45Degree");
 
+    public CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this, () -> mode.is("45Degree"), true);
+
     CheckBox resetMotion = new CheckBox("ResetMotionOnDisable", this, false);
     public FloatSetting speed = new FloatSetting("Speed", this,
         () -> mode.getMode().equalsIgnoreCase("Vanilla"),

@@ -51,9 +51,9 @@ public class IRC extends Module {
 
                         usersOnline.put(ign, new Profile(clientName, Role.fromRoleName(role)));
                     }
+                    lastTime = System.currentTimeMillis();
                 }
             }).start();
-            lastTime = System.currentTimeMillis();
         }
     }
 

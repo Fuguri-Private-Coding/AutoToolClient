@@ -119,7 +119,7 @@ public enum Client implements Imports, EventListener {
         starting = false;
 
 		double elapsedNanos = System.nanoTime() - start;
-		ConsoleScreen.log( "Клиент инициализировался за " + String.format("%.2f", (float) (elapsedNanos / 1000000000D)) + " секунд.");
+		ConsoleScreen.log("Клиент инициализировался за " + String.format("%.2f", (float) (elapsedNanos / 1000000000D)) + " секунд.");
 	}
 
 	public void onClose() {
