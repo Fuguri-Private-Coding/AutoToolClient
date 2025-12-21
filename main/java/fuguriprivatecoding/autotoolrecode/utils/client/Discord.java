@@ -56,10 +56,10 @@ public class Discord implements Imports, EventListener {
     @Override
     public void onEvent(Event event) {
         if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 1000) {
+            lastTime = System.currentTimeMillis();
             updateInformation();
 
             DiscordRPC.discordRunCallbacks();
-            lastTime = System.currentTimeMillis();
         }
     }
 

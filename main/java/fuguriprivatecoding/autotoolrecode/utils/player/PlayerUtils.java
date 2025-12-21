@@ -16,7 +16,7 @@ public class PlayerUtils implements Imports {
 
     private final List<Material> blackListMaterial = Arrays.asList(
         Material.lava, Material.water, Material.cactus, Material.air, Material.anvil, Material.cake,
-        Material.carpet, Material.dragonEgg, Material.fire, Material.grass, Material.portal, Material.redstoneLight,
+        Material.carpet, Material.dragonEgg, Material.fire, Material.portal, Material.redstoneLight,
         Material.circuits, Material.clay, Material.coral
     );
 
