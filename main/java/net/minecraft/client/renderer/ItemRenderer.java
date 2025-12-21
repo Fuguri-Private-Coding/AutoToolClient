@@ -54,8 +54,6 @@ public class ItemRenderer {
     private final RenderItem itemRenderer;
     private int equippedItemSlot = -1;
 
-    Glow shadows;
-
     public ItemRenderer(Minecraft mcIn) {
         this.mc = mcIn;
         this.renderManager = mcIn.getRenderManager();
@@ -292,45 +290,50 @@ public class ItemRenderer {
     }
 
     public void renderItemInFirstPerson(float partialTicks) {
-        if (shadows == null) shadows = Modules.getModule(Glow.class);
         if (!Config.isShaders() || !Shaders.isSkipRenderHand()) {
             float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
-            AbstractClientPlayer abstractclientplayer = this.mc.thePlayer;
+            EntityPlayerSP abstractclientplayer = this.mc.thePlayer;
             float f1 = abstractclientplayer.getSwingProgress(partialTicks);
             float f2 = abstractclientplayer.prevRotationPitch + (abstractclientplayer.rotationPitch - abstractclientplayer.prevRotationPitch) * partialTicks;
             float f3 = abstractclientplayer.prevRotationYaw + (abstractclientplayer.rotationYaw - abstractclientplayer.prevRotationYaw) * partialTicks;
             this.rotateArroundXAndY(f2, f3);
             this.setLightMapFromPlayer(abstractclientplayer);
-            this.rotateWithPlayerRotations((EntityPlayerSP) abstractclientplayer, partialTicks);
+            this.rotateWithPlayerRotations(abstractclientplayer, partialTicks);
             GlStateManager.enableRescaleNormal();
             GlStateManager.pushMatrix();
-
-            CustomItemPos customItemPos = Modules.getModule(CustomItemPos.class);
-
-            if (customItemPos.isToggled()) {
-                GL11.glTranslatef(customItemPos.x.getValue(), customItemPos.y.getValue(), customItemPos.z.getValue());
-                GL11.glRotatef(customItemPos.rotateX.getValue(), 1,0,0);
-                GL11.glRotatef(customItemPos.rotateY.getValue(), 0,1,0);
-                GL11.glRotatef(customItemPos.rotateZ.getValue(), 0,0,1);
-            }
 
             if (this.itemToRender != null) {
                 EnumAction enumaction = this.itemToRender.getItemUseAction();
                 Animations animations = Modules.getModule(Animations.class);
-                boolean animate = (f1 > 0 && Animations.isAnimate()
-                    && animations.isToggled() &&
-                    enumaction.equals(EnumAction.BLOCK))
-                    || (animations.isToggled() &&
-                    animations.always.isToggled() &&
-                    f1 > 0
-                    && enumaction.equals(EnumAction.BLOCK))
-                    || (animations.isToggled()
-                    && abstractclientplayer.getItemInUseCount() > 0 &&
-                    enumaction.equals(EnumAction.BLOCK));
+                CustomItemPos customItemPos = Modules.getModule(CustomItemPos.class);
+                boolean animate = false;
+
+                if (animations.isToggled() && enumaction == EnumAction.BLOCK) {
+                    if (abstractclientplayer.getItemInUseCount() > 0) {
+                        animate = true;
+                    } else if (f1 > 0) {
+                        if (Animations.isAnimate() || animations.always.isToggled()) {
+                            animate = true;
+                        }
+                    }
+                }
+
+                if (customItemPos.isToggled() && !animate) {
+                    GL11.glTranslatef(customItemPos.x.getValue(), customItemPos.y.getValue(), customItemPos.z.getValue());
+                    GL11.glRotatef(customItemPos.rotateX.getValue(), 1,0,0);
+                    GL11.glRotatef(customItemPos.rotateY.getValue(), 0,1,0);
+                    GL11.glRotatef(customItemPos.rotateZ.getValue(), 0,0,1);
+                }
 
                 if (this.itemToRender.getItem() instanceof ItemMap) {
                     this.renderItemMap(abstractclientplayer, f2, f, f1);
                 } else if (animate) {
+                    if (customItemPos.isToggled()) {
+                        GL11.glTranslatef(customItemPos.blockX.getValue(), customItemPos.blockY.getValue(), customItemPos.blockZ.getValue());
+                        GL11.glRotatef(customItemPos.blockRotateX.getValue(), 1,0,0);
+                        GL11.glRotatef(customItemPos.blockRotateY.getValue(), 0,1,0);
+                        GL11.glRotatef(customItemPos.blockRotateZ.getValue(), 0,0,1);
+                    }
                     new RenderItemEvent(f1, f).call();
                 } else if (abstractclientplayer.getItemInUseCount() > 0) {
                     switch (enumaction) {
@@ -416,14 +419,8 @@ public class ItemRenderer {
         this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        float f = 0.1F;
         GlStateManager.color(0.1F, 0.1F, 0.1F, 0.5F);
         GlStateManager.pushMatrix();
-        float f1 = -1.0F;
-        float f2 = 1.0F;
-        float f3 = -1.0F;
-        float f4 = 1.0F;
-        float f5 = -0.5F;
         float f6 = atlas.getMinU();
         float f7 = atlas.getMaxU();
         float f8 = atlas.getMinV();
@@ -448,12 +445,6 @@ public class ItemRenderer {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             GlStateManager.pushMatrix();
-            float f1 = 4.0F;
-            float f2 = -1.0F;
-            float f3 = 1.0F;
-            float f4 = -1.0F;
-            float f5 = 1.0F;
-            float f6 = -0.5F;
             float f7 = -this.mc.thePlayer.rotationYaw / 64.0F;
             float f8 = this.mc.thePlayer.rotationPitch / 64.0F;
             worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);

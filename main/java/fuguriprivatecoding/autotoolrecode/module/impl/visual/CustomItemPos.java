@@ -15,4 +15,14 @@ public class CustomItemPos extends Module {
     public FloatSetting rotateX = new FloatSetting("RotateX", this, -90,90,0,0.1f);
     public FloatSetting rotateY = new FloatSetting("RotateY", this, -90,90,0,0.1f);
     public FloatSetting rotateZ = new FloatSetting("RotateZ", this, -90,90,0,0.1f);
+
+    public FloatSetting blockX = new FloatSetting("BlockX", this, -2,2,0,0.01f);
+    public FloatSetting blockY = new FloatSetting("BlockY", this, -2,2,-0.1f,0.01f);
+    public FloatSetting blockZ = new FloatSetting("BlockZ", this, -2,2,-0.2f,0.01f);
+
+    public FloatSetting blockRotateX = new FloatSetting("BlockRotateX", this, -90,90,0,0.1f);
+    public FloatSetting blockRotateY = new FloatSetting("BlockRotateY", this, -90,90,0,0.1f);
+    public FloatSetting blockRotateZ = new FloatSetting("BlockRotateZ", this, -90,90,0,0.1f);
+
+
 }

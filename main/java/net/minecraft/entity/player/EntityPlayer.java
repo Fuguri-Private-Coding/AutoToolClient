@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 import fuguriprivatecoding.autotoolrecode.event.events.player.AttackEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.ChangeHeadRotationEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.HitSlowDownEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Friends;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
@@ -429,14 +428,8 @@ public abstract class EntityPlayer extends EntityLivingBase {
         super.updateEntityActionState();
         this.updateArmSwingProgress();
 
-        ChangeHeadRotationEvent event = new ChangeHeadRotationEvent(rotationYaw, rotationPitch);
-
-        if (this instanceof EntityPlayerSP) {
-            event.call();
-        }
-
-        this.rotationYawHead = event.getYaw();
-        this.rotationPitchHead = event.getPitch();
+        this.rotationYawHead = rotationYaw;
+        this.rotationPitchHead = rotationPitch;
     }
 
     public void onLivingUpdate() {

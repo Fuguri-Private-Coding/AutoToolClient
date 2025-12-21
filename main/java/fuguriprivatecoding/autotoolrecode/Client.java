@@ -69,6 +69,8 @@ public enum Client implements Imports, EventListener {
 		long start = System.nanoTime();
 		starting = true;
 
+        if (this.profile == null) System.exit(-1);
+
         Display.setTitle(getFullName());
 
         VersionCheck.validateClientVersion(ClientIRC.getClientVersionChannel());

@@ -11,7 +11,6 @@ import java.util.Random;
 import java.util.UUID;
 
 import fuguriprivatecoding.autotoolrecode.event.events.player.JumpEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.UpdateBodyRotationEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Animations;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
@@ -1377,12 +1376,6 @@ public abstract class EntityLivingBase extends Entity implements Imports {
 
     protected float updateDistance(float p_110146_1_, float p_110146_2_) {
         float yaw = rotationYaw;
-
-        if (this instanceof EntityPlayerSP) {
-            UpdateBodyRotationEvent event = new UpdateBodyRotationEvent(yaw);
-            event.call();
-            yaw = event.getYaw();
-        }
 
         float f = MathHelper.wrapDegree(p_110146_1_ - this.renderYawOffset);
         this.renderYawOffset += f * 0.3F;

@@ -7,5 +7,4 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class WorldChangeEvent extends Event {
-//    double x,y,z;
 }

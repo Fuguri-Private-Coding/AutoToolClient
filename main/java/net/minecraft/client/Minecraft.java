@@ -39,7 +39,6 @@ import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.world.FakeTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.utils.file.WindowIconHelper;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
@@ -200,13 +199,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     public static byte[] memoryReserve = new byte[10485760];
     private static final List<DisplayMode> macDisplayModes = Lists.newArrayList(new DisplayMode(2560, 1600), new DisplayMode(2880, 1800));
     private final File fileResourcepacks;
-    @Getter
-    private final PropertyMap twitchDetails;
+    @Getter private final PropertyMap twitchDetails;
     private final PropertyMap profileProperties;
-    @Getter
-    private ServerData currentServerData;
-    @Getter
-    private TextureManager renderEngine;
+    @Getter private ServerData currentServerData;
+    @Getter private TextureManager renderEngine;
     private static Minecraft theMinecraft;
     public PlayerControllerMP playerController;
     private boolean fullscreen;
@@ -215,30 +211,20 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     private CrashReport crashReporter;
     public int displayWidth;
     public int displayHeight;
-    @Setter
-    @Getter
-    private boolean connectedToRealms = false;
+    @Setter @Getter private boolean connectedToRealms = false;
     public Timer timer = new Timer(20.0F);
-    public Timer fakeTimer = new Timer(20.0F);
     private final PlayerUsageSnooper usageSnooper = new PlayerUsageSnooper("client", this, MinecraftServer.getCurrentTimeMillis());
     public WorldClient theWorld;
     public RenderGlobal renderGlobal;
-    @Getter
-    public RenderManager renderManager;
-    @Getter
-    private RenderItem renderItem;
-    @Getter
-    private ItemRenderer itemRenderer;
+    @Getter public RenderManager renderManager;
+    @Getter private RenderItem renderItem;
+    @Getter private ItemRenderer itemRenderer;
     public EntityPlayerSP thePlayer;
-    @Getter
-    private Entity renderViewEntity;
+    @Getter private Entity renderViewEntity;
     public Entity pointedEntity;
     public EffectRenderer effectRenderer;
-    @Setter
-    @Getter
-    private Session session;
-    @Getter
-    private boolean isGamePaused;
+    @Setter @Getter private Session session;
+    @Getter private boolean isGamePaused;
     public FontRenderer fontRendererObj;
     public FontRenderer standardGalacticFontRenderer;
     public GuiScreen currentScreen;
@@ -248,8 +234,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     private final int tempDisplayWidth;
     private final int tempDisplayHeight;
     private IntegratedServer theIntegratedServer;
-    @Getter
-    private final long startMillisTime = System.currentTimeMillis();
+    @Getter private final long startMillisTime = System.currentTimeMillis();
     public GuiAchievement guiAchievement;
     public GuiIngame ingameGUI;
     public boolean skipRenderWorld;
@@ -259,20 +244,16 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     public final File mcDataDir;
     private final File fileAssets;
     private final String launchedVersion;
-    @Getter
-    private final Proxy proxy;
-    @Getter
-    private ISaveFormat saveLoader;
-    @Getter
-    private static int debugFPS;
+    @Getter private final Proxy proxy;
+    @Getter private ISaveFormat saveLoader;
+    @Getter private static int debugFPS;
     public int rightClickDelayTimer;
     private String serverName;
     private int serverPort;
     public boolean inGameHasFocus;
     long systemTime = getSystemTime();
     private int joinPlayerCounter;
-    @Getter
-    public final FrameTimer frameTimer = new FrameTimer();
+    @Getter public final FrameTimer frameTimer = new FrameTimer();
     long startNanoTime = System.nanoTime();
     private final boolean jvm64bit;
     private final boolean isDemo;
@@ -288,15 +269,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     private LanguageManager mcLanguageManager;
     private IStream stream;
     private Framebuffer framebufferMc;
-    @Getter
-    private TextureMap textureMapBlocks;
+    @Getter private TextureMap textureMapBlocks;
     private SoundHandler mcSoundHandler;
     private MusicTicker mcMusicTicker;
     private ResourceLocation mojangLogo;
-    @Getter
-    private final MinecraftSessionService sessionService;
-    @Getter
-    private SkinManager skinManager;
+    @Getter private final MinecraftSessionService sessionService;
+    @Getter private SkinManager skinManager;
     private final Queue<FutureTask<?>> scheduledTasks = Queues.newArrayDeque();
     private final Thread mcThread = Thread.currentThread();
     private ModelManager modelManager;
@@ -839,14 +817,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.timer.updateTimer();
         }
 
-        if (this.isGamePaused && this.theWorld != null) {
-            float f = this.fakeTimer.renderPartialTicks;
-            this.fakeTimer.updateTimer();
-            this.fakeTimer.renderPartialTicks = f;
-        } else {
-            this.fakeTimer.updateTimer();
-        }
-
         RunGameLoopEvent.INST.callNoWorldNoPlayer();
 
         this.mcProfiler.startSection("scheduledExecutables");
@@ -866,10 +836,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             if (tickEvent.isCanceled()) continue;
 
             runTick();
-        }
-
-        for (int r = 0; r < this.fakeTimer.elapsedTicks; ++r) {
-            new FakeTickEvent().call();
         }
 
         this.mcProfiler.endStartSection("preRenderErrors");
@@ -1784,11 +1750,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
         this.renderViewEntity = null;
         this.myNetworkManager = null;
-
-//        if (this.loadingScreen != null) {
-//            this.loadingScreen.resetProgressAndMessage(loadingMessage);
-//            this.loadingScreen.displayLoadingString("");
-//        }
 
         if (worldClientIn == null && this.theWorld != null) {
             this.mcResourcePackRepository.clearResourcePack();

@@ -26,8 +26,7 @@ public class Clicks implements Imports, EventListener {
 
     private static final ClickSettings clickSettings = Modules.getModule(ClickSettings.class);
 
-    @Override
-    public boolean listen() {
+    @Override public boolean listen() {
         return Utils.isWorldLoaded();
     }
 
@@ -72,6 +71,8 @@ public class Clicks implements Imports, EventListener {
     }
 
     public static void addClick() {
+        clicks++;
+
         if (clickSettings.simulateDoubleClick.isToggled() && clicks > 0) {
             float chance = clickSettings.chanceDoubleClick.getValue() / 100f;
 
@@ -79,7 +80,5 @@ public class Clicks implements Imports, EventListener {
                 clicks++;
             }
         }
-
-        clicks++;
     }
 }
