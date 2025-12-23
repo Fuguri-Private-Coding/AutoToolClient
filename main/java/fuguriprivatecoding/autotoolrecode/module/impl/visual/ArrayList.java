@@ -16,8 +16,8 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
-
 import java.awt.*;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -70,78 +70,41 @@ public class ArrayList extends Module {
             float xOffset = this.xPos.getValue() + horizontalSpacing.getValue();
             float yOffset = this.yPos.getValue();
             for (Module module : moduleList) {
-                EasingAnimation anim = module.getArrayListAnim();
-                anim.update(animSpeed.getValue(), Easing.OUT_BACK);
+                EasingAnimation slideAnim = module.getArrayListAnim();
+                slideAnim.update(animSpeed.getValue(), Easing.OUT_BACK);
 
                 float width = font.getStringWidth(module.getName()) + horizontalSpacing.getValue() * 2 + 8;
 
-                float animValue = anim.getValue();
-                float alpha = Math.clamp(animValue, 0, 1);
+                float slideValue = slideAnim.getValue();
+                float alpha = slideAnim.getClampValue();
 
-                switch (pos.getMode()) {
-                    case "RightUp" -> renderRightUp(
-                        xOffset - width + animValue * width,
-                        yOffset,
-                        module,
-                        sc,
-                        moduleList,
-                        alpha
-                    );
+                drawLine(
+                    xOffset - width + slideValue * width,
+                    yOffset,
+                    module,
+                    sc,
+                    moduleList,
+                    alpha,
+                    pos.is("LeftUp")
+                );
 
-                    case "LeftUp" -> renderLeftUp(
-                        xOffset - width + animValue * width,
-                        yOffset,
-                        module,
-                        moduleList,
-                        alpha
-                    );
-                }
-                yOffset += verticalSpacing.getValue() * animValue;
+                yOffset += verticalSpacing.getValue() * slideValue;
             }
         }
     }
 
-    private void renderRightUp(float xOffset, float yOffset, Module module, ScaledResolution sc, List<Module> moduleList, float alpha) {
+    private void drawLine(float xOffset, float yOffset, Module module, ScaledResolution sc, List<Module> moduleList, float alpha, boolean left) {
         float textWidth = font.getStringWidth(module.getName());
         float textHeight = verticalSpacing.getValue();
 
-        float textX = sc.getScaledWidth() - xOffset - textWidth + 0.5f;
+        float textX = left ? xOffset + 0.5f :
+            sc.getScaledWidth() - xOffset - textWidth + 0.5f;
+
         float textY = yOffset - textYPos.getValue() + textHeight / 2f - 2f;
 
-        float bgX = sc.getScaledWidth() - xOffset - horizontalSpacing.getValue() - textWidth;
-        float bgWidth = textWidth + horizontalSpacing.getValue() * 2f;
+        float bgX = left ? xOffset - horizontalSpacing.getValue() :
+            sc.getScaledWidth() - xOffset - horizontalSpacing.getValue() - textWidth;
 
-        Color mixedTextColor = textColor.getMixedColor(moduleList.indexOf(module));
-        Color mixedBgColor = backgroundColor.getMixedColor(moduleList.indexOf(module));
-        Color mixedGlowColor = glowColor.getMixedColor(moduleList.indexOf(module));
-
-        Color textColor = new Colors(mixedTextColor).withMultiplyAlphaClamp(alpha);
-        Color bgColor = new Colors(mixedBgColor).withMultiplyAlphaClamp(alpha);
-        Color glowBgColor = new Colors(mixedGlowColor).withMultiplyAlphaClamp(alpha);
-
-        if (background.isToggled()) {
-            Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, bgColor.getRGB());
-
-            if (glow.isToggled()) {
-                BloomUtils.addToDraw(() -> Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, glowBgColor.getRGB()));
-            }
-
-            if (blur.isToggled()) {
-                BlurUtils.addToDraw(() -> Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, Colors.WHITE.withAlpha(alpha).getRGB()));
-            }
-        }
-
-        font.drawString(module.getName(), textX, textY, textColor, textShadow.isToggled());
-    }
-
-    private void renderLeftUp(float xOffset, float yOffset, Module module, List<Module> moduleList, float alpha) {
-        float textWidth = font.getStringWidth(module.getName());
-        float textHeight = verticalSpacing.getValue();
-
-        float textX = xOffset + 0.5f;
-        float textY = yOffset - textYPos.getValue() + textHeight / 2f - 2f;
-
-        float bgX = xOffset - horizontalSpacing.getValue();
         float bgWidth = textWidth + horizontalSpacing.getValue() * 2f;
 
         Color mixedTextColor = textColor.getMixedColor(moduleList.indexOf(module));
@@ -168,7 +131,7 @@ public class ArrayList extends Module {
     }
 
     void sort(final List<Module> toSort, ClientFont font) {
-        toSort.sort( (m1, m2) -> {
+        toSort.sort((m1, m2) -> {
             final double width1 = font.getStringWidth(m1.getName());
             final double width2 = font.getStringWidth(m2.getName());
 

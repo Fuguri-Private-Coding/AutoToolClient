@@ -69,7 +69,9 @@ public class TimerRange extends Module {
 
             AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100);
 
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, RotUtils.getBestRotation(box).getYaw());
+            float yaw = RotUtils.getBestRotation(box).getYaw();
+
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, yaw);
 
             pos = new Vec3(target.posX, target.posY, target.posZ);
             targetPos = new Vec3(target.newPosX, target.newPosY, target.newPosZ);

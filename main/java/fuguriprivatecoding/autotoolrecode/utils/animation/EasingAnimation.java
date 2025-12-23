@@ -28,6 +28,14 @@ public class EasingAnimation {
         this.start = end;
         this.progress = 1f;
     }
+
+    public float getClampValue() {
+        return Math.clamp(value, 0, 1);
+    }
+
+    public float getClampValue(float min, float max) {
+        return Math.clamp(value, min, max);
+    }
     
     public void update(float speed, Easing easingFunction) {
         if (progress < 1f) {
