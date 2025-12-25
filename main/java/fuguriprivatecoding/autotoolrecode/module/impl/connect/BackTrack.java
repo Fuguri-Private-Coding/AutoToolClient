@@ -61,6 +61,8 @@ public class BackTrack extends Module {
 
     private int delayBetweenBackTracks;
 
+    public boolean working;
+
     @Override
     public void onEvent(Event event) {
         if (event instanceof PacketEvent e) {
@@ -126,6 +128,8 @@ public class BackTrack extends Module {
                 boolean distance = distanceToReal > this.distance.getMaxValue() || distanceToFake > 3 || distanceToReal < this.distance.getMinValue();
 
                 boolean need = onlyWhenNeed.isToggled() && target.hurtTime > maxHurtTimeWhenWorking.getValue();
+
+                working = !improve && !distance && !need;
 
                 if (improve || distance || need) {
                     handle(true);

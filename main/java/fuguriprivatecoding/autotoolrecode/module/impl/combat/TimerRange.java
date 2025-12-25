@@ -153,7 +153,7 @@ public class TimerRange extends Module {
 
     private AxisAlignedBB getFixedCashedBB(EntityLivingBase target, Vec3 newPos, Vec3 pos) {
         BackTrack backTrack = Modules.getModule(BackTrack.class);
-        if (backTrack.isToggled() && !backTrack.packetBuffer.isEmpty()) {
+        if (backTrack.isToggled() && backTrack.working) {
             return target.getEntityBoundingBox().offset(
                     pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ
             );
