@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
@@ -40,11 +39,7 @@ public class ESP extends Module {
                     if (mc.getRenderManager() == null || (playerEntity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || playerEntity.isDead)
                         continue;
 
-                    Vec3 pos = new Vec3(
-                        playerEntity.lrx + (playerEntity.rx - playerEntity.lrx) * mc.timer.renderPartialTicks - RenderManager.renderPosX,
-                        playerEntity.lry + (playerEntity.ry - playerEntity.lry) * mc.timer.renderPartialTicks - RenderManager.renderPosY,
-                        playerEntity.lrz + (playerEntity.rz - playerEntity.lrz) * mc.timer.renderPartialTicks - RenderManager.renderPosZ
-                    );
+                    Vec3 pos = playerEntity.getRealPosition();
 
                     AxisAlignedBB bb = playerEntity.getEntityBoundingBox().offset(pos.xCoord - playerEntity.posX, pos.yCoord - playerEntity.posY, pos.zCoord - playerEntity.posZ);
                     RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());

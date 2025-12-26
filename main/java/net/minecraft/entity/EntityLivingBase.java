@@ -20,6 +20,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -138,6 +139,14 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         this.rotationYaw = (float) (Math.random() * Math.PI * 2.0D);
         this.rotationYawHead = this.rotationYaw;
         this.stepHeight = 0.6F;
+    }
+
+    public Vec3 getRealPosition() {
+        return new Vec3(
+            lrx + (rx - lrx) * mc.timer.renderPartialTicks - RenderManager.renderPosX,
+            lry + (ry - lry) * mc.timer.renderPartialTicks - RenderManager.renderPosY,
+            lrz + (rz - lrz) * mc.timer.renderPartialTicks - RenderManager.renderPosZ
+        );
     }
 
     public Vec3 getPrevPositionVector() {

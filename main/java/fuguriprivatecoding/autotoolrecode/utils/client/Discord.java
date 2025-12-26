@@ -35,22 +35,24 @@ public class Discord implements Imports, EventListener {
     String details;
 
     public static void start() {
-        DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler(discordUser -> {
-            ConsoleScreen.logWithoutPrefix("§f[§9Discord§f]§a Подключен к " + discordUser.username + ".");
-            ConsoleScreen.logWithoutPrefix("§f[§9Discord§f]§a Активность запущенна.");
-            timestamp = System.currentTimeMillis();
-            if (discordUser.userId != null) {
-                name = discordUser.username;
-                id = discordUser.userId;
+        DiscordEventHandlers.Builder handle = new DiscordEventHandlers.Builder();
+
+        handle.setReadyEventHandler(user -> {
+            if (user.userId != null) {
+                ConsoleScreen.logWithoutPrefix("§f[§9Discord§f]§a Подключен к " + user.username + ".");
+                ConsoleScreen.logWithoutPrefix("§f[§9Discord§f]§a Активность запущенна.");
+                timestamp = System.currentTimeMillis();
+
+                name = user.username;
+                id = user.userId;
             } else {
                 System.exit(0);
             }
-        }).build();
+        });
 
-        DiscordRPC.discordInitialize("1356982126746140713", handlers, true);
+        DiscordRPC.discordInitialize("1356982126746140713", handle.build(), true);
 
         update("Запускается игра.", "А пока поешьте печенье.");
-        DiscordRPC.discordRunCallbacks();
     }
 
     @Override
@@ -58,29 +60,24 @@ public class Discord implements Imports, EventListener {
         if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 1000) {
             lastTime = System.currentTimeMillis();
             updateInformation();
-
-            DiscordRPC.discordRunCallbacks();
         }
     }
 
     @Override
     public boolean listen() {
-        return true;
+        DiscordRPCModule discordRPCModule = Modules.getModule(DiscordRPCModule.class);
+        return discordRPCModule != null && discordRPCModule.isToggled();
     }
 
     public void updateInformation() {
-        DiscordRPCModule discordRPCModule = Modules.getModule(DiscordRPCModule.class);
-
-        if (discordRPCModule != null && discordRPCModule.isToggled()) {
-            if (mc.thePlayer != null) {
-                state = mc.isSingleplayer() ?
-                    "В одиночной игре." :
-                    "На сервере: " + mc.getCurrentServerData().serverIP;
-                details = "В игре.";
-            } else {
-                state = mc.currentScreen instanceof GuiMultiplayer ? "Выбор сервера." : "Главное меню";
-                details = "Бездействует.";
-            }
+        if (mc.thePlayer != null) {
+            state = mc.isSingleplayer() ?
+                "В одиночной игре." :
+                "На сервере: " + mc.getCurrentServerData().serverIP;
+            details = "В игре.";
+        } else {
+            state = mc.currentScreen instanceof GuiMultiplayer ? "Выбор сервера." : "Главное меню";
+            details = "Бездействует.";
         }
 
         update(state, details);
@@ -98,5 +95,6 @@ public class Discord implements Imports, EventListener {
             .setStartTimestamps(timestamp);
 
         DiscordRPC.discordUpdatePresence(rpc.build());
+        DiscordRPC.discordRunCallbacks();
     }
 }

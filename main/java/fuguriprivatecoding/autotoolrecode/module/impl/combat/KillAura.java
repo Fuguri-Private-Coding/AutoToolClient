@@ -135,11 +135,13 @@ public class KillAura extends Module {
 
                 boolean teleport = (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled();
 
+                double offset = target.getCollisionBorderSize();
+
                 AxisAlignedBB box = RotUtils.getHitBox(
                     target,
                     teleport ? 100 : horizontalHitBoxSize.getValue(),
                     teleport ? 100 : verticalHitBoxSize.getValue()
-                ).expand(0.1D, 0.1D, 0.1D);
+                ).expand(offset, offset, offset);
 
                 Rot needRotation = getRotation(target, lr, box);
 
@@ -209,7 +211,9 @@ public class KillAura extends Module {
     private Rot getRotation(EntityLivingBase target, Rot lr, AxisAlignedBB box) {
         boolean teleport = (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled();
 
-        box.expand(-0.1, -0.1, -0.1);
+        double offset = target.getCollisionBorderSize();
+
+        box.expand(-offset, -offset, -offset);
 
         Rot needRot = teleport ?
             RotUtils.getBestRotation(box) :

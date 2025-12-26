@@ -16,7 +16,6 @@ import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
@@ -114,11 +113,7 @@ public class TimerRange extends Module {
         }
 
         if (event instanceof Render3DEvent && renderRealPlayerPosition.isToggled() && target != null) {
-            Vec3 realPositon = new Vec3(
-                    target.lrx + (target.rx - target.lrx) * mc.timer.renderPartialTicks - RenderManager.renderPosX,
-                    target.lry + (target.ry - target.lry) * mc.timer.renderPartialTicks - RenderManager.renderPosY,
-                    target.lrz + (target.rz - target.lrz) * mc.timer.renderPartialTicks - RenderManager.renderPosZ
-            );
+            Vec3 realPositon = target.getRealPosition();
 
             AxisAlignedBB bb = target.getEntityBoundingBox().offset(realPositon.xCoord - target.posX, realPositon.yCoord - target.posY, realPositon.zCoord - target.posZ);
 
@@ -153,13 +148,12 @@ public class TimerRange extends Module {
 
     private AxisAlignedBB getFixedCashedBB(EntityLivingBase target, Vec3 newPos, Vec3 pos) {
         BackTrack backTrack = Modules.getModule(BackTrack.class);
-        if (backTrack.isToggled() && backTrack.working) {
-            return target.getEntityBoundingBox().offset(
-                    pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ
-            );
-        }
-        return target.getEntityBoundingBox().offset(
-                newPos.xCoord - target.posX, newPos.yCoord - target.posY, newPos.zCoord - target.posZ
-        );
+        boolean working = backTrack.isToggled() && backTrack.working;
+
+        double offsetX = working ? pos.xCoord - target.posX : newPos.xCoord - target.posX;
+        double offsetY = working ? pos.yCoord - target.posY : newPos.yCoord - target.posY;
+        double offsetZ = working ? pos.zCoord - target.posZ : newPos.zCoord - target.posZ;
+
+        return target.getEntityBoundingBox().offset(offsetX, offsetY, offsetZ);
     }
 }

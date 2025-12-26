@@ -14,7 +14,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.*;
@@ -91,7 +90,7 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof TickEvent) {
-            if (delayBetweenBackTracks > 0) delayBetweenBackTracks--;
+            if (delayBetweenBackTracks > 0 && !working) delayBetweenBackTracks--;
             if (constantRandomize.isToggled() && constantRandomSupplier.getAsBoolean()) delays = delay.getRandomizedIntValue();
         }
 
@@ -113,11 +112,9 @@ public class BackTrack extends Module {
             if (target != null) {
                 Vec3 targetPos = new Vec3(target.nx, target.ny, target.nz);
 
-                AxisAlignedBB realBox = target.getEntityBoundingBox().offset(targetPos.xCoord - target.posX, targetPos.yCoord - target.posY, targetPos.zCoord - target.posZ).expand(
-                        target.getCollisionBorderSize(),
-                        target.getCollisionBorderSize(),
-                        target.getCollisionBorderSize()
-                );
+                double offset = target.getCollisionBorderSize();
+
+                AxisAlignedBB realBox = target.getEntityBoundingBox().offset(targetPos.xCoord - target.posX, targetPos.yCoord - target.posY, targetPos.zCoord - target.posZ).expand(offset, offset, offset);
 
                 double distanceToReal = DistanceUtils.getDistance(realBox);
                 double distanceToFake = DistanceUtils.getDistance(target);
@@ -140,13 +137,9 @@ public class BackTrack extends Module {
                     if (renderOnlyIfWorking.isToggled()) return;
                 }
 
-                targetPos = new Vec3(
-                    target.lrx + (target.rx - target.lrx) * mc.timer.renderPartialTicks - RenderManager.renderPosX,
-                    target.lry + (target.ry - target.lry) * mc.timer.renderPartialTicks - RenderManager.renderPosY,
-                    target.lrz + (target.rz - target.lrz) * mc.timer.renderPartialTicks - RenderManager.renderPosZ
-                );
-
+                targetPos = target.getRealPosition();
                 Vec3 pos = targetPos;
+
                 AxisAlignedBB bb = target.getEntityBoundingBox().offset(pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ);
                 switch (render.getMode()) {
                     case "Player" -> {

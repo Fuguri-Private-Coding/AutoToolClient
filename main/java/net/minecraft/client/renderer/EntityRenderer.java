@@ -539,7 +539,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             f = MathHelper.sin(f * f * f * f * (float) Math.PI);
             final HurtCamera hurtCamera = Modules.getModule(HurtCamera.class);
 
-            final float f2 = hurtCamera.isToggled() ? 0 : entitylivingbase.attackedAtYaw;
+            final float f2 = entitylivingbase.attackedAtYaw;
             GlStateManager.rotate(-f2, 0.0F, 1.0F, 0.0F);
             GlStateManager.rotate(-f * 14.0F, 0.0F, 0.0F, hurtCamera.isToggled() ? hurtCamera.strength.getValue() : 1.0F);
             GlStateManager.rotate(f2, 0.0F, 1.0F, 0.0F);

@@ -24,9 +24,9 @@ public class Animations extends Module {
             .addModes("1.7", "Swong", "Sigma", "Sigma 2", "Scale", "Exhibition", "Exhibition2", "Spin", "Basic", "Slide")
             .setMode("1.7");
 
-    FloatSetting scale = new FloatSetting("Scale", this, -1, 1f, 0f, 0.1f);
+    FloatSetting scale = new FloatSetting("Scale", this, -1, 1f, 0f, 0.01f);
 
-    public FloatSetting speed = new FloatSetting("Speed", this, 0.1f, 2f,1f,0.1f);
+    public FloatSetting speed = new FloatSetting("Speed", this, 0.1f, 2f,1f,0.01f);
 
     public CheckBox always = new CheckBox("AlwaysBlocking", this, true);
 
