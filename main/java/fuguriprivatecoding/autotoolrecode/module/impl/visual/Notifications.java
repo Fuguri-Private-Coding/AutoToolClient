@@ -43,11 +43,10 @@ public class Notifications extends Module {
     private static final List<Notification> notifications = new CopyOnWriteArrayList<>();
 
     public static void addNotification(String name, boolean toggled) {
-        if (!Modules.getModule(Notifications.class).isToggled()) return;
+        Notifications notificationsModule = Modules.getModule(Notifications.class);
+        if (notificationsModule == null || !notificationsModule.isToggled()) return;
 
-        Notification notification = new Notification(name, toggled, System.currentTimeMillis(), (long) Modules.getModule(Notifications.class).removeTime.getValue());
-        notification.getOpenAnim().setEnd(1);
-
+        Notification notification = new Notification(name, toggled, System.currentTimeMillis(), (long) notificationsModule.removeTime.getValue());
         notifications.add(notification);
     }
 
@@ -67,7 +66,7 @@ public class Notifications extends Module {
             float yOffset = 0;
             for (Notification notification : notifications) {
                 String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
-                String text = ClientUtils.prefixLog + "§fМодуль " + notification.getName() + "§f был" + toggleText + "§f.";
+                String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
 
                 EasingAnimation openAnim = notification.getOpenAnim();
 

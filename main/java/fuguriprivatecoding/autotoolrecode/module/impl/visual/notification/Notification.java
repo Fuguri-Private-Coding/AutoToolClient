@@ -5,22 +5,23 @@ import lombok.Getter;
 
 @Getter
 public class Notification {
-    String name;
+    String text;
     boolean toggled;
+
+    long lastTime;
+    long lifeTime;
 
     EasingAnimation openAnim = new EasingAnimation();
 
-    long lastTime;
-    long time;
-
-    public Notification(String name, boolean toggled, long lastTime, long time) {
-        this.name = name;
+    public Notification(String text, boolean toggled, long lastTime, long lifeTime) {
+        this.text = text;
         this.toggled = toggled;
         this.lastTime = lastTime;
-        this.time = time;
+        this.lifeTime = lifeTime;
+        openAnim.setEnd(1);
     }
 
     public boolean isDelete() {
-        return System.currentTimeMillis() - lastTime >= time;
+        return System.currentTimeMillis() - lastTime >= lifeTime;
     }
 }

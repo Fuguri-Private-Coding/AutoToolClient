@@ -17,7 +17,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import java.awt.*;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 

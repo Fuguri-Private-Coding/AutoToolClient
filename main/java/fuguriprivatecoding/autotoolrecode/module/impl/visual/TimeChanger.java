@@ -17,6 +17,6 @@ public class TimeChanger extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof PacketEvent packetEvent && packetEvent.getPacket() instanceof S03PacketTimeUpdate) packetEvent.setCanceled(true);
-        if (event instanceof TickEvent) mc.theWorld.setWorldTime(time.getValue() * 1000L);
+        if (event instanceof TickEvent && mc.theWorld.getWorldTime() != time.getValue() * 1000L) mc.theWorld.setWorldTime(time.getValue() * 1000L);
     }
 }

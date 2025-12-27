@@ -27,13 +27,15 @@ public class GuiUtils implements Imports {
         return Mouse.isButtonDown(2) && mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height;
     }
 
-    public static Vector2f getAbsolutePos(float xPercentage, float yPercentage) {
-        ScaledResolution sc = new ScaledResolution(mc);
-
+    public static Vector2f getAbsolutePos(float xPercentage, float yPercentage, ScaledResolution sc) {
         return new Vector2f(
             (sc.getScaledWidth() / 100f) * xPercentage,
             (sc.getScaledHeight() / 100f) * yPercentage
         );
+    }
+
+    public static Vector2f getAbsolutePos(float xPercentage, float yPercentage) {
+        return getAbsolutePos(xPercentage, yPercentage, new ScaledResolution(mc));
     }
 
     public static boolean isMouseHovered(float x, float y, float width, float height) {

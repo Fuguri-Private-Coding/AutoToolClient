@@ -31,7 +31,6 @@ public class CustomCape extends Module {
 
     public CustomCape() {
         if (CAPE_DIRECTORY.mkdirs()) System.out.println("Successful created Capes Directory.");
-
         updateCape();
     }
 

@@ -21,23 +21,25 @@ public class FullBright extends Module {
         if (mc.thePlayer.isPotionActive(Potion.nightVision)) {
             mc.thePlayer.removePotionEffect(Potion.nightVision.id);
         }
-        mc.gameSettings.gammaSetting = 1;
-    }
 
-    @Override
-    public void onEnable() {
-        if (mc.thePlayer == null) return;
-        switch (mode.getMode()) {
-            case "NightVision" -> mc.thePlayer.addPotionEffect(new PotionEffect(Potion.nightVision.id, Integer.MAX_VALUE, 255, false, false));
-            case "Gamma" -> mc.gameSettings.gammaSetting = 10000;
-        }
+        if (mc.gameSettings.gammaSetting == 10000) mc.gameSettings.gammaSetting = 1;
     }
 
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            if (mode.is("NightVision") && !mc.thePlayer.isPotionActive(Potion.nightVision)) {
-                mc.thePlayer.addPotionEffect(new PotionEffect(Potion.nightVision.id, Integer.MAX_VALUE, 255, false, false));
+            switch (mode.getMode()) {
+                case "NightVision" -> {
+                    if (!mc.thePlayer.isPotionActive(Potion.nightVision)) {
+                        mc.thePlayer.addPotionEffect(new PotionEffect(Potion.nightVision.id, Integer.MAX_VALUE, 255, false, false));
+                    }
+                }
+
+                case "Gamma" -> {
+                    if (mc.gameSettings.gammaSetting != 10000) {
+                        mc.gameSettings.gammaSetting = 10000;
+                    }
+                }
             }
         }
     }

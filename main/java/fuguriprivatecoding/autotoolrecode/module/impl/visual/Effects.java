@@ -40,7 +40,7 @@ public class Effects extends Module {
     public void onEvent(Event event) {
         if (event instanceof AttackEvent e) {
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
-            if (!rayCast.isFriend()) target = e.getHittingEntity();
+            if (!rayCast.isFriend() && !rayCast.isTeam()) target = e.getHittingEntity();
 
             if (e.getHittingEntity() instanceof EntityPlayer entityPlayer) {
                 if (attackEffect.isToggled()) {
@@ -51,11 +51,13 @@ public class Effects extends Module {
                 }
             }
         }
+
         if (event instanceof TickEvent) {
             if (target != null) {
                 if (effect.isToggled()) {
-                    if (mc.theWorld.getLoadedEntityList().contains(target)) targetPos = new Vec3(target.posX,target.posY,target.posZ);
-                    if (!mc.theWorld.getLoadedEntityList().contains(target)) {
+                    if (mc.theWorld.getLoadedEntityList().contains(target)) {
+                        targetPos = target.getPositionVector();
+                    } else {
                         if (effects.getMode().equals("Lightning")) {
                             bolt = new EntityLightningBolt(mc.theWorld, targetPos.xCoord, targetPos.yCoord, targetPos.zCoord);
                             bolt.setEntityId(-777);

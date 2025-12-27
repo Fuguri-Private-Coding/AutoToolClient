@@ -25,26 +25,24 @@ public class ChestStealer extends Module {
 
     final CheckBox checkName = new CheckBox("CheckName", this, true);
 
-    final StopWatch delayStopWatch;
-    final StopWatch startDelayStopWatch;
-    final StopWatch closeDelayStopWatch;
+    final StopWatch delayStopWatch = new StopWatch();
+    final StopWatch startDelayStopWatch = new StopWatch();
+    final StopWatch closeDelayStopWatch = new StopWatch();
 
-    boolean checked = false;
+    String[] chestNames = new String[] {"Chest", "Сундук"};
 
     Vector2f lastPos = new Vector2f(0,0);
-
-    public ChestStealer() {
-        delayStopWatch = new StopWatch();
-        startDelayStopWatch = new StopWatch();
-        closeDelayStopWatch = new StopWatch();
-    }
 
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             if (mc.currentScreen instanceof GuiChest guiChest) {
-                if (checkName.isToggled() && !guiChest.getLowerChestInventory().getDisplayName().getUnformattedText().contains("Chest")) {
-                    return;
+                String chestName = guiChest.getLowerChestInventory().getDisplayName().getUnformattedText();
+
+                if (checkName.isToggled()) {
+                    for (String name : chestNames) {
+                        if (!chestName.contains(name)) return;
+                    }
                 }
 
                 if (!startDelayStopWatch.reachedMS(startDelay.getRandomizedIntValue() * 50L)) return;
@@ -60,7 +58,7 @@ public class ChestStealer extends Module {
                 }
 
                 if (autoClose.isToggled()) {
-                    if (InventoryUtils.isInventoryFull() || InventoryUtils.isInventoryEmpty(container.getLowerChestInventory()) || availableSlot == -1) {
+                    if (availableSlot == -1) {
                         if (closeDelayStopWatch.reachedMS(closeDelay.getRandomizedIntValue() * 50L)) {
                             mc.thePlayer.closeScreen();
                         }
@@ -69,15 +67,14 @@ public class ChestStealer extends Module {
                     }
                 }
             } else {
-                checked = false;
                 startDelayStopWatch.reset();
             }
         }
     }
 
     int getClosestSlotIndex(ContainerChest container, Vector2f lastPos) {
-        int closestSlotIndex = -1;
         float minDistanceSq = Float.MAX_VALUE;
+        int closestSlotIndex = -1;
 
         for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
             final Slot slot = container.getSlot(i);

@@ -30,8 +30,9 @@ public class TargetESP extends Module {
 
     public final ColorSetting color = new ColorSetting("Color", this);
 
-    CheckBox changeHitColor = new CheckBox("ChangeHitColor", this);
-    public final ColorSetting hitColor = new ColorSetting("HitColor", this, changeHitColor::isToggled);
+    final CheckBox changeHitColor = new CheckBox("ChangeHurtColor", this);
+    final CheckBox instantChangeColor = new CheckBox("InstantHurtColor", this, changeHitColor::isToggled, false);
+    final ColorSetting hitColor = new ColorSetting("HurtColor", this, changeHitColor::isToggled);
 
     CheckBox glow = new CheckBox("Glow", this);
 
@@ -41,22 +42,24 @@ public class TargetESP extends Module {
             EntityLivingBase target = TargetStorage.getTarget();
 
             if (target != null) {
-                float hurt = target.hurtTime / 10f;
+                float hurt = changeHitColor.isToggled() ? target.hurtTime / 10f : 0;
 
                 if (mode.getMode().equals("Sigma")) {
-                    if (glow.isToggled()) BloomUtils.addToDraw(() -> renderSigma(target, hurt));
-                    renderSigma(target, hurt);
+                    if (glow.isToggled()) BloomUtils.addToDraw(() -> renderSigma(target, hurt, instantChangeColor.isToggled()));
+                    renderSigma(target, hurt, instantChangeColor.isToggled());
                 }
             }
         }
     }
 
-    private void renderSigma(EntityLivingBase target, float hurt) {
+    private void renderSigma(EntityLivingBase target, float hurt, boolean instant) {
         double animation = sin(System.currentTimeMillis() / 1000.0 * speed.getValue());
 
         double x = target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - RenderManager.renderPosX;
         double y = target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - RenderManager.renderPosY + 0.2;
         double z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - RenderManager.renderPosZ;
+
+        if (instant && hurt != 0) hurt = 1;
 
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_DEPTH_TEST);
@@ -71,7 +74,7 @@ public class TargetESP extends Module {
             double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
             double y1 = y + (animation + 1) / 2 * target.height;
 
-            Color fadeColor = hurt == 0 ? color.getMixedColor(i) : hitColor.getMixedColor(i);
+            Color fadeColor = ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt);
 
             ColorUtils.glColor(fadeColor);
             glVertex3d(x1, y1, z1);
@@ -87,7 +90,7 @@ public class TargetESP extends Module {
             double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
             double y1 = y + (animation + 1) / 2 * target.height;
 
-            Color fadeColor = hurt == 0 ? color.getMixedColor(i) : hitColor.getMixedColor(i);
+            Color fadeColor = ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt);
 
             ColorUtils.glColor(fadeColor, 1.0f);
             glVertex3d(x1, y1, z1);

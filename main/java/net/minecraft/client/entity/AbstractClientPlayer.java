@@ -103,6 +103,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
             if (!customCape.selectedCape.equalsIgnoreCase(customCape.capeMode.getMode())) {
                 locationCape = customCape.getCape();
             }
+
             if (customCape.isToggled() && locationCape != null) {
                 return locationCape;
             }

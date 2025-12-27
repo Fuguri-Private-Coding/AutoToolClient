@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -74,7 +75,7 @@ public class ScoreBoard extends Module {
             Scoreboard scoreboard = mc.theWorld.getScoreboard();
             ScoreObjective objective = scoreboard.getObjectiveInDisplaySlot(1);
             if (objective != null) {
-                Vector2f pos = getPos(sc);
+                Vector2f pos = GuiUtils.getAbsolutePos(posX.getValue(), posY.getValue(), sc);
                 scoreboard = objective.getScoreboard();
                 Collection<Score> collection = scoreboard.getSortedScores(objective);
                 float width = 10.0F;
@@ -122,12 +123,5 @@ public class ScoreBoard extends Module {
             }
             GL11.glPopMatrix();
         }
-    }
-
-    Vector2f getPos(ScaledResolution sc) {
-        return new Vector2f(
-                (sc.getScaledWidth() / 100f) * this.posX.getValue(),
-                (sc.getScaledHeight() / 100f) * this.posY.getValue()
-        );
     }
 }

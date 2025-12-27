@@ -40,7 +40,6 @@ public class ChestESP extends Module {
                     case TileEntityChest tileEntityChest -> {
                         BlockPos pos = tileEntityChest.getPos();
 
-
                         if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor()));
                         if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, Color.WHITE));
 

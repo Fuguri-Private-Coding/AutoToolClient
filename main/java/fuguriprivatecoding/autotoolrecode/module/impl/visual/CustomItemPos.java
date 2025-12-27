@@ -24,5 +24,4 @@ public class CustomItemPos extends Module {
     public FloatSetting blockRotateY = new FloatSetting("BlockRotateY", this, -90,90,0,0.1f);
     public FloatSetting blockRotateZ = new FloatSetting("BlockRotateZ", this, -90,90,0,0.1f);
 
-
 }
