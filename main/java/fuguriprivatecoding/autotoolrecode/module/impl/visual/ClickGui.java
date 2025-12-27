@@ -19,7 +19,7 @@ public class ClickGui extends Module {
 	public final CheckBox glow = new CheckBox("Glow", this);
 	public final CheckBox blur = new CheckBox("Blur", this);
 
-	public final ColorSetting color = new ColorSetting("Color", this);
+	public final ColorSetting color = new ColorSetting("Color", this, 40);
 	public final ColorSetting colorShadow = new ColorSetting("Color Shadow", this);
 
 
