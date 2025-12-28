@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.ItemUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
@@ -36,6 +37,8 @@ public class Fucker extends Module {
 
     CheckBox instantBreak = new CheckBox("InstantBreak", this);
 
+    IntegerSetting breakDelay = new IntegerSetting("BreakDelay", this, 0, 5, 5);
+
     CheckBox whiteListOwnBed = new CheckBox("WhiteListOwnBed", this);
     CheckBox emptySurrounding = new CheckBox("EmptySurrounding", this);
 
@@ -45,18 +48,15 @@ public class Fucker extends Module {
     CheckBox glow = new CheckBox("Glow", this, renderBreaking::isToggled, true);
     ColorSetting glowColor = new ColorSetting("GlowColor", this, () -> renderBreaking.isToggled() && glow.isToggled());
 
-    private Vec3 block;
-    private Vec3 home;
+    private Vec3 block, home;
     private double damage;
 
-    private int delay = 0;
+    private int delay;
 
     @Override
     public void onDisable() {
-        super.onDisable();
-        delay = 5;
-        damage = 0;
         CameraRot.INST.setWillChange(false);
+        reset();
     }
 
     @Override
@@ -74,14 +74,13 @@ public class Fucker extends Module {
         if (Modules.getModule(Scaffold.class).isToggled() || TargetStorage.getTarget() != null) return;
 
         if (event instanceof TickEvent) {
-            if (delay > 0) {
-                delay--;
-                return;
-            }
-
+            if (delay != 0) delay--;
+            Vec3 lastBlock = block;
             block = this.findBlock();
 
-            if (block == null) return;
+            if (block == null) {
+                return;
+            }
 
             Rot needRot = RotUtils.getRotationToPoint(block);
 
@@ -89,21 +88,13 @@ public class Fucker extends Module {
 
             CameraRot.INST.setUnlocked(true);
             mc.thePlayer.moveRotation(delta.fix());
-        }
 
-        if (event instanceof Render3DEvent && block != null && renderBreaking.isToggled()) {
-            Color bedColor = new Colors(color.getFadedColor());
-            Color bedGlowColor = new Colors(glowColor.getFadedColor());
+            BlockPos blockPos = new BlockPos(block);
+            BlockPos lastPos = new BlockPos(lastBlock);
 
-            RenderUtils.start3D();
-
-            BlockPos bedPos = new BlockPos(block);
-
-            if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(bedPos, bedGlowColor));
-            RenderUtils.drawBlockESP(bedPos, bedColor);
-
-            ColorUtils.resetColor();
-            RenderUtils.stop3D();
+            if (!lastPos.equals(blockPos)) {
+                reset();
+            }
         }
 
         if (event instanceof LegitClickTimingEvent && block != null && CameraRot.INST.isUnlocked() && delay == 0) {
@@ -111,6 +102,23 @@ public class Fucker extends Module {
         }
 
         if (block != null) {
+            if (event instanceof Render3DEvent && renderBreaking.isToggled()) {
+                BlockPos bedPos = new BlockPos(this.block);
+
+                float damage = (float) (this.damage / 3f);
+
+                Color bedColor = new Colors(color.getFadedColor()).withMultiplyAlpha(damage);
+                Color bedGlowColor = new Colors(glowColor.getFadedColor()).withMultiplyAlpha(damage);
+
+                RenderUtils.start3D();
+
+                if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(bedPos, bedGlowColor));
+                RenderUtils.drawBlockESP(bedPos, bedColor);
+
+                ColorUtils.resetColor();
+                RenderUtils.stop3D();
+            }
+
             if (event instanceof MoveEvent e) {
                 MoveUtils.moveFix(e, MoveUtils.getDirection(CameraRot.INST.getYaw(), e.getForward(), e.getStrafe()));
             }
@@ -136,16 +144,14 @@ public class Fucker extends Module {
 
                 if (hardness >= 1) {
                     mc.playerController.onPlayerDestroyBlock(blockPos, EnumFacing.DOWN);
-                    delay = 5;
-                    damage = 0;
+                    reset();
                 }
 
                 this.updateDamage(blockPos, hardness);
             } else if (damage > 1) {
                 PacketUtils.sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, blockPos, EnumFacing.UP));
                 mc.playerController.onPlayerDestroyBlock(blockPos, EnumFacing.DOWN);
-                damage = 0;
-                delay = 5;
+                reset();
                 this.updateDamage(blockPos, hardness);
             } else {
                 this.updateDamage(blockPos, hardness);
@@ -155,21 +161,30 @@ public class Fucker extends Module {
         }
     }
 
+    public void reset() {
+        delay = breakDelay.getValue();
+        damage = 0;
+    }
+
     public Vec3 findBlock() {
         if (home != null && mc.thePlayer.getDistanceSq(home.xCoord, home.yCoord, home.zCoord) < 35 * 35 && whiteListOwnBed.isToggled()) {
             return null;
         }
 
-        for (int x = -5; x <= 5; x++) {
-            for (int y = -5; y <= 5; y++) {
-                for (int z = -5; z <= 5; z++) {
+        Vec3 nearestPosition = null;
+        double nearestDistance = Double.MAX_VALUE;
 
+        for (int x = -3; x <= 3; x++) {
+            for (int y = -3; y <= 3; y++) {
+                for (int z = -3; z <= 3; z++) {
                     final Block block = PlayerUtils.blockRelativeToPlayer(x, y, z);
                     final Vec3 position = new Vec3(mc.thePlayer.posX + x, mc.thePlayer.posY + y, mc.thePlayer.posZ + z);
 
                     if (!(block instanceof BlockBed)) {
                         continue;
                     }
+
+                    double distance = mc.thePlayer.getDistanceSq(position.xCoord, position.yCoord, position.zCoord);
 
                     final RayTrace movingObjectPosition = RayCastUtils.rayCast(RotUtils.getRotationToPoint(position), 4.5f);
                     if (movingObjectPosition == null || movingObjectPosition.hitVec.distanceTo(new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)) > 4.5) {
@@ -211,19 +226,25 @@ public class Fucker extends Module {
                         }
 
                         if (!empty) {
-                            if (addVec.equals(position)) {
-                                return null;
-                            } else {
-                                return addVec;
+                            if (!addVec.equals(position)) {
+                                double addVecDistance = mc.thePlayer.getDistanceSq(addVec.xCoord, addVec.yCoord, addVec.zCoord);
+                                if (addVecDistance < nearestDistance) {
+                                    nearestDistance = addVecDistance;
+                                    nearestPosition = addVec;
+                                }
                             }
+                            continue;
                         }
                     }
 
-                    return position;
+                    if (distance < nearestDistance) {
+                        nearestDistance = distance;
+                        nearestPosition = position;
+                    }
                 }
             }
         }
 
-        return null;
+        return nearestPosition;
     }
 }
