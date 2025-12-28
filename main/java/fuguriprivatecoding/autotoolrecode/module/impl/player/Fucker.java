@@ -82,15 +82,28 @@ public class Fucker extends Module {
                 return;
             }
 
-            Rot needRot = RotUtils.getRotationToPoint(block);
+            BlockPos blockPos = new BlockPos(block);
+            BlockPos lastPos = new BlockPos(lastBlock);
+
+            Block block = mc.theWorld.getBlockState(blockPos).getBlock();
+
+            Vec3 pos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+
+            AxisAlignedBB bb = new AxisAlignedBB(
+                pos.xCoord + block.getBlockBoundsMinX(),
+                pos.yCoord + block.getBlockBoundsMinY(),
+                pos.zCoord + block.getBlockBoundsMinZ(),
+                pos.xCoord + block.getBlockBoundsMaxX(),
+                pos.yCoord + block.getBlockBoundsMaxY(),
+                pos.zCoord + block.getBlockBoundsMaxZ()
+            );
+
+            Rot needRot = RotUtils.getBestRotation(bb);
 
             Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), needRot);
 
             CameraRot.INST.setUnlocked(true);
             mc.thePlayer.moveRotation(delta.fix());
-
-            BlockPos blockPos = new BlockPos(block);
-            BlockPos lastPos = new BlockPos(lastBlock);
 
             if (!lastPos.equals(blockPos)) {
                 reset();
@@ -174,9 +187,9 @@ public class Fucker extends Module {
         Vec3 nearestPosition = null;
         double nearestDistance = Double.MAX_VALUE;
 
-        for (int x = -3; x <= 3; x++) {
-            for (int y = -3; y <= 3; y++) {
-                for (int z = -3; z <= 3; z++) {
+        for (int x = -4; x <= 4; x++) {
+            for (int y = -4; y <= 4; y++) {
+                for (int z = -4; z <= 4; z++) {
                     final Block block = PlayerUtils.blockRelativeToPlayer(x, y, z);
                     final Vec3 position = new Vec3(mc.thePlayer.posX + x, mc.thePlayer.posY + y, mc.thePlayer.posZ + z);
 
@@ -186,7 +199,7 @@ public class Fucker extends Module {
 
                     double distance = mc.thePlayer.getDistanceSq(position.xCoord, position.yCoord, position.zCoord);
 
-                    final RayTrace movingObjectPosition = RayCastUtils.rayCast(RotUtils.getRotationToPoint(position), 4.5f);
+                    final RayTrace movingObjectPosition = RayCastUtils.rayCast(RotUtils.getRotationToPoint(position), 4f);
                     if (movingObjectPosition == null || movingObjectPosition.hitVec.distanceTo(new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)) > 4.5) {
                         continue;
                     }
