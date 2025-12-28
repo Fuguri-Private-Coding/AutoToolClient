@@ -343,17 +343,6 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
             worldrenderer.pos((j + 1), (8.5 + i), 0.0D).color(0.0F, 0.0F, 0.0F, 0.5F).endVertex();
             worldrenderer.pos((j + 1), (-1 + i), 0.0D).color(0.0F, 0.0F, 0.0F, 0.5F).endVertex();
             tessellator.draw();
-            GL11.glLineWidth(1.0E-4F);
-            worldrenderer.begin(1, DefaultVertexFormats.POSITION_COLOR);
-            worldrenderer.pos((-j - 1), (-1 + i), 0.0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-            worldrenderer.pos((j + 1), (-1 + i), 0.0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-            worldrenderer.pos((-j - 1), 8.5 + i, 0.0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-            worldrenderer.pos((j + 1), 8.5 + i, 0.0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-            worldrenderer.pos((-j - 1), (-1 + i), 0.0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-            worldrenderer.pos((-j - 1), 8.5 + i, 0.0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-            worldrenderer.pos((j + 1), (-1 + i), 0.0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-            worldrenderer.pos((j + 1), 8.5 + i, 0.0).color(0.0F, 0.0F, 0.0F, 1.0F).endVertex();
-            tessellator.draw();
             GlStateManager.enableTexture2D();
             fontrenderer.drawString(str, -fontrenderer.getStringWidth(str) / 2, i, 553648127);
             GlStateManager.enableDepth();
@@ -364,13 +353,6 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.popMatrix();
         }
-    }
-
-    public boolean isMultipass() {
-        return false;
-    }
-
-    public void renderMultipass(T p_renderMultipass_1_, double p_renderMultipass_2_, double p_renderMultipass_4_, double p_renderMultipass_6_, float p_renderMultipass_8_, float p_renderMultipass_9_) {
     }
 
     public static void setModelBipedMain(RenderBiped p_setModelBipedMain_0_, ModelBiped p_setModelBipedMain_1_) {
