@@ -40,9 +40,7 @@ public class ChestStealer extends Module {
                 String chestName = guiChest.getLowerChestInventory().getDisplayName().getUnformattedText();
 
                 if (checkName.isToggled()) {
-                    for (String name : chestNames) {
-                        if (!chestName.contains(name)) return;
-                    }
+                    if (!chestName.contains("Chest")) return;
                 }
 
                 if (!startDelayStopWatch.reachedMS(startDelay.getRandomizedIntValue() * 50L)) return;

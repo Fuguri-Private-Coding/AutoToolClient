@@ -27,6 +27,7 @@ import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.*;
 
@@ -86,6 +87,8 @@ public class Fucker extends Module {
             BlockPos lastPos = new BlockPos(lastBlock);
 
             Block block = mc.theWorld.getBlockState(blockPos).getBlock();
+
+            mc.thePlayer.inventory.currentItem = getBestSlot(block);
 
             Vec3 pos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
@@ -177,6 +180,35 @@ public class Fucker extends Module {
     public void reset() {
         delay = breakDelay.getValue();
         damage = 0;
+        switchBack();
+    }
+
+    int getBestSlot(Block block) {
+        float bestEff = 1f;
+        int bestSlot = mc.thePlayer.inventory.currentItem;
+
+        for (int i = 0; i < 9; i++) {
+            ItemStack item = mc.thePlayer.inventory.mainInventory[i];
+
+            if (item == null) {
+                continue;
+            }
+
+            final float eff = item.getStrVsBlock(block);
+
+            if (eff <= bestEff) {
+                continue;
+            }
+
+            bestEff = eff;
+            bestSlot = i;
+        }
+
+        return bestSlot;
+    }
+
+    void switchBack() {
+        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
     }
 
     public Vec3 findBlock() {
