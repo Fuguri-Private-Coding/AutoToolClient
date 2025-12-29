@@ -28,6 +28,5 @@ public abstract class Command {
 
 	public void addMessage(String msg) {
 		ConsoleScreen.log(msg);
-		ClientUtils.chatLog(msg);
 	}
 }
