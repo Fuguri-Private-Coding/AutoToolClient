@@ -3,9 +3,10 @@ package fuguriprivatecoding.autotoolrecode.utils.player;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import lombok.experimental.UtilityClass;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import net.minecraft.block.Block;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 
@@ -18,6 +19,11 @@ public class PlayerUtils implements Imports {
         Material.lava, Material.water, Material.cactus, Material.air, Material.anvil, Material.cake,
         Material.carpet, Material.dragonEgg, Material.fire, Material.portal, Material.redstoneLight,
         Material.circuits, Material.coral
+    );
+
+    private final List<Block> blackListBlock = Arrays.asList(
+        Blocks.chest, Blocks.anvil, Blocks.ender_chest, Blocks.crafting_table,
+        Blocks.furnace, Blocks.dragon_egg, Blocks.skull, Blocks.trapped_chest
     );
 
     private final HashMap<Integer, Integer> GOOD_POTIONS = new HashMap<>() {{
@@ -134,7 +140,7 @@ public class PlayerUtils implements Imports {
                         double ey = MathHelper.clamp(mc.thePlayer.posY, blockPos.getY(), (double) blockPos.getY() + block.getBlockBoundsMaxY());
                         double ez = MathHelper.clamp(mc.thePlayer.posZ, blockPos.getZ(), (double) blockPos.getZ() + block.getBlockBoundsMaxZ());
                         Vec3 vec3 = new Vec3(ex, ey, ez);
-                        if (!blackListMaterial.contains(block.getMaterial())) {
+                        if (!blackListMaterial.contains(block.getMaterial()) && !blackListBlock.contains(block)) {
                             positions.add(vec3);
                             hashMap.put(vec3, blockPos);
                         }

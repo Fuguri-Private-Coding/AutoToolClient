@@ -58,24 +58,29 @@ public class ConsoleScreen extends GuiScreen implements EventListener {
         Events.register(this);
         mc = Minecraft.getMinecraft();
 
-        ScaledResolution sc = new ScaledResolution(mc);
-        init(sc);
+        lastMouse = new Vector2f(0, 0);
 
         scrolls = new Animation2D();
         background = new Animation2D();
         sizeBackground = new Animation2D();
     }
 
-    private void init(ScaledResolution resolution) {
-        int screenWidth = resolution.getScaledWidth();
-        int screenHeight = resolution.getScaledHeight();
+    @Override
+    public void initGui() {
+        super.initGui();
+        initPoses();
+    }
 
-        lastSize = new Vector2f(screenWidth - 100, screenHeight - 100);
-        lastPos = new Vector2f(50f, 50f);
-        lastMouse = new Vector2f(0, 0);
+    public void initPoses() {
+        if (pos == null) {
+            ScaledResolution sc = new ScaledResolution(mc);
 
-        size = new Vector2f(screenWidth - 100, screenHeight - 100);
-        pos = new Vector2f(50f, 50f);
+            lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+            lastPos = new Vector2f(50f, 50f);
+
+            size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+            pos = new Vector2f(50f, 50f);
+        }
     }
 
     @Override

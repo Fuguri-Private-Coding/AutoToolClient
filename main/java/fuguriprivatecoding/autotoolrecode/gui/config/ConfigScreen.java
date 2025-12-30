@@ -41,7 +41,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
 
     ClickGui clickGui = Modules.getModule(ClickGui.class);
     ClientSettings clientSettings = Modules.getModule(ClientSettings.class);
-    public final TextButton textField;
+    public TextButton textField;
 
     Vector2f pos, size, lastMouse, lastSize, lastPos;
     boolean moving, closing, creatingConfig;
@@ -62,19 +62,32 @@ public class ConfigScreen extends GuiScreen implements EventListener {
     private ConfigScreen() {
         Events.register(this);
         mc = Minecraft.getMinecraft();
-        ScaledResolution sc = new ScaledResolution(mc);
 
-        lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
-        lastPos = new Vector2f(50f, 50f);
-        size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
-        pos = new Vector2f(50f, 50f);
         lastMouse = new Vector2f(0, 0);
-
-        textField = new TextButton(1, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
 
         background = new Animation2D();
         sizeBackground = new Animation2D();
         scrolls = new Animation2D();
+    }
+
+    @Override
+    public void initGui() {
+        super.initGui();
+        initPoses();
+    }
+
+    public void initPoses() {
+        if (pos == null) {
+            ScaledResolution sc = new ScaledResolution(mc);
+
+            lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+            lastPos = new Vector2f(50f, 50f);
+
+            size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+            pos = new Vector2f(50f, 50f);
+
+            textField = new TextButton(1, sc.getScaledWidth() / 2 - 50, sc.getScaledHeight() / 2, 100, 20);
+        }
     }
 
     @Override

@@ -6,10 +6,10 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.move.longjump.LongJumpMode;
 import fuguriprivatecoding.autotoolrecode.module.impl.move.longjump.impl.MatrixMode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,8 +20,10 @@ public class LongJump extends Module {
         .addModes("Matrix")
         ;
 
-    public final FloatSetting speed = new FloatSetting("Speed", this, () -> jumpMode.is("Matrix"), 0, 10, 5, 0.5f);
-    public final IntegerSetting tick = new IntegerSetting("Ticks", this, () -> jumpMode.is("Matrix"), 0, 80, 25);
+    public final FloatSetting speed = new FloatSetting("Speed", this, () -> jumpMode.is("Matrix"), 0, 10, 5, 1f);
+
+    public final CheckBox autoTick = new CheckBox("AutoTick", this, () -> jumpMode.is("Matrix"), true);
+    public final IntegerSetting tick = new IntegerSetting("Ticks", this, () -> jumpMode.is("Matrix") && !autoTick.isToggled(), 0, 80, 25);
 
     private final Map<String, LongJumpMode> speedModes = new HashMap<>();
     private LongJumpMode currentLongJumpMode;

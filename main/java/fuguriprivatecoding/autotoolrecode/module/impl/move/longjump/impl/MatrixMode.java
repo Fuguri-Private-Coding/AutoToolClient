@@ -91,7 +91,10 @@ public class MatrixMode extends AbstractLongJumpMode {
         if (event instanceof UpdateEvent) {
             if (!this.sent) {
                 mc.thePlayer.motionX = mc.thePlayer.motionY = mc.thePlayer.motionZ = 0;
-                if (this.ticks > longJump.tick.getValue()) {
+
+                int maxTicks = Math.round(longJump.autoTick.isToggled() ? longJump.speed.getValue() * 5 : longJump.tick.getValue());
+
+                if (this.ticks > maxTicks) {
                     this.sent = true;
                     this.ticks = 0;
                     this.canBoost = true;

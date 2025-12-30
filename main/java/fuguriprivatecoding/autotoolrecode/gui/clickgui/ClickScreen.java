@@ -82,14 +82,8 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		lastMouse = new Vector2f(0, 0);
 		mc = Minecraft.getMinecraft();
 
-		ScaledResolution sc = new ScaledResolution(mc);
-		lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
-		lastPos = new Vector2f(50f, 50f);
-		clickedCategoryPos = new Vector2f();
-		clickedModulePos = new Vector2f();
-
-		size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
-		pos = new Vector2f(50f, 50f);
+        clickedCategoryPos = new Vector2f();
+        clickedModulePos = new Vector2f();
 
 		BACKGROUND_COLOR = new Color(0, 0, 0, clickGui.backgroundAlpha.getValue());
 
@@ -100,8 +94,27 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		settingLine = new Animation2D();
 		modulesScrolls = new Animation2D();
 		moduleLine = new Animation2D();
+
 		settingsScrolls = new Animation2D();
 	}
+
+    @Override
+    public void initGui() {
+        super.initGui();
+        initPoses();
+    }
+
+    public void initPoses() {
+        if (pos == null) {
+            ScaledResolution sc = new ScaledResolution(mc);
+
+            lastSize = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+            lastPos = new Vector2f(50f, 50f);
+
+            size = new Vector2f(sc.getScaledWidth() - 100, sc.getScaledHeight() - 100);
+            pos = new Vector2f(50f, 50f);
+        }
+    }
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
