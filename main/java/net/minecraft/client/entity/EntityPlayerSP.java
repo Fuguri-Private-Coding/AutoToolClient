@@ -1,11 +1,9 @@
 package net.minecraft.client.entity;
 
 import fuguriprivatecoding.autotoolrecode.command.Commands;
-import fuguriprivatecoding.autotoolrecode.event.events.player.ChangeSprintEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEventPost;
-import fuguriprivatecoding.autotoolrecode.event.events.player.SprintEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.*;
 import fuguriprivatecoding.autotoolrecode.event.events.world.UpdateEvent;
+import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +26,7 @@ import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.client.gui.inventory.GuiScreenHorseInventory;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.command.server.CommandBlockLogic;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.IMerchant;
@@ -583,9 +582,21 @@ public class EntityPlayerSP extends AbstractClientPlayer {
         this.movementInput.updatePlayerMoveState();
 
         if (this.isUsingItem() && !this.isRiding()) {
-            this.movementInput.moveStrafe *= 0.2F;
-            this.movementInput.moveForward *= 0.2F;
-            this.sprintToggleTimer = 0;
+            float strafe = 0.2F;
+            float forward = 0.2f;
+
+            SlowDownEvent slowDownEvent = new SlowDownEvent(strafe, forward);
+            slowDownEvent.call();
+
+            if (!slowDownEvent.isCanceled()) {
+                strafe = slowDownEvent.getStrafe();
+                forward = slowDownEvent.getForward();
+
+                this.movementInput.moveStrafe *= strafe;
+                this.movementInput.moveForward *= forward;
+
+                this.sprintToggleTimer = 0;
+            }
         }
 
         this.pushOutOfBlocks(this.posX - (double) this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double) this.width * 0.35D);

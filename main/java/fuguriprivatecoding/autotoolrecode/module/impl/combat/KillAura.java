@@ -85,7 +85,7 @@ public class KillAura extends Module {
         .setMode("Silent");
 
     final MultiMode autoDisableIf = new MultiMode("AutoDisableIf", this)
-        .addModes("ChangeWorld", "Death")
+        .addModes("ChangeWorld")
         ;
 
     final StopWatch clickTimer = new StopWatch();
@@ -108,7 +108,6 @@ public class KillAura extends Module {
         }
 
         if (event instanceof TickEvent) {
-            if (mc.thePlayer.isDead && autoDisableIf.get("Death")) setToggled(false);
             TargetStorage.setTarget(findNewTarget());
         }
 
@@ -119,9 +118,9 @@ public class KillAura extends Module {
             if (event instanceof RunGameLoopEvent && mc.currentScreen == null && !mc.thePlayer.isUsingItem() && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
                 if (TimerRange.balance == 0) {
                     if (clickTimer.reachedMS(delay)) {
-                        clickTimer.reset();
-                        Clicks.addClick();
                         delay = Math.round(1000f / CPS.getRandomizedIntValue());
+                        Clicks.addClick();
+                        clickTimer.reset();
                     }
                 }
             }
