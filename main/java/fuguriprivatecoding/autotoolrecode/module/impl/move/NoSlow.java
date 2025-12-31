@@ -53,7 +53,7 @@ public class NoSlow extends Module {
 
         switch (mode.getMode()) {
             case "Intave" -> {
-                if (event instanceof MotionEvent && work) {
+                if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE && work) {
                     mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP));
                 }
             }

@@ -4,7 +4,6 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LookEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEventPost;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.UpdateEvent;
@@ -65,7 +64,7 @@ public class MatrixMode extends AbstractLongJumpMode {
             }
         }
 
-        if (event instanceof MotionEvent e) {
+        if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE) {
             e.setOnGround(false);
             if (!this.sent) {
                 e.setX(this.x);
@@ -74,7 +73,7 @@ public class MatrixMode extends AbstractLongJumpMode {
             }
         }
 
-        if (event instanceof MotionEventPost) {
+        if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.POST) {
             if (!this.sent) {
                 this.x += -Math.sin(Math.toRadians(this.firstDir)) * (0.2496 - (this.ticks % 3 == 0 ? 0.0806 : (double) 0.0F));
                 this.z += Math.cos(Math.toRadians(this.firstDir)) * (0.2496 - (this.ticks % 3 == 0 ? 0.0806 : (double) 0.0F));

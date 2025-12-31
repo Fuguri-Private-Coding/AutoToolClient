@@ -2,9 +2,11 @@ package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.UpdateEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 
@@ -19,6 +21,8 @@ public class FastBreak extends Module {
     IntegerSetting delay = new IntegerSetting("Delay", this, () -> breakMode.is("Delay"), 0, 5, 0);
     IntegerSetting clicks = new IntegerSetting("Clicks", this, () -> breakMode.is("DropDelay"), 1,3,1);
 
+    FloatSetting breakDamage = new FloatSetting("BreakDamage", this, 0, 1f, 1f, 0.01f);
+
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
@@ -30,6 +34,12 @@ public class FastBreak extends Module {
                         mc.playerController.blockHitDelay = 0;
                     }
                 }
+            }
+        }
+
+        if (event instanceof UpdateEvent) {
+            if (mc.playerController.curBlockDamageMP > breakDamage.getValue()) {
+                mc.playerController.curBlockDamageMP = 1f;
             }
         }
     }

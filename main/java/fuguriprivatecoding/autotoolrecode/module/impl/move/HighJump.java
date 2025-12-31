@@ -36,7 +36,7 @@ public class HighJump extends Module {
     public void onEvent(Event event) {
         switch (mode.getMode()) {
             case "Matrix" -> {
-                if (event instanceof MotionEvent e) {
+                if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE) {
                     e.setOnGround(false);
                 }
 

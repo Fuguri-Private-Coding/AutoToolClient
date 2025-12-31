@@ -180,8 +180,9 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             MotionEvent event = new MotionEvent(
                     posX, posY, posZ,
                     rotationYaw, rotationPitch,
-                    onGround
+                    onGround, MotionEvent.Type.PRE
             );
+
             event.call();
             double d0 = event.getX() - lastReportedPosX;
             double d1 = event.getY() - lastReportedPosY;
@@ -222,7 +223,8 @@ public class EntityPlayerSP extends AbstractClientPlayer {
                 this.lastReportedPitch = event.getPitch();
             }
 
-            new MotionEventPost(event.getX(), event.getY(), event.getZ(), event.getYaw(), event.getPitch(), event.isOnGround()).call();
+            event = new MotionEvent(event.getX(), event.getY(), event.getZ(), event.getYaw(), event.getPitch(), event.isOnGround(), MotionEvent.Type.POST);
+            event.call();
         }
     }
 

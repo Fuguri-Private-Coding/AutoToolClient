@@ -12,4 +12,9 @@ public class MotionEvent extends Event {
 	double x, y, z;
 	float yaw, pitch;
 	boolean onGround;
+    Type type;
+
+    public enum Type {
+        PRE, POST
+    }
 }

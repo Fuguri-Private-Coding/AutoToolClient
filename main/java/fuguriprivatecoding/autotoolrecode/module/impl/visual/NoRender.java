@@ -7,6 +7,5 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 
 @ModuleInfo(name = "NoRender", category = Category.VISUAL, description = "Убирает не нужный рендер.")
 public class NoRender extends Module {
-
     public CheckBox fire = new CheckBox("Fire", this, true);
 }

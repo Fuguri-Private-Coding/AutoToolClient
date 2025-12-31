@@ -38,7 +38,7 @@ public class AimAssist extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof MotionEvent) {
+        if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE) {
             TargetStorage.setTarget(TargetFinder.findTarget(distance.getValue(), true, false, false));
 
             EntityLivingBase target = TargetStorage.getTarget();

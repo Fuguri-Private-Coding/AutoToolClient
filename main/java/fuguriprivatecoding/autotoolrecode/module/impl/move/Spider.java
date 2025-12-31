@@ -33,7 +33,7 @@ public class Spider extends Module {
     public void onEvent(Event event) {
         switch (mode.getMode()) {
             case "Polar" -> {
-                if (event instanceof MotionEvent) {
+                if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE) {
                     boolean isInsideBlock = insideBlock();
                     if (mc.thePlayer.isCollidedHorizontally && !isInsideBlock) {
                         double yaw = MoveUtils.direction();

@@ -24,7 +24,7 @@ public class Fixes extends Module {
     @Override
     public void onEvent(Event event) {
         if (mc.thePlayer == null && mc.theWorld == null) return;
-        if (event instanceof MotionEvent) {
+        if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE) {
             if (fixes.get("ClickDelay")) mc.leftClickCounter = -1;
             if (fixes.get("SaveMoveKeys")) {
                 if (wasInGui && mc.currentScreen == null) MoveUtils.updateControls();

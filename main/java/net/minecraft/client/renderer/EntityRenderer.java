@@ -9,10 +9,8 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
-import fuguriprivatecoding.autotoolrecode.event.events.render.DrawBlockHighlightEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
+
+import fuguriprivatecoding.autotoolrecode.event.events.render.*;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
@@ -1493,9 +1491,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.mc.mcProfiler.endStartSection("outline");
 
             if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, new Object[]{renderglobal, entityplayer1, this.mc.objectMouseOver, Integer.valueOf(0), entityplayer1.getHeldItem(), Float.valueOf(partialTicks)})) && !this.mc.gameSettings.hideGUI) {
-                new DrawBlockHighlightEvent().call();
-                BlockOverlay blockOverlay = Modules.getModule(BlockOverlay.class);
-                if (!blockOverlay.isToggled()) renderglobal.drawSelectionBox(entityplayer1, this.mc.objectMouseOver, 0, partialTicks);
+                DrawBlockHighlightEvent.INST.setCanceled(false);
+                DrawBlockHighlightEvent.INST.call();
+
+                if (!DrawBlockHighlightEvent.INST.isCanceled()) renderglobal.drawSelectionBox(entityplayer1, this.mc.objectMouseOver, 0, partialTicks);
             }
             GlStateManager.enableAlpha();
         }

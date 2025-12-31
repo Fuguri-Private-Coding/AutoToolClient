@@ -1031,6 +1031,7 @@ public abstract class Entity implements ICommandSender
         if (this == Minecraft.getMinecraft().thePlayer) {
             MoveFlyingEvent event = new MoveFlyingEvent(yaw, strafe, forward, friction);
             event.call();
+
             yaw = event.getYaw();
             strafe = event.getStrafe();
             forward = event.getForward();

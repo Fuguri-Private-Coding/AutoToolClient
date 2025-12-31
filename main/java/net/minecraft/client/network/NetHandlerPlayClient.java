@@ -657,11 +657,16 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
 
     public void handleChat(S02PacketChat packetIn) {
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.gameController);
+        ChatMessageEvent messageEvent = new ChatMessageEvent(packetIn.getChatComponent(), ChatMessageEvent.Type.IN_CHAT);
+
 
         if (packetIn.getType() == 2) {
-            this.gameController.ingameGUI.setRecordPlaying(packetIn.getChatComponent(), false);
+            messageEvent.setType(ChatMessageEvent.Type.IN_GUI);
+            messageEvent.callNoWorldNoPlayer();
+
+            if (!messageEvent.isCanceled()) this.gameController.ingameGUI.setRecordPlaying(packetIn.getChatComponent(), false);
         } else {
-            ChatMessageEvent messageEvent = new ChatMessageEvent(packetIn.getChatComponent());
+            messageEvent.setType(ChatMessageEvent.Type.IN_CHAT);
             messageEvent.callNoWorldNoPlayer();
 
             if (!messageEvent.isCanceled()) this.gameController.ingameGUI.getChatGUI().printChatMessage(messageEvent.getMessage());

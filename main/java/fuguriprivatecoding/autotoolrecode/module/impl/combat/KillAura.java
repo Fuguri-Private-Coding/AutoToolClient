@@ -165,17 +165,17 @@ public class KillAura extends Module {
                     }
 
                     if (smoothMode.get("Linear")) {
-                        delta.setYaw(MathHelper.wrapDegree(delta.getYaw() / linearSmoothStrength.getValue()));
-                        delta.setPitch(MathHelper.wrapDegree(delta.getPitch() / linearSmoothStrength.getValue()));
+                        delta = delta.divine(linearSmoothStrength.getValue(), linearSmoothStrength.getValue());
                     }
 
                     if (smoothMode.get("ReactionTime")) {
                         Rot delta1 = delta.copy();
 
+                        delta = delta.multiplier(RandomUtils.nextFloat(0.6f, 0.7f));
+
                         if (startSlowRotation) {
+                            delta = delta.multiplier(0.2f);
                             startSlowRotation = false;
-                            delta.setYaw(delta.getYaw() * 0.2f);
-                            delta.setPitch(delta.getPitch() * 0.2f);
                         }
 
                         if (delta1.hypot() < reactionTime.getValue()) startSlowRotation = true;

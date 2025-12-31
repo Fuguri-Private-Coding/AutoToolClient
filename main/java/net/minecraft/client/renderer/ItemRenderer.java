@@ -5,10 +5,8 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomItemPos;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.event.events.render.RenderItemEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.render.UpdateRenderingItem;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Animations;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.NoRender;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -334,7 +332,10 @@ public class ItemRenderer {
                         GL11.glRotatef(customItemPos.blockRotateY.getValue(), 0,1,0);
                         GL11.glRotatef(customItemPos.blockRotateZ.getValue(), 0,0,1);
                     }
-                    new RenderItemEvent(f1, f).call();
+
+                    RenderItemEvent.INST.setSwingProgress(f1);
+                    RenderItemEvent.INST.setEquipProgress(f);
+                    RenderItemEvent.INST.call();
                 } else if (abstractclientplayer.getItemInUseCount() > 0) {
                     switch (enumaction) {
                         case NONE:
@@ -509,14 +510,6 @@ public class ItemRenderer {
         EntityPlayer entityplayer = this.mc.thePlayer;
         ItemStack itemstack = entityplayer.inventory.getStackInSlot(entityplayer.inventory.fakeCurrentItem); //entityplayer.inventory.getCurrentItem();
         boolean flag = false;
-
-        UpdateRenderingItem updateRenderingItem = new UpdateRenderingItem(itemstack);
-        updateRenderingItem.call();
-        itemstack = updateRenderingItem.getStack();
-
-        if (updateRenderingItem.isCanceled()) {
-            return;
-        }
 
         if (this.itemToRender != null && itemstack != null) {
             if (!this.itemToRender.getIsItemStackEqual(itemstack)) {

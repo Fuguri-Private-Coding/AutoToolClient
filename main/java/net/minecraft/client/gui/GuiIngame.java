@@ -469,10 +469,11 @@ public class GuiIngame extends Gui {
     private void renderScoreboard(ScoreObjective objective, ScaledResolution scaledRes) {
         GlStateManager.resetColor();
 
-        ScoreboardRenderEvent event = new ScoreboardRenderEvent();
-        event.call();
+        ScoreboardRenderEvent.INST.setCanceled(false);
+        ScoreboardRenderEvent.INST.call();
 
-        if (event.isCanceled()) return;
+        if (ScoreboardRenderEvent.INST.isCanceled()) return;
+
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<Score> collection = scoreboard.getSortedScores(objective);
         List<Score> list = Lists.newArrayList(Iterables.filter(collection, p_apply_1_ -> p_apply_1_.getPlayerName() != null && !p_apply_1_.getPlayerName().startsWith("#")));        if (list.size() > 15) {

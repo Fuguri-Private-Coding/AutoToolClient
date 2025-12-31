@@ -10,12 +10,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 @Setter
 @AllArgsConstructor
 public final class TeleportEvent extends Event {
-
     private C03PacketPlayer response;
-    private double x;
-    private double y;
-    private double z;
-    private float yaw;
-    private float pitch;
-
+    private double x, y, z;
+    private float yaw, pitch;
 }

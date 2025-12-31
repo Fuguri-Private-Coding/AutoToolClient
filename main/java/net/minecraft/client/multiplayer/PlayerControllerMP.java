@@ -1,5 +1,6 @@
 package net.minecraft.client.multiplayer;
 
+import fuguriprivatecoding.autotoolrecode.event.events.player.BlockDamageEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -221,44 +222,35 @@ public class PlayerControllerMP
         }
     }
 
-    public boolean onPlayerDamageBlock(BlockPos posBlock, EnumFacing directionFacing)
-    {
+    public boolean onPlayerDamageBlock(BlockPos posBlock, EnumFacing directionFacing) {
         this.syncCurrentPlayItem();
 
-        if (this.blockHitDelay > 0)
-        {
+        if (this.blockHitDelay > 0) {
             --this.blockHitDelay;
             return true;
-        }
-        else if (this.currentGameType.isCreative() && this.mc.theWorld.getWorldBorder().contains(posBlock))
-        {
+        } else if (this.currentGameType.isCreative() && this.mc.theWorld.getWorldBorder().contains(posBlock)) {
             this.blockHitDelay = 5;
             this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, posBlock, directionFacing));
             clickBlockCreative(this.mc, this, posBlock, directionFacing);
             return true;
-        }
-        else if (this.isHittingPosition(posBlock))
-        {
+        } else if (this.isHittingPosition(posBlock)) {
             Block block = this.mc.theWorld.getBlockState(posBlock).getBlock();
 
-            if (block.getMaterial() == Material.air)
-            {
+            if (block.getMaterial() == Material.air) {
                 this.isHittingBlock = false;
                 return false;
-            }
-            else
-            {
-                this.curBlockDamageMP += block.getPlayerRelativeBlockHardness(this.mc.thePlayer, this.mc.thePlayer.worldObj, posBlock);
+            } else {
+                float damage = block.getPlayerRelativeBlockHardness(this.mc.thePlayer, this.mc.thePlayer.worldObj, posBlock);
 
-                if (this.stepSoundTickCounter % 4.0F == 0.0F)
-                {
-                    this.mc.getSoundHandler().playSound(new PositionedSoundRecord(new ResourceLocation(block.stepSound.getStepSound()), (block.stepSound.getVolume() + 1.0F) / 8.0F, block.stepSound.getFrequency() * 0.5F, (float)posBlock.getX() + 0.5F, (float)posBlock.getY() + 0.5F, (float)posBlock.getZ() + 0.5F));
+                this.curBlockDamageMP += damage;
+
+                if (this.stepSoundTickCounter % 4.0F == 0.0F) {
+                    this.mc.getSoundHandler().playSound(new PositionedSoundRecord(new ResourceLocation(block.stepSound.getStepSound()), (block.stepSound.getVolume() + 1.0F) / 8.0F, block.stepSound.getFrequency() * 0.5F, (float) posBlock.getX() + 0.5F, (float) posBlock.getY() + 0.5F, (float) posBlock.getZ() + 0.5F));
                 }
 
                 ++this.stepSoundTickCounter;
 
-                if (this.curBlockDamageMP >= 1.0F)
-                {
+                if (this.curBlockDamageMP >= 1.0F) {
                     this.isHittingBlock = false;
                     this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, posBlock, directionFacing));
                     this.onPlayerDestroyBlock(posBlock, directionFacing);
@@ -267,12 +259,10 @@ public class PlayerControllerMP
                     this.blockHitDelay = 5;
                 }
 
-                this.mc.theWorld.sendBlockBreakProgress(this.mc.thePlayer.getEntityId(), this.currentBlock, (int)(this.curBlockDamageMP * 10.0F) - 1);
+                this.mc.theWorld.sendBlockBreakProgress(this.mc.thePlayer.getEntityId(), this.currentBlock, (int) (this.curBlockDamageMP * 10.0F) - 1);
                 return true;
             }
-        }
-        else
-        {
+        } else {
             return this.clickBlock(posBlock, directionFacing);
         }
     }

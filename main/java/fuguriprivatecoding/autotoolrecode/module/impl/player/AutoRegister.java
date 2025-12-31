@@ -36,7 +36,7 @@ public class AutoRegister extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof ChatMessageEvent e) {
+        if (event instanceof ChatMessageEvent e && e.getType() == ChatMessageEvent.Type.IN_CHAT) {
             String message = e.getMessage().getFormattedText();
             if (handleMessage(message)) setMessage(message);
         }
