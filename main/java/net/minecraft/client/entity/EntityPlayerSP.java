@@ -585,7 +585,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             float strafe = 0.2F;
             float forward = 0.2f;
 
-            SlowDownEvent slowDownEvent = new SlowDownEvent(strafe, forward);
+            SlowDownEvent slowDownEvent = new SlowDownEvent(strafe, forward, true);
             slowDownEvent.call();
 
             if (!slowDownEvent.isCanceled()) {
@@ -594,6 +594,11 @@ public class EntityPlayerSP extends AbstractClientPlayer {
 
                 this.movementInput.moveStrafe *= strafe;
                 this.movementInput.moveForward *= forward;
+
+                KeyBinding.setKeyBindState(mc.gameSettings.keyBindSprint.getKeyCode(), slowDownEvent.isSprinting());
+
+                if (!slowDownEvent.isSprinting()) this.setSprinting(false);
+                if (slowDownEvent.isSprinting()) this.setSprinting(MoveUtils.canSprint());
 
                 this.sprintToggleTimer = 0;
             }

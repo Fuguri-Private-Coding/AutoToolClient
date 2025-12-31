@@ -11,4 +11,5 @@ import lombok.Setter;
 public class SlowDownEvent extends Event {
     private float strafe;
     private float forward;
+    private boolean sprinting;
 }

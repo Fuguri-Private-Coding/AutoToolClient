@@ -1572,8 +1572,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 this.displayGuiScreen(new GuiChat("/"));
             }
 
-            ClickEvent rightEvent = new ClickEvent(ClickEvent.Button.RIGHT);
-            rightEvent.call();
+            ClickEvent clickEvent = new ClickEvent(ClickEvent.Button.RIGHT);
 
             if (this.thePlayer.isUsingItem()) {
                 if (!this.gameSettings.keyBindUseItem.isKeyDown()) {
@@ -1583,26 +1582,29 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 new LegitClickTimingEvent().call();
 
                 while (this.gameSettings.keyBindAttack.isPressed()) {
-                    ClickEvent leftEvent = new ClickEvent(ClickEvent.Button.LEFT);
-                    leftEvent.call();
+                    clickEvent = new ClickEvent(ClickEvent.Button.LEFT);
+                    clickEvent.call();
 
-                    if (!leftEvent.isCanceled()) this.clickMouse();
+                    if (!clickEvent.isCanceled()) this.clickMouse();
                 }
 
                 while (this.gameSettings.keyBindUseItem.isPressed()) {
-                    if (!rightEvent.isCanceled()) this.rightClickMouse();
+                    clickEvent = new ClickEvent(ClickEvent.Button.RIGHT);
+                    clickEvent.call();
+
+                    if (!clickEvent.isCanceled()) this.rightClickMouse();
                 }
 
                 while (this.gameSettings.keyBindPickBlock.isPressed()) {
-                    ClickEvent middleEvent = new ClickEvent(ClickEvent.Button.MIDDLE);
-                    middleEvent.call();
+                    clickEvent = new ClickEvent(ClickEvent.Button.MIDDLE);
+                    clickEvent.call();
 
-                    if (!middleEvent.isCanceled()) this.middleClickMouse();
+                    if (!clickEvent.isCanceled()) this.middleClickMouse();
                 }
             }
 
             if (this.gameSettings.keyBindUseItem.isKeyDown() && this.rightClickDelayTimer == 0 && !this.thePlayer.isUsingItem()) {
-                if (!rightEvent.isCanceled()) this.rightClickMouse();
+                if (!clickEvent.isCanceled()) this.rightClickMouse();
             }
 
             this.sendClickBlockToController(this.currentScreen == null && this.gameSettings.keyBindAttack.isKeyDown() && this.inGameHasFocus);

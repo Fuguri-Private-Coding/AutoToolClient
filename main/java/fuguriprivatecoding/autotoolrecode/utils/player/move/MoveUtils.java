@@ -13,12 +13,11 @@ import net.minecraft.util.MathHelper;
 public class MoveUtils implements Imports {
 
     public boolean canSprint() {
-        return mc.thePlayer.moveForward > 0.8F
-                && !mc.thePlayer.isCollidedHorizontally
-                && (mc.thePlayer.getFoodStats().getFoodLevel() > 6 || mc.thePlayer.capabilities.allowFlying)
-                && !mc.thePlayer.isPotionActive(Potion.blindness)
-                && !mc.thePlayer.isUsingItem()
-                && !mc.thePlayer.isSneaking();
+        return mc.thePlayer.moveForward >= 0.8F
+            && !mc.thePlayer.isCollidedHorizontally
+            && (mc.thePlayer.getFoodStats().getFoodLevel() > 6 || mc.thePlayer.capabilities.allowFlying)
+            && !mc.thePlayer.isPotionActive(Potion.blindness)
+            && !mc.thePlayer.isSneaking();
     }
 
     private static float yaw = 0;
