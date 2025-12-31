@@ -64,13 +64,15 @@ public class KillAura extends Module {
     final CheckBox teleportPredictFix = new CheckBox("TeleportPredictFix", this);
 
     final MultiMode smoothMode = new MultiMode("SmoothModes", this)
-        .addModes("Linear", "Basic", "MixDelta", "ReactionTime");
+        .addModes("Linear", "Basic", "MixDelta", "ReactionTime", "Test");
 
     DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
     DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
 
     FloatSetting randomizeStrength = new FloatSetting("RandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
     FloatSetting reactionTime = new FloatSetting("ReactionTime", this, () -> smoothMode.get("ReactionTime"), 0, 5, 1, 0.1f);
+
+    FloatSetting testY = new FloatSetting("Test y", this, () -> smoothMode.get("Test"), 0, 1, 0.2f, 0.01f);
 
     final FloatSetting linearSmoothStrength = new FloatSetting(
         "LinearSmoothStrength", this,
@@ -154,6 +156,11 @@ public class KillAura extends Module {
                 );
 
                 if (!teleport) {
+                    if (smoothMode.get("Test")) {
+                        Rot rotation = RotUtils.getRotationToPoint(RotUtils.getBestHitVec(box).addVector(0, -testY.getValue(), 0));
+                        delta = RotUtils.getDelta(lr, rotation);
+                    }
+
                     if (smoothMode.get("Basic")) {
                         Rot rot = new Rot(
                             RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
