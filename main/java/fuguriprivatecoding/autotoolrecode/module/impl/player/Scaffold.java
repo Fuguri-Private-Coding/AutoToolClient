@@ -167,16 +167,16 @@ public class Scaffold extends Module {
             }
         }
 
-        if (event instanceof SprintEvent) {
+        if (event instanceof SprintEvent e) {
             switch (sprintMode.getMode()) {
                 case "AllDirection" -> {
                     if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.isSneaking() && MoveUtils.isMoving()) {
-                        mc.thePlayer.setSprinting(true);
+                        e.setSprinting(true);
                     }
                 }
 
-                case "JumpSprint" -> mc.thePlayer.setSprinting(mc.gameSettings.keyBindJump.isKeyDown() && MoveUtils.isMoving());
-                case "None" -> mc.thePlayer.setSprinting(false);
+                case "JumpSprint" -> e.setSprinting(mc.gameSettings.keyBindJump.isKeyDown() && MoveUtils.isMoving());
+                case "None" -> e.setSprinting(false);
             }
         }
 
