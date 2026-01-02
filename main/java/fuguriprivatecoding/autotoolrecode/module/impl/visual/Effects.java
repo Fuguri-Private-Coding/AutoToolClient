@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
@@ -42,11 +43,11 @@ public class Effects extends Module {
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
             if (!rayCast.isFriend() && !rayCast.isTeam()) target = e.getHittingEntity();
 
-            if (e.getHittingEntity() instanceof EntityPlayer entityPlayer) {
+            if (e.getHittingEntity() instanceof EntityLivingBase ent) {
                 if (attackEffect.isToggled()) {
                     for (int i = 0; i < attackMultiplier.getValue(); i++) {
-                        if (attackEffects.get("Sharpness")) mc.thePlayer.onEnchantmentCritical(entityPlayer);
-                        if (attackEffects.get("Critical")) mc.thePlayer.onCriticalHit(entityPlayer);
+                        if (attackEffects.get("Sharpness")) mc.thePlayer.onEnchantmentCritical(ent);
+                        if (attackEffects.get("Critical")) mc.thePlayer.onCriticalHit(ent);
                     }
                 }
             }
