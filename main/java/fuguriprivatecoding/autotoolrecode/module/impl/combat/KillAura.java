@@ -28,8 +28,6 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.*;
-import org.joml.Vector2f;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -52,9 +50,9 @@ public class KillAura extends Module {
         .addModes("Best", "Nearest", "Head", "Body")
         .setMode("Best");
 
-    final BooleanSupplier hitBoxSizeVisible = () -> hitVec.getMode().equalsIgnoreCase("Best") || hitVec.getMode().equalsIgnoreCase("Nearest");
-    final IntegerSetting horizontalHitBoxSize = new IntegerSetting("HorizontalHitBoxSize", this, hitBoxSizeVisible, 1, 100, 100);
-    final IntegerSetting verticalHitBoxSize = new IntegerSetting("VerticalHitBoxSize", this, hitBoxSizeVisible, 1, 100, 100);
+    final BooleanSupplier boxSize = () -> hitVec.is("Best") || hitVec.is("Nearest");
+    final IntegerSetting hBoxSize = new IntegerSetting("HBoxSize", this, boxSize, 1, 100, 100);
+    final IntegerSetting vBoxSize = new IntegerSetting("VBoxSize", this, boxSize, 1, 100, 100);
 
     DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0, 180, 90, 1);
     DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0, 180, 90, 1);
@@ -72,7 +70,7 @@ public class KillAura extends Module {
     FloatSetting randomizeStrength = new FloatSetting("RandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
     FloatSetting reactionTime = new FloatSetting("ReactionTime", this, () -> smoothMode.get("ReactionTime"), 0, 5, 1, 0.1f);
 
-    FloatSetting testY = new FloatSetting("Test y", this, () -> smoothMode.get("Test"), 0, 1, 0.2f, 0.01f);
+    FloatSetting testY = new FloatSetting("TestY", this, () -> smoothMode.get("Test"), 0, 1, 0.2f, 0.01f);
 
     final FloatSetting linearSmoothStrength = new FloatSetting(
         "LinearSmoothStrength", this,
@@ -117,13 +115,11 @@ public class KillAura extends Module {
         if (Modules.getModule(Scaffold.class).isToggled()) return;
 
         if (target != null) {
-            if (event instanceof RunGameLoopEvent && mc.currentScreen == null && !mc.thePlayer.isUsingItem() && DistanceUtils.getDistance(target) < clickDistance.getValue()) {
-                if (TimerRange.balance == 0) {
-                    if (clickTimer.reachedMS(delay)) {
-                        delay = Math.round(1000f / CPS.getRandomizedIntValue());
-                        Clicks.addClick();
-                        clickTimer.reset();
-                    }
+            if (event instanceof RunGameLoopEvent && needClicking(target)) {
+                if (clickTimer.reachedMS(delay)) {
+                    delay = Math.round(1000f / CPS.getRandomizedIntValue());
+                    Clicks.addClick();
+                    clickTimer.reset();
                 }
             }
 
@@ -134,14 +130,14 @@ public class KillAura extends Module {
             if (event instanceof TickEvent) {
                 Rot lr = mc.thePlayer.getRotation();
 
-                boolean teleport = (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled();
+                boolean teleport = TimerRange.isTeleporting() && teleportPredictFix.isToggled();
 
                 double offset = target.getCollisionBorderSize();
 
                 AxisAlignedBB box = RotUtils.getHitBox(
                     target,
-                    teleport ? 100 : horizontalHitBoxSize.getValue(),
-                    teleport ? 100 : verticalHitBoxSize.getValue()
+                    teleport ? 100 : hBoxSize.getValue(),
+                    teleport ? 100 : vBoxSize.getValue()
                 ).expand(offset, offset, offset);
 
                 Rot needRotation = getRotation(target, lr, box);
@@ -215,7 +211,7 @@ public class KillAura extends Module {
     }
 
     private Rot getRotation(EntityLivingBase target, Rot lr, AxisAlignedBB box) {
-        boolean teleport = (TimerRange.balance > 0 || TimerRange.teleporting) && teleportPredictFix.isToggled();
+        boolean teleport = TimerRange.isTeleporting() && teleportPredictFix.isToggled();
 
         double offset = target.getCollisionBorderSize();
 
@@ -228,13 +224,13 @@ public class KillAura extends Module {
                 case "Nearest" -> RotUtils.getNearestRotations(lr, box);
                 case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
                 case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
-                default -> throw new IllegalStateException("Unexpected value: " + hitVec.getMode());
+                default -> null;
             };
 
         if (needRot == null) return null;
 
         if (smartAim.isToggled()) {
-            RayTrace hit = RayCastUtils.rayCast(new Vector2f(needRot.getYaw(), needRot.getPitch()), findDistance.getValue(), 0.3f);
+            RayTrace hit = RayCastUtils.rayCast(needRot, findDistance.getValue(), 0.3f);
 
             if (hit == null || hit.typeOfHit != RayTrace.RayType.ENTITY) {
                 needRot = RotUtils.getPossibleBestRotation(needRot, box);
@@ -242,6 +238,10 @@ public class KillAura extends Module {
         }
 
         return needRot;
+    }
+
+    private boolean needClicking(EntityLivingBase target) {
+        return mc.currentScreen == null && !mc.thePlayer.isUsingItem() && DistanceUtils.getDistance(target) < clickDistance.getValue() && TimerRange.balance == 0;
     }
 
     private EntityLivingBase findNewTarget() {

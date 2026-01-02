@@ -1,9 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
-import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
@@ -14,16 +11,27 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import org.lwjgl.input.Mouse;
+import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "AimAssist", category = Category.LEGIT, description = "Помощь в прицеливании.")
 public class AimAssist extends Module {
 
-    final FloatSetting hSpeed = new FloatSetting("HorizontalSpeed", this, 0f, 30.0f, 5.0f, 0.1f) {};
+    final Mode hitVec = new Mode("HitVec", this)
+        .addModes("Best", "Nearest", "Head", "Body")
+        .setMode("Body")
+        ;
 
+    final BooleanSupplier boxSize = () -> hitVec.is("Best") || hitVec.is("Nearest");
+    final IntegerSetting hBoxSize = new IntegerSetting("HBoxSize", this, boxSize, 1, 100, 100);
+    final IntegerSetting vBoxSize = new IntegerSetting("VBoxSize", this, boxSize, 1, 100, 100);
+
+    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0, 20, 90, 0.1f);
     final CheckBox moveVertical = new CheckBox("MoveVertical", this, false);
-    final FloatSetting vSpeed = new FloatSetting("VerticalSpeed", this, moveVertical::isToggled, 0f, 30.0f, 2.5f, 0.1f) {};
+    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, moveVertical::isToggled, 0, 20, 90, 0.1f);
+
     final FloatSetting distance = new FloatSetting("Distance", this, 3.0f, 12.0f, 6.0f, 0.1f) {};
     final IntegerSetting fov = new IntegerSetting("Fov", this, 10, 180, 35);
 
@@ -50,16 +58,38 @@ public class AimAssist extends Module {
             if (workingWhile.get("Sprinting") && !mc.thePlayer.isSprinting()) return;
             if (workingWhile.get("MouseHolding") && !Mouse.isButtonDown(0)) return;
 
-            Vec3 targetPoint = target.getPositionEyes(1.0f);
-            Rot playerRotation = new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
-            Rot delta = RotUtils.getDeltaToPoint(playerRotation, targetPoint);
+            Rot lr = mc.thePlayer.getRotation();
 
-            delta = delta.limit(hSpeed.getValue(), vSpeed.getValue());
+            AxisAlignedBB box = RotUtils.getHitBox(target, hBoxSize.getValue(), vBoxSize.getValue());
 
-            delta = RotUtils.fixDelta(delta);
+            Rot needRot = getRotation(target, box, lr);
 
-            mc.thePlayer.rotationYaw += delta.getYaw();
-            if (moveVertical.isToggled()) mc.thePlayer.rotationPitch += delta.getPitch();
+            Rot speed = new Rot(
+                yawSpeed.getRandomizedIntValue(),
+                moveVertical.isToggled() ? pitchSpeed.getRandomizedIntValue() : 0
+            );
+
+            if (needRot != null) {
+                Rot delta = RotUtils.getDelta(lr, needRot);
+
+                RotUtils.limitDelta(delta, speed);
+                delta = RotUtils.fixDelta(delta);
+
+                mc.thePlayer.moveRotation(
+                    delta.getYaw(),
+                    delta.getPitch()
+                );
+            }
         }
+    }
+
+    private Rot getRotation(EntityLivingBase target, AxisAlignedBB box, Rot lr) {
+        return switch (hitVec.getMode()) {
+            case "Best" -> RotUtils.getBestRotation(box);
+            case "Nearest" -> RotUtils.getNearestRotations(lr, box);
+            case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
+            case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
+            default -> null;
+        };
     }
 }

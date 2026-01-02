@@ -37,10 +37,10 @@ public class AutoClicker extends Module {
                 if (RayCastUtils.rayCast(3, 4.5, new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)).typeOfHit == RayTrace.RayType.BLOCK && breakBlocks.isToggled()) return;
 
                 if (leftStopWatch.reachedMS(leftDelay)) {
+                    leftDelay = getLeftDelay();
                     Clicks.addClick();
                     leftStopWatch.reset();
                 }
-                leftDelay = getLeftDelay();
             }
         }
     }

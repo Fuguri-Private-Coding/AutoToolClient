@@ -8,19 +8,15 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
-import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
-import net.minecraft.util.Vec3;
-
 import java.util.Random;
 
 @ModuleInfo(name = "Velocity", category = Category.COMBAT, description = "Позволяет откидыватся меньше.")
 public class Velocity extends Module {
 
     final Mode mode = new Mode("Mode", this)
-            .addModes("Cancel", "Jump", "Intave", "Test")
+            .addModes("Cancel", "Jump", "Intave")
             .setMode("Cancel");
 
     final IntegerSetting horizontal = new IntegerSetting("Horizontal", this,() -> mode.is("Cancel"), -100, 100, 0);
@@ -64,19 +60,6 @@ public class Velocity extends Module {
                 }
             }
 
-            case "Test" -> {
-                if (event instanceof PacketEvent e && e.getPacket() instanceof S12PacketEntityVelocity) {
-                    Vec3 pos = new Vec3(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY - mc.thePlayer.motionY - 0.001,
-                        mc.thePlayer.posZ
-                    );
-
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.029, mc.thePlayer.posZ);
-                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.029, mc.thePlayer.posZ, mc.thePlayer.onGround));
-                }
-            }
-
             case "Intave" -> {
                 if (event instanceof AttackEvent) {
                     if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.isSprinting()) {
@@ -87,11 +70,12 @@ public class Velocity extends Module {
                 }
 
                 if (event instanceof MoveButtonEvent e && intaveJump.isToggled()) {
-                    if (mc.thePlayer.hurtTime == 10 && mc.thePlayer.hurtTime != lastHurtTime && rand.nextInt(100) <= jumpChance.getValue()) {
+                    if (needJump()) {
                         delay = jumpDelay.getRandomizedIntValue();
                         gotHit = true;
                         timer.reset();
                     }
+
                     lastHurtTime = mc.thePlayer.hurtTime;
 
                     if (timer.reachedMS(delay) && !jumps && gotHit) {
@@ -107,11 +91,12 @@ public class Velocity extends Module {
 
             case "Jump" -> {
                 if (event instanceof MoveButtonEvent e) {
-                    if (mc.thePlayer.hurtTime == 10 && mc.thePlayer.hurtTime != lastHurtTime && rand.nextInt(100) <= jumpChance.getValue()) {
+                    if (needJump()) {
                         delay = jumpDelay.getRandomizedIntValue();
                         gotHit = true;
                         timer.reset();
                     }
+
                     lastHurtTime = mc.thePlayer.hurtTime;
 
                     if (timer.reachedMS(delay) && !jumps && gotHit) {
@@ -125,6 +110,10 @@ public class Velocity extends Module {
                 }
             }
         }
+    }
+
+    private boolean needJump() {
+        return mc.thePlayer.hurtTime == 10 && mc.thePlayer.hurtTime != lastHurtTime && rand.nextInt(100) <= jumpChance.getValue();
     }
 
     @Override

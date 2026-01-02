@@ -156,4 +156,8 @@ public class TimerRange extends Module {
 
         return target.getEntityBoundingBox().offset(offsetX, offsetY, offsetZ);
     }
+
+    public static boolean isTeleporting() {
+        return TimerRange.teleporting || TimerRange.balance > 0;
+    }
 }

@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -18,28 +19,35 @@ public class FastPlace extends Module {
 
     DoubleSlider CPS = new DoubleSlider("CPS", this, 1,80,20,1f);
 
-    StopWatch stopWatch;
-    long delay;
+    StopWatch timer = new StopWatch();
 
-    public FastPlace() {
-        stopWatch = new StopWatch();
-    }
+    long delay;
+    boolean click;
 
     @Override
     public void onEvent(Event event) {
-        if (Modules.getModule(Scaffold.class).isToggled()) return;
-        if (mc.currentScreen != null) return;
-        boolean needClick = Mouse.isButtonDown(1) && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
-        if (event instanceof LegitClickTimingEvent) {
-            if (stopWatch.reachedMS(delay) && needClick) {
-                mc.rightClickMouse();
+        if (Modules.getModule(Scaffold.class).isToggled() || mc.currentScreen != null) return;
+
+        boolean needClick = needClick();
+        if (event instanceof RunGameLoopEvent && needClick) {
+            if (timer.reachedMS(delay)) {
                 delay = (long) (1000D / CPS.getRandomizedIntValue());
-                stopWatch.reset();
+                click = true;
+                timer.reset();
             }
         }
+
+        if (event instanceof LegitClickTimingEvent && click) {
+            mc.rightClickMouse();
+            click = false;
+        }
+
         if (event instanceof ClickEvent e) {
             if (needClick && e.getButton() == ClickEvent.Button.RIGHT) e.cancel();
         }
     }
 
+    private boolean needClick() {
+        return Mouse.isButtonDown(1) && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
+    }
 }

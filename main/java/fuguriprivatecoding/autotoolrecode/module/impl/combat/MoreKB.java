@@ -77,13 +77,13 @@ public class MoreKB extends Module {
     }
 
     boolean notWhile(EntityLivingBase target) {
-        if (notWhile.get("Target Eating") && target.isEating()) return true;
-        if (notWhile.get("Has KnockBack Enchantment") && hasKnockBackEnchantment(mc.thePlayer.inventory.getCurrentItem())) return true;
-        if (notWhile.get("Target is Burning") && target.isBurning()) return true;
-
         float targetMoveYaw = RotUtils.getRotationFromDiff(target.getPositionVector().subtract(target.getPrevPositionVector())).getYaw();
         float delta = MathHelper.wrapDegree(mc.thePlayer.rotationYaw - targetMoveYaw);
-        return notWhile.get("Target is Leaving") && delta <= maxDiff.getValue();
+
+        return notWhile.get("Target Eating") && target.isEating() ||
+            notWhile.get("Has KnockBack Enchantment") && hasKnockBackEnchantment(mc.thePlayer.inventory.getCurrentItem()) ||
+            notWhile.get("Target is Burning") && target.isBurning() ||
+            notWhile.get("Target is Leaving") && delta <= maxDiff.getValue();
     }
 
     private boolean hasKnockBackEnchantment(ItemStack itemStack) {

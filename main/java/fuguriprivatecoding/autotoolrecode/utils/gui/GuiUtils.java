@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.utils.gui;
 
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.gui.ScaledResolution;
+import org.joml.Vector2i;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -38,7 +39,7 @@ public class GuiUtils implements Imports {
         return getAbsolutePos(xPercentage, yPercentage, new ScaledResolution(mc));
     }
 
-    public static boolean isMouseHovered(float x, float y, float width, float height) {
+    public static Vector2i getMousePosition() {
         final ScaledResolution sc = new ScaledResolution(mc);
         int i1 = sc.getScaledWidth();
         int j1 = sc.getScaledHeight();
@@ -46,6 +47,11 @@ public class GuiUtils implements Imports {
         final int mouseX = Mouse.getX() * i1 / mc.displayWidth;
         final int mouseY = j1 - Mouse.getY() * j1 / mc.displayHeight - 1;
 
-        return mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height;
+        return new Vector2i(mouseX, mouseY);
+    }
+
+    public static boolean isMouseHovered(float x, float y, float width, float height) {
+        Vector2i mouse = getMousePosition();
+        return mouse.x > x && mouse.x < x + width && mouse.y > y && mouse.y < y + height;
     }
 }

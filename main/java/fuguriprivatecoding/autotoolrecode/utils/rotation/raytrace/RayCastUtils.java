@@ -153,6 +153,10 @@ public class RayCastUtils implements Imports {
         return rayCast(new Vector2f(rotation.getYaw(), rotation.getPitch()), range, 0);
     }
 
+    public static RayTrace rayCast(final Rot rotation, final double range, final float expand) {
+        return rayCast(new Vector2f(rotation.getYaw(), rotation.getPitch()), range, expand);
+    }
+
     public static RayTrace rayCast(final Vector2f rotation, final double range, final float expand) {
         return rayCast(rotation, range, expand, mc.thePlayer);
     }

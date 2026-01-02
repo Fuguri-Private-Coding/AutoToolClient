@@ -82,6 +82,7 @@ public class Scaffold extends Module {
     
     final FloatSetting minDeltaToSneak = new FloatSetting("MinDeltaToSneak", this, () -> sneakIf.get("Rotate") && godNormalVisible.getAsBoolean(), 0, 10, 2, 0.1f);
     final CheckBox sneakIfRotateWithClutch = new CheckBox("SneakIfRotateWithClutch", this, () -> sneakIf.get("Rotate") && godNormalVisible.getAsBoolean());
+    final CheckBox sneakIfNinjaBridgeWithClutch = new CheckBox("SneakIfNinjaBridgeWithClutch", this, () -> sneakIf.get("NinjaBridge") && godNormalVisible.getAsBoolean());
 
     final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, () -> godNormalVisible.getAsBoolean() && sneakIf.get("NinjaBridge"), 0f,0.1f,0.05f, 0.01f);
 
@@ -155,6 +156,10 @@ public class Scaffold extends Module {
                     if (sneakIf.get("ZeroBlocks") && findBlock() == -1) e.setSneak(true);
 
                     if (sneakIf.get("NinjaBridge")) {
+                        if (isClutch() && sneakIfNinjaBridgeWithClutch.isToggled()) {
+                            return;
+                        }
+
                         BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.7f);
                         if (mc.theWorld.isAirBlock(pos)) e.setSneak(true);
                     }
@@ -242,7 +247,7 @@ public class Scaffold extends Module {
 
             case "GodBridge" -> {
                 if (isClutch()) {
-                    rotation = getBestRotation(yaw, 0, false);
+                    rotation = getBestRotation(0, 0, false);
                 } else {
                     RayTrace rightRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw + 45, getPitch(roundedYaw + 45, false)));
                     RayTrace leftRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw - 45, getPitch(roundedYaw - 45, false)));
