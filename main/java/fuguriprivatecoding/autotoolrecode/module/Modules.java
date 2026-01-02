@@ -33,6 +33,7 @@ public class Modules {
 			new BridgeAssist(),
 			new FovModifier(),
             new Notifications(),
+			new ItemPhysics(),
 			new Trajectory(),
             new FastBreak(),
             new EntityColor(),
