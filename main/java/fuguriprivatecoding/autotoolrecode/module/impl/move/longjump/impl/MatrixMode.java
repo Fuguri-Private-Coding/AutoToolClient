@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.move.longjump.impl;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
-import fuguriprivatecoding.autotoolrecode.event.events.player.LookEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
@@ -79,13 +78,13 @@ public class MatrixMode extends AbstractLongJumpMode {
                 this.z += Math.cos(Math.toRadians(this.firstDir)) * (0.2496 - (this.ticks % 3 == 0 ? 0.0806 : (double) 0.0F));
             }
         }
-
-        if (event instanceof LookEvent e) {
-            if (!this.sent) {
-                e.setYaw((float) this.firstDir);
-                e.setPitch(1);
-            }
-        }
+//
+//        if (event instanceof LookEvent e) {
+//            if (!this.sent) {
+//                e.setYaw((float) this.firstDir);
+//                e.setPitch(1);
+//            }
+//        }
 
         if (event instanceof UpdateEvent) {
             if (!this.sent) {

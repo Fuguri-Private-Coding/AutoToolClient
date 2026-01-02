@@ -43,6 +43,8 @@ public class Fucker extends Module {
     CheckBox whiteListOwnBed = new CheckBox("WhiteListOwnBed", this);
     CheckBox emptySurrounding = new CheckBox("EmptySurrounding", this);
 
+    CheckBox doAutoTool = new CheckBox("DoAutoTool", this, () -> !instantBreak.isToggled());
+
     CheckBox renderBreaking = new CheckBox("RenderBreaking", this, true);
     ColorSetting color = new ColorSetting("Color", this, renderBreaking::isToggled);
 
@@ -56,7 +58,6 @@ public class Fucker extends Module {
 
     @Override
     public void onDisable() {
-        CameraRot.INST.setWillChange(false);
         reset();
     }
 
@@ -88,7 +89,9 @@ public class Fucker extends Module {
 
             Block block = mc.theWorld.getBlockState(blockPos).getBlock();
 
-            mc.thePlayer.inventory.currentItem = getBestSlot(block);
+            if (!instantBreak.isToggled() && doAutoTool.isToggled()) {
+                mc.thePlayer.inventory.currentItem = getBestSlot(block);
+            }
 
             Vec3 pos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
@@ -148,7 +151,7 @@ public class Fucker extends Module {
 
     public void mine() {
         final BlockPos blockPos = new BlockPos(block.xCoord, block.yCoord, block.zCoord);
-        final double hardness = ItemUtils.getPlayerRelativeBlockHardness(mc.theWorld, blockPos, mc.thePlayer.inventory.fakeCurrentItem);
+        final double hardness = ItemUtils.getPlayerRelativeBlockHardness(mc.theWorld, blockPos, mc.thePlayer.inventory.currentItem);
 
         if (instantBreak.isToggled()) {
             PacketUtils.sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, blockPos, EnumFacing.UP));
@@ -181,6 +184,8 @@ public class Fucker extends Module {
         delay = breakDelay.getValue();
         damage = 0;
         switchBack();
+
+        CameraRot.INST.setWillChange(false);
     }
 
     int getBestSlot(Block block) {
@@ -208,16 +213,15 @@ public class Fucker extends Module {
     }
 
     void switchBack() {
-        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+        if (!instantBreak.isToggled() && doAutoTool.isToggled()) {
+            mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+        }
     }
 
     public Vec3 findBlock() {
         if (home != null && mc.thePlayer.getDistanceSq(home.xCoord, home.yCoord, home.zCoord) < 35 * 35 && whiteListOwnBed.isToggled()) {
             return null;
         }
-
-        Vec3 nearestPosition = null;
-        double nearestDistance = Double.MAX_VALUE;
 
         for (int x = -4; x <= 4; x++) {
             for (int y = -4; y <= 4; y++) {
@@ -229,10 +233,9 @@ public class Fucker extends Module {
                         continue;
                     }
 
-                    double distance = mc.thePlayer.getDistanceSq(position.xCoord, position.yCoord, position.zCoord);
+                    final RayTrace trace = RayCastUtils.rayCast(RotUtils.getRotationToPoint(position), 4f);
 
-                    final RayTrace movingObjectPosition = RayCastUtils.rayCast(RotUtils.getRotationToPoint(position), 4f);
-                    if (movingObjectPosition == null || movingObjectPosition.hitVec.distanceTo(new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)) > 4.5) {
+                    if (trace == null || trace.hitVec.distanceTo(mc.thePlayer.getPositionVector()) > 4.5) {
                         continue;
                     }
 
@@ -271,25 +274,19 @@ public class Fucker extends Module {
                         }
 
                         if (!empty) {
-                            if (!addVec.equals(position)) {
-                                double addVecDistance = mc.thePlayer.getDistanceSq(addVec.xCoord, addVec.yCoord, addVec.zCoord);
-                                if (addVecDistance < nearestDistance) {
-                                    nearestDistance = addVecDistance;
-                                    nearestPosition = addVec;
-                                }
+                            if (addVec.equals(position)) {
+                                return null;
+                            } else {
+                                return addVec;
                             }
-                            continue;
                         }
                     }
 
-                    if (distance < nearestDistance) {
-                        nearestDistance = distance;
-                        nearestPosition = position;
-                    }
+                    return position;
                 }
             }
         }
 
-        return nearestPosition;
+        return null;
     }
 }

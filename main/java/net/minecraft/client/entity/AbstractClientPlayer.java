@@ -3,7 +3,6 @@ package net.minecraft.client.entity;
 import com.mojang.authlib.GameProfile;
 import java.io.File;
 
-import fuguriprivatecoding.autotoolrecode.event.events.player.LookEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCape;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomSkin;
@@ -236,12 +235,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
         this.reloadCapeTimeMs = p_setReloadCapeTimeMs_1_;
     }
 
-    public Vec3 getLook(float partialTicks)
-    {
-        LookEvent event = new LookEvent(rotationYaw, rotationPitch);
-        if (this instanceof EntityPlayerSP) {
-            event.call();
-        }
-        return this.getVectorForRotation(event.getPitch(), event.getYaw());
+    public Vec3 getLook(float partialTicks) {
+        return this.getVectorForRotation(rotationPitch, rotationYaw);
     }
 }

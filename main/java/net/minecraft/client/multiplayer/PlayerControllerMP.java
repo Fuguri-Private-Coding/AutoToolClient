@@ -1,6 +1,7 @@
 package net.minecraft.client.multiplayer;
 
 import fuguriprivatecoding.autotoolrecode.event.events.player.BlockDamageEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.BlockHitDelayEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -242,6 +243,13 @@ public class PlayerControllerMP
             } else {
                 float damage = block.getPlayerRelativeBlockHardness(this.mc.thePlayer, this.mc.thePlayer.worldObj, posBlock);
 
+                BlockDamageEvent event = new BlockDamageEvent(this.curBlockDamageMP, damage);
+                event.call();
+
+                this.curBlockDamageMP = event.getCurrentDamage();
+
+                damage = event.getAddingDamage();
+
                 this.curBlockDamageMP += damage;
 
                 if (this.stepSoundTickCounter % 4.0F == 0.0F) {
@@ -256,7 +264,10 @@ public class PlayerControllerMP
                     this.onPlayerDestroyBlock(posBlock, directionFacing);
                     this.curBlockDamageMP = 0.0F;
                     this.stepSoundTickCounter = 0.0F;
-                    this.blockHitDelay = 5;
+                    BlockHitDelayEvent blockHitDelayEvent = new BlockHitDelayEvent(5);
+                    blockHitDelayEvent.call();
+
+                    if (!blockHitDelayEvent.isCanceled()) this.blockHitDelay = blockHitDelayEvent.getDelay();
                 }
 
                 this.mc.theWorld.sendBlockBreakProgress(this.mc.thePlayer.getEntityId(), this.currentBlock, (int) (this.curBlockDamageMP * 10.0F) - 1);

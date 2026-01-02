@@ -29,8 +29,6 @@ public class ChestStealer extends Module {
     final StopWatch startDelayStopWatch = new StopWatch();
     final StopWatch closeDelayStopWatch = new StopWatch();
 
-    String[] chestNames = new String[] {"Chest", "Сундук"};
-
     Vector2f lastPos = new Vector2f(0,0);
 
     @Override
