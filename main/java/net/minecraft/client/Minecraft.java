@@ -817,7 +817,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.timer.updateTimer();
         }
 
-        RunGameLoopEvent.INST.callNoWorldNoPlayer();
+        RunGameLoopEvent.INST.call(false);
 
         this.mcProfiler.startSection("scheduledExecutables");
 

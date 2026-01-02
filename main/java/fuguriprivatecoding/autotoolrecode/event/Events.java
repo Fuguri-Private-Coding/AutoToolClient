@@ -26,8 +26,8 @@ public class Events implements Imports {
         subscribers.removeIf(subscriber -> subscriber.object() == object);
     }
 
-    public void call(Event event) {
-        if (mc.thePlayer == null || mc.theWorld == null) {
+    public void call(Event event, boolean onlyInWorld) {
+        if ((mc.thePlayer == null || mc.theWorld == null) && onlyInWorld) {
             return;
         }
 
@@ -38,21 +38,7 @@ public class Events implements Imports {
 
             try {
                 subscriber.method().invoke(subscriber.object(), event);
-            } catch (IllegalAccessException | InvocationTargetException _) {
-            }
-        }
-    }
-
-    public void callNoWorldNoPlayer(Event event) {
-        for (Subscriber subscriber : subscribers) {
-            if (!subscriber.method().getParameterTypes()[0].isAssignableFrom(event.getClass())) {
-                continue;
-            }
-
-            try {
-                subscriber.method().invoke(subscriber.object(), event);
-            } catch (IllegalAccessException | InvocationTargetException _) {
-            }
+            } catch (IllegalAccessException | InvocationTargetException _) {}
         }
     }
 

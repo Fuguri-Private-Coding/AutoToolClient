@@ -1203,7 +1203,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.mc.gameSettings.showDebugProfilerChart = true;
         }
 
-        RenderScreenEvent.INST.callNoWorldNoPlayer();
+        RenderScreenEvent.INST.call(false);
     }
 
     public void renderStreamIndicator(float partialTicks) {

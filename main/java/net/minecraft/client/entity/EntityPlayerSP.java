@@ -179,7 +179,6 @@ public class EntityPlayerSP extends AbstractClientPlayer {
         if (this.isCurrentViewEntity()) {
             MotionEvent event = new MotionEvent(
                     posX, posY, posZ,
-                    rotationYaw, rotationPitch,
                     onGround, MotionEvent.Type.PRE
             );
 
@@ -188,19 +187,19 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             double d1 = event.getY() - lastReportedPosY;
             double d2 = event.getZ() - lastReportedPosZ;
 
-            double d3 = event.getYaw() - lastReportedYaw;
-            double d4 = event.getPitch() - lastReportedPitch;
+            double d3 = rotationYaw - lastReportedYaw;
+            double d4 = rotationPitch - lastReportedPitch;
 
             boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || this.positionUpdateTicks >= 20;
             boolean flag3 = d3 != 0.0D || d4 != 0.0D;
 
             if (this.ridingEntity == null) {
                 if (flag2 && flag3) {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(event.getX(), event.getY(), event.getZ(), event.getYaw(), event.getPitch(), event.isOnGround()));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(event.getX(), event.getY(), event.getZ(), rotationYaw, rotationPitch, event.isOnGround()));
                 } else if (flag2) {
                     this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(event.getX(), event.getY(), event.getZ(), event.isOnGround()));
                 } else if (flag3) {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(event.getYaw(), event.getPitch(), event.isOnGround()));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(rotationYaw, rotationPitch, event.isOnGround()));
                 } else {
                     this.sendQueue.addToSendQueue(new C03PacketPlayer(event.isOnGround()));
                 }
@@ -219,11 +218,11 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             }
 
             if (flag3) {
-                this.lastReportedYaw = event.getYaw();
-                this.lastReportedPitch = event.getPitch();
+                this.lastReportedYaw = rotationYaw;
+                this.lastReportedPitch = rotationPitch;
             }
 
-            event = new MotionEvent(event.getX(), event.getY(), event.getZ(), event.getYaw(), event.getPitch(), event.isOnGround(), MotionEvent.Type.POST);
+            event = new MotionEvent(event.getX(), event.getY(), event.getZ(), event.isOnGround(), MotionEvent.Type.POST);
             event.call();
         }
     }
@@ -628,7 +627,10 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             this.setSprinting(false);
         }
 
-        new SprintEvent().call();
+        SprintEvent event = new SprintEvent(this.isSprinting());
+        event.call();
+
+        this.setSprinting(event.isSprinting());
 
         if (this.capabilities.allowFlying) {
             if (this.mc.playerController.isSpectatorMode()) {

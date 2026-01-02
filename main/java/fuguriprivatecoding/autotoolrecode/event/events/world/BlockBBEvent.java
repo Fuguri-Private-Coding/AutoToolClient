@@ -16,7 +16,6 @@ public class BlockBBEvent extends Event {
     private final World world;
     private final Block block;
     private final BlockPos blockPos;
-    private AxisAlignedBB boundingBox;
-    private final AxisAlignedBB maskBoundingBox;
+    private AxisAlignedBB boundingBox, maskBoundingBox;
 
 }

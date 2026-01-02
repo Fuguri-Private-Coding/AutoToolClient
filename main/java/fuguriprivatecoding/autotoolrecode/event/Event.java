@@ -12,11 +12,11 @@ public class Event {
         setCanceled(true);
     }
 
-    public void call() {
-        Events.call(this);
+    public void call(boolean onlyInWorld) {
+        Events.call(this, onlyInWorld);
     }
 
-    public void callNoWorldNoPlayer() {
-        Events.callNoWorldNoPlayer(this);
+    public void call() {
+        call(true);
     }
 }

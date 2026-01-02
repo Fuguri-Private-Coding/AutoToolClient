@@ -538,7 +538,6 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
         f = event.getYaw();
         f1 = event.getPitch();
 
-
         if (packetIn.func_179834_f().contains(S08PacketPlayerPosLook.EnumFlags.X)) {
             d0 += entityplayer.posX;
         } else {
@@ -662,12 +661,12 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
 
         if (packetIn.getType() == 2) {
             messageEvent.setType(ChatMessageEvent.Type.IN_GUI);
-            messageEvent.callNoWorldNoPlayer();
+            messageEvent.call(false);
 
             if (!messageEvent.isCanceled()) this.gameController.ingameGUI.setRecordPlaying(packetIn.getChatComponent(), false);
         } else {
             messageEvent.setType(ChatMessageEvent.Type.IN_CHAT);
-            messageEvent.callNoWorldNoPlayer();
+            messageEvent.call(false);
 
             if (!messageEvent.isCanceled()) this.gameController.ingameGUI.getChatGUI().printChatMessage(messageEvent.getMessage());
         }

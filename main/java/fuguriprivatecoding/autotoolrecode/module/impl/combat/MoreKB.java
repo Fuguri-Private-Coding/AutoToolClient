@@ -61,8 +61,8 @@ public class MoreKB extends Module {
             }
 
             case "LegitFast" -> {
-                if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
-                    mc.thePlayer.setSprinting(false);
+                if (event instanceof SprintEvent e && mc.thePlayer.isSprinting()) {
+                    e.setSprinting(false);
                     reset--;
                 }
             }

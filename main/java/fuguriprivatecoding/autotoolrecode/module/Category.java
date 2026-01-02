@@ -18,7 +18,6 @@ public enum Category {
 	;
 
 	public final String name;
-
     public final ResourceLocation logo;
 
     public boolean hovered;

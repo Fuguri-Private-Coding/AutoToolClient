@@ -1,5 +1,13 @@
 package fuguriprivatecoding.autotoolrecode.event.events.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-public class SprintEvent extends Event { }
+@Getter
+@Setter
+@AllArgsConstructor
+public class SprintEvent extends Event {
+    boolean sprinting;
+}

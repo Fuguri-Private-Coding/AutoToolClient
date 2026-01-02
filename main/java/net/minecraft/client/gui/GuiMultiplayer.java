@@ -317,7 +317,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
 
     private void connectToServer(ServerData server) {
         this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, server));
-        new ServerJoinEvent(server).callNoWorldNoPlayer();
+        new ServerJoinEvent(server).call(false);
     }
 
     public void selectServer(int index) {

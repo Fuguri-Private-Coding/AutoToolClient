@@ -74,7 +74,6 @@ public class Module implements Imports, SettingAble, EventListener {
 	public void onEnable() {
 
 	}
-
 	public void onDisable() {
 
 	}
@@ -84,7 +83,9 @@ public class Module implements Imports, SettingAble, EventListener {
         return Utils.isWorldLoaded() && toggled;
     }
 
-    public void onEvent(Event event) {}
+    public void onEvent(Event event) {
+
+	}
 
     public void setToggled(boolean toggled) {
 		if (this.toggled != toggled) {

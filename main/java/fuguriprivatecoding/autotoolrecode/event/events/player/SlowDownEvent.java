@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SlowDownEvent extends Event {
-    private float strafe;
-    private float forward;
+    private float strafe, forward;
     private boolean sprinting;
 }
