@@ -28,9 +28,9 @@ public class AimAssist extends Module {
     final IntegerSetting hBoxSize = new IntegerSetting("HBoxSize", this, boxSize, 1, 100, 100);
     final IntegerSetting vBoxSize = new IntegerSetting("VBoxSize", this, boxSize, 1, 100, 100);
 
-    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0, 20, 90, 0.1f);
+    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0, 20, 5, 0.1f);
     final CheckBox moveVertical = new CheckBox("MoveVertical", this, false);
-    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, moveVertical::isToggled, 0, 20, 90, 0.1f);
+    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, moveVertical::isToggled, 0, 20, 5, 0.1f);
 
     final FloatSetting distance = new FloatSetting("Distance", this, 3.0f, 12.0f, 6.0f, 0.1f) {};
     final IntegerSetting fov = new IntegerSetting("Fov", this, 10, 180, 35);

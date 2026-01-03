@@ -56,6 +56,23 @@ public class NoSlow extends Module {
                 if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE && work) {
                     mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP));
                 }
+
+                if (event instanceof SlowDownEvent e) {
+                    if (isUsingSword() && itemToSlow.get("Sword")) {
+                        e.setForward(forwardSwordSlow.getValue());
+                        e.setStrafe(strafeSwordSlow.getValue());
+                    }
+
+                    if (isUsingConsumable() && itemToSlow.get("Consumable")) {
+                        e.setForward(forwardConsumableSlow.getValue());
+                        e.setStrafe(strafeConsumableSlow.getValue());
+                    }
+
+                    if (isUsingBow() && itemToSlow.get("Bow")) {
+                        e.setForward(forwardBowSlow.getValue());
+                        e.setStrafe(strafeBowSlow.getValue());
+                    }
+                }
             }
 
             case "Vanilla" -> {
