@@ -126,6 +126,7 @@ public enum Client implements Imports, EventListener {
 
 	public void onClose() {
 		Configs.saveConfig(Configs.getDefaultConfig());
+        Accounts.save();
 		KeyBinds.saveBinds();
         ClientIRC.disconnectClientServer();
 	}

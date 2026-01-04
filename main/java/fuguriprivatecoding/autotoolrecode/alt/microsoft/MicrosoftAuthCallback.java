@@ -16,8 +16,10 @@ public class MicrosoftAuthCallback implements Closeable {
     public static final String url = "https://login.live.com/oauth20_authorize.srf?client_id=54fd49e4-2103-4044-9603-2b028c814ec3&response_type=code&scope=XboxLive.signin%20XboxLive.offline_access&redirect_uri=http://localhost:59125&prompt=select_account";
     private static HttpServer server;
 
-    public CompletableFuture<Account> start(BiConsumer<String, Object[]> progressHandler) {
-        CompletableFuture<Account> cf = new CompletableFuture<>();
+    public CompletableFuture<String[]> start(BiConsumer<String, Object[]> progressHandler) {
+        AltScreen altScreen = AltScreen.INST;
+
+        CompletableFuture<String[]> cf = new CompletableFuture<>();
         try {
             if (server != null) {
                 server.stop(0);
@@ -25,7 +27,7 @@ public class MicrosoftAuthCallback implements Closeable {
             }
             server = HttpServer.create(new InetSocketAddress("localhost", 59125), 0);
             server.createContext("/", ex -> {
-                AltScreen.updateStatus("Microsoft authentication callback request: " + ex.getRemoteAddress());
+                altScreen.updateStatus("Microsoft authentication callback request: " + ex.getRemoteAddress());
                 try {
                     final byte[] messageToHTML = "Аккаунт успешно добавлен, можно закрывать страницу.".getBytes(StandardCharsets.UTF_8);
 
@@ -41,7 +43,7 @@ public class MicrosoftAuthCallback implements Closeable {
                         try {
                             cf.complete(auth(progressHandler, ex.getRequestURI().getQuery()));
                         } catch (Throwable t) {
-                            AltScreen.updateStatus("Unable to authenticate via Microsoft.");
+                            altScreen.updateStatus("Unable to authenticate via Microsoft.");
                             cf.completeExceptionally(t);
                         }
                     }, "MicrosoftAuthThread");
@@ -49,22 +51,22 @@ public class MicrosoftAuthCallback implements Closeable {
                     thread.setDaemon(true);
                     thread.start();
                 } catch (Throwable t) {
-                    AltScreen.updateStatus("Unable to process request on Microsoft authentication callback server.");
+                    altScreen.updateStatus("Unable to process request on Microsoft authentication callback server.");
                     close();
                     cf.completeExceptionally(t);
                 }
             });
             server.start();
-            AltScreen.updateStatus("Started Microsoft authentication callback server.");
+            altScreen.updateStatus("Started Microsoft authentication callback server.");
         } catch (Throwable t) {
-            AltScreen.updateStatus("Unable to run the Microsoft authentication callback server.");
+            altScreen.updateStatus("Unable to run the Microsoft authentication callback server.");
             close();
             cf.completeExceptionally(t);
         }
         return cf;
     }
 
-    private Account auth(BiConsumer<String, Object[]> progressHandler, String query) throws Exception {
+    private String[] auth(BiConsumer<String, Object[]> progressHandler, String query) throws Exception {
         if (query == null) throw new NullPointerException("query=null");
         if (query.equals("error=access_denied&error_description=The user has denied access to the scope requested by the client application.")) return null;
         if (!query.startsWith("code=")) throw new IllegalStateException("query=" + query);
@@ -79,7 +81,7 @@ public class MicrosoftAuthCallback implements Closeable {
         String accessToken = Auth.authMinecraft(xstsTokenUserhash.getValue(), xstsTokenUserhash.getKey());
         progressHandler.accept("Authentication... (%s)", new Object[]{"GetProfile"});
         Map.Entry<UUID, String> profile = Auth.getProfile(accessToken);
-        return new Account(profile.getValue(), refreshToken, profile.getKey().toString());
+        return new String[] {profile.getValue(), refreshToken, profile.getKey().toString()};
     }
 
     @Override
@@ -87,10 +89,10 @@ public class MicrosoftAuthCallback implements Closeable {
         try {
             if (server != null) {
                 server.stop(0);
-                AltScreen.updateStatus("Stopped Microsoft authentication callback server.");
+                AltScreen.INST.updateStatus("Stopped Microsoft authentication callback server.");
             }
         } catch (Throwable t) {
-            AltScreen.updateStatus("Unable to stop the Microsoft authentication callback server.");
+            AltScreen.INST.updateStatus("Cant stop the Microsoft authentication callback server: " + t.getMessage());
         }
     }
 }
