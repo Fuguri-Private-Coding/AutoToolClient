@@ -144,7 +144,7 @@ public class AccountFolder extends AccountElement {
 
         if (miniWindowOpened) {
             RoundedUtils.drawRect(clickedPos[0], clickedPos[1], 100, 15, 0, 5, 5, 0, COLOR);
-            font.drawString(input.getText(), clickedPos[0] + 5, clickedPos[1] + 2, Color.WHITE);
+            font.drawString(inputOffline ? input.getText() : "Add offline", clickedPos[0] + 5, clickedPos[1] + 2, Color.WHITE);
 
             RoundedUtils.drawRect(clickedPos[0], clickedPos[1] + 15, 100, 15, 0, 0, 0, 0, COLOR);
             RoundedUtils.drawRect(clickedPos[0], clickedPos[1] + 15 + 15, 100, 15, 5, 0, 0, 5, COLOR);
@@ -205,7 +205,14 @@ public class AccountFolder extends AccountElement {
     }
 
     public void onKey(char c, int key) {
+        for (AccountElement element : elements) {
+            if (element instanceof AccountFolder accountFolder) {
+                accountFolder.onKey(c, key);
+            }
+        }
+
         if (inputOffline) {
+            input.setFocused(true);
             input.textboxKeyTyped(c, key);
 
             if (key == Keyboard.KEY_RETURN) {
