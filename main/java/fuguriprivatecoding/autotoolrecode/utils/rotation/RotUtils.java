@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.rotation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.value.Doubles;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
@@ -221,4 +222,65 @@ public class RotUtils implements Imports {
 		float f3 = MathHelper.sin(-rotation.getPitch() * 0.017453292F);
 		return new Vec3(f1 * f2, f3, f * f2);
 	}
+
+    public static List<Doubles<Float, Vec3>> getTestLegitVec(EntityLivingBase target) {
+        List<Doubles<Float, Vec3>> vectors = new ArrayList<>();
+
+        int pointsPerXZAxis = 5;
+        int pointsPerYAxis = 15;
+
+        Rot playerRotation = mc.thePlayer.getRotation();
+        Vec3 playerEyesPosition = mc.thePlayer.getPositionEyes(1f);
+        AxisAlignedBB hitbox = target.getEntityBoundingBox();
+
+        for (double x = hitbox.minX; x <= hitbox.maxX; x += hitbox.getLengthX() / pointsPerXZAxis) {
+            for (double y = hitbox.minY; y <= hitbox.maxY; y += hitbox.getLengthY() / pointsPerYAxis) {
+                for (double z = hitbox.minZ; z <= hitbox.maxZ; z += hitbox.getLengthZ() / pointsPerXZAxis) {
+                   Vec3 candidate = new Vec3(x, y, z);
+                   vectors.add(new Doubles<>(getCandidateDangerous(candidate, hitbox), candidate));
+                }
+            }
+        }
+
+        return vectors;
+    }
+
+    private static float getCandidateDangerous(Vec3 candidate, AxisAlignedBB hitbox) {
+        Rot currentRotation = mc.thePlayer.getRotation();
+        double perdet = 1;
+        double saveDistanceAroundCurrentRotation = 3;
+
+        Vec3 center = new Vec3(
+            (hitbox.maxX + hitbox.minX) / 2,
+            (hitbox.maxY + hitbox.minY) / 2,
+            (hitbox.maxZ + hitbox.minZ) / 2
+        );
+        Rot centerRot = getRotationToPoint(center);
+
+        Rot candidateRot = getRotationToPoint(candidate);
+        float candidateDangerous = 0;
+
+        /* ----- START HARAM ZONE ----- */
+        float yawDiff = Math.abs(MathHelper.wrapDegree(currentRotation.yaw - candidateRot.yaw));
+        float pitchDiff = Math.abs(MathHelper.wrapDegree(currentRotation.pitch - candidateRot.pitch));
+        float totalDiff = (float) Math.hypot(yawDiff, pitchDiff);
+
+        if ((yawDiff <= perdet || pitchDiff <= perdet) && (totalDiff > saveDistanceAroundCurrentRotation)) {
+            candidateDangerous = 1;
+        }
+
+        // не хотеть двигаться слишком далеко от нынешней ротации
+        candidateDangerous += totalDiff / 60f;
+
+        // аимиться в центр
+        float diffToCenter = (float) getDelta(candidateRot, centerRot).hypot();
+        candidateDangerous += diffToCenter / 90f;
+        /* ----- ОКОНЧАНИЕ HARAM ZONE ----- */
+
+
+        /* ----- НАЧИНАНИЕ PRYANIK ZONE ----- */
+        /* ----- ЗАКАНЧИВАНИЕ PRYANIK ZONE ----- */
+
+        return Math.clamp(candidateDangerous, 0, 1);
+    }
 }
