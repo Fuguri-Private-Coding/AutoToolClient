@@ -20,8 +20,6 @@ public class MoveUtils implements Imports {
             && !mc.thePlayer.isSneaking();
     }
 
-    private static float yaw = 0;
-
     public static boolean isMoveDiagonally(float yaw) {
         return Math.round(yaw / 45f) % 2 != 0;
     }
@@ -43,7 +41,6 @@ public class MoveUtils implements Imports {
     }
 
     public static float getDir() {
-
         float rotationYaw = CameraRot.INST.getYaw();
 
         boolean forward = mc.gameSettings.keyBindForward.isKeyDown();
@@ -74,39 +71,7 @@ public class MoveUtils implements Imports {
             rotationYaw += 360.0f;
         }
 
-        return (float) rotationYaw;
-    }
-
-    public static float getDirs() {
-        if (mc.gameSettings.keyBindForward.isKeyDown() && mc.gameSettings.keyBindLeft.isKeyDown()) {
-            yaw = 45f;
-        } else if (mc.gameSettings.keyBindForward.isKeyDown() && mc.gameSettings.keyBindRight.isKeyDown()) {
-            yaw = -45f;
-        } else if (mc.gameSettings.keyBindBack.isKeyDown() && mc.gameSettings.keyBindLeft.isKeyDown()) {
-            yaw = 135f;
-        } else if (mc.gameSettings.keyBindBack.isKeyDown() && mc.gameSettings.keyBindRight.isKeyDown()) {
-            yaw = -135f;
-        } else if (mc.gameSettings.keyBindBack.isKeyDown()) {
-            yaw = 180f;
-        } else if (mc.gameSettings.keyBindLeft.isKeyDown()) {
-            yaw = 90f;
-        } else if (mc.gameSettings.keyBindRight.isKeyDown()) {
-            yaw = -90f;
-        } else if (mc.gameSettings.keyBindForward.isKeyDown()) {
-            yaw = 0f;
-        }
-
-        return yaw;
-    }
-
-    public static float getYawFromKeybind() {
-        return mc.thePlayer.rotationYaw - getDirs();
-    }
-
-    public static boolean isMovingStraight() {
-        float direction = getYawFromKeybind() + 180;
-        float movingYaw = Math.round(direction / 45) * 45;
-        return movingYaw % 90 == 0f;
+        return rotationYaw;
     }
 
     public static boolean isMoving() {
@@ -137,27 +102,27 @@ public class MoveUtils implements Imports {
     }
 
     public static double direction() {
-        float f = mc.thePlayer.rotationYaw;
+        float rotationYaw = mc.thePlayer.rotationYaw;
         if (mc.thePlayer.moveForward < 0.0F) {
-            f += 180.0F;
+            rotationYaw += 180.0F;
         }
 
-        float f2 = 1.0F;
+        float forward = 1.0F;
         if (mc.thePlayer.moveForward < 0.0F) {
-            f2 = -0.5F;
+            forward = -0.5F;
         } else if (mc.thePlayer.moveForward > 0.0F) {
-            f2 = 0.5F;
+            forward = 0.5F;
         }
 
         if (mc.thePlayer.moveStrafing > 0.0F) {
-            f -= 90.0F * f2;
+            rotationYaw -= 90.0F * forward;
         }
 
         if (mc.thePlayer.moveStrafing < 0.0F) {
-            f += 90.0F * f2;
+            rotationYaw += 90.0F * forward;
         }
 
-        return Math.toRadians(f);
+        return Math.toRadians(rotationYaw);
     }
 
     public void moveFix(MoveEvent e, float targetYaw) {
@@ -254,42 +219,6 @@ public class MoveUtils implements Imports {
         mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft);
         mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump);
         mc.gameSettings.keyBindSprint.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSprint);
-    }
-
-
-    public static double getSpeedNew() {
-        assert mc.thePlayer != null;
-        double motx = mc.thePlayer.motionX;
-        double motz = mc.thePlayer.motionZ;
-        return Math.sqrt(motx * motx + motz * motz);
-    }
-
-    public static double getXT() {
-        return -Math.sin(MoveUtils.getDir());
-    }
-
-    public static double getZT() {
-        return Math.cos(MoveUtils.getDir());
-    }
-
-    public static void strafe2(double motion) {
-        assert mc.thePlayer != null;
-        mc.thePlayer.motionX = getXT() * motion;
-        mc.thePlayer.motionZ = getZT() * motion;
-    }
-
-    public static void limit2speed(double speedd) {
-        assert mc.thePlayer != null;
-        while(getSpeed() > speedd) {
-            mc.thePlayer.motionX *= 0.999;
-            mc.thePlayer.motionZ *= 0.999;
-        }
-    }
-
-    public static void minstrafe(double motion) {
-        if(getSpeed() < motion) {
-            strafe2(motion);
-        }
     }
 
     public static void stopMotion() {

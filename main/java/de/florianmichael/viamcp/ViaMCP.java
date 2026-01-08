@@ -26,11 +26,9 @@ import com.viaversion.viaversion.protocols.v1_16_4to1_17.packet.ClientboundPacke
 import com.viaversion.viaversion.protocols.v1_16_4to1_17.packet.ServerboundPackets1_17;
 import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import de.florianmichael.viamcp.gui.AsyncVersionSlider;
-import lombok.Getter;
 
 import java.io.File;
 
-@Getter
 public class ViaMCP {
     public final static int NATIVE_VERSION = 47;
     public static ViaMCP INSTANCE;
@@ -49,7 +47,7 @@ public class ViaMCP {
         }).build();
 
         // Add this line if you implement the transaction fixes into the game code
-        // fixTransactions();
+         fixTransactions();
     }
 
     private void fixTransactions() {
@@ -67,4 +65,7 @@ public class ViaMCP {
         asyncVersionSlider = new AsyncVersionSlider(-1, x, y, Math.max(width, 110), height);
     }
 
+    public AsyncVersionSlider getAsyncVersionSlider() {
+        return asyncVersionSlider;
+    }
 }

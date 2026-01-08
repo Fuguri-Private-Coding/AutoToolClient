@@ -2,6 +2,8 @@ package net.minecraft.client.renderer;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -37,8 +39,8 @@ public class ActiveRenderInfo
         GLU.gluUnProject(f, f1, 0.0F, MODELVIEW, PROJECTION, VIEWPORT, OBJECTCOORDS);
         position = new Vec3((double)OBJECTCOORDS.get(0), (double)OBJECTCOORDS.get(1), (double)OBJECTCOORDS.get(2));
         int i = p_74583_1_ ? 1 : 0;
-        float f2 = entityplayerIn.rotationPitch;
-        float f3 = entityplayerIn.rotationYaw;
+        float f2 = CameraRot.INST.getPitch();
+        float f3 = CameraRot.INST.getYaw();
         rotationX = MathHelper.cos(f3 * (float)Math.PI / 180.0F) * (float)(1 - i * 2);
         rotationZ = MathHelper.sin(f3 * (float)Math.PI / 180.0F) * (float)(1 - i * 2);
         rotationYZ = -rotationZ * MathHelper.sin(f2 * (float)Math.PI / 180.0F) * (float)(1 - i * 2);

@@ -270,6 +270,11 @@ public class Scaffold extends Module {
             }
         }
 
+        if (!MoveUtils.isMoving() && !isClutch() && mc.gameSettings.keyBindJump.isKeyDown()
+            && mc.thePlayer.motionX == 0 && mc.thePlayer.motionZ == 0) {
+            rotation.setPitch(90);
+        }
+
         Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), rotation);
 
         delta = getDeltaSpeed(delta);
