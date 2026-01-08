@@ -20,7 +20,7 @@ public class PacketUtils implements Imports {
      * отправлает {@code packet} без вызова {@code PacketEvent}
      * @param packet пакет который нужно принять
      */
-    public void recievePacket(Packet packet) {
+    public void receivePacket(Packet packet) {
         try {
             packet.processPacket(mc.getNetHandler().getNetworkManager().packetListener);
         } catch (Exception ignored) {}

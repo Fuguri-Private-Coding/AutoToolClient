@@ -13,6 +13,8 @@ import fuguriprivatecoding.autotoolrecode.handle.Friends;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Teams;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
+import fuguriprivatecoding.autotoolrecode.module.impl.misc.Test;
+import fuguriprivatecoding.autotoolrecode.module.impl.misc.Test2;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Phase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
@@ -192,7 +194,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
     }
 
     public void onUpdate() {
-        this.noClip = Modules.getModule(Phase.class).isToggled() || this.isSpectator();
+        this.noClip = Modules.getModule(Phase.class).isToggled() || this.isSpectator() || Modules.getModule(Test.class).shouldNoclip() || Modules.getModule(Test2.class).isVonyat();
 
         if (this.isSpectator()) {
             this.onGround = false;

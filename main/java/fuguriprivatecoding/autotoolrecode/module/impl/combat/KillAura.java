@@ -78,6 +78,17 @@ public class KillAura extends Module {
         1, 5, 1.5f, 0.1f
     );
 
+    private final CheckBox noise4 = new CheckBox("Noise 4", this, false);
+
+    private final IntegerSetting moveSpeed = new IntegerSetting("Move speed", this, 0, 100, 75);
+
+    private final IntegerSetting frictionAtLargeMove = new IntegerSetting("Friction at large move", this, noise4::isToggled, 0, 100, 50);
+    private final IntegerSetting howManyDegreesPerTickIsLargeMove = new IntegerSetting("How many degrees per tick is large move?", this, 0, 180, 60);
+
+    private final DoubleSlider stopTimeInVerySmallMove = new DoubleSlider("Stop time in very small move (ticks)", this, noise4::isToggled, 0, 20, 4, 1);
+    private final DoubleSlider multiplierToSnapAfterSmallMove = new DoubleSlider("Multiplier to snap after small move", this, noise4::isToggled, 0, 5, 2, 0.01);
+    private final FloatSetting howManyDegreesPerTickIsVerySmallMove = new FloatSetting("How many degrees per tick is very small move?", this, noise4::isToggled, 0, 20, 5, 0.1f);
+
     DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
 
     final Mode moveFix = new Mode("MoveFix", this)
@@ -128,75 +139,7 @@ public class KillAura extends Module {
             }
 
             if (event instanceof TickEvent) {
-                Rot lr = mc.thePlayer.getRotation();
-
-                boolean teleport = TimerRange.isTeleporting() && teleportPredictFix.isToggled();
-
-                double offset = target.getCollisionBorderSize();
-
-                AxisAlignedBB box = RotUtils.getHitBox(
-                    target,
-                    teleport ? 100 : hBoxSize.getValue(),
-                    teleport ? 100 : vBoxSize.getValue()
-                ).expand(offset, offset, offset);
-
-                Rot needRotation = getRotation(target, lr, box);
-
-                if (needRotation == null) return;
-
-                Rot delta = RotUtils.getDelta(lr, needRotation);
-
-                Rot speed = new Rot(
-                    yawSpeed.getRandomizedIntValue(),
-                    pitchSpeed.getRandomizedIntValue()
-                );
-
-                if (!teleport) {
-                    if (smoothMode.get("Test")) {
-                        Rot rotation = RotUtils.getRotationToPoint(RotUtils.getBestHitVec(box).addVector(0, -testY.getValue(), 0));
-                        delta = RotUtils.getDelta(lr, rotation);
-                    }
-
-                    if (smoothMode.get("Basic")) {
-                        Rot rot = new Rot(
-                            RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
-                            RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
-                        );
-
-                        delta.setYaw(MathHelper.wrapDegree(delta.getYaw() - rot.getYaw()));
-                        delta.setPitch(MathHelper.wrapDegree(delta.getPitch() - rot.getPitch()));
-                    }
-
-                    if (smoothMode.get("Linear")) {
-                        delta = delta.divine(linearSmoothStrength.getValue(), linearSmoothStrength.getValue());
-                    }
-
-                    if (smoothMode.get("ReactionTime")) {
-                        Rot delta1 = delta.copy();
-
-                        delta = delta.multiplier(RandomUtils.nextFloat(0.6f, 0.7f));
-
-                        if (startSlowRotation) {
-                            delta = delta.multiplier(0.2f);
-                            startSlowRotation = false;
-                        }
-
-                        if (delta1.hypot() < reactionTime.getValue()) startSlowRotation = true;
-                    }
-
-                    RotUtils.limitDelta(delta, speed);
-
-                    if (smoothMode.get("MixDelta")) {
-                        delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
-                        delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
-                    }
-                }
-
-                lastDelta = delta.copy();
-                delta = RotUtils.fixDelta(delta);
-
-                CameraRot.INST.setUnlocked(true);
-                mc.thePlayer.moveRotation(delta);
+                rotate();
             }
 
             if (moveFix.is("OFF")) {
@@ -214,8 +157,6 @@ public class KillAura extends Module {
         boolean teleport = TimerRange.isTeleporting() && teleportPredictFix.isToggled();
 
         double offset = target.getCollisionBorderSize();
-
-        box.expand(-offset, -offset, -offset);
 
         Rot needRot = teleport ?
             RotUtils.getBestRotation(box) :
@@ -277,5 +218,124 @@ public class KillAura extends Module {
         if (TargetStorage.getTarget() != null && newTarget == null) CameraRot.INST.setWillChange(false);
 
         return newTarget;
+    }
+
+    private int waitTicks;
+
+    private void rotate() {
+        EntityLivingBase target = TargetStorage.getTarget();
+
+        if (noise4.isToggled()) {
+            Rot lr = mc.thePlayer.getRotation();
+
+            AxisAlignedBB box = RotUtils.getHitBox(
+                target,
+                hBoxSize.getValue(),
+                vBoxSize.getValue()
+            );
+
+            Rot need = getRotation(target, lr, box);
+
+            if (need == null) return;
+
+            float moveMultiplier = Math.clamp((moveSpeed.value + RandomUtils.nextInt(1, 20)) / 100f, 0, 1);
+            Rot delta = RotUtils.getDelta(lr, need).multiplier(moveMultiplier);
+
+            double deltaScale = delta.hypot();
+            boolean large = deltaScale >= howManyDegreesPerTickIsLargeMove.value;
+            boolean verySmall = deltaScale <= howManyDegreesPerTickIsVerySmallMove.value;
+
+            if (large) {
+                delta.setYaw(MathHelper.lerp(frictionAtLargeMove.value / 100f, lastDelta.getYaw(), delta.getYaw()));
+                delta.setPitch(MathHelper.lerp(frictionAtLargeMove.value / 100f, lastDelta.getPitch(), delta.getPitch()));
+            }
+
+            if (verySmall) {
+                if (waitTicks > 0) {
+                    waitTicks--;
+                    delta.setYaw(0);
+                    delta.setPitch(0);
+                } else if (waitTicks == 0) {
+                    delta = delta.multiplier((float) multiplierToSnapAfterSmallMove.getRandomizedDoubleValue());
+                    waitTicks = stopTimeInVerySmallMove.getRandomizedIntValue();
+                }
+            }
+
+            delta = RotUtils.fixDelta(delta);
+            lastDelta = delta.copy();
+
+            CameraRot.INST.setUnlocked(true);
+            mc.thePlayer.moveRotation(delta);
+        } else {
+            Rot lr = mc.thePlayer.getRotation();
+
+            boolean teleport = TimerRange.isTeleporting() && teleportPredictFix.isToggled();
+
+            double offset = target.getCollisionBorderSize();
+
+            AxisAlignedBB box = RotUtils.getHitBox(
+                target,
+                teleport ? 100 : hBoxSize.getValue(),
+                teleport ? 100 : vBoxSize.getValue()
+            ).expand(offset, offset, offset);
+
+            Rot needRotation = getRotation(target, lr, box);
+
+            if (needRotation == null) return;
+
+            Rot delta = RotUtils.getDelta(lr, needRotation);
+
+            Rot speed = new Rot(
+                yawSpeed.getRandomizedIntValue(),
+                pitchSpeed.getRandomizedIntValue()
+            );
+
+            if (!teleport) {
+                if (smoothMode.get("Test")) {
+                    Rot rotation = RotUtils.getRotationToPoint(RotUtils.getBestHitVec(box).addVector(0, -testY.getValue(), 0));
+                    delta = RotUtils.getDelta(lr, rotation);
+                }
+
+                if (smoothMode.get("Basic")) {
+                    Rot rot = new Rot(
+                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
+                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
+                    );
+
+                    delta.setYaw(MathHelper.wrapDegree(delta.getYaw() - rot.getYaw()));
+                    delta.setPitch(MathHelper.wrapDegree(delta.getPitch() - rot.getPitch()));
+                }
+
+                if (smoothMode.get("Linear")) {
+                    delta = delta.divine(linearSmoothStrength.getValue(), linearSmoothStrength.getValue());
+                }
+
+                if (smoothMode.get("ReactionTime")) {
+                    Rot delta1 = delta.copy();
+
+                    delta = delta.multiplier(RandomUtils.nextFloat(0.6f, 0.7f));
+
+                    if (startSlowRotation) {
+                        delta = delta.multiplier(0.2f);
+                        startSlowRotation = false;
+                    }
+
+                    if (delta1.hypot() < reactionTime.getValue()) startSlowRotation = true;
+                }
+
+                RotUtils.limitDelta(delta, speed);
+
+                if (smoothMode.get("MixDelta")) {
+                    delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
+                    delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
+                }
+            }
+
+            delta = RotUtils.fixDelta(delta);
+            lastDelta = delta.copy();
+
+            CameraRot.INST.setUnlocked(true);
+            mc.thePlayer.moveRotation(delta);
+        }
     }
 }
