@@ -74,6 +74,7 @@ public class RotUtils implements Imports {
             center.yCoord + box.getLengthY() * verticalPercent,
             center.zCoord + box.getLengthZ() * horizontalPercent
         );
+
         return box;
     }
 

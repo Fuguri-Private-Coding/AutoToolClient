@@ -28,83 +28,83 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.*;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, description = "Автоматически целится и бьет противника.")
 public class KillAura extends Module {
 
-    final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 8, 6, 0.1f);
-    final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
+    private final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 8, 6, 0.1f);
+    private final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
 
-    final MultiMode targets = new MultiMode("Targets", this)
+    private final MultiMode targets = new MultiMode("Targets", this)
         .addModes("Players", "Mobs", "Animals", "Villagers");
 
-    final Mode sortType = new Mode("SortType", this)
+    private final Mode sortType = new Mode("SortType", this)
         .addModes("Distance", "FOV", "HurtTime")
         .setMode("FOV");
 
-    final Mode hitVec = new Mode("HitVec", this)
+    private final Mode hitVec = new Mode("HitVec", this)
         .addModes("Best", "Nearest", "Head", "Body")
         .setMode("Best");
 
-    final BooleanSupplier boxSize = () -> hitVec.is("Best") || hitVec.is("Nearest");
-    final IntegerSetting hBoxSize = new IntegerSetting("HBoxSize", this, boxSize, 1, 100, 100);
-    final IntegerSetting vBoxSize = new IntegerSetting("VBoxSize", this, boxSize, 1, 100, 100);
+    private final BooleanSupplier boxSize = () -> hitVec.is("Best") || hitVec.is("Nearest");
+    private final IntegerSetting hBoxSize = new IntegerSetting("HBoxSize", this, boxSize, 1, 100, 100);
+    private final IntegerSetting vBoxSize = new IntegerSetting("VBoxSize", this, boxSize, 1, 100, 100);
 
-    DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0, 180, 90, 1);
-    DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0, 180, 90, 1);
+    private final DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0, 180, 90, 1);
+    private final DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0, 180, 90, 1);
 
-    final CheckBox smartAim = new CheckBox("SmartAim", this);
+    private final CheckBox smartAim = new CheckBox("SmartAim", this);
 
-    final CheckBox teleportPredictFix = new CheckBox("TeleportPredictFix", this);
+    private final CheckBox teleportPredictFix = new CheckBox("TeleportPredictFix", this);
 
-    final MultiMode smoothMode = new MultiMode("SmoothModes", this)
-        .addModes("Linear", "Basic", "MixDelta", "ReactionTime", "Test");
+    private final MultiMode smoothMode = new MultiMode("SmoothModes", this)
+        .addModes("Linear", "Basic", "MixDelta", "ReactionTime", "Offset", "Advanced");
 
-    DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
-    DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
+    private final DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
+    private final DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
 
-    FloatSetting randomizeStrength = new FloatSetting("RandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
-    FloatSetting reactionTime = new FloatSetting("ReactionTime", this, () -> smoothMode.get("ReactionTime"), 0, 5, 1, 0.1f);
+    private final FloatSetting randomizeStrength = new FloatSetting("RandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
+    private final FloatSetting reactionTime = new FloatSetting("ReactionTime", this, () -> smoothMode.get("ReactionTime"), 0, 5, 1, 0.1f);
 
-    FloatSetting testY = new FloatSetting("TestY", this, () -> smoothMode.get("Test"), 0, 1, 0.2f, 0.01f);
+    private final FloatSetting offsetX = new FloatSetting("OffsetX", this, () -> smoothMode.get("Offset"), -1, 1, 0, 0.01f);
+    private final FloatSetting offsetY = new FloatSetting("OffsetY", this, () -> smoothMode.get("Offset"), -1, 1, -0.2f, 0.01f);
+    private final FloatSetting offsetZ = new FloatSetting("OffsetZ", this, () -> smoothMode.get("Offset"), -1, 1, 0, 0.01f);
 
-    final FloatSetting linearSmoothStrength = new FloatSetting(
+    private final FloatSetting linearSmoothStrength = new FloatSetting(
         "LinearSmoothStrength", this,
         () -> smoothMode.get("Linear"),
         1, 5, 1.5f, 0.1f
     );
 
-    private final CheckBox noise4 = new CheckBox("Noise 4", this, false);
+    private final IntegerSetting moveSpeed = new IntegerSetting("MoveSpeed", this, () -> smoothMode.get("Advanced"), 0, 100, 75);
 
-    private final IntegerSetting moveSpeed = new IntegerSetting("Move speed", this, 0, 100, 75);
+    private final IntegerSetting frictionAtLargeMove = new IntegerSetting("FrictionAtLargeMove", this, () -> smoothMode.get("Advanced"), 0, 100, 50);
+    private final IntegerSetting howManyDegreesPerTickIsLargeMove = new IntegerSetting("HowManyDegreesPerTickIsLargeMove?", this, () -> smoothMode.get("Advanced"), 0, 180, 60);
 
-    private final IntegerSetting frictionAtLargeMove = new IntegerSetting("Friction at large move", this, noise4::isToggled, 0, 100, 50);
-    private final IntegerSetting howManyDegreesPerTickIsLargeMove = new IntegerSetting("How many degrees per tick is large move?", this, 0, 180, 60);
+    private final DoubleSlider stopTimeInVerySmallMove = new DoubleSlider("StopTimeInVerySmallMoveTicks", this, () -> smoothMode.get("Advanced"), 0, 20, 4, 1);
+    private final DoubleSlider multiplierToSnapAfterSmallMove = new DoubleSlider("MultiplierToSnapAfterSmallMove", this, () -> smoothMode.get("Advanced"), 0, 5, 2, 0.01);
+    private final FloatSetting howManyDegreesPerTickIsVerySmallMove = new FloatSetting("HowManyDegreesPerTickIsVerySmallMove?", this, () -> smoothMode.get("Advanced"), 0, 20, 5, 0.1f);
 
-    private final DoubleSlider stopTimeInVerySmallMove = new DoubleSlider("Stop time in very small move (ticks)", this, noise4::isToggled, 0, 20, 4, 1);
-    private final DoubleSlider multiplierToSnapAfterSmallMove = new DoubleSlider("Multiplier to snap after small move", this, noise4::isToggled, 0, 5, 2, 0.01);
-    private final FloatSetting howManyDegreesPerTickIsVerySmallMove = new FloatSetting("How many degrees per tick is very small move?", this, noise4::isToggled, 0, 20, 5, 0.1f);
+    private final DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
 
-    DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
-
-    final Mode moveFix = new Mode("MoveFix", this)
+    private final Mode moveFix = new Mode("MoveFix", this)
         .addModes("OFF", "Legit", "Silent")
         .setMode("Silent");
 
-    final MultiMode autoDisableIf = new MultiMode("AutoDisableIf", this)
-        .addModes("ChangeWorld")
-        ;
+    private final MultiMode autoDisableIf = new MultiMode("AutoDisableIf", this)
+        .addModes("ChangeWorld");
 
-    final StopWatch clickTimer = new StopWatch();
+    private final StopWatch clickTimer = new StopWatch();
     private long delay;
 
-    boolean startSlowRotation;
+    private int waitTicks;
+    private boolean startSlowRotation;
 
-    Rot lastDelta = new Rot();
+    private Rot lastDelta = new Rot();
 
     @Override
     public void onDisable() {
@@ -139,16 +139,14 @@ public class KillAura extends Module {
             }
 
             if (event instanceof TickEvent) {
-                rotate();
+                rotate(target);
             }
 
             if (moveFix.is("OFF")) {
                 if (event instanceof MoveFlyingEvent e) e.setYaw(CameraRot.INST.getYaw());
                 if (event instanceof JumpEvent e) e.setYaw(CameraRot.INST.getYaw());
-            }
-
-            if (event instanceof MoveEvent e) {
-                if (moveFix.is("Silent")) MoveUtils.moveFix(e, MoveUtils.getDirection(CameraRot.INST.getYaw(), e.getForward(), e.getStrafe()));
+            } else if (moveFix.is("Silent")) {
+                if (event instanceof MoveEvent e) MoveUtils.moveFix(e, MoveUtils.getDirection(CameraRot.INST.getYaw(), e.getForward(), e.getStrafe()));
             }
         }
     }
@@ -156,17 +154,15 @@ public class KillAura extends Module {
     private Rot getRotation(EntityLivingBase target, Rot lr, AxisAlignedBB box) {
         boolean teleport = TimerRange.isTeleporting() && teleportPredictFix.isToggled();
 
-        double offset = target.getCollisionBorderSize();
-
-        Rot needRot = teleport ?
-            RotUtils.getBestRotation(box) :
-            switch (hitVec.getMode()) {
+        Rot needRot = switch (hitVec.getMode()) {
                 case "Best" -> RotUtils.getBestRotation(box);
                 case "Nearest" -> RotUtils.getNearestRotations(lr, box);
                 case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
                 case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
                 default -> null;
             };
+
+        if (teleport) needRot = RotUtils.getBestRotation(box);
 
         if (needRot == null) return null;
 
@@ -186,28 +182,23 @@ public class KillAura extends Module {
     }
 
     private EntityLivingBase findNewTarget() {
-        List<EntityLivingBase> entityList = new ArrayList<>();
-
-        for (Entity entity : mc.theWorld.loadedEntityList) {
-            if (entity != mc.thePlayer && DistanceUtils.getDistance(entity) < findDistance.getValue() && !entity.isDead) {
-                switch (entity) {
-                    case EntityPlayer entityPlayer when targets.get("Players") && !entityPlayer.isFriend() && !entityPlayer.isTeam() -> entityList.add(entityPlayer);
-                    case EntityMob entityMob when targets.get("Mobs") -> entityList.add(entityMob);
-                    case EntityAnimal entityAnimal when targets.get("Animals") -> entityList.add(entityAnimal);
-                    case EntityVillager entityVillager when targets.get("Villagers") -> entityList.add(entityVillager);
-
-                    default -> {}
-                }
-            }
-        }
+        List<EntityLivingBase> entityList = mc.theWorld.loadedEntityList.stream()
+            .filter(this::isValidTarget)
+            .filter(this::isWithinDistance)
+            .filter(EntityLivingBase.class::isInstance)
+            .map(EntityLivingBase.class::cast)
+            .filter(this::matchesTargetType)
+            .collect(Collectors.toList());
 
         entityList.removeIf(ent -> DistanceUtils.getDistance(ent) > findDistance.getValue());
 
-        switch (sortType.getMode()) {
-            case "Distance" -> entityList.sort(Comparator.comparingDouble(DistanceUtils::getDistance));
-            case "FOV" -> entityList.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
-            case "HurtTime" -> entityList.sort(Comparator.comparingDouble(ent -> ent.hurtTime));
-        }
+        entityList.sort(
+            switch (sortType.getMode()) {
+                case "Distance" -> Comparator.comparingDouble(DistanceUtils::getDistance);
+                case "HurtTime" -> Comparator.comparingDouble(ent -> ent.hurtTime);
+                default -> Comparator.comparingDouble(RotUtils::getFovToEntity);
+            }
+        );
 
         EntityLivingBase newTarget = null;
 
@@ -220,122 +211,122 @@ public class KillAura extends Module {
         return newTarget;
     }
 
-    private int waitTicks;
+    private boolean isValidTarget(Entity entity) {
+        return entity != mc.thePlayer && !entity.isDead;
+    }
 
-    private void rotate() {
-        EntityLivingBase target = TargetStorage.getTarget();
+    private boolean isWithinDistance(Entity entity) {
+        return DistanceUtils.getDistance(entity) < findDistance.getValue();
+    }
 
-        if (noise4.isToggled()) {
-            Rot lr = mc.thePlayer.getRotation();
+    private boolean matchesTargetType(EntityLivingBase entity) {
+        return switch (entity) {
+            case EntityPlayer player -> targets.get("Players") && !player.isFriend() && !player.isTeam();
+            case EntityMob ignore -> targets.get("Mobs");
+            case EntityAnimal ignore -> targets.get("Animals");
+            case EntityVillager ignore -> targets.get("Villagers");
+            default -> false;
+        };
+    }
 
-            AxisAlignedBB box = RotUtils.getHitBox(
-                target,
-                hBoxSize.getValue(),
-                vBoxSize.getValue()
-            );
+    private void rotate(EntityLivingBase target) {
+        Rot lr = mc.thePlayer.getRotation();
 
-            Rot need = getRotation(target, lr, box);
+        boolean teleport = TimerRange.isTeleporting() && teleportPredictFix.isToggled();
 
-            if (need == null) return;
+        double offset = target.getCollisionBorderSize();
 
-            float moveMultiplier = Math.clamp((moveSpeed.value + RandomUtils.nextInt(1, 20)) / 100f, 0, 1);
-            Rot delta = RotUtils.getDelta(lr, need).multiplier(moveMultiplier);
+        AxisAlignedBB box = RotUtils.getHitBox(
+            target,
+            teleport ? 100 : hBoxSize.getValue(),
+            teleport ? 100 : vBoxSize.getValue()
+        ).expand(offset, offset, offset);
 
-            double deltaScale = delta.hypot();
-            boolean large = deltaScale >= howManyDegreesPerTickIsLargeMove.value;
-            boolean verySmall = deltaScale <= howManyDegreesPerTickIsVerySmallMove.value;
+        Rot needRotation = getRotation(target, lr, box);
 
-            if (large) {
-                delta.setYaw(MathHelper.lerp(frictionAtLargeMove.value / 100f, lastDelta.getYaw(), delta.getYaw()));
-                delta.setPitch(MathHelper.lerp(frictionAtLargeMove.value / 100f, lastDelta.getPitch(), delta.getPitch()));
-            }
+        if (needRotation == null) return;
 
-            if (verySmall) {
-                if (waitTicks > 0) {
-                    waitTicks--;
-                    delta.setYaw(0);
-                    delta.setPitch(0);
-                } else if (waitTicks == 0) {
-                    delta = delta.multiplier((float) multiplierToSnapAfterSmallMove.getRandomizedDoubleValue());
-                    waitTicks = stopTimeInVerySmallMove.getRandomizedIntValue();
-                }
-            }
+        Rot delta;
 
-            delta = RotUtils.fixDelta(delta);
-            lastDelta = delta.copy();
-
-            CameraRot.INST.setUnlocked(true);
-            mc.thePlayer.moveRotation(delta);
+        if (smoothMode.get("Advanced")) {
+            float moveMultiplier = Math.clamp((moveSpeed.getValue() + RandomUtils.nextInt(1, 20)) / 100f, 0, 1);
+            delta = RotUtils.getDelta(lr, needRotation).multiplier(moveMultiplier);
         } else {
-            Rot lr = mc.thePlayer.getRotation();
+            delta = RotUtils.getDelta(lr, needRotation);
+        }
 
-            boolean teleport = TimerRange.isTeleporting() && teleportPredictFix.isToggled();
+        Rot speed = new Rot(
+            yawSpeed.getRandomizedIntValue(),
+            pitchSpeed.getRandomizedIntValue()
+        );
 
-            double offset = target.getCollisionBorderSize();
+        if (!teleport) {
+            if (smoothMode.get("Offset")) {
+                Rot rotation = RotUtils.getRotationToPoint(RotUtils.getBestHitVec(box).addVector(offsetX.getValue(), offsetY.getValue(), offsetZ.getValue()));
+                delta = RotUtils.getDelta(lr, rotation);
+            }
 
-            AxisAlignedBB box = RotUtils.getHitBox(
-                target,
-                teleport ? 100 : hBoxSize.getValue(),
-                teleport ? 100 : vBoxSize.getValue()
-            ).expand(offset, offset, offset);
+            if (smoothMode.get("Basic")) {
+                Rot rot = new Rot(
+                    RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
+                    RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
+                );
 
-            Rot needRotation = getRotation(target, lr, box);
+                delta.setYaw(MathHelper.wrapDegree(delta.getYaw() - rot.getYaw()));
+                delta.setPitch(MathHelper.wrapDegree(delta.getPitch() - rot.getPitch()));
+            }
 
-            if (needRotation == null) return;
+            if (smoothMode.get("Linear")) {
+                delta = delta.divine(linearSmoothStrength.getValue(), linearSmoothStrength.getValue());
+            }
 
-            Rot delta = RotUtils.getDelta(lr, needRotation);
+            if (smoothMode.get("ReactionTime")) {
+                Rot delta1 = delta.copy();
 
-            Rot speed = new Rot(
-                yawSpeed.getRandomizedIntValue(),
-                pitchSpeed.getRandomizedIntValue()
-            );
+                delta = delta.multiplier(RandomUtils.nextFloat(0.6f, 0.7f));
 
-            if (!teleport) {
-                if (smoothMode.get("Test")) {
-                    Rot rotation = RotUtils.getRotationToPoint(RotUtils.getBestHitVec(box).addVector(0, -testY.getValue(), 0));
-                    delta = RotUtils.getDelta(lr, rotation);
+                if (startSlowRotation) {
+                    delta = delta.multiplier(0.2f);
+                    startSlowRotation = false;
                 }
 
-                if (smoothMode.get("Basic")) {
-                    Rot rot = new Rot(
-                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
-                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
-                    );
+                if (delta1.hypot() < reactionTime.getValue()) startSlowRotation = true;
+            }
 
-                    delta.setYaw(MathHelper.wrapDegree(delta.getYaw() - rot.getYaw()));
-                    delta.setPitch(MathHelper.wrapDegree(delta.getPitch() - rot.getPitch()));
+            if (smoothMode.get("Advanced")) {
+                double deltaScale = delta.hypot();
+                boolean large = deltaScale >= howManyDegreesPerTickIsLargeMove.getValue();
+                boolean verySmall = deltaScale <= howManyDegreesPerTickIsVerySmallMove.getValue();
+
+                if (large) {
+                    delta.setYaw(MathHelper.lerp(frictionAtLargeMove.getValue() / 100f, lastDelta.getYaw(), delta.getYaw()));
+                    delta.setPitch(MathHelper.lerp(frictionAtLargeMove.getValue() / 100f, lastDelta.getPitch(), delta.getPitch()));
                 }
 
-                if (smoothMode.get("Linear")) {
-                    delta = delta.divine(linearSmoothStrength.getValue(), linearSmoothStrength.getValue());
-                }
-
-                if (smoothMode.get("ReactionTime")) {
-                    Rot delta1 = delta.copy();
-
-                    delta = delta.multiplier(RandomUtils.nextFloat(0.6f, 0.7f));
-
-                    if (startSlowRotation) {
-                        delta = delta.multiplier(0.2f);
-                        startSlowRotation = false;
+                if (verySmall) {
+                    if (waitTicks > 0) {
+                        waitTicks--;
+                        delta.setYaw(0);
+                        delta.setPitch(0);
+                    } else if (waitTicks == 0) {
+                        delta = delta.multiplier((float) multiplierToSnapAfterSmallMove.getRandomizedDoubleValue());
+                        waitTicks = stopTimeInVerySmallMove.getRandomizedIntValue();
                     }
-
-                    if (delta1.hypot() < reactionTime.getValue()) startSlowRotation = true;
-                }
-
-                RotUtils.limitDelta(delta, speed);
-
-                if (smoothMode.get("MixDelta")) {
-                    delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
-                    delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
                 }
             }
 
-            delta = RotUtils.fixDelta(delta);
-            lastDelta = delta.copy();
+            RotUtils.limitDelta(delta, speed);
 
-            CameraRot.INST.setUnlocked(true);
-            mc.thePlayer.moveRotation(delta);
+            if (smoothMode.get("MixDelta")) {
+                delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
+                delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
+            }
         }
+
+        delta = RotUtils.fixDelta(delta);
+        lastDelta = delta.copy();
+
+        CameraRot.INST.setUnlocked(true);
+        mc.thePlayer.moveRotation(delta);
     }
 }

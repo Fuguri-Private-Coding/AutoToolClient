@@ -35,68 +35,68 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "Scaffold", category = Category.PLAYER, description = "Позволяет ХАЛЯЛЬНО строится.")
 public class Scaffold extends Module {
 
-    final Mode rotMode = new Mode("RotationMode", this)
+    private final Mode rotMode = new Mode("RotationMode", this)
             .addModes("TellyBridge", "GodBridge", "Normal")
             .setMode("GodBridge");
 
-    final BooleanSupplier tellyVisible = () -> rotMode.is("TellyBridge");
-    final BooleanSupplier godVisible = () -> rotMode.is("GodBridge");
-    final BooleanSupplier godNormalVisible = () -> rotMode.is("GodBridge") || rotMode.is("Normal");
-    final BooleanSupplier tellyNormalVisible = () -> rotMode.is("TellyBridge") || rotMode.is("Normal");
+    private final BooleanSupplier tellyVisible = () -> rotMode.is("TellyBridge");
+    private final BooleanSupplier godVisible = () -> rotMode.is("GodBridge");
+    private final BooleanSupplier godNormalVisible = () -> rotMode.is("GodBridge") || rotMode.is("Normal");
+    private final BooleanSupplier tellyNormalVisible = () -> rotMode.is("TellyBridge") || rotMode.is("Normal");
 
-    final DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
-    final DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
+    private final DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
+    private final DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
 
-    final DoubleSlider yawClutchSpeed = new DoubleSlider("YawClutchSpeed", this, godVisible, 0,180,90,1);
-    final DoubleSlider pitchClutchSpeed = new DoubleSlider("PitchClutchSpeed", this, godVisible, 0,180,90,1);
+    private final DoubleSlider yawClutchSpeed = new DoubleSlider("YawClutchSpeed", this, godVisible, 0,180,90,1);
+    private final DoubleSlider pitchClutchSpeed = new DoubleSlider("PitchClutchSpeed", this, godVisible, 0,180,90,1);
 
-    final DoubleSlider pitchCorrectionSearchRange = new DoubleSlider("PitchCorrectionSearchRange", this, 0,90,90,0.1f);
-    final FloatSetting pitchCorrectionMinStep = new FloatSetting("PitchCorrectionMinStep", this, 0.3f, 10, 1f, 0.01f);
+    private final DoubleSlider pitchCorrectionSearchRange = new DoubleSlider("PitchCorrectionSearchRange", this, 0,90,90,0.1f);
+    private final FloatSetting pitchCorrectionMinStep = new FloatSetting("PitchCorrectionMinStep", this, 0.3f, 10, 1f, 0.01f);
 
-    final CheckBox sortYawOffset = new CheckBox("SortYawOffset", this, tellyNormalVisible);
-    final FloatSetting yawOffset = new FloatSetting("YawOffset", this, () -> tellyNormalVisible.getAsBoolean() && sortYawOffset.isToggled(), 0, 90, 45, 0.1f);
+    private final CheckBox sortYawOffset = new CheckBox("SortYawOffset", this, tellyNormalVisible);
+    private final FloatSetting yawOffset = new FloatSetting("YawOffset", this, () -> tellyNormalVisible.getAsBoolean() && sortYawOffset.isToggled(), 0, 90, 45, 0.1f);
 
-    final MultiMode removeSwing = new MultiMode("RemoveSwing", this)
+    private final MultiMode removeSwing = new MultiMode("RemoveSwing", this)
         .addModes("On Client", "On Server")
         ;
 
-    final Mode sprintMode = new Mode("SprintMode", this)
+    private final Mode sprintMode = new Mode("SprintMode", this)
         .addModes("None", "Legit", "JumpSprint", "AllDirection")
         .setMode("Legit")
         ;
 
-    final CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this);
-    final CheckBox strictYaw = new CheckBox("StrictYaw", this, tellyNormalVisible);
+    private final CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this);
+    private final CheckBox strictYaw = new CheckBox("StrictYaw", this, tellyNormalVisible);
 
-    final CheckBox clutch = new CheckBox("Clutch", this, godVisible);
+    private final CheckBox clutch = new CheckBox("Clutch", this, godVisible);
 
-    final CheckBox speedTelly = new CheckBox("SpeedTelly", this, tellyVisible, true);
-    final DoubleSlider airTicks = new DoubleSlider("AirTicks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 0,10,3,1);
+    private final CheckBox speedTelly = new CheckBox("SpeedTelly", this, tellyVisible, true);
+    private final DoubleSlider airTicks = new DoubleSlider("AirTicks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 0,10,3,1);
 
-    final CheckBox flick = new CheckBox("Flick", this, tellyVisible, false);
-    
-    final CheckBox sameY = new CheckBox("SameY", this, true);
+    private final CheckBox flick = new CheckBox("Flick", this, tellyVisible, false);
 
-    final MultiMode sneakIf = new MultiMode("SneakIf", this, godNormalVisible)
+    private final CheckBox sameY = new CheckBox("SameY", this, true);
+
+    private final MultiMode sneakIf = new MultiMode("SneakIf", this, godNormalVisible)
         .addModes("Rotate", "ZeroBlocks", "NinjaBridge");
     
-    final FloatSetting minDeltaToSneak = new FloatSetting("MinDeltaToSneak", this, () -> sneakIf.get("Rotate") && godNormalVisible.getAsBoolean(), 0, 10, 2, 0.1f);
-    final CheckBox sneakIfRotateWithClutch = new CheckBox("SneakIfRotateWithClutch", this, () -> sneakIf.get("Rotate") && godNormalVisible.getAsBoolean());
-    final CheckBox sneakIfNinjaBridgeWithClutch = new CheckBox("SneakIfNinjaBridgeWithClutch", this, () -> sneakIf.get("NinjaBridge") && godNormalVisible.getAsBoolean());
+    private final FloatSetting minDeltaToSneak = new FloatSetting("MinDeltaToSneak", this, () -> sneakIf.get("Rotate") && godNormalVisible.getAsBoolean(), 0, 10, 2, 0.1f);
+    private final CheckBox sneakIfRotateWithClutch = new CheckBox("SneakIfRotateWithClutch", this, () -> sneakIf.get("Rotate") && godNormalVisible.getAsBoolean());
+    private final CheckBox sneakIfNinjaBridgeWithClutch = new CheckBox("SneakIfNinjaBridgeWithClutch", this, () -> sneakIf.get("NinjaBridge") && godNormalVisible.getAsBoolean());
 
-    final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, () -> godNormalVisible.getAsBoolean() && sneakIf.get("NinjaBridge"), 0f,0.1f,0.05f, 0.01f);
+    private final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, () -> godNormalVisible.getAsBoolean() && sneakIf.get("NinjaBridge"), 0f,0.1f,0.05f, 0.01f);
 
-    final CheckBox render = new CheckBox("Render", this, true);
-    final ColorSetting color = new ColorSetting("Color", this);
+    private final CheckBox render = new CheckBox("Render", this, true);
+    private final ColorSetting color = new ColorSetting("Color", this);
 
-    final CheckBox glow = new CheckBox("Glow", this);
-    final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
+    private final CheckBox glow = new CheckBox("Glow", this);
+    private final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
 
-    Rot rotation, lastRotation = Rot.ZERO;
+    private Rot rotation, lastRotation = Rot.ZERO;
 
-    BlockPos targetBlock;
+    private BlockPos targetBlock;
 
-    double lastDelta = 0;
+    private double lastDelta = 0;
 
     @Override
     public void onDisable() {
@@ -141,7 +141,12 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof MoveEvent e) {
-            MoveUtils.moveFix(e, MoveUtils.getDirection(CameraRot.INST.getYaw(), e.getForward(), e.getStrafe()));
+            float yaw = CameraRot.INST.getYaw();
+            float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw), 45);
+
+            float needYaw = strictYaw.isToggled() ? roundedYaw : yaw;
+
+            MoveUtils.moveFix(e, MoveUtils.getDirection(needYaw, e.getForward(), e.getStrafe()));
 
             switch (rotMode.getMode()) {
                 case "GodBridge", "Normal" -> {
@@ -227,8 +232,8 @@ public class Scaffold extends Module {
         float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
         float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw + 180), 45);
 
-        boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.6) != Math.floor(mc.thePlayer.posX) ||
-            Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(roundedYaw)) * 0.3) != Math.floor(mc.thePlayer.posZ);
+        boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.5) != Math.floor(mc.thePlayer.posX) ||
+            Math.floor(mc.thePlayer.posZ + Math.sin(Math.toRadians(roundedYaw)) * 0.5) != Math.floor(mc.thePlayer.posZ);
 
         float needYaw = strictYaw.isToggled() ? roundedYaw - 180 : yaw;
 

@@ -60,7 +60,12 @@ public class BackTrack extends Module {
 
     private int delayBetweenBackTracks;
 
-    public boolean working;
+    public static boolean working;
+
+    @Override
+    public void onDisable() {
+        working = false;
+    }
 
     @Override
     public void onEvent(Event event) {

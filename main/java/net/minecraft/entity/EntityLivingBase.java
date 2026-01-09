@@ -141,6 +141,14 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         this.stepHeight = 0.6F;
     }
 
+    public Vec3 getNewPosition() {
+        return new Vec3(newPosX, newPosY, newPosZ);
+    }
+
+    public Vec3 getNPosition() {
+        return new Vec3(nx, ny, nz);
+    }
+
     public Vec3 getRealPosition() {
         return new Vec3(
             lrx + (rx - lrx) * mc.timer.renderPartialTicks - RenderManager.renderPosX,
