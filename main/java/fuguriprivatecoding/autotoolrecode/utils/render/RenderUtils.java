@@ -40,6 +40,14 @@ public class RenderUtils implements Imports {
         GlStateManager.disableBlend();
     }
 
+    public static Vec3 getAbsoluteSmoothPos(Vec3 lastPos, Vec3 currentPos) {
+        return getAbsoluteSmoothPos(lastPos, currentPos, mc.timer.renderPartialTicks);
+    }
+
+    public static Vec3 getAbsoluteSmoothPos(Vec3 lastPos, Vec3 currentPos, float partialTicks) {
+        return lastPos.add(currentPos.subtract(lastPos).multiple(partialTicks));
+    }
+
     public static void renderBed(final BlockPos[] blockPos, Color color) {
         double posX = blockPos[0].getX() - mc.getRenderManager().viewerPosX;
         double posY = blockPos[0].getY() - mc.getRenderManager().viewerPosY;

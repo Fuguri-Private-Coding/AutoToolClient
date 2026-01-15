@@ -151,7 +151,7 @@ public class Scaffold extends Module {
             switch (rotMode.getMode()) {
                 case "GodBridge", "Normal" -> {
                     if (sneakIf.get("Rotate") && lastDelta > minDeltaToSneak.getValue()) {
-                        if (isClutch() && sneakIfRotateWithClutch.isToggled()) {
+                        if (isClutch() && !sneakIfRotateWithClutch.isToggled()) {
                             return;
                         }
 
@@ -161,7 +161,7 @@ public class Scaffold extends Module {
                     if (sneakIf.get("ZeroBlocks") && findBlock() == -1) e.setSneak(true);
 
                     if (sneakIf.get("NinjaBridge")) {
-                        if (isClutch() && sneakIfNinjaBridgeWithClutch.isToggled()) {
+                        if (isClutch() && !sneakIfNinjaBridgeWithClutch.isToggled()) {
                             return;
                         }
 

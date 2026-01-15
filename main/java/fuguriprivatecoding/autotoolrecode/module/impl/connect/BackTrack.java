@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -115,7 +116,7 @@ public class BackTrack extends Module {
             handle(false);
 
             if (target != null) {
-                Vec3 targetPos = new Vec3(target.nx, target.ny, target.nz);
+                Vec3 targetPos = target.getNPosition();
 
                 double offset = target.getCollisionBorderSize();
 
@@ -180,12 +181,14 @@ public class BackTrack extends Module {
         if (packetBuffer.isEmpty()) return;
 
         packetBuffer.removeIf(packet -> {
-            if (System.currentTimeMillis() - packet.getTime() >= delays || clear) {
+            long packetTime = System.currentTimeMillis() - packet.getTime();
+            if (packetTime >= delays || clear) {
                 try {
-                    packet.getVar().processPacket(mc.getNetHandler().getNetworkManager().getNetHandler());
+                    PacketUtils.receivePacket(packet.getVar());
                 } catch (Exception ignored) {}
                 return true;
             }
+
             return false;
         });
     }

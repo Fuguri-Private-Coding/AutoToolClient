@@ -14,23 +14,21 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketWithTime;
 import fuguriprivatecoding.autotoolrecode.utils.packet.VecWithTime;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
-
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -86,6 +84,7 @@ public class Ping extends Module {
 
     private int delays = 50;
     private long lastResetTime, delayBeforeNextLag;
+
     private final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
     private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
 
@@ -98,8 +97,7 @@ public class Ping extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (mc.thePlayer == null || mc.theWorld == null) return;
-        if (mc.isIntegratedServerRunning()) return;
+        if (mc.thePlayer == null || mc.theWorld == null || mc.isIntegratedServerRunning()) return;
         long currentTime = System.currentTimeMillis();
         switch (event) {
             case ChangeSprintEvent _ when actions.get("ChangeSprint") -> reset(changeSprintTimeCondition.getValue());
@@ -148,11 +146,7 @@ public class Ping extends Module {
                 if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) reset(damageTimeCondition.getValue());
                 if (actions.get("UsingItem") && mc.thePlayer.isUsingItem()) reset(usingItemTimeCondition.getValue());
 
-                if (currentTime - lastResetTime > delayBeforeNextLag &&
-                    delayIncreaseType.getMode().equalsIgnoreCase("Smooth") &&
-                    delays != delay.getMaxValue()) {
-                    updateDelay(addingDelayPerTick.getRandomizedIntValue());
-                }
+                handleSmoothDelay(currentTime);
 
                 if (resetIfDistance.isToggled()) {
                     EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
@@ -167,30 +161,20 @@ public class Ping extends Module {
             }
 
             case Render3DEvent _ when !(mc.gameSettings.thirdPersonView == 0 || currentTime - lastResetTime < delayBeforeNextLag || lastPos == null || currentPos == null || renderModes.getMode().equalsIgnoreCase("OFF")) -> {
-                EntityPlayerSP player = mc.thePlayer;
-
-                double x = lastPos.xCoord + (currentPos.xCoord - lastPos.xCoord) * mc.timer.renderPartialTicks - RenderManager.renderPosX;
-                double y = lastPos.yCoord + (currentPos.yCoord - lastPos.yCoord) * mc.timer.renderPartialTicks - RenderManager.renderPosY;
-                double z = lastPos.zCoord + (currentPos.zCoord - lastPos.zCoord) * mc.timer.renderPartialTicks - RenderManager.renderPosZ;
-
-                Vec3 pos = new Vec3(x, y, z);
+                Vec3 pos = RenderUtils.getAbsoluteSmoothPos(lastPos, currentPos);
                 switch (renderModes.getMode()) {
                     case "HitBox" -> {
                         RenderUtils.start3D();
-                        Vec3 diff = pos.subtract(player.getPositionVector());
-                        AxisAlignedBB bb = player.getEntityBoundingBox().offset(diff);
-                        if (glow.isToggled()) {
-                            BloomUtils.addToDraw(() -> RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue()));
-                        }
+                        Vec3 diff = pos.subtract(mc.thePlayer.getPositionVector());
+                        AxisAlignedBB bb = mc.thePlayer.getEntityBoundingBox().offset(diff);
+                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue()));
                         RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());
                         RenderUtils.stop3D();
                     }
 
                     case "Player" -> {
-                        if (glow.isToggled()) {
-                            BloomUtils.addToDraw(() -> RenderUtils.renderPlayer(player, pos, player.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor()));
-                        }
-                        RenderUtils.renderPlayer(player, pos, player.rotationYawHead, mc.timer.renderPartialTicks);
+                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.renderPlayer(mc.thePlayer, pos, mc.thePlayer.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor()));
+                        RenderUtils.renderPlayer(mc.thePlayer, pos, mc.thePlayer.rotationYawHead, mc.timer.renderPartialTicks);
                     }
                 }
             }
@@ -200,17 +184,27 @@ public class Ping extends Module {
 
     private void handlePackets() {
         buffer.removeIf(packetWithTime -> {
-           if (System.currentTimeMillis() - packetWithTime.time() >= delays) {
-               mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetWithTime.packet());
-               return true;
-           }
-           return false;
+            long packetTime = System.currentTimeMillis() - packetWithTime.time();
+            if (packetTime >= delays) {
+                PacketUtils.sendPacket(packetWithTime.packet());
+                return true;
+            }
+
+            return false;
         });
         posBuffer.removeIf(pos -> System.currentTimeMillis() - pos.time() >= delays);
     }
 
+    private void handleSmoothDelay(long currentTime) {
+        if (currentTime - lastResetTime > delayBeforeNextLag &&
+            delayIncreaseType.is("Smooth") &&
+            delays != delay.getMaxValue()) {
+            updateDelay(addingDelayPerTick.getRandomizedIntValue());
+        }
+    }
+
     private void resetAllPackets() {
-        buffer.forEach(packetWithTime -> mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packetWithTime.packet()));
+        buffer.forEach(packetWithTime -> PacketUtils.sendPacket(packetWithTime.packet()));
         buffer.clear();
         posBuffer.clear();
     }
@@ -219,12 +213,10 @@ public class Ping extends Module {
         resetAllPackets();
         lastResetTime = System.currentTimeMillis();
         delayBeforeNextLag = time;
-        if (delayIncreaseType.is("Smooth")) delays = 0;
-        if (delayIncreaseType.is("Instant")) delays = delay.getRandomizedIntValue();
+        delays = delayIncreaseType.is("Smooth") ? 0 : delay.getRandomizedIntValue();
     }
 
     private void updateDelay(int addDelay) {
-        delays += addDelay;
-        delays = (int) Math.clamp(delays, delay.getMinValue(), delay.getMaxValue());
+        delays = (int) Math.clamp(delays + addDelay, 0, delay.getMaxValue());
     }
 }

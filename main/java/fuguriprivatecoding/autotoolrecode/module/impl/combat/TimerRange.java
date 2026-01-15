@@ -22,7 +22,7 @@ public class TimerRange extends Module {
 
     IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 0, 20, 4);
     IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 4);
-    FloatSetting partialTicks = new FloatSetting("PartialTicks", this, -2.5f, 2.5f, 1, 0.1f);
+    FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0, 2.5f, 1, 0.1f);
     IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
 
     public static boolean teleporting = false, click = false;

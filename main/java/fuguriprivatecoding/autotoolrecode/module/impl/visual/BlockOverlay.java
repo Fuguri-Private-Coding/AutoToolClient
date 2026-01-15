@@ -31,7 +31,6 @@ public class BlockOverlay extends Module {
             RayTrace hit = mc.objectMouseOver;
 
             e.cancel();
-
             if (hit.typeOfHit == RayTrace.RayType.BLOCK) {
                 BlockPos pos = hit.getBlockPos();
 

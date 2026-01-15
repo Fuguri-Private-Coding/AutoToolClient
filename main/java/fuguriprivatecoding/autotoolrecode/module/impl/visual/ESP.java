@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
@@ -35,13 +36,12 @@ public class ESP extends Module {
         if (event instanceof Render3DEvent) {
             if (modes.get("HitBox")) {
                 RenderUtils.start3D();
-                for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
-                    if (mc.getRenderManager() == null || (playerEntity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || playerEntity.isDead)
-                        continue;
+                for (EntityPlayer player : mc.theWorld.playerEntities) {
+                    if (shouldContinueRender(player)) continue;
 
-                    Vec3 pos = playerEntity.getRealPosition();
+                    Vec3 pos = player.getRealPosition();
 
-                    AxisAlignedBB bb = playerEntity.getEntityBoundingBox().offset(pos.xCoord - playerEntity.posX, pos.yCoord - playerEntity.posY, pos.zCoord - playerEntity.posZ);
+                    AxisAlignedBB bb = player.getEntityBoundingBox().offset(pos.xCoord - player.posX, pos.yCoord - player.posY, pos.zCoord - player.posZ);
                     RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());
                 }
                 RenderUtils.stop3D();
@@ -49,13 +49,17 @@ public class ESP extends Module {
 
             if (modes.get("Glow")) {
                 for (final EntityPlayer player : mc.theWorld.playerEntities) {
-                    if (mc.getRenderManager() == null || (player == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || player.isDead)
-                        continue;
+                    if (shouldContinueRender(player)) continue;
+
                     BloomUtils.addToDraw(() -> mc.renderManager.renderEntitySimple(player, mc.timer.renderPartialTicks));
                 }
                 RenderHelper.disableStandardItemLighting();
                 mc.entityRenderer.disableLightmap();
             }
         }
+    }
+
+    private boolean shouldContinueRender(Entity player) {
+        return mc.getRenderManager() == null || (player == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || player.isDead;
     }
 }
