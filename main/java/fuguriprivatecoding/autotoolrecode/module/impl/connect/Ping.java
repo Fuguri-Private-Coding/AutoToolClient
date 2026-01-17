@@ -161,7 +161,7 @@ public class Ping extends Module {
             }
 
             case Render3DEvent _ when !(mc.gameSettings.thirdPersonView == 0 || currentTime - lastResetTime < delayBeforeNextLag || lastPos == null || currentPos == null || renderModes.getMode().equalsIgnoreCase("OFF")) -> {
-                Vec3 pos = RenderUtils.getAbsoluteSmoothPos(lastPos, currentPos);
+                Vec3 pos = RenderUtils.getAbsoluteSmoothPos(lastPos, currentPos).subtract(mc.renderManager.getRenderPosition());
                 switch (renderModes.getMode()) {
                     case "HitBox" -> {
                         RenderUtils.start3D();

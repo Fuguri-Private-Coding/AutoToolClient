@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -43,7 +44,7 @@ public class KillAura extends Module {
         .addModes("Players", "Mobs", "Animals", "Villagers");
 
     private final Mode sortType = new Mode("SortType", this)
-        .addModes("Distance", "FOV", "HurtTime")
+        .addModes("Distance", "FOV", "HurtTime", "Switch")
         .setMode("FOV");
 
     private final Mode hitVec = new Mode("HitVec", this)
@@ -177,57 +178,6 @@ public class KillAura extends Module {
         return needRot;
     }
 
-    private boolean needClicking(EntityLivingBase target) {
-        return mc.currentScreen == null && !mc.thePlayer.isUsingItem() && DistanceUtils.getDistance(target) < clickDistance.getValue() && TimerRange.balance == 0;
-    }
-
-    private EntityLivingBase findNewTarget() {
-        List<EntityLivingBase> entityList = mc.theWorld.loadedEntityList.stream()
-            .filter(this::isValidTarget)
-            .filter(this::isWithinDistance)
-            .filter(EntityLivingBase.class::isInstance)
-            .map(EntityLivingBase.class::cast)
-            .filter(this::matchesTargetType)
-            .collect(Collectors.toList());
-
-        entityList.removeIf(ent -> DistanceUtils.getDistance(ent) > findDistance.getValue());
-
-        entityList.sort(
-            switch (sortType.getMode()) {
-                case "Distance" -> Comparator.comparingDouble(DistanceUtils::getDistance);
-                case "HurtTime" -> Comparator.comparingDouble(ent -> ent.hurtTime);
-                default -> Comparator.comparingDouble(RotUtils::getFovToEntity);
-            }
-        );
-
-        EntityLivingBase newTarget = null;
-
-        if (!entityList.isEmpty()) {
-            newTarget = entityList.getFirst();
-        }
-
-        if (TargetStorage.getTarget() != null && newTarget == null) CameraRot.INST.setWillChange(false);
-
-        return newTarget;
-    }
-
-    private boolean isValidTarget(Entity entity) {
-        return entity != mc.thePlayer && !entity.isDead;
-    }
-
-    private boolean isWithinDistance(Entity entity) {
-        return DistanceUtils.getDistance(entity) < findDistance.getValue();
-    }
-
-    private boolean matchesTargetType(EntityLivingBase entity) {
-        return switch (entity) {
-            case EntityPlayer player -> targets.get("Players") && !player.isFriend() && !player.isTeam();
-            case EntityMob ignore -> targets.get("Mobs");
-            case EntityAnimal ignore -> targets.get("Animals");
-            case EntityVillager ignore -> targets.get("Villagers");
-            default -> false;
-        };
-    }
 
     private void rotate(EntityLivingBase target) {
         Rot lr = mc.thePlayer.getRotation();
@@ -237,9 +187,9 @@ public class KillAura extends Module {
         double offset = target.getCollisionBorderSize();
 
         AxisAlignedBB box = RotUtils.getHitBox(
-            target,
-            teleport ? 100 : hBoxSize.getValue(),
-            teleport ? 100 : vBoxSize.getValue()
+                target,
+                teleport ? 100 : hBoxSize.getValue(),
+                teleport ? 100 : vBoxSize.getValue()
         ).expand(offset, offset, offset);
 
         Rot needRotation = getRotation(target, lr, box);
@@ -256,8 +206,8 @@ public class KillAura extends Module {
         }
 
         Rot speed = new Rot(
-            yawSpeed.getRandomizedIntValue(),
-            pitchSpeed.getRandomizedIntValue()
+                yawSpeed.getRandomizedIntValue(),
+                pitchSpeed.getRandomizedIntValue()
         );
 
         if (!teleport) {
@@ -268,8 +218,8 @@ public class KillAura extends Module {
 
             if (smoothMode.get("Basic")) {
                 Rot rot = new Rot(
-                    RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
-                    RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
+                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
+                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
                 );
 
                 delta.setYaw(MathHelper.wrapDegree(delta.getYaw() - rot.getYaw()));
@@ -328,5 +278,67 @@ public class KillAura extends Module {
 
         CameraRot.INST.setUnlocked(true);
         mc.thePlayer.moveRotation(delta);
+    }
+
+    private boolean needClicking(EntityLivingBase target) {
+        return mc.currentScreen == null && !mc.thePlayer.isUsingItem() && DistanceUtils.getDistance(target) < clickDistance.getValue() && TimerRange.balance == 0;
+    }
+
+    private EntityLivingBase findNewTarget() {
+        List<EntityLivingBase> entityList = mc.theWorld.loadedEntityList.stream()
+            .filter(this::isValidTarget)
+            .filter(this::isWithinDistance)
+            .filter(EntityLivingBase.class::isInstance)
+            .map(EntityLivingBase.class::cast)
+            .filter(this::matchesTargetType)
+            .collect(Collectors.toList());
+
+        entityList.removeIf(ent -> DistanceUtils.getDistance(ent) > findDistance.getValue());
+
+        entityList.sort(
+            switch (sortType.getMode()) {
+                case "Distance" -> Comparator.comparingDouble(DistanceUtils::getDistance);
+                case "HurtTime" -> Comparator.comparingDouble(ent -> ent.hurtTime);
+                case "Switch" -> Comparator.comparingDouble(entity -> {
+                    double hurtTime = entity.hurtTime;
+                    double distance = DistanceUtils.getDistance(entity);
+
+                    if (distance <= 3) {
+                        return hurtTime;
+                    } else {
+                        return distance;
+                    }
+                });
+                default -> Comparator.comparingDouble(RotUtils::getFovToEntity);
+            }
+        );
+
+        EntityLivingBase newTarget = null;
+
+        if (!entityList.isEmpty()) {
+            newTarget = entityList.getFirst();
+        }
+
+        if (TargetStorage.getTarget() != null && newTarget == null) CameraRot.INST.setWillChange(false);
+
+        return newTarget;
+    }
+
+    private boolean isValidTarget(Entity entity) {
+        return entity != mc.thePlayer && !entity.isDead;
+    }
+
+    private boolean isWithinDistance(Entity entity) {
+        return DistanceUtils.getDistance(entity) < findDistance.getValue();
+    }
+
+    private boolean matchesTargetType(EntityLivingBase entity) {
+        return switch (entity) {
+            case EntityPlayer player -> targets.get("Players") && !player.isFriend() && !player.isTeam();
+            case EntityMob ignore -> targets.get("Mobs");
+            case EntityAnimal ignore -> targets.get("Animals");
+            case EntityVillager ignore -> targets.get("Villagers");
+            default -> false;
+        };
     }
 }

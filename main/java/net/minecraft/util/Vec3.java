@@ -69,6 +69,10 @@ public class Vec3
         return this.subtract(vec.xCoord, vec.yCoord, vec.zCoord);
     }
 
+    public Vec3 divine(float value) {
+        return new Vec3(this.xCoord / value, this.yCoord / value, this.zCoord / value);
+    }
+
     public Vec3 subtract(double x, double y, double z)
     {
         return this.addVector(-x, -y, -z);

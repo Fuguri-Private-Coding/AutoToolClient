@@ -94,12 +94,7 @@ public class TimerRange extends Module {
 
     private void updateCashedIncrementPos() {
         if (posRotIncrement > 0) {
-            Vec3 cashingPos = new Vec3(
-                    (targetPos.xCoord - pos.xCoord) / posRotIncrement,
-                    (targetPos.yCoord - pos.yCoord) / posRotIncrement,
-                    (targetPos.zCoord - pos.zCoord) / posRotIncrement
-            );
-            pos = pos.add(cashingPos);
+            pos = pos.add(targetPos.subtract(pos).divine(posRotIncrement));
             posRotIncrement--;
         }
     }

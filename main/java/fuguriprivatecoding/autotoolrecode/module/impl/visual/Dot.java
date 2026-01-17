@@ -15,6 +15,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import net.minecraft.util.RayTrace;
+import net.minecraft.util.Vec3;
 
 @ModuleInfo(name = "Dot", category = Category.VISUAL, description = "Показывает текущие измененные ротации.")
 public class Dot extends Module {
@@ -37,7 +38,9 @@ public class Dot extends Module {
         }
 
         if (event instanceof Render3DEvent && CameraRot.INST.isUnlocked()) {
-            RayTrace mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks),6,6, prevPos.add(pos.subtract(prevPos).multiplier(mc.timer.renderPartialTicks)), mc.timer.renderPartialTicks);
+            Rot smoothPos = prevPos.add(pos.subtract(prevPos));
+
+            RayTrace mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(-1),6,6, smoothPos, -1);
             if (mouse != null) {
                 if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, glowColor.getFadedColor()));
                 RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, color.getFadedColor());
