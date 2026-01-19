@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.player.AttackEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MoveButtonEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.SprintEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
@@ -13,8 +12,6 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
@@ -40,19 +37,16 @@ public class MoreKB extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof AttackEvent e && e.getHittingEntity() != null && e.getHittingEntity() instanceof EntityLivingBase ent) {
-            if (ent.hurtTime == 10 && !notWhile(ent) && delay == 0 && reset == 0) {
+        if (event instanceof TickEvent) {
+            EntityLivingBase ent = TargetStorage.getTargetOrSelectedEntity();
+            if (ent != null && ent.hurtTime == 10 && !notWhile(ent) && delay == 0 && reset == 0) {
                 delay = delayTicks.getRandomizedIntValue();
                 reset = resetTicks.getRandomizedIntValue();
             }
+            if (delay > 0) delay--;
         }
 
-        if (delay > 0) {
-            if (event instanceof TickEvent) delay--;
-            return;
-        }
-
-        if (reset == 0) return;
+        if (reset == 0 || delay > 0) return;
 
         switch (mode.getMode()) {
             case "WTap" -> {
