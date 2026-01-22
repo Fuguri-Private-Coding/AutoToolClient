@@ -13,7 +13,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 public class Regen extends Module {
 
     public final IntegerSetting health = new IntegerSetting("Health", this, 0, 20, 20);
-    public final IntegerSetting hunger = new IntegerSetting("MinHunger", this, 0, 10, 20);
+    public final IntegerSetting hunger = new IntegerSetting("MinHunger", this, 0, 10, 10);
     public final IntegerSetting packets = new IntegerSetting("Packets", this, 0, 200, 200);
     public final CheckBox groundCheck = new CheckBox("GroundCheck", this, false);
 

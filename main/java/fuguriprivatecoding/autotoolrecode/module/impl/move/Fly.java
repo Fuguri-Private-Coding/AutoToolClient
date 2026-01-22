@@ -79,7 +79,7 @@ public class Fly extends Module {
                 if (event instanceof PacketEvent e && !e.isCanceled() && Utils.isWorldLoaded()) {
                     Packet packet = e.getPacket();
 
-                    if (packet instanceof C00PacketKeepAlive || packet instanceof C0FPacketConfirmTransaction) {
+                    if (packet instanceof C0FPacketConfirmTransaction) {
                         packets.add(packet);
                         e.cancel();
                     }

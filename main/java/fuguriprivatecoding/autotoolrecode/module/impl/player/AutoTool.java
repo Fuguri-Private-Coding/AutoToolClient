@@ -18,7 +18,7 @@ public class AutoTool extends Module {
     DoubleSlider switchDelayTick = new DoubleSlider("SwitchDelayTick", this, 0,20,0,1);
     DoubleSlider backSwitchDelayTick = new DoubleSlider("BackSwitchDelayTick", this, 0,20,0,1);
 
-    boolean flag;
+    boolean flag, switched;
 
     StopWatch switchTimer = new StopWatch();
     StopWatch backSwitchTimer = new StopWatch();
@@ -31,29 +31,38 @@ public class AutoTool extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (mc.objectMouseOver == null)
-            return;
-
-        final RayTrace mouse = mc.objectMouseOver;
-
         if (event instanceof LegitClickTimingEvent) {
-            if (mouse.typeOfHit != RayTrace.RayType.BLOCK || mouse.getBlockPos() == null || !mc.gameSettings.keyBindAttack.isKeyDown()) {
-                if (flag && backSwitchTimer.reachedMS(backSwitchDelayTick.getRandomizedIntValue() * 50L)) {
-                    flag = false;
-                    switchBack();
-                    backSwitchTimer.reset();
+            flag = shouldSwitch(mc.objectMouseOver);
+
+            long switchDelay = switchDelayTick.getRandomizedIntValue() * 50L;
+
+            if (switchTimer.reachedMS(switchDelay)) {
+                if (flag && !switched) {
+                    switched = true;
+                    switchTool();
                 }
-                return;
             }
 
-            if (switchTimer.reachedMS(switchDelayTick.getRandomizedIntValue() * 50L)) {
-                flag = true;
-                backSwitchTimer.reset();
-                final BlockPos block = mouse.getBlockPos();
-                mc.thePlayer.inventory.currentItem = getBestSlot(mc.theWorld.getBlockState(block).getBlock());
+            if (switched) {
+                long backSwitchDelay = backSwitchDelayTick.getRandomizedIntValue() * 50L;
+
+                if (!flag) {
+                    if (backSwitchTimer.reachedMS(backSwitchDelay)) switchBack();
+                } else {
+                    backSwitchTimer.reset();
+                    switchTool();
+                }
+            }
+
+            if (!flag) {
                 switchTimer.reset();
             }
+
         }
+    }
+
+    boolean shouldSwitch(RayTrace mouse) {
+        return mouse.typeOfHit == RayTrace.RayType.BLOCK && mouse.getBlockPos() != null && mc.gameSettings.keyBindAttack.isKeyDown();
     }
 
     int getBestSlot(Block block) {
@@ -80,7 +89,13 @@ public class AutoTool extends Module {
         return bestSlot;
     }
 
+    void switchTool() {
+        final BlockPos block = mc.objectMouseOver.getBlockPos();
+        mc.thePlayer.inventory.currentItem = getBestSlot(mc.theWorld.getBlockState(block).getBlock());
+    }
+
     void switchBack() {
         mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+        switched = false;
     }
 }

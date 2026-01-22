@@ -18,6 +18,7 @@ public class LongJump extends Module {
 
     Mode jumpMode = new Mode("JumpMode", this)
         .addModes("Matrix")
+        .setMode("Matrix")
         ;
 
     public final FloatSetting speed = new FloatSetting("Speed", this, () -> jumpMode.is("Matrix"), 0, 10, 5, 1f);

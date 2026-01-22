@@ -19,7 +19,7 @@ public class AutoWater extends Module {
         if (event instanceof TickEvent) {
             RayTrace rayCast = mc.objectMouseOver;
             if (rayCast.typeOfHit != RayTrace.RayType.BLOCK
-                || mc.theWorld.getBlockState(rayCast.getBlockPos()).getBlock().getMaterial() == Material.water
+                || mc.theWorld.getBlockState(rayCast.getBlockPos().add(0, -1,0)).getBlock().getMaterial() == Material.water
                 || mc.thePlayer.isInWater()) return;
 
             if (mc.thePlayer.fallDistance > fallDistance.getValue()) {

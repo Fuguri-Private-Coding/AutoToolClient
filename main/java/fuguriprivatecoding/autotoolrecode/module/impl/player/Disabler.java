@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketWithTime;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.network.Packet;
@@ -35,9 +36,7 @@ public class Disabler extends Module {
     @Override
     public void onDisable() {
         if (disableMode.is("MatrixBalance")) {
-            for (PacketWithTime packet : packets) {
-                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet.packet());
-            }
+            packets.forEach(packet -> PacketUtils.sendPacket(packet.packet()));
             packets.clear();
         }
     }
@@ -78,6 +77,7 @@ public class Disabler extends Module {
                         e.cancel();
                         packets.add(new PacketWithTime(packet, System.currentTimeMillis()));
                     }
+
                     if (packet instanceof C03PacketPlayer && !packets.isEmpty()) {
                         if (mc.thePlayer.getBps(true) == 0D) {
                             e.cancel();

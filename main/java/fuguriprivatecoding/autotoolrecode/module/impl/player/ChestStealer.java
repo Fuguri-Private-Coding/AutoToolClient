@@ -7,12 +7,16 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.inventory.InventoryUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import org.lwjgl.util.vector.Vector2f;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "ChestStealer", category = Category.PLAYER, description = "Автоматически берет вещи из сундука.")
 public class ChestStealer extends Module {
@@ -44,17 +48,26 @@ public class ChestStealer extends Module {
                 if (!startDelayStopWatch.reachedMS(startDelay.getRandomizedIntValue() * 50L)) return;
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
-                int availableSlot = getClosestSlotIndex(container, lastPos);
 
-                if (delayStopWatch.reachedMS(delay.getRandomizedIntValue() * 50L) && availableSlot != -1) {
-                    guiChest.activeSlot = mc.thePlayer.openContainer.getSlot(availableSlot);
+                List<Integer> slotList = new CopyOnWriteArrayList<>();
 
-                    mc.playerController.windowClick(container.windowId, availableSlot, 0, 1, mc.thePlayer);
-                    delayStopWatch.reset();
+                for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
+                    int slot = getClosestSlotIndex(container, lastPos, slotList);
+                    if (slot != -1) slotList.add(slot);
+                }
+
+                for (Integer i : slotList) {
+                    if (delayStopWatch.reachedMS(delay.getRandomizedIntValue() * 50L) && !slotList.isEmpty()) {
+                        guiChest.activeSlot = mc.thePlayer.openContainer.getSlot(i);
+
+                        mc.playerController.windowClick(container.windowId, i, 0, 1, mc.thePlayer);
+                        delayStopWatch.reset();
+                        slotList.remove(i);
+                    }
                 }
 
                 if (autoClose.isToggled()) {
-                    if (availableSlot == -1) {
+                    if (slotList.isEmpty()) {
                         if (closeDelayStopWatch.reachedMS(closeDelay.getRandomizedIntValue() * 50L)) {
                             mc.thePlayer.closeScreen();
                         }
@@ -68,14 +81,14 @@ public class ChestStealer extends Module {
         }
     }
 
-    int getClosestSlotIndex(ContainerChest container, Vector2f lastPos) {
+    int getClosestSlotIndex(ContainerChest container, Vector2f lastPos, List<Integer> list) {
         float minDistanceSq = Float.MAX_VALUE;
         int closestSlotIndex = -1;
 
         for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
             final Slot slot = container.getSlot(i);
             if (InventoryUtils.isValid(container.getLowerChestInventory().getStackInSlot(i))) {
-                if (slot.getHasStack()) {
+                if (slot.getHasStack() && !list.contains(i)) {
                     float slotCenterX = slot.xDisplayPosition + 8;
                     float slotCenterY = slot.yDisplayPosition + 8;
 
