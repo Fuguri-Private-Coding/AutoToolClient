@@ -78,7 +78,11 @@ public class BackTrack extends Module {
             if ((packet instanceof S06PacketUpdateHealth
                     || packet instanceof S02PacketChat
                     || packet instanceof S19PacketEntityStatus
-                    || packet instanceof S29PacketSoundEffect)
+                    || packet instanceof S29PacketSoundEffect
+//                    || packet instanceof S19PacketEntityHeadLook
+//                    || packet instanceof S14PacketEntity.S16PacketEntityLook
+//                    || packet instanceof S14PacketEntity.S17PacketEntityLookMove
+                        )
                     && realTimeDamage.isToggled()) return;
 
             if (packet instanceof S13PacketDestroyEntities s13) {

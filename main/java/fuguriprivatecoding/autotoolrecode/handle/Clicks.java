@@ -1,20 +1,28 @@
 package fuguriprivatecoding.autotoolrecode.handle;
 
+import de.florianmichael.viamcp.fixes.AttackOrder;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.ClickSettings;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import lombok.Getter;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.RayTrace;
+import net.minecraft.util.Vec3;
 
 public class Clicks implements Imports, EventListener {
 
@@ -46,7 +54,7 @@ public class Clicks implements Imports, EventListener {
             }
 
             for (int i = 0; i < iters; i++) {
-                mc.clickMouse();
+                click(target);
             }
         }
     }
@@ -80,5 +88,27 @@ public class Clicks implements Imports, EventListener {
                 clicks++;
             }
         }
+    }
+
+    public static void click(EntityLivingBase target) {
+        if (clickSettings.ignoreWalls.isToggled()) {
+            RayTrace hit = RayCastUtils.rayCast(mc.thePlayer.getRotation(), 8, 0);
+            RayTrace hits = RayCastUtils.rayCast(3, 0, mc.thePlayer.getRotation());
+
+            if (shouldWallAttack(target, hit, hits)) {
+                AttackOrder.sendFixedAttack(mc.thePlayer, target);
+                return;
+            }
+
+            mc.clickMouse();
+        } else {
+            mc.clickMouse();
+        }
+    }
+
+    public static boolean shouldWallAttack(EntityLivingBase target, RayTrace hit, RayTrace hits) {
+        double distance = DistanceUtils.getDistance(RotUtils.getVectorForRotation(mc.thePlayer.getRotation()));
+
+        return distance <= 3 && hit.typeOfHit == RayTrace.RayType.BLOCK && hits != null && hits.entityHit instanceof EntityLivingBase;
     }
 }

@@ -148,7 +148,6 @@ public class RayCastUtils implements Imports {
         return rayCast(mc.thePlayer.getPositionEyes(1f), entityRange, blockRange, rotation);
     }
 
-
     public static RayTrace rayCast(final Rot rotation, final double range) {
         return rayCast(new Vector2f(rotation.getYaw(), rotation.getPitch()), range, 0);
     }
@@ -159,6 +158,159 @@ public class RayCastUtils implements Imports {
 
     public static RayTrace rayCast(final Vector2f rotation, final double range, final float expand) {
         return rayCast(rotation, range, expand, mc.thePlayer);
+    }
+
+    public static Entity rayCastEntityThroughWalls(final double range, final Rot rotation, final IEntityFilter entityFilter) {
+        final Entity renderViewEntity = mc.getRenderViewEntity();
+
+        if (renderViewEntity == null || mc.theWorld == null) {
+            return null;
+        }
+
+        final Vec3 eyePosition = renderViewEntity.getPositionEyes(1F);
+
+        final float yaw = rotation.getYaw();
+        final float pitch = rotation.getPitch();
+
+        final float yawCos = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
+        final float yawSin = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
+        final float pitchCos = -MathHelper.cos(-pitch * 0.017453292F);
+        final float pitchSin = MathHelper.sin(-pitch * 0.017453292F);
+
+        final Vec3 lookVector = new Vec3(
+            yawSin * pitchCos,
+            pitchSin,
+            yawCos * pitchCos
+        );
+
+        final AxisAlignedBB searchBox = renderViewEntity.getEntityBoundingBox()
+            .addCoord(lookVector.xCoord * range, lookVector.yCoord * range, lookVector.zCoord * range)
+            .expand(range, range, range)
+            .expand(5.0D, 5.0D, 5.0D);
+
+        final List<Entity> allEntities = mc.theWorld.getEntitiesInAABBexcluding(
+            renderViewEntity,
+            searchBox,
+            Predicates.and(EntitySelectors.NOT_SPECTATING, Entity::canBeCollidedWith)
+        );
+
+        Entity targetEntity = null;
+        double closestDistance = Double.MAX_VALUE;
+
+        final double rayYawRad = Math.toRadians(yaw);
+        final double rayPitchRad = Math.toRadians(pitch);
+
+        final double rayDirX = Math.sin(rayYawRad) * Math.cos(rayPitchRad);
+        final double rayDirY = -Math.sin(rayPitchRad);
+        final double rayDirZ = Math.cos(rayYawRad) * Math.cos(rayPitchRad);
+
+        for (final Entity entity : allEntities) {
+            if (entityFilter != null && !entityFilter.canRayCast(entity)) {
+                continue;
+            }
+
+            final AxisAlignedBB entityBB = entity.getEntityBoundingBox();
+            final double centerX = (entityBB.minX + entityBB.maxX) / 2.0;
+            final double centerY = (entityBB.minY + entityBB.maxY) / 2.0;
+            final double centerZ = (entityBB.minZ + entityBB.maxZ) / 2.0;
+
+            final double toEntityX = centerX - eyePosition.xCoord;
+            final double toEntityY = centerY - eyePosition.yCoord;
+            final double toEntityZ = centerZ - eyePosition.zCoord;
+
+            final double distance = Math.sqrt(
+                toEntityX * toEntityX +
+                    toEntityY * toEntityY +
+                    toEntityZ * toEntityZ
+            );
+
+            final double normX = toEntityX / distance;
+            final double normY = toEntityY / distance;
+            final double normZ = toEntityZ / distance;
+
+            final double dotProduct =
+                rayDirX * normX +
+                    rayDirY * normY +
+                    rayDirZ * normZ;
+
+            final double angle = Math.acos(Math.max(-1, Math.min(1, dotProduct)));
+
+            final double maxAngle = Math.toRadians(5.0);
+
+            if (angle <= maxAngle && distance <= range) {
+                final double score = distance * (1.0 + angle * 10.0);
+
+                if (score < closestDistance) {
+                    closestDistance = score;
+                    targetEntity = entity;
+                }
+            }
+        }
+
+        return targetEntity;
+    }
+
+    public static Entity rayCastEntityThroughWalls(final double range, final Rot rotation) {
+        final Entity renderViewEntity = mc.getRenderViewEntity();
+
+        if (renderViewEntity == null || mc.theWorld == null) {
+            return null;
+        }
+
+        final Vec3 eyePosition = renderViewEntity.getPositionEyes(1F);
+        final float yaw = rotation.getYaw();
+        final float pitch = rotation.getPitch();
+
+        final List<Entity> entities = mc.theWorld.getEntitiesInAABBexcluding(
+            renderViewEntity,
+            renderViewEntity.getEntityBoundingBox().expand(range, range, range),
+            EntitySelectors.NOT_SPECTATING
+        );
+
+        Entity bestTarget = null;
+        double bestScore = Double.MAX_VALUE;
+
+        final double yawRad = Math.toRadians(yaw);
+        final double pitchRad = Math.toRadians(pitch);
+        final Vec3 lookDir = new Vec3(
+            Math.sin(yawRad) * Math.cos(pitchRad),
+            -Math.sin(pitchRad),
+            Math.cos(yawRad) * Math.cos(pitchRad)
+        );
+
+        for (final Entity entity : entities) {
+            final Vec3 toEntity = new Vec3(
+                entity.posX - eyePosition.xCoord,
+                (entity.posY + entity.getEyeHeight()) - eyePosition.yCoord,
+                entity.posZ - eyePosition.zCoord
+            );
+
+            final double distance = toEntity.lengthVector();
+
+            if (distance > range) {
+                continue;
+            }
+
+            final Vec3 toEntityNorm = toEntity.normalize();
+
+            final double cosAngle =
+                lookDir.xCoord * toEntityNorm.xCoord +
+                    lookDir.yCoord * toEntityNorm.yCoord +
+                    lookDir.zCoord * toEntityNorm.zCoord;
+
+            final double angle = Math.acos(Math.max(-1, Math.min(1, cosAngle)));
+
+            if (angle <= Math.toRadians(10.0)) {
+                final double score = distance * (1.0 + angle * 5.0);
+
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestTarget = entity;
+                }
+            }
+        }
+
+        return bestTarget;
     }
 
     public static RayTrace rayCast(final Vector2f rotation, final double range, final float expand, Entity entity) {

@@ -18,4 +18,6 @@ public class ClickSettings extends Module {
     public CheckBox forceClickReduce = new CheckBox("ForceClickReduce", this);
     public IntegerSetting minDiffToForce = new IntegerSetting("MinDiffToForce", this, forceClickReduce::isToggled, 0, 180, 45);
 
+    public CheckBox ignoreWalls = new CheckBox("IgnoreWalls", this, false);
+
 }

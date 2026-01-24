@@ -76,7 +76,7 @@ public class Fly extends Module {
                     e.setBoundingBox(abb);
                 }
 
-                if (event instanceof PacketEvent e && !e.isCanceled() && Utils.isWorldLoaded()) {
+                if (event instanceof PacketEvent e && Utils.isWorldLoaded()) {
                     Packet packet = e.getPacket();
 
                     if (packet instanceof C0FPacketConfirmTransaction) {
