@@ -3,6 +3,8 @@ package fuguriprivatecoding.autotoolrecode.utils.packet;
 import lombok.experimental.UtilityClass;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.INetHandlerPlayClient;
+import net.minecraft.network.play.INetHandlerPlayServer;
 
 @UtilityClass
 public class PacketUtils implements Imports {
@@ -14,7 +16,6 @@ public class PacketUtils implements Imports {
     public void sendPacket(Packet packet) {
         mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet);
     }
-
 
     /**
      * отправлает {@code packet} без вызова {@code PacketEvent}

@@ -58,6 +58,7 @@ public class BloomUtils implements Imports {
         program.uniform("brightness", shadows.brightness.getValue());
         program.uniform("texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
         program.uniform("direction", shadows.offset1.getValue(), 0);
+        program.uniform("time", System.currentTimeMillis());
 
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_SRC_ALPHA);

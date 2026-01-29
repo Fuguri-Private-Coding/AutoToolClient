@@ -15,7 +15,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import net.minecraft.util.RayTrace;
-import net.minecraft.util.Vec3;
 
 @ModuleInfo(name = "Dot", category = Category.VISUAL, description = "Показывает текущие измененные ротации.")
 public class Dot extends Module {

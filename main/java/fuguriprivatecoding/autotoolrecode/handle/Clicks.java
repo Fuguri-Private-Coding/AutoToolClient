@@ -14,15 +14,11 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.ClickSettings;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import lombok.Getter;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.RayTrace;
-import net.minecraft.util.Vec3;
 
 public class Clicks implements Imports, EventListener {
 
@@ -93,7 +89,7 @@ public class Clicks implements Imports, EventListener {
     public static void click(EntityLivingBase target) {
         if (clickSettings.ignoreWalls.isToggled()) {
             RayTrace hit = RayCastUtils.rayCast(mc.thePlayer.getRotation(), 8, 0);
-            RayTrace hits = RayCastUtils.rayCast(3, 0, mc.thePlayer.getRotation());
+            RayTrace hits = RayCastUtils.rayCast(DistanceUtils.getDistance(target) + 0.2f, 0, mc.thePlayer.getRotation());
 
             if (shouldWallAttack(target, hit, hits)) {
                 AttackOrder.sendFixedAttack(mc.thePlayer, target);
@@ -107,8 +103,8 @@ public class Clicks implements Imports, EventListener {
     }
 
     public static boolean shouldWallAttack(EntityLivingBase target, RayTrace hit, RayTrace hits) {
-        double distance = DistanceUtils.getDistance(RotUtils.getVectorForRotation(mc.thePlayer.getRotation()));
+        double distance = DistanceUtils.getDistance(target);
 
-        return distance <= 3 && hit.typeOfHit == RayTrace.RayType.BLOCK && hits != null && hits.entityHit instanceof EntityLivingBase;
+        return distance <= 3 && hit.typeOfHit == RayTrace.RayType.BLOCK && hits != null && hits.typeOfHit == RayTrace.RayType.ENTITY;
     }
 }

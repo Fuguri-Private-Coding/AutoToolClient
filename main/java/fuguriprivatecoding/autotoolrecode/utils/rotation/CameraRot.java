@@ -7,6 +7,8 @@ public class CameraRot extends Rot {
 
     public static final CameraRot INST = new CameraRot();
 
+    @Getter Rot prevRot = new Rot();
+
     private CameraRot() {
 
     }

@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,7 +29,7 @@ public class MidClick extends Module {
             if (Mouse.isButtonDown(2)) {
                 if (!down) {
                     down = true;
-                    Entity entity = RayCastUtils.raycastEntity(range.getValue(), mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, entity1 -> entity1 instanceof EntityPlayer);
+                    Entity entity = RayCastUtils.raycastEntity(range.getValue(), CameraRot.INST.getYaw(), CameraRot.INST.getPitch(), entity1 -> entity1 instanceof EntityPlayer);
                     if (entity instanceof EntityPlayer entity2) {
                         Friends.onClick(entity2.getName());
                     }

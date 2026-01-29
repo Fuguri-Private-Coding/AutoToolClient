@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode;
 
+import fuguriprivatecoding.autotoolrecode.alts.AltScreen;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
@@ -21,7 +22,7 @@ import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.config.Configs;
 import fuguriprivatecoding.autotoolrecode.bind.KeyBinds;
 import fuguriprivatecoding.autotoolrecode.module.Module;
-import fuguriprivatecoding.autotoolrecode.alt.Accounts;
+import fuguriprivatecoding.autotoolrecode.alts.Accounts;
 
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
 import fuguriprivatecoding.autotoolrecode.utils.client.sound.*;
@@ -126,7 +127,7 @@ public enum Client implements Imports, EventListener {
 
 	public void onClose() {
 		Configs.saveConfig(Configs.getDefaultConfig());
-        Accounts.save();
+//        Accounts.save();
 		KeyBinds.saveBinds();
         ClientIRC.disconnectClientServer();
 	}

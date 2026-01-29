@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.gui.main;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
+import fuguriprivatecoding.autotoolrecode.alts.AltScreen;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.ImgButton;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;

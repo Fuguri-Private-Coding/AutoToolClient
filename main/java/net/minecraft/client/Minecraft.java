@@ -39,8 +39,10 @@ import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.MBlurEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.utils.file.WindowIconHelper;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.MotionBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
@@ -862,6 +864,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.mcProfiler.endSection();
         }
 
+        new MBlurEvent().call();
+
         this.mcProfiler.endSection();
 
         if (this.gameSettings.showDebugInfo && this.gameSettings.showDebugProfilerChart && !this.gameSettings.hideGUI) {
@@ -922,7 +926,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         }
 
         this.mcProfiler.endSection();
-
         DeltaTracker.update();
     }
 
@@ -1220,7 +1223,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
                             if (this.playerController.onPlayerRightClick(this.thePlayer, this.theWorld, itemstack, blockpos, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec)) {
                                 flag = false;
-                                if (swing) this.thePlayer.swingItem();
+                                if (swing) {
+                                    this.thePlayer.swingItem();
+                                }
                             }
 
                             if (itemstack == null) {
@@ -1229,7 +1234,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
                             if (itemstack.stackSize == 0) {
                                 this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-                            } else if (itemstack.stackSize != i || this.playerController.isInCreativeMode()) {
+                            } else if (swing && (itemstack.stackSize != i || this.playerController.isInCreativeMode())) {
                                 this.entityRenderer.itemRenderer.resetEquippedProgress();
                             }
                         }

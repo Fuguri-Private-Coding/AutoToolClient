@@ -31,6 +31,8 @@ public class BackTrack extends Module {
     final BooleanSupplier constantRandomSupplier = () -> delay.minValue != delay.maxValue;
     final CheckBox constantRandomize = new CheckBox("ConstantDelayRandomize", this, constantRandomSupplier, true);
 
+    final FloatSetting threshold = new FloatSetting("Threshold", this, 0, 1, 0, 0.01f);
+
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenBackTracks", this, 0, 20, 0) ;
 
     final DoubleSlider distance = new DoubleSlider("Distance", this, 0,12,12,0.1f);
@@ -73,16 +75,12 @@ public class BackTrack extends Module {
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();
 
-            if (target == null || e.isCanceled() || e.getDirection() != PacketDirection.INCOMING) return;
+            if (target == null || e.isCanceled() || e.getDirection() == PacketDirection.OUTGOING) return;
 
             if ((packet instanceof S06PacketUpdateHealth
                     || packet instanceof S02PacketChat
                     || packet instanceof S19PacketEntityStatus
-                    || packet instanceof S29PacketSoundEffect
-//                    || packet instanceof S19PacketEntityHeadLook
-//                    || packet instanceof S14PacketEntity.S16PacketEntityLook
-//                    || packet instanceof S14PacketEntity.S17PacketEntityLookMove
-                        )
+                    || packet instanceof S29PacketSoundEffect)
                     && realTimeDamage.isToggled()) return;
 
             if (packet instanceof S13PacketDestroyEntities s13) {
@@ -100,8 +98,11 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof TickEvent) {
-            if (delayBetweenBackTracks > 0 && !working) delayBetweenBackTracks--;
-            if (constantRandomize.isToggled() && constantRandomSupplier.getAsBoolean()) delays = delay.getRandomizedIntValue();
+            if (working) {
+                if (constantRandomize.isToggled() && constantRandomSupplier.getAsBoolean()) delays = delay.getRandomizedIntValue();
+            } else {
+                if (delayBetweenBackTracks > 0) delayBetweenBackTracks--;
+            }
         }
 
         if (event instanceof Render3DEvent) {
@@ -129,9 +130,7 @@ public class BackTrack extends Module {
                 double distanceToReal = DistanceUtils.getDistance(realBox);
                 double distanceToFake = DistanceUtils.getDistance(target);
 
-                double threshold = 0;
-
-                boolean improve = distanceToFake + threshold >= distanceToReal;
+                boolean improve = distanceToFake + threshold.getValue() >= distanceToReal;
                 boolean distance = distanceToReal > this.distance.getMaxValue() || distanceToFake > 3 || distanceToReal < this.distance.getMinValue();
 
                 boolean need = onlyWhenNeed.isToggled() && target.hurtTime > maxHurtTimeWhenWorking.getValue();

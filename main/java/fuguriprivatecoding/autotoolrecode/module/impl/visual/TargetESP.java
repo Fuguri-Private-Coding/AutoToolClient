@@ -1,16 +1,25 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.MathHelper;
+import org.lwjgl.opengl.GL11;
+
 import java.awt.*;
 
 import static java.lang.Math.*;
@@ -20,13 +29,13 @@ import static org.lwjgl.opengl.GL11.*;
 public class TargetESP extends Module {
 
     final Mode mode = new Mode("Mode", this)
-            .addModes("Sigma")
-            .setMode("Sigma");
+        .addModes("Sigma")
+        .setMode("Sigma");
 
-    final FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f) {};
+    final FloatSetting speed = new FloatSetting("Speed", this, 1f, 10f, 3f, 0.1f);
     final IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
-    final FloatSetting length = new FloatSetting("Length", this, 0.2f, 2.5f, 0.6f, 0.1f) {};
-    final FloatSetting radius = new FloatSetting("Radius", this, 0.1f, 2f, 0.7f, 0.1f) {};
+    final FloatSetting length = new FloatSetting("Length", this, 0.2f, 2.5f, 0.6f, 0.1f);
+    final FloatSetting radius = new FloatSetting("Radius", this, 0.1f, 2f, 0.7f, 0.1f);
 
     public final ColorSetting color = new ColorSetting("Color", this);
 
@@ -35,6 +44,8 @@ public class TargetESP extends Module {
     final ColorSetting hitColor = new ColorSetting("HurtColor", this, changeHitColor::isToggled);
 
     CheckBox glow = new CheckBox("Glow", this);
+
+    public static long startTime = System.currentTimeMillis();
 
     @Override
     public void onEvent(Event event) {
@@ -45,7 +56,8 @@ public class TargetESP extends Module {
                 float hurt = changeHitColor.isToggled() ? target.hurtTime / 10f : 0;
 
                 if (mode.getMode().equals("Sigma")) {
-                    if (glow.isToggled()) BloomUtils.addToDraw(() -> renderSigma(target, hurt, instantChangeColor.isToggled()));
+                    if (glow.isToggled())
+                        BloomUtils.addToDraw(() -> renderSigma(target, hurt, instantChangeColor.isToggled()));
                     renderSigma(target, hurt, instantChangeColor.isToggled());
                 }
             }

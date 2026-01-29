@@ -262,6 +262,6 @@ public class ClickGuiScreenNew extends GuiScreen {
     private void updateGuiAnimations() {
         moduleScroll.getScrollAnim().update(3f, Easing.OUT_CUBIC);
         openSettingsAnim.update(2, Easing.OUT_BACK);
-        openAnim.update(2f, Easing.OUT_BACK);
+        openAnim.update(3f, Easing.OUT_CUBIC);
     }
 }

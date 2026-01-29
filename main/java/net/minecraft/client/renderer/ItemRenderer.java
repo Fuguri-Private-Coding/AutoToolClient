@@ -3,6 +3,7 @@ package net.minecraft.client.renderer;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomItemPos;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.event.events.render.RenderItemEvent;

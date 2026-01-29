@@ -68,7 +68,8 @@ public class Session
     public static enum Type
     {
         LEGACY("legacy"),
-        MOJANG("mojang");
+        MOJANG("mojang"),
+        MCTOKEN("mcToken");
 
         private static final Map<String, Session.Type> SESSION_TYPES = Maps.<String, Session.Type>newHashMap();
         private final String sessionType;

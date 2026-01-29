@@ -7,7 +7,7 @@ import net.minecraft.util.ResourceLocation;
 @UtilityClass
 public class Shaders {
 
-	public Shader rounded, background, gaussianBlur, bloom, alpha, roundedgrad;
+	public Shader rounded, background, gaussianBlur, bloom, alpha, roundedgrad, mb;
 
 	public void init() {
 		rounded = new Shader(getShaderSource("rounded.glsl"), getShaderSource("vertex.txt"));
@@ -16,6 +16,7 @@ public class Shaders {
         bloom = new Shader(getShaderSource("bloom.frag"), getShaderSource("vertex.txt"));
 
 		alpha = new Shader(getShaderSource("alpha.glsl"), getShaderSource("vertex.txt"));
+		mb = new Shader(getShaderSource("mb.glsl"), getShaderSource("vertex.txt"));
 
 		gaussianBlur = new Shader(getShaderSource("blur.glsl"), getShaderSource("vertex.txt"));
 

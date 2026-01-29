@@ -4,10 +4,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
@@ -447,6 +444,23 @@ public class RenderUtils implements Imports {
         GlStateManager.disableBlend();
         GlStateManager.enableDepth();
         if (resetColor) ColorUtils.resetColor();
+    }
+
+    public static void drawImage(ResourceLocation image, float x, float y, float width, float height) {
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glDepthMask(false);
+        OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        mc.getTextureManager().bindTexture(image);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, width, height, width, height, width, height);
+        GlStateManager.disableBlend();
+        glDepthMask(true);
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
     }
 
     public static void start2D() {
