@@ -141,8 +141,10 @@ public class ChestStealer extends Module {
             final Slot slot = container.getSlot(i);
             if (InventoryUtils.isValid(container.getLowerChestInventory().getStackInSlot(i))) {
                 if (slot.getHasStack()) {
-                    int slotCenterX = 170 + slot.xDisplayPosition + 8;
-                    int slotCenterY = 110 + slot.yDisplayPosition + 8;
+                    GuiContainer cont = (GuiContainer) mc.currentScreen;
+
+                    int slotCenterX = cont.getGuiLeft() + slot.xDisplayPosition + 8;
+                    int slotCenterY = cont.getGuiTop() + slot.yDisplayPosition + 8;
 
                     slots.add(new Vector2i(slotCenterX, slotCenterY));
                 }

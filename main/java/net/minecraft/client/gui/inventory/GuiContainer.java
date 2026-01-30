@@ -3,6 +3,8 @@ package net.minecraft.client.gui.inventory;
 import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.Set;
+
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -27,8 +29,9 @@ public abstract class GuiContainer extends GuiScreen
     public Container inventorySlots;
 
     public Slot activeSlot;
+    @Getter
     protected int guiLeft;
-    protected int guiTop;
+    @Getter protected int guiTop;
     public Slot theSlot;
     private Slot clickedSlot;
     private boolean isRightMouseClick;

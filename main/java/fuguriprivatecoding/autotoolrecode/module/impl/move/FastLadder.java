@@ -14,7 +14,7 @@ public class FastLadder extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE) {
+        if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE && mc.thePlayer.isOnLadder() && mc.gameSettings.keyBindJump.isKeyDown()) {
             e.setOnGround(true);
             mc.thePlayer.motionY = motion.getValue();
         }
