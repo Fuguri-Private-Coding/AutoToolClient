@@ -38,14 +38,15 @@ public class TargetESP extends Module {
     final FloatSetting radius = new FloatSetting("Radius", this, 0.1f, 2f, 0.7f, 0.1f);
 
     public final ColorSetting color = new ColorSetting("Color", this);
+    public final CheckBox verticalOffset = new CheckBox("VerticalOffset", this, false);
+    public final ColorSetting verticalColor = new ColorSetting("VerticalColor", this, verticalOffset::isToggled);
 
     final CheckBox changeHitColor = new CheckBox("ChangeHurtColor", this);
     final CheckBox instantChangeColor = new CheckBox("InstantHurtColor", this, changeHitColor::isToggled, false);
     final ColorSetting hitColor = new ColorSetting("HurtColor", this, changeHitColor::isToggled);
+    final ColorSetting verticalHitColor = new ColorSetting("VerticalHitColor", this, () -> changeHitColor.isToggled() && verticalOffset.isToggled());
 
     CheckBox glow = new CheckBox("Glow", this);
-
-    public static long startTime = System.currentTimeMillis();
 
     @Override
     public void onEvent(Event event) {
@@ -65,7 +66,7 @@ public class TargetESP extends Module {
     }
 
     private void renderSigma(EntityLivingBase target, float hurt, boolean instant) {
-        double animation = sin(System.currentTimeMillis() / 1000.0 * speed.getValue());
+        double animation = cos(System.currentTimeMillis() / 1000.0 * speed.getValue());
 
         double x = target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - RenderManager.renderPosX;
         double y = target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - RenderManager.renderPosY + 0.2;
@@ -82,15 +83,16 @@ public class TargetESP extends Module {
         glShadeModel(7425);
         glBegin(GL_QUAD_STRIP);
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
-            double x1 = x + sin(i * Math.PI / 180) * radius.getValue();
-            double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
+            double x1 = x + cos(i * Math.PI / 180) * radius.getValue();
+            double z1 = z + sin(i * Math.PI / 180) * radius.getValue();
             double y1 = y + (animation + 1) / 2 * target.height;
 
-            Color fadeColor = ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt);
+            Color horizontalColor = ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt);
+            Color verticalColor = verticalOffset.isToggled() ? ColorUtils.interpolateColor(this.verticalColor.getMixedColor(i), this.verticalHitColor.getMixedColor(i), hurt) : horizontalColor;
 
-            ColorUtils.glColor(fadeColor);
+            ColorUtils.glColor(horizontalColor);
             glVertex3d(x1, y1, z1);
-            ColorUtils.glColor(fadeColor, 0f);
+            ColorUtils.glColor(verticalColor, 0);
             glVertex3d(x1, y1 + animation * length.getValue(), z1);
         }
         glEnd();
@@ -98,15 +100,15 @@ public class TargetESP extends Module {
         glBegin(GL_LINE_STRIP);
 
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
-            double x1 = x + sin(i * Math.PI / 180) * radius.getValue();
-            double z1 = z + cos(i * Math.PI / 180) * radius.getValue();
+            double x1 = x + cos(i * Math.PI / 180) * radius.getValue();
+            double z1 = z + sin(i * Math.PI / 180) * radius.getValue();
             double y1 = y + (animation + 1) / 2 * target.height;
 
-            Color fadeColor = ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt);
+            Color horizontalColor = ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt);
 
-            ColorUtils.glColor(fadeColor, 1.0f);
+            ColorUtils.glColor(horizontalColor, 1.0f);
             glVertex3d(x1, y1, z1);
-            ColorUtils.glColor(fadeColor, 1.0f);
+            ColorUtils.glColor(horizontalColor, 1.0f);
             glVertex3d(x1, y1, z1);
         }
         glEnd();

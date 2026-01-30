@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -66,6 +67,8 @@ public class KillAura extends Module {
 
     private final MultiMode smoothMode = new MultiMode("SmoothModes", this)
         .addModes("Linear", "Basic", "MixDelta", "ReactionTime", "Offset", "Advanced");
+
+    private final CheckBox cameraAim = new CheckBox("CameraAim", this, false);
 
     private final DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
     private final DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
@@ -168,6 +171,22 @@ public class KillAura extends Module {
         if (teleport) needRot = RotUtils.getBestRotation(box);
 
         if (needRot == null) return null;
+
+        if (cameraAim.isToggled()) {
+            RayTrace hit = RayCastUtils.rayCast(CameraRot.INST, findDistance.getValue() + 3, 0);
+//
+
+//            AxisAlignedBB hitBox = box.expand(-0.1, -0.1, -0.1);
+//            Vec3 hitVec = new Vec3(
+//                Math.clamp(hit.hitVec.xCoord, hitBox.minX, hitBox.maxX),
+//                Math.clamp(hit.hitVec.yCoord, hitBox.minY, hitBox.maxY),
+//                Math.clamp(hit.hitVec.zCoord, hitBox.minZ, hitBox.maxZ)
+//            );
+
+            if (hit.entityHit == target) {
+                needRot = RotUtils.getRotationToPoint(hit.hitVec);
+            }
+        }
 
         if (smartAim.isToggled()) {
             RayTrace hit = RayCastUtils.rayCast(needRot, findDistance.getValue(), 0.3f);
