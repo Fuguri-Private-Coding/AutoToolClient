@@ -116,7 +116,8 @@ public class Modules {
 			new TargetHUD(),
 			new Scaffold(),
 			new HighJump(),
-			new LongJump()
+			new LongJump(),
+			new RawMouseInput()
         );
 	}
 

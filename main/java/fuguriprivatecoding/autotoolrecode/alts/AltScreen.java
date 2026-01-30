@@ -26,6 +26,9 @@ import net.minecraft.util.Session;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -65,13 +68,12 @@ public class AltScreen extends GuiScreen {
         ScaledResolution sc = new ScaledResolution(mc);
 
         Accounts.loadAccounts();
-        textButton = new TextButton(0, 50, sc.getScaledHeight() - 10 - 75, 100, 20);
-        buttonList.add(new Button(1,"Login", 50, sc.getScaledHeight() - 10 - 50, 100, 20));
-        buttonList.add(new Button(2,"Microsoft", 50, sc.getScaledHeight() - 10 - 25, 100, 20));
+        textButton = new TextButton(0, 50, sc.getScaledHeight() - 10 - 100, 100, 20);
+        buttonList.add(new Button(1,"Login", 50, sc.getScaledHeight() - 10 - 75, 100, 20));
+        buttonList.add(new Button(2,"Microsoft", 50, sc.getScaledHeight() - 10 - 50, 100, 20));
+        buttonList.add(new Button(3,"MCToken", 50, sc.getScaledHeight() - 10 - 25, 100, 20));
 
         textButton.setFocused(true);
-
-        textButton.setMaxStringLength(10000);
     }
 
     @Override
@@ -88,9 +90,9 @@ public class AltScreen extends GuiScreen {
         float rectHeight = (sc.getScaledHeight() - 30);
 
         float buttonsX = 45;
-        float buttonsY = sc.getScaledHeight() - 5 - 75 - 10;
+        float buttonsY = sc.getScaledHeight() - 5 - 75 - 10 - 25;
         float buttonsWidth = 110;
-        float buttonsHeight = 80;
+        float buttonsHeight = 105;
 
         Color rectsColor = new Color(0,0,0,0.5f);
 
@@ -237,21 +239,15 @@ public class AltScreen extends GuiScreen {
         switch (button.id) {
             case 1 -> {
                 if (!textButton.getText().isEmpty()) {
-                    if (textButton.getCursorPosition() <= 16) {
-                        String accountName = textButton.getText();
-                        boolean accountExists = accounts.stream().anyMatch(acc -> acc.getName().equals(accountName));
+                    String accountName = textButton.getText();
+                    boolean accountExists = accounts.stream().anyMatch(acc -> acc.getName().equals(accountName));
 
-                        if (!accountExists) {
-                            Account account = new Account(accountName);
-                            addAccount(account);
-                            loginOffline(account);
-                            selectedAccount = account;
-                        }
-                    } else {
-                        String token = textButton.getText();
-                        loginMicrosoft(null, token);
+                    if (!accountExists) {
+                        Account account = new Account(accountName);
+                        addAccount(account);
+                        loginOffline(account);
+                        selectedAccount = account;
                     }
-
                     textButton.setText("");
                 } else if (selectedAccount != null) {
                     if (selectedAccount.getType() == Account.AccountType.MICROSOFT) {
@@ -286,6 +282,15 @@ public class AltScreen extends GuiScreen {
                 });
 
                 if (isFinished.get()) callback.close();
+            }
+
+            case 3 -> {
+                try {
+                    String token = getClipboardText();
+                    loginMicrosoft(null, token);
+                } catch (UnsupportedFlavorException e) {
+                    updateStatus("MCToken must be in clipboard.");
+                }
             }
         }
     }
@@ -337,6 +342,13 @@ public class AltScreen extends GuiScreen {
         account.setDeleting(true);
         selectedAccount = null;
         updateStatus("Successful removed account: " + account.getName() + ".");
+    }
+
+    private String getClipboardText() throws UnsupportedFlavorException, IOException {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        return clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)
+            ? (String) clipboard.getData(DataFlavor.stringFlavor)
+            : null;
     }
 
     private void loginOffline(Account account) {

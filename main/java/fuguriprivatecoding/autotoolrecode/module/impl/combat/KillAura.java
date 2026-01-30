@@ -30,6 +30,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.*;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,8 @@ public class KillAura extends Module {
     private final Mode sortType = new Mode("SortType", this)
         .addModes("Distance", "FOV", "HurtTime", "Switch")
         .setMode("FOV");
+
+    private final IntegerSetting maxSwitchEntity = new IntegerSetting("MaxSwitchEntity", this, () -> sortType.is("Switch"), 0, 5,5);
 
     private final Mode hitVec = new Mode("HitVec", this)
         .addModes("Best", "Nearest", "Head", "Body")
@@ -294,16 +297,23 @@ public class KillAura extends Module {
 
         entityList.removeIf(ent -> DistanceUtils.getDistance(ent) > findDistance.getValue());
 
+        List<Entity> switchList = new CopyOnWriteArrayList<>();
+
+        for (EntityLivingBase ent : entityList) {
+            double distance = DistanceUtils.getDistance(ent);
+            if (distance <= 3 && switchList.size() < maxSwitchEntity.getValue()) switchList.add(ent);
+        }
+
         entityList.sort(
             switch (sortType.getMode()) {
                 case "Distance" -> Comparator.comparingDouble(DistanceUtils::getDistance);
                 case "HurtTime" -> Comparator.comparingDouble(ent -> ent.hurtTime);
                 case "Switch" -> Comparator.comparingDouble(entity -> {
-                    double hurtTime = entity.hurtTime;
                     double distance = DistanceUtils.getDistance(entity);
+                    double hurtTime = entity.hurtTime;
 
-                    if (distance <= 3) {
-                        return hurtTime;
+                    if (switchList.size() > 1) {
+                        return hurtTime + distance;
                     } else {
                         return distance;
                     }
