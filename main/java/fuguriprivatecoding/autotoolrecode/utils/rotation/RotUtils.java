@@ -154,8 +154,8 @@ public class RotUtils implements Imports {
         Vec3 best = null;
 
         for (double x = box.minX; x <= box.maxX; x += stepX) {
-            for (double z = box.minZ; z <= box.maxZ; z += stepY) {
-                for (double y = box.minY; y <= box.maxY; y += stepZ) {
+            for (double z = box.minZ; z <= box.maxZ; z += stepZ) {
+                for (double y = box.minY; y <= box.maxY; y += stepY) {
                     Vec3 pos = new Vec3(x, y, z);
                     if (mc.thePlayer.canVecBeSeen(pos)) {
                         double distance = DistanceUtils.getDistance(pos);
@@ -193,7 +193,8 @@ public class RotUtils implements Imports {
 	}
 
 	public static float getMouseGCD() {
-		return (float) (Math.pow(mc.gameSettings.mouseSensitivity * 0.6 + 0.2, 3) * 1.2);
+        float f = mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;
+        return f * f * f * 8.0F * 0.15F;
 	}
 
 	public static Rot fixDelta(Rot delta) {

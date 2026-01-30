@@ -374,6 +374,10 @@ public class AxisAlignedBB
         }
     }
 
+    public Vec3 getCenter() {
+        return new Vec3((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2);
+    }
+
     private boolean isVecInYZ(Vec3 vec)
     {
         return vec == null ? false : vec.yCoord >= this.minY && vec.yCoord <= this.maxY && vec.zCoord >= this.minZ && vec.zCoord <= this.maxZ;
