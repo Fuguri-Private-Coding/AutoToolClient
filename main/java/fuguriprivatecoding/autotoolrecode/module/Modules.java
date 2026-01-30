@@ -30,6 +30,7 @@ public class Modules {
 			new AutoWater(),
             new BWHelper(),
             new AutoRegister(),
+			new FastLadder(),
 			new BridgeAssist(),
 			new FovModifier(),
             new Notifications(),

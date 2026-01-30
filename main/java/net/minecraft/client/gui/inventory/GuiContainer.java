@@ -368,7 +368,7 @@ public abstract class GuiContainer extends GuiScreen
                         }
                         else
                         {
-                            boolean flag2 = l != -999 && (Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54));
+                            boolean flag2 = l != -999 && (Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54) || forceShift);
                             int i1 = 0;
 
                             if (flag2)
@@ -413,6 +413,8 @@ public abstract class GuiContainer extends GuiScreen
         this.lastClickTime = i;
         this.lastClickButton = mouseButton;
     }
+
+    public static boolean forceShift;
 
     protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick)
     {
