@@ -154,6 +154,13 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     public String getSkinType()
     {
         NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
+
+        CustomSkin customSkin = Modules.getModule(CustomSkin.class);
+
+        if (this == mc.thePlayer && customSkin.isToggled()) {
+            return CustomSkin.getType();
+        }
+
         return networkplayerinfo == null ? DefaultPlayerSkin.getSkinType(this.getUniqueID()) : networkplayerinfo.getSkinType();
     }
 

@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import lombok.Getter;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -24,6 +25,11 @@ public class CustomSkin extends Module {
         .addMode("None")
         .setMode("None")
         ;
+    
+    public Mode skinType = new Mode("SkinType", this)
+        .addModes("Classic", "Slim")
+        .setMode("Slim")
+        ;
 
     @Getter final File SKIN_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/skins");
 
@@ -35,6 +41,11 @@ public class CustomSkin extends Module {
     public CustomSkin() {
         if (SKIN_DIRECTORY.mkdirs()) System.out.println("Successful created Skins Directory.");
         updateSkins();
+    }
+    
+    public static String getType() {
+        CustomSkin customSkin = Modules.getModule(CustomSkin.class);
+        return customSkin.skinType.is("Slim") ? "slim" : "default";
     }
 
     @Override
