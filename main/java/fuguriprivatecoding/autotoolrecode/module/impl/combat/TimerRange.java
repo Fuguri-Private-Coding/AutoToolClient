@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
+import fuguriprivatecoding.autotoolrecode.module.impl.connect.Ping;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
@@ -21,10 +22,12 @@ import net.minecraft.util.Vec3;
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
 public class TimerRange extends Module {
 
-    IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 0, 20, 4);
-    IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 4);
-    FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0, 2.5f, 1, 0.1f);
-    IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
+    final IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 0, 20, 4);
+    final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 4);
+    final FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0, 2.5f, 1, 0.1f);
+    final IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
+
+    final CheckBox onlyWhenPing = new CheckBox("OnlyWhenPing", this, false);
 
     public static boolean teleporting = false, click = false;
     int teleportTicks, posRotIncrement = 0;
@@ -35,6 +38,7 @@ public class TimerRange extends Module {
     @Override
     public void onEvent(Event event) {
         EntityLivingBase target = TargetStorage.getTarget();
+
         if (event instanceof RunGameLoopEvent && balance > 0) {
             mc.timer.renderPartialTicks = partialTicks.getValue();
         }
@@ -50,6 +54,8 @@ public class TimerRange extends Module {
                 balance--;
                 return;
             }
+
+            if (!Ping.isPing() && onlyWhenPing.isToggled()) return;
 
             AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100);
 

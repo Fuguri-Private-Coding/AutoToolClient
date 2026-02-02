@@ -85,7 +85,7 @@ public class Ping extends Module {
     private int delays = 50;
     private long lastResetTime, delayBeforeNextLag;
 
-    private final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
+    private static final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
     private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
 
     Vec3 lastPos, currentPos;
@@ -218,5 +218,9 @@ public class Ping extends Module {
 
     private void updateDelay(int addDelay) {
         delays = (int) Math.clamp(delays + addDelay, 0, delay.getMaxValue());
+    }
+
+    public static boolean isPing() {
+        return Modules.getModule(Ping.class).isToggled() && !buffer.isEmpty();
     }
 }

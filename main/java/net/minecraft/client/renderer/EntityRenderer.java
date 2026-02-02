@@ -14,6 +14,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.render.*;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.ChestStealer;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -29,6 +30,7 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.gui.MapItemRenderer;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.culling.ClippingHelper;
@@ -1169,7 +1171,13 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     if (Reflector.ForgeHooksClient_drawScreen.exists()) {
                         Reflector.callVoid(Reflector.ForgeHooksClient_drawScreen, this.mc.currentScreen, k1, l1, partialTicks);
                     } else {
-                        this.mc.currentScreen.drawScreen(k1, l1, partialTicks);
+                        ScreenEvent event = ScreenEvent.INST;
+                        event.setCanceled(false);
+                        event.setType(ScreenEvent.Type.PRE);
+                        event.call();
+                        if (!event.isCanceled()) this.mc.currentScreen.drawScreen(k1, l1, partialTicks);
+                        event.setType(ScreenEvent.Type.POST);
+                        event.call();
                     }
                 } catch (Throwable throwable) {
                     CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering screen");

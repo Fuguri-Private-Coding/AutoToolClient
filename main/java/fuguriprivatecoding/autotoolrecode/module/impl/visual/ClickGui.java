@@ -22,7 +22,6 @@ public class ClickGui extends Module {
 	public final ColorSetting color = new ColorSetting("Color", this, 40);
 	public final ColorSetting colorShadow = new ColorSetting("Color Shadow", this);
 
-
     public ClickGui() {
         Fonts.fonts.forEach((fontName, _) -> fonts.addMode(fontName));
         fonts.setMode("SFProRounded");

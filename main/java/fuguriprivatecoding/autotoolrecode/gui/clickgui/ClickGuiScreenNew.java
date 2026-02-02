@@ -19,6 +19,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedGradUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
@@ -101,7 +102,8 @@ public class ClickGuiScreenNew extends GuiScreen {
             mc.displayGuiScreen(null);
         }
 
-        RoundedUtils.drawRect(x + 100, y, width - 100, height, 0, 0, 10, 10, rectColor);
+
+        RoundedUtils.drawRect(x + 100, y, width - 100, height, 0, 0, 10, 10, rectColor.withAlpha(1));
         RoundedUtils.drawRect(x, y, 100, height, 10, 10, 0, 0, rectColor.withAlpha(0.5f));
 
         BloomUtils.addToDraw(() -> {

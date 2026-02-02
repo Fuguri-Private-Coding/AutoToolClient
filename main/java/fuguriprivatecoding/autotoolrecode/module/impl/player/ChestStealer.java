@@ -1,19 +1,17 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.ScreenEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
-import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
-import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.player.inventory.InventoryUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -42,8 +40,13 @@ public class ChestStealer extends Module {
     final CheckBox autoClose = new CheckBox("AutoClose", this, true);
     final DoubleSlider closeDelay = new DoubleSlider("CloseDelay", this, autoClose::isToggled, 0,10,1,1);
 
+    final CheckBox anyLoot = new CheckBox("AnyLoot", this, false);
+
     final CheckBox render = new CheckBox("Render", this, true);
-    final ColorSetting color = new ColorSetting("Color", this, render::isToggled);
+    final MultiMode renderModes = new MultiMode("RenderModes", this, render::isToggled)
+        .addModes("Cursor", "HoverSlot");
+
+    final ColorSetting color = new ColorSetting("Color", this, () -> render.isToggled() && renderModes.get("Cursor"));
 
     final CheckBox checkName = new CheckBox("CheckName", this, true);
 
@@ -92,12 +95,12 @@ public class ChestStealer extends Module {
                 int deltaX = (int) (Math.clamp(currentSlot.x - mouse.mouseX, -moveSpeed, moveSpeed) / smooth.getRandomizedDoubleValue());
                 int deltaY = (int) (Math.clamp(currentSlot.y - mouse.mouseY, -moveSpeed, moveSpeed) / smooth.getRandomizedDoubleValue());
 
-                mouse.move(deltaX, deltaY);
-
                 if (slots.getFirst().x != -1488) {
+                    mouse.move(deltaX, deltaY);
+
                     if (Math.hypot(deltaX, deltaY) < minDeltaToClick.getValue()) {
                         if (delayStopWatch.reachedMS(delays) && slots.contains(currentSlot)) {
-                            mouse.click(mc.currentScreen);
+                            mouse.click();
 
                             delayStopWatch.reset();
                             slots.remove(currentSlot);
@@ -107,7 +110,7 @@ public class ChestStealer extends Module {
                     }
 
                     if (fail.isToggled() && Math.random() <= failChance.getRandomizedIntValue() / 100f) {
-                        mouse.click(mc.currentScreen);
+                        mouse.click();
                     }
                 }
 
@@ -127,8 +130,21 @@ public class ChestStealer extends Module {
             }
         }
 
-        if (event instanceof RenderScreenEvent && opened && render.isToggled()) {
-            RoundedUtils.drawRect(mouse.mouseX - 1, mouse.mouseY - 1, 2, 2, 1, color.getFadedColor());
+        if (slots.getFirst().x != 1488 && opened && render.isToggled()) {
+            if (event instanceof ScreenEvent e) {
+                if (e.getType() == ScreenEvent.Type.PRE && renderModes.get("HoverSlot")) {
+                    e.cancel();
+                    mouse.render();
+                } else {
+                    if (renderModes.get("Cursor")) {
+                        float x = mouse.prevX + (mouse.mouseX - mouse.prevX) * mc.timer.renderPartialTicks;
+                        float y = mouse.prevY + (mouse.mouseY - mouse.prevY) * mc.timer.renderPartialTicks;
+
+                        ColorUtils.glColor(color.getFadedColor());
+                        RenderUtils.drawImage(Client.INST.of("image/cursor.png"), x - 2, y, 10, 10, true);
+                    }
+                }
+            }
         }
     }
 
@@ -139,15 +155,16 @@ public class ChestStealer extends Module {
 
         for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
             final Slot slot = container.getSlot(i);
-            if (InventoryUtils.isValid(container.getLowerChestInventory().getStackInSlot(i))) {
-                if (slot.getHasStack()) {
-                    GuiContainer cont = (GuiContainer) mc.currentScreen;
+            if (!InventoryUtils.isValid(container.getLowerChestInventory().getStackInSlot(i)) && !anyLoot.isToggled())
+                continue;
 
-                    int slotCenterX = cont.getGuiLeft() + slot.xDisplayPosition + 8;
-                    int slotCenterY = cont.getGuiTop() + slot.yDisplayPosition + 8;
+            if (slot.getHasStack()) {
+                GuiContainer cont = (GuiContainer) mc.currentScreen;
 
-                    slots.add(new Vector2i(slotCenterX, slotCenterY));
-                }
+                int slotCenterX = cont.getGuiLeft() + slot.xDisplayPosition + 8;
+                int slotCenterY = cont.getGuiTop() + slot.yDisplayPosition + 8;
+
+                slots.add(new Vector2i(slotCenterX, slotCenterY));
             }
         }
 
@@ -155,26 +172,37 @@ public class ChestStealer extends Module {
     }
 
     private static class MousePoint {
-        int mouseX;
-        int mouseY;
+        int mouseX, prevX;
+        int mouseY, prevY;
 
         public void move(int deltaX, int deltaY) {
+            prevUpdate();
             mouseX += deltaX;
             mouseY += deltaY;
         }
 
-        public void click(GuiScreen guiScreen) {
+        public void click() {
             try {
                 GuiContainer.forceShift = true;
-                guiScreen.mouseClick(mouseX, mouseY, 1);
+                mc.currentScreen.mouseClick(mouseX, mouseY, 1);
                 GuiContainer.forceShift = false;
             } catch (Exception ignored) {}
         }
 
+        public void render() {
+            mc.currentScreen.drawScreen(mouseX, mouseY, mc.timer.renderPartialTicks);
+        }
+
         public void reset() {
             ScaledResolution sc = new ScaledResolution(mc);
+            prevUpdate();
             mouseX = sc.getScaledWidth() / 2;
             mouseY = sc.getScaledHeight() / 2;
+        }
+
+        private void prevUpdate() {
+            prevX = mouseX;
+            prevY = mouseY;
         }
     }
 }
