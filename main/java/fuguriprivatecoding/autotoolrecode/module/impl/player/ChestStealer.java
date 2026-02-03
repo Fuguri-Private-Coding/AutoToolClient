@@ -18,7 +18,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import org.joml.Vector2i;
-import java.awt.*;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -40,7 +40,7 @@ public class ChestStealer extends Module {
     final CheckBox autoClose = new CheckBox("AutoClose", this, true);
     final DoubleSlider closeDelay = new DoubleSlider("CloseDelay", this, autoClose::isToggled, 0,10,1,1);
 
-    final CheckBox anyLoot = new CheckBox("AnyLoot", this, false);
+    final CheckBox takeAllLoot = new CheckBox("TakeAllLoot", this, false);
 
     final CheckBox render = new CheckBox("Render", this, true);
     final MultiMode renderModes = new MultiMode("RenderModes", this, render::isToggled)
@@ -155,7 +155,7 @@ public class ChestStealer extends Module {
 
         for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
             final Slot slot = container.getSlot(i);
-            if (!InventoryUtils.isValid(container.getLowerChestInventory().getStackInSlot(i)) && !anyLoot.isToggled())
+            if (!InventoryUtils.isValid(container.getLowerChestInventory().getStackInSlot(i)) && !takeAllLoot.isToggled())
                 continue;
 
             if (slot.getHasStack()) {

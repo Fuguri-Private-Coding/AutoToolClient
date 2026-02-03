@@ -184,6 +184,8 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             );
 
             event.call();
+            if (event.isCanceled()) return;
+
             double d0 = event.getX() - lastReportedPosX;
             double d1 = event.getY() - lastReportedPosY;
             double d2 = event.getZ() - lastReportedPosZ;
