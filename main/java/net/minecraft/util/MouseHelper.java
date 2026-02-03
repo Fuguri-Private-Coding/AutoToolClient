@@ -25,7 +25,7 @@ public class MouseHelper {
 
         if (mouseInput != null && mouseInput.isToggled() && Mouse.isGrabbed() && mouseInput.isAvailable()) {
             this.deltaX = (int) RawMouseInput.deltaX;
-            this.deltaY = (int) RawMouseInput.deltaY;
+            this.deltaY = (int) RawMouseInput.deltaY * -1;
             RawMouseInput.thread.reset();
             return;
         }

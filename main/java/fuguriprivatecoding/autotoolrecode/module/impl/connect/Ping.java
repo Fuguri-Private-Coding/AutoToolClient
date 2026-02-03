@@ -220,7 +220,7 @@ public class Ping extends Module {
         delays = (int) Math.clamp(delays + addDelay, 0, delay.getMaxValue());
     }
 
-    public static boolean isPing() {
+    public static boolean isWorking() {
         return Modules.getModule(Ping.class).isToggled() && !buffer.isEmpty();
     }
 }

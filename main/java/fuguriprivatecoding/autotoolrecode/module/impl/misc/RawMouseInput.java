@@ -1,7 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
-import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -50,13 +48,7 @@ public class RawMouseInput extends Module {
 
     @Override
     public void onDisable() {
-        mc.gameSettings.invertMouse = false;
         running = false;
-    }
-
-    @Override
-    public void onEvent(Event event) {
-        if (event instanceof TickEvent) mc.gameSettings.invertMouse = true;
     }
 
     public class MouseThread extends Thread {

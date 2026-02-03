@@ -55,7 +55,7 @@ public class TimerRange extends Module {
                 return;
             }
 
-            if (!Ping.isPing() && onlyWhenPing.isToggled()) return;
+            if (!Ping.isWorking() && onlyWhenPing.isToggled()) return;
 
             AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100);
 
