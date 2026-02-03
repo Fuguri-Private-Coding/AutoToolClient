@@ -1,23 +1,19 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
 import fuguriprivatecoding.autotoolrecode.event.events.world.BlockBBEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.UpdateEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.C00PacketKeepAlive;
-import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
-import net.minecraft.network.play.server.S00PacketKeepAlive;
-import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 import net.minecraft.util.AxisAlignedBB;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -26,10 +22,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Fly extends Module {
 
     Mode mode = new Mode("Mode", this)
-            .addModes("Vanilla", "Poral")
+            .addModes("Vanilla", "GroundCollision")
             .setMode("Vanilla");
 
     final FloatSetting speed = new FloatSetting("Speed", this, () -> mode.getMode().equalsIgnoreCase("Vanilla"), 0.1f, 1f, 0.6f, 0.1f) {};
+
+    final CheckBox cancelC0F = new CheckBox("CancelC0F", this, false);
 
     List<Packet> packets = new CopyOnWriteArrayList<>();
 
@@ -39,7 +37,7 @@ public class Fly extends Module {
     }
 
     private void reset() {
-        if (mode.is("Poral")) {
+        if (!packets.isEmpty()) {
             packets.forEach(PacketUtils::sendPacket);
             packets.clear();
         }
@@ -61,7 +59,7 @@ public class Fly extends Module {
                 }
             }
 
-            case "Poral" -> {
+            case "GroundCollision" -> {
                 if (event instanceof BlockBBEvent e) {
                     if (!mc.gameSettings.keyBindJump.isKeyDown() && mc.gameSettings.keyBindSneak.isKeyDown()) return;
                     AxisAlignedBB abb = new AxisAlignedBB(
@@ -75,15 +73,15 @@ public class Fly extends Module {
 
                     e.setBoundingBox(abb);
                 }
+            }
+        }
 
-                if (event instanceof PacketEvent e && Utils.isWorldLoaded()) {
-                    Packet packet = e.getPacket();
+        if (event instanceof PacketEvent e && Utils.isWorldLoaded() && cancelC0F.isToggled()) {
+            Packet packet = e.getPacket();
 
-                    if (packet instanceof C0FPacketConfirmTransaction) {
-                        packets.add(packet);
-                        e.cancel();
-                    }
-                }
+            if (packet instanceof C0FPacketConfirmTransaction) {
+                packets.add(packet);
+                e.cancel();
             }
         }
     }

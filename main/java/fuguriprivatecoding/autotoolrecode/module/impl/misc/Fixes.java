@@ -12,10 +12,11 @@ import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 @ModuleInfo(name = "Fixes", category = Category.MISC, description = "Убирает задержки механики майнкрафта.")
 public class Fixes extends Module {
 
-    MultiMode fixes = new MultiMode("Fixes", this)
+    public MultiMode fixes = new MultiMode("Fixes", this)
             .add("ClickDelay", true)
             .add("SaveMoveKeys", true)
-            .add("JumpDelay", true);
+            .add("JumpDelay", true)
+            .add("FastWorldLoading (Test)", true);
 
     IntegerSetting jumpChance = new IntegerSetting("JumpChance", this, 0, 100, 100);
 

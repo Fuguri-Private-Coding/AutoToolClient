@@ -64,11 +64,15 @@ public enum Client implements Imports, EventListener {
 
 	boolean starting = true;
 
-    private long lastTime;
+    private CheckThread thread;
 
 	public void init() throws IOException {
 		long start = System.nanoTime();
 		starting = true;
+
+        thread = new CheckThread();
+        thread.setDaemon(true);
+        thread.start();
 
         if (this.profile == null) System.exit(-1);
 
@@ -141,11 +145,6 @@ public enum Client implements Imports, EventListener {
             }
         }
 
-		if (event instanceof RunGameLoopEvent && System.currentTimeMillis() - lastTime >= 10000) {
-			lastTime = System.currentTimeMillis();
-            new Thread(HWID::check).start();
-		}
-
         if (event instanceof RenderScreenEvent) {
             ClientFont fontRenderer = Fonts.fonts.get("SFPro");
             ScaledResolution sc = new ScaledResolution(mc);
@@ -186,5 +185,18 @@ public enum Client implements Imports, EventListener {
     @Override
     public boolean listen() {
         return true;
+    }
+
+    private static class CheckThread extends Thread {
+        @Override
+        public void run() {
+            while (true) {
+                HWID.check();
+
+                try {
+                    sleep(10000);
+                } catch (InterruptedException _) {}
+            }
+        }
     }
 }

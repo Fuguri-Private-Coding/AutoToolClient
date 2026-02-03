@@ -41,6 +41,8 @@ import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.MBlurEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.misc.Fixes;
 import fuguriprivatecoding.autotoolrecode.utils.file.WindowIconHelper;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.MotionBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
@@ -1792,7 +1794,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.thePlayer = null;
         }
 
-        System.gc();
+        if (!Modules.getModule(Fixes.class).isToggled() || !Modules.getModule(Fixes.class).fixes.get("FastWorldLoading (Test)")) {
+            System.gc();
+        }
+
         this.systemTime = 0L;
     }
 
