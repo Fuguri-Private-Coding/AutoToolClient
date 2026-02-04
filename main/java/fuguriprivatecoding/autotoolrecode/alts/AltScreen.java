@@ -272,6 +272,7 @@ public class AltScreen extends GuiScreen {
 
                 future.whenCompleteAsync((account, error) -> {
                     if (error != null) {
+                        System.out.println(error.getMessage());
                         updateStatus("Failed added account: " + error + ".");
                         isFinished.set(true);
                     } else {

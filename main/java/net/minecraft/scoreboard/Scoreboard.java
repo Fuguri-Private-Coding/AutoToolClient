@@ -264,6 +264,8 @@ public class Scoreboard
 
     public void removeTeam(ScorePlayerTeam p_96511_1_)
     {
+        if (p_96511_1_ == null) return;
+
         this.teams.remove(p_96511_1_.getRegisteredName());
 
         for (String s : p_96511_1_.getMembershipCollection())

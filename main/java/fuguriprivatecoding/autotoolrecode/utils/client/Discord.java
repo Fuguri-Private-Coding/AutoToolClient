@@ -11,15 +11,17 @@ import net.minecraft.client.gui.GuiMultiplayer;
 
 public class Discord implements Imports {
 
-    private static boolean running = false;
+    public static boolean running = false;
 
     @Getter private static String name, id;
     private static long timestamp;
 
     public static void init() {
         DiscordThread thread = new DiscordThread();
+        Discord.running = true;
         thread.setDaemon(true);
         thread.start();
+        start();
     }
 
     public static void start() {

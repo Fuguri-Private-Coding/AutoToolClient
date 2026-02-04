@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
@@ -9,8 +9,8 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
-import fuguriprivatecoding.autotoolrecode.module.impl.connect.Ping;
-import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
@@ -19,18 +19,17 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 
-@ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
-public class TimerRange extends Module {
+@ModuleInfo(name = "LagRange", category = Category.COMBAT)
+public class LagRange extends Module {
 
-    final IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 0, 20, 4);
-    final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 4);
+    final IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 1, 10, 4);
     final FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0, 2.5f, 1, 0.1f);
+    final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 0);
+    final FloatSetting additionalDistance = new FloatSetting("AdditionalDistance", this, 0,1,0.3f, 0.05f);
     final IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
 
-    final CheckBox onlyWhenPing = new CheckBox("OnlyWhenPing", this, false);
-
-    public static boolean teleporting = false, click = false;
-    int teleportTicks;
+    public static boolean click = false;
+    static int teleportTicks;
     int posRotIncrement = 0;
     public static int balance = 0;
 
@@ -49,54 +48,56 @@ public class TimerRange extends Module {
             click = false;
         }
 
-        if (event instanceof TickEvent e && !teleporting) {
+        if (event instanceof TickEvent e) {
             if (balance > 0) {
                 e.cancel();
                 balance--;
                 return;
             }
 
-            if (!Ping.isWorking() && onlyWhenPing.isToggled()) return;
-
-            AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100);
-
-            float yaw = RotUtils.getBestRotation(box).getYaw();
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, yaw);
-
-            pos = target.getPositionVector();
-            targetPos = target.getNewPosition();
-            posRotIncrement = target.newPosRotationIncrements;
-
-            teleportTicks = 0;
-            for (int i = 0; i < maxTicks.getValue(); i++) {
-                updateCashedIncrementPos();
-
-                AxisAlignedBB targetBox = getPredictBB(target, target.getNPosition(), pos);
-                boolean skip = DistanceUtils.getDistance(simulatedPlayer, targetBox) > 3.0D;
-
-                if (skip) {
-                    simulatedPlayer.tick();
-                    continue;
-                }
-
-                teleportTicks = i;
-                break;
-            }
-
             if (target.hurtTime > maxTargetHurtTime.getValue()) return;
 
-            teleporting = true;
-            for (int i = 0; i < teleportTicks; i++) {
-                try {
-                    mc.runTick();
-                    balance++;
-                    if (i == teleportTicks - 1) {
-                        click = true;
-                        balance += additionalTicks.getValue();
+            if (teleportTicks == 0) {
+                AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100);
+
+                float yaw = RotUtils.getBestRotation(box).getYaw();
+                SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, yaw);
+
+                pos = target.getPositionVector();
+                targetPos = target.getNewPosition();
+                posRotIncrement = target.newPosRotationIncrements;
+
+                for (int i = 0; i < maxTicks.getValue(); i++) {
+                    updateCashedIncrementPos();
+
+                    AxisAlignedBB targetBox = getPredictBB(target, target.getNPosition(), pos);
+
+                    double distance = 3 + additionalDistance.getValue();
+                    boolean skip = DistanceUtils.getDistance(simulatedPlayer, targetBox) > distance;
+
+                    if (skip) {
+                        simulatedPlayer.tick();
+                        continue;
                     }
-                } catch (Exception ignored) {}
+
+                    balance = teleportTicks = i;
+                    balance += additionalTicks.getValue();
+                    break;
+                }
             }
-            teleporting = false;
+
+            if (balance == 0 && teleportTicks > 0) {
+                for (int i = 0; i < teleportTicks; i++) {
+                    try {
+                        mc.runTick();
+                        balance++;
+                        if (i == teleportTicks - 1) {
+                            click = true;
+                        }
+                    } catch (Exception ignored) {}
+                }
+                teleportTicks = 0;
+            }
         }
     }
 
@@ -116,6 +117,6 @@ public class TimerRange extends Module {
     }
 
     public static boolean isTeleporting() {
-        return TimerRange.teleporting || TimerRange.balance > 0;
+        return LagRange.teleportTicks > 0 || LagRange.balance > 0;
     }
 }

@@ -157,7 +157,7 @@ public class KillAura extends Module {
     }
 
     private Rot getRotation(EntityLivingBase target, Rot lr, AxisAlignedBB box) {
-        boolean teleport = TimerRange.isTeleporting() && teleportPredictFix.isToggled();
+        boolean teleport = (TimerRange.isTeleporting() || LagRange.isTeleporting()) && teleportPredictFix.isToggled();
 
         Rot needRot = switch (hitVec.getMode()) {
                 case "Best" -> RotUtils.getBestRotation(box);
@@ -206,7 +206,7 @@ public class KillAura extends Module {
     private void rotate(EntityLivingBase target) {
         Rot lr = mc.thePlayer.getRotation();
 
-        boolean teleport = TimerRange.isTeleporting() && teleportPredictFix.isToggled();
+        boolean teleport = (TimerRange.isTeleporting() || LagRange.isTeleporting()) && teleportPredictFix.isToggled();
 
         double offset = target.getCollisionBorderSize();
 
