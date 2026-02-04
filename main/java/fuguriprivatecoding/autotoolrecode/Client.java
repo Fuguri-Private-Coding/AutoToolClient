@@ -84,7 +84,7 @@ public enum Client implements Imports, EventListener {
 
         ClientIRC.connectClient();
 
-        if (CLIENT_DIR.mkdirs()) System.out.println("Successful created Сlient Directory.");
+        if (CLIENT_DIR.mkdirs()) System.out.println("Successful created Client Directory.");
 
 		Events.register(this);
 

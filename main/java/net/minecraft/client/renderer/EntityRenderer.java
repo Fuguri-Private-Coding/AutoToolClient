@@ -660,8 +660,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             }
         } else if (!this.mc.gameSettings.debugCamEnable) {
             CameraRot cameraRot = CameraRot.INST;
-            float pitch = cameraRot.isUnlocked() ? cameraRot.getPrevRot().getPitch() + (cameraRot.getPitch() - cameraRot.getPrevRot().getPitch()) * partialTicks : entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
-            float yaw = cameraRot.isUnlocked() ? cameraRot.getPrevRot().getYaw() + (cameraRot.getYaw() - cameraRot.getPrevRot().getYaw()) * partialTicks : entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks;
+            float pitch = cameraRot.isUnlocked() ? cameraRot.getPitch() : entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+            float yaw = cameraRot.isUnlocked() ? cameraRot.getYaw() : entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks;
 
             GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
 
