@@ -69,8 +69,8 @@ public class KillAura extends Module {
 
     private final CheckBox cameraAim = new CheckBox("CameraAim", this, false);
 
-    private final DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
-    private final DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 1, 1, 0.01f);
+    private final DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 100, 1, 1f);
+    private final DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 100, 1, 1f);
 
     private final FloatSetting randomizeStrength = new FloatSetting("RandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
     private final FloatSetting reactionTime = new FloatSetting("ReactionTime", this, () -> smoothMode.get("ReactionTime"), 0, 5, 1, 0.1f);
@@ -171,9 +171,18 @@ public class KillAura extends Module {
 
         if (needRot == null) return null;
 
+        if (smartAim.isToggled()) {
+            RayTrace hit = RayCastUtils.rayCast(needRot, findDistance.getValue(), 0.3f);
+
+            if (hit == null || hit.typeOfHit != RayTrace.RayType.ENTITY) {
+                needRot = RotUtils.getPossibleBestRotation(needRot, box);
+            }
+        }
+
         if (cameraAim.isToggled()) {
             RayTrace hit = RayCastUtils.rayCast(CameraRot.INST, findDistance.getValue() + 3, 0);
-//
+
+            Rot dp = RotUtils.getDelta(CameraRot.INST, CameraRot.INST.getPrevRot());
 
 //            AxisAlignedBB hitBox = box.expand(-0.1, -0.1, -0.1);
 //            Vec3 hitVec = new Vec3(
@@ -181,18 +190,13 @@ public class KillAura extends Module {
 //                Math.clamp(hit.hitVec.yCoord, hitBox.minY, hitBox.maxY),
 //                Math.clamp(hit.hitVec.zCoord, hitBox.minZ, hitBox.maxZ)
 //            );
+//
+//            if (hit.entityHit == target) {
+//                needRot = RotUtils.getRotationToPoint(hit.hitVec);
+//            }
 
-            if (hit.entityHit == target) {
-                needRot = RotUtils.getRotationToPoint(hit.hitVec);
-            }
-        }
+            if (hit.typeOfHit == RayTrace.RayType.ENTITY) needRot = CameraRot.INST;
 
-        if (smartAim.isToggled()) {
-            RayTrace hit = RayCastUtils.rayCast(needRot, findDistance.getValue(), 0.3f);
-
-            if (hit == null || hit.typeOfHit != RayTrace.RayType.ENTITY) {
-                needRot = RotUtils.getPossibleBestRotation(needRot, box);
-            }
         }
 
         return needRot;
@@ -288,8 +292,8 @@ public class KillAura extends Module {
             RotUtils.limitDelta(delta, speed);
 
             if (smoothMode.get("MixDelta")) {
-                delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
-                delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
+                delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedIntValue() / 100f, lastDelta.getYaw(), delta.getYaw()));
+                delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedIntValue() / 100f, lastDelta.getPitch(), delta.getPitch()));
             }
         }
 

@@ -105,11 +105,17 @@ public class EntityPlayerSP extends AbstractClientPlayer {
         return new Rot(rotationYaw, rotationPitch);
     }
 
+    public Rot getPrevRotation() {
+        return new Rot(prevRotationYaw, prevRotationPitch);
+    }
+
     public void moveRotation(Rot delta) {
         moveRotation(delta.getYaw(), delta.getPitch());
     }
 
     public void moveRotation(float deltaYaw, float deltaPitch) {
+        prevRotationYaw = rotationYaw;
+        prevRotationPitch = rotationPitch;
         rotationYaw += deltaYaw;
         rotationPitch += deltaPitch;
         rotationPitch = Math.clamp(rotationPitch, -90, 90);
@@ -527,16 +533,6 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     }
 
     public void onLivingUpdate() {
-//        if (this.sprintingTicksLeft > 0)
-//        {
-//            --this.sprintingTicksLeft;
-//
-//            if (this.sprintingTicksLeft == 0)
-//            {
-//                this.setSprinting(false);
-//            }
-//        }
-
         if (this.sprintToggleTimer > 0) {
             --this.sprintToggleTimer;
         }

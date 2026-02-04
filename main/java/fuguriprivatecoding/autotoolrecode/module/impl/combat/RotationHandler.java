@@ -19,7 +19,7 @@ public class RotationHandler extends Module {
 
     final DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 1, 180, 30, 1);
     final DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 1, 180, 30, 1);
-    final DoubleSlider mixDelta = new DoubleSlider("MixDelta", this, 0, 1, 1, 0.01f);
+    final DoubleSlider mixDelta = new DoubleSlider("MixDelta", this, 0, 100, 1, 1f);
 
     Rot lastDelta = Rot.ZERO;
 
@@ -30,8 +30,8 @@ public class RotationHandler extends Module {
                 Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), CameraRot.INST);
                 if (isToggled()) delta = delta.limit((float) yawSpeed.getRandomizedDoubleValue(), (float) pitchSpeed.getRandomizedDoubleValue());
 
-                delta.setYaw(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getYaw(), delta.getYaw()));
-                delta.setPitch(MathHelper.lerp((float) mixDelta.getRandomizedDoubleValue(), lastDelta.getPitch(), delta.getPitch()));
+                delta.setYaw(MathHelper.lerp((float) mixDelta.getRandomizedIntValue() / 100f, lastDelta.getYaw(), delta.getYaw()));
+                delta.setPitch(MathHelper.lerp((float) mixDelta.getRandomizedIntValue() / 100f, lastDelta.getPitch(), delta.getPitch()));
 
                 lastDelta = delta;
 

@@ -37,8 +37,6 @@ public class Dot extends Module {
         }
 
         if (event instanceof Render3DEvent && CameraRot.INST.isUnlocked()) {
-            Rot smoothPos = prevPos.add(pos.subtract(prevPos));
-
             RayTrace mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(-1),6,6, pos, -1);
             if (mouse != null) {
                 if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, glowColor.getFadedColor()));

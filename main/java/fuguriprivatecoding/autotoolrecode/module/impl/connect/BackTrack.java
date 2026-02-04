@@ -37,8 +37,11 @@ public class BackTrack extends Module {
 
     final DoubleSlider distance = new DoubleSlider("Distance", this, 0,12,12,0.1f);
 
-    final CheckBox onlyWhenNeed = new CheckBox("OnlyWhenNeed", this, true);
-    final IntegerSetting maxHurtTimeWhenWorking = new IntegerSetting("MaxHurtTimeWhenWorking",this, onlyWhenNeed::isToggled, 0, 10, 5);
+    final CheckBox resetIfTargetHurtTime = new CheckBox("ResetIfTargetHurtTime", this, true);
+    final IntegerSetting minTargetHurtTimeToReset = new IntegerSetting("MinTargetHurtTimeToReset",this, resetIfTargetHurtTime::isToggled, 0, 10, 5);
+
+    final CheckBox resetIfPlayerHurtTime = new CheckBox("ResetIfPlayerHurtTime", this, false);
+    final IntegerSetting minPlayerHurtTimeToReset = new IntegerSetting("MinPlayerHurtTimeToReset", this, resetIfPlayerHurtTime::isToggled, 0, 10, 10);
 
     final CheckBox onlyKillAura = new CheckBox("OnlyKillAura", this, true);
     final CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
@@ -133,11 +136,12 @@ public class BackTrack extends Module {
                 boolean improve = distanceToFake + threshold.getValue() >= distanceToReal;
                 boolean distance = distanceToReal > this.distance.getMaxValue() || distanceToFake > 3 || distanceToReal < this.distance.getMinValue();
 
-                boolean need = onlyWhenNeed.isToggled() && target.hurtTime > maxHurtTimeWhenWorking.getValue();
+                boolean targetHurtTime = resetIfTargetHurtTime.isToggled() && target.hurtTime > minTargetHurtTimeToReset.getValue();
+                boolean playerHurtTime = mc.thePlayer.hurtTime > minPlayerHurtTimeToReset.getValue() && resetIfPlayerHurtTime.isToggled();
 
-                working = !improve && !distance && !need;
+                working = !improve && !distance && !targetHurtTime && !playerHurtTime;
 
-                if (improve || distance || need) {
+                if (improve || distance || targetHurtTime || playerHurtTime) {
                     handle(true);
 
                     delayBetweenBackTracks = delayBetweenTicks.getValue();
