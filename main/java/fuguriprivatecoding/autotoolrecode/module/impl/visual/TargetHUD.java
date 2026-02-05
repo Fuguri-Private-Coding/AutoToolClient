@@ -7,7 +7,6 @@ import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedGradUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -149,11 +148,10 @@ public class TargetHUD extends Module {
             float healthX = x + height;
             float healthY = y + height / 2f + 2;
 
-            Color healthColorFirst = new Colors(healthColor.getColor()).withMultiplyAlphaClamp(alpha);
-            Color healthColorSecond = new Colors(healthColor.getFadeColor()).withMultiplyAlphaClamp(alpha);
+            Color healthColor = new Colors(this.healthColor.getFadedColor()).withMultiplyAlphaClamp(alpha);
 
             RoundedUtils.drawRect(healthX, healthY, maxHealthBarWidth, 10, 5, bgColor);
-            RoundedGradUtils.drawRect(healthX, healthY, healthAnimation.getValue(), 10, 5, healthColorFirst, healthColorSecond, false);
+            RoundedUtils.drawRect(healthX, healthY, healthAnimation.getValue(), 10, 5, healthColor);
         }
 
         if (render.get("Head") && target instanceof EntityPlayer) {
