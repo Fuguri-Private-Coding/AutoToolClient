@@ -257,11 +257,10 @@ public abstract class Entity implements ICommandSender
                 float cameraYaw = prevCameraYaw + yaw * 0.15f;
                 float cameraPitch = Math.clamp(prevCameraPitch - pitch * 0.15f, -90, 90);
 
+                CameraRot.INST.getPrevRot().setPitch(camera.getPitch());
+                CameraRot.INST.getPrevRot().setYaw(camera.getYaw());
                 camera.setYaw(cameraYaw);
                 camera.setPitch(cameraPitch);
-
-                CameraRot.INST.getPrevRot().setYaw(CameraRot.INST.getPrevRot().getYaw() + camera.getYaw() - prevCameraYaw);
-                CameraRot.INST.getPrevRot().setPitch(CameraRot.INST.getPrevRot().getPitch() + camera.getPitch() - prevCameraPitch);
                 return;
             }
         }
@@ -283,11 +282,13 @@ public abstract class Entity implements ICommandSender
             float cameraYaw = camera.getYaw() + delta;
             float cameraPitch = rotationPitch;
 
+            CameraRot.INST.getPrevRot().setPitch(camera.getPitch());
+            CameraRot.INST.getPrevRot().setYaw(camera.getYaw());
             camera.setYaw(cameraYaw);
             camera.setPitch(cameraPitch);
-
-            CameraRot.INST.getPrevRot().setYaw(CameraRot.INST.getPrevRot().getYaw() + camera.getYaw() - prevCameraYaw);
-            CameraRot.INST.getPrevRot().setPitch(CameraRot.INST.getPrevRot().getPitch() + camera.getPitch() - prevCameraPitch);
+//
+//            CameraRot.INST.getPrevRot().setYaw(CameraRot.INST.getPrevRot().getYaw() + camera.getYaw() - prevCameraYaw);
+//            CameraRot.INST.getPrevRot().setPitch(CameraRot.INST.getPrevRot().getPitch() + camera.getPitch() - prevCameraPitch);
         }
     }
 

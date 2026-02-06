@@ -65,19 +65,14 @@ public class KillAura extends Module {
     private final CheckBox teleportPredictFix = new CheckBox("TeleportPredictFix", this);
 
     private final MultiMode smoothMode = new MultiMode("SmoothModes", this)
-        .addModes("Linear", "Basic", "MixDelta", "ReactionTime", "Offset", "Advanced");
+        .addModes("CameraDelta", "Linear", "Basic", "MixDelta", "Advanced");
 
-    private final CheckBox cameraAim = new CheckBox("CameraAim", this, false);
+    private final DoubleSlider deltaMultiplier = new DoubleSlider("DeltaMultiplier", this, () -> smoothMode.get("CameraDelta"), 1, 15, 8, 0.1f);
 
     private final DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 100, 1, 1f);
     private final DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 100, 1, 1f);
 
     private final FloatSetting randomizeStrength = new FloatSetting("RandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
-    private final FloatSetting reactionTime = new FloatSetting("ReactionTime", this, () -> smoothMode.get("ReactionTime"), 0, 5, 1, 0.1f);
-
-    private final FloatSetting offsetX = new FloatSetting("OffsetX", this, () -> smoothMode.get("Offset"), -1, 1, 0, 0.01f);
-    private final FloatSetting offsetY = new FloatSetting("OffsetY", this, () -> smoothMode.get("Offset"), -1, 1, -0.2f, 0.01f);
-    private final FloatSetting offsetZ = new FloatSetting("OffsetZ", this, () -> smoothMode.get("Offset"), -1, 1, 0, 0.01f);
 
     private final FloatSetting linearSmoothStrength = new FloatSetting(
         "LinearSmoothStrength", this,
@@ -107,7 +102,6 @@ public class KillAura extends Module {
     private long delay;
 
     private int waitTicks;
-    private boolean startSlowRotation;
 
     private Rot lastDelta = new Rot();
 
@@ -179,24 +173,13 @@ public class KillAura extends Module {
             }
         }
 
-        if (cameraAim.isToggled()) {
-            RayTrace hit = RayCastUtils.rayCast(CameraRot.INST, findDistance.getValue() + 3, 0);
+        if (smoothMode.get("CameraDelta")) {
+            Rot mouseDelta = RotUtils.getDelta(
+                CameraRot.INST.getPrevRot(),
+                CameraRot.INST
+            );
 
-            Rot dp = RotUtils.getDelta(CameraRot.INST, CameraRot.INST.getPrevRot());
-
-//            AxisAlignedBB hitBox = box.expand(-0.1, -0.1, -0.1);
-//            Vec3 hitVec = new Vec3(
-//                Math.clamp(hit.hitVec.xCoord, hitBox.minX, hitBox.maxX),
-//                Math.clamp(hit.hitVec.yCoord, hitBox.minY, hitBox.maxY),
-//                Math.clamp(hit.hitVec.zCoord, hitBox.minZ, hitBox.maxZ)
-//            );
-//
-//            if (hit.entityHit == target) {
-//                needRot = RotUtils.getRotationToPoint(hit.hitVec);
-//            }
-
-            if (hit.typeOfHit == RayTrace.RayType.ENTITY) needRot = CameraRot.INST;
-
+            needRot = needRot.add(mouseDelta.multiplier((float) deltaMultiplier.getRandomizedDoubleValue()));
         }
 
         return needRot;
@@ -235,11 +218,6 @@ public class KillAura extends Module {
         );
 
         if (!teleport) {
-            if (smoothMode.get("Offset")) {
-                Rot rotation = RotUtils.getRotationToPoint(RotUtils.getBestHitVec(box).addVector(offsetX.getValue(), offsetY.getValue(), offsetZ.getValue()));
-                delta = RotUtils.getDelta(lr, rotation);
-            }
-
             if (smoothMode.get("Basic")) {
                 Rot rot = new Rot(
                         RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
@@ -252,19 +230,6 @@ public class KillAura extends Module {
 
             if (smoothMode.get("Linear")) {
                 delta = delta.divine(linearSmoothStrength.getValue(), linearSmoothStrength.getValue());
-            }
-
-            if (smoothMode.get("ReactionTime")) {
-                Rot delta1 = delta.copy();
-
-                delta = delta.multiplier(RandomUtils.nextFloat(0.6f, 0.7f));
-
-                if (startSlowRotation) {
-                    delta = delta.multiplier(0.2f);
-                    startSlowRotation = false;
-                }
-
-                if (delta1.hypot() < reactionTime.getValue()) startSlowRotation = true;
             }
 
             if (smoothMode.get("Advanced")) {

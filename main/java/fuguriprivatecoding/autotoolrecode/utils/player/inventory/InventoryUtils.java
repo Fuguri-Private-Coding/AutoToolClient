@@ -231,7 +231,7 @@ public class InventoryUtils implements Imports {
     }
 
     public static boolean isValidBlock(final Block block, final boolean toPlace) {
-        if (block instanceof BlockContainer || block instanceof BlockTNT || !block.isFullBlock() || (!block.isFullCube() && !(block instanceof BlockGlass)) || (toPlace && block instanceof BlockFalling)) {
+        if (block instanceof BlockContainer || block instanceof BlockTNT || !block.isFullBlock() || (toPlace && block instanceof BlockFalling)) {
             return false;
         }
         final Material material = block.getMaterial();
