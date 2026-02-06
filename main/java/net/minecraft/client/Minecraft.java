@@ -1794,7 +1794,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.thePlayer = null;
         }
 
-        if (!Modules.getModule(Fixes.class).isToggled() || !Modules.getModule(Fixes.class).fixes.get("FastWorldLoading (Test)")) {
+        if (!Modules.getModule(Fixes.class).isToggled() || !Modules.getModule(Fixes.class).fixes.get("FastWorldLoading")) {
             System.gc();
         }
 

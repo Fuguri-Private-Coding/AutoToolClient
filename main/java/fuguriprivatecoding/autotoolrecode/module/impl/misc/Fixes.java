@@ -16,7 +16,7 @@ public class Fixes extends Module {
             .add("ClickDelay", true)
             .add("SaveMoveKeys", true)
             .add("JumpDelay", true)
-            .add("FastWorldLoading (Test)", true);
+            .add("FastWorldLoading", true);
 
     IntegerSetting jumpChance = new IntegerSetting("JumpChance", this, 0, 100, 100);
 

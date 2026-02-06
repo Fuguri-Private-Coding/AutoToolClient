@@ -8,17 +8,17 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.gui.mouse.MouseDelta;
+import fuguriprivatecoding.autotoolrecode.utils.gui.mouse.MousePoint;
 import fuguriprivatecoding.autotoolrecode.utils.player.inventory.InventoryUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import org.joml.Vector2i;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -54,8 +54,9 @@ public class ChestStealer extends Module {
     final StopWatch startDelayStopWatch = new StopWatch();
     final StopWatch closeDelayStopWatch = new StopWatch();
 
+    int startDelayTick, closeDelayTick, lootDelayTick;
+
     boolean opened = false;
-    long delays;
 
     List<Vector2i> slots = new CopyOnWriteArrayList<>();
     Vector2i currentSlot = new Vector2i(0, 0);
@@ -68,45 +69,41 @@ public class ChestStealer extends Module {
             if (mc.currentScreen instanceof GuiChest guiChest) {
                 String chestName = guiChest.getLowerChestInventory().getDisplayName().getUnformattedText();
 
-                if (checkName.isToggled()) {
-                    if (!chestName.contains("Chest")) return;
-                }
-
-                if (!startDelayStopWatch.reachedMS(startDelay.getRandomizedIntValue() * 50L)) return;
+                if (!startDelayStopWatch.reachedMS(startDelayTick * 50L) ||
+                    checkName.isToggled() && !chestName.contains("Chest")) return;
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
 
                 if (!opened) {
-                    slots = getSlots(container);
                     opened = true;
                 }
 
-                slots.sort(Comparator.comparingInt(slot -> {
-                    int dx = mouse.mouseX - slot.x;
-                    int dy = mouse.mouseY - slot.y;
+                slots = getSlots(container);
 
-                    return (int) Math.hypot(dx, dy);
+                slots.sort(Comparator.comparingInt(slot -> {
+                    int deltaX = mouse.getMouseX() - slot.x;
+                    int deltaY = mouse.getMouseY() - slot.y;
+
+                    return (int) Math.hypot(deltaX, deltaY);
                 }));
 
                 currentSlot = slots.getFirst();
 
-                int moveSpeed = this.moveSpeed.getRandomizedIntValue();
-
-                int deltaX = (int) (Math.clamp(currentSlot.x - mouse.mouseX, -moveSpeed, moveSpeed) / smooth.getRandomizedDoubleValue());
-                int deltaY = (int) (Math.clamp(currentSlot.y - mouse.mouseY, -moveSpeed, moveSpeed) / smooth.getRandomizedDoubleValue());
+                MouseDelta delta = mouse.getDelta(currentSlot)
+                    .limit(this.moveSpeed.getRandomizedIntValue())
+                    .divine((float) smooth.getRandomizedDoubleValue());
 
                 if (slots.getFirst().x != -1488) {
-                    mouse.move(deltaX, deltaY);
+                    mouse.move(delta);
 
-                    if (Math.hypot(deltaX, deltaY) < minDeltaToClick.getValue()) {
-                        if (delayStopWatch.reachedMS(delays) && slots.contains(currentSlot)) {
+                    if (delta.hypot() < minDeltaToClick.getValue()) {
+                        if (delayStopWatch.reachedMS(lootDelayTick * 50L) && slots.contains(currentSlot)) {
+//                            slots.remove(currentSlot);
                             mouse.click();
-
-                            delayStopWatch.reset();
-                            slots.remove(currentSlot);
                         }
                     } else {
-                        delays = delay.getRandomizedIntValue() * 50L;
+                        lootDelayTick = delay.getRandomizedIntValue();
+                        delayStopWatch.reset();
                     }
 
                     if (fail.isToggled() && Math.random() <= failChance.getRandomizedIntValue() / 100f) {
@@ -116,17 +113,19 @@ public class ChestStealer extends Module {
 
                 if (autoClose.isToggled()) {
                     if (slots.getFirst().x == -1488) {
-                        if (closeDelayStopWatch.reachedMS(closeDelay.getRandomizedIntValue() * 50L)) {
+                        if (closeDelayStopWatch.reachedMS(closeDelayTick * 50L)) {
                             mc.thePlayer.closeScreen();
                         }
                     } else {
+                        closeDelayTick = closeDelay.getRandomizedIntValue();
                         closeDelayStopWatch.reset();
                     }
                 }
             } else {
+                startDelayTick = startDelay.getRandomizedIntValue();
                 startDelayStopWatch.reset();
-                opened = false;
                 mouse.reset();
+                opened = false;
             }
         }
 
@@ -137,8 +136,8 @@ public class ChestStealer extends Module {
                     mouse.render();
                 } else {
                     if (renderModes.get("Cursor")) {
-                        float x = mouse.prevX + (mouse.mouseX - mouse.prevX) * mc.timer.renderPartialTicks;
-                        float y = mouse.prevY + (mouse.mouseY - mouse.prevY) * mc.timer.renderPartialTicks;
+                        float x = mouse.getPrevX() + (mouse.getMouseX() - mouse.getPrevX()) * mc.timer.renderPartialTicks;
+                        float y = mouse.getPrevY() + (mouse.getMouseY() - mouse.getPrevY()) * mc.timer.renderPartialTicks;
 
                         ColorUtils.glColor(color.getFadedColor());
                         RenderUtils.drawImage(Client.INST.of("image/cursor.png"), x - 2, y, 10, 10, true);
@@ -154,10 +153,10 @@ public class ChestStealer extends Module {
         slots.add(new Vector2i(-1488, -1488));
 
         for (int i = 0; i < container.getLowerChestInventory().getSizeInventory(); i++) {
-            final Slot slot = container.getSlot(i);
             if (!InventoryUtils.isValid(container.getLowerChestInventory().getStackInSlot(i)) && !takeAllLoot.isToggled())
                 continue;
 
+            final Slot slot = container.getSlot(i);
             if (slot.getHasStack()) {
                 GuiContainer cont = (GuiContainer) mc.currentScreen;
 
@@ -169,40 +168,5 @@ public class ChestStealer extends Module {
         }
 
         return slots;
-    }
-
-    private static class MousePoint {
-        int mouseX, prevX;
-        int mouseY, prevY;
-
-        public void move(int deltaX, int deltaY) {
-            prevUpdate();
-            mouseX += deltaX;
-            mouseY += deltaY;
-        }
-
-        public void click() {
-            try {
-                GuiContainer.forceShift = true;
-                mc.currentScreen.mouseClick(mouseX, mouseY, 1);
-                GuiContainer.forceShift = false;
-            } catch (Exception ignored) {}
-        }
-
-        public void render() {
-            mc.currentScreen.drawScreen(mouseX, mouseY, mc.timer.renderPartialTicks);
-        }
-
-        public void reset() {
-            ScaledResolution sc = new ScaledResolution(mc);
-            prevUpdate();
-            mouseX = sc.getScaledWidth() / 2;
-            mouseY = sc.getScaledHeight() / 2;
-        }
-
-        private void prevUpdate() {
-            prevX = mouseX;
-            prevY = mouseY;
-        }
     }
 }
