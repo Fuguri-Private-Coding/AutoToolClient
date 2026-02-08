@@ -84,7 +84,7 @@ public class Scaffold extends Module {
     private final CheckBox sneakIfRotateWithClutch = new CheckBox("SneakIfRotateWithClutch", this, () -> sneakIf.get("Rotate") && godNormalVisible.getAsBoolean());
     private final CheckBox sneakIfNinjaBridgeWithClutch = new CheckBox("SneakIfNinjaBridgeWithClutch", this, () -> sneakIf.get("NinjaBridge") && godNormalVisible.getAsBoolean());
 
-    private final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, () -> godNormalVisible.getAsBoolean() && sneakIf.get("NinjaBridge"), 0f,0.1f,0.05f, 0.01f);
+    private final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, () -> godNormalVisible.getAsBoolean() && sneakIf.get("NinjaBridge"), -0.1f,0.1f,0.05f, 0.01f);
 
     private final CheckBox render = new CheckBox("Render", this, true);
     private final ColorSetting color = new ColorSetting("Color", this);

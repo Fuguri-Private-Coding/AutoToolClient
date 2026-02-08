@@ -30,7 +30,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.*;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
@@ -44,16 +43,14 @@ public class KillAura extends Module {
         .addModes("Players", "Mobs", "Animals", "Villagers");
 
     private final Mode sortType = new Mode("SortType", this)
-        .addModes("Distance", "FOV", "HurtTime", "Switch")
+        .addModes("Distance", "FOV", "HurtTime")
         .setMode("FOV");
 
-    private final IntegerSetting maxSwitchEntity = new IntegerSetting("MaxSwitchEntity", this, () -> sortType.is("Switch"), 0, 5,5);
-
     private final Mode hitVec = new Mode("HitVec", this)
-        .addModes("Best", "Nearest", "Head", "Body")
+        .addModes("Best", "Nearest", "Head", "Body", "Camera")
         .setMode("Best");
 
-    private final BooleanSupplier boxSize = () -> hitVec.is("Best") || hitVec.is("Nearest");
+    private final BooleanSupplier boxSize = () -> hitVec.is("Best") || hitVec.is("Nearest") || hitVec.is("Camera");
     private final IntegerSetting hBoxSize = new IntegerSetting("HBoxSize", this, boxSize, 1, 100, 100);
     private final IntegerSetting vBoxSize = new IntegerSetting("VBoxSize", this, boxSize, 1, 100, 100);
 
@@ -65,9 +62,9 @@ public class KillAura extends Module {
     private final CheckBox teleportPredictFix = new CheckBox("TeleportPredictFix", this);
 
     private final MultiMode smoothMode = new MultiMode("SmoothModes", this)
-        .addModes("CameraDelta", "Linear", "Basic", "MixDelta", "Advanced");
+        .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Advanced");
 
-    private final DoubleSlider deltaMultiplier = new DoubleSlider("DeltaMultiplier", this, () -> smoothMode.get("CameraDelta"), 1, 15, 8, 0.1f);
+    private final DoubleSlider deltaMultiplier = new DoubleSlider("DeltaMultiplier", this, () -> smoothMode.get("MouseDelta"), 1, 15, 8, 0.1f);
 
     private final DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 100, 1, 1f);
     private final DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 100, 1, 1f);
@@ -153,27 +150,30 @@ public class KillAura extends Module {
     private Rot getRotation(EntityLivingBase target, Rot lr, AxisAlignedBB box) {
         boolean teleport = (TimerRange.isTeleporting() || LagRange.isTeleporting()) && teleportPredictFix.isToggled();
 
+        RayTrace cameraHit = RayCastUtils.rayCast(CameraRot.INST, findDistance.getValue() + 3, 0);
+
         Rot needRot = switch (hitVec.getMode()) {
                 case "Best" -> RotUtils.getBestRotation(box);
                 case "Nearest" -> RotUtils.getNearestRotations(lr, box);
                 case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
                 case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
+                case "Camera" -> cameraHit.entityHit == target ? CameraRot.INST : RotUtils.getNearestRotations(lr, box);
                 default -> null;
             };
 
-        if (teleport) needRot = RotUtils.getBestRotation(box);
-
         if (needRot == null) return null;
 
-        if (smartAim.isToggled()) {
-            RayTrace hit = RayCastUtils.rayCast(needRot, findDistance.getValue(), 0.3f);
+        if (teleport) needRot = RotUtils.getBestRotation(box);
 
-            if (hit == null || hit.typeOfHit != RayTrace.RayType.ENTITY) {
+        if (smartAim.isToggled()) {
+            RayTrace smartHit = RayCastUtils.rayCast(needRot, findDistance.getValue(), 0.3f);
+
+            if (smartHit == null || smartHit.typeOfHit != RayTrace.RayType.ENTITY) {
                 needRot = RotUtils.getPossibleBestRotation(needRot, box);
             }
         }
 
-        if (smoothMode.get("CameraDelta")) {
+        if (smoothMode.get("MouseDelta")) {
             Rot mouseDelta = RotUtils.getDelta(
                 CameraRot.INST.getPrevRot(),
                 CameraRot.INST
@@ -184,7 +184,6 @@ public class KillAura extends Module {
 
         return needRot;
     }
-
 
     private void rotate(EntityLivingBase target) {
         Rot lr = mc.thePlayer.getRotation();
@@ -284,27 +283,10 @@ public class KillAura extends Module {
 
         entityList.removeIf(ent -> DistanceUtils.getDistance(ent) > findDistance.getValue());
 
-        List<Entity> switchList = new CopyOnWriteArrayList<>();
-
-        for (EntityLivingBase ent : entityList) {
-            double distance = DistanceUtils.getDistance(ent);
-            if (distance <= 3 && switchList.size() < maxSwitchEntity.getValue()) switchList.add(ent);
-        }
-
         entityList.sort(
             switch (sortType.getMode()) {
                 case "Distance" -> Comparator.comparingDouble(DistanceUtils::getDistance);
                 case "HurtTime" -> Comparator.comparingDouble(ent -> ent.hurtTime);
-                case "Switch" -> Comparator.comparingDouble(entity -> {
-                    double distance = DistanceUtils.getDistance(entity);
-                    double hurtTime = entity.hurtTime;
-
-                    if (switchList.size() > 1) {
-                        return hurtTime + distance;
-                    } else {
-                        return distance;
-                    }
-                });
                 default -> Comparator.comparingDouble(RotUtils::getFovToEntity);
             }
         );
