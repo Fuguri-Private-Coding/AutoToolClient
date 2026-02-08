@@ -1,1 +1,1 @@
-Assets for minesfart. (https://workupload.com/file/LkBYhpf2qRJ)
+AutoTool Launcher (https://mega.nz/file/WQlhFLjY#qpI769fCmdcvFKN5Q5NSQgCjCjQ-CE6ILZsFvlQs20c)
