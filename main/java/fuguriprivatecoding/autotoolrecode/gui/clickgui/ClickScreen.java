@@ -697,6 +697,77 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 					case KeyBind keyBind -> fontRenderer.drawString(activeKeyBind == keyBind ? "▬" : Keyboard.getKeyName(keyBind.getKey()), background.x + verticalLineXOffset + 5 + settingWidth + 1, background.y + 2 + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset, MAIN_COLOR);
 
+                    case TestRotationOffsetSetting rotOffset -> {
+                        float startX = background.x + verticalLineXOffset + 5 + 32.5f + 4 + 20;
+                        float startY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
+
+                        float rectX = startX + 5;
+                        float rectY = startY;
+                        float rectWidth = 100;
+                        float rectHeight = 100;
+                        float rectCenterX = rectX + rectWidth / 2;
+                        float rectCenterY = rectY + rectHeight / 2;
+
+                        RoundedUtils.drawRect(
+                            rectX,
+                            rectY,
+                            rectWidth,
+                            rectHeight,
+                            5,
+                            BACKGROUND_COLOR
+                        );
+                        RoundedUtils.drawRect(
+                            rectCenterX - 1,
+                            rectY,
+                            0,
+                            rectHeight,
+                            0,
+                            Color.WHITE
+                        );
+                        RoundedUtils.drawRect(
+                            rectX,
+                            rectCenterY - 1,
+                            rectWidth,
+                            0,
+                            0,
+                            Color.WHITE
+                        );
+
+                        RoundedUtils.drawRect(
+                            rectX,
+                            rectY + rectHeight + 5,
+                            45,
+                            12,
+                            5,
+                            Color.GREEN
+                        );
+
+                        fontRenderer.drawCenteredString(
+                            "Start recording",
+                            rectX + 45 / 2,
+                            rectY + 3,
+                            Color.WHITE
+                        );
+
+                        RoundedUtils.drawRect(
+                            rectX + 55,
+                            rectY + rectHeight + 5,
+                            45,
+                            12,
+                            5,
+                            Color.RED
+                        );
+
+                        fontRenderer.drawCenteredString(
+                            "Stop recording",
+                            rectX + 55,
+                            rectY + 3,
+                            Color.WHITE
+                        );
+
+                        offset += 110;
+                    }
+
 					default -> {}
 				}
 				offset += 14;
@@ -1065,6 +1136,69 @@ public class ClickScreen extends GuiScreen implements EventListener {
 					offset += currentOffset + 3 - 8;
 					settingsTotalHeight += currentOffset + 3 - 8;
 				}
+
+                if (setting instanceof TestRotationOffsetSetting rotOffset) {
+                    float startX = background.x + verticalLineXOffset + 5 + 32.5f + 4 + 20;
+                    float startY = background.y + 2 + 2 + fontRenderer.FONT_HEIGHT + 16.5f + offset + fontRenderer.FONT_HEIGHT / 2f - 2.5f;
+
+                    float rectX = startX + 5;
+                    float rectY = startY;
+                    float rectWidth = 100;
+                    float rectHeight = 100;
+                    float rectCenterX = rectX + rectWidth / 2;
+                    float rectCenterY = rectY + rectHeight / 2;
+
+//                    RoundedUtils.drawRect(
+//                        rectX,
+//                        rectY,
+//                        rectWidth,
+//                        rectHeight,
+//                        5,
+//                        BACKGROUND_COLOR
+//                    );
+//                    RoundedUtils.drawRect(
+//                        rectCenterX - 1,
+//                        rectY,
+//                        0,
+//                        rectHeight,
+//                        0,
+//                        Color.WHITE
+//                    );
+//                    RoundedUtils.drawRect(
+//                        rectX,
+//                        rectCenterY - 1,
+//                        rectWidth,
+//                        0,
+//                        0,
+//                        Color.WHITE
+//                    );
+
+//                    RoundedUtils.drawRect(
+//                        rectX,
+//                        rectY + rectHeight + 5,
+//                        45,
+//                        12,
+//                        5,
+//                        Color.GREEN
+//                    );
+//
+//                    RoundedUtils.drawRect(
+//                        rectX + 55,
+//                        rectY + rectHeight + 5,
+//                        45,
+//                        12,
+//                        5,
+//                        Color.RED
+//                    );
+
+                    if (mouseX >= rectX && mouseX <= rectX + 45
+                        && mouseX >= rectY + rectHeight + 5 && mouseY <= rectY + rectHeight + 5 + 12
+                        && mouseButton == 0) {
+                        rotOffset.recording = true;
+                    }
+
+                    offset += 110;
+                }
 
 				offset += 14;
 			}

@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.rotation;
 
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.entity.Entity;
@@ -88,4 +89,22 @@ public class Rot {
 	public Rot fix() {
 		return RotUtils.fixDelta(this);
 	}
+
+    public JsonObject toJsonObject() {
+        JsonObject object = new JsonObject();
+
+        object.addProperty("yaw", yaw);
+        object.addProperty("pitch", pitch);
+
+        return object;
+    }
+
+    public static Rot fromJsonObject(JsonObject object) {
+        if (!object.has("yaw") || !object.has("pitch")) {
+            System.out.println("missing yaw or pitch to create rot from json-object");
+            return null;
+        }
+
+        return new Rot(object.get("yaw").getAsFloat(), object.get("pitch").getAsFloat());
+    }
 }
