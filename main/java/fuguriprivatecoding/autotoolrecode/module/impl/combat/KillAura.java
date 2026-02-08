@@ -62,7 +62,7 @@ public class KillAura extends Module {
     private final CheckBox teleportPredictFix = new CheckBox("TeleportPredictFix", this);
 
     private final MultiMode smoothMode = new MultiMode("SmoothModes", this)
-        .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Advanced");
+        .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Advanced", "Recorded");
 
     private final DoubleSlider deltaMultiplier = new DoubleSlider("DeltaMultiplier", this, () -> smoothMode.get("MouseDelta"), 1, 15, 8, 0.1f);
 
@@ -76,6 +76,9 @@ public class KillAura extends Module {
         () -> smoothMode.get("Linear"),
         1, 5, 1.5f, 0.1f
     );
+
+    private final TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothMode.get("Recorded"));
+    private final FloatSetting recordedMultiplier = new FloatSetting("RecordedMultiplier", this, () -> smoothMode.get("Recorded"), 0, 10, 1, 0.01f);
 
     private final IntegerSetting moveSpeed = new IntegerSetting("MoveSpeed", this, () -> smoothMode.get("Advanced"), 0, 100, 75);
 
@@ -98,7 +101,7 @@ public class KillAura extends Module {
     private final StopWatch clickTimer = new StopWatch();
     private long delay;
 
-    private int waitTicks;
+    private int waitTicks, recordedIndex;
 
     private Rot lastDelta = new Rot();
 
@@ -180,6 +183,11 @@ public class KillAura extends Module {
             );
 
             needRot = needRot.add(mouseDelta.multiplier((float) deltaMultiplier.getRandomizedDoubleValue()));
+        }
+
+        if (smoothMode.get("Recorded")) {
+            Rot recordedDelta = recordedOffset.getByIndex(recordedIndex++);
+            needRot = needRot.add(recordedDelta.multiplier(recordedMultiplier.getValue()));
         }
 
         return needRot;
