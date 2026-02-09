@@ -166,16 +166,6 @@ public class KillAura extends Module {
 
         if (needRot == null) return null;
 
-        if (teleport) needRot = RotUtils.getBestRotation(box);
-
-        if (smartAim.isToggled()) {
-            RayTrace smartHit = RayCastUtils.rayCast(needRot, findDistance.getValue(), 0.3f);
-
-            if (smartHit == null || smartHit.typeOfHit != RayTrace.RayType.ENTITY) {
-                needRot = RotUtils.getPossibleBestRotation(needRot, box);
-            }
-        }
-
         if (smoothMode.get("MouseDelta")) {
             Rot mouseDelta = RotUtils.getDelta(
                 CameraRot.INST.getPrevRot(),
@@ -188,6 +178,16 @@ public class KillAura extends Module {
         if (smoothMode.get("Recorded")) {
             Rot recordedDelta = recordedOffset.getByIndex(recordedIndex++);
             needRot = needRot.add(recordedDelta.multiplier(recordedMultiplier.getValue()));
+        }
+
+        if (teleport) needRot = RotUtils.getBestRotation(box);
+
+        if (smartAim.isToggled()) {
+            RayTrace smartHit = RayCastUtils.rayCast(needRot, findDistance.getValue(), 0.3f);
+
+            if (smartHit == null || smartHit.typeOfHit != RayTrace.RayType.ENTITY) {
+                needRot = RotUtils.getPossibleBestRotation(needRot, box);
+            }
         }
 
         return needRot;
@@ -320,7 +320,7 @@ public class KillAura extends Module {
 
     private boolean matchesTargetType(EntityLivingBase entity) {
         return switch (entity) {
-            case EntityPlayer player -> targets.get("Players") && !player.isFriend() && !player.isTeam();
+            case EntityPlayer player -> targets.get("Players") && !player.isFriend() && !player.isBot() && !player.isTeam();
             case EntityMob ignore -> targets.get("Mobs");
             case EntityAnimal ignore -> targets.get("Animals");
             case EntityVillager ignore -> targets.get("Villagers");

@@ -45,7 +45,7 @@ public class Clicks implements Imports, EventListener {
 
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
 
-            if (rayCast != null && (rayCast.isFriend() || rayCast.isTeam()) || !clicking) {
+            if (rayCast != null && (rayCast.isFriend() || rayCast.isTeam() || rayCast.isBot()) || !clicking) {
                 return;
             }
 

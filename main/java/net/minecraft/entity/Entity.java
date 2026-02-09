@@ -286,9 +286,6 @@ public abstract class Entity implements ICommandSender
             CameraRot.INST.getPrevRot().setYaw(camera.getYaw());
             camera.setYaw(cameraYaw);
             camera.setPitch(cameraPitch);
-//
-//            CameraRot.INST.getPrevRot().setYaw(CameraRot.INST.getPrevRot().getYaw() + camera.getYaw() - prevCameraYaw);
-//            CameraRot.INST.getPrevRot().setPitch(CameraRot.INST.getPrevRot().getPitch() + camera.getPitch() - prevCameraPitch);
         }
     }
 

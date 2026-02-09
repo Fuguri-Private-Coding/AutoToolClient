@@ -1,25 +1,17 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.MathHelper;
-import org.lwjgl.opengl.GL11;
-
 import java.awt.*;
 
 import static java.lang.Math.*;
@@ -36,6 +28,8 @@ public class TargetESP extends Module {
     final IntegerSetting quality = new IntegerSetting("Quality", this, 1, 360, 60);
     final FloatSetting length = new FloatSetting("Length", this, 0.2f, 2.5f, 0.6f, 0.1f);
     final FloatSetting radius = new FloatSetting("Radius", this, 0.1f, 2f, 0.7f, 0.1f);
+
+    public final FloatSetting outLineAlpha = new FloatSetting("OutLineAlpha", this, 0, 1, 1, 0.01f);
 
     public final ColorSetting color = new ColorSetting("Color", this);
     public final CheckBox verticalOffset = new CheckBox("VerticalOffset", this, false);
@@ -104,11 +98,11 @@ public class TargetESP extends Module {
             double z1 = z + sin(i * Math.PI / 180) * radius.getValue();
             double y1 = y + (animation + 1) / 2 * target.height;
 
-            Color horizontalColor = ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt);
+            Color finalColor = new Colors(ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt)).withAlpha(outLineAlpha.getValue());
 
-            ColorUtils.glColor(horizontalColor, 1.0f);
+            ColorUtils.glColor(finalColor);
             glVertex3d(x1, y1, z1);
-            ColorUtils.glColor(horizontalColor, 1.0f);
+            ColorUtils.glColor(finalColor);
             glVertex3d(x1, y1, z1);
         }
         glEnd();

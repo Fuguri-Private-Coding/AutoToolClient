@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.player.AttackEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.HitSlowDownEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Friends;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.AntiBot;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Teams;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.Test;
@@ -1941,6 +1942,11 @@ public abstract class EntityPlayer extends EntityLivingBase {
     public boolean isFriend() {
         MidClick midClick = Modules.getModule(MidClick.class);
         return midClick.isToggled() && Friends.isFriend(getName(), midClick.reverseFriends.isToggled());
+    }
+
+    public boolean isBot() {
+        AntiBot antiBot = Modules.getModule(AntiBot.class);
+        return antiBot.isToggled() && antiBot.isBot(this);
     }
 
     public boolean isTeam() {

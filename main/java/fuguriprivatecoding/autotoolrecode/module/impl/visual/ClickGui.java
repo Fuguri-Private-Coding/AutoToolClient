@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
+import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickGuiScreenNew;
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -29,7 +30,7 @@ public class ClickGui extends Module {
 
 	@Override
 	public void onEnable() {
-		mc.displayGuiScreen(ClickScreen.INST);
+		mc.displayGuiScreen(new ClickGuiScreenNew());
 		toggle();
 	}
 }

@@ -33,6 +33,7 @@ public class Modules {
             new AutoRegister(),
 			new FastLadder(),
 			new BridgeAssist(),
+			new AntiBot(),
 			new FovModifier(),
             new Notifications(),
 			new ItemPhysics(),

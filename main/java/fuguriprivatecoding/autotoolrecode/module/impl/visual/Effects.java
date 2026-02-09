@@ -41,7 +41,7 @@ public class Effects extends Module {
     public void onEvent(Event event) {
         if (event instanceof AttackEvent e) {
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
-            if (!rayCast.isFriend() && !rayCast.isTeam()) target = e.getHittingEntity();
+            if (!rayCast.isFriend() && !rayCast.isTeam() && rayCast.isBot()) target = e.getHittingEntity();
 
             if (e.getHittingEntity() instanceof EntityLivingBase ent) {
                 if (attackEffect.isToggled()) {

@@ -8,13 +8,14 @@ import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
+import lombok.Getter;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-// created by dicves_recode on 07.02.2026
 public class TestRotationOffsetSetting extends Setting {
     private final List<Rot> offsets = new ArrayList<>();
     private final Color BACKGROUND_COLOR = new Color(0, 0, 0, 120);

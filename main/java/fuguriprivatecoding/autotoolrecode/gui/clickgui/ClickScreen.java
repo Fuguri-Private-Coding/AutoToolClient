@@ -24,6 +24,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import fuguriprivatecoding.autotoolrecode.utils.value.Doubles;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
@@ -766,6 +767,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
                         );
 
                         offset += 110;
+						settingsTotalHeight += 110;
                     }
 
 					default -> {}
@@ -1198,6 +1200,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
                     }
 
                     offset += 110;
+					settingsTotalHeight += 110;
                 }
 
 				offset += 14;
