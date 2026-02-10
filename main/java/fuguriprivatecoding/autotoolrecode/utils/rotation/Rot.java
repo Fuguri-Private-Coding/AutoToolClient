@@ -68,6 +68,13 @@ public class Rot {
         );
     }
 
+	public Rot limit(Rot speed) {
+		return new Rot(
+			MathHelper.clamp(getYaw(), -speed.yaw, speed.yaw),
+			MathHelper.clamp(getPitch() , -speed.pitch, speed.pitch)
+		);
+	}
+
     public Rot divine(float yaw, float pitch) {
         return new Rot(
             getYaw() / yaw,

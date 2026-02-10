@@ -13,6 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Objects;
 
 @ModuleInfo(name = "CustomCape", category = Category.VISUAL, description = "Изменяет вам плащ.")
 public class CustomCape extends Module {
@@ -43,7 +44,7 @@ public class CustomCape extends Module {
     public void updateCape() {
         capeMode.getModes().clear();
         capeMode.addMode("None");
-        for (File cape : CAPE_DIRECTORY.listFiles()) {
+        for (File cape : Objects.requireNonNull(CAPE_DIRECTORY.listFiles())) {
             capeMode.addMode(cape.getName().replaceAll(".png", ""));
         }
     }

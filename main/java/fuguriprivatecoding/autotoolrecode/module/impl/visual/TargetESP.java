@@ -63,7 +63,7 @@ public class TargetESP extends Module {
         double animation = cos(System.currentTimeMillis() / 1000.0 * speed.getValue());
 
         double x = target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - RenderManager.renderPosX;
-        double y = target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - RenderManager.renderPosY + 0.2;
+        double y = target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - RenderManager.renderPosY;
         double z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - RenderManager.renderPosZ;
 
         if (instant && hurt != 0) hurt = 1;
@@ -79,7 +79,7 @@ public class TargetESP extends Module {
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
             double x1 = x + cos(i * Math.PI / 180) * radius.getValue();
             double z1 = z + sin(i * Math.PI / 180) * radius.getValue();
-            double y1 = y + (animation + 1) / 2 * target.height;
+            double y1 = y + (animation + 1) * target.height / 1.8;
 
             Color horizontalColor = ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt);
             Color verticalColor = verticalOffset.isToggled() ? ColorUtils.interpolateColor(this.verticalColor.getMixedColor(i), this.verticalHitColor.getMixedColor(i), hurt) : horizontalColor;
@@ -96,7 +96,7 @@ public class TargetESP extends Module {
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
             double x1 = x + cos(i * Math.PI / 180) * radius.getValue();
             double z1 = z + sin(i * Math.PI / 180) * radius.getValue();
-            double y1 = y + (animation + 1) / 2 * target.height;
+            double y1 = y + (animation + 1) * target.height / 1.8;
 
             Color finalColor = new Colors(ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt)).withAlpha(outLineAlpha.getValue());
 

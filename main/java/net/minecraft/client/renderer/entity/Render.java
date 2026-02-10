@@ -54,7 +54,7 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     }
 
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        if (Modules.getModule(NameTags.class).isToggled()) {
+        if (Modules.getModule(NameTags.class).isToggled() && !Modules.getModule(NameTags.class).renderAllNames.isToggled() && !(entity instanceof EntityPlayer)) {
             return;
         }
         this.renderName(entity, x, y, z);
@@ -71,9 +71,9 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     }
 
     protected void renderOffsetLivingLabel(T entityIn, double x, double y, double z, String str, float p_177069_9_, double p_177069_10_) {
-        if (entityIn instanceof EntityPlayer && Modules.getModule(NameTags.class).isToggled()) {
-            return;
-        }
+        boolean entity = entityIn instanceof EntityPlayer ent && str.equalsIgnoreCase(ent.getDisplayName().getFormattedText());
+        if (entity && Modules.getModule(NameTags.class).isToggled()) return;
+
         this.renderLivingLabel(entityIn, str, x, y, z, 256);
     }
 
@@ -307,12 +307,7 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     protected void renderLivingLabel(T entityIn, String str, double x, double y, double z, int maxDistance) {
         double d0 = entityIn.getDistanceSqToEntity(this.renderManager.livingPlayer);
 
-        boolean b = entityIn instanceof EntityPlayer && Modules.getModule(NameTags.class).isToggled();
-
-        boolean friend = entityIn instanceof EntityPlayer ent && Modules.getModule(MidClick.class).showInName.isToggled() && ent.isFriend();
-
-        if (d0 <= (double) (maxDistance * maxDistance) || b) {
-            if (friend) str = "§2[Friend]§9 " + str;
+        if (d0 <= (double) (maxDistance * maxDistance)) {
             FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
             float f = 1.6f;
             float f1 = (float) ((double) (0.016666668F * f) + Math.sqrt(d0) / 850.0);

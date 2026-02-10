@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 @ModuleInfo(name = "CustomSkin", category = Category.VISUAL, description = "Изменяет вам скин.")
 public class CustomSkin extends Module {
@@ -57,7 +58,7 @@ public class CustomSkin extends Module {
     public void updateSkins() {
         skinMode.getModes().clear();
         skinMode.addMode("None");
-        for (File skin : SKIN_DIRECTORY.listFiles()) {
+        for (File skin : Objects.requireNonNull(SKIN_DIRECTORY.listFiles())) {
             skinMode.addMode(skin.getName().replaceAll(".png", ""));
         }
     }

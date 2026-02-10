@@ -282,7 +282,7 @@ public class Scaffold extends Module {
 
         Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), rotation);
 
-        delta = getDeltaSpeed(delta);
+        delta = delta.limit(getDeltaSpeed());
         delta = RotUtils.fixDelta(delta);
 
         lastDelta = delta.hypot();
@@ -292,7 +292,7 @@ public class Scaffold extends Module {
     }
 
     boolean isClutch() {
-        return (mc.thePlayer.hurtResistantTime > 0 || Player.airTicks > 12) && clutch.isToggled();
+        return (Player.isClutch() || DistanceUtils.getDistance(targetBlock) > 3.7f) && clutch.isToggled();
     }
 
     boolean isSameY(RayTrace mouse) {
@@ -311,30 +311,30 @@ public class Scaffold extends Module {
         return false;
     }
 
-    Rot getDeltaSpeed(Rot delta) {
+    Rot getDeltaSpeed() {
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (isTelly()) {
-                    return delta.limit(180, 180);
+                    return new Rot(180, 180);
                 } else {
-                    return delta.limit(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
+                    return new Rot(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
                 }
             }
 
             case "GodBridge" -> {
                 if (isClutch()) {
-                    return delta.limit(yawClutchSpeed.getRandomizedIntValue(), pitchClutchSpeed.getRandomizedIntValue());
+                    return new Rot(yawClutchSpeed.getRandomizedIntValue(), pitchClutchSpeed.getRandomizedIntValue());
                 } else {
-                    return delta.limit(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
+                    return new Rot(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
                 }
             }
 
             case "Normal" -> {
-                return delta.limit(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
+                return new Rot(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
             }
         }
 
-        return delta;
+        return new Rot(50, 50);
     }
 
     private float getPitch(float yaw, boolean handleMouse) {

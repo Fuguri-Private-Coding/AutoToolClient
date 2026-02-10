@@ -30,6 +30,18 @@ public class RoundedUtils implements Imports {
         draw(x - 1f, y - 1f, width + 2, height + 2, radius, radius, radius, radius, color);
     }
 
+    public static void drawCenteredXRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {
+        drawRect(x - width / 2f, y, width, height, radius, color);
+    }
+
+    public static void drawCenteredYRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {
+        drawRect(x, y - height / 2f, width, height, radius, color);
+    }
+
+    public static void drawCenteredXYRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {
+        drawRect(x - width / 2f, y - height / 2f, width, height, radius, color);
+    }
+
     public static void drawRect(final float x, final float y, final float width, final float height, final float leftDown, final float leftUp, final float rightUp, final float rightDown, final Color color) {
         draw(x - 1f, y - 1f, width + 2, height + 2, leftUp, leftDown, rightUp, rightDown, color);
     }

@@ -9,9 +9,11 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -30,6 +32,7 @@ public class BackTrack extends Module {
     final DoubleSlider delay = new DoubleSlider("Delay", this, 0,5000,200,1);
     final BooleanSupplier constantRandomSupplier = () -> delay.minValue != delay.maxValue;
     final CheckBox constantRandomize = new CheckBox("ConstantDelayRandomize", this, constantRandomSupplier, true);
+    final CheckBox adaptiveDelay = new CheckBox("AdaptiveDelay", this, true);
 
     final FloatSetting threshold = new FloatSetting("Threshold", this, 0, 1, 0, 0.01f);
 
@@ -103,6 +106,11 @@ public class BackTrack extends Module {
         if (event instanceof TickEvent) {
             if (working) {
                 if (constantRandomize.isToggled() && constantRandomSupplier.getAsBoolean()) delays = delay.getRandomizedIntValue();
+
+                if (adaptiveDelay.isToggled()) {
+                    double distance = Math.clamp(DistanceUtils.getDistance(target) / this.distance.getMinValue(), 0, 1);
+                    delays = (long) (delay.getRandomizedIntValue() * distance);
+                }
             } else {
                 if (delayBetweenBackTracks > 0) delayBetweenBackTracks--;
             }
@@ -134,7 +142,9 @@ public class BackTrack extends Module {
                 double distanceToFake = DistanceUtils.getDistance(target);
 
                 boolean improve = distanceToFake + threshold.getValue() >= distanceToReal;
-                boolean distance = distanceToReal > this.distance.getMaxValue() || distanceToFake > 3 || distanceToReal < this.distance.getMinValue();
+                boolean distanceFake = distanceToFake > 3 && !adaptiveDelay.isToggled();
+
+                boolean distance = distanceToReal > this.distance.getMaxValue() || distanceFake || distanceToReal < this.distance.getMinValue();
 
                 boolean targetHurtTime = resetIfTargetHurtTime.isToggled() && target.hurtTime > minTargetHurtTimeToReset.getValue();
                 boolean playerHurtTime = mc.thePlayer.hurtTime > minPlayerHurtTimeToReset.getValue() && resetIfPlayerHurtTime.isToggled();
