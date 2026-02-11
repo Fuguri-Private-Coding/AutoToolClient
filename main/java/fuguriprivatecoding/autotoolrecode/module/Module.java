@@ -58,6 +58,7 @@ public class Module implements Imports, SettingAble, EventListener {
 		}
 
         arrayListAnim.setEnd(toggled);
+        toggleAnimation.setEnd(toggled);
         addNotification();
     }
 
