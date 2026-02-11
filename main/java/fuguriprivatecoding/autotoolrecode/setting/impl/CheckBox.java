@@ -68,7 +68,7 @@ public class CheckBox extends Setting {
 
         font.drawString(String.valueOf(toggled), x + widthName, y, toggleColor);
 
-        return 15;
+        return 13;
     }
 
     @Override
@@ -78,12 +78,12 @@ public class CheckBox extends Setting {
 
         if (hovered && key == 0) toggled = !toggled;
 
-        return 15;
+        return 13;
     }
 
     @Override
     public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-        return 15;
+        return 13;
     }
 
     @Override

@@ -17,6 +17,8 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiScreen;
@@ -47,6 +49,8 @@ public class ClickGuiScreenNew extends GuiScreen {
     private final Scroll moduleScroll = new Scroll(25);
     private final Scroll settingsScroll = new Scroll(15);
 
+    private float settingsScrollTotalHeight = 0;
+
     public static void init() {
         INST = new ClickGuiScreenNew();
     }
@@ -71,14 +75,17 @@ public class ClickGuiScreenNew extends GuiScreen {
 
         float alpha = openAnim.getClampValue();
 
-        Color rectColor = Colors.BLACK.withAlphaClamp(0.5f).withMultiplyAlpha(alpha);
-        Color rectOutLineColor = Colors.WHITE.withAlphaClamp(0.7f).withMultiplyAlpha(alpha);
+        Color rectColor = Colors.BLACK.withAlphaClamp(0.3f).withMultiplyAlpha(alpha);
+        Color rectOutLineColor = Colors.WHITE.withAlphaClamp(0.5f).withMultiplyAlpha(alpha);
         Color textColor = Colors.WHITE.withAlpha(alpha);
 
         if (closing && openAnim.getValue() <= 0.2) {
             mc.currentScreen.onGuiClosed();
             mc.thePlayer.closeScreen();
         }
+
+        if (clickGui.blur.isToggled()) BlurUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, 10f, Colors.WHITE.withAlpha(alpha)));
+        if (clickGui.glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(x, y, width, height, 10f, clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed()));
 
         RoundedUtils.drawRect(x, y, width, height, 10f, rectColor);
         RoundedUtils.drawRect(x, y, width, 35, 0, 10, 10, 0, rectColor);
@@ -135,8 +142,8 @@ public class ClickGuiScreenNew extends GuiScreen {
         float categoryModulesX = x + 5;
         float categoryModulesY = y + 40;
 
-        categorySwitchAnim.update(5, Easing.IN_OUT_CUBIC);
-        openSettingsAnim.update(5, Easing.IN_OUT_CUBIC);
+        categorySwitchAnim.update(4, Easing.IN_OUT_CIRC);
+        openSettingsAnim.update(4, Easing.IN_OUT_CIRC);
 
         StencilUtils.setUpTexture(x, y + 35, width, height - 35, 10, 0, 0, 10);
         StencilUtils.writeTexture();
@@ -183,31 +190,48 @@ public class ClickGuiScreenNew extends GuiScreen {
 
         if (openSettingsAnim.getValue() > 0) {
             float moduleSettingsX = x + 5;
-            float moduleSettingsY = y + 40 - (height - 35) + openSettingsAnim.getValue() * (height - 35);
+            float moduleSettingsY = y + 40 - settingsScrollTotalHeight - (height - 35) + openSettingsAnim.getValue() * (height - 35 + settingsScrollTotalHeight);
             String moduleName = lastSelectedModule.getName();
             float moduleNameWidth = font.getStringWidth(moduleName);
+
 
             ScaleUtils.startScaling(moduleSettingsX - moduleNameWidth / 2f, moduleSettingsY - font.FONT_HEIGHT / 2f, moduleNameWidth, font.FONT_HEIGHT, 2);
             font.drawString(moduleName, moduleSettingsX, moduleSettingsY, textColor, true);
             ScaleUtils.stopScaling();
 
+            boolean settingsHovered = GuiUtils.isHovered(mouseX, mouseY, x + 5, y + 35, width - 10, height - 35);
+
             moduleSettingsY += font.FONT_HEIGHT * 2;
 
-            float settingsXOffset = 0;
-            float settingsYOffset = 0;
+            StencilUtils.setUpTexture(x, y + 55, width, height - 55, 10,0,0,10);
+            StencilUtils.writeTexture();
 
+            settingsScroll.update(settingsScrollTotalHeight, height - 60);
+            settingsScroll.handleScrollInput(settingsHovered);
+
+            settingsScroll.getScrollAnim().update(4, Easing.OUT_CUBIC);
+
+            settingsScrollTotalHeight = 0;
+
+            float settingsXOffset = 0;
+            float settingsYOffset = settingsScroll.getScrollAnim().getValue();
             for (Setting setting : lastSelectedModule.getSettings()) {
                 if (!setting.isVisible())
                     continue;
 
-                settingsYOffset += setting.draw(
+                float offset = setting.draw(
                     moduleSettingsX,
                     moduleSettingsY + settingsYOffset,
                     font,
                     new Colors(clickGui.color.getMixedColor(lastSelectedModule.getSettings().indexOf(setting))),
                     alpha
                 );
+
+                settingsYOffset += offset;
+                settingsScrollTotalHeight += offset;
             }
+            settingsScroll.setScrollTotalHeight(settingsYOffset);
+            StencilUtils.endWriteTexture();
         }
 
         StencilUtils.endWriteTexture();
@@ -311,11 +335,13 @@ public class ClickGuiScreenNew extends GuiScreen {
             float settingsXOffset = 0;
             float settingsYOffset = 0;
 
+            settingsScrollTotalHeight = 0;
+
             for (Setting setting : lastSelectedModule.getSettings()) {
                 if (!setting.isVisible())
                     continue;
 
-                settingsYOffset += setting.mouseClicked(
+                float offset = setting.mouseClicked(
                     mouseX,
                     mouseY,
                     moduleSettingsX,
@@ -323,6 +349,9 @@ public class ClickGuiScreenNew extends GuiScreen {
                     mouseButton,
                     font
                 );
+
+                settingsYOffset += offset;
+                settingsScrollTotalHeight += offset;
             }
         }
 
@@ -343,11 +372,13 @@ public class ClickGuiScreenNew extends GuiScreen {
             float settingsXOffset = 0;
             float settingsYOffset = 0;
 
+            settingsScrollTotalHeight = 0;
+
             for (Setting setting : lastSelectedModule.getSettings()) {
                 if (!setting.isVisible())
                     continue;
 
-                settingsYOffset += setting.mouseReleased(
+                float offset = setting.mouseReleased(
                     mouseX,
                     mouseY,
                     moduleSettingsX,
@@ -355,6 +386,9 @@ public class ClickGuiScreenNew extends GuiScreen {
                     state,
                     font
                 );
+
+                settingsYOffset += offset;
+                settingsScrollTotalHeight += offset;
             }
         }
     }

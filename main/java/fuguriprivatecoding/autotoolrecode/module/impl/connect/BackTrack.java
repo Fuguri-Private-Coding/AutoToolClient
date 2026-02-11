@@ -34,7 +34,7 @@ public class BackTrack extends Module {
 
     final FloatSetting threshold = new FloatSetting("Threshold", this, 0, 1, 0, 0.01f);
 
-    final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenBackTracks", this, 0, 20, 0) ;
+    final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenTrack", this, 0, 20, 0) ;
 
     final DoubleSlider distance = new DoubleSlider("Distance", this, 0,12,12,0.1f);
 

@@ -90,15 +90,19 @@ public class FloatSetting extends Setting {
         setAnimatedValue(sliderAnim.getValue());
 
         float animatedFilledFactor = getAnimatedNormalize();
-        final float length = 75;
+        final float length = 100;
         final float sliderLength = animatedFilledFactor * length;
 
-        RoundedUtils.drawRect(x + widthName, y, length, 4, 1.5f, Colors.GRAY.withAlphaClamp(0.3f * alpha));
-        RoundedUtils.drawRect(x + widthName, y, sliderLength, 4, 1.5f, elementColor);
-        RoundedUtils.drawRect(x + widthName + sliderLength - 2, y - 1, 6, 6, 3f, Color.WHITE);
-        font.drawString(String.format("%.2f", getValue()), x + widthName + length + 5, y, Color.WHITE);
+        RoundedUtils.drawRect(x, y + font.FONT_HEIGHT, length, 4, 1.5f, Colors.GRAY.withAlphaClamp(0.3f * alpha));
+        RoundedUtils.drawRect(x, y + font.FONT_HEIGHT, sliderLength, 4, 1.5f, elementColor);
+        RoundedUtils.drawRect(x + sliderLength - 2, y - 1 + font.FONT_HEIGHT, 6, 6, 3f, Color.WHITE);
 
-        boolean hovered = GuiUtils.isMouseHovered(x + widthName - 2, y - 2, length + 4, 8);
+        String valueText = String.format("%.2f", getValue());
+        float valueWidth = font.getStringWidth(valueText);
+
+        font.drawString(valueText, x + length - valueWidth, y, Color.WHITE);
+
+        boolean hovered = GuiUtils.isMouseHovered(x - 2, y - 2 + font.FONT_HEIGHT, length + 4, 8);
 
         if (hovered) {
             final ScaledResolution sc = new ScaledResolution(mc);
@@ -109,25 +113,25 @@ public class FloatSetting extends Setting {
             if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
                 setValue(getValue() + signum(DeltaTracker.getDeltaScroll()) * getStep());
             } else if (Mouse.isButtonDown(0)) {
-                float mx = mouseX - (x + widthName);
+                float mx = mouseX - (x);
                 float p = mx / length;
                 float normalize = getMin() + (getMax() - getMin()) * p;
                 setValue(normalize);
             }
         }
         
-        return 15;
+        return 20;
     }
 
     @Override
     public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
 
-        return 15;
+        return 20;
     }
 
     @Override
     public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-        return 15;
+        return 20;
     }
 
     @Override
