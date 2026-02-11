@@ -9,11 +9,9 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -65,7 +63,9 @@ public class BackTrack extends Module {
     public final List<TimedVar<Packet>> packetBuffer = new CopyOnWriteArrayList<>();
 
     private EntityLivingBase target;
-    private long delays = 90;
+
+    private long saveDelay = 90;
+    private long currentDelay = 90;
 
     private int delayBetweenBackTracks;
 
@@ -105,11 +105,11 @@ public class BackTrack extends Module {
 
         if (event instanceof TickEvent) {
             if (working) {
-                if (constantRandomize.isToggled() && constantRandomSupplier.getAsBoolean()) delays = delay.getRandomizedIntValue();
+                if (constantRandomize.isToggled() && constantRandomSupplier.getAsBoolean()) saveDelay = delay.getRandomizedIntValue();
 
                 if (adaptiveDelay.isToggled()) {
                     double distance = Math.clamp(DistanceUtils.getDistance(target) / this.distance.getMinValue(), 0, 1);
-                    delays = (long) (delay.getRandomizedIntValue() * distance);
+                    currentDelay = (long) (saveDelay * distance);
                 }
             } else {
                 if (delayBetweenBackTracks > 0) delayBetweenBackTracks--;
@@ -155,7 +155,8 @@ public class BackTrack extends Module {
                     handle(true);
 
                     delayBetweenBackTracks = delayBetweenTicks.getValue();
-                    delays = delay.getRandomizedIntValue();
+                    saveDelay = delay.getRandomizedIntValue();
+                    currentDelay = saveDelay;
 
                     if (renderOnlyIfWorking.isToggled()) return;
                 }
@@ -199,7 +200,7 @@ public class BackTrack extends Module {
 
         packetBuffer.removeIf(packet -> {
             long packetTime = System.currentTimeMillis() - packet.getTime();
-            if (packetTime >= delays || clear) {
+            if (packetTime >= currentDelay || clear) {
                 try {
                     PacketUtils.receivePacket(packet.getVar());
                 } catch (Exception ignored) {}
@@ -212,6 +213,6 @@ public class BackTrack extends Module {
 
     @Override
     public String getSuffix() {
-        return delays + " ms";
+        return currentDelay + " ms";
     }
 }
