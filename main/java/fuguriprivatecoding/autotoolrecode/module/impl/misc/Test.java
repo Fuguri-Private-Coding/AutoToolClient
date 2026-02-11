@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
@@ -53,6 +54,21 @@ public class Test extends Module {
 
     @Override
     public void onEvent(Event event) {
+        if (event instanceof PacketEvent e && e.getDirection() == PacketDirection.INCOMING) {
+            Packet packet = e.getPacket();
+
+            if (packet instanceof S12PacketEntityVelocity s12 && s12.getId() == mc.thePlayer.getEntityId() && mc.thePlayer.onGround) {
+                mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(
+                    mc.thePlayer.posX,
+                    mc.thePlayer.posY,
+                    mc.thePlayer.posZ,
+                    mc.thePlayer.rotationYaw,
+                    mc.thePlayer.rotationPitch,
+                    true
+                ));
+            }
+        }
+
 //        if (event instanceof PacketEvent e) {
 //            Packet packet = e.getPacket();
 //
@@ -144,7 +160,7 @@ public class Test extends Module {
     }
 
     public boolean shouldNoclip() {
-        return isToggled();
+        return false;
     }
 
 //    private void updateTarget() {
