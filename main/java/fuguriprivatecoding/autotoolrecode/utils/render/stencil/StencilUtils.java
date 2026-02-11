@@ -9,11 +9,15 @@ import java.awt.*;
 
 public class StencilUtils implements Imports {
 
-    public static void setUpTexture(float x, float y, float width, float height, float radius) {
+    public static void setUpTexture(float x, float y, float width, float height, final float leftDown, final float leftUp, final float rightUp, final float rightDown) {
         initStencil();
         GL11.glEnable(2960);
         bindWriteStencilBuffer();
-        RoundedUtils.drawRect(x + 1, y + 1, width - 2, height - 2, radius, Color.WHITE);
+        RoundedUtils.drawRect(x + 1, y + 1, width - 2, height - 2, leftDown, leftUp , rightUp, rightDown, Color.WHITE);
+    }
+
+    public static void setUpTexture(float x, float y, float width, float height, float radius) {
+        setUpTexture(x, y, width, height, radius, radius, radius, radius);
     }
 
     public static void writeTexture() {
