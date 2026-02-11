@@ -143,7 +143,7 @@ public class ClickGuiScreenNew extends GuiScreen {
                 float moduleY = categoryModulesY + offsetY;
                 float moduleWidth = 75;
 
-                
+
 
 
                 if (moduleX <= x + width && moduleX + moduleWidth >= x) {
