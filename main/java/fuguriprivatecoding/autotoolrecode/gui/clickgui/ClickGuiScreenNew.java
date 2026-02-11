@@ -329,6 +329,37 @@ public class ClickGuiScreenNew extends GuiScreen {
     }
 
     @Override
+    protected void mouseReleased(int mouseX, int mouseY, int state) {
+        ClientFont font = Fonts.fonts.get(clickGui.fonts.getMode());
+
+        if (openSettingsAnim.getValue() > 0) {
+            float moduleSettingsX = x + 5;
+            float moduleSettingsY = y + 40 - (height - 35) + openSettingsAnim.getValue() * (height - 35);
+            String moduleName = lastSelectedModule.getName();
+            float moduleNameWidth = font.getStringWidth(moduleName);
+
+            moduleSettingsY += font.FONT_HEIGHT * 2;
+
+            float settingsXOffset = 0;
+            float settingsYOffset = 0;
+
+            for (Setting setting : lastSelectedModule.getSettings()) {
+                if (!setting.isVisible())
+                    continue;
+
+                settingsYOffset += setting.mouseReleased(
+                    mouseX,
+                    mouseY,
+                    moduleSettingsX,
+                    moduleSettingsY + settingsYOffset,
+                    state,
+                    font
+                );
+            }
+        }
+    }
+
+    @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (bindingModule != null && binding) {
             if (keyCode == Keyboard.KEY_ESCAPE) {

@@ -78,6 +78,11 @@ public class KeyBind extends Setting {
     }
 
     @Override
+    public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
+        return 15;
+    }
+
+    @Override
     public void keyTyped(int key) {
         if (listeningForKey) {
             setKey(key);

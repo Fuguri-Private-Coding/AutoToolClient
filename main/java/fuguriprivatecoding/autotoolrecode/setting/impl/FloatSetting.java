@@ -96,7 +96,7 @@ public class FloatSetting extends Setting {
         RoundedUtils.drawRect(x + widthName, y, length, 4, 1.5f, Colors.GRAY.withAlphaClamp(0.3f * alpha));
         RoundedUtils.drawRect(x + widthName, y, sliderLength, 4, 1.5f, elementColor);
         RoundedUtils.drawRect(x + widthName + sliderLength - 2, y - 1, 6, 6, 3f, Color.WHITE);
-        font.drawString(String.format("%.2f", getValue()), x + widthName + length + 5, y, elementColor);
+        font.drawString(String.format("%.2f", getValue()), x + widthName + length + 5, y, Color.WHITE);
 
         boolean hovered = GuiUtils.isMouseHovered(x + widthName - 2, y - 2, length + 4, 8);
 
@@ -122,6 +122,11 @@ public class FloatSetting extends Setting {
     @Override
     public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
 
+        return 15;
+    }
+
+    @Override
+    public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
         return 15;
     }
 

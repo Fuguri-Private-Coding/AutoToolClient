@@ -15,6 +15,9 @@ import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.ScaledResolution;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
+import org.lwjgl.LWJGLUtil;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -22,6 +25,7 @@ import java.awt.*;
 import java.util.function.BooleanSupplier;
 
 import static fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports.mc;
+import static java.lang.Math.round;
 import static java.lang.Math.signum;
 
 @Getter
@@ -32,12 +36,14 @@ public class DoubleSlider extends Setting {
     public double min, max, step;
     public double minValue, maxValue;
 
-
     EasingAnimation sliderMinAnim = new EasingAnimation();
     EasingAnimation sliderMaxAnim = new EasingAnimation();
 
     public double animatedValueMin;
     public double animatedValueMax;
+
+    private boolean draggingMin;
+    private boolean draggingMax;
 
     public DoubleSlider(String name, SettingAble parent, double min, double max, double value, double step) {
         super(name, parent);
@@ -86,94 +92,100 @@ public class DoubleSlider extends Setting {
         return RandomUtils.nextDouble(minValue, maxValue);
     }
 
-//    @Override
-//    public void render() {
-//        ImGui.pushID(hashCode());
-//        float[] minV = new float[] { (float) minValue };
-//        float[] maxV = new float[] { (float) maxValue };
-//
-//        if (ImGui.collapsingHeader(getName())) {
-//            ImGui.indent();
-//            if (ImGui.sliderFloat("Min", minV, (float) min, (float) max)) {
-//                setMinValue(minV[0]);
-//            }
-//            if (ImGui.sliderFloat("Max", maxV, (float) min, (float) max)) {
-//                setMaxValue(maxV[0]);
-//            }
-//            ImGui.unindent();
-//        }
-//
-//        ImGui.popID();
-//    }
-
     @Override
     public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
-        font.drawString(getName() + ": ", x, y, Colors.WHITE.withAlphaClamp(alpha));
+        font.drawString(getName(), x, y, Color.WHITE);
 
-        EasingAnimation sliderMinAnim = getSliderMinAnim();
-        EasingAnimation sliderMaxAnim = getSliderMaxAnim();
-
-        sliderMinAnim.update(4f, Easing.OUT_CUBIC);
+        sliderMinAnim.update(4, Easing.OUT_CUBIC);
         sliderMinAnim.setEnd((float) minValue);
-        sliderMaxAnim.update(4f, Easing.OUT_CUBIC);
+
+        sliderMaxAnim.update(4, Easing.OUT_CUBIC);
         sliderMaxAnim.setEnd((float) maxValue);
 
         setAnimatedValueMin(sliderMinAnim.getValue());
         setAnimatedValueMax(sliderMaxAnim.getValue());
 
-        final float length = 75;
-        float animatedFilledFactorMin = (float) getAnimatedNormalizeMin();
-        float animatedFilledFactorMax = (float) getAnimatedNormalizeMax();
-        final float sliderLengthMin = animatedFilledFactorMin * length;
-        final float sliderLengthMax = animatedFilledFactorMax * length;
+        float sliderLength = 100;
+        float filledStart = (float) (sliderLength * getAnimatedNormalizeMin());
+        float filledLength = (float) (sliderLength * (getAnimatedNormalizeMax() - getAnimatedNormalizeMin()));
 
-        RoundedUtils.drawRect(x, y + 10, length, 4, 1.5f, Colors.GRAY.withAlphaClamp(0.3f * alpha));
-        RoundedUtils.drawRect(x, y + 10, sliderLengthMin, 4, 1.5f, elementColor);
-        RoundedUtils.drawRect(x + sliderLengthMin - 2, y - 1 + 10, 6, 6, 3f, Color.WHITE);
-        font.drawString(String.format("%.2f", getMinValue()), x + length + 5, y + 10, Color.WHITE);
+        RoundedUtils.drawRect(x, y + font.FONT_HEIGHT, sliderLength, 4, 1.5f, Colors.GRAY.withAlphaClamp(0.3f));
+        RoundedUtils.drawRect(x + filledStart, y + font.FONT_HEIGHT, filledLength, 4, 1.5f, elementColor);
 
-        RoundedUtils.drawRect(x, y + 10 + 10, length, 4, 1.5f, Colors.GRAY.withAlphaClamp(0.3f * alpha));
-        RoundedUtils.drawRect(x, y + 10 + 10, sliderLengthMax, 4, 1.5f, elementColor);
-        RoundedUtils.drawRect(x + sliderLengthMax - 2, y - 1 + 10 + 10, 6, 6, 3f, Color.WHITE);
-        font.drawString(String.format("%.2f", getMaxValue()), x + length + 5, y + 10 + 10, Color.WHITE);
+        RoundedUtils.drawRect(x + filledStart - 2, y + font.FONT_HEIGHT - 1, 6, 6, 3f, Color.WHITE);
+        RoundedUtils.drawRect(x + filledStart + filledLength - 2, y + font.FONT_HEIGHT - 1, 6, 6, 3f, Color.WHITE);
 
-        boolean hoveredMin = GuiUtils.isMouseHovered(x - 2, y - 2 + 10, length + 4, 8);
-        boolean hoveredMax = GuiUtils.isMouseHovered(x - 2, y - 2 + 10 + 10, length + 4, 8);
+        String valueText = String.format("%.2f %.2f", getMinValue(), getMaxValue());
+        float valueWidth = font.getStringWidth(valueText);
+
+        font.drawString(valueText, x + sliderLength - valueWidth, y, Color.WHITE);
+
+        //RoundedUtils.drawRect(x - 2, y - 2, sliderLength + 4 + 4, font.FONT_HEIGHT + 8, 0, Colors.WHITE.withAlpha(0.3f));
 
         final ScaledResolution sc = new ScaledResolution(mc);
         int i1 = sc.getScaledWidth();
-
         final int mouseX = Mouse.getX() * i1 / mc.displayWidth;
+        float sliderCenter = x + filledStart + filledLength / 2;
+        boolean hovered = GuiUtils.isMouseHovered(x - 2, y - 2, sliderLength + 4 + 4, font.FONT_HEIGHT + 8);
 
-        if (hoveredMin) {
-            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-                setMinValue(getMinValue() + signum(DeltaTracker.getDeltaScroll()) * getStep());
-            } else if (Mouse.isButtonDown(0)) {
+
+        if (hovered && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && mouseX < sliderCenter) {
+            setMinValue(getMinValue() + signum(DeltaTracker.getDeltaScroll()) * getStep());
+        }
+
+        if (draggingMin) {
+            if (Mouse.isButtonDown(0)) {
                 float mx = mouseX - x;
-                float p = mx / length;
-                float normalize = (float) (getMin() + (getMax() - getMin()) * p);
+                float p = mx / sliderLength;
+                double normalize = getMin() + (getMax() - getMin()) * p;
                 setMinValue(normalize);
             }
         }
 
-        if (hoveredMax) {
-            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-                setMaxValue(getMaxValue() + signum(DeltaTracker.getDeltaScroll()) * getStep());
-            } else if (Mouse.isButtonDown(0)) {
+        if (hovered && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && mouseX > sliderCenter) {
+            setMaxValue(getMaxValue() + signum(DeltaTracker.getDeltaScroll()) * getStep());
+        }
+
+        if (draggingMax) {
+            if (Mouse.isButtonDown(0)) {
                 float mx = mouseX - x;
-                float p = mx / length;
-                float normalize = (float) (getMin() + (getMax() - getMin()) * p);
+                float p = mx / sliderLength;
+                double normalize = getMin() + (getMax() - getMin()) * p;
                 setMaxValue(normalize);
             }
         }
 
-        return 35;
+        return 20;
     }
 
     @Override
     public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
+        float sliderLength = 100;
+        float filledStart = (float) (sliderLength * getAnimatedNormalizeMin());
+        float filledLength = (float) (sliderLength * (getAnimatedNormalizeMax() - getAnimatedNormalizeMin()));
 
-        return 35;
+        boolean hovered = GuiUtils.isMouseHovered(x - 2, y - 2, sliderLength + 4 + 4, font.FONT_HEIGHT + 8);
+
+        if (hovered && key == 0) {
+            float sliderCenter = x + filledStart + filledLength / 2;
+
+            Vector2i mousePos = GuiUtils.getMousePosition();
+
+            draggingMin = mousePos.x < sliderCenter;
+            draggingMax = mousePos.x > sliderCenter;
+
+            System.out.println(sliderCenter + " " + mousePos.x + " " + mousePos.y + " " + draggingMin + " " + draggingMax);
+        }
+
+        return 20;
+    }
+
+    @Override
+    public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
+        draggingMin = false;
+        draggingMax = false;
+
+        return 20;
     }
 
     @Override

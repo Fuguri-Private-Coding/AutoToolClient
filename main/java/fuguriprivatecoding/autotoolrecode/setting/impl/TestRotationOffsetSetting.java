@@ -41,6 +41,11 @@ public class TestRotationOffsetSetting extends Setting {
     }
 
     @Override
+    public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
+        return 0;
+    }
+
+    @Override
     public void keyTyped(int key) {
 
     }

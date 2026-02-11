@@ -30,7 +30,7 @@ public class ClickGui extends Module {
 
 	@Override
 	public void onEnable() {
-		mc.displayGuiScreen(new ClickGuiScreenNew());
+		mc.displayGuiScreen(ClickGuiScreenNew.INST);
 		toggle();
 	}
 }

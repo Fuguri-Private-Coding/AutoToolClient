@@ -8,7 +8,6 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
@@ -79,6 +78,11 @@ public class CheckBox extends Setting {
 
         if (hovered && key == 0) toggled = !toggled;
 
+        return 15;
+    }
+
+    @Override
+    public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
         return 15;
     }
 

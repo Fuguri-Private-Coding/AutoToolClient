@@ -30,6 +30,7 @@ public abstract class Setting implements ISetting {
 
     public abstract float draw(float x, float y, ClientFont font, Color elementColor, float alpha);
     public abstract float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font);
+    public abstract float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font);
     public abstract void keyTyped(int key);
 
 	@Override
