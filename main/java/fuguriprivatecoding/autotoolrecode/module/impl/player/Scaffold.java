@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
@@ -22,6 +23,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.block.*;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -36,25 +38,23 @@ import java.util.function.BooleanSupplier;
 public class Scaffold extends Module {
 
     private final Mode rotMode = new Mode("RotationMode", this)
-            .addModes("TellyBridge", "GodBridge", "Normal")
-            .setMode("GodBridge");
+            .addModes("TellyBridge", "Normal")
+            .setMode("Normal");
 
     private final BooleanSupplier tellyVisible = () -> rotMode.is("TellyBridge");
-    private final BooleanSupplier godVisible = () -> rotMode.is("GodBridge");
-    private final BooleanSupplier godNormalVisible = () -> rotMode.is("GodBridge") || rotMode.is("Normal");
-    private final BooleanSupplier tellyNormalVisible = () -> rotMode.is("TellyBridge") || rotMode.is("Normal");
+    private final BooleanSupplier normalVisible = () -> rotMode.is("Normal");
 
     private final DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0,180,90,1);
     private final DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0,180,90,1);
 
-    private final DoubleSlider yawClutchSpeed = new DoubleSlider("YawClutchSpeed", this, godVisible, 0,180,90,1);
-    private final DoubleSlider pitchClutchSpeed = new DoubleSlider("PitchClutchSpeed", this, godVisible, 0,180,90,1);
+    private final DoubleSlider yawClutchSpeed = new DoubleSlider("YawClutchSpeed", this, normalVisible, 0,180,90,1);
+    private final DoubleSlider pitchClutchSpeed = new DoubleSlider("PitchClutchSpeed", this, normalVisible, 0,180,90,1);
 
     private final DoubleSlider pitchCorrectionSearchRange = new DoubleSlider("PitchCorrectionSearchRange", this, 0,90,90,0.1f);
     private final FloatSetting pitchCorrectionMinStep = new FloatSetting("PitchCorrectionMinStep", this, 0.3f, 10, 1f, 0.01f);
 
-    private final CheckBox sortYawOffset = new CheckBox("SortYawOffset", this, tellyNormalVisible);
-    private final FloatSetting yawOffset = new FloatSetting("YawOffset", this, () -> tellyNormalVisible.getAsBoolean() && sortYawOffset.isToggled(), 0, 90, 45, 0.1f);
+    private final CheckBox sortYawOffset = new CheckBox("SortYawOffset", this);
+    private final FloatSetting yawOffset = new FloatSetting("YawOffset", this, sortYawOffset::isToggled, 0, 90, 45, 0.1f);
 
     private final MultiMode removeSwing = new MultiMode("RemoveSwing", this)
         .addModes("On Client", "On Server")
@@ -66,9 +66,9 @@ public class Scaffold extends Module {
         ;
 
     private final CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this);
-    private final CheckBox strictYaw = new CheckBox("StrictYaw", this, tellyNormalVisible);
+    private final CheckBox strictYaw = new CheckBox("StrictYaw", this);
 
-    private final CheckBox clutch = new CheckBox("Clutch", this, godVisible);
+    private final CheckBox clutch = new CheckBox("Clutch", this, normalVisible);
 
     private final CheckBox speedTelly = new CheckBox("SpeedTelly", this, tellyVisible, true);
     private final DoubleSlider airTicks = new DoubleSlider("AirTicks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 0,10,3,1);
@@ -77,14 +77,16 @@ public class Scaffold extends Module {
 
     private final CheckBox sameY = new CheckBox("SameY", this, true);
 
-    private final MultiMode sneakIf = new MultiMode("SneakIf", this, godNormalVisible)
+    private final MultiMode sneakIf = new MultiMode("SneakIf", this, normalVisible)
         .addModes("Rotate", "ZeroBlocks", "NinjaBridge");
     
-    private final FloatSetting minDeltaToSneak = new FloatSetting("MinDeltaToSneak", this, () -> sneakIf.get("Rotate") && godNormalVisible.getAsBoolean(), 0, 10, 2, 0.1f);
-    private final CheckBox sneakIfRotateWithClutch = new CheckBox("SneakIfRotateWithClutch", this, () -> sneakIf.get("Rotate") && godNormalVisible.getAsBoolean());
-    private final CheckBox sneakIfNinjaBridgeWithClutch = new CheckBox("SneakIfNinjaBridgeWithClutch", this, () -> sneakIf.get("NinjaBridge") && godNormalVisible.getAsBoolean());
+    private final FloatSetting minDeltaToSneak = new FloatSetting("MinDeltaToSneak", this, () -> sneakIf.get("Rotate") && normalVisible.getAsBoolean(), 0, 10, 2, 0.1f);
+    private final CheckBox sneakIfRotateWithClutch = new CheckBox("SneakIfRotateWithClutch", this, () -> sneakIf.get("Rotate") && normalVisible.getAsBoolean());
+    private final CheckBox sneakIfNinjaBridgeWithClutch = new CheckBox("SneakIfNinjaBridgeWithClutch", this, () -> sneakIf.get("NinjaBridge") && normalVisible.getAsBoolean());
 
-    private final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, () -> godNormalVisible.getAsBoolean() && sneakIf.get("NinjaBridge"), -0.1f,0.1f,0.05f, 0.01f);
+    private final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, () -> normalVisible.getAsBoolean() && sneakIf.get("NinjaBridge"), -0.1f,0.1f,0.05f, 0.01f);
+
+    private final DoubleSlider cps = new DoubleSlider("CPS", this, 0, 80, 20, 1);
 
     private final CheckBox render = new CheckBox("Render", this, true);
     private final ColorSetting color = new ColorSetting("Color", this);
@@ -92,11 +94,14 @@ public class Scaffold extends Module {
     private final CheckBox glow = new CheckBox("Glow", this);
     private final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
 
-    private Rot rotation, lastRotation = Rot.ZERO;
+    private Rot rotation, lastRotation, lastDelta = Rot.ZERO;
 
     private BlockPos targetBlock;
 
-    private double lastDelta = 0;
+    int clicks = 0;
+
+    private final StopWatch clickTimer = new StopWatch();
+    private long clickDelay;
 
     @Override
     public void onDisable() {
@@ -130,6 +135,14 @@ public class Scaffold extends Module {
             legitPlace();
         }
 
+        if (event instanceof RunGameLoopEvent) {
+            if (clickTimer.reachedMS(clickDelay)) {
+                clicks++;
+                clickDelay = Math.round(1000f / cps.getRandomizedIntValue());
+                clickTimer.reset();
+            }
+        }
+
         if (event instanceof Render3DEvent && targetBlock != null && render.isToggled()) {
             RenderUtils.start3D();
 
@@ -148,26 +161,24 @@ public class Scaffold extends Module {
 
             MoveUtils.moveFix(e, MoveUtils.getDirection(needYaw, e.getForward(), e.getStrafe()));
 
-            switch (rotMode.getMode()) {
-                case "GodBridge", "Normal" -> {
-                    if (sneakIf.get("Rotate") && lastDelta > minDeltaToSneak.getValue()) {
-                        if (isClutch() && !sneakIfRotateWithClutch.isToggled()) {
-                            return;
-                        }
-
-                        e.setSneak(true);
+            if (rotMode.is("Normal")) {
+                if (sneakIf.get("Rotate") && lastDelta.hypot() > minDeltaToSneak.getValue()) {
+                    if (isClutch() && !sneakIfRotateWithClutch.isToggled()) {
+                        return;
                     }
 
-                    if (sneakIf.get("ZeroBlocks") && findBlock() == -1) e.setSneak(true);
+                    e.setSneak(true);
+                }
 
-                    if (sneakIf.get("NinjaBridge")) {
-                        if (isClutch() && !sneakIfNinjaBridgeWithClutch.isToggled()) {
-                            return;
-                        }
+                if (sneakIf.get("ZeroBlocks") && findBlock() == -1) e.setSneak(true);
 
-                        BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.7f);
-                        if (mc.theWorld.isAirBlock(pos)) e.setSneak(true);
+                if (sneakIf.get("NinjaBridge")) {
+                    if (isClutch() && !sneakIfNinjaBridgeWithClutch.isToggled()) {
+                        return;
                     }
+
+                    BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.7f);
+                    if (mc.theWorld.isAirBlock(pos)) e.setSneak(true);
                 }
             }
         }
@@ -211,19 +222,24 @@ public class Scaffold extends Module {
     void legitPlace() {
         RayTrace mouseOver = RayCastUtils.rayCast(6, 4.5f, mc.thePlayer.getRotation());
 
+        int iters = clicks;
+        clicks = 0;
+
         if (mouseOver.typeOfHit == RayTrace.RayType.BLOCK
             && isSameY(mouseOver)
             && targetBlock.equals(mouseOver.getBlockPos())
             && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
 
-            mc.rightClickMouse(false);
+            for (int i = 0; i < iters; i++) {
+                mc.rightClickMouse(false);
 
-            if (!removeSwing.get("On Client")) {
-                mc.thePlayer.swingItemNoPacket();
-            }
+                if (!removeSwing.get("On Client")) {
+                    mc.thePlayer.swingItemNoPacket();
+                }
 
-            if (!removeSwing.get("On Server")) {
-                mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+                if (!removeSwing.get("On Server")) {
+                    mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+                }
             }
         }
     }
@@ -238,40 +254,27 @@ public class Scaffold extends Module {
         float needYaw = strictYaw.isToggled() ? roundedYaw - 180 : yaw;
 
         boolean isDiagonally = MoveUtils.isMoveDiagonally(needYaw);
+        float offset = isDiagonally ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
 
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (isTelly()) {
                     rotation = new Rot(needYaw, lastRotation.getPitch());
                 } else {
-                    float offset = isDiagonally ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
-
                     rotation = getBestRotation(needYaw, offset, sortYawOffset.isToggled());
                 }
             }
 
-            case "GodBridge" -> {
-                if (isClutch()) {
-                    rotation = getBestRotation(0, 0, false);
-                } else {
-                    RayTrace rightRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw + 45, getPitch(roundedYaw + 45, false)));
-                    RayTrace leftRayCast = RayCastUtils.rayCast(3,4.5, new Rot(roundedYaw - 45, getPitch(roundedYaw - 45, false)));
-
-                    boolean isLeftRayCastSide = leftRayCast.typeOfHit == RayTrace.RayType.BLOCK || rightRayCast.typeOfHit != RayTrace.RayType.BLOCK;
-                    boolean isRightRayCastSide = rightRayCast.typeOfHit == RayTrace.RayType.BLOCK || leftRayCast.typeOfHit != RayTrace.RayType.BLOCK;
-
-                    boolean moveDiagonally = MoveUtils.isMoveDiagonally(roundedYaw);
-
-                    float finallyYaw = MathHelper.wrapDegree(moveDiagonally ? roundedYaw : (roundedYaw + (isRightRayCastSide ? (isOnRightSide && !isLeftRayCastSide ? 45 : !isOnRightSide && isLeftRayCastSide ? -45 : 45) : -45)));
-
-                    rotation = new Rot(finallyYaw, getPitch(finallyYaw, true));
-                }
-            }
-
             case "Normal" -> {
-                float offset = isDiagonally ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
+                float rotYaw = MathHelper.wrapDegree(needYaw + 180 + offset);
+                float rotPitch = getPitch(rotYaw, true);
 
-                rotation = getBestRotation(needYaw, offset, sortYawOffset.isToggled());
+                rotation = new Rot(rotYaw, rotPitch);
+                RayTrace hit = RayCastUtils.rayCast(rotation, 4.5f);
+
+                if ((hit.typeOfHit != RayTrace.RayType.BLOCK || isClutch()) && clutch.isToggled()) {
+                    rotation = getBestRotation(0, 0, false);
+                }
             }
         }
 
@@ -285,7 +288,7 @@ public class Scaffold extends Module {
         delta = delta.limit(getDeltaSpeed());
         delta = RotUtils.fixDelta(delta);
 
-        lastDelta = delta.hypot();
+        lastDelta = delta.copy();
 
         CameraRot.INST.setUnlocked(true);
         mc.thePlayer.moveRotation(delta);
@@ -321,16 +324,12 @@ public class Scaffold extends Module {
                 }
             }
 
-            case "GodBridge" -> {
+            case "Normal" -> {
                 if (isClutch()) {
                     return new Rot(yawClutchSpeed.getRandomizedIntValue(), pitchClutchSpeed.getRandomizedIntValue());
                 } else {
                     return new Rot(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
                 }
-            }
-
-            case "Normal" -> {
-                return new Rot(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
             }
         }
 
@@ -417,26 +416,6 @@ public class Scaffold extends Module {
         return lastRotation;
     }
 
-    public int getBlockCount() {
-        int blockCount = 0;
-
-        for (int i = 36; i < 45; ++i) {
-            if (!mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()) continue;
-
-            final ItemStack is = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
-
-            final Block block = ((ItemBlock) is.getItem()).getBlock();
-
-            if (!(is.getItem() instanceof ItemBlock && ItemUtils.blackListedBlock(block))) {
-                continue;
-            }
-
-            blockCount += is.stackSize;
-        }
-
-        return blockCount;
-    }
-
     public int findBlock() {
         int bestSlot = -1;
 
@@ -455,4 +434,3 @@ public class Scaffold extends Module {
         return bestSlot;
     }
 }
-

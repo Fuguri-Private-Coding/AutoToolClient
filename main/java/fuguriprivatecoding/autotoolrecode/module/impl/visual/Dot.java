@@ -23,6 +23,8 @@ public class Dot extends Module {
 
     public final ColorSetting color = new ColorSetting("Color", this);
 
+    private final CheckBox smooth = new CheckBox("Smooth", this, false);
+
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
 
@@ -37,9 +39,15 @@ public class Dot extends Module {
         }
 
         if (event instanceof Render3DEvent && CameraRot.INST.isUnlocked()) {
-//            Rot smooth = prevPos.add(pos.subtract(prevPos).multiplier(mc.timer.renderPartialTicks));
+            RayTrace mouse;
 
-            RayTrace mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(-1),6,6, pos, -1);
+            if (smooth.isToggled()) {
+                Rot smoothPos = prevPos.add(pos.subtract(prevPos).multiplier(mc.timer.renderPartialTicks));
+                mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks), 6, 6, smoothPos, mc.timer.renderPartialTicks);
+            } else {
+                mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(-1),6,6, pos, -1);
+            }
+
             if (mouse != null) {
                 if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, glowColor.getFadedColor()));
                 RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, color.getFadedColor());

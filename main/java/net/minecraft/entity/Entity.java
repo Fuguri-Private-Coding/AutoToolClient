@@ -2275,9 +2275,13 @@ public abstract class Entity implements ICommandSender
     {
     }
 
-    public EnumFacing getHorizontalFacing()
+    public EnumFacing getHorizontalFacing(float yaw)
     {
-        return EnumFacing.getHorizontal(MathHelper.floor_double((double)(this.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3);
+        return EnumFacing.getHorizontal(MathHelper.floor_double((double)(yaw * 4.0F / 360.0F) + 0.5D) & 3);
+    }
+
+    public EnumFacing getHorizontalFacing() {
+        return getHorizontalFacing(this.rotationYaw);
     }
 
     protected HoverEvent getHoverEvent()
@@ -2352,6 +2356,10 @@ public abstract class Entity implements ICommandSender
     public Vec3 getPositionVector()
     {
         return new Vec3(this.posX, this.posY, this.posZ);
+    }
+
+    public Vec3 getLastPositionVector() {
+        return new Vec3(this.lastTickPosX, this.lastTickPosY, this.lastTickPosZ);
     }
 
     public Vector3f getPositionVector3f()
