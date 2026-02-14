@@ -26,7 +26,6 @@ public class Modules {
 		register(
 			new AutoSoup(),
 			new KillAura(),
-			new LagRange(),
             new AspectRatio(),
 			new AutoWater(),
             new BWHelper(),

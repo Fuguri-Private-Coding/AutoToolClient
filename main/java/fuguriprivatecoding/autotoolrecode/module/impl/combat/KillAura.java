@@ -149,7 +149,7 @@ public class KillAura extends Module {
     }
 
     private Rot getRotation(EntityLivingBase target, Rot lr, AxisAlignedBB box) {
-        boolean teleport = (TimerRange.isTeleporting() || LagRange.isTeleporting()) && teleportPredictFix.isToggled();
+        boolean teleport = (TimerRange.isTeleporting()) && teleportPredictFix.isToggled();
 
         RayTrace cameraHit = RayCastUtils.rayCast(CameraRot.INST, findDistance.getValue() + 3, 0);
 
@@ -194,7 +194,7 @@ public class KillAura extends Module {
     private void rotate(EntityLivingBase target) {
         Rot lr = mc.thePlayer.getRotation();
 
-        boolean teleport = (TimerRange.isTeleporting() || LagRange.isTeleporting()) && teleportPredictFix.isToggled();
+        boolean teleport = (TimerRange.isTeleporting()) && teleportPredictFix.isToggled();
 
         double offset = target.getCollisionBorderSize();
         AxisAlignedBB box = RotUtils.getHitBox(
