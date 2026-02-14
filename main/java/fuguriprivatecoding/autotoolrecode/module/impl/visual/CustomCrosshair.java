@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.ScaledResolution;
 
@@ -21,7 +22,7 @@ public class CustomCrosshair extends Module {
 
     ColorSetting color = new ColorSetting("Color", this);
 
-    FloatSetting length = new FloatSetting("Length", this, () -> mode.is("Cross"), 1, 20, 4, 0.1f);
+    FloatSetting length = new FloatSetting("Length", this, () -> mode.is("Cross"), 1, 50, 4, 0.1f);
     FloatSetting scale = new FloatSetting("Scale", this, 0,20,2, 0.1f);
 
     @Override

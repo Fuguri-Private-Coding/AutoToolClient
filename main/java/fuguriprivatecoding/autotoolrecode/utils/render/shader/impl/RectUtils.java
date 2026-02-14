@@ -14,7 +14,7 @@ public class RectUtils {
 
     private static void draw(final float x, final float y, final float width, final float height, final float factor, Color color) {
         if (program == null) program = Shaders.testelips;
-        float factorPenis = (1 / factor) * 20;
+        float factorPenis = (1 / factor) * height;
 
         ClientUtils.chatLog(factorPenis);
         program.start();
