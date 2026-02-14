@@ -17,7 +17,7 @@ public class RoundedUtils implements Imports {
         program.uniform("u_size", width, height);
         program.uniform("u_radius", leftUp, leftDown, rightUp, rightDown);
         program.uniform("u_smooth", 1f);
-        program.uniform("u_color", color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, color.getAlpha() / 255.0F);
+        program.uniform("u_color", color);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableAlpha();

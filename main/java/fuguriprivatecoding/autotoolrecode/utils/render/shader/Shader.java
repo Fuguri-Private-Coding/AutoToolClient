@@ -8,6 +8,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -88,6 +89,10 @@ public class Shader implements Imports {
 
 	public static void stop() {
 		GL20.glUseProgram(0);
+	}
+
+	public void uniform(final String name, final Color color) {
+		GL20.glUniform4f(getLocation(name), color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, color.getAlpha() / 255.0F);
 	}
 
     public void uniform(final String name, final FloatBuffer floatBuffer) {
