@@ -98,7 +98,6 @@ public class ChestStealer extends Module {
 
                     if (delta.hypot() < minDeltaToClick.getValue()) {
                         if (delayStopWatch.reachedMS(lootDelayTick * 50L) && slots.contains(currentSlot)) {
-//                            slots.remove(currentSlot);
                             mouse.click();
                         }
                     } else {

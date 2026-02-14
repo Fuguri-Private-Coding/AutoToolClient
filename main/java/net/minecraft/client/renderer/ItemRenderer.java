@@ -1,13 +1,10 @@
 package net.minecraft.client.renderer;
 
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomItemPos;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Hand;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.event.events.render.RenderItemEvent;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Animations;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.NoRender;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -304,35 +301,35 @@ public class ItemRenderer {
 
             if (this.itemToRender != null) {
                 EnumAction enumaction = this.itemToRender.getItemUseAction();
-                Animations animations = Modules.getModule(Animations.class);
-                CustomItemPos customItemPos = Modules.getModule(CustomItemPos.class);
-                boolean animate = false;
+                Hand hand = Modules.getModule(Hand.class);
 
-                if (animations.isToggled() && enumaction == EnumAction.BLOCK) {
+                boolean animations = hand.effect.get("Animations");
+                boolean itemPos = hand.effect.get("ItemPos");
+
+                boolean animate = false;
+                if (hand.isToggled() && animations && enumaction == EnumAction.BLOCK) {
                     if (abstractclientplayer.getItemInUseCount() > 0) {
                         animate = true;
-                    } else if (f1 > 0) {
-                        if (Animations.isAnimate() || animations.always.isToggled()) {
-                            animate = true;
-                        }
+                    } else if (f1 > 0 && hand.always.isToggled()) {
+                        animate = true;
                     }
                 }
 
-                if (customItemPos.isToggled() && !animate) {
-                    GL11.glTranslatef(customItemPos.x.getValue(), customItemPos.y.getValue(), customItemPos.z.getValue());
-                    GL11.glRotatef(customItemPos.rotateX.getValue(), 1,0,0);
-                    GL11.glRotatef(customItemPos.rotateY.getValue(), 0,1,0);
-                    GL11.glRotatef(customItemPos.rotateZ.getValue(), 0,0,1);
+                if (hand.isToggled() && itemPos && !animate) {
+                    GL11.glTranslatef(hand.x.getValue(), hand.y.getValue(), hand.z.getValue());
+                    GL11.glRotatef(hand.rotateX.getValue(), 1,0,0);
+                    GL11.glRotatef(hand.rotateY.getValue(), 0,1,0);
+                    GL11.glRotatef(hand.rotateZ.getValue(), 0,0,1);
                 }
 
                 if (this.itemToRender.getItem() instanceof ItemMap) {
                     this.renderItemMap(abstractclientplayer, f2, f, f1);
                 } else if (animate) {
-                    if (customItemPos.isToggled()) {
-                        GL11.glTranslatef(customItemPos.blockX.getValue(), customItemPos.blockY.getValue(), customItemPos.blockZ.getValue());
-                        GL11.glRotatef(customItemPos.blockRotateX.getValue(), 1,0,0);
-                        GL11.glRotatef(customItemPos.blockRotateY.getValue(), 0,1,0);
-                        GL11.glRotatef(customItemPos.blockRotateZ.getValue(), 0,0,1);
+                    if (hand.isToggled() && itemPos) {
+                        GL11.glTranslatef(hand.blockX.getValue(), hand.blockY.getValue(), hand.blockZ.getValue());
+                        GL11.glRotatef(hand.blockRotateX.getValue(), 1,0,0);
+                        GL11.glRotatef(hand.blockRotateY.getValue(), 0,1,0);
+                        GL11.glRotatef(hand.blockRotateZ.getValue(), 0,0,1);
                     }
 
                     RenderItemEvent.INST.setSwingProgress(f1);

@@ -4,7 +4,6 @@ import lombok.experimental.UtilityClass;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.*;
@@ -19,10 +18,6 @@ import java.util.List;
 
 import static fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports.mc;
 
-/**
- * @author Auth
- * @since 09/07/2022
- */
 @UtilityClass
 public class ItemUtils {
 
@@ -83,25 +78,12 @@ public class ItemUtils {
         }
 
         if (mc.thePlayer.isPotionActive(Potion.digSlowdown)) {
-            final float f1;
-
-            switch (mc.thePlayer.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) {
-                case 0:
-                    f1 = 0.3F;
-                    break;
-
-                case 1:
-                    f1 = 0.09F;
-                    break;
-
-                case 2:
-                    f1 = 0.0027F;
-                    break;
-
-                case 3:
-                default:
-                    f1 = 8.1E-4F;
-            }
+            final float f1 = switch (mc.thePlayer.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) {
+                case 0 -> 0.3F;
+                case 1 -> 0.09F;
+                case 2 -> 0.0027F;
+                default -> 8.1E-4F;
+            };
 
             f *= f1;
         }
@@ -115,6 +97,24 @@ public class ItemUtils {
         }
 
         return f;
+    }
+
+    public int findBlockInHotBar() {
+        int bestSlot = -1;
+
+        for (int i = 0; i < 9; i++) {
+            ItemStack item = mc.thePlayer.inventory.mainInventory[i];
+
+            if (item == null || !(item.getItem() instanceof ItemBlock itemBlock) || item.stackSize == 0) continue;
+
+            Block block = itemBlock.getBlock();
+
+            if (ItemUtils.blackListedBlock(block)) continue;
+
+            bestSlot = i;
+        }
+
+        return bestSlot;
     }
 
     public boolean canHeldItemHarvest(final Block blockIn, final int slot) {

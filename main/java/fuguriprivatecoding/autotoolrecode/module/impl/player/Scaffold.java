@@ -24,9 +24,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
-import net.minecraft.block.*;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
 import org.lwjgl.input.Mouse;
@@ -54,7 +52,7 @@ public class Scaffold extends Module {
     private final FloatSetting pitchCorrectionMinStep = new FloatSetting("PitchCorrectionMinStep", this, 0.3f, 10, 1f, 0.01f);
 
     private final CheckBox sortYawOffset = new CheckBox("SortYawOffset", this);
-    private final FloatSetting yawOffset = new FloatSetting("YawOffset", this, sortYawOffset::isToggled, 0, 90, 45, 0.1f);
+    private final FloatSetting yawOffset = new FloatSetting("YawOffset", this, () -> sortYawOffset.isToggled() || normalVisible.getAsBoolean(), 0, 90, 45, 0.1f);
 
     private final MultiMode removeSwing = new MultiMode("RemoveSwing", this)
         .addModes("On Client", "On Server")
@@ -69,6 +67,8 @@ public class Scaffold extends Module {
     private final CheckBox strictYaw = new CheckBox("StrictYaw", this);
 
     private final CheckBox clutch = new CheckBox("Clutch", this, normalVisible);
+
+    private final FloatSetting minDistanceToClutch = new FloatSetting("MinDistanceToClutch", this, () -> normalVisible.getAsBoolean() && clutch.isToggled(), 3, 6, 3.7f, 0.1f);
 
     private final CheckBox speedTelly = new CheckBox("SpeedTelly", this, tellyVisible, true);
     private final DoubleSlider airTicks = new DoubleSlider("AirTicks", this, () -> tellyVisible.getAsBoolean() && !speedTelly.isToggled(), 0,10,3,1);
@@ -124,7 +124,7 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof LegitClickTimingEvent) {
-            int slot = findBlock();
+            int slot = ItemUtils.findBlockInHotBar();
 
             if (slot != -1) {
                 if (mc.thePlayer.inventory.currentItem != slot) {
@@ -170,7 +170,7 @@ public class Scaffold extends Module {
                     e.setSneak(true);
                 }
 
-                if (sneakIf.get("ZeroBlocks") && findBlock() == -1) e.setSneak(true);
+                if (sneakIf.get("ZeroBlocks") && ItemUtils.findBlockInHotBar() == -1) e.setSneak(true);
 
                 if (sneakIf.get("NinjaBridge")) {
                     if (isClutch() && !sneakIfNinjaBridgeWithClutch.isToggled()) {
@@ -284,8 +284,9 @@ public class Scaffold extends Module {
         }
 
         Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), rotation);
+        Rot speed = getDeltaSpeed();
 
-        delta = delta.limit(getDeltaSpeed());
+        delta = delta.limit(speed);
         delta = RotUtils.fixDelta(delta);
 
         lastDelta = delta.copy();
@@ -295,7 +296,7 @@ public class Scaffold extends Module {
     }
 
     boolean isClutch() {
-        return (Player.isClutch() || DistanceUtils.getDistance(targetBlock) > 3.7f) && clutch.isToggled();
+        return (Player.isClutch() || DistanceUtils.getDistance(targetBlock) > minDistanceToClutch.getValue()) && clutch.isToggled();
     }
 
     boolean isSameY(RayTrace mouse) {
@@ -308,32 +309,43 @@ public class Scaffold extends Module {
 
     boolean isTelly() {
         if (MoveUtils.isMoving()) {
-            if (mc.gameSettings.keyBindJump.isKeyDown()) return mc.thePlayer.onGround || Player.airTicks < (speedTelly.isToggled() ? 0 : airTicks.getRandomizedIntValue());
-            return !mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ)) && flick.isToggled();
+            if (mc.gameSettings.keyBindJump.isKeyDown()) {
+                int needAirTicks = (speedTelly.isToggled() ? 0 : airTicks.getRandomizedIntValue());
+                return mc.thePlayer.onGround || Player.airTicks < needAirTicks;
+            } else {
+                BlockPos pos = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ);
+                return !mc.theWorld.isAirBlock(pos) && flick.isToggled();
+            }
         }
         return false;
     }
 
     Rot getDeltaSpeed() {
+        Rot speed = Rot.ZERO;
+
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (isTelly()) {
-                    return new Rot(180, 180);
+                    speed.setYaw(180);
+                    speed.setPitch(180);
                 } else {
-                    return new Rot(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
+                    speed.setYaw(yawSpeed.getRandomizedIntValue());
+                    speed.setPitch(pitchSpeed.getRandomizedIntValue());
                 }
             }
 
             case "Normal" -> {
                 if (isClutch()) {
-                    return new Rot(yawClutchSpeed.getRandomizedIntValue(), pitchClutchSpeed.getRandomizedIntValue());
+                    speed.setYaw(yawClutchSpeed.getRandomizedIntValue());
+                    speed.setPitch(pitchClutchSpeed.getRandomizedIntValue());
                 } else {
-                    return new Rot(yawSpeed.getRandomizedIntValue(), pitchSpeed.getRandomizedIntValue());
+                    speed.setYaw(yawSpeed.getRandomizedIntValue());
+                    speed.setPitch(pitchSpeed.getRandomizedIntValue());
                 }
             }
         }
 
-        return new Rot(50, 50);
+        return speed;
     }
 
     private float getPitch(float yaw, boolean handleMouse) {
@@ -350,12 +362,7 @@ public class Scaffold extends Module {
 
             if (hit != null) {
                 RotationData data = new RotationData(rot, hit);
-
-                if (hit.typeOfHit == RayTrace.RayType.BLOCK &&
-                    hit.hitVec.yCoord < mc.thePlayer.posY &&
-                    hit.getBlockPos().equals(targetBlock) &&
-                    hit.sideHit != EnumFacing.DOWN
-                ) dataList.add(data);
+                if (isOverBlock(hit, targetBlock)) dataList.add(data);
             }
         }
 
@@ -364,7 +371,6 @@ public class Scaffold extends Module {
         dataList.sort(Comparator.comparingDouble(data -> Math.abs(mc.thePlayer.rotationPitch) - data.rotation().getPitch()));
 
         RotationData rotationData = dataList.getFirst();
-
         if (handleMouse) lastRotation = rotationData.rotation();
 
         return rotationData.rotation().getPitch();
@@ -386,12 +392,7 @@ public class Scaffold extends Module {
 
             if (hit != null) {
                 RotationData data = new RotationData(rot, hit);
-
-                if (hit.typeOfHit == RayTrace.RayType.BLOCK &&
-                    hit.sideHit != EnumFacing.DOWN &&
-                    hit.hitVec.yCoord < mc.thePlayer.posY &&
-                    hit.getBlockPos().equals(targetBlock)
-                ) validRotations.add(data);
+                if (isOverBlock(hit, targetBlock)) validRotations.add(data);
             }
         }
 
@@ -416,21 +417,7 @@ public class Scaffold extends Module {
         return lastRotation;
     }
 
-    public int findBlock() {
-        int bestSlot = -1;
-
-        for (int i = 0; i < 9; i++) {
-            ItemStack item = mc.thePlayer.inventory.mainInventory[i];
-
-            if (item == null || !(item.getItem() instanceof ItemBlock itemBlock) || item.stackSize == 0) continue;
-
-            Block block = itemBlock.getBlock();
-
-            if (ItemUtils.blackListedBlock(block)) continue;
-
-            bestSlot = i;
-        }
-
-        return bestSlot;
+    private boolean isOverBlock(RayTrace hit, BlockPos targetBlock) {
+        return hit.typeOfHit == RayTrace.RayType.BLOCK && hit.hitVec.yCoord < mc.thePlayer.posY && hit.getBlockPos().equals(targetBlock) && hit.sideHit != EnumFacing.DOWN;
     }
 }

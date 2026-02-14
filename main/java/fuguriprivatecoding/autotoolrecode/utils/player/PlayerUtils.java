@@ -157,6 +157,20 @@ public class PlayerUtils implements Imports {
         return null;
     }
 
+    public int teleport(int ticks, int additionalTicks) {
+        int balance = 0;
+
+        for (int i = 0; i < ticks; i++) {
+            try {
+                mc.runTick();
+                balance++;
+                balance += additionalTicks;
+            } catch (Exception ignored) {}
+        }
+
+        return balance;
+    }
+
     /**
      * Checks if a potion is good
      *

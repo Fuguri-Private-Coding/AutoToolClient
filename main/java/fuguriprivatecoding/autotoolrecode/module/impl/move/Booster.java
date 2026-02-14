@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.KeyBind;
+import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "Booster", category = Category.MOVE, description = "Позволяет вам телепортироватся по нажатию кнопке.")
@@ -19,6 +20,7 @@ public class Booster extends Module {
     KeyBind key = new KeyBind("Key", this, Keyboard.KEY_NONE);
 
     IntegerSetting maxTicks = new IntegerSetting("MaxTicks", this, 0, 20, 2);
+    IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
     FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0, 2.5f, 1, 0.1f);
 
     CheckBox checkBalance = new CheckBox("CheckBalance", this);
@@ -45,12 +47,8 @@ public class Booster extends Module {
         if (active) {
             if (event instanceof TickEvent) {
                 teleporting = true;
-                for (int i = 0; i < maxTicks.getValue(); i++) {
-                    try {
-                        mc.runTick();
-                        if (checkBalance.isToggled()) balance++;
-                    } catch (Exception _) {}
-                }
+                int newBalance = PlayerUtils.teleport(maxTicks.getValue(), additionalTicks.getValue());
+                if (checkBalance.isToggled()) balance = newBalance;
                 teleporting = false;
                 active = false;
             }

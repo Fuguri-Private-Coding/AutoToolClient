@@ -129,8 +129,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private float smoothCamFilterX;
     private float smoothCamFilterY;
     private float smoothCamPartialTicks;
-    private float fovModifierHand;
-    private float fovModifierHandPrev;
+    public float fovModifierHand;
+    public float fovModifierHandPrev;
     private float bossColorModifier;
     private float bossColorModifierPrev;
     private boolean cloudFog;
@@ -473,10 +473,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             float f = 70.0F;
 
             if (useFOVSetting) {
-                FovModifier fovModifier = Modules.getModule(FovModifier.class);
-                f = fovModifier.isToggled() ? fovModifier.fov.getValue() : this.mc.gameSettings.fovSetting;
+                f = FovModifier.getFov();
 
-                if ((fovModifier.isToggled() && fovModifier.dynamicFov.isToggled()) || (Config.isDynamicFov() && !fovModifier.isToggled())) {
+                if (Config.isDynamicFov() && !Modules.getModule(FovModifier.class).isToggled()) {
                     f *= this.fovModifierHandPrev + (this.fovModifierHand - this.fovModifierHandPrev) * partialTicks;
                 }
             }
@@ -484,7 +483,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             boolean flag = false;
 
             if (this.mc.currentScreen == null) {
-                GameSettings gamesettings = this.mc.gameSettings;
                 flag = GameSettings.isKeyDown(this.mc.gameSettings.ofKeyBindZoom);
             }
 
@@ -496,9 +494,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     this.mc.renderGlobal.displayListEntitiesDirty = true;
                 }
 
-                if (Config.zoomMode) {
-                    f /= 4.0F;
-                }
+                f /= 4.0F;
             } else if (Config.zoomMode) {
                 Config.zoomMode = false;
                 this.mc.gameSettings.smoothCamera = Config.zoomSmoothCamera;
@@ -550,10 +546,14 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
     private void setupViewBobbing(float partialTicks) {
         if (this.mc.getRenderViewEntity() instanceof EntityPlayer entityplayer) {
-            float f = entityplayer.distanceWalkedModified - entityplayer.prevDistanceWalkedModified;
-            float f1 = -(entityplayer.distanceWalkedModified + f * partialTicks);
-            float f2 = entityplayer.prevCameraYaw + (entityplayer.cameraYaw - entityplayer.prevCameraYaw) * partialTicks;
-            float f3 = entityplayer.prevCameraPitch + (entityplayer.cameraPitch - entityplayer.prevCameraPitch) * partialTicks;
+            ViewBobbing viewBobbing = Modules.getModule(ViewBobbing.class);
+
+            float factor = viewBobbing == null || !viewBobbing.isToggled() ? 1 : viewBobbing.strength.getValue();
+
+            float f = (entityplayer.distanceWalkedModified - entityplayer.prevDistanceWalkedModified) * factor;
+            float f1 = (-(entityplayer.distanceWalkedModified + f * partialTicks)) * factor;
+            float f2 = (entityplayer.prevCameraYaw + (entityplayer.cameraYaw - entityplayer.prevCameraYaw) * partialTicks) * factor;
+            float f3 = (entityplayer.prevCameraPitch + (entityplayer.cameraPitch - entityplayer.prevCameraPitch) * partialTicks) * factor;
             GlStateManager.translate(MathHelper.sin(f1 * (float) Math.PI) * f2 * 0.5F, -Math.abs(MathHelper.cos(f1 * (float) Math.PI) * f2), 0.0F);
             GlStateManager.rotate(MathHelper.sin(f1 * (float) Math.PI) * f2 * 3.0F, 0.0F, 0.0F, 1.0F);
             GlStateManager.rotate(Math.abs(MathHelper.cos(f1 * (float) Math.PI - 0.2F) * f2) * 5.0F, 1.0F, 0.0F, 0.0F);
@@ -727,7 +727,9 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
         this.hurtCameraEffect(partialTicks);
 
-        if (this.mc.gameSettings.viewBobbing) {
+        ViewBobbing viewBobbing = Modules.getModule(ViewBobbing.class);
+
+        if (this.mc.gameSettings.viewBobbing && (viewBobbing == null || !viewBobbing.isToggled() || !viewBobbing.removeScreenBobbing.isToggled())) {
             this.setupViewBobbing(partialTicks);
         }
 

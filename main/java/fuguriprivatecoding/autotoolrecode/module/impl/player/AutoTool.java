@@ -18,7 +18,7 @@ public class AutoTool extends Module {
     DoubleSlider switchDelayTick = new DoubleSlider("SwitchDelayTick", this, 0,20,0,1);
     DoubleSlider backSwitchDelayTick = new DoubleSlider("BackSwitchDelayTick", this, 0,20,0,1);
 
-    boolean flag, switched;
+    boolean needSwitch, switched;
 
     StopWatch switchTimer = new StopWatch();
     StopWatch backSwitchTimer = new StopWatch();
@@ -32,12 +32,12 @@ public class AutoTool extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof LegitClickTimingEvent) {
-            flag = shouldSwitch(mc.objectMouseOver);
+            needSwitch = shouldSwitch(mc.objectMouseOver);
 
             long switchDelay = switchDelayTick.getRandomizedIntValue() * 50L;
 
             if (switchTimer.reachedMS(switchDelay)) {
-                if (flag && !switched) {
+                if (needSwitch && !switched) {
                     switched = true;
                     switchTool();
                 }
@@ -46,7 +46,7 @@ public class AutoTool extends Module {
             if (switched) {
                 long backSwitchDelay = backSwitchDelayTick.getRandomizedIntValue() * 50L;
 
-                if (!flag) {
+                if (!needSwitch) {
                     if (backSwitchTimer.reachedMS(backSwitchDelay)) switchBack();
                 } else {
                     backSwitchTimer.reset();
@@ -54,10 +54,9 @@ public class AutoTool extends Module {
                 }
             }
 
-            if (!flag) {
+            if (!needSwitch) {
                 switchTimer.reset();
             }
-
         }
     }
 

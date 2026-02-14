@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
@@ -87,15 +88,7 @@ public class LagRange extends Module {
             }
 
             if (balance == 0 && teleportTicks > 0) {
-                for (int i = 0; i < teleportTicks; i++) {
-                    try {
-                        mc.runTick();
-                        balance++;
-                        if (i == teleportTicks - 1) {
-                            click = true;
-                        }
-                    } catch (Exception ignored) {}
-                }
+                PlayerUtils.teleport(teleportTicks, additionalTicks.getValue());
                 teleportTicks = 0;
             }
         }

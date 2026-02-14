@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import fuguriprivatecoding.autotoolrecode.event.events.player.JumpEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Animations;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.Hand;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import lombok.Getter;
 import lombok.Setter;
@@ -951,14 +951,14 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     }
 
     public int getArmSwingAnimationEnd() {
-        Animations animations = Modules.getModule(Animations.class);
+        Hand hand = Modules.getModule(Hand.class);
 
         int i = this.isPotionActive(Potion.digSpeed)
                 ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier())
                 : (this.isPotionActive(Potion.digSlowdown) ? 6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : 6);
 
-        if (animations.isToggled()) {
-            i = (int) ((double) i / animations.speed.getValue());
+        if (hand.isToggled() && hand.effect.get("Animations")) {
+            i = (int) ((double) i / hand.speed.getValue());
         }
         return i;
     }

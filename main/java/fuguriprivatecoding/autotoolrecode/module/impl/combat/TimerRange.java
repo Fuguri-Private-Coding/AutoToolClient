@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.Ping;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
@@ -30,8 +31,7 @@ public class TimerRange extends Module {
     final CheckBox onlyWhenPing = new CheckBox("OnlyWhenPing", this, false);
 
     public static boolean teleporting = false, click = false;
-    int teleportTicks;
-    int posRotIncrement = 0;
+    int teleportTicks, posRotIncrement;
     public static int balance = 0;
 
     Vec3 targetPos, pos;
@@ -71,7 +71,7 @@ public class TimerRange extends Module {
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 updateCashedIncrementPos();
 
-                AxisAlignedBB targetBox = getPredictBB(target, target.getNPosition(), pos);
+                AxisAlignedBB targetBox = getRealBB(target, target.getNPosition(), pos);
                 boolean skip = DistanceUtils.getDistance(simulatedPlayer, targetBox) > 3.0D;
 
                 if (skip) {
@@ -86,16 +86,8 @@ public class TimerRange extends Module {
             if (target.hurtTime > maxTargetHurtTime.getValue()) return;
 
             teleporting = true;
-            for (int i = 0; i < teleportTicks; i++) {
-                try {
-                    mc.runTick();
-                    balance++;
-                    if (i == teleportTicks - 1) {
-                        click = true;
-                        balance += additionalTicks.getValue();
-                    }
-                } catch (Exception ignored) {}
-            }
+            balance = PlayerUtils.teleport(teleportTicks, additionalTicks.getValue());
+            click = true;
             teleporting = false;
         }
     }
@@ -107,7 +99,7 @@ public class TimerRange extends Module {
         }
     }
 
-    private AxisAlignedBB getPredictBB(EntityLivingBase target, Vec3 newPos, Vec3 pos) {
+    private AxisAlignedBB getRealBB(EntityLivingBase target, Vec3 newPos, Vec3 pos) {
         double offsetX = BackTrack.working ? pos.xCoord - target.posX : newPos.xCoord - target.posX;
         double offsetY = BackTrack.working ? pos.yCoord - target.posY : newPos.yCoord - target.posY;
         double offsetZ = BackTrack.working ? pos.zCoord - target.posZ : newPos.zCoord - target.posZ;

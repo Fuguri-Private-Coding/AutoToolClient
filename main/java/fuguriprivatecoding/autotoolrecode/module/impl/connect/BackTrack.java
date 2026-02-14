@@ -38,11 +38,12 @@ public class BackTrack extends Module {
 
     final DoubleSlider distance = new DoubleSlider("Distance", this, 0,12,12,0.1f);
 
-    final CheckBox resetIfTargetHurtTime = new CheckBox("ResetIfTargetHurtTime", this, true);
-    final IntegerSetting minTargetHurtTimeToReset = new IntegerSetting("MinTargetHurtTimeToReset",this, resetIfTargetHurtTime::isToggled, 0, 10, 5);
+    final MultiMode resetIf = new MultiMode("ResetIf", this)
+        .addModes("TargetHurtTime", "PlayerHurtTime")
+        ;
 
-    final CheckBox resetIfPlayerHurtTime = new CheckBox("ResetIfPlayerHurtTime", this, false);
-    final IntegerSetting minPlayerHurtTimeToReset = new IntegerSetting("MinPlayerHurtTimeToReset", this, resetIfPlayerHurtTime::isToggled, 0, 10, 10);
+    final IntegerSetting minTargetHurtTime = new IntegerSetting("MinTargetHurtTime",this, () -> resetIf.get("TargetHurtTime"), 0, 10, 5);
+    final IntegerSetting minPlayerHurtTime = new IntegerSetting("MinPlayerHurtTime", this, () -> resetIf.get("PlayerHurtTime"), 0, 10, 10);
 
     final CheckBox onlyKillAura = new CheckBox("OnlyKillAura", this, true);
     final CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
@@ -146,8 +147,8 @@ public class BackTrack extends Module {
 
                 boolean distance = distanceToReal > this.distance.getMaxValue() || distanceFake || distanceToReal < this.distance.getMinValue();
 
-                boolean targetHurtTime = resetIfTargetHurtTime.isToggled() && target.hurtTime > minTargetHurtTimeToReset.getValue();
-                boolean playerHurtTime = mc.thePlayer.hurtTime > minPlayerHurtTimeToReset.getValue() && resetIfPlayerHurtTime.isToggled();
+                boolean targetHurtTime = resetIf.get("TargetHurtTime") && target.hurtTime > minTargetHurtTime.getValue();
+                boolean playerHurtTime = mc.thePlayer.hurtTime > minPlayerHurtTime.getValue() && resetIf.get("PlayerHurtTime");
 
                 working = !improve && !distance && !targetHurtTime && !playerHurtTime;
 

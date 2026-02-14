@@ -74,7 +74,7 @@ public class TargetESP extends Module {
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
         glDisable(GL_CULL_FACE);
-        glShadeModel(7425);
+        glShadeModel(GL_SMOOTH);
         glBegin(GL_QUAD_STRIP);
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
             double x1 = x + cos(i * Math.PI / 180) * radius.getValue();
@@ -107,7 +107,6 @@ public class TargetESP extends Module {
         }
         glEnd();
         glEnable(GL_CULL_FACE);
-        glShadeModel(7424);
         ColorUtils.resetColor();
         glLineWidth(1f);
         glDisable(GL_LINE_SMOOTH);

@@ -80,8 +80,6 @@ public class KillAura extends Module {
     private final TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothMode.get("Recorded"));
     private final FloatSetting recordedMultiplier = new FloatSetting("RecordedMultiplier", this, () -> smoothMode.get("Recorded"), 0, 10, 1, 0.01f);
 
-    private final IntegerSetting moveSpeed = new IntegerSetting("MoveSpeed", this, () -> smoothMode.get("Advanced"), 0, 100, 75);
-
     private final IntegerSetting frictionAtLargeMove = new IntegerSetting("FrictionAtLargeMove", this, () -> smoothMode.get("Advanced"), 0, 100, 50);
     private final IntegerSetting howManyDegreesPerTickIsLargeMove = new IntegerSetting("HowManyDegreesPerTickIsLargeMove?", this, () -> smoothMode.get("Advanced"), 0, 180, 60);
 
@@ -199,7 +197,6 @@ public class KillAura extends Module {
         boolean teleport = (TimerRange.isTeleporting() || LagRange.isTeleporting()) && teleportPredictFix.isToggled();
 
         double offset = target.getCollisionBorderSize();
-
         AxisAlignedBB box = RotUtils.getHitBox(
                 target,
                 teleport ? 100 : hBoxSize.getValue(),
@@ -207,32 +204,18 @@ public class KillAura extends Module {
         ).expand(offset, offset, offset);
 
         Rot needRotation = getRotation(target, lr, box);
-
         if (needRotation == null) return;
 
-        Rot delta;
-
-        if (smoothMode.get("Advanced")) {
-            float moveMultiplier = Math.clamp((moveSpeed.getValue() + RandomUtils.nextInt(1, 20)) / 100f, 0, 1);
-            delta = RotUtils.getDelta(lr, needRotation).multiplier(moveMultiplier);
-        } else {
-            delta = RotUtils.getDelta(lr, needRotation);
-        }
-
-        Rot speed = new Rot(
-                yawSpeed.getRandomizedIntValue(),
-                pitchSpeed.getRandomizedIntValue()
-        );
+        Rot delta = RotUtils.getDelta(lr, needRotation);
 
         if (!teleport) {
             if (smoothMode.get("Basic")) {
                 Rot rot = new Rot(
-                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
-                        RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
+                    RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
+                    RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
                 );
 
-                delta.setYaw(MathHelper.wrapDegree(delta.getYaw() - rot.getYaw()));
-                delta.setPitch(MathHelper.wrapDegree(delta.getPitch() - rot.getPitch()));
+                delta = delta.add(rot);
             }
 
             if (smoothMode.get("Linear")) {
@@ -260,6 +243,11 @@ public class KillAura extends Module {
                     }
                 }
             }
+
+            Rot speed = new Rot(
+                yawSpeed.getRandomizedIntValue(),
+                pitchSpeed.getRandomizedIntValue()
+            );
 
             RotUtils.limitDelta(delta, speed);
 

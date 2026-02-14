@@ -1,52 +1,76 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.RenderItemEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
-import lombok.Getter;
+import java.util.function.BooleanSupplier;
 
-@ModuleInfo(name = "Animations", category = Category.VISUAL, description = "СВАГАВСКИЕ ХАЛЯЛЬ АНИМАЦИИ МЕЧА.")
-public class Animations extends Module {
+@ModuleInfo(name = "Hand", category = Category.VISUAL, description = "Делает манипуляции с рукой и свага анимации.")
+public class Hand extends Module {
 
-    @Getter
-    static boolean animate;
+    public final MultiMode effect = new MultiMode("Effect", this)
+        .add("Animations", true)
+        .add("ItemPos", true)
+        ;
 
-    Mode mode = new Mode("Mode", this)
-            .addModes("1.7", "Swong", "Sigma", "Sigma 2", "Scale", "Exhibition", "Exhibition2", "Spin", "Basic", "Slide")
-            .setMode("1.7");
+    BooleanSupplier animationsSupplier = () -> effect.get("Animations");
+    BooleanSupplier itemPosSupplier = () -> effect.get("Animations");
 
-    FloatSetting scale = new FloatSetting("Scale", this, -1, 1f, 0f, 0.01f);
+    Mode mode = new Mode("Mode", this, animationsSupplier)
+        .addModes("1.7", "Swong", "Sigma", "Sigma 2", "Scale", "Exhibition", "Exhibition2", "Basic", "Slide")
+        .setMode("1.7");
 
-    public FloatSetting speed = new FloatSetting("Speed", this, 0.1f, 2f,1f,0.01f);
+    FloatSetting scale = new FloatSetting("Scale", this, animationsSupplier, -1, 1f, 0.1f, 0.01f);
+    public FloatSetting speed = new FloatSetting("Speed", this, animationsSupplier, 0.1f, 2f,1f,0.01f);
+    public CheckBox always = new CheckBox("AlwaysBlocking", this, animationsSupplier, true);
 
-    public CheckBox always = new CheckBox("AlwaysBlocking", this, true);
+    public FloatSetting x = new FloatSetting("X", this, itemPosSupplier, -2,2,-0.15f,0.01f);
+    public FloatSetting y = new FloatSetting("Y", this, itemPosSupplier, -2,2,0,0.01f);
+    public FloatSetting z = new FloatSetting("Z", this, itemPosSupplier, -2,2,0,0.01f);
+
+    public FloatSetting rotateX = new FloatSetting("RotateX", this, itemPosSupplier, -90,90,0,0.1f);
+    public FloatSetting rotateY = new FloatSetting("RotateY", this, itemPosSupplier, -90,90,0,0.1f);
+    public FloatSetting rotateZ = new FloatSetting("RotateZ", this, itemPosSupplier, -90,90,0,0.1f);
+
+    public FloatSetting blockX = new FloatSetting("BlockX", this, itemPosSupplier, -2,2,0,0.01f);
+    public FloatSetting blockY = new FloatSetting("BlockY", this, itemPosSupplier, -2,2,-0.1f,0.01f);
+    public FloatSetting blockZ = new FloatSetting("BlockZ", this, itemPosSupplier, -2,2,-0.2f,0.01f);
+
+    public FloatSetting blockRotateX = new FloatSetting("BlockRotateX", this, itemPosSupplier, -90,90,0,0.1f);
+    public FloatSetting blockRotateY = new FloatSetting("BlockRotateY", this, itemPosSupplier, -90,90,0,0.1f);
+    public FloatSetting blockRotateZ = new FloatSetting("BlockRotateZ", this, itemPosSupplier, -90,90,0,0.1f);
 
     @Override
     public void onEvent(Event event) {
         if (event instanceof RenderItemEvent renderItemEvent) {
-            float scales = 1 - scale.getValue();
-            GL11.glScaled(scales, scales, scales);
+            float scale = 1 - this.scale.getValue();
+            float resetScale = 1f / scale;
+
+            GL11.glScaled(scale, scale, scale);
             ItemRenderer itemRenderer = mc.getItemRenderer();
-            float animationProgression = renderItemEvent.getEquipProgress();
+
+            float equipProgress = renderItemEvent.getEquipProgress();
             float convertedProgress = (float) Math.sin(Math.sqrt(renderItemEvent.getSwingProgress()) * Math.PI);
-            float y;
+
+            float y = -convertedProgress * 2.0F;
             switch (mode.getMode()) {
                 case "1.7" -> {
-                    itemRenderer.transformFirstPersonItem(animationProgression, renderItemEvent.getSwingProgress());
+                    itemRenderer.transformFirstPersonItem(equipProgress, renderItemEvent.getSwingProgress());
                     itemRenderer.doBlockTransformations();
                 }
 
                 case "Swong" -> {
-                    itemRenderer.transformFirstPersonItem(animationProgression / 2.0F, renderItemEvent.getSwingProgress());
+                    itemRenderer.transformFirstPersonItem(equipProgress / 2.0F, renderItemEvent.getSwingProgress());
                     GlStateManager.rotate(convertedProgress * 30.0F / 2.0F, -convertedProgress, -0.0F, 9.0F);
                     GlStateManager.rotate(convertedProgress * 40.0F, 1.0F, -convertedProgress / 2.0F, -0.0F);
                     GlStateManager.translate(0.0F, 0.2F, 0.0F);
@@ -55,12 +79,12 @@ public class Animations extends Module {
 
                 case "Scale" -> {
                     GlStateManager.translate(0, 0, convertedProgress * -0.2);
-                    itemRenderer.transformFirstPersonItem(animationProgression, 0.0f);
+                    itemRenderer.transformFirstPersonItem(equipProgress, 0.0f);
                     itemRenderer.doBlockTransformations();
                 }
 
                 case "Slide" -> {
-                    itemRenderer.transformFirstPersonItem(animationProgression, 0.0f);
+                    itemRenderer.transformFirstPersonItem(equipProgress, 0.0f);
                     float var15 = MathHelper.sin(MathHelper.sqrt_float(renderItemEvent.getSwingProgress()) * 3.1415927F);
                     GlStateManager.rotate(-var15 * 55.0F / 2.0F, -8.0F, -0.0F, 9.0F);
                     GlStateManager.rotate(-var15 * 45.0F, 1.0F, var15 / 2.0F, -0.0F);
@@ -76,16 +100,8 @@ public class Animations extends Module {
                     itemRenderer.doBlockTransformations();
                 }
 
-                case "Spin" -> {
-                    itemRenderer.transformFirstPersonItem(animationProgression, 0.0F);
-                    GlStateManager.translate(0.0F, 0.2F, -1.0F);
-                    GlStateManager.rotate(-59.0F, -1.0F, 0.0F, 3.0F);
-                    GlStateManager.rotate((float)(-(System.currentTimeMillis() / 2L % 360L)), 1.0F, 0.0F, 0.0F);
-                    GlStateManager.rotate(60.0F, 0.0F, 1.0F, 0.0F);
-                }
-
                 case "Exhibition2" -> {
-                    itemRenderer.transformFirstPersonItem(animationProgression / 2.0F, 0.0F);
+                    itemRenderer.transformFirstPersonItem(equipProgress / 2.0F, 0.0F);
                     GlStateManager.translate(0.0F, 0.3F, -0.0F);
                     GlStateManager.rotate(-convertedProgress * 30.0F, 1.0F, 0.0F, 2.0F);
                     GlStateManager.rotate(-convertedProgress * 44.0F, 1.5F, convertedProgress / 1.2F, 0.0F);
@@ -93,8 +109,7 @@ public class Animations extends Module {
                 }
 
                 case "Sigma" -> {
-                    itemRenderer.transformFirstPersonItem(animationProgression, 0.0F);
-                    y = -convertedProgress * 2.0F;
+                    itemRenderer.transformFirstPersonItem(equipProgress, 0.0F);
                     GlStateManager.translate(0.0F, y / 10.0F + 0.1F, 0.0F);
                     GlStateManager.rotate(y * 10.0F, 0.0F, 1.0F, 0.0F);
                     GlStateManager.rotate(250.0F, 0.2F, 1.0F, -0.6F);
@@ -103,7 +118,7 @@ public class Animations extends Module {
                 }
 
                 case "Exhibition" -> {
-                    itemRenderer.transformFirstPersonItem(animationProgression / 2.0F, 0.0F);
+                    itemRenderer.transformFirstPersonItem(equipProgress / 2.0F, 0.0F);
                     GlStateManager.translate(0.0F, 0.3F, -0.0F);
                     GlStateManager.rotate(-convertedProgress * 31.0F, 1.0F, 0.0F, 2.0F);
                     GlStateManager.rotate(-convertedProgress * 33.0F, 1.5F, convertedProgress / 1.1F, 0.0F);
@@ -111,7 +126,7 @@ public class Animations extends Module {
                 }
 
                 case "Sigma 2" -> {
-                    itemRenderer.transformFirstPersonItem(animationProgression, 0.0F);
+                    itemRenderer.transformFirstPersonItem(equipProgress, 0.0F);
                     GlStateManager.scale(0.8F, 0.8F, 0.8F);
                     GlStateManager.translate(0.0F, 0.1F, 0.0F);
                     itemRenderer.doBlockTransformations();
@@ -119,8 +134,7 @@ public class Animations extends Module {
                     GlStateManager.rotate(-convertedProgress * 135.0F / 4.0F, 1.0F, 1.0F, 0.0F);
                 }
             }
-            GL11.glScaled(1f / scales,1f / scales, 1f / scales);
+            GL11.glScaled(resetScale,resetScale, resetScale);
         }
     }
 }
-
