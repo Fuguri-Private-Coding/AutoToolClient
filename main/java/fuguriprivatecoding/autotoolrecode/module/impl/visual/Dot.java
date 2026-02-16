@@ -38,20 +38,18 @@ public class Dot extends Module {
             pos = mc.thePlayer.getRotation();
         }
 
-        if (event instanceof Render3DEvent && CameraRot.INST.isUnlocked()) {
-            RayTrace mouse;
+        RayTrace mouse;
 
-            if (smooth.isToggled()) {
-                Rot smoothPos = prevPos.add(pos.subtract(prevPos).multiplier(mc.timer.renderPartialTicks));
-                mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks), 6, 6, smoothPos, mc.timer.renderPartialTicks);
-            } else {
-                mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(-1),6,6, pos, -1);
-            }
+        if (smooth.isToggled()) {
+            Rot smoothPos = prevPos.add(pos.subtract(prevPos).multiplier(mc.timer.renderPartialTicks));
+            mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks), 4.5f, 4.5f, smoothPos, mc.timer.renderPartialTicks);
+        } else {
+            mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(-1),4.5f,4.5f, pos, -1);
+        }
 
-            if (mouse != null) {
-                if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, glowColor.getFadedColor()));
-                RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, color.getFadedColor());
-            }
+        if (event instanceof Render3DEvent && mouse != null && CameraRot.INST.isUnlocked()) {
+            if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, glowColor.getFadedColor()));
+            RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, color.getFadedColor());
         }
     }
 }

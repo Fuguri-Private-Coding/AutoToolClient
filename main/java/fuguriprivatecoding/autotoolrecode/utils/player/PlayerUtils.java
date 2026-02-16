@@ -164,7 +164,9 @@ public class PlayerUtils implements Imports {
             try {
                 mc.runTick();
                 balance++;
-                balance += additionalTicks;
+                if (i == ticks - 1) {
+                    balance += additionalTicks;
+                }
             } catch (Exception ignored) {}
         }
 

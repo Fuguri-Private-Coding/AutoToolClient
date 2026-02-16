@@ -24,7 +24,7 @@ public class Hand extends Module {
         ;
 
     BooleanSupplier animationsSupplier = () -> effect.get("Animations");
-    BooleanSupplier itemPosSupplier = () -> effect.get("Animations");
+    BooleanSupplier itemPosSupplier = () -> effect.get("ItemPos");
 
     Mode mode = new Mode("Mode", this, animationsSupplier)
         .addModes("1.7", "Swong", "Sigma", "Sigma 2", "Scale", "Exhibition", "Exhibition2", "Basic", "Slide")
