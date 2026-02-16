@@ -76,11 +76,7 @@ public class FloatSetting extends Setting {
 
     @Override
     public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
-
-        float widthName = font.getStringWidth(getName() + ": ");
-
-
-        font.drawString(getName() + ": ", x, y, Colors.WHITE.withAlphaClamp(alpha));
+        font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
 
         EasingAnimation sliderAnim = getSliderAnim();
 

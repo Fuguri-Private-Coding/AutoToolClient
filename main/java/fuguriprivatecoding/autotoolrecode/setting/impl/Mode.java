@@ -1,18 +1,19 @@
 package fuguriprivatecoding.autotoolrecode.setting.impl;
 
 import com.google.gson.JsonObject;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BooleanSupplier;
 
 @Getter
@@ -40,18 +41,89 @@ public class Mode extends Setting {
 
     @Override
     public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
-        return 0;
+        updateAnimation();
+        font.drawString(getName(), x, y, Color.WHITE);
+
+        float modesX = x;
+        float modesY = y + 10;
+
+        float modesOffsetX = 0;
+        float modesOffsetY = 0;
+
+        for (String s : modes) {
+            float modeX = modesX + modesOffsetX;
+            float modeY = modesY + modesOffsetY;
+
+            Color modeColor = ColorUtils.interpolateColor(Colors.WHITE, elementColor, modeProgress.getOrDefault(s, 0f));
+            font.drawString(s, modeX, modeY, modeColor);
+
+            modesOffsetX += font.getStringWidth(s);
+
+            if (!s.equals(modes.getLast())) {
+                modeX = modesX + modesOffsetX;
+                modeY = modesY + modesOffsetY;
+
+                font.drawString(",", modeX, modeY, Color.WHITE);
+                modesOffsetX += font.getStringWidth(", ");
+            }
+
+        }
+
+        return 10 + 10 + modesOffsetY;
     }
 
     @Override
     public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
+        float modesX = x;
+        float modesY = y + 10;
 
-        return 0;
+        float modesOffsetX = 0;
+        float modesOffsetY = 0;
+
+        for (String s : modes) {
+            float modeX = modesX + modesOffsetX;
+            float modeY = modesY + modesOffsetY;
+
+//            font.drawString(s, modeX, modeY, modeColor);
+
+            if (GuiUtils.isHovered(
+                mouseX,
+                mouseY,
+                modeX,
+                modeY,
+                font.getStringWidth(s),
+                10
+            ) && key == 0) {
+                mode = s;
+            }
+
+            modesOffsetX += font.getStringWidth(s);
+
+            if (!s.equals(modes.getLast())) {
+                modesOffsetX += font.getStringWidth(", ");
+            }
+
+        }
+
+        return 10 + 10 + modesOffsetY;
     }
 
     @Override
     public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-        return 0;
+        float modesX = x;
+        float modesY = y + 10;
+
+        float modesOffsetX = 0;
+        float modesOffsetY = 0;
+
+        for (String s : modes) {
+            modesOffsetX += font.getStringWidth(s);
+
+            if (!s.equals(modes.getLast()))
+                modesOffsetX += font.getStringWidth(", ");
+        }
+
+        return 10 + 10 + modesOffsetY;
     }
 
     @Override
