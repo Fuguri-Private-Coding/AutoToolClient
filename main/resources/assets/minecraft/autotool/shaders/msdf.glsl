@@ -5,9 +5,6 @@ uniform float Range;
 uniform float Thickness;
 uniform float Smoothness;
 uniform vec4 Color;
-uniform bool Outline;
-uniform float OutlineThickness;
-uniform vec4 OutlineColor;
 
 float median(vec3 color) {
     return max(min(color.r, color.g), min(max(color.r, color.g), color.b));
@@ -26,18 +23,7 @@ void main() {
 
     float fillAlpha = smoothstep(-Smoothness, Smoothness, sigDist / pixelDist);
 
-    vec4 color;
-    if (Outline) {
-        float outlineDist = sigDist + OutlineThickness;
-        float outlineAlpha = smoothstep(-Smoothness, Smoothness, outlineDist / pixelDist);
-
-        color = mix(OutlineColor, vec4(1.0, 1.0, 1.0, 1.0), fillAlpha);
-        color.a = outlineAlpha;
-    } else {
-        color = vec4(Color.rgb, Color.a * fillAlpha);
-    }
-
-//    if (color.a == 0.0) discard;
+    vec4 color = vec4(Color.rgb, Color.a * fillAlpha);
 
     gl_FragColor = color;
 }

@@ -47,19 +47,15 @@ public class MsdfFont implements Imports {
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableAlpha();
 
-//        program.start();
+        program.start();
 
         mc.getTextureManager().bindTexture(texture);
-//
-//        program.uniform("Sampler0", 0);
-//        program.uniform("Range", atlas.getRange());
-//        program.uniform("Thickness", thickness);
-//        program.uniform("Smoothness", 0f);
-//        program.uniform("Color", color);
-//        program.uniform("Outline", 0);
-//        program.uniform("OutlineThickness", 0);
-//        program.uniform("OutlineColor", 0);
 
+        program.uniform("Sampler0", 0);
+        program.uniform("Range", atlas.getRange());
+        program.uniform("Thickness", thickness);
+        program.uniform("Smoothness", 0.007f);
+        program.uniform("Color", color);
 
         GL11.glBegin(GL11.GL_QUADS);
 
@@ -84,7 +80,7 @@ public class MsdfFont implements Imports {
 
         ColorUtils.resetColor();
         GlStateManager.disableBlend();
-//        Shader.stop();
+        Shader.stop();
     }
 
     public void draw(String text, float x, float y, float thickness, float spacing, Color color) {

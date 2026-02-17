@@ -33,7 +33,8 @@ public class CustomCrosshair extends Module {
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = new ScaledResolution(mc);
 
-            font.draw("Привет пупсик , / ? HELLO PUPSIKZ . - _ = + AV", 50, 50, 1, 0, color.getFadedColor());
+            font.setSize(32);
+            font.draw("Привет пупсик , / ? HELLO PUPSIKZ . - _ = + AV", 50, 50, 0.01f, 0, color.getFadedColor());
 
             switch (mode.getMode()) {
                 case "Cross" -> {
