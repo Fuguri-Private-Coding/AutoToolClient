@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 public class TestRotationOffsetSetting extends Setting {
-    private final List<Rot> offsets = new ArrayList<>();
+    public final List<Rot> offsets = new ArrayList<>();
     private final Color BACKGROUND_COLOR = new Color(0, 0, 0, 120);
 
     public boolean recording;

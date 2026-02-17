@@ -87,7 +87,7 @@ public class TimerRange extends Module {
 
             teleporting = true;
             balance = PlayerUtils.teleport(teleportTicks, additionalTicks.getValue());
-            click = true;
+            if (balance != 0) click = true;
             teleporting = false;
         }
     }

@@ -77,8 +77,8 @@ public class TargetESP extends Module {
         glShadeModel(GL_SMOOTH);
         glBegin(GL_QUAD_STRIP);
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
-            double x1 = x + cos(i * Math.PI / 180) * radius.getValue();
-            double z1 = z + sin(i * Math.PI / 180) * radius.getValue();
+            double x1 = x + cos(i * Math.PI / 180) * (radius.getValue() + 0.05);
+            double z1 = z + sin(i * Math.PI / 180) * (radius.getValue() + 0.05);
             double y1 = y + (animation + 1) * target.height / 1.8;
 
             Color horizontalColor = ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt);
@@ -94,8 +94,8 @@ public class TargetESP extends Module {
         glBegin(GL_LINE_STRIP);
 
         for (int i = 0; i <= 360; i += 360 / quality.getValue()) {
-            double x1 = x + cos(i * Math.PI / 180) * radius.getValue();
-            double z1 = z + sin(i * Math.PI / 180) * radius.getValue();
+            double x1 = x + cos(i * Math.PI / 180) * (radius.getValue() + 0.05);
+            double z1 = z + sin(i * Math.PI / 180) * (radius.getValue() + 0.05);
             double y1 = y + (animation + 1) * target.height / 1.8;
 
             Color finalColor = new Colors(ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt)).withAlpha(outLineAlpha.getValue());

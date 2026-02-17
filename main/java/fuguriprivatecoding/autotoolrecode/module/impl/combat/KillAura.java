@@ -77,7 +77,7 @@ public class KillAura extends Module {
         1, 5, 1.5f, 0.1f
     );
 
-    private final TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothMode.get("Recorded"));
+    private TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothMode.get("Recorded"));
     private final FloatSetting recordedMultiplier = new FloatSetting("RecordedMultiplier", this, () -> smoothMode.get("Recorded"), 0, 10, 1, 0.01f);
 
     private final IntegerSetting frictionAtLargeMove = new IntegerSetting("FrictionAtLargeMove", this, () -> smoothMode.get("Advanced"), 0, 100, 50);
@@ -174,6 +174,8 @@ public class KillAura extends Module {
         }
 
         if (smoothMode.get("Recorded")) {
+            if (recordedIndex >= recordedOffset.offsets.size()) recordedIndex = 0;
+
             Rot recordedDelta = recordedOffset.getByIndex(recordedIndex++);
             needRot = needRot.add(recordedDelta.multiplier(recordedMultiplier.getValue()));
         }

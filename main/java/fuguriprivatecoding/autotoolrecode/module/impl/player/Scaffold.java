@@ -118,7 +118,6 @@ public class Scaffold extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            targetBlock = PlayerUtils.getPossibleBlockPos();
 
             rotate();
         }
@@ -136,6 +135,7 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof RunGameLoopEvent) {
+            targetBlock = PlayerUtils.getPossibleBlockPos();
             if (clickTimer.reachedMS(clickDelay)) {
                 clicks++;
                 clickDelay = Math.round(1000f / cps.getRandomizedIntValue());
