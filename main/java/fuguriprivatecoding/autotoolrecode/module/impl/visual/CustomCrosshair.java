@@ -8,9 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import net.minecraft.client.gui.ScaledResolution;
 
 @ModuleInfo(name = "CustomCrosshair", category = Category.VISUAL, description = "Позволяет сделать свой прицел.")
@@ -26,15 +24,10 @@ public class CustomCrosshair extends Module {
     FloatSetting length = new FloatSetting("Length", this, () -> mode.is("Cross"), 1, 50, 4, 0.1f);
     FloatSetting scale = new FloatSetting("Scale", this, 0,20,2, 0.1f);
 
-    private final MsdfFont font = MsdfFont.create("SFProRegular");
-
     @Override
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = new ScaledResolution(mc);
-
-            font.setSize(32);
-            font.draw("Привет пупсик , / ? HELLO PUPSIKZ . - _ = + AV", 50, 50, 0.01f, 0, color.getFadedColor());
 
             switch (mode.getMode()) {
                 case "Cross" -> {

@@ -47,7 +47,7 @@ public class FastPlace extends Module {
             if (needClick()) for (int i = 0; i < iters; i++) mc.rightClickMouse();
         }
 
-        if (event instanceof ClickEvent e) {
+        if (event instanceof ClickEvent e && needClick()) {
             if (e.getButton() == ClickEvent.Button.RIGHT) e.cancel();
         }
     }
@@ -57,16 +57,6 @@ public class FastPlace extends Module {
 
         boolean oneClick = true;
         boolean flag = false;
-
-        IBlockState iblockstate = mc.theWorld.getBlockState(hit.getBlockPos());
-
-        float f = (float) (hit.hitVec.xCoord - (double) hit.getBlockPos().getX());
-        float f1 = (float) (hit.hitVec.yCoord - (double) hit.getBlockPos().getY());
-        float f2 = (float) (hit.hitVec.zCoord - (double) hit.getBlockPos().getZ());
-
-        if ((!mc.thePlayer.isSneaking() || mc.thePlayer.getHeldItem() == null) && iblockstate.getBlock().onBlockActivated(mc.theWorld, hit.getBlockPos(), iblockstate, mc.thePlayer, hit.sideHit, f, f1, f2)) {
-            flag = true;
-        }
 
         ItemStack heldStack = mc.thePlayer.getHeldItem();
 
@@ -79,8 +69,8 @@ public class FastPlace extends Module {
         boolean item = mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
         boolean hitBlock = hit.typeOfHit == RayTrace.RayType.BLOCK;
 
-        boolean finas = this.oneClick.isToggled() ? oneClick && item && hitBlock : item && hitBlock;
+        boolean finas = !this.oneClick.isToggled() || oneClick;
 
-        return Mouse.isButtonDown(1) && finas;
+        return Mouse.isButtonDown(1) && finas && item && hitBlock;
     }
 }

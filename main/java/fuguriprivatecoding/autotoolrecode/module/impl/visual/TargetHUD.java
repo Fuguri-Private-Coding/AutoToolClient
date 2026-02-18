@@ -7,6 +7,8 @@ import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -19,9 +21,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.projection.Convertors;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
@@ -29,6 +28,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
@@ -84,7 +84,7 @@ public class TargetHUD extends Module {
         }
 
         if (event instanceof Render2DEvent) {
-            currentScale.update(2, Easing.OUT_BACK);
+            currentScale.update(2f, Easing.OUT_BACK);
 
             if (target == null || target.getSkin() == null || target.getName() == null) return;
 
@@ -122,7 +122,7 @@ public class TargetHUD extends Module {
         Color bgColor = new Colors(this.bgColor.getFadedColor()).withMultiplyAlphaClamp(alpha);
 
         if (render.get("Background")) {
-            RoundedUtils.drawRect(x, y, width, height, bgRadius.getValue(), bgColor);
+            RenderUtils.drawRoundedOutLineRectangle(x, y, width, height, bgRadius.getValue(), bgColor, Colors.WHITE, Colors.WHITE);
         }
 
         StencilUtils.setUpTexture(x, y, width, height, bgRadius.getValue());
@@ -131,27 +131,26 @@ public class TargetHUD extends Module {
 
         if (render.get("Name")) {
             Color textColor = new Colors(this.textColor.getFadedColor()).withMultiplyAlphaClamp(alpha);
-            font.drawString(target.getName(), x + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, y + height / 2f - 10f, textColor, textShadow.isToggled());
+            font.drawString(target.getName(), x + width / 2f + 18 - font.getStringWidth(target.getName()) / 2f, y + height / 2f - 10, textColor, textShadow.isToggled());
         }
 
         if (render.get("Health")) {
             float maxHealth = target.getMaxHealth();
             float currentHealth = target.getHealth();
             float healthPercentage = currentHealth / maxHealth;
-            float maxHealthBarWidth = width - height - 5;
+            float maxHealthBarWidth = width - height - 10;
             float targetHealthWidth = maxHealthBarWidth * healthPercentage;
 
             if (healthAnimation.getEnd() != targetHealthWidth) healthAnimation.setEnd(targetHealthWidth);
 
             healthAnimation.update(7, Easing.LINEAR);
 
-            float healthX = x + height;
-            float healthY = y + height / 2f + 2;
+            float healthX = x + height + 2.5f;
+            float healthY = y + height / 2f + 4;
 
-            Color healthColor = new Colors(this.healthColor.getFadedColor()).withMultiplyAlphaClamp(alpha);
-
-            RoundedUtils.drawRect(healthX, healthY, maxHealthBarWidth, 10, 5, bgColor);
-            RoundedUtils.drawRect(healthX, healthY, healthAnimation.getValue(), 10, 5, healthColor);
+            RoundedGradUtils.drawRect(healthX, healthY, maxHealthBarWidth, 7.5f, 3.75f, bgColor, bgColor, false);
+            RoundedGradUtils.drawRect(healthX, healthY, healthAnimation.getValue(), 7.5f, 3.75f, this.healthColor.getColor(), this.healthColor.getFadeColor(), false);
+            RenderUtils.drawRoundedOutLineRectangle(healthX, healthY, maxHealthBarWidth, 7.5f, 3.75f, Colors.WHITE.withAlpha(0), Colors.WHITE, Colors.WHITE);
         }
 
         if (render.get("Head") && target instanceof EntityPlayer) {
@@ -167,7 +166,11 @@ public class TargetHUD extends Module {
 
             Color color = ColorUtils.interpolateColor(headColor, headHitColor, hurtTime);
 
-            StencilUtils.setUpTexture(headX, headY, headWidth, headHeight, headRadius.getValue() * currentScale.getValue());
+//            StencilUtils.setUpTexture(headX - 1, headY - 1, headWidth + 2, headHeight + 2, headRadius.getValue() * currentScale.getValue());
+            StencilUtils.initStencil();
+            GL11.glEnable(2960);
+            StencilUtils.bindWriteStencilBuffer();
+            RectUtils.drawRect(headX, headY, headWidth, headHeight, headRadius.getValue(), Color.WHITE);
             StencilUtils.writeTexture();
 
             ColorUtils.glColor(color);
@@ -175,6 +178,8 @@ public class TargetHUD extends Module {
             ColorUtils.resetColor();
 
             StencilUtils.endWriteTexture();
+
+            RenderUtils.drawRoundedOutLineRectangle(headX, headY, headWidth, headHeight, headRadius.getValue(), Colors.WHITE.withAlpha(0), color, color);
         }
 
         StencilUtils.endWriteTexture();
