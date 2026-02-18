@@ -53,7 +53,7 @@ public class MsdfFont implements Imports {
 
         program.uniform("Sampler0", 0);
         program.uniform("Range", atlas.getRange());
-        program.uniform("Thickness", thickness);
+        program.uniform("Thickness", 0.001f);
         program.uniform("Smoothness", 0.007f);
         program.uniform("Color", color);
 

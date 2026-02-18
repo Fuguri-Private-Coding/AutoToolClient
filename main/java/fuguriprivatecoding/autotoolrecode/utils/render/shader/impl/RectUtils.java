@@ -16,7 +16,6 @@ public class RectUtils {
         if (program == null) program = Shaders.testelips;
         float factorPenis = (1 / factor) * height;
 
-        ClientUtils.chatLog(factorPenis);
         program.start();
         program.uniform("Factor", factorPenis);
         program.uniform("Color", color);
