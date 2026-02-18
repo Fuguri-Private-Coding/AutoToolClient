@@ -41,18 +41,25 @@ public class GuiPlayerTabOverlay extends Gui
         this.guiIngame = guiIngameIn;
     }
 
-    public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
+    public String getPlayerName(NetworkPlayerInfo profile)
     {
         final MidClick midClick = Modules.getModule(MidClick.class);
-        final MurderMystery murderDetector = Modules.getModule(MurderMystery.class);
 
-        String friend = Friends.isFriend(networkPlayerInfoIn.getGameProfile().getName(), midClick.reverseFriends.isToggled()) ? "§2[Friend]§9 " : "";
-        String murder = murderDetector.isToggled() && murderDetector.murders.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§4[Murder]§4 " : "";
-        String detective = murderDetector.isToggled() && murderDetector.detectives.contains(networkPlayerInfoIn.getGameProfile().getName()) ? "§6[Detective]§6 " : "";
-        String user = IRC.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()) != null ? IRC.usersOnline.get(networkPlayerInfoIn.getGameProfile().getName()).toColoredString() + " " : "";
-        String name = networkPlayerInfoIn.getDisplayName() != null ? networkPlayerInfoIn.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(networkPlayerInfoIn.getPlayerTeam(), networkPlayerInfoIn.getGameProfile().getName());
+        String currentName = profile.getGameProfile().getName();
 
-        return user + friend + murder + detective + name;
+        boolean friend = Friends.isFriend(currentName, midClick.reverseFriends.isToggled());
+        boolean murder = MurderMystery.isMurder(currentName);
+        boolean detective = MurderMystery.isDetective(currentName);
+        boolean user = IRC.isClientUser(currentName);
+
+        String detectiveText = detective ? "§6[Detective]§6 " : "";
+        String murderText = murder ? "§4[Murder]§4 " : "";
+        String friendText = friend ? "§2[Friend]§9 " : "";
+        String userText = user ? IRC.usersOnline.get(currentName).toColoredString() + " " : "";
+
+        String name = profile.getDisplayName() != null ? profile.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(profile.getPlayerTeam(), profile.getGameProfile().getName());
+
+        return detectiveText + murderText + friendText + userText + name;
     }
 
     public void updatePlayerList(boolean willBeRendered)

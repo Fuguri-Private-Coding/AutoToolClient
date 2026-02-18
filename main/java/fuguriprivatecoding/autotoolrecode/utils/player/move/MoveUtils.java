@@ -5,9 +5,11 @@ import lombok.experimental.UtilityClass;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
+import org.lwjgl.input.Keyboard;
 
 @UtilityClass
 public class MoveUtils implements Imports {
@@ -18,6 +20,15 @@ public class MoveUtils implements Imports {
             && (mc.thePlayer.getFoodStats().getFoodLevel() > 6 || mc.thePlayer.capabilities.allowFlying)
             && !mc.thePlayer.isPotionActive(Potion.blindness)
             && !mc.thePlayer.isSneaking();
+    }
+
+    public static void handleKeyBinding(boolean forward, boolean right, boolean left, boolean sneak, boolean jump, boolean backward) {
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindForward.getKeyCode()) && forward);
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindBack.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindBack.getKeyCode()) && backward);
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindRight.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindRight.getKeyCode()) && right);
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindLeft.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.getKeyCode()) && left);
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode()) && jump);
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.getKeyCode()) && sneak);
     }
 
     public static boolean isMoveDiagonally(float yaw) {

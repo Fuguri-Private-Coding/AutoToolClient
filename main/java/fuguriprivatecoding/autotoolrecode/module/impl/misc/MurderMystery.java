@@ -60,11 +60,19 @@ public class MurderMystery extends Module {
         }
     }
 
+    public static boolean isMurder(String name) {
+        return Modules.getModule(MurderMystery.class).isToggled() && !murders.isEmpty() && murders.contains(name);
+    }
+
     public static boolean isMurder(EntityPlayer entity) {
-        return Modules.getModule(MurderMystery.class).isToggled() && !murders.isEmpty() && murders.contains(entity.getName());
+        return isMurder(entity.getName());
+    }
+
+    public static boolean isDetective(String name) {
+        return Modules.getModule(MurderMystery.class).isToggled() && !detectives.isEmpty() && detectives.contains(name);
     }
 
     public static boolean isDetective(EntityPlayer entity) {
-        return Modules.getModule(MurderMystery.class).isToggled() && !detectives.isEmpty() && detectives.contains(entity.getName());
+        return isDetective(entity.getName());
     }
 }

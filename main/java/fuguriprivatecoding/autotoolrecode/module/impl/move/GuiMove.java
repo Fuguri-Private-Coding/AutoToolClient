@@ -7,13 +7,11 @@ import fuguriprivatecoding.autotoolrecode.gui.config.ConfigScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
+import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.settings.KeyBinding;
-import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "GuiMove", category = Category.MOVE, description = "Позовляет вам двигатся в окнах.")
 public class GuiMove extends Module {
@@ -23,17 +21,21 @@ public class GuiMove extends Module {
         .set("Client", true)
         ;
 
-    final CheckBox jumpInGui = new CheckBox("JumpInGui", this, true);
+    MultiMode availableMoveInGui = new MultiMode("AvailableMoveInGui", this)
+        .add("Jump", true)
+        .add("Sneak")
+        ;
 
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             if (isKeyHandle(mc.currentScreen)) {
-                KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindForward.getKeyCode()));
-                KeyBinding.setKeyBindState(mc.gameSettings.keyBindBack.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindBack.getKeyCode()));
-                KeyBinding.setKeyBindState(mc.gameSettings.keyBindRight.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindRight.getKeyCode()));
-                KeyBinding.setKeyBindState(mc.gameSettings.keyBindLeft.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.getKeyCode()));
-                KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode()) && jumpInGui.isToggled());
+                MoveUtils.handleKeyBinding(
+                    true, true, true,
+                    availableMoveInGui.get("Sneak"),
+                    availableMoveInGui.get("Jumo"),
+                    true
+                );
             }
         }
     }

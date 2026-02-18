@@ -6,7 +6,6 @@ import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -87,7 +86,7 @@ public class Clicks implements Imports, EventListener {
     }
 
     public static void click(EntityLivingBase target) {
-        if (clickSettings.ignoreWalls.isToggled()) {
+        if (clickSettings.ignoreWalls.isToggled() && target != null) {
             RayTrace hit = RayCastUtils.rayCast(mc.thePlayer.getRotation(), 8, 0);
             RayTrace hits = RayCastUtils.rayCast(DistanceUtils.getDistance(target) + 0.2f, 0, mc.thePlayer.getRotation());
 

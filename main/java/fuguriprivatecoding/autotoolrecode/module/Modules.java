@@ -27,7 +27,6 @@ public class Modules {
 			new AutoSoup(),
 			new KillAura(),
             new AspectRatio(),
-			new AutoWater(),
             new BWHelper(),
             new AutoRegister(),
 			new FastLadder(),

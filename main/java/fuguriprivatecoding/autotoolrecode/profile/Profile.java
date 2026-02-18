@@ -22,6 +22,6 @@ public class Profile implements Serializable {
      * @return Строка с цветом текста
      */
     public String toColoredString() {
-        return username + " §f[" + role.getColorPrefix() + role.name() + "§f]";
+        return "§7[§9" + username + "§7] [" + role.getColorPrefix() + role.name() + "§7]§f";
     }
 }

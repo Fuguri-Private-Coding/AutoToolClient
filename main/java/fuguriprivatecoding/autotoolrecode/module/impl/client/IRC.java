@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.profile.Role;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import net.dv8tion.jda.api.entities.Message;
 import net.minecraft.entity.player.EntityPlayer;
 import java.util.HashMap;
@@ -35,11 +36,16 @@ public class IRC extends Module {
     public void onDisable() {
         ClientIRC.disconnectServer();
         history.clear();
+        usersOnline.clear();
         running = false;
     }
 
+    public static boolean isClientUser(String name) {
+        return usersOnline.get(name) != null;
+    }
+
     public static boolean isClientUser(EntityPlayer ent) {
-        return usersOnline.get(ent.getName()) != null;
+        return isClientUser(ent.getName());
     }
 
     private static class IRCThread extends Thread {
