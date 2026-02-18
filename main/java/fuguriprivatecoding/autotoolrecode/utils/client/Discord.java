@@ -17,14 +17,15 @@ public class Discord implements Imports {
     private static long timestamp;
 
     public static void init() {
-        DiscordThread thread = new DiscordThread();
-        Discord.running = true;
-        thread.setDaemon(true);
-        thread.start();
         start();
     }
 
     public static void start() {
+        running = true;
+        DiscordThread thread = new DiscordThread();
+        thread.setDaemon(true);
+        thread.start();
+
         DiscordEventHandlers.Builder handle = new DiscordEventHandlers.Builder();
 
         handle.setReadyEventHandler(user -> {
@@ -43,7 +44,6 @@ public class Discord implements Imports {
         DiscordRPC.discordInitialize("1356982126746140713", handle.build(), true);
 
         update("Запускается игра.", "А пока поешьте печенье.");
-        running = true;
     }
 
     public static void stop() {

@@ -16,15 +16,17 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class IRC extends Module {
 
     public static HashMap<String, Profile> usersOnline = new HashMap<>();
-    private static List<Message> history = new CopyOnWriteArrayList<>();
+    private static final List<Message> history = new CopyOnWriteArrayList<>();
 
-    private static boolean running = false;
+    private static volatile boolean running = false;
+
+    IRCThread thread;
 
     @Override
     public void onEnable() {
         ClientIRC.connectServer();
         running = true;
-        IRCThread thread = new IRCThread();
+        thread = new IRCThread();
         thread.setDaemon(true);
         thread.start();
     }
@@ -32,8 +34,8 @@ public class IRC extends Module {
     @Override
     public void onDisable() {
         ClientIRC.disconnectServer();
+        history.clear();
         running = false;
-        history = new CopyOnWriteArrayList<>();
     }
 
     public static boolean isClientUser(EntityPlayer ent) {
@@ -44,7 +46,8 @@ public class IRC extends Module {
         @Override
         public void run() {
             while (running) {
-                history = ClientIRC.getServerChannel().getIterableHistory().stream().toList();
+                List<Message> newList = ClientIRC.getServerChannel().getIterableHistory().stream().toList();
+                history.addAll(newList);
                 if (!history.isEmpty()) {
                     for (Message message : history) {
                         String msg = message.getContentRaw();
