@@ -63,6 +63,10 @@ public class Scaffold extends Module {
         .setMode("Legit")
         ;
 
+    private final CheckBox startAtEdge = new CheckBox("StartAtEdge", this, normalVisible, false);
+
+    private final FloatSetting startEdgeOffset = new FloatSetting("StartEdgeOffset", this, () -> normalVisible.getAsBoolean() && startAtEdge.isToggled(), -0.1f,0.1f,0.05f, 0.01f);
+
     private final CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this);
     private final CheckBox strictYaw = new CheckBox("StrictYaw", this);
 
@@ -100,6 +104,8 @@ public class Scaffold extends Module {
 
     int clicks = 0;
 
+    boolean active = false;
+
     private final StopWatch clickTimer = new StopWatch();
     private long clickDelay;
 
@@ -118,11 +124,21 @@ public class Scaffold extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
+            if (rotMode.is("Normal") && startAtEdge.isToggled()) {
+               if (!active) {
+                   BlockPos pos = MoveUtils.getDirectionalBlockPos(startEdgeOffset.getValue(), 0.7f);
+                   if (mc.theWorld.isAirBlock(pos)) active = true;
+               }
+            } else {
+                active = true;
+            }
 
-            rotate();
+            if (active) {
+                rotate();
+            }
         }
 
-        if (event instanceof LegitClickTimingEvent) {
+        if (event instanceof LegitClickTimingEvent && active) {
             int slot = ItemUtils.findBlockInHotBar();
 
             if (slot != -1) {
@@ -136,10 +152,12 @@ public class Scaffold extends Module {
 
         if (event instanceof RunGameLoopEvent) {
             targetBlock = PlayerUtils.getPossibleBlockPos();
-            if (clickTimer.reachedMS(clickDelay)) {
-                clicks++;
-                clickDelay = Math.round(1000f / cps.getRandomizedIntValue());
-                clickTimer.reset();
+            if (active) {
+                if (clickTimer.reachedMS(clickDelay)) {
+                    clicks++;
+                    clickDelay = Math.round(1000f / cps.getRandomizedIntValue());
+                    clickTimer.reset();
+                }
             }
         }
 
@@ -183,7 +201,7 @@ public class Scaffold extends Module {
             }
         }
 
-        if (event instanceof SprintEvent e) {
+        if (event instanceof SprintEvent e && active) {
             switch (sprintMode.getMode()) {
                 case "AllDirection" -> {
                     if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.isSneaking() && MoveUtils.isMoving()) {
@@ -196,7 +214,7 @@ public class Scaffold extends Module {
             }
         }
 
-        if (event instanceof JumpEvent e) {
+        if (event instanceof JumpEvent e && active) {
             float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
             float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw), 45);
 
@@ -217,6 +235,7 @@ public class Scaffold extends Module {
         CameraRot.INST.setWillChange(false);
 
         targetBlock = null;
+        active = false;
     }
 
     void legitPlace() {
