@@ -32,8 +32,8 @@ public class GuiMove extends Module {
             if (isKeyHandle(mc.currentScreen)) {
                 MoveUtils.handleKeyBinding(
                     true, true, true,
-                    availableMoveInGui.get("Sneak"),
-                    availableMoveInGui.get("Jumo"),
+                    false,
+                    true,
                     true
                 );
             }
