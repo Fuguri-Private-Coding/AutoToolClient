@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.RotationData;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.ScaffoldType;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.player.ItemUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
@@ -51,7 +52,7 @@ public class Scaffold extends Module {
     private final DoubleSlider pitchCorrectionSearchRange = new DoubleSlider("PitchCorrectionSearchRange", this, 0,90,90,0.1f);
     private final FloatSetting pitchCorrectionMinStep = new FloatSetting("PitchCorrectionMinStep", this, 0.3f, 10, 1f, 0.01f);
 
-    private final CheckBox sortYawOffset = new CheckBox("SortYawOffset", this);
+    private final CheckBox sortYawOffset = new CheckBox("SortYawOffset", this, tellyVisible);
     private final FloatSetting yawOffset = new FloatSetting("YawOffset", this, () -> sortYawOffset.isToggled() || normalVisible.getAsBoolean(), 0, 90, 45, 0.1f);
 
     private final MultiMode removeSwing = new MultiMode("RemoveSwing", this)
@@ -102,9 +103,9 @@ public class Scaffold extends Module {
 
     private BlockPos targetBlock;
 
-    int clicks = 0;
+    private ScaffoldType type;
 
-    boolean active = false;
+    int clicks = 0;
 
     private final StopWatch clickTimer = new StopWatch();
     private long clickDelay;
@@ -123,122 +124,89 @@ public class Scaffold extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof TickEvent) {
-            if (rotMode.is("Normal") && startAtEdge.isToggled()) {
-               if (!active) {
-                   BlockPos pos = MoveUtils.getDirectionalBlockPos(startEdgeOffset.getValue(), 0.7f);
-                   if (mc.theWorld.isAirBlock(pos)) active = true;
-               }
-            } else {
-                active = true;
-            }
-
-            if (active) {
-                rotate();
-            }
-        }
-
-        if (event instanceof LegitClickTimingEvent && active) {
-            int slot = ItemUtils.findBlockInHotBar();
-
-            if (slot != -1) {
-                if (mc.thePlayer.inventory.currentItem != slot) {
-                    mc.thePlayer.inventory.currentItem = slot;
+        switch (event) {
+            case TickEvent _ -> {
+                switch (type) {
+                    case ACTIVE -> rotate();
+                    case NONACTIVE -> updateScaffoldType();
                 }
             }
 
-            legitPlace();
-        }
+            case LegitClickTimingEvent _ when type == ScaffoldType.ACTIVE -> {
+                int slot = ItemUtils.findBlockInHotBar();
 
-        if (event instanceof RunGameLoopEvent) {
-            targetBlock = PlayerUtils.getPossibleBlockPos();
-            if (active) {
-                if (clickTimer.reachedMS(clickDelay)) {
-                    clicks++;
-                    clickDelay = Math.round(1000f / cps.getRandomizedIntValue());
-                    clickTimer.reset();
-                }
-            }
-        }
-
-        if (event instanceof Render3DEvent && targetBlock != null && render.isToggled()) {
-            RenderUtils.start3D();
-
-            if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(targetBlock, glowColor.getFadedFloatColor()));
-            RenderUtils.drawBlockESP(targetBlock, color.getFadedFloatColor());
-
-            ColorUtils.resetColor();
-            RenderUtils.stop3D();
-        }
-
-        if (event instanceof MoveEvent e) {
-            float yaw = CameraRot.INST.getYaw();
-            float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw), 45);
-
-            float needYaw = strictYaw.isToggled() ? roundedYaw : yaw;
-
-            MoveUtils.moveFix(e, MoveUtils.getDirection(needYaw, e.getForward(), e.getStrafe()));
-
-            if (rotMode.is("Normal")) {
-                if (sneakIf.get("Rotate") && lastDelta.hypot() > minDeltaToSneak.getValue()) {
-                    if (isClutch() && !sneakIfRotateWithClutch.isToggled()) {
-                        return;
-                    }
-
-                    e.setSneak(true);
-                }
-
-                if (sneakIf.get("ZeroBlocks") && ItemUtils.findBlockInHotBar() == -1) e.setSneak(true);
-
-                if (sneakIf.get("NinjaBridge")) {
-                    if (isClutch() && !sneakIfNinjaBridgeWithClutch.isToggled()) {
-                        return;
-                    }
-
-                    BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.7f);
-                    if (mc.theWorld.isAirBlock(pos)) e.setSneak(true);
-                }
-            }
-        }
-
-        if (event instanceof SprintEvent e && active) {
-            switch (sprintMode.getMode()) {
-                case "AllDirection" -> {
-                    if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.isSneaking() && MoveUtils.isMoving()) {
-                        e.setSprinting(true);
+                if (slot != -1) {
+                    if (mc.thePlayer.inventory.currentItem != slot) {
+                        mc.thePlayer.inventory.currentItem = slot;
                     }
                 }
 
-                case "JumpSprint" -> e.setSprinting(mc.gameSettings.keyBindJump.isKeyDown() && MoveUtils.isMoving());
-                case "None" -> e.setSprinting(false);
+                click();
             }
-        }
 
-        if (event instanceof JumpEvent e && active) {
-            float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
-            float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw), 45);
-
-            float needYaw = strictYaw.isToggled() ? roundedYaw : yaw;
-
-            e.setYaw(!sprintMode.is("JumpSprint") ? mc.thePlayer.rotationYaw : needYaw);
-        }
-
-        if (event instanceof ClickEvent e) {
-            if (e.getButton() == ClickEvent.Button.RIGHT || e.getButton() == ClickEvent.Button.LEFT) {
-                e.cancel();
+            case RunGameLoopEvent _ -> {
+                targetBlock = PlayerUtils.getPossibleBlockPos();
+                if (type == ScaffoldType.ACTIVE) {
+                    if (clickTimer.reachedMS(clickDelay)) {
+                        clicks++;
+                        clickDelay = Math.round(1000f / cps.getRandomizedIntValue());
+                        clickTimer.reset();
+                    }
+                }
             }
+
+            case Render3DEvent _ when targetBlock != null && render.isToggled() -> {
+                RenderUtils.start3D();
+
+                if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(targetBlock, glowColor.getFadedFloatColor()));
+                RenderUtils.drawBlockESP(targetBlock, color.getFadedFloatColor());
+
+                ColorUtils.resetColor();
+                RenderUtils.stop3D();
+            }
+
+            case MoveEvent e -> {
+                float yaw = CameraRot.INST.getYaw();
+                float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw), 45);
+                float needYaw = strictYaw.isToggled() ? roundedYaw : yaw;
+
+                MoveUtils.moveFix(e, MoveUtils.getDirection(needYaw, e.getForward(), e.getStrafe()));
+                e.setSneak(isSneak());
+            }
+
+            case SprintEvent e when type == ScaffoldType.ACTIVE -> {
+                switch (sprintMode.getMode()) {
+                    case "AllDirection" -> {
+                        if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.isSneaking() && MoveUtils.isMoving()) {
+                            e.setSprinting(true);
+                        }
+                    }
+
+                    case "JumpSprint" -> e.setSprinting(mc.gameSettings.keyBindJump.isKeyDown() && MoveUtils.isMoving());
+                    case "None" -> e.setSprinting(false);
+                }
+            }
+
+            case JumpEvent e when type == ScaffoldType.ACTIVE -> {
+                float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
+                float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw), 45);
+
+                float needYaw = strictYaw.isToggled() ? roundedYaw : yaw;
+
+                e.setYaw(!sprintMode.is("JumpSprint") ? mc.thePlayer.rotationYaw : needYaw);
+            }
+
+            case ClickEvent e -> {
+                if (e.getButton() == ClickEvent.Button.RIGHT || e.getButton() == ClickEvent.Button.LEFT) {
+                    e.cancel();
+                }
+            }
+
+            default -> {}
         }
     }
 
-    private void resetValues() {
-        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
-        CameraRot.INST.setWillChange(false);
-
-        targetBlock = null;
-        active = false;
-    }
-
-    void legitPlace() {
+    private void click() {
         RayTrace mouseOver = RayCastUtils.rayCast(6, 4.5f, mc.thePlayer.getRotation());
 
         int iters = clicks;
@@ -252,18 +220,13 @@ public class Scaffold extends Module {
             for (int i = 0; i < iters; i++) {
                 mc.rightClickMouse(false);
 
-                if (!removeSwing.get("On Client")) {
-                    mc.thePlayer.swingItemNoPacket();
-                }
-
-                if (!removeSwing.get("On Server")) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
-                }
+                if (!removeSwing.get("On Client")) mc.thePlayer.swingItemNoPacket();
+                if (!removeSwing.get("On Server")) mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
             }
         }
     }
 
-    void rotate() {
+    private void rotate() {
         float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
         float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw + 180), 45);
 
@@ -314,11 +277,32 @@ public class Scaffold extends Module {
         mc.thePlayer.moveRotation(delta);
     }
 
-    boolean isClutch() {
+    private boolean isSneak() {
+        if (rotMode.is("Normal")) {
+            if (sneakIf.get("Rotate") && lastDelta.hypot() > minDeltaToSneak.getValue()) {
+                return !isClutch() || sneakIfRotateWithClutch.isToggled();
+            }
+
+            if (sneakIf.get("ZeroBlocks") && ItemUtils.findBlockInHotBar() == -1) return true;
+
+            if (sneakIf.get("NinjaBridge")) {
+                if (isClutch() && !sneakIfNinjaBridgeWithClutch.isToggled()) {
+                    return false;
+                }
+
+                BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.7f);
+                return mc.theWorld.isAirBlock(pos);
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isClutch() {
         return (Player.isClutch() || DistanceUtils.getDistance(targetBlock) > minDistanceToClutch.getValue()) && clutch.isToggled();
     }
 
-    boolean isSameY(RayTrace mouse) {
+    private boolean isSameY(RayTrace mouse) {
         if (sameY.isToggled()) {
             if (Mouse.isButtonDown(1)) return mouse.sideHit != EnumFacing.DOWN;
             return mouse.sideHit != EnumFacing.DOWN && mouse.sideHit != EnumFacing.UP;
@@ -326,7 +310,7 @@ public class Scaffold extends Module {
         return mouse.sideHit != EnumFacing.DOWN;
     }
 
-    boolean isTelly() {
+    private boolean isTelly() {
         if (MoveUtils.isMoving()) {
             if (mc.gameSettings.keyBindJump.isKeyDown()) {
                 int needAirTicks = (speedTelly.isToggled() ? 0 : airTicks.getRandomizedIntValue());
@@ -339,7 +323,18 @@ public class Scaffold extends Module {
         return false;
     }
 
-    Rot getDeltaSpeed() {
+    private void updateScaffoldType() {
+        if (rotMode.is("Normal") && startAtEdge.isToggled()) {
+            if (type != ScaffoldType.ACTIVE) {
+                BlockPos pos = MoveUtils.getDirectionalBlockPos(startEdgeOffset.getValue(), 0.7f);
+                if (mc.theWorld.isAirBlock(pos)) type = ScaffoldType.ACTIVE;
+            }
+        } else {
+            type = ScaffoldType.ACTIVE;
+        }
+    }
+
+    private Rot getDeltaSpeed() {
         Rot speed = Rot.ZERO;
 
         switch (rotMode.getMode()) {
@@ -438,5 +433,13 @@ public class Scaffold extends Module {
 
     private boolean isOverBlock(RayTrace hit, BlockPos targetBlock) {
         return hit.typeOfHit == RayTrace.RayType.BLOCK && hit.hitVec.yCoord < mc.thePlayer.posY && hit.getBlockPos().equals(targetBlock) && hit.sideHit != EnumFacing.DOWN;
+    }
+
+    private void resetValues() {
+        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+        CameraRot.INST.setWillChange(false);
+
+        targetBlock = null;
+        type = ScaffoldType.NONACTIVE;
     }
 }
