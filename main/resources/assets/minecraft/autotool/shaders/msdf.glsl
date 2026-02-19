@@ -13,17 +13,10 @@ float median(vec3 color) {
 void main() {
     vec2 uv = gl_TexCoord[0].st;
 
-    vec3 samples = texture2D(Sampler0, uv).rgb;
-    float sigDist = median(samples) - 0.5;
+    float dist = median(texture2D(Sampler0, uv).rgb) - 0.5 + Thickness;
+    vec2 h = vec2(dFdx(uv.x), dFdy(uv.y)) * textureSize(Sampler0, 0);
+    float pixels = Range * inversesqrt(h.x * h.x + h.y * h.y);
+    float alpha = smoothstep(-Smoothness, Smoothness, dist * pixels);
 
-    vec2 duv = fwidth(uv);
-    float pixelDist = Range * length(duv * textureSize(Sampler0, 0));
-
-    sigDist += Thickness;
-
-    float fillAlpha = smoothstep(-Smoothness, Smoothness, sigDist / pixelDist);
-
-    vec4 color = vec4(Color.rgb, Color.a * fillAlpha);
-
-    gl_FragColor = color;
+    gl_FragColor = vec4(Color.rgb, Color.a * alpha);
 }

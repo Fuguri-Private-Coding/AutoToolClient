@@ -12,6 +12,9 @@ public class RoundedUtils implements Imports {
     private static Shader program;
 
     private static void draw(final float x, final float y, final float width, final float height, final float leftDown, final float leftUp, final float rightUp, final float rightDown, Color color) {
+        if (color.getAlpha() == 0)
+            return;
+
         if (program == null) program = Shaders.rounded;
         program.start();
         program.uniform("u_size", width, height);

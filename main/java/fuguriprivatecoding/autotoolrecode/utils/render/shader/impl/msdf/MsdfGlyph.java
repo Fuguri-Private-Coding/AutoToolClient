@@ -58,6 +58,10 @@ public class MsdfGlyph {
         return this.advance * size;
     }
 
+    public float getHeight(float size) {
+        return height * size;
+    }
+
     public int getCharCode() {
         return code;
     }
