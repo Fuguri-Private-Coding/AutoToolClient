@@ -40,9 +40,6 @@ public class MsdfFont implements Imports {
         Shader program = Shaders.msdf;
 
 
-
-
-
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableAlpha();
@@ -53,8 +50,8 @@ public class MsdfFont implements Imports {
 
         program.uniform("Sampler0", 0);
         program.uniform("Range", atlas.getRange());
-        program.uniform("Thickness", 0.001f);
-        program.uniform("Smoothness", 0.007f);
+        program.uniform("Thickness", 0.05f);
+        program.uniform("Smoothness", 0.5f);
         program.uniform("Color", color);
 
         GL11.glBegin(GL11.GL_QUADS);
@@ -118,6 +115,32 @@ public class MsdfFont implements Imports {
         }
 
         return width;
+    }
+
+    public float height(String text) {
+        return height(text, size);
+    }
+
+    public float height(String text, float size) {
+        float maxHeight = 0;
+
+        int prevChar = -1;
+        for (char c : text.toCharArray()) {
+            MsdfGlyph glyph = this.glyphs.get((int) c);
+
+            if (glyph == null) continue;
+
+
+            float height = glyph.getHeight(size);
+
+            if (height > maxHeight) {
+                maxHeight = height;
+            }
+
+            prevChar = c;
+        }
+
+        return maxHeight;
     }
 
     private static final ResourceLocation FONTS_LOCATION = Client.INST.of("fonts/");

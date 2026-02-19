@@ -85,6 +85,10 @@ public class Colors extends Color {
         return new Colors(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha);
     }
 
+    public Colors withAlpha(int alpha) {
+        return new Colors(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+    }
+
     public Colors withMultiplyAlpha(float multiply) {
         return new Colors(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, (color.getAlpha() / 255f) * multiply);
     }
