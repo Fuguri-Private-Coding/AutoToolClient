@@ -39,22 +39,22 @@ public class ClickGuiRecodeNewNEw extends GuiScreen {
         font = Fonts.get("Regular");
         font.setSize(13);
 
-        // update alpha
-        int clickGuiAlpha = clickGuiModule.backgroundAlpha.getValue();
-
-        if (backgroundColor.getAlpha() != clickGuiAlpha)
-            backgroundColor = backgroundColor.withAlpha(clickGuiAlpha);
-
-        // background
-        float radius = clickGuiModule.radius.getValue();
-        RoundedUtils.drawRect(x, y, width, height, radius, backgroundColor);
-
-        // black header
-        String autoToolText = Client.INST.getFullName();
-        float autoToolTextHeight = font.height(autoToolText);
-
-        RoundedUtils.drawRect(x, y, width, autoToolTextHeight + 4, 0, radius, radius, 0, Colors.BLACK);
-        font.draw(autoToolText, x + 5, y + autoToolTextHeight + 2, Colors.WHITE);
+//        // update alpha
+//        int clickGuiAlpha = clickGuiModule.backgroundAlpha.getValue();
+//
+//        if (backgroundColor.getAlpha() != clickGuiAlpha)
+//            backgroundColor = backgroundColor.withAlpha(clickGuiAlpha);
+//
+//        // background
+//        float radius = clickGuiModule.radius.getValue();
+//        RoundedUtils.drawRect(x, y, width, height, radius, backgroundColor);
+//
+//        // black header
+//        String autoToolText = Client.INST.getFullName();
+//        float autoToolTextHeight = font.height(autoToolText);
+//
+//        RoundedUtils.drawRect(x, y, width, autoToolTextHeight + 4, 0, radius, radius, 0, Colors.BLACK);
+//        font.draw(autoToolText, x + 5, y + autoToolTextHeight + 2, Colors.WHITE);
 
     }
 

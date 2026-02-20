@@ -51,5 +51,9 @@ public class Degree45Mode extends AbstractSpeedMode {
                 e.getStrafe()
             ));
         }
+
+        if (event instanceof MoveButtonEvent e && MoveUtils.isMoving() && speed.jump.isToggled()) {
+            e.setJump(true);
+        }
     }
 }

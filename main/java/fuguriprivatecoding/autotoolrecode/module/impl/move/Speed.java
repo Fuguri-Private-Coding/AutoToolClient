@@ -21,6 +21,8 @@ public class Speed extends Module {
 
     public CheckBox rotateWithMovement = new CheckBox("RotateWithMovement", this, () -> mode.is("45Degree"), true);
 
+    public CheckBox jump = new CheckBox("Jump", this, false);
+
     CheckBox resetMotion = new CheckBox("ResetMotionOnDisable", this, false);
     public FloatSetting speed = new FloatSetting("Speed", this,
         () -> mode.getMode().equalsIgnoreCase("Vanilla"),

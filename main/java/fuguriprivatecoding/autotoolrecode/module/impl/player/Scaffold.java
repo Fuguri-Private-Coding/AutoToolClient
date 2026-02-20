@@ -173,7 +173,30 @@ public class Scaffold extends Module {
                 float needYaw = strictYaw.isToggled() ? roundedYaw : yaw;
 
                 MoveUtils.moveFix(e, MoveUtils.getDirection(needYaw, e.getForward(), e.getStrafe()));
-                if (isSneak()) e.setSneak(true);
+
+                if (rotMode.is("Normal")) {
+                    if (sneakIf.get("Rotate") && lastDelta.hypot() > minDeltaToSneak.getValue()) {
+                        if (isClutch() && !sneakIfRotateWithClutch.isToggled()) {
+                            return;
+                        }
+
+                        e.setSneak(true);
+                    }
+
+                    if (sneakIf.get("ZeroBlocks") && ItemUtils.findBlockInHotBar() == -1) e.setSneak(true);
+
+                    if (sneakIf.get("NinjaBridge")) {
+                        if (isClutch() && !sneakIfNinjaBridgeWithClutch.isToggled()) {
+                            return;
+                        }
+
+                        BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.7f);
+
+                        if (mc.theWorld.isAirBlock(pos)) {
+                            e.setSneak(true);
+                        }
+                    }
+                }
             }
 
             case SprintEvent e when type == ScaffoldType.ACTIVE -> {
@@ -280,23 +303,6 @@ public class Scaffold extends Module {
     }
 
     private boolean isSneak() {
-        if (rotMode.is("Normal")) {
-            if (sneakIf.get("Rotate") && lastDelta.hypot() > minDeltaToSneak.getValue()) {
-                return !isClutch() || sneakIfRotateWithClutch.isToggled();
-            }
-
-            if (sneakIf.get("ZeroBlocks") && ItemUtils.findBlockInHotBar() == -1) return true;
-
-            if (sneakIf.get("NinjaBridge")) {
-                if (isClutch() && !sneakIfNinjaBridgeWithClutch.isToggled()) {
-                    return false;
-                }
-
-                BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.7f);
-                return mc.theWorld.isAirBlock(pos);
-            }
-        }
-
         return false;
     }
 
