@@ -17,6 +17,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.Test;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.Test2;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Phase;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockDirectional;
@@ -1824,9 +1825,10 @@ public abstract class EntityPlayer extends EntityLivingBase {
         if (this.isPlayerSleeping())
         {
             f = 0.2F;
+
         }
 
-        if (this.isSneaking())
+        if (this.isSneaking() && (!Modules.getModule(Scaffold.class).isToggled() || !Modules.getModule(Scaffold.class).removeSneakHeight.isToggled()))
         {
             f -= 0.08F;
         }

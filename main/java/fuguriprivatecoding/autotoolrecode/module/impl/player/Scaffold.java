@@ -93,6 +93,8 @@ public class Scaffold extends Module {
 
     private final DoubleSlider cps = new DoubleSlider("CPS", this, 0, 80, 20, 1);
 
+    public final CheckBox removeSneakHeight = new CheckBox("RemoveSneakHeight", this, true);
+
     private final CheckBox render = new CheckBox("Render", this, true);
     private final ColorSetting color = new ColorSetting("Color", this);
 
@@ -171,7 +173,7 @@ public class Scaffold extends Module {
                 float needYaw = strictYaw.isToggled() ? roundedYaw : yaw;
 
                 MoveUtils.moveFix(e, MoveUtils.getDirection(needYaw, e.getForward(), e.getStrafe()));
-                e.setSneak(isSneak());
+                if (isSneak()) e.setSneak(true);
             }
 
             case SprintEvent e when type == ScaffoldType.ACTIVE -> {
