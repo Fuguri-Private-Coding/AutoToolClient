@@ -3,8 +3,10 @@ package fuguriprivatecoding.autotoolrecode.newsetting.impl;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.newsetting.Value;
 import fuguriprivatecoding.autotoolrecode.utils.value.Doubles;
+import lombok.Getter;
 
 // created by dicves_recode on 11.02.2026
+@Getter
 public class DoubleNumberValue extends Value<Doubles<Number, Number>> {
     private final Number min, max, step;
 
@@ -26,7 +28,7 @@ public class DoubleNumberValue extends Value<Doubles<Number, Number>> {
     @Override
     public void setJson(JsonObject object) {
         if (!object.has("first") || !object.has("second")) {
-            System.out.println("при загрузке \"" + name + "\" не был найден параметр \"min\" или \"max\"");
+            System.out.println("при загрузке \"" + name + "\" не были найдены параметры \"first\" и \"second\"");
             return;
         }
 
