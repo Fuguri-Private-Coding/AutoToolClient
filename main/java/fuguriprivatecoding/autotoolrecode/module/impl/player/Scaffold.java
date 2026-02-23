@@ -101,7 +101,7 @@ public class Scaffold extends Module {
     private final CheckBox glow = new CheckBox("Glow", this);
     private final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
 
-    private Rot rotation, lastRotation, lastDelta = Rot.ZERO;
+    private Rot rotation = Rot.ZERO, lastRotation = Rot.ZERO, lastDelta = Rot.ZERO;
 
     private BlockPos targetBlock;
 
@@ -134,27 +134,20 @@ public class Scaffold extends Module {
                 }
             }
 
-            case LegitClickTimingEvent _ when type == ScaffoldType.ACTIVE -> {
+            case LegitClickTimingEvent _ -> {
                 int slot = ItemUtils.findBlockInHotBar();
 
-                if (slot != -1) {
-                    if (mc.thePlayer.inventory.currentItem != slot) {
-                        mc.thePlayer.inventory.currentItem = slot;
-                    }
+                if (mc.thePlayer.inventory.currentItem != slot && slot != -1) {
+                    mc.thePlayer.inventory.currentItem = slot;
                 }
 
-                click();
+                if (type == ScaffoldType.ACTIVE) click();
             }
 
             case RunGameLoopEvent _ -> {
                 targetBlock = PlayerUtils.getPossibleBlockPos();
-                if (type == ScaffoldType.ACTIVE) {
-                    if (clickTimer.reachedMS(clickDelay)) {
-                        clicks++;
-                        clickDelay = Math.round(1000f / cps.getRandomizedIntValue());
-                        clickTimer.reset();
-                    }
-                }
+
+                if (type == ScaffoldType.ACTIVE) updateClicks();
             }
 
             case Render3DEvent _ when targetBlock != null && render.isToggled() -> {
@@ -168,32 +161,24 @@ public class Scaffold extends Module {
             }
 
             case MoveEvent e -> {
-                float yaw = CameraRot.INST.getYaw();
-                float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw), 45);
-                float needYaw = strictYaw.isToggled() ? roundedYaw : yaw;
-
-                MoveUtils.moveFix(e, MoveUtils.getDirection(needYaw, e.getForward(), e.getStrafe()));
+                MoveUtils.moveFix(e, MoveUtils.getDirection(getMoveYaw(), e.getForward(), e.getStrafe()));
 
                 if (rotMode.is("Normal")) {
                     if (sneakIf.get("Rotate") && lastDelta.hypot() > minDeltaToSneak.getValue()) {
-                        if (isClutch() && !sneakIfRotateWithClutch.isToggled()) {
-                            return;
+                        if (!isClutch() || sneakIfRotateWithClutch.isToggled()) {
+                            e.setSneak(true);
                         }
-
-                        e.setSneak(true);
                     }
 
                     if (sneakIf.get("ZeroBlocks") && ItemUtils.findBlockInHotBar() == -1) e.setSneak(true);
 
                     if (sneakIf.get("NinjaBridge")) {
-                        if (isClutch() && !sneakIfNinjaBridgeWithClutch.isToggled()) {
-                            return;
-                        }
+                        if (!isClutch() || sneakIfNinjaBridgeWithClutch.isToggled()) {
+                            BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.7f);
 
-                        BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.7f);
-
-                        if (mc.theWorld.isAirBlock(pos)) {
-                            e.setSneak(true);
+                            if (mc.theWorld.isAirBlock(pos)) {
+                                e.setSneak(true);
+                            }
                         }
                     }
                 }
@@ -212,20 +197,8 @@ public class Scaffold extends Module {
                 }
             }
 
-            case JumpEvent e when type == ScaffoldType.ACTIVE -> {
-                float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
-                float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw), 45);
-
-                float needYaw = strictYaw.isToggled() ? roundedYaw : yaw;
-
-                e.setYaw(!sprintMode.is("JumpSprint") ? mc.thePlayer.rotationYaw : needYaw);
-            }
-
-            case ClickEvent e -> {
-                if (e.getButton() == ClickEvent.Button.RIGHT || e.getButton() == ClickEvent.Button.LEFT) {
-                    e.cancel();
-                }
-            }
+            case JumpEvent e when type == ScaffoldType.ACTIVE -> e.setYaw(getJumpYaw());
+            case ClickEvent e when e.getButton() == ClickEvent.Button.RIGHT || e.getButton() == ClickEvent.Button.LEFT -> e.cancel();
 
             default -> {}
         }
@@ -285,10 +258,7 @@ public class Scaffold extends Module {
             }
         }
 
-        if (!MoveUtils.isMoving() && !isClutch() && mc.gameSettings.keyBindJump.isKeyDown()
-            && mc.thePlayer.motionX == 0 && mc.thePlayer.motionZ == 0) {
-            rotation.setPitch(90);
-        }
+        if (shouldNinePitch()) rotation.setPitch(90);
 
         Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), rotation);
         Rot speed = getDeltaSpeed();
@@ -302,8 +272,33 @@ public class Scaffold extends Module {
         mc.thePlayer.moveRotation(delta);
     }
 
-    private boolean isSneak() {
-        return false;
+    private float getMoveYaw() {
+        float yaw = CameraRot.INST.getYaw();
+        float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw), 45);
+
+        return strictYaw.isToggled() ? roundedYaw : yaw;
+    }
+
+    private float getJumpYaw() {
+        float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
+        float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw), 45);
+
+        float needYaw = strictYaw.isToggled() ? roundedYaw : yaw;
+
+        return !sprintMode.is("JumpSprint") ? mc.thePlayer.rotationYaw : needYaw;
+    }
+
+    private void updateClicks() {
+        if (clickTimer.reachedMS(clickDelay)) {
+            clicks++;
+            clickDelay = Math.round(1000f / cps.getRandomizedIntValue());
+            clickTimer.reset();
+        }
+    }
+
+    private boolean shouldNinePitch() {
+        return !MoveUtils.isMoving() && !isClutch() && mc.gameSettings.keyBindJump.isKeyDown()
+            && mc.thePlayer.motionX == 0 && mc.thePlayer.motionZ == 0;
     }
 
     private boolean isClutch() {
@@ -323,9 +318,9 @@ public class Scaffold extends Module {
             if (mc.gameSettings.keyBindJump.isKeyDown()) {
                 int needAirTicks = (speedTelly.isToggled() ? 0 : airTicks.getRandomizedIntValue());
                 return mc.thePlayer.onGround || Player.airTicks < needAirTicks;
-            } else {
-                BlockPos pos = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1f, mc.thePlayer.posZ);
-                return !mc.theWorld.isAirBlock(pos) && flick.isToggled();
+            } else if (flick.isToggled()) {
+                BlockPos pos = new BlockPos(mc.thePlayer.getPositionVector());
+                return !mc.theWorld.isAirBlock(pos.add(0.0, -0.1, 0.0));
             }
         }
         return false;

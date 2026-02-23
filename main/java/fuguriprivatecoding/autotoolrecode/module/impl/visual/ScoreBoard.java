@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -92,7 +93,7 @@ public class ScoreBoard extends Module {
 
                 float finalWidth = width;
                 if (roundedRect.isToggled()) {
-                    if (glow.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getFadedColor()));
+                    if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed()));
                     if (blur.isToggled()) BlurUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE));
 
                     RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), color.getFadedColor());
@@ -104,7 +105,7 @@ public class ScoreBoard extends Module {
                     fontRenderer.drawString(objective.getDisplayName(), (int) ((pos.x + finalWidth / 2f) - fontRenderer.getStringWidth(objective.getDisplayName()) / 2.0F), pos.y + 2.5f + 2, Color.WHITE, textShadow.isToggled());
                     StencilUtils.endWriteTexture();
                 } else {
-                    if (glow.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, 0, colorShadow.getFadedColor()));
+                    if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawMixedRect(pos.x, pos.y, finalWidth, height, colorShadow.getSpeed(), colorShadow.getColor(), colorShadow.getFadeColor()));
                     if (blur.isToggled()) BlurUtils.addToDraw(() -> RoundedUtils.drawRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), Color.WHITE));
 
                     RoundedUtils.drawRect(pos.x, pos.y, width, height, 0, color.getFadedColor());
