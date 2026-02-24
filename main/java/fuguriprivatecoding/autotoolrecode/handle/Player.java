@@ -37,8 +37,9 @@ public class Player implements Imports, EventListener {
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();
 
-            if (packet instanceof S12PacketEntityVelocity s12 && s12.getId() == mc.thePlayer.getEntityId()) {
-                velocity = 20;
+            switch (packet) {
+                case S12PacketEntityVelocity s12 when s12.getId() == mc.thePlayer.getEntityId() -> velocity = 20;
+                default -> {}
             }
         }
     }

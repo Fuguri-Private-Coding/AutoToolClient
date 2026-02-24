@@ -108,6 +108,6 @@ public class TimerRange extends Module {
     }
 
     public static boolean isTeleporting() {
-        return TimerRange.teleporting;
+        return click;
     }
 }

@@ -105,6 +105,8 @@ public class Scaffold extends Module {
 
     private BlockPos targetBlock;
 
+    float finalNeedYaw;
+
     private ScaffoldType type;
 
     int clicks = 0;
@@ -174,7 +176,7 @@ public class Scaffold extends Module {
 
                     if (sneakIf.get("NinjaBridge")) {
                         if (!isClutch() || sneakIfNinjaBridgeWithClutch.isToggled()) {
-                            BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.7f);
+                            BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.1f);
 
                             if (mc.theWorld.isAirBlock(pos)) {
                                 e.setSneak(true);
