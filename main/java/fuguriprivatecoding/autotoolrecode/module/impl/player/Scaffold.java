@@ -207,7 +207,7 @@ public class Scaffold extends Module {
     }
 
     private void click() {
-        RayTrace mouseOver = RayCastUtils.rayCast(6, 4.5f, mc.thePlayer.getRotation());
+        RayTrace mouseOver = mc.objectMouseOver;
 
         int iters = clicks;
         clicks = 0;
@@ -227,7 +227,10 @@ public class Scaffold extends Module {
     }
 
     private void rotate() {
-        float yaw = rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
+        float yaw = rotateWithMovement.isToggled()
+            ? MoveUtils.getDir()
+            : CameraRot.INST.getYaw();
+
         float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw + 180), 45);
 
         boolean isOnRightSide = Math.floor(mc.thePlayer.posX + Math.cos(Math.toRadians(roundedYaw)) * 0.5) != Math.floor(mc.thePlayer.posX) ||

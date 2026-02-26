@@ -1611,6 +1611,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             }
 
             if (this.gameSettings.keyBindUseItem.isKeyDown() && this.rightClickDelayTimer == 0 && !this.thePlayer.isUsingItem()) {
+                clickEvent = new ClickEvent(ClickEvent.Button.RIGHT);
+                clickEvent.call();
+
                 if (!clickEvent.isCanceled()) this.rightClickMouse();
             }
 
