@@ -59,6 +59,8 @@ public enum Client implements Imports, EventListener {
     private final String RESOURCES_CLIENT_ID = "autotool/";
 
     public final File CLIENT_DIR = new File(CLIENT_NAME);
+    public final File SKIN_DIRECTORY = new File(CLIENT_DIR + "/skins");
+    public final File CAPE_DIRECTORY = new File(CLIENT_DIR + "/capes");
 
 	@Setter Profile profile;
 
@@ -83,8 +85,6 @@ public enum Client implements Imports, EventListener {
         Runtime.getRuntime().addShutdownHook(new Thread(this::onClose));
 
         ClientIRC.connectClient();
-
-        if (CLIENT_DIR.mkdirs()) System.out.println("Successful created Client Directory.");
 
 		Events.register(this);
 
@@ -135,6 +135,12 @@ public enum Client implements Imports, EventListener {
 		KeyBinds.saveBinds();
         ClientIRC.disconnectClientServer();
 	}
+
+    private void createDirectories() {
+        if (CLIENT_DIR.mkdirs()) System.out.println("Successful created Client Directory.");
+        if (SKIN_DIRECTORY.mkdirs()) System.out.println("Successful created Skin Directory.");
+        if (CAPE_DIRECTORY.mkdirs()) System.out.println("Successful created Cape Directory.");
+    }
 
     @Override
 	public void onEvent(Event event) {

@@ -23,15 +23,12 @@ public class CustomCape extends Module {
         .setMode("None")
         ;
 
-    @Getter final File CAPE_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/capes");
-
     DynamicTexture dynamicTexture;
     BufferedImage capeImage;
     public String selectedCape = "none";
     File capeFile;
 
     public CustomCape() {
-        if (CAPE_DIRECTORY.mkdirs()) System.out.println("Successful created Capes Directory.");
         updateCape();
     }
 
@@ -44,7 +41,7 @@ public class CustomCape extends Module {
     public void updateCape() {
         capeMode.getModes().clear();
         capeMode.addMode("None");
-        for (File cape : Objects.requireNonNull(CAPE_DIRECTORY.listFiles())) {
+        for (File cape : Objects.requireNonNull(Client.INST.CAPE_DIRECTORY.listFiles())) {
             capeMode.addMode(cape.getName().replaceAll(".png", ""));
         }
     }
@@ -56,7 +53,7 @@ public class CustomCape extends Module {
 
     public ResourceLocation getCape() {
         if (!selectedCape.equalsIgnoreCase(capeMode.getMode())) {
-            capeFile = new File(CAPE_DIRECTORY, capeMode.getMode() + ".png");
+            capeFile = new File(Client.INST.CAPE_DIRECTORY, capeMode.getMode() + ".png");
             if (!capeFile.exists()) return null;
 
             try (InputStream inputStream = new FileInputStream(capeFile)) {

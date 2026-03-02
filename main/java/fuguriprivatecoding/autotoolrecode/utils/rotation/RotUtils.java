@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -98,6 +99,34 @@ public class RotUtils implements Imports {
 
 	public static Rot getBestRotation(AxisAlignedBB bb) {
 		return getRotationToPoint(getBestHitVec(bb));
+	}
+
+	public static Vec3 getNearestPoint(Vec3 current, AxisAlignedBB box) {
+		Vec3[] points = {
+			new Vec3(box.minX, box.minY, box.minZ),
+			new Vec3(box.maxX, box.maxY, box.maxZ),
+			new Vec3(box.minX, box.minY, box.minZ),
+			new Vec3(box.maxX, box.maxY, box.maxZ),
+			new Vec3(box.minX, box.minY, box.minZ),
+			new Vec3(box.maxX, box.maxY, box.maxZ),
+			new Vec3(box.minX, box.minY, box.minZ),
+			new Vec3(box.maxX, box.maxY, box.maxZ)
+		};
+
+		List<Vec3> rotations = Arrays.stream(points).toList();
+
+		double minX = rotations.stream().mapToDouble(Vec3::getXCoord).min().orElse(0D);
+		double maxX = rotations.stream().mapToDouble(Vec3::getXCoord).max().orElse(0D);
+		double minY = rotations.stream().mapToDouble(Vec3::getYCoord).min().orElse(0D);
+		double maxY = rotations.stream().mapToDouble(Vec3::getYCoord).max().orElse(0D);
+		double minZ = rotations.stream().mapToDouble(Vec3::getZCoord).min().orElse(0D);
+		double maxZ = rotations.stream().mapToDouble(Vec3::getZCoord).max().orElse(0D);
+
+		double x = Math.clamp(current.xCoord, minX, maxX);
+		double y = Math.clamp(current.yCoord, minY, maxY);
+		double z = Math.clamp(current.zCoord, minZ, maxZ);
+
+		return new Vec3(x, y, z);
 	}
 
 	public static Vec3 getBestHitVec(Vec3 from, AxisAlignedBB bb) {

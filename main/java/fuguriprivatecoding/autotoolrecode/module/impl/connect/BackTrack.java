@@ -12,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -46,6 +47,8 @@ public class BackTrack extends Module {
     final IntegerSetting minPlayerHurtTime = new IntegerSetting("MinPlayerHurtTime", this, () -> resetIf.get("PlayerHurtTime"), 0, 10, 10);
 
     final CheckBox onlyKillAura = new CheckBox("OnlyKillAura", this, true);
+    final CheckBox legacyTargetFinding = new CheckBox("LegacyTargetFinding", this, () -> !onlyKillAura.isToggled(), true);
+    final FloatSetting findTargetDistance = new FloatSetting("FindTargetDistance", this, () -> !onlyKillAura.isToggled() && legacyTargetFinding.isToggled(), 3.0f, 12.0f, 6.0f, 0.1f) {};
     final CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
 
     final CheckBox renderOnlyIfWorking = new CheckBox("RenderOnlyIfWorking", this, true);
@@ -109,8 +112,9 @@ public class BackTrack extends Module {
                 if (constantRandomize.isToggled() && constantRandomSupplier.getAsBoolean()) saveDelay = delay.getRandomizedIntValue();
 
                 if (adaptiveDelay.isToggled()) {
-                    double distance = Math.clamp(DistanceUtils.getDistance(target) / this.distance.getMinValue(), 0, 1);
-                    currentDelay = (long) (saveDelay * distance);
+                    double minDistanceDelay = DistanceUtils.getDistance(target) / this.distance.getMinValue();
+                    double distanceFactor = Math.clamp(minDistanceDelay, 0, 1);
+                    currentDelay = (long) (saveDelay * distanceFactor);
                 }
             } else {
                 if (delayBetweenBackTracks > 0) delayBetweenBackTracks--;
@@ -118,7 +122,7 @@ public class BackTrack extends Module {
         }
 
         if (event instanceof Render3DEvent) {
-            EntityLivingBase needTarget = (onlyKillAura.isToggled() ? TargetStorage.getTarget() : TargetStorage.getTargetOrSelectedEntity());
+            EntityLivingBase needTarget = updateTarget();
 
             if (target != needTarget) {
                 handle(true);
@@ -210,6 +214,19 @@ public class BackTrack extends Module {
 
             return false;
         });
+    }
+
+    private EntityLivingBase updateTarget() {
+        if (onlyKillAura.isToggled()) {
+            return TargetStorage.getTarget();
+        } else {
+            if (legacyTargetFinding.isToggled()) {
+                return TargetStorage.getSelectedEntity();
+            } else {
+                float distance = findTargetDistance.getValue();
+                return TargetFinder.findTarget(distance, true, false, false);
+            }
+        }
     }
 
     @Override

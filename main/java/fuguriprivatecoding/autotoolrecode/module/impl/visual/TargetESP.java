@@ -32,13 +32,10 @@ public class TargetESP extends Module {
     public final FloatSetting outLineAlpha = new FloatSetting("OutLineAlpha", this, 0, 1, 1, 0.01f);
 
     public final ColorSetting color = new ColorSetting("Color", this);
-    public final CheckBox verticalOffset = new CheckBox("VerticalOffset", this, false);
-    public final ColorSetting verticalColor = new ColorSetting("VerticalColor", this, verticalOffset::isToggled);
 
     final CheckBox changeHitColor = new CheckBox("ChangeHurtColor", this);
     final CheckBox instantChangeColor = new CheckBox("InstantHurtColor", this, changeHitColor::isToggled, false);
     final ColorSetting hitColor = new ColorSetting("HurtColor", this, changeHitColor::isToggled);
-    final ColorSetting verticalHitColor = new ColorSetting("VerticalHitColor", this, () -> changeHitColor.isToggled() && verticalOffset.isToggled());
 
     CheckBox glow = new CheckBox("Glow", this);
 
@@ -82,11 +79,10 @@ public class TargetESP extends Module {
             double y1 = y + (animation + 1) * target.height / 1.8;
 
             Color horizontalColor = ColorUtils.interpolateColor(color.getMixedColor(i), hitColor.getMixedColor(i), hurt);
-            Color verticalColor = verticalOffset.isToggled() ? ColorUtils.interpolateColor(this.verticalColor.getMixedColor(i), this.verticalHitColor.getMixedColor(i), hurt) : horizontalColor;
 
             ColorUtils.glColor(horizontalColor);
             glVertex3d(x1, y1, z1);
-            ColorUtils.glColor(verticalColor, 0);
+            ColorUtils.glColor(horizontalColor, 0);
             glVertex3d(x1, y1 + animation * length.getValue(), z1);
         }
         glEnd();

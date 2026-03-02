@@ -54,6 +54,8 @@ public class Fucker extends Module {
     private Vec3 block, home;
     private double damage;
 
+    private int needSlot;
+
     private int delay;
 
     @Override
@@ -90,7 +92,9 @@ public class Fucker extends Module {
             Block block = mc.theWorld.getBlockState(blockPos).getBlock();
 
             if (!instantBreak.isToggled() && doAutoTool.isToggled()) {
-                mc.thePlayer.inventory.currentItem = getBestSlot(block);
+                needSlot = getBestSlot(block);
+            } else {
+                needSlot = -1;
             }
 
             Vec3 pos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
@@ -117,6 +121,8 @@ public class Fucker extends Module {
         }
 
         if (event instanceof LegitClickTimingEvent && block != null && CameraRot.INST.isUnlocked() && delay == 0) {
+            if (needSlot != -1) mc.thePlayer.inventory.currentItem = needSlot;
+
             mine();
         }
 

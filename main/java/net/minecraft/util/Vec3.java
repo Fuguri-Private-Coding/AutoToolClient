@@ -1,5 +1,8 @@
 package net.minecraft.util;
 
+import lombok.Getter;
+
+@Getter
 public class Vec3
 {
     public static final Vec3 ZERO = new Vec3(0,0,0);

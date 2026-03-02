@@ -47,7 +47,7 @@ public class KillAura extends Module {
         .setMode("FOV");
 
     private final Mode hitVec = new Mode("HitVec", this)
-        .addModes("Best", "Nearest", "Head", "Body", "Camera")
+        .addModes("Best", "Nearest", "Head", "Body")
         .setMode("Best");
 
     private final BooleanSupplier boxSize = () -> hitVec.is("Best") || hitVec.is("Nearest") || hitVec.is("Camera");
@@ -58,18 +58,18 @@ public class KillAura extends Module {
     private final DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 0, 180, 90, 1);
 
     private final CheckBox smartAim = new CheckBox("SmartAim", this);
-
-    private final CheckBox teleportPredictFix = new CheckBox("TeleportPredictFix", this);
+    private final CheckBox snapForTeleport = new CheckBox("SnapForTeleport", this);
 
     private final MultiMode smoothMode = new MultiMode("SmoothModes", this)
-        .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Advanced", "Recorded");
+        .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Recorded");
 
     private final DoubleSlider deltaMultiplier = new DoubleSlider("DeltaMultiplier", this, () -> smoothMode.get("MouseDelta"), 1, 15, 8, 0.1f);
 
     private final DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 100, 1, 1f);
     private final DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 100, 1, 1f);
 
-    private final FloatSetting randomizeStrength = new FloatSetting("RandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
+    private final FloatSetting yawStrength = new FloatSetting("YawRandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
+    private final FloatSetting pitchStrength = new FloatSetting("PitchRandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
 
     private final FloatSetting linearSmoothStrength = new FloatSetting(
         "LinearSmoothStrength", this,
@@ -79,13 +79,6 @@ public class KillAura extends Module {
 
     private TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothMode.get("Recorded"));
     private final FloatSetting recordedMultiplier = new FloatSetting("RecordedMultiplier", this, () -> smoothMode.get("Recorded"), 0, 10, 1, 0.01f);
-
-    private final IntegerSetting frictionAtLargeMove = new IntegerSetting("FrictionAtLargeMove", this, () -> smoothMode.get("Advanced"), 0, 100, 50);
-    private final IntegerSetting howManyDegreesPerTickIsLargeMove = new IntegerSetting("HowManyDegreesPerTickIsLargeMove?", this, () -> smoothMode.get("Advanced"), 0, 180, 60);
-
-    private final DoubleSlider stopTimeInVerySmallMove = new DoubleSlider("StopTimeInVerySmallMoveTicks", this, () -> smoothMode.get("Advanced"), 0, 20, 4, 1);
-    private final DoubleSlider multiplierToSnapAfterSmallMove = new DoubleSlider("MultiplierToSnapAfterSmallMove", this, () -> smoothMode.get("Advanced"), 0, 5, 2, 0.01);
-    private final FloatSetting howManyDegreesPerTickIsVerySmallMove = new FloatSetting("HowManyDegreesPerTickIsVerySmallMove?", this, () -> smoothMode.get("Advanced"), 0, 20, 5, 0.1f);
 
     private final DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
 
@@ -99,7 +92,7 @@ public class KillAura extends Module {
     private final StopWatch clickTimer = new StopWatch();
     private long delay;
 
-    private int waitTicks, recordedIndex;
+    private int recordedIndex;
 
     private Rot lastDelta = new Rot();
 
@@ -148,28 +141,23 @@ public class KillAura extends Module {
         }
     }
 
-    private Rot getRotation(EntityLivingBase target, Rot lr, AxisAlignedBB box) {
-        boolean teleport = (TimerRange.isTeleporting()) && teleportPredictFix.isToggled();
+    private Rot getRotation(EntityLivingBase target, AxisAlignedBB box) {
+        boolean teleport = (TimerRange.isTeleporting()) && snapForTeleport.isToggled();
 
-        RayTrace cameraHit = RayCastUtils.rayCast(CameraRot.INST, findDistance.getValue() + 3, 0);
+        Vec3 needPoint = switch (hitVec.getMode()) {
+            case "Best" -> RotUtils.getBestHitVec(box);
+            case "Nearest" -> RotUtils.getNearestPoint(RotUtils.getVectorForRotation(mc.thePlayer.getRotation()), box);
+            case "Head" -> target.getPositionEyes(1f);
+            case "Body" -> new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ);
+            default -> null;
+        };
 
-        Rot needRot = switch (hitVec.getMode()) {
-                case "Best" -> RotUtils.getBestRotation(box);
-                case "Nearest" -> RotUtils.getNearestRotations(lr, box);
-                case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
-                case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
-                case "Camera" -> cameraHit.entityHit == target ? CameraRot.INST : RotUtils.getNearestRotations(lr, box);
-                default -> null;
-            };
+        if (needPoint == null) return null;
 
-        if (needRot == null) return null;
+        Rot needRot = RotUtils.getRotationToPoint(needPoint);
 
         if (smoothMode.get("MouseDelta")) {
-            Rot mouseDelta = RotUtils.getDelta(
-                CameraRot.INST.getPrevRot(),
-                CameraRot.INST
-            );
-
+            Rot mouseDelta = RotUtils.getDelta(CameraRot.INST.getPrevRot(), CameraRot.INST);
             needRot = needRot.add(mouseDelta.multiplier((float) deltaMultiplier.getRandomizedDoubleValue()));
         }
 
@@ -196,7 +184,7 @@ public class KillAura extends Module {
     private void rotate(EntityLivingBase target) {
         Rot lr = mc.thePlayer.getRotation();
 
-        boolean teleport = (TimerRange.isTeleporting()) && teleportPredictFix.isToggled();
+        boolean teleport = (TimerRange.isTeleporting()) && snapForTeleport.isToggled();
 
         double offset = target.getCollisionBorderSize();
         AxisAlignedBB box = RotUtils.getHitBox(
@@ -205,7 +193,8 @@ public class KillAura extends Module {
                 teleport ? 100 : vBoxSize.getValue()
         ).expand(offset, offset, offset);
 
-        Rot needRotation = getRotation(target, lr, box);
+        Rot needRotation = getRotation(target, box);
+
         if (needRotation == null) return;
 
         Rot delta = RotUtils.getDelta(lr, needRotation);
@@ -213,8 +202,8 @@ public class KillAura extends Module {
         if (!teleport) {
             if (smoothMode.get("Basic")) {
                 Rot rot = new Rot(
-                    RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue()),
-                    RandomUtils.nextFloat(-randomizeStrength.getValue(), randomizeStrength.getValue())
+                    RandomUtils.nextFloat(-yawStrength.getValue(), yawStrength.getValue()),
+                    RandomUtils.nextFloat(-pitchStrength.getValue(), pitchStrength.getValue())
                 );
 
                 delta = delta.add(rot);
@@ -222,28 +211,6 @@ public class KillAura extends Module {
 
             if (smoothMode.get("Linear")) {
                 delta = delta.divine(linearSmoothStrength.getValue(), linearSmoothStrength.getValue());
-            }
-
-            if (smoothMode.get("Advanced")) {
-                double deltaScale = delta.hypot();
-                boolean large = deltaScale >= howManyDegreesPerTickIsLargeMove.getValue();
-                boolean verySmall = deltaScale <= howManyDegreesPerTickIsVerySmallMove.getValue();
-
-                if (large) {
-                    delta.setYaw(MathHelper.lerp(frictionAtLargeMove.getValue() / 100f, lastDelta.getYaw(), delta.getYaw()));
-                    delta.setPitch(MathHelper.lerp(frictionAtLargeMove.getValue() / 100f, lastDelta.getPitch(), delta.getPitch()));
-                }
-
-                if (verySmall) {
-                    if (waitTicks > 0) {
-                        waitTicks--;
-                        delta.setYaw(0);
-                        delta.setPitch(0);
-                    } else if (waitTicks == 0) {
-                        delta = delta.multiplier((float) multiplierToSnapAfterSmallMove.getRandomizedDoubleValue());
-                        waitTicks = stopTimeInVerySmallMove.getRandomizedIntValue();
-                    }
-                }
             }
 
             Rot speed = new Rot(

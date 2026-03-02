@@ -58,7 +58,7 @@ public class TimerRange extends Module {
 
             if (!Ping.isWorking() && onlyWhenPing.isToggled()) return;
 
-            AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100);
+            AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100).expand(0.1D, 0.1D, 0.1D);
 
             float yaw = RotUtils.getBestRotation(box).getYaw();
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, yaw);
@@ -71,7 +71,7 @@ public class TimerRange extends Module {
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 updateCashedIncrementPos();
 
-                AxisAlignedBB targetBox = getRealBB(target, target.getNPosition(), pos);
+                AxisAlignedBB targetBox = getRealBB(target, target.getNPosition(), pos).expand(-0.1D, -0.1D, -0.1D);
                 boolean skip = DistanceUtils.getDistance(simulatedPlayer, targetBox) > 3.0D;
 
                 if (skip) {
