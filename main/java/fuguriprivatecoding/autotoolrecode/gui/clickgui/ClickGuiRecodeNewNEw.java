@@ -2,11 +2,13 @@ package fuguriprivatecoding.autotoolrecode.gui.clickgui;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
+import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -17,11 +19,10 @@ public class ClickGuiRecodeNewNEw extends GuiScreen {
     public static ClickGuiRecodeNewNEw INST;
 
     private final ClickGui clickGuiModule = Modules.getModule(ClickGui.class);
+    private final ClientSettings clientSettingsModule = Modules.getModule(ClientSettings.class);
 
     private float x, y, width, height;
     private Colors backgroundColor = Colors.BLACK.withAlpha(clickGuiModule.backgroundAlpha.getValue());
-
-    private MsdfFont font = Fonts.get("Regular");
 
     public static void init() {
         INST = new ClickGuiRecodeNewNEw();
@@ -36,25 +37,20 @@ public class ClickGuiRecodeNewNEw extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        font = Fonts.get("Regular");
-        font.setSize(13);
+        ClientFont font = Fonts.fonts.get(clickGuiModule.fonts.getMode());
 
-//        // update alpha
-//        int clickGuiAlpha = clickGuiModule.backgroundAlpha.getValue();
-//
-//        if (backgroundColor.getAlpha() != clickGuiAlpha)
-//            backgroundColor = backgroundColor.withAlpha(clickGuiAlpha);
-//
-//        // background
-//        float radius = clickGuiModule.radius.getValue();
-//        RoundedUtils.drawRect(x, y, width, height, radius, backgroundColor);
-//
-//        // black header
-//        String autoToolText = Client.INST.getFullName();
-//        float autoToolTextHeight = font.height(autoToolText);
-//
-//        RoundedUtils.drawRect(x, y, width, autoToolTextHeight + 4, 0, radius, radius, 0, Colors.BLACK);
-//        font.draw(autoToolText, x + 5, y + autoToolTextHeight + 2, Colors.WHITE);
+        // update alpha
+        float clickGuiAlpha = clickGuiModule.backgroundAlpha.getValue() / 255f;
+
+        if (backgroundColor.getAlpha() != clickGuiAlpha)
+            backgroundColor = backgroundColor.withAlpha(clickGuiAlpha);
+
+        // background
+        float radius = clientSettingsModule.backgroundRadius.getValue();
+        RoundedUtils.drawRect(x, y, width, height, radius, backgroundColor);
+        RoundedUtils.drawRect(x, y, width, 20, 0, radius, radius, 0, Colors.BLACK);
+
+
 
     }
 

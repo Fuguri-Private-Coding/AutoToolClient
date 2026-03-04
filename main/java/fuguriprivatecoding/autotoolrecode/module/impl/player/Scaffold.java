@@ -128,82 +128,77 @@ public class Scaffold extends Module {
 
     @Override
     public void onEvent(Event event) {
-        switch (event) {
-            case TickEvent _ -> {
-                switch (type) {
-                    case ACTIVE -> rotate();
-                    case NONACTIVE -> updateScaffoldType();
+        if (event instanceof TickEvent) {
+            targetBlock = PlayerUtils.getPossibleBlockPos();
+            switch (type) {
+                case ACTIVE -> rotate();
+                case NONACTIVE -> updateScaffoldType();
+            }
+        }
+
+        if (event instanceof LegitClickTimingEvent) {
+            int slot = ItemUtils.findBlockInHotBar();
+
+            if (mc.thePlayer.inventory.currentItem != slot && slot != -1) {
+                mc.thePlayer.inventory.currentItem = slot;
+            }
+
+            if (type == ScaffoldType.ACTIVE) click();
+        }
+
+        if (event instanceof RunGameLoopEvent) {
+            if (type == ScaffoldType.ACTIVE) updateClicks();
+        }
+
+        if (event instanceof Render3DEvent && targetBlock != null && render.isToggled()) {
+            RenderUtils.start3D();
+
+            if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(targetBlock, glowColor.getFadedFloatColor()));
+            RenderUtils.drawBlockESP(targetBlock, color.getFadedFloatColor());
+
+            ColorUtils.resetColor();
+            RenderUtils.stop3D();
+        }
+
+        if (event instanceof MoveEvent e) {
+            MoveUtils.moveFix(e, MoveUtils.getDirection(getMoveYaw(), e.getForward(), e.getStrafe()));
+
+            if (rotMode.is("Normal")) {
+                if (sneakIf.get("Rotate") && lastDelta.hypot() > minDeltaToSneak.getValue()) {
+                    if (!isClutch() || sneakIfRotateWithClutch.isToggled()) {
+                        e.setSneak(true);
+                    }
                 }
-            }
 
-            case LegitClickTimingEvent _ -> {
-                int slot = ItemUtils.findBlockInHotBar();
+                if (sneakIf.get("ZeroBlocks") && ItemUtils.findBlockInHotBar() == -1) e.setSneak(true);
 
-                if (mc.thePlayer.inventory.currentItem != slot && slot != -1) {
-                    mc.thePlayer.inventory.currentItem = slot;
-                }
+                if (sneakIf.get("NinjaBridge")) {
+                    if (!isClutch() || sneakIfNinjaBridgeWithClutch.isToggled()) {
+                        BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.1f);
 
-                if (type == ScaffoldType.ACTIVE) click();
-            }
-
-            case RunGameLoopEvent _ -> {
-                targetBlock = PlayerUtils.getPossibleBlockPos();
-
-                if (type == ScaffoldType.ACTIVE) updateClicks();
-            }
-
-            case Render3DEvent _ when targetBlock != null && render.isToggled() -> {
-                RenderUtils.start3D();
-
-                if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(targetBlock, glowColor.getFadedFloatColor()));
-                RenderUtils.drawBlockESP(targetBlock, color.getFadedFloatColor());
-
-                ColorUtils.resetColor();
-                RenderUtils.stop3D();
-            }
-
-            case MoveEvent e -> {
-                MoveUtils.moveFix(e, MoveUtils.getDirection(getMoveYaw(), e.getForward(), e.getStrafe()));
-
-                if (rotMode.is("Normal")) {
-                    if (sneakIf.get("Rotate") && lastDelta.hypot() > minDeltaToSneak.getValue()) {
-                        if (!isClutch() || sneakIfRotateWithClutch.isToggled()) {
+                        if (mc.theWorld.isAirBlock(pos)) {
                             e.setSneak(true);
                         }
                     }
-
-                    if (sneakIf.get("ZeroBlocks") && ItemUtils.findBlockInHotBar() == -1) e.setSneak(true);
-
-                    if (sneakIf.get("NinjaBridge")) {
-                        if (!isClutch() || sneakIfNinjaBridgeWithClutch.isToggled()) {
-                            BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.1f);
-
-                            if (mc.theWorld.isAirBlock(pos)) {
-                                e.setSneak(true);
-                            }
-                        }
-                    }
                 }
             }
-
-            case SprintEvent e when type == ScaffoldType.ACTIVE -> {
-                switch (sprintMode.getMode()) {
-                    case "AllDirection" -> {
-                        if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.isSneaking() && MoveUtils.isMoving()) {
-                            e.setSprinting(true);
-                        }
-                    }
-
-                    case "JumpSprint" -> e.setSprinting(mc.gameSettings.keyBindJump.isKeyDown() && MoveUtils.isMoving());
-                    case "None" -> e.setSprinting(false);
-                }
-            }
-
-            case JumpEvent e when type == ScaffoldType.ACTIVE -> e.setYaw(getJumpYaw());
-            case ClickEvent e when e.getButton() == ClickEvent.Button.RIGHT || e.getButton() == ClickEvent.Button.LEFT -> e.cancel();
-
-            default -> {}
         }
+
+        if (event instanceof SprintEvent e && type == ScaffoldType.ACTIVE) {
+            switch (sprintMode.getMode()) {
+                case "AllDirection" -> {
+                    if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.thePlayer.isSneaking() && MoveUtils.isMoving()) {
+                        e.setSprinting(true);
+                    }
+                }
+
+                case "JumpSprint" -> e.setSprinting(mc.gameSettings.keyBindJump.isKeyDown() && MoveUtils.isMoving());
+                case "None" -> e.setSprinting(false);
+            }
+        }
+
+        if (event instanceof JumpEvent e && type == ScaffoldType.ACTIVE) e.setYaw(getJumpYaw());
+        if (event instanceof ClickEvent e && (e.getButton() == ClickEvent.Button.RIGHT || e.getButton() == ClickEvent.Button.LEFT)) e.cancel();
     }
 
     private void click() {
