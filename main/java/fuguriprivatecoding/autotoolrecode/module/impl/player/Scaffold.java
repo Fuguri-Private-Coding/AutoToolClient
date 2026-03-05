@@ -443,6 +443,7 @@ public class Scaffold extends Module {
         CameraRot.INST.setWillChange(false);
 
         targetBlock = null;
+        lastDelta = Rot.ZERO;
         type = ScaffoldType.NONACTIVE;
     }
 }
