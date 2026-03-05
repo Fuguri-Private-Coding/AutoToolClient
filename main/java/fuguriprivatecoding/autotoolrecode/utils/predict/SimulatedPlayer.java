@@ -38,16 +38,11 @@ public class SimulatedPlayer implements Imports {
     public AxisAlignedBB box;
     public final MovementInput movementInput;
     private int jumpTicks;
-    public double motionZ;
-    public double motionY;
-    public double motionX;
-    @Getter
-    private boolean inWater;
+    public double motionX, motionY, motionZ;
+    @Getter private boolean inWater;
     public boolean onGround;
     public float rotationYaw;
-    private double posX;
-    private double posY;
-    private double posZ;
+    private double posX, posY, posZ;
     private final PlayerCapabilities capabilities;
     private final Entity ridingEntity;
     private float jumpMovementFactor;
@@ -63,17 +58,13 @@ public class SimulatedPlayer implements Imports {
     public float fallDistance;
     private final float stepHeight;
     private boolean isCollided;
-    private int fire;
-    private float distanceWalkedModified;
-    private float distanceWalkedOnStepModified;
-    private int nextStepDistance;
+    private int fire, nextStepDistance;
+    private float distanceWalkedModified, distanceWalkedOnStepModified;
     public final float height;
     private final float width;
     private final int fireResistance;
-    private boolean isInWeb;
-    private boolean noClip;
-    @Getter
-    private boolean isSprinting;
+    private boolean isInWeb, noClip;
+    @Getter private boolean isSprinting;
     private final FoodStats foodStats;
 
     public SimulatedPlayer(EntityPlayerSP player, AxisAlignedBB box, MovementInput movementInput, int jumpTicks, double motionZ, double motionY, double motionX, boolean inWater, boolean onGround, boolean isAirBorne, float rotationYaw, double posX, double posY, double posZ, PlayerCapabilities capabilities, Entity ridingEntity, float jumpMovementFactor, World worldObj, boolean isCollidedHorizontally, boolean isCollidedVertically, WorldBorder worldBorder, IChunkProvider chunkProvider, boolean isOutsideBorder, Entity riddenByEntity, BaseAttributeMap attributeMap, boolean isSpectator, float fallDistance, float stepHeight, boolean isCollided, int fire, float distanceWalkedModified, float distanceWalkedOnStepModified, int nextStepDistance, float height, float width, int fireResistance, boolean isInWeb, boolean noClip, boolean isSprinting, FoodStats foodStats) {
@@ -693,7 +684,7 @@ public class SimulatedPlayer implements Imports {
                 if (block1 != Blocks.ladder) {
                     d13 = 0.0;
                 }
-                if (block1 != null && onGround) {
+                if (onGround) {
                     onEntityCollidedWithBlock(block1);
                 }
                 distanceWalkedModified = (float) (distanceWalkedModified + MathHelper.sqrt_double(d12 * d12 + d14 * d14) * 0.6);

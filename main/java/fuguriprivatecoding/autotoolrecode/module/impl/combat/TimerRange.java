@@ -85,10 +85,12 @@ public class TimerRange extends Module {
                 break;
             }
 
-            teleporting = true;
-            balance = PlayerUtils.teleport(teleportTicks, additionalTicks.getValue());
-            if (balance != 0) click = true;
-            teleporting = false;
+            if (teleportTicks > 0) {
+                teleporting = true;
+                balance = PlayerUtils.teleport(teleportTicks, additionalTicks.getValue());
+                click = true;
+                teleporting = false;
+            }
         }
     }
 

@@ -3,49 +3,46 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
-import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
-import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
+import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.ScaledResolution;
-
+import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
 
 @ModuleInfo(name = "DynamicIsland", category = Category.VISUAL)
 public class DynamicIsland extends Module {
 
     private static final DateFormat FORMAT = new SimpleDateFormat("HH:mm");
 
-    EasingAnimation x, y, width, height, textAlpha;
+    private final EasingAnimation width, height, textAlpha, rectRadius;
 
-    String currentText, lastText;
+    private Runnable currentRun, lastRun;
 
-    Date date = new Date();
+    private float additionalHeight = 0;
+    private float additionalWidth = 0;
+
+    private final Date date = new Date();
+
+    private boolean opened = false;
 
     public DynamicIsland() {
-        x = new EasingAnimation();
-        y = new EasingAnimation();
         width = new EasingAnimation();
         height = new EasingAnimation();
         textAlpha = new EasingAnimation();
+        rectRadius = new EasingAnimation();
     }
 
     @Override
@@ -55,25 +52,24 @@ public class DynamicIsland extends Module {
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = ScaleUtils.getScaledResolution();
 
-            float additionalHeight = 15;
+            rectRadius.setEnd(opened ? 10 : 7.5f);
 
-            updateText(Client.INST.getFullName());
+            updateText(() -> {
+                font.drawString(Client.INST.getFullName(), 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
+            }, font.getStringWidth(Client.INST.getFullName()), 0);
 
-            float textWidth = font.getStringWidth(lastText);
+            width.setEnd(10 + additionalWidth);
+            height.setEnd(15 + additionalHeight);
 
-            x.setEnd(sc.getScaledWidth() / 2f - (textWidth + 10) / 2f);
-            y.setEnd(5);
-            width.setEnd(textWidth + 10);
-            height.setEnd(additionalHeight);
+            opened = additionalHeight > 0;
 
-            x.update(3, Easing.OUT_CUBIC);
-            y.update(3, Easing.OUT_CUBIC);
             width.update(3, Easing.OUT_CUBIC);
             height.update(3, Easing.OUT_CUBIC);
             textAlpha.update(6, Easing.OUT_CUBIC);
+            rectRadius.update(3, Easing.OUT_CUBIC);
 
-            float x = this.x.getValue();
-            float y = this.y.getValue();
+            float x = sc.getScaledWidth() / 2f - width.getValue() / 2f;
+            float y = 5;
             float width = this.width.getValue();
             float height = this.height.getValue();
 
@@ -86,14 +82,21 @@ public class DynamicIsland extends Module {
             float timeX = x - timeWidth - 3;
             float timeY = y + 5;
 
-            float textX = x + 5;
-            float textY = y + 5;
+            float renderX = x + 5;
+            float renderY = y + 5;
 
-            RenderUtils.drawRoundedOutLineRectangle(x, y, width, height, 7.5f, Colors.BLACK.withAlpha(0.5f), Colors.WHITE.withAlpha(0.3f), Colors.WHITE.withAlpha(0.3f));
+            RenderUtils.drawRoundedOutLineRectangle(x, y, width, height, rectRadius.getValue(), Colors.BLACK.withAlpha(0.5f), Colors.WHITE.withAlpha(0.3f), Colors.WHITE.withAlpha(0.3f));
 
-            BloomUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(x, y, width, height, 7.5f, Color.BLACK, Color.WHITE, 3));
+            StencilUtils.setUpTexture(x, y, width, height, rectRadius.getValue());
+            StencilUtils.writeTexture();
 
-            font.drawString(currentText, textX, textY, Colors.WHITE.withAlphaClamp(textAlpha.getValue()));
+            GL11.glPushMatrix();
+            GL11.glTranslated(renderX, renderY, 0);
+            currentRun.run();
+            GL11.glPopMatrix();
+
+            StencilUtils.endWriteTexture();
+
             font.drawString(currentTimeText, timeX, timeY, Color.WHITE);
 
             float internetX = x + width + 5;
@@ -105,15 +108,21 @@ public class DynamicIsland extends Module {
         }
     }
 
-    private void updateText(String text) {
-        if (!Objects.equals(currentText, text)) {
-            lastText = text;
+    private void updateText(Runnable run, float additionalWidth, float additionalHeight) {
+        if (width.getValue() != additionalWidth) {
+            lastRun = run;
+            this.additionalWidth = additionalWidth;
+            this.additionalHeight = additionalHeight;
+            if (additionalHeight > 0) opened = true;
+            textAlpha.setEnd(0);
         }
 
-        if (textAlpha.getValue() == 0f && !width.isAnimating()) {
-            currentText = lastText;
-        }
+        if (!width.isAnimating() && !height.isAnimating()) {
+            textAlpha.setEnd(1);
 
-        textAlpha.setEnd(Objects.equals(currentText, lastText));
+            if (textAlpha.getValue() == 0f) {
+                currentRun = lastRun;
+            }
+        }
     }
 }
