@@ -56,7 +56,9 @@ public class TimerRange extends Module {
                 return;
             }
 
-            if (!Ping.isWorking() && onlyWhenPing.isToggled()) return;
+            if ((!Ping.isWorking() && onlyWhenPing.isToggled())
+                || target.hurtTime > maxTargetHurtTime.getValue()
+            ) return;
 
             AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100).expand(0.1D, 0.1D, 0.1D);
 
@@ -82,8 +84,6 @@ public class TimerRange extends Module {
                 teleportTicks = i;
                 break;
             }
-
-            if (target.hurtTime > maxTargetHurtTime.getValue()) return;
 
             teleporting = true;
             balance = PlayerUtils.teleport(teleportTicks, additionalTicks.getValue());

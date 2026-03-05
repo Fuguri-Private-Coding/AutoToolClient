@@ -11,7 +11,7 @@ import net.minecraft.client.gui.GuiMultiplayer;
 
 public class Discord implements Imports {
 
-    public static boolean running = false;
+    private static volatile boolean running = false;
 
     @Getter private static String name, id;
     private static long timestamp;

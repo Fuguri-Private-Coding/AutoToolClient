@@ -33,22 +33,33 @@ public class BedESP extends Module {
     final CheckBox blur = new CheckBox("Blur", this);
 
     public static final List<BlockPos[]> beds = new ArrayList<>();
-    private static volatile boolean running = false;
 
-    BedThread thread;
+    private volatile boolean running = false;
+    private BedThread thread;
 
     @Override
     public void onEnable() {
         running = true;
-        thread = new BedThread();
-        thread.setDaemon(true);
-        thread.start();
+
+        if (thread == null || !thread.isAlive()) {
+            thread = new BedThread();
+            thread.setDaemon(true);
+            thread.start();
+        }
     }
 
     @Override
     public void onDisable() {
-        if (!beds.isEmpty()) beds.clear();
         running = false;
+
+        if (thread != null) {
+            thread.interrupt();
+            thread = null;
+        }
+
+        synchronized (beds) {
+            beds.clear();
+        }
     }
 
     @Override
@@ -75,14 +86,16 @@ public class BedESP extends Module {
     private class BedThread extends Thread {
         @Override
         public void run() {
-            while (running) {
+            while (running && !isInterrupted()) {
                 if (Utils.isWorldLoaded()) {
                     List<BlockPos[]> foundBeds = new ArrayList<>();
 
                     int rangeValue = range.getValue();
+
                     for (int y = rangeValue; y >= -rangeValue; --y) {
                         for (int x = -rangeValue; x <= rangeValue; ++x) {
                             for (int z = -rangeValue; z <= rangeValue; ++z) {
+
                                 BlockPos pos = new BlockPos(
                                     mc.thePlayer.posX + x,
                                     mc.thePlayer.posY + y,
@@ -90,7 +103,10 @@ public class BedESP extends Module {
                                 );
 
                                 IBlockState state = mc.theWorld.getBlockState(pos);
-                                if (state.getBlock() == Blocks.bed && state.getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT) {
+
+                                if (state.getBlock() == Blocks.bed &&
+                                    state.getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT) {
+
                                     BlockPos headPos = pos.offset(state.getValue(BlockBed.FACING));
                                     foundBeds.add(new BlockPos[]{pos, headPos});
                                 }
@@ -98,19 +114,28 @@ public class BedESP extends Module {
                         }
                     }
 
-                    synchronized(beds) {
+                    synchronized (beds) {
+
                         beds.removeIf(bedPair -> {
                             if (bedPair == null || bedPair[0] == null) return true;
-                            return foundBeds.stream().noneMatch(found -> isSamePos(bedPair[0], found[0]));
+                            return foundBeds.stream()
+                                .noneMatch(found -> isSamePos(bedPair[0], found[0]));
                         });
 
-                        for (BlockPos[] foundBed : foundBeds) if (beds.stream().noneMatch(bed -> isSamePos(bed[0], foundBed[0]))) beds.add(foundBed);
+                        for (BlockPos[] foundBed : foundBeds) {
+                            if (beds.stream().noneMatch(bed -> isSamePos(bed[0], foundBed[0]))) {
+                                beds.add(foundBed);
+                            }
+                        }
                     }
                 }
 
                 try {
                     Thread.sleep(rate.getValue() * 1000L);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException e) {
+                    interrupt();
+                    return;
+                }
             }
         }
     }

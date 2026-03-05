@@ -28,6 +28,7 @@ public class Modules {
 			new KillAura(),
             new AspectRatio(),
             new BWHelper(),
+			new DynamicIsland(),
             new AutoRegister(),
 			new FastLadder(),
 			new BridgeAssist(),

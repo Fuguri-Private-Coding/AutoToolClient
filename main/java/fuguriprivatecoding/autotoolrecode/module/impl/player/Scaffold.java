@@ -105,8 +105,6 @@ public class Scaffold extends Module {
 
     private BlockPos targetBlock;
 
-    float finalNeedYaw;
-
     private ScaffoldType type;
 
     int clicks = 0;
@@ -162,7 +160,9 @@ public class Scaffold extends Module {
 
         if (event instanceof MoveEvent e) {
             MoveUtils.moveFix(e, MoveUtils.getDirection(getMoveYaw(), e.getForward(), e.getStrafe()));
+        }
 
+        if (event instanceof MoveButtonEvent e) {
             if (rotMode.is("Normal")) {
                 if (sneakIf.get("Rotate") && lastDelta.hypot() > minDeltaToSneak.getValue()) {
                     if (!isClutch() || sneakIfRotateWithClutch.isToggled()) {

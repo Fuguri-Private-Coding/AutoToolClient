@@ -47,6 +47,9 @@ import org.lwjgl.opengl.Display;
 import lombok.*;
 
 import java.io.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 public enum Client implements Imports, EventListener {
@@ -66,17 +69,23 @@ public enum Client implements Imports, EventListener {
 
 	boolean starting = true;
 
-    private CheckThread thread;
+    private final ScheduledExecutorService scheduler =
+        Executors.newSingleThreadScheduledExecutor();
 
 	public void init() throws IOException {
 		long start = System.nanoTime();
 		starting = true;
 
-        thread = new CheckThread();
-        thread.setDaemon(true);
-        thread.start();
+        scheduler.scheduleAtFixedRate(
+            HWID::check,
+            0,
+            10,
+            TimeUnit.SECONDS
+        );
 
         if (this.profile == null) System.exit(-1);
+
+        createDirectories();
 
         Display.setTitle(getFullName());
 
@@ -134,7 +143,8 @@ public enum Client implements Imports, EventListener {
 //        Accounts.save();
 		KeyBinds.saveBinds();
         ClientIRC.disconnectClientServer();
-	}
+        scheduler.shutdown();
+    }
 
     private void createDirectories() {
         if (CLIENT_DIR.mkdirs()) System.out.println("Successful created Client Directory.");
@@ -191,18 +201,5 @@ public enum Client implements Imports, EventListener {
     @Override
     public boolean listen() {
         return true;
-    }
-
-    private static class CheckThread extends Thread {
-        @Override
-        public void run() {
-            while (true) {
-                HWID.check();
-
-                try {
-                    sleep(10000);
-                } catch (InterruptedException _) {}
-            }
-        }
     }
 }
