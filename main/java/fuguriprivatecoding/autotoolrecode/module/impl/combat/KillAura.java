@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -144,6 +145,8 @@ public class KillAura extends Module {
     private Rot getRotation(EntityLivingBase target, AxisAlignedBB box) {
         boolean teleport = (TimerRange.isTeleporting()) && snapForTeleport.isToggled();
 
+        AxisAlignedBB fullBox = RotUtils.getHitBox(target, 100, 100).expand(0.1, 0.1, 0.1);
+
         Vec3 needPoint = switch (hitVec.getMode()) {
             case "Best" -> RotUtils.getBestHitVec(box);
             case "Nearest" -> RotUtils.getNearestPoint(RotUtils.getVectorForRotation(mc.thePlayer.getRotation()), box);
@@ -171,10 +174,11 @@ public class KillAura extends Module {
         if (teleport) needRot = RotUtils.getBestRotation(box);
 
         if (smartAim.isToggled()) {
-            RayTrace smartHit = RayCastUtils.rayCast(needRot, findDistance.getValue(), 0.3f);
+            RayTrace hit = RayCastUtils.rayCast(needRot, findDistance.getValue(), 0);
+            RayTrace hits = RayCastUtils.rayCast(findDistance.getValue(), 0, needRot);
 
-            if (smartHit == null || smartHit.typeOfHit != RayTrace.RayType.ENTITY) {
-                needRot = RotUtils.getPossibleBestRotation(needRot, box);
+            if (hit.typeOfHit == RayTrace.RayType.BLOCK && hits.typeOfHit == RayTrace.RayType.ENTITY) {
+                needRot = RotUtils.getPossibleBestRotation(needRot, fullBox);
             }
         }
 
