@@ -8,7 +8,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 
 @ModuleInfo(name = "Reach", category = Category.COMBAT, description = "Увеличивает дальность вашего удара.")
 public class Reach extends Module {
-    public final FloatSetting addRange = new FloatSetting("Add range", this, 0.01f, 3, 1.5f, 0.01f);
+    public final FloatSetting addRange = new FloatSetting("Add range", this, -3, 3, 1.5f, 0.01f);
 
     public static double getAddRange() {
         Reach reach = Modules.getModule(Reach.class);
