@@ -8,7 +8,6 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.mouse.MouseDelta;
 import fuguriprivatecoding.autotoolrecode.utils.gui.mouse.MousePoint;
@@ -18,6 +17,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import org.joml.Vector2i;
@@ -72,7 +72,7 @@ public class ChestStealer extends Module {
                 String chestName = guiChest.getLowerChestInventory().getDisplayName().getUnformattedText();
 
                 if (!startDelayStopWatch.reachedMS(startDelayTick * 50L) ||
-                    checkName.isToggled() && !chestName.contains("Chest")) return;
+                    checkName.isToggled() && !chestName.contains(I18n.format("tile.chest.name"))) return;
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
 
