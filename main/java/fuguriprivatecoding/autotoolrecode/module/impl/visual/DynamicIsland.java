@@ -68,15 +68,15 @@ public class DynamicIsland extends Module {
 
             var notifications = Modules.getModule(Notifications.class);
 
-            if (mc.currentScreen instanceof GuiChat && GuiUtils.isMouseHovered(sc.getScaledWidth() / 2f - width.getValue() / 2f, 5, width.getValue(), height.getValue())) {
+            if (mc.currentScreen != null && GuiUtils.isMouseHovered(sc.getScaledWidth() / 2f - width.getValue() / 2f, 5, width.getValue(), height.getValue())) {
                 String profile = "Profile: " + Client.INST.getProfile().toColoredString();
 
                 float width = fontr.getStringWidth(profile);
 
                 updateText(() -> {
-                    RoundedUtils.drawRect(0, 0, 10, 10, 2.5f, Color.YELLOW);
-                    RoundedUtils.drawRect(65, 0, 10, 10, 2.5f, Color.RED);
-                }, 80, 0);
+                    RoundedUtils.drawRect(0, 0, 10, 10, 5f, Colors.YELLOW.withAlpha(textAlpha.getValue()));
+                    RoundedUtils.drawRect(65, 0, 10, 10, 5f, Colors.RED.withAlpha(textAlpha.getValue()));
+                }, 80, 5);
 
                 if (this.width.getValue() == 10 + 80) {
                     float x = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
