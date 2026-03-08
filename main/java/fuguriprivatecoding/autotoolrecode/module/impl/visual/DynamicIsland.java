@@ -10,6 +10,8 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notification;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
@@ -65,7 +67,7 @@ public class DynamicIsland extends Module {
 
             var notifications = Modules.getModule(Notifications.class);
 
-            if (mc.currentScreen != null && GuiUtils.isMouseHovered(sc.getScaledWidth() / 2f - width.getValue() / 2f, 5, width.getValue(), height.getValue())) {
+            if (mc.currentScreen != null && GuiUtils.isMouseHovered(0, 5, additionalWidth + 10, additionalHeight + 15)) {
                 float x = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
                 float y = 5 + 5;
 
@@ -96,19 +98,33 @@ public class DynamicIsland extends Module {
                     pressed = Mouse.isButtonDown(0);
                 }
             } else {
-                if (notifications.isToggled() && !Notifications.notifications.isEmpty()) {
-                    Notification notification = Notifications.notifications.getLast();
+                if (HWID.noConnection) {
+                    long time = System.currentTimeMillis() - HWID.lastTimeConnection;
+                    int sec = Integer.parseInt(String.valueOf(time / 1000L));
 
-                    String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
-                    String text = " §fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
+                    int remainingSec = 30 - sec;
+
+                    String text = "Нет интернет подключения, клиент закроется через §9" + remainingSec + "§f s.";
+                    String texts = "Нет интернет подключения, клиент закроется через §9" + 30 + "§f s.";
 
                     updateText(() -> {
                         fontr.drawString(text, 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
-                    }, fontr.getStringWidth(text), 0);
+                    }, fontr.getStringWidth(texts), 0);
                 } else {
-                    updateText(() -> {
-                        fontr.drawString(Client.INST.getFullName(), 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
-                    }, fontr.getStringWidth(Client.INST.getFullName()), 0);
+                    if (notifications.isToggled() && !Notifications.notifications.isEmpty()) {
+                        Notification notification = Notifications.notifications.getLast();
+
+                        String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
+                        String text = " §fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
+
+                        updateText(() -> {
+                            fontr.drawString(text, 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                        }, fontr.getStringWidth(text), 0);
+                    } else {
+                        updateText(() -> {
+                            fontr.drawString(Client.INST.getFullName(), 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                        }, fontr.getStringWidth(Client.INST.getFullName()), 0);
+                    }
                 }
             }
 
@@ -184,12 +200,17 @@ public class DynamicIsland extends Module {
             textAlpha.setEnd(0);
         }
 
-        if (!width.isAnimating() && !height.isAnimating()) {
-            textAlpha.setEnd(1);
+        if (this.additionalWidth == additionalWidth && textAlpha.getValue() == 1) {
+            lastRun = run;
+            currentRun = lastRun;
+        }
 
+        if (!width.isAnimating() && !height.isAnimating()) {
             if (textAlpha.getValue() == 0f) {
                 currentRun = lastRun;
             }
+
+            textAlpha.setEnd(1);
         }
     }
 }

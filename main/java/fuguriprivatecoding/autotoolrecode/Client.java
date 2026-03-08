@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.DynamicIsland;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
@@ -161,13 +162,12 @@ public enum Client implements Imports, EventListener {
             }
         }
 
-        if (event instanceof RenderScreenEvent) {
+        if (event instanceof RenderScreenEvent && !Modules.getModule(DynamicIsland.class).isToggled()) {
             ClientFont fontRenderer = Fonts.fonts.get("SFPro");
             ScaledResolution sc = new ScaledResolution(mc);
 
             EasingAnimation anim = HWID.noConnectionAnim;
             anim.update(1f, Easing.OUT_BACK);
-            anim.setEnd(false);
 
             long time = System.currentTimeMillis() - HWID.lastTimeConnection;
             int sec = Integer.parseInt(String.valueOf(time / 1000L));
