@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -10,7 +11,10 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notification;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.client.sound.TrackInfoFinder;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
+import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
@@ -22,6 +26,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.text.DateFormat;
@@ -42,7 +47,7 @@ public class DynamicIsland extends Module {
 
     private final Date date = new Date();
 
-    private boolean opened = false;
+    private boolean opened, pressed = false;
 
     public DynamicIsland() {
         width = new EasingAnimation();
@@ -56,21 +61,39 @@ public class DynamicIsland extends Module {
         ClientFont font = Fonts.fonts.get("SFPro");
         ClientFont fontr = Fonts.fonts.get("SFProRegular");
 
-        if (event instanceof Render2DEvent e) {
-            ScaledResolution sc = e.getScaledResolution();
+        if (event instanceof RenderScreenEvent) {
+            ScaledResolution sc = ScaleUtils.getScaledResolution();
 
             rectRadius.setEnd(opened ? 10 : 7.5f);
 
             var notifications = Modules.getModule(Notifications.class);
 
-            if (mc.currentScreen instanceof GuiChat && GuiUtils.isHovered(e.getMouseX(), e.getMouseY(), sc.getScaledWidth() / 2f - width.getValue() / 2f, 5, width.getValue(), height.getValue())) {
+            if (mc.currentScreen instanceof GuiChat && GuiUtils.isMouseHovered(sc.getScaledWidth() / 2f - width.getValue() / 2f, 5, width.getValue(), height.getValue())) {
                 String profile = "Profile: " + Client.INST.getProfile().toColoredString();
 
                 float width = fontr.getStringWidth(profile);
 
                 updateText(() -> {
-                    fontr.drawString(profile, 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
-                }, width, 0);
+                    RoundedUtils.drawRect(0, 0, 10, 10, 2.5f, Color.YELLOW);
+                    RoundedUtils.drawRect(65, 0, 10, 10, 2.5f, Color.RED);
+                }, 80, 0);
+
+                if (this.width.getValue() == 10 + 80) {
+                    float x = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
+                    float y = 5 + 5;
+
+                    if (GuiUtils.isMouseHovered(x, y, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
+                        TrackInfoFinder.nextTrack();
+                        ClientUtils.chatLog("next");
+                    }
+
+                    if (GuiUtils.isMouseHovered(x + 65, y, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
+                        TrackInfoFinder.playPause();
+                        ClientUtils.chatLog("playpause");
+                    }
+
+                    pressed = Mouse.isButtonDown(0);
+                }
             } else {
                 if (notifications.isToggled() && !Notifications.notifications.isEmpty()) {
                     Notification notification = Notifications.notifications.getLast();
