@@ -30,9 +30,7 @@ public class Notifications extends Module {
     final Mode fonts = new Mode("Fonts", this);
 
     final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this);
-
     public final FloatSetting removeTime = new FloatSetting("RemoveTime", this, 100, 1500, 250, 50);
-
     final FloatSetting gapOffset = new FloatSetting("GapOffset", this, 0,20,5,0.1f);
 
     final CheckBox glow = new CheckBox("Glow", this);
@@ -40,7 +38,7 @@ public class Notifications extends Module {
 
     final CheckBox blur = new CheckBox("Blur", this);
 
-    private static final List<Notification> notifications = new CopyOnWriteArrayList<>();
+    public static final List<Notification> notifications = new CopyOnWriteArrayList<>();
 
     public static void addNotification(String name, boolean toggled) {
         Notifications notificationsModule = Modules.getModule(Notifications.class);
@@ -73,6 +71,8 @@ public class Notifications extends Module {
                 openAnim.update(2f, Easing.OUT_BACK);
 
                 if (notification.isDelete()) openAnim.setEnd(0);
+
+                if (Modules.getModule(DynamicIsland.class).isToggled()) continue;
 
                 float width = fontRenderer.getStringWidth(text);
 

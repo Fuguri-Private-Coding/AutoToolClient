@@ -3,19 +3,28 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notification;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.text.DateFormat;
@@ -48,24 +57,48 @@ public class DynamicIsland extends Module {
     @Override
     public void onEvent(Event event) {
         ClientFont font = Fonts.fonts.get("SFPro");
+        ClientFont fontr = Fonts.fonts.get("SFProRegular");
 
-        if (event instanceof Render2DEvent) {
+        if (event instanceof Render2DEvent e) {
             ScaledResolution sc = ScaleUtils.getScaledResolution();
 
             rectRadius.setEnd(opened ? 10 : 7.5f);
 
-            updateText(() -> {
-                font.drawString(Client.INST.getFullName(), 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
-            }, font.getStringWidth(Client.INST.getFullName()), 0);
+            var notifications = Modules.getModule(Notifications.class);
+
+            if (mc.currentScreen instanceof GuiChat && GuiUtils.isHovered(e.getMouseX(), e.getMouseY(), sc.getScaledWidth() / 2f - width.getValue() / 2f, 5, width.getValue(), height.getValue())) {
+                String profile = "Profile: " + Client.INST.getProfile().toColoredString();
+
+                float width = fontr.getStringWidth(profile);
+
+                updateText(() -> {
+                    fontr.drawString(profile, 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                }, width, 0);
+            } else {
+                if (notifications.isToggled() && !Notifications.notifications.isEmpty()) {
+                    Notification notification = Notifications.notifications.getLast();
+
+                    String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
+                    String text = " §fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
+
+                    updateText(() -> {
+                        fontr.drawString(text, 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                    }, fontr.getStringWidth(text), 0);
+                } else {
+                    updateText(() -> {
+                        fontr.drawString(Client.INST.getFullName(), 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                    }, fontr.getStringWidth(Client.INST.getFullName()), 0);
+                }
+            }
 
             width.setEnd(10 + additionalWidth);
             height.setEnd(15 + additionalHeight);
 
             opened = additionalHeight > 0;
 
-            width.update(3, Easing.OUT_CUBIC);
-            height.update(3, Easing.OUT_CUBIC);
-            textAlpha.update(6, Easing.OUT_CUBIC);
+            width.update(3, Easing.OUT_BACK);
+            height.update(3, Easing.OUT_BACK);
+            textAlpha.update(8, Easing.OUT_CUBIC);
             rectRadius.update(3, Easing.OUT_CUBIC);
 
             float x = sc.getScaledWidth() / 2f - width.getValue() / 2f;
@@ -85,7 +118,21 @@ public class DynamicIsland extends Module {
             float renderX = x + 5;
             float renderY = y + 5;
 
-            RenderUtils.drawRoundedOutLineRectangle(x, y, width, height, rectRadius.getValue(), Colors.BLACK.withAlpha(0.5f), Colors.WHITE.withAlpha(0.3f), Colors.WHITE.withAlpha(0.3f));
+            RenderUtils.drawRoundedOutLineRectangle(x, y, width, height, rectRadius.getValue(), Colors.BLACK.withAlpha(Modules.getModule(Blur.class).isToggled() ? 0f : 0.5f), Colors.WHITE.withAlpha(0.5f), Colors.WHITE.withAlpha(0.5f));
+
+            if (Modules.getModule(Blur.class).isToggled()) {
+                BlurUtils.addToDraw(() -> {
+                    RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.BLACK.withAlpha(1f));
+                });
+
+                BlurUtils.draw();
+                mc.getFramebuffer().bindFramebuffer(false);
+                mc.getFramebuffer().bindFramebufferTexture();
+                Shader.drawQuad();
+                GlStateManager.bindTexture(0);
+
+                RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.LIGHT_GRAY.withAlpha(0.05f));
+            }
 
             StencilUtils.setUpTexture(x, y, width, height, rectRadius.getValue());
             StencilUtils.writeTexture();
@@ -113,7 +160,6 @@ public class DynamicIsland extends Module {
             lastRun = run;
             this.additionalWidth = additionalWidth;
             this.additionalHeight = additionalHeight;
-            if (additionalHeight > 0) opened = true;
             textAlpha.setEnd(0);
         }
 

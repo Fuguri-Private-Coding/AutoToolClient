@@ -222,7 +222,7 @@ public class RenderManager
         renderPosZ = renderPosZIn;
     }
 
-    public Vec3 getRenderPosition() {
+    public static Vec3 getRenderPosition() {
         return new Vec3(renderPosX, renderPosY, renderPosZ);
     }
 

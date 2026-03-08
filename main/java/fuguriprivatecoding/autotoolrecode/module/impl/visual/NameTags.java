@@ -12,6 +12,8 @@ import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
@@ -30,10 +32,14 @@ public class NameTags extends Module {
     FloatSetting yOffset = new FloatSetting("YOffset", this, 0f,5f,1f,0.1f);
     FloatSetting textYOffset = new FloatSetting("TextYOffset", this, -5,5f,0f,0.01f);
 
-    public final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this);
+    private final FloatSetting scaleFactor = new FloatSetting("ScaleFactor", this, 0.1f, 1.5f, 0.7f, 0.1f);
+    private final CheckBox background = new CheckBox("Background", this, false);
+    public final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, background::isToggled);
     public final CheckBox textShadow = new CheckBox("TextShadow", this);
 
     public final CheckBox renderAllNames = new CheckBox("RenderAllNames", this, false);
+
+    private final IntegerSetting maxDistanceToRender = new IntegerSetting("MaxDistanceToRender", this,0, 256, 256);
 
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this);
@@ -49,11 +55,13 @@ public class NameTags extends Module {
         if (event instanceof Render3DEvent) {
             RenderUtils.start3D();
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
-                if (mc.getRenderManager() == null || (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || entity.isDead)
+                if (mc.getRenderManager() == null || (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || entity.isDead || DistanceUtils.getDistance(entity) > maxDistanceToRender.getValue())
                     continue;
-                Vec3 pos = calculateTranslatedPos(entity);
 
-                renderNameTag(entity, getText(entity), pos);
+                Vec3 pos = RenderUtils.getAbsoluteSmoothPos(entity.getLastPositionVector(), entity.getPositionVector()).subtract(RenderManager.getRenderPosition());;
+                Vec3 addPos = new Vec3(0, entity.getEyeHeight() + yOffset.getValue(), 0);
+
+                renderNameTag(getText(entity), pos.add(addPos));
             }
             RenderUtils.stop3D();
         }
@@ -73,9 +81,11 @@ public class NameTags extends Module {
         return detectiveText + murderText + friendText + userText + ent.getDisplayName().getFormattedText();
     }
 
-    private void renderNameTag(Entity entity, String name, Vec3 pos) {
-        float distance = mc.thePlayer.getDistanceToEntity(entity);
-        float scale = Math.max(distance / 1.8f, 5.0f);
+    private void renderNameTag(String name, Vec3 pos) {
+        Vec3 playerPos = RenderUtils.getAbsoluteSmoothPos(mc.thePlayer.getLastPositionVector(), mc.thePlayer.getPositionVector()).subtract(RenderManager.getRenderPosition());
+
+        float distance = (float) playerPos.distanceTo(pos);
+        float scale = Math.max(distance * scaleFactor.getValue(), 5.0f);
         scale /= 200f;
         glPushMatrix();
         glTranslated(pos.xCoord, pos.yCoord, pos.zCoord);
@@ -96,17 +106,15 @@ public class NameTags extends Module {
         mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
 
         if (glow.isToggled()) {
-            BloomUtils.addToDraw(() -> Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glowColor.getFadedColor().getRGB()));
+            BloomUtils.addToDraw(() -> {
+                if (background.isToggled()) {
+                    Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glowColor.getFadedColor().getRGB());
+                } else {
+                    mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
+                }
+            });
         }
 
         glPopMatrix();
-    }
-
-    private Vec3 calculateTranslatedPos(Entity entity) {
-        return new Vec3(
-                (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks - RenderManager.renderPosX),
-                (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks - RenderManager.renderPosY + entity.getEyeHeight() + yOffset.getValue()),
-                (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks - RenderManager.renderPosZ)
-        );
     }
 }
