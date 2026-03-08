@@ -3,17 +3,14 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notification;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
-import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
@@ -60,7 +57,7 @@ public class DynamicIsland extends Module {
         ClientFont fontr = Fonts.fonts.get("SFProRegular");
 
         if (event instanceof Render2DEvent e) {
-            ScaledResolution sc = ScaleUtils.getScaledResolution();
+            ScaledResolution sc = e.getScaledResolution();
 
             rectRadius.setEnd(opened ? 10 : 7.5f);
 
