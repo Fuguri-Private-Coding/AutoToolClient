@@ -82,10 +82,10 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     protected Minecraft mc;
     protected int sprintToggleTimer;
     public int sprintingTicksLeft;
-    public float renderArmYaw;
-    public float renderArmPitch;
-    public float prevRenderArmYaw;
-    public float prevRenderArmPitch;
+    public float renderArmYaw, cameraRenderArmYaw;
+    public float renderArmPitch, cameraRenderArmPitch;
+    public float prevRenderArmYaw, cameraPrevRenderArmYaw;
+    public float prevRenderArmPitch, cameraPrevRenderArmPitch;
     private int horseJumpPowerCounter;
     private float horseJumpPower;
     public float timeInPortal;
@@ -521,10 +521,18 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             this.moveStrafing = this.movementInput.moveStrafe;
             this.moveForward = this.movementInput.moveForward;
             this.isJumping = this.movementInput.jump;
+
+            this.cameraPrevRenderArmYaw = this.cameraRenderArmYaw;
+            this.cameraPrevRenderArmPitch = this.cameraRenderArmPitch;
+
             this.prevRenderArmYaw = this.renderArmYaw;
             this.prevRenderArmPitch = this.renderArmPitch;
+
             this.renderArmPitch = (float) ((double) this.renderArmPitch + (double) (this.rotationPitch - this.renderArmPitch) * 0.5D);
             this.renderArmYaw = (float) ((double) this.renderArmYaw + (double) (this.rotationYaw - this.renderArmYaw) * 0.5D);
+
+            this.cameraRenderArmYaw = (float) ((double) this.cameraPrevRenderArmYaw + (double) (CameraRot.INST.getYaw() - this.cameraRenderArmYaw) * 0.5D);
+            this.cameraRenderArmPitch = (float) ((double) this.cameraPrevRenderArmPitch + (double) (CameraRot.INST.getPitch() - this.cameraRenderArmPitch) * 0.5D);
         }
     }
 

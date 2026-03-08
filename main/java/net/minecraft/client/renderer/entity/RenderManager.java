@@ -4,11 +4,13 @@ import com.google.common.collect.Maps;
 import java.util.Collections;
 import java.util.Map;
 
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelChicken;
@@ -284,8 +286,15 @@ public class RenderManager
         }
         else
         {
-            this.playerViewY = livingPlayerIn.prevRotationYaw + (livingPlayerIn.rotationYaw - livingPlayerIn.prevRotationYaw) * partialTicks;
-            this.playerViewX = livingPlayerIn.prevRotationPitch + (livingPlayerIn.rotationPitch - livingPlayerIn.prevRotationPitch) * partialTicks;
+            if (livingPlayerIn == Minecraft.getMinecraft().thePlayer) {
+                CameraRot camera = CameraRot.INST;
+
+                this.playerViewY = camera.getPrevRot().getYaw() + (camera.getYaw() - camera.getPrevRot().getYaw()) * partialTicks;
+                this.playerViewX = camera.getPrevRot().getPitch() + (camera.getPitch() - camera.getPrevRot().getPitch()) * partialTicks;
+            } else {
+                this.playerViewY = livingPlayerIn.prevRotationYaw + (livingPlayerIn.rotationYaw - livingPlayerIn.prevRotationYaw) * partialTicks;
+                this.playerViewX = livingPlayerIn.prevRotationPitch + (livingPlayerIn.rotationPitch - livingPlayerIn.prevRotationPitch) * partialTicks;
+            }
         }
 
         if (optionsIn.thirdPersonView == 2)

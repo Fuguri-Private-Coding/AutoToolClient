@@ -26,6 +26,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
 import org.lwjgl.input.Mouse;
@@ -202,15 +203,24 @@ public class Scaffold extends Module {
     }
 
     private void click() {
-        RayTrace mouseOver = mc.objectMouseOver;
+        RayTrace hit = mc.objectMouseOver;
 
         int iters = clicks;
         clicks = 0;
 
-        if (mouseOver.typeOfHit == RayTrace.RayType.BLOCK
-            && isSameY(mouseOver)
-            && targetBlock.equals(mouseOver.getBlockPos())
-            && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock) {
+        boolean oneClick = true;
+
+        ItemStack heldStack = mc.thePlayer.getHeldItem();
+
+        if (heldStack != null && heldStack.getItem() instanceof ItemBlock itemblock) {
+            if (!itemblock.canPlaceBlockOnSide(mc.theWorld, hit.getBlockPos(), hit.sideHit, mc.thePlayer, heldStack)) {
+                oneClick = false;
+            }
+        }
+
+        if (hit.typeOfHit == RayTrace.RayType.BLOCK
+            && (shouldNinePitch() || (isSameY(hit) && targetBlock.equals(hit.getBlockPos())))
+            && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock && oneClick) {
 
             for (int i = 0; i < iters; i++) {
                 mc.rightClickMouse(false);
@@ -250,7 +260,7 @@ public class Scaffold extends Module {
                 float rotPitch = getPitch(rotYaw, true);
 
                 rotation = new Rot(rotYaw, rotPitch);
-                RayTrace hit = RayCastUtils.rayCast(rotation, 4.5f);
+                RayTrace hit = RayCastUtils.rayCast(3f, 4.5f, rotation);
 
                 if ((hit.typeOfHit != RayTrace.RayType.BLOCK || isClutch()) && clutch.isToggled()) {
                     rotation = getBestRotation(0, 0, false);
@@ -297,7 +307,7 @@ public class Scaffold extends Module {
     }
 
     private boolean shouldNinePitch() {
-        return !MoveUtils.isMoving() && !isClutch() && mc.gameSettings.keyBindJump.isKeyDown()
+        return !MoveUtils.isMoving() && mc.gameSettings.keyBindJump.isKeyDown()
             && mc.thePlayer.motionX == 0 && mc.thePlayer.motionZ == 0;
     }
 

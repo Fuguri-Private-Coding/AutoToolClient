@@ -2,6 +2,7 @@ package net.minecraft.client.renderer;
 
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Hand;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.event.events.render.RenderItemEvent;
@@ -106,10 +107,10 @@ public class ItemRenderer {
     }
 
     private void rotateWithPlayerRotations(EntityPlayerSP entityplayerspIn, float partialTicks) {
-        float f = entityplayerspIn.prevRenderArmPitch + (entityplayerspIn.renderArmPitch - entityplayerspIn.prevRenderArmPitch) * partialTicks;
-        float f1 = entityplayerspIn.prevRenderArmYaw + (entityplayerspIn.renderArmYaw - entityplayerspIn.prevRenderArmYaw) * partialTicks;
-        GlStateManager.rotate((entityplayerspIn.rotationPitch - f) * 0.1F, 1.0F, 0.0F, 0.0F);
-        GlStateManager.rotate((entityplayerspIn.rotationYaw - f1) * 0.1F, 0.0F, 1.0F, 0.0F);
+        float f = entityplayerspIn.cameraPrevRenderArmPitch + (entityplayerspIn.cameraRenderArmPitch - entityplayerspIn.cameraPrevRenderArmPitch) * partialTicks;
+        float f1 = entityplayerspIn.cameraPrevRenderArmYaw + (entityplayerspIn.cameraRenderArmYaw - entityplayerspIn.cameraPrevRenderArmYaw) * partialTicks;
+        GlStateManager.rotate((CameraRot.INST.getPitch() - f) * 0.1F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate((CameraRot.INST.getYaw() - f1) * 0.1F, 0.0F, 1.0F, 0.0F);
     }
 
     private float getMapAngleFromPitch(float pitch) {
