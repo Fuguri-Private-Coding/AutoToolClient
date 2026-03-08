@@ -69,25 +69,31 @@ public class DynamicIsland extends Module {
             var notifications = Modules.getModule(Notifications.class);
 
             if (mc.currentScreen != null && GuiUtils.isMouseHovered(sc.getScaledWidth() / 2f - width.getValue() / 2f, 5, width.getValue(), height.getValue())) {
-                String profile = "Profile: " + Client.INST.getProfile().toColoredString();
+                float x = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
+                float y = 5 + 5;
 
-                float width = fontr.getStringWidth(profile);
+                boolean isHoveredNext = GuiUtils.isMouseHovered(x, y, 10, 10);
+                boolean isHoveredPlay = GuiUtils.isMouseHovered(x + 85, y, 10, 10);
+
+                Color nextColor = Colors.YELLOW.withAlpha(textAlpha.getValue());
+                Color playColor = Colors.RED.withAlpha(textAlpha.getValue());
 
                 updateText(() -> {
-                    RoundedUtils.drawRect(0, 0, 10, 10, 5f, Colors.YELLOW.withAlpha(textAlpha.getValue()));
-                    RoundedUtils.drawRect(65, 0, 10, 10, 5f, Colors.RED.withAlpha(textAlpha.getValue()));
-                }, 80, 5);
+                    fontr.drawString("MusicPlayer", 30, 2.5f, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                    fontr.drawString("Next", 0, 15, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                    fontr.drawString("Play", 85, 15, Colors.WHITE.withAlpha(textAlpha.getValue()));
 
-                if (this.width.getValue() == 10 + 80) {
-                    float x = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
-                    float y = 5 + 5;
+                    RoundedUtils.drawRect(0, 0, 10, 10, 5f, nextColor);
+                    RoundedUtils.drawRect(90, 0, 10, 10, 5f, playColor);
+                }, 100, 25);
 
+                if (this.width.getValue() == 10 + 100) {
                     if (GuiUtils.isMouseHovered(x, y, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
                         TrackInfoFinder.nextTrack();
                         ClientUtils.chatLog("next");
                     }
 
-                    if (GuiUtils.isMouseHovered(x + 65, y, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
+                    if (GuiUtils.isMouseHovered(x + 85, y, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
                         TrackInfoFinder.playPause();
                         ClientUtils.chatLog("playpause");
                     }
