@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -12,9 +11,9 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notifi
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
-import fuguriprivatecoding.autotoolrecode.utils.client.sound.TrackInfoFinder;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
+import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
@@ -23,7 +22,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
@@ -72,30 +70,28 @@ public class DynamicIsland extends Module {
                 float x = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
                 float y = 5 + 5;
 
-                boolean isHoveredNext = GuiUtils.isMouseHovered(x, y, 10, 10);
-                boolean isHoveredPlay = GuiUtils.isMouseHovered(x + 85, y, 10, 10);
-
-                Color nextColor = Colors.YELLOW.withAlpha(textAlpha.getValue());
-                Color playColor = Colors.RED.withAlpha(textAlpha.getValue());
+                float textWidth = fontr.getStringWidth("MusicPlayer");
 
                 updateText(() -> {
-                    fontr.drawString("MusicPlayer", 30, 2.5f, Colors.WHITE.withAlpha(textAlpha.getValue()));
-                    fontr.drawString("Next", 0, 15, Colors.WHITE.withAlpha(textAlpha.getValue()));
-                    fontr.drawString("Play", 85, 15, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                    fontr.drawString("MusicPlayer", width.getValue() / 2f - textWidth / 2f - 5, 2.5f, Colors.WHITE.withAlpha(textAlpha.getValue()));
+
+                    boolean isHoveredNext = GuiUtils.isMouseHovered(x, y, 10, 10);
+                    boolean isHoveredPlay = GuiUtils.isMouseHovered(x + 70, y, 10, 10);
+
+                    Color nextColor = isHoveredNext ? Colors.YELLOW.withAlpha(textAlpha.getValue()).darker() : Colors.YELLOW.withAlpha(textAlpha.getValue());
+                    Color playColor = isHoveredPlay ? Colors.RED.withAlpha(textAlpha.getValue()).darker() : Colors.RED.withAlpha(textAlpha.getValue());
 
                     RoundedUtils.drawRect(0, 0, 10, 10, 5f, nextColor);
-                    RoundedUtils.drawRect(90, 0, 10, 10, 5f, playColor);
-                }, 100, 25);
+                    RoundedUtils.drawRect(70, 0, 10, 10, 5f, playColor);
+                }, 80, 5);
 
-                if (this.width.getValue() == 10 + 100) {
+                if (this.width.getValue() == 10 + 80) {
                     if (GuiUtils.isMouseHovered(x, y, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
-                        TrackInfoFinder.nextTrack();
-                        ClientUtils.chatLog("next");
+                        MediaController.next();
                     }
 
-                    if (GuiUtils.isMouseHovered(x + 85, y, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
-                        TrackInfoFinder.playPause();
-                        ClientUtils.chatLog("playpause");
+                    if (GuiUtils.isMouseHovered(x + 70, y, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
+                        MediaController.playPause();
                     }
 
                     pressed = Mouse.isButtonDown(0);

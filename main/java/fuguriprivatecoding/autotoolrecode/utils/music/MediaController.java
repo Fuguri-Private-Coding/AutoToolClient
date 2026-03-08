@@ -22,7 +22,7 @@ public class MediaController {
 
             USER_32.PostMessage(
                 hwnd,
-                0x0319, // WM_APPCOMMAND
+                0x0319,
                 WPARAM0,
                 new WinDef.LPARAM(lParamValue)
             );
@@ -41,19 +41,11 @@ public class MediaController {
         sendCommand(13);
     }
 
-    public void pause() {
+    public void playPause() {
         sendCommand(14);
     }
 
     public void play() {
         sendCommand(46);
-    }
-
-    public void testFastForward() {
-        sendCommand(49);
-    }
-
-    public void testRewind() {
-        sendCommand(50);
     }
 }
