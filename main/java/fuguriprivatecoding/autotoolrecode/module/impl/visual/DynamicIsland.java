@@ -68,17 +68,18 @@ public class DynamicIsland extends Module {
 
             var notifications = Modules.getModule(Notifications.class);
 
-            if (mc.currentScreen != null && GuiUtils.isMouseHovered(0, 5, additionalWidth + 10, additionalHeight + 15)) {
-                float x = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
-                float y = 5 + 5;
+            float rectX = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
+            float rectY = 5 + 5;
+
+            if (mc.currentScreen != null && GuiUtils.isMouseHovered(rectX - 5, rectY- 5, additionalWidth + 10, additionalHeight + 15)) {
 
                 float textWidth = fontr.getStringWidth("MusicPlayer");
 
                 updateText(() -> {
                     fontr.drawString("MusicPlayer", width.getValue() / 2f - textWidth / 2f - 5, 2.5f, Colors.WHITE.withAlpha(textAlpha.getValue()));
 
-                    boolean isHoveredNext = GuiUtils.isMouseHovered(x, y, 10, 10);
-                    boolean isHoveredPlay = GuiUtils.isMouseHovered(x + 70, y, 10, 10);
+                    boolean isHoveredNext = GuiUtils.isMouseHovered(rectX, rectY, 10, 10);
+                    boolean isHoveredPlay = GuiUtils.isMouseHovered(rectX + 70, rectY, 10, 10);
 
                     Color nextColor = isHoveredNext ? Colors.YELLOW.withAlpha(textAlpha.getValue()).darker() : Colors.YELLOW.withAlpha(textAlpha.getValue());
                     Color playColor = isHoveredPlay ? Colors.RED.withAlpha(textAlpha.getValue()).darker() : Colors.RED.withAlpha(textAlpha.getValue());
@@ -88,11 +89,11 @@ public class DynamicIsland extends Module {
                 }, 80, 5);
 
                 if (this.width.getValue() == 10 + 80) {
-                    if (GuiUtils.isMouseHovered(x, y, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
+                    if (GuiUtils.isMouseHovered(rectX, rectY, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
                         MediaController.next();
                     }
 
-                    if (GuiUtils.isMouseHovered(x + 70, y, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
+                    if (GuiUtils.isMouseHovered(rectX + 70, rectY, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
                         MediaController.playPause();
                     }
 
