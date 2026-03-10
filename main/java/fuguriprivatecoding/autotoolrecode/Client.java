@@ -150,7 +150,7 @@ public enum Client implements Imports, EventListener {
 //        Accounts.save();
 		KeyBinds.saveBinds();
         ClientIRC.disconnectClientServer();
-        nowPlaying.close();
+        nowPlaying.getExecutor().close();
         scheduler.shutdown();
     }
 

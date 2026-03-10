@@ -11,7 +11,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public final class WindowsNowPlayingService implements Closeable {
-    private final ScheduledExecutorService executor;
+    @Getter private final ScheduledExecutorService executor;
     @Getter private volatile TrackInfo current = TrackInfo.EMPTY;
     @Getter private volatile BufferedImage artworkImage;
     private volatile long lastVersion = -1L;
@@ -33,8 +33,8 @@ public final class WindowsNowPlayingService implements Closeable {
     private void tick() {
         try {
             TrackInfo changed = SmtcNative.nFetchIfChanged(lastVersion);
+
             if (changed == null) {
-                current = null;
                 return;
             }
 

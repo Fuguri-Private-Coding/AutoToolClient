@@ -78,35 +78,31 @@ public class DynamicIsland extends Module {
             float rectX = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
             float rectY = 5 + 5;
 
-            float elementAlpha = textAlpha.getValue();
-            Color whiteColor = Colors.WHITE.withAlpha(elementAlpha);
+            Colors whiteColor = Colors.WHITE;
 
-            if (mc.currentScreen != null && GuiUtils.isMouseHovered(rectX - 5, rectY- 5, additionalWidth + 10, additionalHeight + 15)) {
+            if (mc.currentScreen != null && GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + 15)) {
                 var nowPlaying = Client.INST.getNowPlaying();
 
                 TrackInfo info = nowPlaying.getCurrent();
+                BufferedImage img = nowPlaying.getArtworkImage();
 
-                if (info == null) {
+                if (img == null) {
                     String mediaText = "Медиа контент не найден.";
 
                     float mediaTextWidth = regularFont.getStringWidth(mediaText);
 
                     updateRun(() -> {
-                         regularFont.drawString(mediaText, 0, 0, whiteColor);
+                         regularFont.drawString(mediaText, 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
                     }, mediaTextWidth, 0);
                 } else {
                     if (!Objects.equals(info.title(), Client.INST.getSongName())) {
-                        BufferedImage img = nowPlaying.getArtworkImage();
+                        dynamicTexture = new DynamicTexture(img);
 
-                        if (img != null) {
-                            dynamicTexture = new DynamicTexture(img);
+                        String name = "song_image_" + info.title();
+                        ResourceLocation songImage = mc.getTextureManager().getDynamicTextureLocation(name, dynamicTexture);
 
-                            String name = "song_image_" + info.title();
-                            ResourceLocation songImage = mc.getTextureManager().getDynamicTextureLocation(name, dynamicTexture);
-
-                            Client.INST.setSongImg(songImage);
-                            Client.INST.setSongName(info.title());
-                        }
+                        Client.INST.setSongImg(songImage);
+                        Client.INST.setSongName(info.title());
                     }
 
                     String title = info.title();
@@ -115,20 +111,20 @@ public class DynamicIsland extends Module {
 
                     updateRun(() -> {
                         if (Client.INST.getSongImg() != null) {
-                            ColorUtils.glColor(whiteColor);
+                            ColorUtils.glColor(whiteColor.withAlpha(textAlpha.getValue()));
                             RenderUtils.drawImage(Client.INST.getSongImg(), 0, 0, 25, 25, true);
                         }
 
-                        regularFont.drawString(title, 30, 5, whiteColor);
-                        regularFont.drawString(artist, 30, 15, whiteColor);
+                        regularFont.drawString(title, 30, 5, whiteColor.withAlpha(textAlpha.getValue()));
+                        regularFont.drawString(artist, 30, 15, whiteColor.withAlpha(textAlpha.getValue()));
 
                         boolean isHoveredNext = GuiUtils.isMouseHovered(rectX + 95, rectY + 30, 10, 10);
                         boolean isHoveredPlay = GuiUtils.isMouseHovered(rectX + 95 / 2f, rectY + 30, 10, 10);
                         boolean isHoveredPrev = GuiUtils.isMouseHovered(rectX, rectY + 30, 10, 10);
 
-                        Color nextColor = isHoveredNext ? Colors.YELLOW.withAlpha(elementAlpha).darker() : Colors.YELLOW.withAlpha(elementAlpha);
-                        Color playColor = isHoveredPlay ? playing ? Colors.GREEN.withAlpha(elementAlpha).darker() : Colors.RED.withAlpha(elementAlpha).darker() : playing ? Colors.GREEN.withAlpha(elementAlpha) : Colors.RED.withAlpha(elementAlpha);
-                        Color prevColor = isHoveredPrev ? Colors.YELLOW.withAlpha(elementAlpha).darker() : Colors.YELLOW.withAlpha(elementAlpha);
+                        Color nextColor = isHoveredNext ? Colors.YELLOW.withAlpha(textAlpha.getValue()).darker() : Colors.YELLOW.withAlpha(textAlpha.getValue());
+                        Color playColor = isHoveredPlay ? playing ? Colors.GREEN.withAlpha(textAlpha.getValue()).darker() : Colors.RED.withAlpha(textAlpha.getValue()).darker() : playing ? Colors.GREEN.withAlpha(textAlpha.getValue()) : Colors.RED.withAlpha(textAlpha.getValue());
+                        Color prevColor = isHoveredPrev ? Colors.YELLOW.withAlpha(textAlpha.getValue()).darker() : Colors.YELLOW.withAlpha(textAlpha.getValue());
 
                         RoundedUtils.drawRect(0, 30, 10, 10, 5f, prevColor);
                         RoundedUtils.drawRect(95 / 2f, 30, 10, 10, 5, playColor);
@@ -158,7 +154,7 @@ public class DynamicIsland extends Module {
                     float connectionWidth = regularFont.getStringWidth(staticText);
 
                     updateRun(() -> {
-                        regularFont.drawString(text, 0, 0, whiteColor);
+                        regularFont.drawString(text, 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
                     }, connectionWidth, 0);
                 } else {
                     if (notifications.isToggled() && !Notifications.notifications.isEmpty()) {
@@ -170,11 +166,11 @@ public class DynamicIsland extends Module {
                         float notificationTextWidth = regularFont.getStringWidth(notificationText);
 
                         updateRun(() -> {
-                            regularFont.drawString(notificationText, 0, 0, whiteColor);
+                            regularFont.drawString(notificationText, 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
                         }, notificationTextWidth, 0);
                     } else {
                         updateRun(() -> {
-                            regularFont.drawString(Client.INST.getFullName(), 0, 0, whiteColor);
+                            regularFont.drawString(Client.INST.getFullName(), 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
                         }, regularFont.getStringWidth(Client.INST.getFullName()), 0);
                     }
                 }
