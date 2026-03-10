@@ -3,7 +3,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -11,12 +10,12 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notification;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
@@ -26,12 +25,18 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+import smtc.TrackInfo;
+
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 @ModuleInfo(name = "DynamicIsland", category = Category.VISUAL)
 public class DynamicIsland extends Module {
@@ -49,6 +54,8 @@ public class DynamicIsland extends Module {
 
     private boolean opened, pressed = false;
 
+    DynamicTexture dynamicTexture;
+
     public DynamicIsland() {
         width = new EasingAnimation();
         height = new EasingAnimation();
@@ -59,7 +66,7 @@ public class DynamicIsland extends Module {
     @Override
     public void onEvent(Event event) {
         ClientFont font = Fonts.fonts.get("SFPro");
-        ClientFont fontr = Fonts.fonts.get("SFProRegular");
+        ClientFont regularFont = Fonts.fonts.get("SFProRegular");
 
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = ScaleUtils.getScaledResolution();
@@ -71,33 +78,72 @@ public class DynamicIsland extends Module {
             float rectX = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
             float rectY = 5 + 5;
 
+            float elementAlpha = textAlpha.getValue();
+            Color whiteColor = Colors.WHITE.withAlpha(elementAlpha);
+
             if (mc.currentScreen != null && GuiUtils.isMouseHovered(rectX - 5, rectY- 5, additionalWidth + 10, additionalHeight + 15)) {
+                var nowPlaying = Client.INST.getNowPlaying();
 
-                float textWidth = fontr.getStringWidth("MusicPlayer");
+                TrackInfo info = nowPlaying.getCurrent();
 
-                updateText(() -> {
-                    fontr.drawString("MusicPlayer", width.getValue() / 2f - textWidth / 2f - 5, 2.5f, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                if (info == null) {
+                    String mediaText = "Медиа контент не найден.";
 
-                    boolean isHoveredNext = GuiUtils.isMouseHovered(rectX, rectY, 10, 10);
-                    boolean isHoveredPlay = GuiUtils.isMouseHovered(rectX + 70, rectY, 10, 10);
+                    float mediaTextWidth = regularFont.getStringWidth(mediaText);
 
-                    Color nextColor = isHoveredNext ? Colors.YELLOW.withAlpha(textAlpha.getValue()).darker() : Colors.YELLOW.withAlpha(textAlpha.getValue());
-                    Color playColor = isHoveredPlay ? Colors.RED.withAlpha(textAlpha.getValue()).darker() : Colors.RED.withAlpha(textAlpha.getValue());
+                    updateRun(() -> {
+                         regularFont.drawString(mediaText, 0, 0, whiteColor);
+                    }, mediaTextWidth, 0);
+                } else {
+                    if (!Objects.equals(info.title(), Client.INST.getSongName())) {
+                        BufferedImage img = nowPlaying.getArtworkImage();
 
-                    RoundedUtils.drawRect(0, 0, 10, 10, 5f, nextColor);
-                    RoundedUtils.drawRect(70, 0, 10, 10, 5f, playColor);
-                }, 80, 5);
+                        if (img != null) {
+                            dynamicTexture = new DynamicTexture(img);
 
-                if (this.width.getValue() == 10 + 80) {
-                    if (GuiUtils.isMouseHovered(rectX, rectY, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
-                        MediaController.next();
+                            String name = "song_image_" + info.title();
+                            ResourceLocation songImage = mc.getTextureManager().getDynamicTextureLocation(name, dynamicTexture);
+
+                            Client.INST.setSongImg(songImage);
+                            Client.INST.setSongName(info.title());
+                        }
                     }
 
-                    if (GuiUtils.isMouseHovered(rectX + 70, rectY, 10, 10) && Mouse.isButtonDown(0) && !pressed) {
-                        MediaController.playPause();
-                    }
+                    String title = info.title();
+                    String artist = info.artist();
+                    boolean playing = info.isPlaying();
 
-                    pressed = Mouse.isButtonDown(0);
+                    updateRun(() -> {
+                        if (Client.INST.getSongImg() != null) {
+                            ColorUtils.glColor(whiteColor);
+                            RenderUtils.drawImage(Client.INST.getSongImg(), 0, 0, 25, 25, true);
+                        }
+
+                        regularFont.drawString(title, 30, 5, whiteColor);
+                        regularFont.drawString(artist, 30, 15, whiteColor);
+
+                        boolean isHoveredNext = GuiUtils.isMouseHovered(rectX + 95, rectY + 30, 10, 10);
+                        boolean isHoveredPlay = GuiUtils.isMouseHovered(rectX + 95 / 2f, rectY + 30, 10, 10);
+                        boolean isHoveredPrev = GuiUtils.isMouseHovered(rectX, rectY + 30, 10, 10);
+
+                        Color nextColor = isHoveredNext ? Colors.YELLOW.withAlpha(elementAlpha).darker() : Colors.YELLOW.withAlpha(elementAlpha);
+                        Color playColor = isHoveredPlay ? playing ? Colors.GREEN.withAlpha(elementAlpha).darker() : Colors.RED.withAlpha(elementAlpha).darker() : playing ? Colors.GREEN.withAlpha(elementAlpha) : Colors.RED.withAlpha(elementAlpha);
+                        Color prevColor = isHoveredPrev ? Colors.YELLOW.withAlpha(elementAlpha).darker() : Colors.YELLOW.withAlpha(elementAlpha);
+
+                        RoundedUtils.drawRect(0, 30, 10, 10, 5f, prevColor);
+                        RoundedUtils.drawRect(95 / 2f, 30, 10, 10, 5, playColor);
+                        RoundedUtils.drawRect(95, 30, 10, 10, 5f, nextColor);
+                    }, 105, 35);
+
+                    if (this.width.getValue() == 10 + 105) {
+                        if (Mouse.isButtonDown(0) && !pressed) {
+                            if (GuiUtils.isMouseHovered(rectX, rectY + 30, 10, 10)) MediaController.prev();
+                            if (GuiUtils.isMouseHovered(rectX + 95 / 2f, rectY + 30, 10, 10)) MediaController.playPause();
+                            if (GuiUtils.isMouseHovered(rectX + 95, rectY + 30, 10, 10)) MediaController.next();
+                        }
+
+                        pressed = Mouse.isButtonDown(0);
+                    }
                 }
             } else {
                 if (HWID.noConnection) {
@@ -107,25 +153,29 @@ public class DynamicIsland extends Module {
                     int remainingSec = 30 - sec;
 
                     String text = "Нет интернет подключения, клиент закроется через §9" + remainingSec + "§f s.";
-                    String texts = "Нет интернет подключения, клиент закроется через §9" + 30 + "§f s.";
+                    String staticText = "Нет интернет подключения, клиент закроется через §9" + 30 + "§f s.";
 
-                    updateText(() -> {
-                        fontr.drawString(text, 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
-                    }, fontr.getStringWidth(texts), 0);
+                    float connectionWidth = regularFont.getStringWidth(staticText);
+
+                    updateRun(() -> {
+                        regularFont.drawString(text, 0, 0, whiteColor);
+                    }, connectionWidth, 0);
                 } else {
                     if (notifications.isToggled() && !Notifications.notifications.isEmpty()) {
                         Notification notification = Notifications.notifications.getLast();
 
                         String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
-                        String text = " §fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
+                        String notificationText = " §fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
 
-                        updateText(() -> {
-                            fontr.drawString(text, 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
-                        }, fontr.getStringWidth(text), 0);
+                        float notificationTextWidth = regularFont.getStringWidth(notificationText);
+
+                        updateRun(() -> {
+                            regularFont.drawString(notificationText, 0, 0, whiteColor);
+                        }, notificationTextWidth, 0);
                     } else {
-                        updateText(() -> {
-                            fontr.drawString(Client.INST.getFullName(), 0, 0, Colors.WHITE.withAlpha(textAlpha.getValue()));
-                        }, fontr.getStringWidth(Client.INST.getFullName()), 0);
+                        updateRun(() -> {
+                            regularFont.drawString(Client.INST.getFullName(), 0, 0, whiteColor);
+                        }, regularFont.getStringWidth(Client.INST.getFullName()), 0);
                     }
                 }
             }
@@ -177,8 +227,12 @@ public class DynamicIsland extends Module {
             StencilUtils.writeTexture();
 
             GL11.glPushMatrix();
+
+            float scaleFactor = 0.9f + textAlpha.getValue() * 0.1f;
+            ScaleUtils.startScaling(x, y, width, height, scaleFactor);
             GL11.glTranslated(renderX, renderY, 0);
             currentRun.run();
+            ScaleUtils.stopScaling();
             GL11.glPopMatrix();
 
             StencilUtils.endWriteTexture();
@@ -194,7 +248,7 @@ public class DynamicIsland extends Module {
         }
     }
 
-    private void updateText(Runnable run, float additionalWidth, float additionalHeight) {
+    private void updateRun(Runnable run, float additionalWidth, float additionalHeight) {
         if (width.getValue() != additionalWidth) {
             lastRun = run;
             this.additionalWidth = additionalWidth;
@@ -202,7 +256,7 @@ public class DynamicIsland extends Module {
             textAlpha.setEnd(0);
         }
 
-        if (this.additionalWidth == additionalWidth && textAlpha.getValue() == 1) {
+        if (width.getValue() - 10 == additionalWidth) {
             lastRun = run;
             currentRun = lastRun;
         }

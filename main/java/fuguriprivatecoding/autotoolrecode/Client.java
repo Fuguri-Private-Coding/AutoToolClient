@@ -14,6 +14,7 @@ import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
@@ -27,8 +28,6 @@ import fuguriprivatecoding.autotoolrecode.alts.Accounts;
 
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
 import fuguriprivatecoding.autotoolrecode.utils.client.sound.*;
-import fuguriprivatecoding.autotoolrecode.gui.altmanager.*;
-import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.*;
 import fuguriprivatecoding.autotoolrecode.utils.packet.*;
 import fuguriprivatecoding.autotoolrecode.gui.console.*;
@@ -46,6 +45,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import lombok.*;
+import smtc.WindowsNowPlayingService;
 
 import java.io.*;
 import java.util.concurrent.Executors;
@@ -68,6 +68,10 @@ public enum Client implements Imports, EventListener {
 
 	@Setter Profile profile;
 
+    private final WindowsNowPlayingService nowPlaying = new WindowsNowPlayingService();
+    @Setter private String songName;
+    @Setter private ResourceLocation songImg;
+
 	boolean starting = true;
 
     private final ScheduledExecutorService scheduler =
@@ -83,6 +87,8 @@ public enum Client implements Imports, EventListener {
             10,
             TimeUnit.SECONDS
         );
+
+        nowPlaying.start();
 
         if (this.profile == null) System.exit(-1);
 
@@ -144,6 +150,7 @@ public enum Client implements Imports, EventListener {
 //        Accounts.save();
 		KeyBinds.saveBinds();
         ClientIRC.disconnectClientServer();
+        nowPlaying.close();
         scheduler.shutdown();
     }
 
