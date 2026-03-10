@@ -5,11 +5,12 @@ import lombok.Getter;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public final class WindowsNowPlayingService implements AutoCloseable {
+public final class WindowsNowPlayingService implements Closeable {
     private final ScheduledExecutorService executor;
     @Getter private volatile TrackInfo current = TrackInfo.EMPTY;
     @Getter private volatile BufferedImage artworkImage;
@@ -52,6 +53,6 @@ public final class WindowsNowPlayingService implements AutoCloseable {
     @Override
     public void close() {
         executor.shutdown();
-        SmtcNative.nShutdown();
+//        SmtcNative.nShutdown();
     }
 }
