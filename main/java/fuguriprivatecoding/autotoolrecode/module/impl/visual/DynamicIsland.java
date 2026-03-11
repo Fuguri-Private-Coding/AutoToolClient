@@ -80,22 +80,17 @@ public class DynamicIsland extends Module {
 
             Colors whiteColor = Colors.WHITE;
 
+            float interpolatedPositionMs = Client.INST.getNowPlaying().getInterpolatedPositionMs();
+
             if (mc.currentScreen != null && GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + 15)) {
                 var nowPlaying = Client.INST.getNowPlaying();
 
                 TrackInfo info = nowPlaying.getCurrent();
-                BufferedImage img = nowPlaying.getArtworkImage();
 
-                if (img == null) {
-                    String mediaText = "Медиа контент не найден.";
+                if (!Objects.equals(info.title(), Client.INST.getSongName())) {
+                    BufferedImage img = nowPlaying.getArtworkImage();
 
-                    float mediaTextWidth = regularFont.getStringWidth(mediaText);
-
-                    updateRun(() -> {
-                         regularFont.drawString(mediaText, 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
-                    }, mediaTextWidth, 0);
-                } else {
-                    if (!Objects.equals(info.title(), Client.INST.getSongName())) {
+                    if (img != null) {
                         dynamicTexture = new DynamicTexture(img);
 
                         String name = "song_image_" + info.title();
@@ -104,42 +99,69 @@ public class DynamicIsland extends Module {
                         Client.INST.setSongImg(songImage);
                         Client.INST.setSongName(info.title());
                     }
+                }
 
-                    String title = info.title();
-                    String artist = info.artist();
-                    boolean playing = info.isPlaying();
+                String title = info.title();
+                String artist = info.artist();
+                boolean playing = info.isPlaying();
 
-                    updateRun(() -> {
-                        if (Client.INST.getSongImg() != null) {
-                            ColorUtils.glColor(whiteColor.withAlpha(textAlpha.getValue()));
-                            RenderUtils.drawImage(Client.INST.getSongImg(), 0, 0, 25, 25, true);
-                        }
-
-                        regularFont.drawString(title, 30, 5, whiteColor.withAlpha(textAlpha.getValue()));
-                        regularFont.drawString(artist, 30, 15, whiteColor.withAlpha(textAlpha.getValue()));
-
-                        boolean isHoveredNext = GuiUtils.isMouseHovered(rectX + 95, rectY + 30, 10, 10);
-                        boolean isHoveredPlay = GuiUtils.isMouseHovered(rectX + 95 / 2f, rectY + 30, 10, 10);
-                        boolean isHoveredPrev = GuiUtils.isMouseHovered(rectX, rectY + 30, 10, 10);
-
-                        Color nextColor = isHoveredNext ? Colors.YELLOW.withAlpha(textAlpha.getValue()).darker() : Colors.YELLOW.withAlpha(textAlpha.getValue());
-                        Color playColor = isHoveredPlay ? playing ? Colors.GREEN.withAlpha(textAlpha.getValue()).darker() : Colors.RED.withAlpha(textAlpha.getValue()).darker() : playing ? Colors.GREEN.withAlpha(textAlpha.getValue()) : Colors.RED.withAlpha(textAlpha.getValue());
-                        Color prevColor = isHoveredPrev ? Colors.YELLOW.withAlpha(textAlpha.getValue()).darker() : Colors.YELLOW.withAlpha(textAlpha.getValue());
-
-                        RoundedUtils.drawRect(0, 30, 10, 10, 5f, prevColor);
-                        RoundedUtils.drawRect(95 / 2f, 30, 10, 10, 5, playColor);
-                        RoundedUtils.drawRect(95, 30, 10, 10, 5f, nextColor);
-                    }, 105, 35);
-
-                    if (this.width.getValue() == 10 + 105) {
-                        if (Mouse.isButtonDown(0) && !pressed) {
-                            if (GuiUtils.isMouseHovered(rectX, rectY + 30, 10, 10)) MediaController.prev();
-                            if (GuiUtils.isMouseHovered(rectX + 95 / 2f, rectY + 30, 10, 10)) MediaController.playPause();
-                            if (GuiUtils.isMouseHovered(rectX + 95, rectY + 30, 10, 10)) MediaController.next();
-                        }
-
-                        pressed = Mouse.isButtonDown(0);
+                updateRun(() -> {
+                    if (Client.INST.getSongImg() != null) {
+                        ColorUtils.glColor(whiteColor.withAlpha(textAlpha.getValue()));
+                        RenderUtils.drawImage(Client.INST.getSongImg(), 0, 0, 25, 25, true);
                     }
+
+                    String playText = playing ? "||" : "|>";
+
+                    float playTextWidth = font.getStringWidth(playText);
+
+                    regularFont.drawString(title, 30, 5, whiteColor.withAlpha(textAlpha.getValue()));
+                    regularFont.drawString(artist, 30, 15, whiteColor.withAlpha(textAlpha.getValue()));
+
+                    boolean isHoveredPrev = GuiUtils.isMouseHovered(rectX + 5, rectY + 40, 10, 10);
+                    boolean isHoveredPlay = GuiUtils.isMouseHovered(rectX + 105 / 2f - playTextWidth / 2f, rectY + 40, 10, 10);
+                    boolean isHoveredNext = GuiUtils.isMouseHovered(rectX + 95, rectY + 40, 10, 10);
+
+                    Color hoveredColor = whiteColor.withAlpha(textAlpha.getValue()).darker();
+
+                    Color color = whiteColor.withAlpha(textAlpha.getValue());
+
+                    Color nextColor = isHoveredNext ? hoveredColor : color;
+                    Color playColor = isHoveredPlay ? hoveredColor : color;
+                    Color prevColor = isHoveredPrev ? hoveredColor : color;
+
+                    float maxDurationWidth = 105;
+
+                    float durationMS = info.durationMs();
+                    float durationWidth = interpolatedPositionMs / durationMS;
+
+                    float currentWidth = maxDurationWidth * durationWidth;
+
+                    RoundedUtils.drawRect(0, 30, maxDurationWidth, 3, 0, Colors.BLACK.withAlpha(textAlpha.getValue() * 0.5f));
+                    RoundedUtils.drawRect(0, 30, currentWidth, 3, 0, whiteColor.withAlpha(textAlpha.getValue()));
+
+                    font.drawString("<", 5, 42, prevColor);
+                    font.drawString(playText, 105 / 2f - playTextWidth / 2f, 42, playColor);
+                    font.drawString(">", 95, 42, nextColor);
+
+                }, 105, 45);
+
+                if (this.width.getValue() == 10 + 105) {
+                    if (Mouse.isButtonDown(0) && !pressed) {
+                        String playText = info.isPlaying() ? "||" : "|>";
+
+                        float playTextWidth = font.getStringWidth(playText);
+
+                        boolean isHoveredPrev = GuiUtils.isMouseHovered(rectX + 5, rectY + 40, 10, 10);
+                        boolean isHoveredPlay = GuiUtils.isMouseHovered(rectX + 105 / 2f - playTextWidth / 2f, rectY + 40, 10, 10);
+                        boolean isHoveredNext = GuiUtils.isMouseHovered(rectX + 95, rectY + 40, 10, 10);
+
+                        if (isHoveredPrev) MediaController.prev();
+                        if (isHoveredPlay) MediaController.playPause();
+                        if (isHoveredNext) MediaController.next();
+                    }
+
+                    pressed = Mouse.isButtonDown(0);
                 }
             } else {
                 if (HWID.noConnection) {

@@ -1,10 +1,10 @@
 package smtc;
 
 public final class SmtcNative {
-    static {
+
+    public static void init() {
         System.loadLibrary("smtc_bridge");
     }
-    private SmtcNative() {}
 
     public static native boolean nInit();
     public static native void nShutdown();
@@ -16,4 +16,5 @@ public final class SmtcNative {
     public static native boolean nTogglePlayPause();
     public static native boolean nPlay();
     public static native boolean nPause();
+    public static native boolean nSeek(long positionMs);
 }

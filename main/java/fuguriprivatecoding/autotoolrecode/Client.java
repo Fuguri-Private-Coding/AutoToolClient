@@ -45,6 +45,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import lombok.*;
+import smtc.SmtcNative;
 import smtc.WindowsNowPlayingService;
 
 import java.io.*;
@@ -80,6 +81,8 @@ public enum Client implements Imports, EventListener {
 	public void init() throws IOException {
 		long start = System.nanoTime();
 		starting = true;
+
+        SmtcNative.init();
 
         scheduler.scheduleAtFixedRate(
             HWID::check,
@@ -150,8 +153,8 @@ public enum Client implements Imports, EventListener {
 //        Accounts.save();
 		KeyBinds.saveBinds();
         ClientIRC.disconnectClientServer();
-        nowPlaying.getExecutor().close();
         scheduler.shutdown();
+        nowPlaying.close();
     }
 
     private void createDirectories() {
