@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -42,6 +43,13 @@ public class AutoClicker extends Module {
                     leftStopWatch.reset();
                 }
             }
+        }
+
+        if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.LEFT) {
+            if (!Mouse.isButtonDown(0) || mc.thePlayer.isUsingItem() || Mouse.isButtonDown(1) || mc.currentScreen != null) return;
+            if (RayCastUtils.rayCast(3, 4.5, new Rot(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)).typeOfHit == RayTrace.RayType.BLOCK && breakBlocks.isToggled()) return;
+
+            e.cancel();
         }
     }
 

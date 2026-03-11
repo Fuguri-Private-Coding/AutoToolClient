@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.handle;
 import de.florianmichael.viamcp.fixes.AttackOrder;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
+import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
@@ -35,12 +36,12 @@ public class Clicks implements Imports, EventListener {
 
     @Override
     public void onEvent(Event event) {
+        EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
+        boolean clicking = needClick(target);
+
         if (event instanceof LegitClickTimingEvent) {
             int iters = clicks;
             clicks = 0;
-
-            EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
-            boolean clicking = needClick(target);
 
             EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
 
@@ -50,6 +51,14 @@ public class Clicks implements Imports, EventListener {
 
             for (int i = 0; i < iters; i++) {
                 click(target);
+            }
+        }
+
+        if (event instanceof ClickEvent e) {
+            EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
+
+            if (rayCast != null && (rayCast.isFriend() || rayCast.isTeam() || rayCast.isBot()) || !clicking) {
+                e.cancel();
             }
         }
     }
