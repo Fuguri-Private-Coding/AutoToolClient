@@ -143,8 +143,8 @@ public class DynamicIsland extends Module {
                     float durationWidth = currentMediaTime / info.durationMs();
                     float currentWidth = maxDurationWidth * durationWidth;
 
-                    RoundedUtils.drawRect(0, 30, maxDurationWidth, 3, 0, Colors.BLACK.withAlpha(textAlpha.getValue() * 0.5f));
-                    RoundedUtils.drawRect(0, 30, currentWidth, 3, 0, whiteColor.withAlpha(textAlpha.getValue()));
+                    RoundedUtils.drawRect(0, 30, maxDurationWidth, 3, 1.5f, Colors.BLACK.withAlpha(textAlpha.getValue() * 0.5f));
+                    RoundedUtils.drawRect(0, 30, currentWidth, 3, 1.5f, whiteColor.withAlpha(textAlpha.getValue()));
 
                     font.drawString("<", 5, 42, prevColor);
                     font.drawString(playText, 105 / 2f - playTextWidth / 2f, 42, playColor);
