@@ -66,7 +66,6 @@ public class ChestStealer extends Module {
     private boolean opened = false;
 
     private List<StealerSlot> slots = new CopyOnWriteArrayList<>();
-    private StealerSlot currentSlot = new StealerSlot(new Vector2i(0, 0), new Vector2i(0, 0));
 
     private final MousePoint mouse = new MousePoint();
 
@@ -89,15 +88,13 @@ public class ChestStealer extends Module {
                     slots.sort(Comparator.comparingInt(slot -> (int) mouse.getDelta(slot.centerPos).hypot()));
                 }
 
-                currentSlot = slots.getFirst();
-
-                StealerSlot firstSlot = slots.getFirst();
+                StealerSlot currentSlot = slots.getFirst();
 
                 MouseDelta delta = mouse.getDelta(currentSlot.centerPos)
                     .limit(this.moveSpeed.getRandomizedIntValue())
                     .divine((float) smooth.getRandomizedDoubleValue());
 
-                if (firstSlot.centerPos.x != -666) {
+                if (currentSlot.centerPos.x != -666) {
                     mouse.move(delta);
 
                     int offset = (int) minOffsetToClick.getValue();
@@ -123,7 +120,7 @@ public class ChestStealer extends Module {
                 }
 
                 if (autoClose.isToggled()) {
-                    if (firstSlot.centerPos.x == -666) {
+                    if (currentSlot.centerPos.x == -666) {
                         if (closeDelayStopWatch.reachedMS(closeDelayTick * 50L)) {
                             mc.thePlayer.closeScreen();
                         }

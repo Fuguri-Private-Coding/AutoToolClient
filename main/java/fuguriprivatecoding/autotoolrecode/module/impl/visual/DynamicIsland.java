@@ -31,8 +31,8 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import smtc.TrackInfo;
-import smtc.WindowsNowPlayingService;
+import fuguriprivatecoding.autotoolrecode.utils.music.TrackInfo;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.text.DateFormat;
@@ -81,18 +81,18 @@ public class DynamicIsland extends Module {
 
             Colors whiteColor = Colors.WHITE;
 
-            float currentMediaTime = Client.INST.getNowPlaying().getInterpolatedPositionMs();
+            float currentMediaTime = Client.INST.getMediaController().getInterpolatedPositionMs();
 
-            WindowsNowPlayingService nowPlaying = Client.INST.getNowPlaying();
+            MediaController mediaController = Client.INST.getMediaController();
 
-            TrackInfo info = nowPlaying.getCurrent();
+            TrackInfo info = mediaController.getCurrent();
 
             String title = info.title();
             String artist = info.artist();
             boolean playing = info.isPlaying();
 
             if (!Objects.equals(title, Client.INST.getSongName())) {
-                BufferedImage img = nowPlaying.getArtworkImage();
+                BufferedImage img = mediaController.getArtworkImage();
 
                 if (img != null) {
                     dynamicTexture = new DynamicTexture(img);
@@ -167,9 +167,9 @@ public class DynamicIsland extends Module {
                         boolean isHoveredPlay = GuiUtils.isMouseHovered(playX, buttonsY, 10, 10);
                         boolean isHoveredNext = GuiUtils.isMouseHovered(nextX, buttonsY, 10, 10);
 
-                        if (isHoveredPrev) MediaController.prev();
-                        if (isHoveredPlay) MediaController.playPause();
-                        if (isHoveredNext) MediaController.next();
+                        if (isHoveredPrev) mediaController.prev();
+                        if (isHoveredPlay) mediaController.playPause();
+                        if (isHoveredNext) mediaController.next();
                     }
 
                     pressed = Mouse.isButtonDown(0);

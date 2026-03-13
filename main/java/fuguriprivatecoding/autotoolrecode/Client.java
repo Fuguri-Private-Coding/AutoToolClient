@@ -46,7 +46,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import lombok.*;
 import smtc.SmtcNative;
-import smtc.WindowsNowPlayingService;
+import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
 
 import java.io.*;
 import java.util.concurrent.Executors;
@@ -69,7 +69,7 @@ public enum Client implements Imports, EventListener {
 
 	@Setter Profile profile;
 
-    private final WindowsNowPlayingService nowPlaying = new WindowsNowPlayingService();
+    private final MediaController mediaController = new MediaController();
     @Setter private String songName;
     @Setter private ResourceLocation songImg;
 
@@ -91,7 +91,7 @@ public enum Client implements Imports, EventListener {
             TimeUnit.SECONDS
         );
 
-        nowPlaying.start();
+        mediaController.start();
 
         if (this.profile == null) System.exit(-1);
 
@@ -154,7 +154,7 @@ public enum Client implements Imports, EventListener {
 		KeyBinds.saveBinds();
         ClientIRC.disconnectClientServer();
         scheduler.shutdown();
-        nowPlaying.close();
+        mediaController.close();
     }
 
     private void createDirectories() {
