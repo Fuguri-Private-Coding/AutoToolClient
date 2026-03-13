@@ -28,47 +28,47 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ModuleInfo(name = "ChestStealer", category = Category.PLAYER, description = "Автоматически берет вещи из сундука.")
 public class ChestStealer extends Module {
 
-    final DoubleSlider startDelay = new DoubleSlider("StartDelay", this, 0, 20, 5, 1);
+    private final DoubleSlider startDelay = new DoubleSlider("StartDelay", this, 0, 20, 5, 1);
 
-    final DoubleSlider moveSpeed = new DoubleSlider("MoveSpeed", this, 0, 100, 50, 1);
-    final DoubleSlider smooth = new DoubleSlider("Smooth", this, 1, 3, 2, 0.1f);
-    final FloatSetting minOffsetToClick = new FloatSetting("MinOffsetToClick", this, 0, 7, 1, 1f);
+    private final DoubleSlider moveSpeed = new DoubleSlider("MoveSpeed", this, 0, 100, 50, 1);
+    private final DoubleSlider smooth = new DoubleSlider("Smooth", this, 1, 3, 2, 0.1f);
+    private final FloatSetting minOffsetToClick = new FloatSetting("MinOffsetToClick", this, 0, 7, 1, 1f);
 
-    final CheckBox fail = new CheckBox("Fail", this, false);
-    final DoubleSlider failChance = new DoubleSlider("FailChance", this, fail::isToggled, 0, 100, 20, 1);
+    private final CheckBox fail = new CheckBox("Fail", this, false);
+    private final DoubleSlider failChance = new DoubleSlider("FailChance", this, fail::isToggled, 0, 100, 20, 1);
 
-    final DoubleSlider delay = new DoubleSlider("Delay", this, 0,10,1,1);
+    private final DoubleSlider delay = new DoubleSlider("Delay", this, 0,10,1,1);
 
-    final CheckBox autoClose = new CheckBox("AutoClose", this, true);
-    final DoubleSlider closeDelay = new DoubleSlider("CloseDelay", this, autoClose::isToggled, 0,10,1,1);
+    private final CheckBox autoClose = new CheckBox("AutoClose", this, true);
+    private final DoubleSlider closeDelay = new DoubleSlider("CloseDelay", this, autoClose::isToggled, 0,10,1,1);
 
-    final CheckBox takeAllLoot = new CheckBox("TakeAllLoot", this, false);
+    private final CheckBox takeAllLoot = new CheckBox("TakeAllLoot", this, false);
 
-    final Mode sortType = new Mode("SortType", this)
+    private final Mode sortType = new Mode("SortType", this)
         .addModes("Nearest", "Linear")
         .setMode("Nearest")
         ;
 
-    final CheckBox render = new CheckBox("Render", this, true);
-    final MultiMode renderModes = new MultiMode("RenderModes", this, render::isToggled)
+    private final CheckBox render = new CheckBox("Render", this, true);
+    private final MultiMode renderModes = new MultiMode("RenderModes", this, render::isToggled)
         .addModes("Cursor", "HoverSlot");
 
-    final ColorSetting color = new ColorSetting("Color", this, () -> render.isToggled() && renderModes.get("Cursor"));
+    private final ColorSetting color = new ColorSetting("Color", this, () -> render.isToggled() && renderModes.get("Cursor"));
 
-    final CheckBox checkName = new CheckBox("CheckName", this, true);
+    private final CheckBox checkName = new CheckBox("CheckName", this, true);
 
-    final StopWatch delayStopWatch = new StopWatch();
-    final StopWatch startDelayStopWatch = new StopWatch();
-    final StopWatch closeDelayStopWatch = new StopWatch();
+    private final StopWatch delayStopWatch = new StopWatch();
+    private final StopWatch startDelayStopWatch = new StopWatch();
+    private final StopWatch closeDelayStopWatch = new StopWatch();
 
-    int startDelayTick, closeDelayTick, lootDelayTick;
+    private int startDelayTick, closeDelayTick, lootDelayTick;
 
-    boolean opened = false;
+    private boolean opened = false;
 
-    List<StealerSlot> slots = new CopyOnWriteArrayList<>();
-    StealerSlot currentSlot = new StealerSlot(new Vector2i(0, 0), new Vector2i(0, 0));
+    private List<StealerSlot> slots = new CopyOnWriteArrayList<>();
+    private StealerSlot currentSlot = new StealerSlot(new Vector2i(0, 0), new Vector2i(0, 0));
 
-    MousePoint mouse = new MousePoint();
+    private final MousePoint mouse = new MousePoint();
 
     @Override
     public void onEvent(Event event) {
