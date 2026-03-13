@@ -1,9 +1,7 @@
 #version 120
 
 uniform sampler2D Sampler0;
-uniform vec2 ScreenSize;
 uniform vec2 Size;
-
 uniform vec4 Radius;
 uniform float Smoothness;
 uniform float CornerSmoothness;
@@ -16,91 +14,53 @@ uniform float BaseAlpha;
 uniform bool FresnelInvert;
 uniform float FresnelMix;
 uniform float DistortStrength;
-uniform float FlipY;
 
 float roundedBoxSDF(vec2 p, vec2 b, vec4 r, float smoothness) {
     r.xy = (p.x > 0.0) ? r.xy : r.zw;
     r.x = (p.y > 0.0) ? r.x : r.y;
-
     vec2 q = abs(p) - b + r.x;
-    vec2 qClamped = max(q, 0.0);
-
-    float len = pow(
-        pow(qClamped.x, smoothness) + pow(qClamped.y, smoothness),
-        1.0 / smoothness
-    );
-
+    vec2 q_clamped = max(q, 0.0);
+    float len = pow(pow(q_clamped.x, smoothness) + pow(q_clamped.y, smoothness), 1.0/smoothness);
     return min(max(q.x, q.y), 0.0) + len - r.x;
-}
-
-vec2 safeNormalize(vec2 v) {
-    float len = length(v);
-    return len > 0.0001 ? v / len : vec2(0.0, 0.0);
 }
 
 void main() {
     vec2 uv = gl_TexCoord[0].st;
 
-/*
-     * Локальные координаты прямоугольника в framebuffer pixels.
-     */
     vec2 center = Size * 0.5;
-    vec2 halfSize = max(center - vec2(1.0), vec2(0.0));
-    vec2 pos = uv * Size - center;
+    vec2 box_half_size = center - 1.0;
+    vec2 pos = (uv * Size) - center;
 
-    float cornerPower = max(CornerSmoothness, 0.001);
-    float sdf = roundedBoxSDF(-pos, halfSize, Radius, cornerPower);
+    float distance = roundedBoxSDF(-pos, box_half_size, Radius, CornerSmoothness);
+    float alpha = 1.0 - smoothstep(1.0 - Smoothness, 1.0, distance);
 
-/*
-     * Маска rounded-rect.
-     */
-    float edgeSoftness = max(Smoothness, 0.0001);
-    float alphaMask = 1.0 - smoothstep(0.0, edgeSoftness, sdf);
+    float distToEdge = abs(roundedBoxSDF(pos, box_half_size, Radius, CornerSmoothness));
 
-/*
-     * Градиент к краям для стеклянного блика.
-     */
-    float maxDist = max(min(halfSize.x, halfSize.y), 0.0001);
-    float edgeGradient = 1.0 - clamp(abs(sdf) / maxDist, 0.0, 1.0);
-
-    float base = FresnelInvert ? edgeGradient : (1.0 - edgeGradient);
+    float max_dist_norm = min(box_half_size.x, box_half_size.y);
+    float edge_gradient = 1.0 - clamp(distToEdge / max_dist_norm, 0.0, 1.0);
 
     float fresnel;
+    float base = FresnelInvert ? edge_gradient : (1.0 - edge_gradient);
+
     if (FresnelPower > 20.0) {
         fresnel = exp(FresnelPower * log(clamp(base, 0.001, 1.0)));
     } else {
-        fresnel = pow(clamp(base, 0.0, 1.0), FresnelPower);
+        fresnel = pow(base, FresnelPower);
     }
+
     fresnel = clamp(fresnel, 0.0, 1.0);
 
-/*
-     * Ключевой фикс:
-     * читаем Sampler0 через экранную позицию текущего пикселя,
-     * поэтому фон внутри стекла всегда совпадает с тем, что под ним.
-     */
-    vec2 screenUV = gl_FragCoord.xy / ScreenSize;
+    vec2 dir = normalize(pos);
+    vec2 distortedTexCoord = uv + dir * fresnel * DistortStrength;
 
-    if (FlipY > 0.5) {
-        screenUV.y = 1.0 - screenUV.y;
-    }
-
-    vec2 dir = safeNormalize(pos);
-
-/*
-     * Небольшая дисторсия от центра к краям.
-     * DistortStrength задается в пикселях.
-     */
-    vec2 distortion = dir * fresnel * (DistortStrength / ScreenSize);
-    vec2 sampleUV = clamp(screenUV + distortion, vec2(0.0), vec2(1.0));
-
-    vec4 texColor = texture2D(Sampler0, sampleUV);
+    vec4 texColor = texture2D(Sampler0, distortedTexCoord);
 
     vec3 finalColor = mix(texColor.rgb, FresnelColor, fresnel * FresnelMix);
-    float finalAlpha = mix(BaseAlpha, FresnelAlpha, fresnel) * alphaMask * GlobalAlpha;
+    float finalAlpha = mix(BaseAlpha, FresnelAlpha, fresnel) * alpha;
 
     if (finalAlpha < 0.001) {
         discard;
     }
 
-    gl_FragColor = vec4(finalColor, finalAlpha);
+    gl_FragColor = vec4(finalColor, finalAlpha * GlobalAlpha);
 }

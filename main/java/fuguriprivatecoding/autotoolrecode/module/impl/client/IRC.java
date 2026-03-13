@@ -36,12 +36,7 @@ public class IRC extends Module {
     }
 
     private void enableThread() {
-        scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
-            Thread t = new Thread(r);
-            t.setDaemon(true);
-            return t;
-        });
-
+        scheduler = Executors.newSingleThreadScheduledExecutor();
         updateLists();
     }
 
