@@ -18,6 +18,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.RayTrace;
 import net.minecraft.util.Vec3;
 
@@ -70,7 +71,7 @@ public class Dot extends Module {
                 case "2D" -> {
                     if (event instanceof Render2DEvent) {
                         mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
-                        Vec3 pos = mouse.hitVec.subtract(mc.renderManager.getRenderPosition());
+                        Vec3 pos = mouse.hitVec.subtract(RenderManager.getRenderPosition());
                         float[] positions = Convertors.convert2D(pos, mc.gameSettings.guiScale);
                         mc.entityRenderer.setupOverlayRendering();
 

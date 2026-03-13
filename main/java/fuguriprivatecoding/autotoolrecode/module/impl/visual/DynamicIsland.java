@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -23,6 +24,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -30,12 +32,13 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import smtc.TrackInfo;
-
+import smtc.WindowsNowPlayingService;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @ModuleInfo(name = "DynamicIsland", category = Category.VISUAL)
@@ -73,68 +76,71 @@ public class DynamicIsland extends Module {
 
             rectRadius.setEnd(opened ? 10 : 7.5f);
 
-            var notifications = Modules.getModule(Notifications.class);
-
             float rectX = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
             float rectY = 5 + 5;
 
             Colors whiteColor = Colors.WHITE;
 
-            float interpolatedPositionMs = Client.INST.getNowPlaying().getInterpolatedPositionMs();
+            float currentMediaTime = Client.INST.getNowPlaying().getInterpolatedPositionMs();
 
-            if (mc.currentScreen != null && GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + 15)) {
-                var nowPlaying = Client.INST.getNowPlaying();
+            WindowsNowPlayingService nowPlaying = Client.INST.getNowPlaying();
 
-                TrackInfo info = nowPlaying.getCurrent();
+            TrackInfo info = nowPlaying.getCurrent();
 
-                if (!Objects.equals(info.title(), Client.INST.getSongName())) {
-                    BufferedImage img = nowPlaying.getArtworkImage();
+            String title = info.title();
+            String artist = info.artist();
+            boolean playing = info.isPlaying();
 
-                    if (img != null) {
-                        dynamicTexture = new DynamicTexture(img);
+            if (!Objects.equals(title, Client.INST.getSongName())) {
+                BufferedImage img = nowPlaying.getArtworkImage();
 
-                        String name = "song_image_" + info.title();
-                        ResourceLocation songImage = mc.getTextureManager().getDynamicTextureLocation(name, dynamicTexture);
+                if (img != null) {
+                    dynamicTexture = new DynamicTexture(img);
 
-                        Client.INST.setSongImg(songImage);
-                        Client.INST.setSongName(info.title());
-                    }
+                    String name = "song_image_" + info.title();
+                    ResourceLocation songImage = mc.getTextureManager().getDynamicTextureLocation(name, dynamicTexture);
+
+                    Client.INST.setSongImg(songImage);
+                    Client.INST.setSongName(info.title());
                 }
+            }
 
-                String title = info.title();
-                String artist = info.artist();
-                boolean playing = info.isPlaying();
+            boolean hoveredRect = GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + 15);
 
+            if (mc.currentScreen instanceof GuiChat && hoveredRect) {
                 updateRun(() -> {
-                    if (Client.INST.getSongImg() != null) {
+                    ResourceLocation songImage = Client.INST.getSongImg();
+
+                    if (songImage != null) {
                         ColorUtils.glColor(whiteColor.withAlpha(textAlpha.getValue()));
-                        RenderUtils.drawImage(Client.INST.getSongImg(), 0, 0, 25, 25, true);
+                        RenderUtils.drawImage(songImage, 0, 0, 25, 25, true);
                     }
-
-                    String playText = playing ? "||" : "|>";
-
-                    float playTextWidth = font.getStringWidth(playText);
 
                     regularFont.drawString(title, 30, 5, whiteColor.withAlpha(textAlpha.getValue()));
                     regularFont.drawString(artist, 30, 15, whiteColor.withAlpha(textAlpha.getValue()));
 
-                    boolean isHoveredPrev = GuiUtils.isMouseHovered(rectX + 5, rectY + 40, 10, 10);
-                    boolean isHoveredPlay = GuiUtils.isMouseHovered(rectX + 105 / 2f - playTextWidth / 2f, rectY + 40, 10, 10);
-                    boolean isHoveredNext = GuiUtils.isMouseHovered(rectX + 95, rectY + 40, 10, 10);
+                    String playText = playing ? "||" : "|>";
+                    float playTextWidth = font.getStringWidth(playText);
 
-                    Color hoveredColor = whiteColor.withAlpha(textAlpha.getValue()).darker();
+                    float buttonsY = rectY + 40;
+
+                    float prevX = rectX + 5;
+                    float playX = rectX + 105 / 2f - playTextWidth / 2f;
+                    float nextX = rectX + 95;
+
+                    boolean isHoveredPrev = GuiUtils.isMouseHovered(prevX, buttonsY, 10, 10);
+                    boolean isHoveredPlay = GuiUtils.isMouseHovered(playX, buttonsY, 10, 10);
+                    boolean isHoveredNext = GuiUtils.isMouseHovered(nextX, buttonsY, 10, 10);
 
                     Color color = whiteColor.withAlpha(textAlpha.getValue());
 
-                    Color nextColor = isHoveredNext ? hoveredColor : color;
-                    Color playColor = isHoveredPlay ? hoveredColor : color;
-                    Color prevColor = isHoveredPrev ? hoveredColor : color;
+                    Color nextColor = isHoveredNext ? color.darker() : color;
+                    Color playColor = isHoveredPlay ? color.darker() : color;
+                    Color prevColor = isHoveredPrev ? color.darker() : color;
 
                     float maxDurationWidth = 105;
 
-                    float durationMS = info.durationMs();
-                    float durationWidth = interpolatedPositionMs / durationMS;
-
+                    float durationWidth = currentMediaTime / info.durationMs();
                     float currentWidth = maxDurationWidth * durationWidth;
 
                     RoundedUtils.drawRect(0, 30, maxDurationWidth, 3, 0, Colors.BLACK.withAlpha(textAlpha.getValue() * 0.5f));
@@ -146,15 +152,20 @@ public class DynamicIsland extends Module {
 
                 }, 105, 45);
 
-                if (this.width.getValue() == 10 + 105) {
+                if (this.width.getValue() == 10 + this.additionalWidth) {
                     if (Mouse.isButtonDown(0) && !pressed) {
                         String playText = info.isPlaying() ? "||" : "|>";
 
                         float playTextWidth = font.getStringWidth(playText);
+                        float buttonsY = rectY + 40;
 
-                        boolean isHoveredPrev = GuiUtils.isMouseHovered(rectX + 5, rectY + 40, 10, 10);
-                        boolean isHoveredPlay = GuiUtils.isMouseHovered(rectX + 105 / 2f - playTextWidth / 2f, rectY + 40, 10, 10);
-                        boolean isHoveredNext = GuiUtils.isMouseHovered(rectX + 95, rectY + 40, 10, 10);
+                        float prevX = rectX + 5;
+                        float playX = rectX + 105 / 2f - playTextWidth / 2f;
+                        float nextX = rectX + 95;
+
+                        boolean isHoveredPrev = GuiUtils.isMouseHovered(prevX, buttonsY, 10, 10);
+                        boolean isHoveredPlay = GuiUtils.isMouseHovered(playX, buttonsY, 10, 10);
+                        boolean isHoveredNext = GuiUtils.isMouseHovered(nextX, buttonsY, 10, 10);
 
                         if (isHoveredPrev) MediaController.prev();
                         if (isHoveredPlay) MediaController.playPause();
@@ -179,6 +190,8 @@ public class DynamicIsland extends Module {
                         regularFont.drawString(text, 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
                     }, connectionWidth, 0);
                 } else {
+                    Notifications notifications = Modules.getModule(Notifications.class);
+
                     if (notifications.isToggled() && !Notifications.notifications.isEmpty()) {
                         Notification notification = Notifications.notifications.getLast();
 
@@ -191,9 +204,27 @@ public class DynamicIsland extends Module {
                             regularFont.drawString(notificationText, 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
                         }, notificationTextWidth, 0);
                     } else {
-                        updateRun(() -> {
-                            regularFont.drawString(Client.INST.getFullName(), 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
-                        }, regularFont.getStringWidth(Client.INST.getFullName()), 0);
+                        boolean needDesc = false;
+                        if (mc.currentScreen instanceof ClickScreen) {
+                            List<Module> moduleList = Modules.getModulesByCategory(ClickScreen.selectedCategory);
+
+                            for (Module module : moduleList) {
+                                if (module.getDescAnim().getValue() != 0 && !module.getDescription().equalsIgnoreCase("")) {
+                                    String descText = module.getDescription();
+
+                                    needDesc = true;
+                                    updateRun(() -> {
+                                        regularFont.drawString(descText, 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
+                                    }, regularFont.getStringWidth(descText), 0);
+                                }
+                            }
+                        }
+
+                        if (!needDesc) {
+                            updateRun(() -> {
+                                regularFont.drawString(Client.INST.getFullName(), 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
+                            }, regularFont.getStringWidth(Client.INST.getFullName()), 0);
+                        }
                     }
                 }
             }
@@ -222,9 +253,6 @@ public class DynamicIsland extends Module {
             float timeX = x - timeWidth - 3;
             float timeY = y + 5;
 
-            float renderX = x + 5;
-            float renderY = y + 5;
-
             RenderUtils.drawRoundedOutLineRectangle(x, y, width, height, rectRadius.getValue(), Colors.BLACK.withAlpha(Modules.getModule(Blur.class).isToggled() ? 0f : 0.5f), Colors.WHITE.withAlpha(0.5f), Colors.WHITE.withAlpha(0.5f));
 
             if (Modules.getModule(Blur.class).isToggled()) {
@@ -244,13 +272,18 @@ public class DynamicIsland extends Module {
             StencilUtils.setUpTexture(x, y, width, height, rectRadius.getValue());
             StencilUtils.writeTexture();
 
-            GL11.glPushMatrix();
+            float translateX = x + 5;
+            float translateY = y + 5;
 
             float scaleFactor = 0.9f + textAlpha.getValue() * 0.1f;
+
+            GL11.glPushMatrix();
+
             ScaleUtils.startScaling(x, y, width, height, scaleFactor);
-            GL11.glTranslated(renderX, renderY, 0);
+            GL11.glTranslated(translateX, translateY, 0);
             currentRun.run();
             ScaleUtils.stopScaling();
+
             GL11.glPopMatrix();
 
             StencilUtils.endWriteTexture();

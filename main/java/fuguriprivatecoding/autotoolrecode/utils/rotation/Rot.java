@@ -15,8 +15,8 @@ public class Rot {
 
 	public static Rot fromRotationVec(Vec3 lookVec) {
 		return new Rot(
-				MathHelper.wrapDegree((float) (Math.toDegrees(Math.atan2(lookVec.zCoord, lookVec.xCoord)) - 90)),
-				MathHelper.wrapDegree((float) (-Math.toDegrees(Math.atan2(lookVec.yCoord, Math.sqrt(lookVec.xCoord * lookVec.xCoord + lookVec.zCoord * lookVec.zCoord)))))
+			MathHelper.wrapDegree((float) (Math.toDegrees(Math.atan2(lookVec.zCoord, lookVec.xCoord)) - 90)),
+			MathHelper.wrapDegree((float) (-Math.toDegrees(Math.atan2(lookVec.yCoord, Math.sqrt(lookVec.xCoord * lookVec.xCoord + lookVec.zCoord * lookVec.zCoord)))))
 		);
 	}
 
@@ -40,8 +40,8 @@ public class Rot {
 
 	public Rot add(float yaw, float pitch) {
 		return new Rot(
-				this.yaw + yaw,
-				MathHelper.clamp(this.pitch + pitch, -90, 90)
+			this.yaw + yaw,
+			MathHelper.clamp(this.pitch + pitch, -90, 90)
 		);
 	}
 
@@ -84,8 +84,8 @@ public class Rot {
 
 	public Rot copy() {
 		return new Rot(
-				yaw,
-				Math.clamp(pitch, -90, 90)
+			yaw,
+			Math.clamp(pitch, -90, 90)
 		);
 	}
 

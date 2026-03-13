@@ -44,6 +44,11 @@ public class ChestStealer extends Module {
 
     final CheckBox takeAllLoot = new CheckBox("TakeAllLoot", this, false);
 
+    final Mode sortType = new Mode("SortType", this)
+        .addModes("Nearest", "Linear")
+        .setMode("Nearest")
+        ;
+
     final CheckBox render = new CheckBox("Render", this, true);
     final MultiMode renderModes = new MultiMode("RenderModes", this, render::isToggled)
         .addModes("Cursor", "HoverSlot");
@@ -80,20 +85,19 @@ public class ChestStealer extends Module {
 
                 slots = getSlots(container);
 
-                slots.sort(Comparator.comparingInt(slot -> {
-                    int deltaX = mouse.getMouseX() - slot.centerPos.x;
-                    int deltaY = mouse.getMouseY() - slot.centerPos.y;
-
-                    return (int) Math.hypot(deltaX, deltaY);
-                }));
+                if (sortType.is("Nearest")) {
+                    slots.sort(Comparator.comparingInt(slot -> (int) mouse.getDelta(slot.centerPos).hypot()));
+                }
 
                 currentSlot = slots.getFirst();
+
+                StealerSlot firstSlot = slots.getFirst();
 
                 MouseDelta delta = mouse.getDelta(currentSlot.centerPos)
                     .limit(this.moveSpeed.getRandomizedIntValue())
                     .divine((float) smooth.getRandomizedDoubleValue());
 
-                if (slots.getFirst().centerPos.x != -666) {
+                if (firstSlot.centerPos.x != -666) {
                     mouse.move(delta);
 
                     int offset = (int) minOffsetToClick.getValue();
@@ -119,7 +123,7 @@ public class ChestStealer extends Module {
                 }
 
                 if (autoClose.isToggled()) {
-                    if (slots.getFirst().centerPos.x == -666) {
+                    if (firstSlot.centerPos.x == -666) {
                         if (closeDelayStopWatch.reachedMS(closeDelayTick * 50L)) {
                             mc.thePlayer.closeScreen();
                         }

@@ -13,6 +13,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.DynamicIsland;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
@@ -64,7 +65,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 	final Color CATEGORY_COLOR = new Color(255, 255, 255, 255);
 
 	public KeyBind activeKeyBind;
-	Category selectedCategory = Category.COMBAT;
+	public static Category selectedCategory = Category.COMBAT;
 	Module selectedModule = null;
 	Category clickedCategory;
 	Module clickedModule;
@@ -832,16 +833,18 @@ public class ClickScreen extends GuiScreen implements EventListener {
             module.getDescAnim().setEnd(module.isHovered());
 
             if (!module.getDescription().equalsIgnoreCase("") && module.getDescAnim().getValue() != 0) {
-                float descriptionWidth = fontRenderer.getStringWidth(module.getDescription());
-                ScaleUtils.startScaling(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 5, descriptionWidth + 6, 14, module.getDescAnim().getValue());
+                if (!Modules.getModule(DynamicIsland.class).isToggled()) {
+					float descriptionWidth = fontRenderer.getStringWidth(module.getDescription());
+					ScaleUtils.startScaling(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 5, descriptionWidth + 6, 14, module.getDescAnim().getValue());
 
-                float alphaDesc = module.getDescAnim().getValue();
+					float alphaDesc = module.getDescAnim().getValue();
 
-                Color bgColorWithAlpha = new Colors(BACKGROUND_COLOR).withMultiplyAlphaClamp(alphaDesc);
+					Color bgColorWithAlpha = new Colors(BACKGROUND_COLOR).withMultiplyAlphaClamp(alphaDesc);
 
-                RoundedUtils.drawRect(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 5, descriptionWidth + 6, 14, clientSettings.backgroundRadius.getValue(), bgColorWithAlpha);
-                fontRenderer.drawString(module.getDescription(), sc.getScaledWidth() / 2f - descriptionWidth / 2f + 3 + 2, 5 + 5, Colors.WHITE.withAlphaClamp(alphaDesc), true);
-                ScaleUtils.stopScaling();
+					RoundedUtils.drawRect(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 5, descriptionWidth + 6, 14, clientSettings.backgroundRadius.getValue(), bgColorWithAlpha);
+					fontRenderer.drawString(module.getDescription(), sc.getScaledWidth() / 2f - descriptionWidth / 2f + 3 + 2, 5 + 5, Colors.WHITE.withAlphaClamp(alphaDesc), true);
+					ScaleUtils.stopScaling();
+				}
             }
 
 			offsetModuleDesc += fontRenderer.FONT_HEIGHT + 2;

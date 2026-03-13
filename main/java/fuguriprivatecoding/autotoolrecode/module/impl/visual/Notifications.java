@@ -63,16 +63,14 @@ public class Notifications extends Module {
 
             float yOffset = 0;
             for (Notification notification : notifications) {
-                String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
-                String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
-
                 EasingAnimation openAnim = notification.getOpenAnim();
-
                 openAnim.update(2f, Easing.OUT_BACK);
 
                 if (notification.isDelete()) openAnim.setEnd(0);
-
                 if (Modules.getModule(DynamicIsland.class).isToggled()) continue;
+
+                String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
+                String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
 
                 float width = fontRenderer.getStringWidth(text);
 

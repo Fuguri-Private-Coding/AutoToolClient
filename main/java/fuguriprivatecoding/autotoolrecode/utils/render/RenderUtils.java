@@ -431,7 +431,7 @@ public class RenderUtils implements Imports {
     }
 
     public static void drawImage(ResourceLocation image, int x, int y, int width, int height) {
-        drawImage(image, x,y,width,height,false);
+        drawImage(image, x, y, width, height,false);
     }
 
     public static void drawImage(ResourceLocation image, float x, float y, float width, float height, boolean resetColor) {
