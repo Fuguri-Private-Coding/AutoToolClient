@@ -28,6 +28,37 @@ public class InventoryUtils implements Imports {
     public static final int ONLY_HOT_BAR_BEGIN = 36;
     public static final int END = 45;
 
+    /* # Slots
+    hotbar slots = 36-44 id
+    armor slots = 5-8 id
+    inv slots = 9-35 id
+
+    all inv slots = 9-44 id
+
+    craft slots = 1-4 id
+    craft result = 0 id
+
+    # Mouse Buttons
+    left click = 0
+    right click = 1
+
+    hotbar = slotIndex 0-8
+
+    # Modes
+    left/right click without shift = 0
+    left/right click with shift = 1
+    drop click = 4
+    hotbar click = 2
+    */
+    public static final int HOTBAR_START = 36;
+    public static final int HOTBAR_END = 44;
+    public static final int ARMOR_START = 5;
+    public static final int ARMOR_END = 8;
+    public static final int INV_START = 9;
+    public static final int INV_END = 35;
+    public static final int INV_WITH_HOTBAR_START = INV_START;
+    public static final int INV_WITH_HOTBAR_END = HOTBAR_END;
+
     public static boolean isValidStack(final ItemStack stack) {
         if (stack.getItem() instanceof ItemBlock && isGoodBlockStack(stack)) {
             return true;

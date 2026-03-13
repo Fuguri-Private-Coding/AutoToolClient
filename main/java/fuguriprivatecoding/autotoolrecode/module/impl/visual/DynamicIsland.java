@@ -31,7 +31,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import fuguriprivatecoding.autotoolrecode.utils.music.TrackInfo;
+import smtc.TrackInfo;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

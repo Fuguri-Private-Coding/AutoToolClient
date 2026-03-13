@@ -2,6 +2,9 @@ package net.minecraft.client.multiplayer;
 
 import fuguriprivatecoding.autotoolrecode.event.events.player.BlockDamageEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.BlockHitDelayEvent;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.InventoryManager;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -509,6 +512,9 @@ public class PlayerControllerMP
 
     public ItemStack windowClick(int windowId, int slotId, int mouseButtonClicked, int mode, EntityPlayer playerIn)
     {
+        if (Modules.getModule(InventoryManager.class).isToggled()) {
+            ClientUtils.chatLog("windowsID = " + windowId + " slotID = " + slotId + " mouseButton = " + mouseButtonClicked + " mode = " + mode);
+        }
         short short1 = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
         ItemStack itemstack = playerIn.openContainer.slotClick(slotId, mouseButtonClicked, mode, playerIn);
         this.netClientHandler.addToSendQueue(new C0EPacketClickWindow(windowId, slotId, mouseButtonClicked, mode, itemstack, short1));

@@ -1,7 +1,5 @@
 package smtc;
 
-import fuguriprivatecoding.autotoolrecode.utils.music.TrackInfo;
-
 public final class SmtcNative {
 
     public static void init() {

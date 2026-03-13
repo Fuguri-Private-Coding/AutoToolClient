@@ -27,6 +27,7 @@ public class Modules {
 			new AutoSoup(),
 			new KillAura(),
             new AspectRatio(),
+			new InventoryManager(),
             new BWHelper(),
 			new DynamicIsland(),
             new AutoRegister(),

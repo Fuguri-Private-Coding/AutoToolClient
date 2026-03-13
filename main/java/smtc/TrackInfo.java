@@ -1,6 +1,6 @@
-package fuguriprivatecoding.autotoolrecode.utils.music;
+package smtc;
 
-public record TrackInfo(long version, String title, String artist, Status playbackStatus, boolean available,
+public record TrackInfo(long version, String title, String artist, int playbackStatus, boolean available,
                         byte[] artworkBytes, long durationMs, long positionMs, long lastUpdatedEpochMs,
                         boolean seekSupported) {
     enum Status {
@@ -8,13 +8,13 @@ public record TrackInfo(long version, String title, String artist, Status playba
     }
 
     public static final TrackInfo EMPTY =
-            new TrackInfo(0L, "", "", Status.CLOSED, false, null, 0L, 0L, 0L, false);
+            new TrackInfo(0L, "", "", Status.CLOSED.ordinal(), false, null, 0L, 0L, 0L, false);
 
     public boolean isPlaying() {
-        return playbackStatus == Status.PLAYING;
+        return playbackStatus == Status.PLAYING.ordinal();
     }
 
     public boolean isPaused() {
-        return playbackStatus == Status.PAUSED;
+        return playbackStatus == Status.PAUSED.ordinal();
     }
 }
