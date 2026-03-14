@@ -1,6 +1,6 @@
 package fuguriprivatecoding.autotoolrecode;
 
-import fuguriprivatecoding.autotoolrecode.alts.AltScreen;
+import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
@@ -23,7 +23,6 @@ import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.config.Configs;
 import fuguriprivatecoding.autotoolrecode.bind.KeyBinds;
-import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.alts.Accounts;
 
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
@@ -100,7 +99,6 @@ public enum Client implements Imports, EventListener {
         Display.setTitle(getFullName());
 
         VersionCheck.validateClientVersion(ClientIRC.getClientVersionChannel());
-
         Runtime.getRuntime().addShutdownHook(new Thread(this::onClose));
 
         ClientIRC.connectClient();
@@ -129,7 +127,6 @@ public enum Client implements Imports, EventListener {
 
 		ViaMCP.create();
 
-        ClickGuiScreenNew.init();
         ConsoleScreen.init();
 		ConfigScreen.init();
         ClickScreen.init();
@@ -150,7 +147,6 @@ public enum Client implements Imports, EventListener {
 
 	public void onClose() {
 		Configs.saveConfig(Configs.getDefaultConfig());
-//        Accounts.save();
 		KeyBinds.saveBinds();
         ClientIRC.disconnectClientServer();
         scheduler.shutdown();
@@ -167,9 +163,9 @@ public enum Client implements Imports, EventListener {
 	public void onEvent(Event event) {
 		if (event instanceof ServerJoinEvent && Modules.getModule(IRC.class).isToggled()) ClientIRC.connectServer();
 		if (event instanceof KeyEvent keyEvent) {
-            for (Module module : Modules.getModules()) {
+            Modules.getModules().forEach(module -> {
                 if (module.getKey() == keyEvent.getKey()) module.toggle();
-            }
+            });
         }
 
         if (event instanceof RenderScreenEvent && !Modules.getModule(DynamicIsland.class).isToggled()) {

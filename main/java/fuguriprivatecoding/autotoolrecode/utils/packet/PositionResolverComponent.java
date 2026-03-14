@@ -14,6 +14,7 @@ import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S0CPacketSpawnPlayer;
 import net.minecraft.network.play.server.S14PacketEntity;
 import net.minecraft.network.play.server.S18PacketEntityTeleport;
 
@@ -49,6 +50,19 @@ public class PositionResolverComponent implements Imports, EventListener {
                 entityLivingBase.ny = s18.getY() / 32.0;
                 entityLivingBase.nz = s18.getZ() / 32.0;
                 entityLivingBase.posRotIncrements = 3;
+            }
+
+            if (packet instanceof S0CPacketSpawnPlayer s0c && mc.theWorld.getEntityByID(s0c.getEntityID()) instanceof EntityLivingBase entityLivingBase) {
+                entityLivingBase.nx = s0c.getX() / 32.0;
+                entityLivingBase.ny = s0c.getY() / 32.0;
+                entityLivingBase.nz = s0c.getZ() / 32.0;
+                entityLivingBase.lrx = s0c.getX() / 32.0;
+                entityLivingBase.lry = s0c.getY() / 32.0;
+                entityLivingBase.lrz = s0c.getZ() / 32.0;
+                entityLivingBase.rx = s0c.getX() / 32.0;
+                entityLivingBase.ry = s0c.getY() / 32.0;
+                entityLivingBase.rz = s0c.getZ() / 32.0;
+                entityLivingBase.posRotIncrements = 1;
             }
         }
 

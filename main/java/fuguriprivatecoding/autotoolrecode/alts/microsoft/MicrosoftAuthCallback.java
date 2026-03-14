@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.alts.microsoft;
 
 import com.sun.net.httpserver.HttpServer;
 import fuguriprivatecoding.autotoolrecode.alts.Account;
-import fuguriprivatecoding.autotoolrecode.alts.AltScreen;
+import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
 import java.io.Closeable;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -69,14 +69,14 @@ public class MicrosoftAuthCallback implements Closeable {
         if (query.equals("error=access_denied&error_description=The user has denied access to the scope requested by the client application.")) return null;
         if (!query.startsWith("code=")) throw new IllegalStateException("query=" + query);
         progressHandler.accept("Authentication... (%s)", new Object[]{"CodeToToken"});
-        Map.Entry<String, String> authRefreshTokens = fuguriprivatecoding.autotoolrecode.alt.microsoft.Auth.codeToToken(query.replace("code=", ""));
+        Map.Entry<String, String> authRefreshTokens = Auth.codeToToken(query.replace("code=", ""));
         String refreshToken = authRefreshTokens.getValue();
         progressHandler.accept("Authentication... (%s)", new Object[]{"AuthXBL"});
-        String xblToken = fuguriprivatecoding.autotoolrecode.alt.microsoft.Auth.authXBL(authRefreshTokens.getKey());
+        String xblToken = Auth.authXBL(authRefreshTokens.getKey());
         progressHandler.accept("Authentication... (%s)", new Object[]{"AuthXSTS"});
-        Map.Entry<String, String> xstsTokenUserhash = fuguriprivatecoding.autotoolrecode.alt.microsoft.Auth.authXSTS(xblToken);
+        Map.Entry<String, String> xstsTokenUserhash = Auth.authXSTS(xblToken);
         progressHandler.accept("Authentication... (%s)", new Object[]{"AuthMinecraft"});
-        String accessToken = fuguriprivatecoding.autotoolrecode.alt.microsoft.Auth.authMinecraft(xstsTokenUserhash.getValue(), xstsTokenUserhash.getKey());
+        String accessToken = Auth.authMinecraft(xstsTokenUserhash.getValue(), xstsTokenUserhash.getKey());
         progressHandler.accept("Authentication... (%s)", new Object[]{"GetProfile"});
         Map.Entry<UUID, String> profile = Auth.getProfile(accessToken);
         return new Account(profile.getValue(), refreshToken, profile.getKey().toString());

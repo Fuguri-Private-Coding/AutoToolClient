@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.alts;
 
 import com.google.gson.*;
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import lombok.experimental.UtilityClass;
 

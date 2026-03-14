@@ -170,6 +170,20 @@ public class DynamicIsland extends Module {
                         if (isHoveredPrev) mediaController.prev();
                         if (isHoveredPlay) mediaController.playPause();
                         if (isHoveredNext) mediaController.next();
+//
+//                        float maxDurationWidth = 105;
+//
+//                        boolean isHoveredTimeRect = GuiUtils.isMouseHovered(rectX, rectY + 30, maxDurationWidth, 5);
+//
+//                        if (isHoveredTimeRect) {
+//                            Vector2i mousePos = GuiUtils.getMousePosition();
+//                            mousePos = mousePos.sub((int) rectX, (int) (rectY + 30));
+//
+//                            float normalizedMousePos = mousePos.x / maxDurationWidth;
+//                            long seekPosMs = (long) (normalizedMousePos * info.durationMs());
+//
+//                            mediaController.seek(seekPosMs);
+//                        }
                     }
 
                     pressed = Mouse.isButtonDown(0);

@@ -1,6 +1,9 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -10,14 +13,29 @@ import net.minecraft.util.MathHelper;
 public class S0EPacketSpawnObject implements Packet<INetHandlerPlayClient>
 {
     private int entityId;
+    @Setter
+    @Getter
     private int x;
+    @Setter
+    @Getter
     private int y;
+    @Setter
+    @Getter
     private int z;
+    @Setter
+    @Getter
     private int speedX;
+    @Setter
+    @Getter
     private int speedY;
+    @Setter
+    @Getter
     private int speedZ;
+    @Getter
     private int pitch;
+    @Getter
     private int yaw;
+    @Getter
     private int type;
     private int field_149020_k;
 
@@ -132,84 +150,9 @@ public class S0EPacketSpawnObject implements Packet<INetHandlerPlayClient>
         return this.entityId;
     }
 
-    public int getX()
-    {
-        return this.x;
-    }
-
-    public int getY()
-    {
-        return this.y;
-    }
-
-    public int getZ()
-    {
-        return this.z;
-    }
-
-    public int getSpeedX()
-    {
-        return this.speedX;
-    }
-
-    public int getSpeedY()
-    {
-        return this.speedY;
-    }
-
-    public int getSpeedZ()
-    {
-        return this.speedZ;
-    }
-
-    public int getPitch()
-    {
-        return this.pitch;
-    }
-
-    public int getYaw()
-    {
-        return this.yaw;
-    }
-
-    public int getType()
-    {
-        return this.type;
-    }
-
     public int func_149009_m()
     {
         return this.field_149020_k;
-    }
-
-    public void setX(int newX)
-    {
-        this.x = newX;
-    }
-
-    public void setY(int newY)
-    {
-        this.y = newY;
-    }
-
-    public void setZ(int newZ)
-    {
-        this.z = newZ;
-    }
-
-    public void setSpeedX(int newSpeedX)
-    {
-        this.speedX = newSpeedX;
-    }
-
-    public void setSpeedY(int newSpeedY)
-    {
-        this.speedY = newSpeedY;
-    }
-
-    public void setSpeedZ(int newSpeedZ)
-    {
-        this.speedZ = newSpeedZ;
     }
 
     public void func_149002_g(int p_149002_1_)

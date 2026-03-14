@@ -10,7 +10,9 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
@@ -39,7 +41,13 @@ public class ESP extends Module {
                 for (EntityPlayer player : mc.theWorld.playerEntities) {
                     if (shouldContinueRender(player)) continue;
 
-                    Vec3 pos = player.getRealPosition();
+                    Vec3 pos;
+
+                    if (player == mc.thePlayer) {
+                        pos = RenderUtils.getAbsoluteSmoothPos(player.getLastPositionVector(), player.getPositionVector()).subtract(RenderManager.getRenderPosition());
+                    } else {
+                        pos = player.getRealPosition();
+                    }
 
                     AxisAlignedBB bb = player.getEntityBoundingBox().offset(pos.xCoord - player.posX, pos.yCoord - player.posY, pos.zCoord - player.posZ);
                     RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());

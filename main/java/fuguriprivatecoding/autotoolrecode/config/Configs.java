@@ -17,16 +17,16 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.*;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @UtilityClass
 public class Configs implements Imports {
 
     @Getter final File CONFIG_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/configs");
-    @Getter private List<Config> configs = new ArrayList<>();
+    @Getter private final List<Config> configs = new CopyOnWriteArrayList<>();
     @Getter Config defaultConfig = new Config("default");
 
     public void init() {

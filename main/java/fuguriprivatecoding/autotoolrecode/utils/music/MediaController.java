@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.utils.music;
 
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 import smtc.SmtcNative;
 import smtc.TrackInfo;

@@ -1,6 +1,8 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+
+import lombok.Getter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.network.Packet;
@@ -8,6 +10,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.util.MathHelper;
 
+@Getter
 public class S2CPacketSpawnGlobalEntity implements Packet<INetHandlerPlayClient>
 {
     private int entityId;
@@ -56,28 +59,4 @@ public class S2CPacketSpawnGlobalEntity implements Packet<INetHandlerPlayClient>
         handler.handleSpawnGlobalEntity(this);
     }
 
-    public int func_149052_c()
-    {
-        return this.entityId;
-    }
-
-    public int func_149051_d()
-    {
-        return this.x;
-    }
-
-    public int func_149050_e()
-    {
-        return this.y;
-    }
-
-    public int func_149049_f()
-    {
-        return this.z;
-    }
-
-    public int func_149053_g()
-    {
-        return this.type;
-    }
 }
