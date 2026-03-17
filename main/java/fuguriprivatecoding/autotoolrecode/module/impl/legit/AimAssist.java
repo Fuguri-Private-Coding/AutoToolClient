@@ -39,6 +39,8 @@ public class AimAssist extends Module {
         .addModes("MoveForward", "Sprinting", "MouseHolding")
         ;
 
+    private Vec3 currentVec;
+
     @Override
     public void onDisable() {
         TargetStorage.setTarget(null);
@@ -62,7 +64,7 @@ public class AimAssist extends Module {
 
             AxisAlignedBB box = RotUtils.getHitBox(target, hBoxSize.getValue(), vBoxSize.getValue());
 
-            Rot needRot = getRotation(target, box, lr);
+            Rot needRot = getRotation(target, box);
 
             Rot speed = new Rot(
                 yawSpeed.getRandomizedIntValue(),
@@ -83,10 +85,11 @@ public class AimAssist extends Module {
         }
     }
 
-    private Rot getRotation(EntityLivingBase target, AxisAlignedBB box, Rot lr) {
+    private Rot getRotation(EntityLivingBase target, AxisAlignedBB box) {
+        if (currentVec == null) currentVec = RotUtils.getBestHitVec(target);
         return switch (hitVec.getMode()) {
             case "Best" -> RotUtils.getBestRotation(box);
-            case "Nearest" -> RotUtils.getNearestRotations(lr, box);
+            case "Nearest" -> RotUtils.getRotationToPoint(currentVec = box.clampVecToInside(currentVec));
             case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
             case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
             default -> null;

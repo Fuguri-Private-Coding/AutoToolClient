@@ -710,6 +710,8 @@ public class ClickScreen extends GuiScreen implements EventListener {
                         float rectCenterX = rectX + rectWidth / 2;
                         float rectCenterY = rectY + rectHeight / 2;
 
+						String text = "Offsets: " + rotOffset.offsets.size();
+
                         RoundedUtils.drawRect(
                             rectX,
                             rectY,
@@ -743,13 +745,13 @@ public class ClickScreen extends GuiScreen implements EventListener {
                             5,
                             Color.GREEN
                         );
-
-                        fontRenderer.drawCenteredString(
-                            "Start recording",
-                            rectX + 45 / 2,
-                            rectY + 3,
-                            Color.WHITE
-                        );
+//
+//                        fontRenderer.drawCenteredString(
+//                            "Start recording",
+//                            rectX + 45 / 2,
+//                            rectY + 3,
+//                            Color.WHITE
+//                        );
 
                         RoundedUtils.drawRect(
                             rectX + 55,
@@ -759,14 +761,15 @@ public class ClickScreen extends GuiScreen implements EventListener {
                             5,
                             Color.RED
                         );
+//
+//                        fontRenderer.drawCenteredString(
+//                            "Stop recording",
+//                            rectX + 55,
+//                            rectY + 3,
+//                            Color.WHITE
+//                        );
 
-                        fontRenderer.drawCenteredString(
-                            "Stop recording",
-                            rectX + 55,
-                            rectY + 3,
-                            Color.WHITE
-                        );
-
+						fontRenderer.drawString(text, rectX + rectWidth / 2f - fontRenderer.getStringWidth(text) / 2f, rectY + 5, Colors.WHITE);
                         offset += 110;
 						settingsTotalHeight += 110;
                     }

@@ -20,9 +20,10 @@ import fuguriprivatecoding.autotoolrecode.utils.packet.VecWithTime;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
@@ -149,7 +150,7 @@ public class Ping extends Module {
                 handleSmoothDelay(currentTime);
 
                 if (resetIfDistance.isToggled()) {
-                    EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
+                    EntityLivingBase target = TargetFinder.findTarget(6f, true, false, false);
 
                     if (target != null && DistanceUtils.getDistance(target) <= distance.getValue()) {
                         reset(50);
@@ -161,7 +162,7 @@ public class Ping extends Module {
             }
 
             case Render3DEvent _ when !(mc.gameSettings.thirdPersonView == 0 || currentTime - lastResetTime < delayBeforeNextLag || lastPos == null || currentPos == null || renderModes.getMode().equalsIgnoreCase("OFF")) -> {
-                Vec3 pos = RenderUtils.getAbsoluteSmoothPos(lastPos, currentPos).subtract(mc.renderManager.getRenderPosition());
+                Vec3 pos = RenderUtils.getAbsoluteSmoothPos(lastPos, currentPos).subtract(RenderManager.getRenderPosition());
                 switch (renderModes.getMode()) {
                     case "HitBox" -> {
                         RenderUtils.start3D();

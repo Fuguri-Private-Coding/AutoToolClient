@@ -30,7 +30,7 @@ public class Hand extends Module {
         .addModes("1.7", "Swong", "Sigma", "Sigma 2", "Scale", "Exhibition", "Exhibition2", "Basic", "Slide")
         .setMode("1.7");
 
-    FloatSetting scale = new FloatSetting("Scale", this, animationsSupplier, -1, 1f, 0.1f, 0.01f);
+    FloatSetting blockScale = new FloatSetting("BlockScale", this, animationsSupplier, -1, 1f, 0.1f, 0.01f);
     public FloatSetting speed = new FloatSetting("Speed", this, animationsSupplier, 0.1f, 2f,1f,0.01f);
     public CheckBox always = new CheckBox("AlwaysBlocking", this, animationsSupplier, true);
 
@@ -53,7 +53,7 @@ public class Hand extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof RenderItemEvent renderItemEvent) {
-            float scale = 1 - this.scale.getValue();
+            float scale = 1 - this.blockScale.getValue();
             float resetScale = 1f / scale;
 
             GL11.glScaled(scale, scale, scale);

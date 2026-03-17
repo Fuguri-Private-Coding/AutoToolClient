@@ -12,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.Vec3;
@@ -72,7 +73,7 @@ public class Blink extends Module {
                 return;
             }
 
-            Vec3 pos = positions.getFirst().subtract(mc.renderManager.getRenderPosition());
+            Vec3 pos = positions.getFirst().subtract(RenderManager.getRenderPosition());
 
             switch (renderModes.getMode()) {
                 case "HitBox" -> {

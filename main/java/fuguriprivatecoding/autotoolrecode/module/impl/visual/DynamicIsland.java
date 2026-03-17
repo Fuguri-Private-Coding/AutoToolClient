@@ -11,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notification;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
@@ -22,6 +23,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiChat;
@@ -29,6 +31,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
+import org.joml.Vector2i;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import smtc.TrackInfo;
@@ -74,7 +77,7 @@ public class DynamicIsland extends Module {
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = ScaleUtils.getScaledResolution();
 
-            rectRadius.setEnd(opened ? 10 : 7.5f);
+            rectRadius.setEnd(opened ? 15f : 7.5f);
 
             float rectX = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
             float rectY = 5 + 5;
@@ -115,9 +118,10 @@ public class DynamicIsland extends Module {
                         ColorUtils.glColor(whiteColor.withAlpha(textAlpha.getValue()));
                         RenderUtils.drawImage(songImage, 0, 0, 25, 25, true);
                     }
-
                     regularFont.drawString(title, 30, 5, whiteColor.withAlpha(textAlpha.getValue()));
+                    ScaleUtils.startScaling(30 - regularFont.getStringWidth(artist) / 2f, 15, regularFont.getStringWidth(artist), 9, 0.8f);
                     regularFont.drawString(artist, 30, 15, whiteColor.withAlpha(textAlpha.getValue()));
+                    ScaleUtils.stopScaling();
 
                     String playText = playing ? "||" : "|>";
                     float playTextWidth = font.getStringWidth(playText);
@@ -138,17 +142,17 @@ public class DynamicIsland extends Module {
                     Color playColor = isHoveredPlay ? color.darker() : color;
                     Color prevColor = isHoveredPrev ? color.darker() : color;
 
-                    float maxDurationWidth = 105;
+                    float maxDurationWidth = 95;
 
                     float durationWidth = currentMediaTime / info.durationMs();
                     float currentWidth = maxDurationWidth * durationWidth;
 
-                    RoundedUtils.drawRect(0, 30, maxDurationWidth, 3, 1.5f, Colors.BLACK.withAlpha(textAlpha.getValue() * 0.5f));
-                    RoundedUtils.drawRect(0, 30, currentWidth, 3, 1.5f, whiteColor.withAlpha(textAlpha.getValue()));
+                    RoundedUtils.drawRect(5f, 30, maxDurationWidth, 2f, 1f, Colors.BLACK.withAlpha(textAlpha.getValue() * 0.5f));
+                    RoundedUtils.drawRect(5f, 30, currentWidth, 2f, 1f, whiteColor.withAlpha(textAlpha.getValue()));
 
-                    font.drawString("<", 5, 42, prevColor);
-                    font.drawString(playText, 105 / 2f - playTextWidth / 2f, 42, playColor);
-                    font.drawString(">", 95, 42, nextColor);
+                    font.drawString("<", 5, 40, prevColor);
+                    font.drawString(playText, 105 / 2f - playTextWidth / 2f, 40, playColor);
+                    font.drawString(">", 95, 40, nextColor);
 
                 }, 105, 45);
 
@@ -170,20 +174,6 @@ public class DynamicIsland extends Module {
                         if (isHoveredPrev) mediaController.prev();
                         if (isHoveredPlay) mediaController.playPause();
                         if (isHoveredNext) mediaController.next();
-//
-//                        float maxDurationWidth = 105;
-//
-//                        boolean isHoveredTimeRect = GuiUtils.isMouseHovered(rectX, rectY + 30, maxDurationWidth, 5);
-//
-//                        if (isHoveredTimeRect) {
-//                            Vector2i mousePos = GuiUtils.getMousePosition();
-//                            mousePos = mousePos.sub((int) rectX, (int) (rectY + 30));
-//
-//                            float normalizedMousePos = mousePos.x / maxDurationWidth;
-//                            long seekPosMs = (long) (normalizedMousePos * info.durationMs());
-//
-//                            mediaController.seek(seekPosMs);
-//                        }
                     }
 
                     pressed = Mouse.isButtonDown(0);
@@ -248,10 +238,10 @@ public class DynamicIsland extends Module {
 
             opened = additionalHeight > 0;
 
-            width.update(3, Easing.OUT_BACK);
-            height.update(3, Easing.OUT_BACK);
-            textAlpha.update(8, Easing.OUT_CUBIC);
-            rectRadius.update(3, Easing.OUT_CUBIC);
+            width.update(4, Easing.IN_OUT_CUBIC);
+            height.update(4, Easing.IN_OUT_CUBIC);
+            textAlpha.update(5, Easing.OUT_CUBIC);
+            rectRadius.update(4, Easing.IN_OUT_CUBIC);
 
             float x = sc.getScaledWidth() / 2f - width.getValue() / 2f;
             float y = 5;

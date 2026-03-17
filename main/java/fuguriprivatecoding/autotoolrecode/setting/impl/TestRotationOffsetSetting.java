@@ -14,10 +14,11 @@ import lombok.Getter;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 
 public class TestRotationOffsetSetting extends Setting {
-    public final List<Rot> offsets = new ArrayList<>();
+    public final List<Rot> offsets = new CopyOnWriteArrayList<>();
     private final Color BACKGROUND_COLOR = new Color(0, 0, 0, 120);
 
     public boolean recording;

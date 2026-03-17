@@ -28,6 +28,7 @@ public class Modules {
 			new KillAura(),
             new AspectRatio(),
 			new InventoryManager(),
+			new DeltaRecorder(),
             new BWHelper(),
 			new DynamicIsland(),
             new AutoRegister(),

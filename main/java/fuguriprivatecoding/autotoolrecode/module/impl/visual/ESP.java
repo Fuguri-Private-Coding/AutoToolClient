@@ -5,12 +5,12 @@ import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
@@ -28,7 +28,9 @@ public class ESP extends Module {
         .add("Glow")
         ;
 
-    BooleanSupplier renderBox = () -> (modes.get("HitBox"));
+    BooleanSupplier renderBox = () -> modes.get("HitBox");
+
+    final CheckBox useRealPositions = new CheckBox("UseRealPositions", this, renderBox, false);
 
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f, 5f, 1f, 0.1f);
@@ -41,13 +43,9 @@ public class ESP extends Module {
                 for (EntityPlayer player : mc.theWorld.playerEntities) {
                     if (shouldContinueRender(player)) continue;
 
-                    Vec3 pos;
-
-                    if (player == mc.thePlayer) {
-                        pos = RenderUtils.getAbsoluteSmoothPos(player.getLastPositionVector(), player.getPositionVector()).subtract(RenderManager.getRenderPosition());
-                    } else {
-                        pos = player.getRealPosition();
-                    }
+                    Vec3 pos = player == mc.thePlayer || !useRealPositions.isToggled() ?
+                        RenderUtils.getAbsoluteSmoothPos(player.getLastPositionVector(), player.getPositionVector()).subtract(RenderManager.getRenderPosition()) :
+                        player.getRealPosition();
 
                     AxisAlignedBB bb = player.getEntityBoundingBox().offset(pos.xCoord - player.posX, pos.yCoord - player.posY, pos.zCoord - player.posZ);
                     RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());

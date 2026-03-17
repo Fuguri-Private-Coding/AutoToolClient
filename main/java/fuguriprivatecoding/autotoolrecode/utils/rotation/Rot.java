@@ -6,19 +6,12 @@ import lombok.Setter;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
-import org.lwjgl.util.vector.Vector2f;
+import org.joml.Vector2f;
 
 @Setter
 public class Rot {
 	public static final Rot ZERO = new Rot(0,0);
 	@Getter float yaw, pitch;
-
-	public static Rot fromRotationVec(Vec3 lookVec) {
-		return new Rot(
-			MathHelper.wrapDegree((float) (Math.toDegrees(Math.atan2(lookVec.zCoord, lookVec.xCoord)) - 90)),
-			MathHelper.wrapDegree((float) (-Math.toDegrees(Math.atan2(lookVec.yCoord, Math.sqrt(lookVec.xCoord * lookVec.xCoord + lookVec.zCoord * lookVec.zCoord)))))
-		);
-	}
 
 	public Vec3 getVec3d() {
 		return Entity.getVecForRotation(pitch, yaw);

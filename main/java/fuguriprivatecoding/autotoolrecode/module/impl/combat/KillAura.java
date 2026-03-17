@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -77,7 +78,7 @@ public class KillAura extends Module {
         1, 5, 1.5f, 0.1f
     );
 
-    private TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothMode.get("Recorded"));
+    public final TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothMode.get("Recorded"));
     private final FloatSetting recordedMultiplier = new FloatSetting("RecordedMultiplier", this, () -> smoothMode.get("Recorded"), 0, 10, 1, 0.01f);
 
     private final DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
@@ -95,6 +96,8 @@ public class KillAura extends Module {
     private int recordedIndex;
 
     private Rot lastDelta = new Rot();
+
+    private Vec3 currentVec;
 
     @Override
     public void onDisable() {
@@ -144,13 +147,15 @@ public class KillAura extends Module {
     private Rot getRotation(EntityLivingBase target, AxisAlignedBB box) {
         boolean teleport = (TimerRange.isTeleporting()) && snapForTeleport.isToggled();
 
-        AxisAlignedBB fullBox = RotUtils.getHitBox(target, 100, 100).expand(0.1, 0.1, 0.1);
+        AxisAlignedBB fullBox = RotUtils.getHitBox(target, 100, 100).expand(0.1);
+
+        if (currentVec == null) currentVec = RotUtils.getBestHitVec(box);
 
         Vec3 needPoint = switch (hitVec.getMode()) {
             case "Best" -> RotUtils.getBestHitVec(box);
-            case "Nearest" -> RotUtils.getNearestPoint(RotUtils.getVectorForRotation(mc.thePlayer.getRotation()), box);
-            case "Head" -> target.getPositionEyes(1f);
-            case "Body" -> new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ);
+            case "Nearest" -> currentVec = box.clampVecToInside(currentVec);
+            case "Head" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight(), 0);
+            case "Body" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight() / 2f, 0);
             default -> null;
         };
 
@@ -160,7 +165,9 @@ public class KillAura extends Module {
 
         if (smoothMode.get("MouseDelta")) {
             Rot mouseDelta = RotUtils.getDelta(CameraRot.INST.getPrevRot(), CameraRot.INST);
-            needRot = needRot.add(mouseDelta.multiplier((float) deltaMultiplier.getRandomizedDoubleValue()));
+            mouseDelta = mouseDelta.multiplier((float) deltaMultiplier.getRandomizedDoubleValue());
+
+            needRot = needRot.add(mouseDelta);
         }
 
         if (smoothMode.get("Recorded")) {

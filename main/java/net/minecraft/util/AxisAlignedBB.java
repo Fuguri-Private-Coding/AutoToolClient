@@ -88,6 +88,11 @@ public class AxisAlignedBB
         return new AxisAlignedBB(d0, d1, d2, d3, d4, d5);
     }
 
+    public AxisAlignedBB expand(double factor)
+    {
+        return expand(factor, factor, factor);
+    }
+
     public AxisAlignedBB union(AxisAlignedBB other)
     {
         double d0 = Math.min(this.minX, other.minX);

@@ -62,7 +62,7 @@ public enum Easing {
         double c4 = (2 * PI) / 3;
         return -pow(2, 10 * x - 10) * sin((x * 10 - 10.75) * c4);
     }),
-    OUT_ELASTIC(x -> {
+    OUT_CUBICOUT_ELASTIC(x -> {
         if (x == 0) return 0D;
         if (x == 1) return 1D;
         double c4 = (2 * PI) / 3;
