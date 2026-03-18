@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notification;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
@@ -19,19 +18,19 @@ import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
-import org.joml.Vector2i;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import smtc.TrackInfo;
@@ -71,8 +70,8 @@ public class DynamicIsland extends Module {
 
     @Override
     public void onEvent(Event event) {
-        ClientFont font = Fonts.fonts.get("SFPro");
-        ClientFont regularFont = Fonts.fonts.get("SFProRegular");
+        MsdfFont font = Fonts.get("Bold");
+        MsdfFont regularFont = Fonts.get("Regular");
 
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = ScaleUtils.getScaledResolution();
@@ -116,15 +115,20 @@ public class DynamicIsland extends Module {
 
                     if (songImage != null) {
                         ColorUtils.glColor(whiteColor.withAlpha(textAlpha.getValue()));
+                        StencilUtils.initStencil();
+                        GL11.glEnable(2960);
+                        StencilUtils.bindWriteStencilBuffer();
+                        RectUtils.drawRect(0, 0, 25, 25, 10f, Color.WHITE);
+                        StencilUtils.writeTexture();
+
                         RenderUtils.drawImage(songImage, 0, 0, 25, 25, true);
+                        StencilUtils.endWriteTexture();
                     }
-                    regularFont.drawString(title, 30, 5, whiteColor.withAlpha(textAlpha.getValue()));
-                    ScaleUtils.startScaling(30 - regularFont.getStringWidth(artist) / 2f, 15, regularFont.getStringWidth(artist), 9, 0.8f);
-                    regularFont.drawString(artist, 30, 15, whiteColor.withAlpha(textAlpha.getValue()));
-                    ScaleUtils.stopScaling();
+                    regularFont.draw(title, 30, 6, 8, whiteColor.withAlpha(textAlpha.getValue()));
+                    regularFont.draw(artist, 30, 6 + regularFont.height(title, 8) + 3, 6, Colors.WHITE.withAlpha(textAlpha.getValue()));
 
                     String playText = playing ? "||" : "|>";
-                    float playTextWidth = font.getStringWidth(playText);
+                    float playTextWidth = font.width(playText, 8);
 
                     float buttonsY = rectY + 40;
 
@@ -150,9 +154,9 @@ public class DynamicIsland extends Module {
                     RoundedUtils.drawRect(5f, 30, maxDurationWidth, 2f, 1f, Colors.BLACK.withAlpha(textAlpha.getValue() * 0.5f));
                     RoundedUtils.drawRect(5f, 30, currentWidth, 2f, 1f, whiteColor.withAlpha(textAlpha.getValue()));
 
-                    font.drawString("<", 5, 40, prevColor);
-                    font.drawString(playText, 105 / 2f - playTextWidth / 2f, 40, playColor);
-                    font.drawString(">", 95, 40, nextColor);
+                    regularFont.draw("<", 5, 42.5f, 12, prevColor);
+                    font.draw(playText, 105 / 2f - playTextWidth / 2f, 40, 8, playColor);
+                    regularFont.draw(">", 95, 42.5f, 12, nextColor);
 
                 }, 105, 45);
 
@@ -160,7 +164,7 @@ public class DynamicIsland extends Module {
                     if (Mouse.isButtonDown(0) && !pressed) {
                         String playText = info.isPlaying() ? "||" : "|>";
 
-                        float playTextWidth = font.getStringWidth(playText);
+                        float playTextWidth = font.width(playText, 8);
                         float buttonsY = rectY + 40;
 
                         float prevX = rectX + 5;
@@ -185,13 +189,13 @@ public class DynamicIsland extends Module {
 
                     int remainingSec = 30 - sec;
 
-                    String text = "Нет интернет подключения, клиент закроется через §9" + remainingSec + "§f s.";
-                    String staticText = "Нет интернет подключения, клиент закроется через §9" + 30 + "§f s.";
+                    String text = "Нет интернет подключения, клиент закроется через " + remainingSec + " s.";
+                    String staticText = "Нет интернет подключения, клиент закроется через " + 30 + " s.";
 
-                    float connectionWidth = regularFont.getStringWidth(staticText);
+                    float connectionWidth = regularFont.width(staticText, 8);
 
                     updateRun(() -> {
-                        regularFont.drawString(text, 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
+                        regularFont.draw(text, 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
                     }, connectionWidth, 0);
                 } else {
                     Notifications notifications = Modules.getModule(Notifications.class);
@@ -199,13 +203,13 @@ public class DynamicIsland extends Module {
                     if (notifications.isToggled() && !Notifications.notifications.isEmpty()) {
                         Notification notification = Notifications.notifications.getLast();
 
-                        String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
-                        String notificationText = " §fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
+                        String toggleText = notification.isToggled() ? "включен" : "выключен";
+                        String notificationText = " Модуль " + notification.getText() + " был " + toggleText + ".";
 
-                        float notificationTextWidth = regularFont.getStringWidth(notificationText);
+                        float notificationTextWidth = regularFont.width(notificationText, 8);
 
                         updateRun(() -> {
-                            regularFont.drawString(notificationText, 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
+                            regularFont.draw(notificationText, 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
                         }, notificationTextWidth, 0);
                     } else {
                         boolean needDesc = false;
@@ -218,16 +222,16 @@ public class DynamicIsland extends Module {
 
                                     needDesc = true;
                                     updateRun(() -> {
-                                        regularFont.drawString(descText, 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
-                                    }, regularFont.getStringWidth(descText), 0);
+                                        regularFont.draw(descText, 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
+                                    }, regularFont.width(descText, 8), 0);
                                 }
                             }
                         }
 
                         if (!needDesc) {
                             updateRun(() -> {
-                                regularFont.drawString(Client.INST.getFullName(), 0, 0, whiteColor.withAlpha(textAlpha.getValue()));
-                            }, regularFont.getStringWidth(Client.INST.getFullName()), 0);
+                                regularFont.draw(Client.INST.getFullName(), 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
+                            }, regularFont.width(Client.INST.getFullName(), 8), 0);
                         }
                     }
                 }
@@ -252,7 +256,7 @@ public class DynamicIsland extends Module {
 
             String currentTimeText = FORMAT.format(date);
 
-            float timeWidth = font.getStringWidth(currentTimeText);
+            float timeWidth = font.width(currentTimeText, 8);
 
             float timeX = x - timeWidth - 3;
             float timeY = y + 5;
@@ -273,13 +277,13 @@ public class DynamicIsland extends Module {
                 RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.LIGHT_GRAY.withAlpha(0.05f));
             }
 
-            StencilUtils.setUpTexture(x, y, width, height, rectRadius.getValue());
-            StencilUtils.writeTexture();
+            ScissorUtils.enableScissor();
+            ScissorUtils.scissor(sc, x + 2, y + 2, width - 4, height - 4);
 
             float translateX = x + 5;
             float translateY = y + 5;
 
-            float scaleFactor = 0.9f + textAlpha.getValue() * 0.1f;
+            float scaleFactor = 0.95f + textAlpha.getValue() * 0.05f;
 
             GL11.glPushMatrix();
 
@@ -290,9 +294,9 @@ public class DynamicIsland extends Module {
 
             GL11.glPopMatrix();
 
-            StencilUtils.endWriteTexture();
+            ScissorUtils.disableScissor();
 
-            font.drawString(currentTimeText, timeX, timeY, Color.WHITE);
+            font.draw(currentTimeText, timeX, timeY, 8, Color.WHITE);
 
             float internetX = x + width + 5;
             float internetY = y + 5;

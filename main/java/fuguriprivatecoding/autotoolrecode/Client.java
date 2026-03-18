@@ -112,6 +112,7 @@ public enum Client implements Imports, EventListener {
         Shaders.init();
         Sounds.init();
         Fonts.init();
+        fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts.init();
 
         Modules.init();
 

@@ -64,12 +64,12 @@ public class Module implements Imports, SettingAble, EventListener {
 
     void addNotification() {
         Notifications notifications = Modules.getModule(Notifications.class);
-        if (!Client.INST.isStarting() && notifications != null && notifications.isToggled() && !name.equalsIgnoreCase("ClickGui")) Notifications.addNotification("§9" + getName(), toggled);
+        if (!Client.INST.isStarting() && notifications != null && notifications.isToggled() && !name.equalsIgnoreCase("ClickGui")) Notifications.addNotification(getName(), toggled);
     }
 
 	void playSound(float volume) {
 		if (Client.INST.isStarting() || name.equalsIgnoreCase("ClickGui")) return;
-        (toggled ? Sounds.getEnableSound() : Sounds.getDisableSound()).asyncPlay(volume);
+        (toggled ? Sounds.getEnableVlSound() : Sounds.getDisableVlSound()).asyncPlay(volume);
 	}
 
 	public void onEnable() {

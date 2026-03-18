@@ -26,6 +26,7 @@ public class ScissorUtils implements Imports {
     }
 
     public static void scissor(ScaledResolution scaledResolution, double x, double y, double width, double height) {
+        debugScissor = false;
         if (scaledResolution == null || width <= 0 || height <= 0) {
             return;
         }

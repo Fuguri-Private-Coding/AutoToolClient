@@ -39,6 +39,7 @@ public class MsdfFont implements Imports {
     public void draw(String text, float x, float y, float size, float thickness, float spacing, Color color) {
         Shader program = Shaders.msdf;
 
+        y += height(text, size) - 2;
 
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -51,7 +52,7 @@ public class MsdfFont implements Imports {
         program.uniform("Sampler0", 0);
         program.uniform("Range", atlas.getRange());
         program.uniform("Thickness", 0.05f);
-        program.uniform("Smoothness", 0.5f);
+        program.uniform("Smoothness", 0.4f);
         program.uniform("Color", color);
 
         GL11.glBegin(GL11.GL_QUADS);
@@ -84,12 +85,12 @@ public class MsdfFont implements Imports {
         draw(text, x, y, size, thickness, spacing, color);
     }
 
-    public void draw(String text, float x, float y, float thickness, Color color) {
-        draw(text, x, y, size, thickness, 0, color);
+    public void draw(String text, float x, float y, Color color) {
+        draw(text, x, y, size, 0, 0, color);
     }
 
-    public void draw(String text, float x, float y, Color color) {
-        draw(text, x, y, size, 1, 0, color);
+    public void draw(String text, float x, float y, float size, Color color) {
+        draw(text, x, y, size, 0, 0, color);
     }
 
     public float width(String text) {
