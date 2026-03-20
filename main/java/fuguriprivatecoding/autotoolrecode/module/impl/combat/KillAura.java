@@ -37,8 +37,9 @@ import java.util.stream.Collectors;
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, description = "Автоматически целится и бьет противника.")
 public class KillAura extends Module {
 
-    private final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 8, 6, 0.1f);
-    private final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 8, 6f, 0.1f);
+    private final FloatSetting findDistance = new FloatSetting("FindDistance", this, 3, 12, 12, 0.1f);
+    private final FloatSetting rotateDistance = new FloatSetting("RotateDistance", this, 3, 12, 6, 0.1f);
+    private final FloatSetting clickDistance = new FloatSetting("ClickDistance", this, 3, 12, 3.5f, 0.1f);
 
     private final MultiMode targets = new MultiMode("Targets", this)
         .addModes("Players", "Mobs", "Animals", "Villagers");
@@ -129,6 +130,11 @@ public class KillAura extends Module {
 
             if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.LEFT) {
                 e.cancel();
+            }
+
+            if (DistanceUtils.getDistance(target) > rotateDistance.getValue()) {
+                CameraRot.INST.setWillChange(false);
+                return;
             }
 
             if (event instanceof TickEvent) {
