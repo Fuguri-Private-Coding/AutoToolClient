@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.experimental.UtilityClass;
 
+import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,14 +13,18 @@ import java.util.Map;
 @UtilityClass
 public class Fonts {
     private final File FONTS_DIR = new File(Client.INST.CLIENT_DIR, "test-fonts");
-    private final Map<String, MsdfFont> FONTS = new HashMap<>();
+    public final Map<String, MsdfFont> FONTS = new HashMap<>();
 
     public void init() {
         FONTS.clear();
 
+        FONTS.put("Bold", MsdfFont.create("Bold"));
+        FONTS.put("Regular", MsdfFont.create("Regular"));
+        FONTS.put("Roboto", MsdfFont.create("Roboto"));
+
         if (FONTS_DIR.mkdir()) {
-            ClientUtils.chatLog("при загрузке шрифтов папки \"" + FONTS_DIR.getName() + "\" не существовало.");
-            ClientUtils.chatLog("загрузка отменена.");
+            ClientUtils.chatLog("При инициализации шрифтов, папки \"" + FONTS_DIR.getName() + "\" не существовало.");
+            ClientUtils.chatLog("Инициализация отменена.");
             return;
         }
 
@@ -37,6 +42,7 @@ public class Fonts {
     }
 
     public MsdfFont get(String name) {
-        return FONTS.get(name);
+        MsdfFont font = FONTS.get(name);
+        return font != null ? font : FONTS.get("Bold");
     }
 }

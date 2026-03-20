@@ -4,13 +4,13 @@ import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -54,12 +54,13 @@ public class ViaVersionScreen extends GuiScreen {
         alphaAnim.update(3, Easing.IN_OUT_QUAD);
         alphaAnim.setEnd(1f);
 
+        MsdfFont font = Fonts.get("Bold");
+
         AlphaUtils.startWrite();
 
-        ClientFont font = Fonts.fonts.get("SFProRounded");
         String currentVersion = "Current Version: " + ViaLoadingBase.getInstance().getTargetVersion().getName();
 
-        font.drawString(currentVersion, sc.getScaledWidth() / 2f - font.getStringWidth(currentVersion) / 2f, 5 + 2, Color.WHITE, true);
+        font.draw(currentVersion, sc.getScaledWidth() / 2f - font.width(currentVersion, 8) / 2f, 15, 8, Color.WHITE);
 
         RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 200, 30, 400, sc.getScaledHeight() - 65, 7.5f, new Color(0, 0, 0, 0.7f));
 
@@ -71,7 +72,7 @@ public class ViaVersionScreen extends GuiScreen {
         for (ProtocolVersion protocol : ViaLoadingBase.PROTOCOLS.reversed()) {
             Color hoveredColor = ViaLoadingBase.getInstance().getTargetVersion() == protocol ? new Color(0.2f, 0.2f, 0.2f, 0.7f) : new Color(0f, 0f, 0f, 0.7f);
             RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 195, 35 + offset, 390, 20, 10, hoveredColor);
-            font.drawString(protocol.getName(), sc.getScaledWidth() / 2f - font.getStringWidth(protocol.getName()) / 2f, 30f + 11.5f + 2 + offset, ViaLoadingBase.getInstance().getTargetVersion() == protocol ? Color.green : Color.WHITE);
+            font.draw(protocol.getName(), sc.getScaledWidth() / 2f - font.width(protocol.getName(), 8) / 2f, 30f + 11.5f + 2 + offset, 8, ViaLoadingBase.getInstance().getTargetVersion() == protocol ? Color.green : Color.WHITE);
             offset += 25;
             scrollTotalHeight += 25;
         }

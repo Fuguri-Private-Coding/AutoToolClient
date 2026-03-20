@@ -11,12 +11,13 @@ import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
 import fuguriprivatecoding.autotoolrecode.gui.multiplayer.ViaVersionScreen;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.AlphaUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
@@ -285,7 +286,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
         alphaAnim.setEnd(1f);
 
         ScaledResolution sc = new ScaledResolution(mc);
-        ClientFont fontRenderer = Fonts.fonts.get("SFProRounded");
+        MsdfFont font = Fonts.get("Bold");
         AlphaUtils.startWrite();
         RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 155, 30, 310, sc.getScaledHeight() - 87, 10, new Color(0,0,0,0.7f));
         ScissorUtils.enableScissor();
@@ -293,7 +294,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
         this.serverListSelector.drawScreen(mouseX, mouseY, partialTicks, false);
         ScissorUtils.disableScissor();
 
-        fontRenderer.drawCenteredString(I18n.format("multiplayer.title"), this.width / 2f, 15, Color.WHITE);
+        font.drawCenter(I18n.format("multiplayer.title"), this.width / 2f, 15, 8, Color.WHITE);
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         if (this.hoveringText != null) {

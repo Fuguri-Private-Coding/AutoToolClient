@@ -93,6 +93,10 @@ public class MsdfFont implements Imports {
         draw(text, x, y, size, 0, 0, color);
     }
 
+    public void drawCenter(String text, float x, float y, float size, Color color) {
+        draw(text, x - width(text, size) / 2f, y, size, 0, 0, color);
+    }
+
     public float width(String text) {
         return width(text, size);
     }

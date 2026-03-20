@@ -15,13 +15,13 @@ import java.util.*;
 @UtilityClass
 public class PlayerUtils implements Imports {
 
-    private final List<Material> blackListMaterial = Arrays.asList(
+    public final List<Material> blackListMaterial = Arrays.asList(
         Material.lava, Material.water, Material.cactus, Material.air, Material.anvil, Material.cake,
         Material.carpet, Material.dragonEgg, Material.fire, Material.portal, Material.redstoneLight,
         Material.circuits, Material.coral
     );
 
-    private final List<Block> blackListBlock = Arrays.asList(
+    public final List<Block> blackListBlock = Arrays.asList(
         Blocks.chest, Blocks.anvil, Blocks.ender_chest, Blocks.crafting_table,
         Blocks.furnace, Blocks.dragon_egg, Blocks.skull, Blocks.trapped_chest
     );

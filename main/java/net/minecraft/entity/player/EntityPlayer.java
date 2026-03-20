@@ -1828,7 +1828,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
 
         }
 
-        if (this.isSneaking() && (!Modules.getModule(Scaffold.class).isToggled() || !Modules.getModule(Scaffold.class).removeSneakHeight.isToggled()))
+        if (this.isSneaking())
         {
             f -= 0.08F;
         }

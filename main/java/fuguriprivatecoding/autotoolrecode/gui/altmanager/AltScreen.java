@@ -15,10 +15,10 @@ import fuguriprivatecoding.autotoolrecode.utils.gui.Scroll;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -80,7 +80,7 @@ public class AltScreen extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        ClientFont fontRenderer = Fonts.fonts.get("SFPro");
+        MsdfFont fontRenderer = Fonts.get("Bold");
 
         ScaledResolution sc = new ScaledResolution(mc);
 
@@ -109,15 +109,15 @@ public class AltScreen extends GuiScreen {
 
         String currentSession = "Current Session: " + mc.getSession().getUsername();
         String currentType = "Type: " + mc.getSession().getSessionType();
-        fontRenderer.drawString(currentSession, 5,5, Color.WHITE);
-        fontRenderer.drawString(currentType, 5,5 + 10 + 1, Color.WHITE);
+        fontRenderer.draw(currentSession, 5, 5, 8, Color.WHITE);
+        fontRenderer.draw(currentType, 5, 5 + 10 + 1, 8, Color.WHITE);
 
         updateDeleting();
 
         float statusX = rectX + rectWidth / 2f;
         float statusY = 7.5f;
 
-        fontRenderer.drawCenteredString(statusText, statusX, statusY, Color.WHITE);
+        fontRenderer.drawCenter(statusText, statusX, statusY, 8, Color.WHITE);
 
         StencilUtils.setUpTexture(rectX, rectY, rectWidth, rectHeight, 10);
         StencilUtils.writeTexture();
@@ -159,7 +159,7 @@ public class AltScreen extends GuiScreen {
             Color removeColor = hoveredRemove ? Colors.RED.withAlpha(delete.getValue()) : Colors.WHITE.withAlpha(delete.getValue());
 
             RoundedUtils.drawRect(accountX, accountY, accountWidth, accountHeight, 7.5f, accountRectColor);
-            fontRenderer.drawString(account.getName() + " " + account.getType(), accountX + 5, accountY + accountHeight / 2f - 2.5f, textColor);
+            fontRenderer.draw(account.getName() + " " + account.getType(), accountX + 5, accountY + accountHeight / 2f - 2.5f, 8, textColor);
 
             ColorUtils.glColor(removeColor);
             RenderUtils.drawImage(removeLogo, deleteX, deleteY, deleteWidth, deleteHeight, true);

@@ -70,13 +70,13 @@ public class DynamicIsland extends Module {
 
     @Override
     public void onEvent(Event event) {
-        MsdfFont font = Fonts.get("Bold");
+        MsdfFont boldFont = Fonts.get("Bold");
         MsdfFont regularFont = Fonts.get("Regular");
 
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = ScaleUtils.getScaledResolution();
 
-            rectRadius.setEnd(opened ? 15f : 7.5f);
+            rectRadius.setEnd(opened ? 10f : 7.5f);
 
             float rectX = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
             float rectY = 5 + 5;
@@ -118,17 +118,26 @@ public class DynamicIsland extends Module {
                         StencilUtils.initStencil();
                         GL11.glEnable(2960);
                         StencilUtils.bindWriteStencilBuffer();
-                        RectUtils.drawRect(0, 0, 25, 25, 10f, Color.WHITE);
+                        RectUtils.drawRect(0, 0, 30, 30, 7.5f, Color.WHITE);
                         StencilUtils.writeTexture();
+                        RenderUtils.drawImage(songImage, 0, 0, 30, 30, true);
 
-                        RenderUtils.drawImage(songImage, 0, 0, 25, 25, true);
+                        float maxDurationWidth = 30;
+
+                        float durationWidth = currentMediaTime / info.durationMs();
+                        float currentWidth = maxDurationWidth * durationWidth;
+
+                        RoundedUtils.drawRect(0, 28, maxDurationWidth, 2f, 0, Colors.BLACK.withAlpha(textAlpha.getValue() * 0.5f));
+                        RoundedUtils.drawRect(0, 28, currentWidth, 2f, 0, whiteColor.withAlpha(textAlpha.getValue()));
+
                         StencilUtils.endWriteTexture();
                     }
-                    regularFont.draw(title, 30, 6, 8, whiteColor.withAlpha(textAlpha.getValue()));
-                    regularFont.draw(artist, 30, 6 + regularFont.height(title, 8) + 3, 6, Colors.WHITE.withAlpha(textAlpha.getValue()));
+
+                    regularFont.draw(title, 35, 7, 8, whiteColor.withAlpha(textAlpha.getValue()));
+                    regularFont.draw(artist, 35, 7 + regularFont.height(title, 8) + 3, 6, Colors.WHITE.withAlpha(textAlpha.getValue()));
 
                     String playText = playing ? "||" : "|>";
-                    float playTextWidth = font.width(playText, 8);
+                    float playTextWidth = boldFont.width(playText, 8);
 
                     float buttonsY = rectY + 40;
 
@@ -146,25 +155,17 @@ public class DynamicIsland extends Module {
                     Color playColor = isHoveredPlay ? color.darker() : color;
                     Color prevColor = isHoveredPrev ? color.darker() : color;
 
-                    float maxDurationWidth = 95;
+                    regularFont.draw("<", 5, 40f, 12, prevColor);
+                    boldFont.draw(playText, 105 / 2f - playTextWidth / 2f, 37.5f, 8, playColor);
+                    regularFont.draw(">", 95, 40f, 12, nextColor);
 
-                    float durationWidth = currentMediaTime / info.durationMs();
-                    float currentWidth = maxDurationWidth * durationWidth;
-
-                    RoundedUtils.drawRect(5f, 30, maxDurationWidth, 2f, 1f, Colors.BLACK.withAlpha(textAlpha.getValue() * 0.5f));
-                    RoundedUtils.drawRect(5f, 30, currentWidth, 2f, 1f, whiteColor.withAlpha(textAlpha.getValue()));
-
-                    regularFont.draw("<", 5, 42.5f, 12, prevColor);
-                    font.draw(playText, 105 / 2f - playTextWidth / 2f, 40, 8, playColor);
-                    regularFont.draw(">", 95, 42.5f, 12, nextColor);
-
-                }, 105, 45);
+                }, 105, 40);
 
                 if (this.width.getValue() == 10 + this.additionalWidth) {
                     if (Mouse.isButtonDown(0) && !pressed) {
                         String playText = info.isPlaying() ? "||" : "|>";
 
-                        float playTextWidth = font.width(playText, 8);
+                        float playTextWidth = boldFont.width(playText, 8);
                         float buttonsY = rectY + 40;
 
                         float prevX = rectX + 5;
@@ -204,7 +205,7 @@ public class DynamicIsland extends Module {
                         Notification notification = Notifications.notifications.getLast();
 
                         String toggleText = notification.isToggled() ? "включен" : "выключен";
-                        String notificationText = " Модуль " + notification.getText() + " был " + toggleText + ".";
+                        String notificationText = "Модуль " + notification.getText() + " был " + toggleText + ".";
 
                         float notificationTextWidth = regularFont.width(notificationText, 8);
 
@@ -217,7 +218,7 @@ public class DynamicIsland extends Module {
                             List<Module> moduleList = Modules.getModulesByCategory(ClickScreen.selectedCategory);
 
                             for (Module module : moduleList) {
-                                if (module.getDescAnim().getValue() != 0 && !module.getDescription().equalsIgnoreCase("")) {
+                                if (module.isHovered() && !module.getDescription().equalsIgnoreCase("")) {
                                     String descText = module.getDescription();
 
                                     needDesc = true;
@@ -256,7 +257,7 @@ public class DynamicIsland extends Module {
 
             String currentTimeText = FORMAT.format(date);
 
-            float timeWidth = font.width(currentTimeText, 8);
+            float timeWidth = boldFont.width(currentTimeText, 8);
 
             float timeX = x - timeWidth - 3;
             float timeY = y + 5;
@@ -296,7 +297,7 @@ public class DynamicIsland extends Module {
 
             ScissorUtils.disableScissor();
 
-            font.draw(currentTimeText, timeX, timeY, 8, Color.WHITE);
+            boldFont.draw(currentTimeText, timeX, timeY, 8, Color.WHITE);
 
             float internetX = x + width + 5;
             float internetY = y + 5;

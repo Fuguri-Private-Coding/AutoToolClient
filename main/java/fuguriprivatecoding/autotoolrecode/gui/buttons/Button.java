@@ -5,9 +5,9 @@ import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 
@@ -38,7 +38,7 @@ public class Button extends GuiButton {
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
         boolean hovered = GuiUtils.isHovered(mouseX, mouseY, x, y, width, height);
 
-        ClientFont fontRenderer = Fonts.fonts.get("SFProRounded");
+        MsdfFont fontRenderer = Fonts.get("Bold");
 
         hoverAnim.update(2, Easing.OUT_BACK);
         hoverAnim.setEnd(hovered ? 1 : 0);
@@ -55,6 +55,6 @@ public class Button extends GuiButton {
         float textX = x + width / 2f;
         float textY = y + 2 + (height - 8) / 2f;
 
-        fontRenderer.drawCenteredString(name, textX, textY, Colors.WHITE);
+        fontRenderer.drawCenter(name, textX, textY, 8, Colors.WHITE);
     }
 }
