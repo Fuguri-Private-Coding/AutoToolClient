@@ -23,7 +23,7 @@ import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.config.Configs;
 import fuguriprivatecoding.autotoolrecode.bind.KeyBinds;
-import fuguriprivatecoding.autotoolrecode.alts.Accounts;
+import fuguriprivatecoding.autotoolrecode.alt.Accounts;
 
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
 import fuguriprivatecoding.autotoolrecode.utils.client.sound.*;

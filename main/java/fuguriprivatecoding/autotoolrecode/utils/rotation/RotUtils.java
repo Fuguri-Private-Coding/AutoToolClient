@@ -7,6 +7,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
 import static java.lang.Math.*;
 
 public class RotUtils implements Imports {
@@ -65,6 +69,29 @@ public class RotUtils implements Imports {
 			(float) (Math.toDegrees(Math.atan2(diff.zCoord, diff.xCoord)) - 90),
 			(float) -Math.toDegrees(Math.atan2(diff.yCoord, distance))
 		);
+	}
+
+	public static Rot getNearestRotation(Rot current, AxisAlignedBB bb) {
+		Vec3[] points = {
+			new Vec3(bb.minX, bb.minY, bb.minZ),
+			new Vec3(bb.maxX, bb.minY, bb.minZ),
+			new Vec3(bb.maxX, bb.minY, bb.maxZ),
+			new Vec3(bb.minX, bb.minY, bb.maxZ),
+			new Vec3(bb.maxX, bb.maxY, bb.minZ),
+			new Vec3(bb.maxX, bb.maxY, bb.maxZ),
+			new Vec3(bb.minX, bb.maxY, bb.maxZ),
+			new Vec3(bb.maxX, bb.maxY, bb.maxZ)
+		};
+
+		List<Rot> rotations = Arrays.stream(points).map(RotUtils::getRotationToPoint).toList();
+
+		double minYaw = rotations.stream().mapToDouble(Rot::getYaw).min().orElse(0D);
+		double maxYaw = rotations.stream().mapToDouble(Rot::getYaw).max().orElse(0D);
+		double minPitch = rotations.stream().mapToDouble(Rot::getPitch).min().orElse(0D);
+		double maxPitch = rotations.stream().mapToDouble(Rot::getPitch).max().orElse(0D);
+
+		return new Rot(Math.clamp(MathHelper.wrapDegree(current.getYaw()), (float) minYaw, (float) maxYaw),
+			Math.clamp(current.getPitch(), (float) minPitch, (float) maxPitch));
 	}
 
 	public static AxisAlignedBB getEntityExpandedBB(Entity entity) {

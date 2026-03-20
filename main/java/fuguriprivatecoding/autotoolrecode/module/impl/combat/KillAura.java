@@ -98,8 +98,6 @@ public class KillAura extends Module {
 
     private Rot lastDelta = new Rot();
 
-    private Vec3 currentVec;
-
     @Override
     public void onDisable() {
         if (!Modules.getModule(Scaffold.class).isToggled()) CameraRot.INST.setWillChange(false);
@@ -155,19 +153,16 @@ public class KillAura extends Module {
 
         AxisAlignedBB fullBox = RotUtils.getHitBox(target, 100, 100).expand(0.1);
 
-        if (currentVec == null) currentVec = RotUtils.getBestHitVec(box);
-
         Vec3 needPoint = switch (hitVec.getMode()) {
             case "Best" -> RotUtils.getBestHitVec(box);
-            case "Nearest" -> currentVec = box.clampVecToInside(currentVec);
             case "Head" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight(), 0);
             case "Body" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight() / 2f, 0);
-            default -> null;
+            default -> Vec3.ZERO;
         };
 
-        if (needPoint == null) return null;
-
         Rot needRot = RotUtils.getRotationToPoint(needPoint);
+
+        if (hitVec.is("Nearest")) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), box);
 
         if (smoothMode.get("MouseDelta")) {
             Rot mouseDelta = RotUtils.getDelta(CameraRot.INST.getPrevRot(), CameraRot.INST);

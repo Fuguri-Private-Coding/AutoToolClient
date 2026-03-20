@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.alts.microsoft;
+package fuguriprivatecoding.autotoolrecode.alt.microsoft;
 
 import com.google.gson.*;
 import org.apache.logging.log4j.LogManager;

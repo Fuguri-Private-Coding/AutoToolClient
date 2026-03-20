@@ -1,20 +1,16 @@
 package fuguriprivatecoding.autotoolrecode.utils.music;
 
-import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.DynamicIsland;
 import lombok.Getter;
 import smtc.SmtcNative;
 import smtc.TrackInfo;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.Closeable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public final class MediaController implements Closeable {
+public final class MediaController {
     @Getter private final ScheduledExecutorService executor;
     @Getter private volatile TrackInfo current = TrackInfo.EMPTY;
     @Getter private volatile BufferedImage artworkImage;
@@ -26,31 +22,27 @@ public final class MediaController implements Closeable {
     }
 
     public void start() {
-        if (!SmtcNative.nInit()) {
-            return;
-        }
-
+        if (!SmtcNative.nInit()) return;
         executor.scheduleWithFixedDelay(this::tick, 0L, 200L, TimeUnit.MILLISECONDS);
     }
 
     private void tick() {
-        if (!Modules.getModule(DynamicIsland.class).isToggled()) return;
         try {
             TrackInfo changed = SmtcNative.nFetchIfChanged(lastVersion);
-            if (changed == null || !changed.available()) {
-                return;
+            if (changed == null) return;
+
+            if (changed.available()) {
+                lastVersion = changed.version();
+                current = changed;
+
+                if (changed.artworkBytes() != null && changed.artworkBytes().length > 0) {
+                    artworkImage = ImageIO.read(new ByteArrayInputStream(changed.artworkBytes()));
+                } else {
+                    artworkImage = null;
+                }
+
+                artworkVersion = changed.version();
             }
-
-            lastVersion = changed.version();
-            current = changed;
-
-            if (changed.artworkBytes() != null && changed.artworkBytes().length > 0) {
-                artworkImage = ImageIO.read(new ByteArrayInputStream(changed.artworkBytes()));
-            } else {
-                artworkImage = null;
-            }
-
-            artworkVersion = changed.version();
         } catch (Throwable ignored) {}
     }
 
@@ -106,7 +98,6 @@ public final class MediaController implements Closeable {
         return SmtcNative.nSeek(clamped);
     }
 
-    @Override
     public void close() {
         executor.shutdown();
         SmtcNative.nShutdown();

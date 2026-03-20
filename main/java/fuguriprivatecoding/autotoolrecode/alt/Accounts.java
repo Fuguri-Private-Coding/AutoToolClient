@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.alts;
+package fuguriprivatecoding.autotoolrecode.alt;
 
 import com.google.gson.*;
 import fuguriprivatecoding.autotoolrecode.Client;

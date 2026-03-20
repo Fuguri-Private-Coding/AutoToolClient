@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.alts;
+package fuguriprivatecoding.autotoolrecode.alt;
 
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;

@@ -139,7 +139,7 @@ public class DynamicIsland extends Module {
                     String playText = playing ? "||" : "|>";
                     float playTextWidth = boldFont.width(playText, 8);
 
-                    float buttonsY = rectY + 40;
+                    float buttonsY = rectY + 35;
 
                     float prevX = rectX + 5;
                     float playX = rectX + 105 / 2f - playTextWidth / 2f;
@@ -166,7 +166,7 @@ public class DynamicIsland extends Module {
                         String playText = info.isPlaying() ? "||" : "|>";
 
                         float playTextWidth = boldFont.width(playText, 8);
-                        float buttonsY = rectY + 40;
+                        float buttonsY = rectY + 35;
 
                         float prevX = rectX + 5;
                         float playX = rectX + 105 / 2f - playTextWidth / 2f;
