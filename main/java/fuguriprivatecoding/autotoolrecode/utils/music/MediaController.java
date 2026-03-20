@@ -1,5 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.music;
 
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.DynamicIsland;
 import lombok.Getter;
 import smtc.SmtcNative;
 import smtc.TrackInfo;
@@ -7,11 +9,12 @@ import smtc.TrackInfo;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public final class MediaController {
+public final class MediaController implements Closeable {
     @Getter private final ScheduledExecutorService executor;
     @Getter private volatile TrackInfo current = TrackInfo.EMPTY;
     @Getter private volatile BufferedImage artworkImage;
@@ -31,9 +34,12 @@ public final class MediaController {
     }
 
     private void tick() {
+        if (!Modules.getModule(DynamicIsland.class).isToggled()) return;
         try {
             TrackInfo changed = SmtcNative.nFetchIfChanged(lastVersion);
-            if (changed == null) return;
+            if (changed == null || !changed.available()) {
+                return;
+            }
 
             lastVersion = changed.version();
             current = changed;
@@ -100,6 +106,7 @@ public final class MediaController {
         return SmtcNative.nSeek(clamped);
     }
 
+    @Override
     public void close() {
         executor.shutdown();
         SmtcNative.nShutdown();
