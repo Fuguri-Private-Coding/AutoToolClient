@@ -1,4 +1,4 @@
-#version 120
+#version 130
 
 uniform sampler2D image;
 uniform float alpha;
@@ -12,7 +12,7 @@ void main() {
     vec2 uv = gl_TexCoord[0].st;
     vec4 color = texture2D(image, uv);
 
-    if (alpha == 1.0) {
+    if (alpha >= 1.0) {
         gl_FragColor = color;
         return;
     }

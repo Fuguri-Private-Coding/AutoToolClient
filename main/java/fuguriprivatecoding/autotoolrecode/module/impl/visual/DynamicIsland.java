@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notification;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
@@ -19,7 +20,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -28,13 +28,11 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import smtc.TrackInfo;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.text.DateFormat;
@@ -45,6 +43,8 @@ import java.util.Objects;
 
 @ModuleInfo(name = "DynamicIsland", category = Category.VISUAL)
 public class DynamicIsland extends Module {
+
+    private final CheckBox blur = new CheckBox("Blur", this, false);
 
     private static final DateFormat FORMAT = new SimpleDateFormat("HH:mm");
 
@@ -107,9 +107,14 @@ public class DynamicIsland extends Module {
                 }
             }
 
-            boolean hoveredRect = GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + 15);
+            boolean hoveredRect = GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + 50);
 
             if (mc.currentScreen instanceof GuiChat && hoveredRect) {
+                float titleWidth = Math.max(regularFont.width(info.title(), 8), 105 - 35);
+                float artistWidth = Math.max(regularFont.width(info.artist(), 6), 105 - 35);
+
+                float needWidth = Math.max(titleWidth, artistWidth);
+
                 updateRun(() -> {
                     ResourceLocation songImage = Client.INST.getSongImg();
 
@@ -121,61 +126,61 @@ public class DynamicIsland extends Module {
                         RectUtils.drawRect(0, 0, 30, 30, 7.5f, Color.WHITE);
                         StencilUtils.writeTexture();
                         RenderUtils.drawImage(songImage, 0, 0, 30, 30, true);
-
-                        float maxDurationWidth = 30;
-
-                        float durationWidth = currentMediaTime / info.durationMs();
-                        float currentWidth = maxDurationWidth * durationWidth;
-
-                        RoundedUtils.drawRect(0, 28, maxDurationWidth, 2f, 0, Colors.BLACK.withAlpha(textAlpha.getValue() * 0.5f));
-                        RoundedUtils.drawRect(0, 28, currentWidth, 2f, 0, whiteColor.withAlpha(textAlpha.getValue()));
-
                         StencilUtils.endWriteTexture();
                     }
 
                     regularFont.draw(title, 35, 7, 8, whiteColor.withAlpha(textAlpha.getValue()));
                     regularFont.draw(artist, 35, 7 + regularFont.height(title, 8) + 3, 6, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                }, needWidth + 35, 25);
 
-                    String playText = playing ? "||" : "|>";
-                    float playTextWidth = boldFont.width(playText, 8);
+                float widthRect = 50;
 
-                    float buttonsY = rectY + 35;
+                String playText = playing ? "||" : "|>";
+                float playTextWidth = boldFont.width(playText, 8);
 
-                    float prevX = rectX + 5;
-                    float playX = rectX + 105 / 2f - playTextWidth / 2f;
-                    float nextX = rectX + 95;
+                float buttonsY = rectY + height.getValue() + 15;
 
-                    boolean isHoveredPrev = GuiUtils.isMouseHovered(prevX, buttonsY, 10, 10);
-                    boolean isHoveredPlay = GuiUtils.isMouseHovered(playX, buttonsY, 10, 10);
-                    boolean isHoveredNext = GuiUtils.isMouseHovered(nextX, buttonsY, 10, 10);
+                float elementAlpha = height.getValue() / (additionalHeight + 15);
 
-                    Color color = whiteColor.withAlpha(textAlpha.getValue());
+                float renderX = rectX + ((width.getValue() - 10) / 2f) - widthRect / 2f;
 
-                    Color nextColor = isHoveredNext ? color.darker() : color;
-                    Color playColor = isHoveredPlay ? color.darker() : color;
-                    Color prevColor = isHoveredPrev ? color.darker() : color;
+                float prevX = renderX + 5;
+                float playX = renderX + widthRect / 2f - playTextWidth / 2f;
+                float nextX = renderX + widthRect - 10;
 
-                    regularFont.draw("<", 5, 40f, 12, prevColor);
-                    boldFont.draw(playText, 105 / 2f - playTextWidth / 2f, 37.5f, 8, playColor);
-                    regularFont.draw(">", 95, 40f, 12, nextColor);
+                boolean isHoveredPrev = GuiUtils.isMouseHovered(prevX, buttonsY, 10, 10);
+                boolean isHoveredPlay = GuiUtils.isMouseHovered(playX, buttonsY, 10, 10);
+                boolean isHoveredNext = GuiUtils.isMouseHovered(nextX, buttonsY, 10, 10);
 
-                }, 105, 40);
+                Color color = whiteColor.withAlpha(elementAlpha);
+
+                Color nextColor = isHoveredNext ? color.darker() : color;
+                Color playColor = isHoveredPlay ? color.darker() : color;
+                Color prevColor = isHoveredPrev ? color.darker() : color;
+
+                float maxDurationWidth = width.getValue() - 30;
+
+                float durationWidth = currentMediaTime / info.durationMs();
+                float currentWidth = maxDurationWidth * durationWidth;
+
+                RoundedUtils.drawRect(rectX + 7.5f, rectY + height.getValue() - 1.25f, width.getValue() - 25f, 3f + 5, 4.75f, Colors.BLACK.withAlpha(elementAlpha * 0.5f));
+                RoundedUtils.drawRect(rectX + 10, rectY + height.getValue() + 1f, width.getValue() - 30, 3f, 1.5f, Colors.BLACK.withAlpha(elementAlpha * 0.5f));
+                RoundedUtils.drawRect(rectX + 10, rectY + height.getValue() + 1f, currentWidth, 3f, 1.5f, Colors.WHITE.withAlpha(elementAlpha));
+
+                RoundedUtils.drawRect(renderX, rectY + height.getValue() + 10, widthRect, 15, 7.5f, Colors.BLACK.withAlpha(elementAlpha * 0.5f));
+                regularFont.draw("<", prevX, buttonsY + 1, 12, prevColor);
+                boldFont.draw(playText, playX, buttonsY - 1, 8, playColor);
+                regularFont.draw(">", nextX, buttonsY + 1, 12, nextColor);
+
+                if (blur.isToggled()) {
+                    BlurUtils.addToDraw(() -> {
+                        RoundedUtils.drawRect(rectX + 7.5f, rectY + height.getValue() - 1.25f, width.getValue() - 25f, 3f + 5, 4.75f, Colors.BLACK.withAlpha(elementAlpha * 0.5f));
+                        RoundedUtils.drawRect(renderX, rectY + height.getValue() + 10, widthRect, 15, 7.5f, Colors.BLACK.withAlpha(elementAlpha * 0.5f));
+                    });
+                }
 
                 if (this.width.getValue() == 10 + this.additionalWidth) {
                     if (Mouse.isButtonDown(0) && !pressed) {
-                        String playText = info.isPlaying() ? "||" : "|>";
-
-                        float playTextWidth = boldFont.width(playText, 8);
-                        float buttonsY = rectY + 35;
-
-                        float prevX = rectX + 5;
-                        float playX = rectX + 105 / 2f - playTextWidth / 2f;
-                        float nextX = rectX + 95;
-
-                        boolean isHoveredPrev = GuiUtils.isMouseHovered(prevX, buttonsY, 10, 10);
-                        boolean isHoveredPlay = GuiUtils.isMouseHovered(playX, buttonsY, 10, 10);
-                        boolean isHoveredNext = GuiUtils.isMouseHovered(nextX, buttonsY, 10, 10);
-
                         if (isHoveredPrev) mediaController.prev();
                         if (isHoveredPlay) mediaController.playPause();
                         if (isHoveredNext) mediaController.next();
@@ -262,20 +267,10 @@ public class DynamicIsland extends Module {
             float timeX = x - timeWidth - 3;
             float timeY = y + 5;
 
-            RenderUtils.drawRoundedOutLineRectangle(x, y, width, height, rectRadius.getValue(), Colors.BLACK.withAlpha(Modules.getModule(Blur.class).isToggled() ? 0f : 0.5f), Colors.WHITE.withAlpha(0.5f), Colors.WHITE.withAlpha(0.5f));
+            RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.BLACK.withAlpha(0.5f));
 
-            if (Modules.getModule(Blur.class).isToggled()) {
-                BlurUtils.addToDraw(() -> {
-                    RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.BLACK.withAlpha(1f));
-                });
-
-                BlurUtils.draw();
-                mc.getFramebuffer().bindFramebuffer(false);
-                mc.getFramebuffer().bindFramebufferTexture();
-                Shader.drawQuad();
-                GlStateManager.bindTexture(0);
-
-                RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.LIGHT_GRAY.withAlpha(0.05f));
+            if (blur.isToggled()) {
+                BlurUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.WHITE.withAlpha(1f)));
             }
 
             ScissorUtils.enableScissor();
@@ -284,7 +279,7 @@ public class DynamicIsland extends Module {
             float translateX = x + 5;
             float translateY = y + 5;
 
-            float scaleFactor = 0.95f + textAlpha.getValue() * 0.05f;
+            float scaleFactor = 0.95f + textAlpha.getMultipleValue(0.05f);
 
             GL11.glPushMatrix();
 

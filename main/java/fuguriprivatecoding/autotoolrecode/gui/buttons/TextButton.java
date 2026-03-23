@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.gui.buttons;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
@@ -64,7 +65,7 @@ public class TextButton extends GuiTextField {
         float cursorWidth = 0.5f;
         float cursorHeight = 9 * hoverAnim.getValue() + keyTypedAnim.getValue() * 2;
 
-        Color rectColor = ColorUtils.interpolateColor(Colors.BLACK.withAlpha(0.7f), Colors.BLACK.withAlpha(0.8f), hoverAnim.getValue());
+        Color rectColor = ColorUtils.interpolateColor(Colors.BLACK.withAlpha(0.3f), Colors.BLACK.withAlpha(0.5f), hoverAnim.getValue());
         Color cursorColor = ColorUtils.interpolateColor(Colors.BLACK, Colors.WHITE, hoverAnim.getValue());
 
         RoundedUtils.drawRect(x, y, width, height, height / 2f, rectColor);

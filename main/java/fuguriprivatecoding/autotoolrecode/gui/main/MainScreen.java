@@ -16,6 +16,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUti
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import java.awt.*;
 import java.io.IOException;
@@ -36,19 +37,16 @@ public class MainScreen extends GuiScreen {
 
     ResourceLocation exitLogo = new ResourceLocation("minecraft", "autotool/mainmenu/exit.png");
 
-    EasingAnimation openAnim = new EasingAnimation();
-
     EasingAnimation anim = new EasingAnimation();
 
     @Override
     public void initGui() {
         final ScaledResolution sc = new ScaledResolution(mc);
-        buttonList.add(new Button(0,"SinglePlayer", sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10, 150, 20));
-        buttonList.add(new Button(1,"MultiPlayer", sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10 + 25, 150, 20));
-        buttonList.add(new Button(2,"MinecraftSettings", sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10 + 25 + 25, 150, 20));
+        buttonList.add(new Button(0, I18n.format("menu.singleplayer"), sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10, 150, 20));
+        buttonList.add(new Button(1, I18n.format("menu.multiplayer"), sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10 + 25, 150, 20));
+        buttonList.add(new Button(2, I18n.format("menu.options"), sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10 + 25 + 25, 150, 20));
         buttonList.add(new Button(3,"AltManager", sc.getScaledWidth() / 2f - 75,sc.getScaledHeight() / 2f + 10 + 25 + 25 + 25, 150, 20));
         buttonList.add(new ImgButton(4, exitLogo, sc.getScaledWidth() - 20,5, 15, 15));
-        openAnim.setEnd(1);
     }
 
     @Override
@@ -60,11 +58,7 @@ public class MainScreen extends GuiScreen {
 
         final String welcome = "Добро пожаловать в §9AutoTool§f!";
 
-        openAnim.update(3f, Easing.IN_OUT_QUAD);
-
         BackgroundUtils.run();
-
-        AlphaUtils.startWrite();
 
         boolean isHovered = GuiUtils.isHovered(mouseX, mouseY, sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f - 25, 160, 25f);
 
@@ -76,7 +70,7 @@ public class MainScreen extends GuiScreen {
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(sc, sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f - 25 - heightAnim, 160, 25f + 4 + heightAnim);
 
-        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f - 25 - heightAnim, 160, 25f + heightAnim, 2, 12.5f, 12.5f, 2, Colors.BLACK.withAlpha(0.7f));
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f - 25 - heightAnim, 160, 25f + heightAnim, 2, 12.5f, 12.5f, 2, Colors.BLACK.withAlpha(0.5f));
         String discord = "нах ты открыл, ладно нажимай.";
         boolean isHoveredText = GuiUtils.isHovered(mouseX, mouseY, sc.getScaledWidth() / 2f - font.getStringWidth(discord) / 2f, sc.getScaledHeight() / 2f + 2 - heightAnim, font.getStringWidth(discord), 9);
 
@@ -88,18 +82,9 @@ public class MainScreen extends GuiScreen {
         font.drawCenteredString(hello, sc.getScaledWidth() / 2f + 1.5f, sc.getScaledHeight() / 2f - 5 - 15 - heightAnim, Color.WHITE);
         font.drawCenteredString(welcome, sc.getScaledWidth() / 2f + 1.5f, sc.getScaledHeight() / 2f - 5 - 5f - heightAnim, Color.WHITE);
 
-        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f + 5, 160, 105, 15, 2, 2, 15, Colors.BLACK.withAlpha(0.7f));
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f + 5, 160, 105, 15, 2, 2, 15, Colors.BLACK.withAlpha(0.5f));
 
         super.drawScreen(mouseX, mouseY, partialTicks);
-
-        AlphaUtils.endWrite();
-        AlphaUtils.draw(openAnim.getValue());
-    }
-
-    @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
-        openAnim.setValue(0f);
     }
 
     @Override

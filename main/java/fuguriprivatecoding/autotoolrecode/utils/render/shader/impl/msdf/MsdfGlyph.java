@@ -40,8 +40,6 @@ public class MsdfGlyph {
         float width = this.width * size;
         float height = this.height * size;
 
-        ColorUtils.glColor(color);
-
         GL11.glTexCoord2f(minU, minV);
         GL11.glVertex2f(x, y);
         GL11.glTexCoord2f(minU, maxV);

@@ -23,7 +23,7 @@ public final class MediaController {
 
     public void start() {
         if (!SmtcNative.nInit()) return;
-        executor.scheduleWithFixedDelay(this::tick, 0L, 200L, TimeUnit.MILLISECONDS);
+        executor.scheduleWithFixedDelay(this::tick, 0L, 50L, TimeUnit.MILLISECONDS);
     }
 
     private void tick() {
@@ -65,26 +65,32 @@ public final class MediaController {
     }
 
     public boolean next() {
+        if (!current.available()) return false;
         return SmtcNative.nNext();
     }
 
     public boolean prev() {
+        if (!current.available()) return false;
         return SmtcNative.nPrev();
     }
 
     public boolean stop() {
+        if (!current.available()) return false;
         return SmtcNative.nStop();
     }
 
     public boolean playPause() {
+        if (!current.available()) return false;
         return SmtcNative.nTogglePlayPause();
     }
 
     public boolean play() {
+        if (!current.available()) return false;
         return SmtcNative.nPlay();
     }
 
     public boolean pause() {
+        if (!current.available()) return false;
         return SmtcNative.nPause();
     }
 

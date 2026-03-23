@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
 import fuguriprivatecoding.autotoolrecode.gui.multiplayer.ViaVersionScreen;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
@@ -46,7 +47,6 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
     public LanServerDetector.LanServerList lanServerList;
     public LanServerDetector.ThreadLanServerFind lanServerDetector;
     public boolean initialized;
-    EasingAnimation alphaAnim = new EasingAnimation();
 
     public GuiMultiplayer(GuiScreen parentScreen) {
         this.parentScreen = parentScreen;
@@ -109,8 +109,6 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
 
     public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
-
-        alphaAnim.setEnd(0f);
 
         if (this.lanServerDetector != null) {
             this.lanServerDetector.interrupt();
@@ -282,13 +280,10 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
         this.hoveringText = null;
         BackgroundUtils.run();
 
-        alphaAnim.update(3f, Easing.IN_OUT_QUAD);
-        alphaAnim.setEnd(1f);
-
         ScaledResolution sc = new ScaledResolution(mc);
         MsdfFont font = Fonts.get("Bold");
-        AlphaUtils.startWrite();
-        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 155, 30, 310, sc.getScaledHeight() - 87, 10, new Color(0,0,0,0.7f));
+
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 155, 30, 310, sc.getScaledHeight() - 87, 10, Colors.BLACK.withAlpha(0.5f));
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), 0, 35, sc.getScaledWidth(), sc.getScaledHeight() - 95);
         this.serverListSelector.drawScreen(mouseX, mouseY, partialTicks, false);
@@ -300,9 +295,6 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
         if (this.hoveringText != null) {
             this.drawHoveringText(Lists.newArrayList(Splitter.on("\n").split(this.hoveringText)), mouseX, mouseY);
         }
-
-        AlphaUtils.endWrite();
-        AlphaUtils.draw(alphaAnim.getValue());
     }
 
     public void connectToSelected() {

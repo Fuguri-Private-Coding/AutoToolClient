@@ -76,7 +76,6 @@ public class MsdfFont implements Imports {
 
         GL11.glEnd();
 
-        ColorUtils.resetColor();
         GlStateManager.disableBlend();
         Shader.stop();
     }

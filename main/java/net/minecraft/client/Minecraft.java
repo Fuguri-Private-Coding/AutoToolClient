@@ -40,6 +40,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.MBlurEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.FakeTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.Fixes;
@@ -217,6 +218,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     public int displayHeight;
     @Setter @Getter private boolean connectedToRealms = false;
     public Timer timer = new Timer(20.0F);
+    public Timer fakeTimer = new Timer(20.0F);
     private final PlayerUsageSnooper usageSnooper = new PlayerUsageSnooper("client", this, MinecraftServer.getCurrentTimeMillis());
     public WorldClient theWorld;
     public RenderGlobal renderGlobal;
@@ -821,6 +823,14 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.timer.updateTimer();
         }
 
+        if (this.isGamePaused && this.theWorld != null) {
+            float f = this.fakeTimer.renderPartialTicks;
+            this.fakeTimer.updateTimer();
+            this.fakeTimer.renderPartialTicks = f;
+        } else {
+            this.fakeTimer.updateTimer();
+        }
+
         RunGameLoopEvent.INST.call(false);
 
         this.mcProfiler.startSection("scheduledExecutables");
@@ -840,6 +850,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             if (tickEvent.isCanceled()) continue;
 
             runTick();
+        }
+
+        for (int j = 0; j < this.fakeTimer.elapsedTicks; ++j) {
+            FakeTickEvent fakeTickEvent = new FakeTickEvent();
+            fakeTickEvent.call();
         }
 
         this.mcProfiler.endStartSection("preRenderErrors");

@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
@@ -46,7 +47,7 @@ public class ImgButton extends GuiButton {
         float width = prevWidth + hoverAnim.getValue() * 2;
         float height = prevHeight + hoverAnim.getValue() * 2;
 
-        Color rectColor = ColorUtils.interpolateColor(new Color(0,0,0,0.7f), new Color(0,0,0,0.8f), hoverAnim.getValue());
+        Color rectColor = ColorUtils.interpolateColor(Colors.BLACK.withAlpha(0.3f), Colors.BLACK.withAlpha(0.5f), hoverAnim.getValue());
 
         RoundedUtils.drawRect(x, y, width, height, height / 2f, rectColor);
 

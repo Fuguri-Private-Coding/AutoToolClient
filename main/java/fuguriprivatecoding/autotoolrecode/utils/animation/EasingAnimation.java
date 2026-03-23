@@ -71,4 +71,8 @@ public class EasingAnimation {
         this.end = value;
         this.progress = 1f;
     }
+
+    public float getMultipleValue(float factor) {
+        return this.value * factor;
+    }
 }
