@@ -23,7 +23,7 @@ public final class MediaController {
 
     public void start() {
         if (!SmtcNative.nInit()) return;
-        executor.scheduleWithFixedDelay(this::tick, 0L, 50L, TimeUnit.MILLISECONDS);
+        executor.scheduleWithFixedDelay(this::tick, 0L, 200L, TimeUnit.MILLISECONDS);
     }
 
     private void tick() {

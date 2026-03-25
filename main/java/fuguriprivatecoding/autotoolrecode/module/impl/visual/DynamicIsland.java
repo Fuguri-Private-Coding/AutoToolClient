@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -26,7 +26,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
@@ -73,7 +72,7 @@ public class DynamicIsland extends Module {
         MsdfFont boldFont = Fonts.get("Bold");
         MsdfFont regularFont = Fonts.get("Regular");
 
-        if (event instanceof Render2DEvent) {
+        if (event instanceof RenderScreenEvent) {
             ScaledResolution sc = ScaleUtils.getScaledResolution();
 
             rectRadius.setEnd(opened ? 10f : 7.5f);
@@ -107,9 +106,9 @@ public class DynamicIsland extends Module {
                 }
             }
 
-            boolean hoveredRect = GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + 50);
+            boolean hoveredRect = GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + (opened ? 50 : 15));
 
-            if (mc.currentScreen instanceof GuiChat && hoveredRect) {
+            if (mc.currentScreen != null && hoveredRect) {
                 float titleWidth = Math.max(regularFont.width(info.title(), 8), 105 - 35);
                 float artistWidth = Math.max(regularFont.width(info.artist(), 6), 105 - 35);
 
@@ -174,8 +173,8 @@ public class DynamicIsland extends Module {
 
                 if (blur.isToggled()) {
                     BlurUtils.addToDraw(() -> {
-                        RoundedUtils.drawRect(rectX + 7.5f, rectY + height.getValue() - 1.25f, width.getValue() - 25f, 3f + 5, 4.75f, Colors.BLACK.withAlpha(elementAlpha * 0.5f));
-                        RoundedUtils.drawRect(renderX, rectY + height.getValue() + 10, widthRect, 15, 7.5f, Colors.BLACK.withAlpha(elementAlpha * 0.5f));
+                        RoundedUtils.drawRect(rectX + 7.5f, rectY + height.getValue() - 1.25f, width.getValue() - 25f, 3f + 5, 4.75f, Colors.WHITE.withAlpha(elementAlpha));
+                        RoundedUtils.drawRect(renderX, rectY + height.getValue() + 10, widthRect, 15, 7.5f, Colors.WHITE.withAlpha(elementAlpha));
                     });
                 }
 
