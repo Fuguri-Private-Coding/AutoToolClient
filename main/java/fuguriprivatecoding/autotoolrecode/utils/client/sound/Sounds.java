@@ -22,20 +22,14 @@ public class Sounds {
         File disable = new File(SOUND_DIRECTORY, "disable.wav");
         File disableVl = new File(SOUND_DIRECTORY, "disablevl.wav");
 
-        unpackIfNeeded(enable, "assets/minecraft/autotool/sounds/enable.wav");
-        unpackIfNeeded(enableVl, "assets/minecraft/autotool/sounds/enablevl.wav");
-        unpackIfNeeded(disable, "assets/minecraft/autotool/sounds/disable.wav");
-        unpackIfNeeded(disableVl, "assets/minecraft/autotool/sounds/disablevl.wav");
+        FileUtils.unpackIfNeeded(enable, "assets/minecraft/autotool/sounds/enable.wav");
+        FileUtils.unpackIfNeeded(enableVl, "assets/minecraft/autotool/sounds/enablevl.wav");
+        FileUtils.unpackIfNeeded(disable, "assets/minecraft/autotool/sounds/disable.wav");
+        FileUtils.unpackIfNeeded(disableVl, "assets/minecraft/autotool/sounds/disablevl.wav");
 
         enableSound = new Sound(enable);
         disableSound = new Sound(disable);
         enableVlSound = new Sound(enableVl);
         disableVlSound = new Sound(disableVl);
-    }
-
-    private void unpackIfNeeded(File file, String assetsPath) throws IOException {
-        if (!file.exists()) {
-            FileUtils.unpackFile(file, assetsPath);
-        }
     }
 }

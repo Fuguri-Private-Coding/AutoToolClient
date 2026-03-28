@@ -35,7 +35,7 @@ public class MainScreen extends GuiScreen {
         this.mc = Imports.mc;
     }
 
-    ResourceLocation exitLogo = new ResourceLocation("minecraft", "autotool/mainmenu/exit.png");
+    ResourceLocation exitLogo = new ResourceLocation("minecraft", "autotool/image/exit.png");
 
     EasingAnimation anim = new EasingAnimation();
 

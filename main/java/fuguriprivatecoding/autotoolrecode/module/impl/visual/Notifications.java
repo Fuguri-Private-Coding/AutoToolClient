@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -55,18 +56,24 @@ public class Notifications extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof Render2DEvent) {
-            notifications.removeIf(notification -> notification.isDelete() && notification.getOpenAnim().getValue() == 0);
+        if (event instanceof RenderScreenEvent) {
+            if (!notifications.isEmpty()) {
+                notifications.removeIf(notification -> notification.isDelete() && notification.getOpenAnim().getValue() == 0);
 
+                for (Notification notification : notifications) {
+                    notification.getOpenAnim().update(2f, Easing.OUT_BACK);
+                    if (notification.isDelete()) notification.getOpenAnim().setEnd(0);
+                }
+            }
+        }
+
+        if (event instanceof Render2DEvent) {
             ScaledResolution sc = new ScaledResolution(mc);
             ClientFont fontRenderer = Fonts.fonts.get(fonts.getMode());
 
             float yOffset = 0;
             for (Notification notification : notifications) {
                 EasingAnimation openAnim = notification.getOpenAnim();
-                openAnim.update(2f, Easing.OUT_BACK);
-
-                if (notification.isDelete()) openAnim.setEnd(0);
                 if (Modules.getModule(DynamicIsland.class).isToggled()) continue;
 
                 String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";

@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.DynamicIsland;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
@@ -63,14 +64,13 @@ public enum Client implements Imports, EventListener {
     private final String RESOURCES_CLIENT_ID = "autotool/";
 
     public final File CLIENT_DIR = new File(CLIENT_NAME);
+    private final File NATIVES_DIR = new File("natives");
     public final File SKIN_DIRECTORY = new File(CLIENT_DIR + "/skins");
     public final File CAPE_DIRECTORY = new File(CLIENT_DIR + "/capes");
 
 	@Setter Profile profile;
 
     private final MediaController mediaController = new MediaController();
-    @Setter private String songName;
-    @Setter private ResourceLocation songImg;
 
 	boolean starting = true;
 
@@ -81,7 +81,11 @@ public enum Client implements Imports, EventListener {
 		long start = System.nanoTime();
 		starting = true;
 
-        SmtcNative.init();
+        File msdf_gen_file = new File("msdf-gen.zip");
+        FileUtils.unpackIfNeeded(msdf_gen_file, "assets/minecraft/autotool/msdf-gen/msdf-gen.zip");
+
+        File smtc_bridge_native_file = new File(NATIVES_DIR, "smtc_bridge.dll");
+        FileUtils.unpackFile(smtc_bridge_native_file, "assets/minecraft/autotool/native/smtc_bridge.dll");
 
         scheduler.scheduleAtFixedRate(
             HWID::check,
@@ -90,9 +94,10 @@ public enum Client implements Imports, EventListener {
             TimeUnit.SECONDS
         );
 
-        mediaController.start();
-
         if (this.profile == null) System.exit(-1);
+
+        SmtcNative.init();
+        mediaController.start();
 
         createDirectories();
 

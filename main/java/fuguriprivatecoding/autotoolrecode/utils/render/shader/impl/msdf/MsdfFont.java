@@ -134,7 +134,6 @@ public class MsdfFont implements Imports {
 
             if (glyph == null) continue;
 
-
             float height = glyph.getHeight(size);
 
             if (height > maxHeight) {

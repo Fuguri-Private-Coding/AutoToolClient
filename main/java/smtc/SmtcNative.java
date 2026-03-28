@@ -16,5 +16,4 @@ public final class SmtcNative {
     public static native boolean nTogglePlayPause();
     public static native boolean nPlay();
     public static native boolean nPause();
-    public static native boolean nSeek(long positionMs);
 }

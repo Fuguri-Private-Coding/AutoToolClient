@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
@@ -10,6 +11,7 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -22,6 +24,7 @@ import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -29,6 +32,8 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.*;
+
+import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -62,25 +67,26 @@ public class KillAura extends Module {
     private final CheckBox smartAim = new CheckBox("SmartAim", this);
     private final CheckBox snapForTeleport = new CheckBox("SnapForTeleport", this);
 
-    private final MultiMode smoothMode = new MultiMode("SmoothModes", this)
+    private final MultiMode smoothModes = new MultiMode("SmoothModes", this)
         .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Recorded");
 
-    private final DoubleSlider deltaMultiplier = new DoubleSlider("DeltaMultiplier", this, () -> smoothMode.get("MouseDelta"), 1, 15, 8, 0.1f);
+    private final DoubleSlider deltaMultiplier = new DoubleSlider("DeltaMultiplier", this, () -> smoothModes.get("MouseDelta"), 1, 15, 8, 0.1f);
+    private final CheckBox invertDelta = new CheckBox("InvertDelta", this, () -> smoothModes.get("MouseDelta"), false);
 
-    private final DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothMode.get("MixDelta"), 0, 100, 1, 1f);
-    private final DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothMode.get("MixDelta"), 0, 100, 1, 1f);
+    private final DoubleSlider mixYawDelta = new DoubleSlider("MixYawDelta", this, () -> smoothModes.get("MixDelta"), 0, 100, 1, 1f);
+    private final DoubleSlider mixPitchDelta = new DoubleSlider("MixPitchDelta", this, () -> smoothModes.get("MixDelta"), 0, 100, 1, 1f);
 
-    private final FloatSetting yawStrength = new FloatSetting("YawRandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
-    private final FloatSetting pitchStrength = new FloatSetting("PitchRandomizeStrength", this, () -> smoothMode.get("Basic"), 0, 20, 5, 0.1f);
+    private final FloatSetting yawStrength = new FloatSetting("YawRandomizeStrength", this, () -> smoothModes.get("Basic"), 0, 20, 5, 0.1f);
+    private final FloatSetting pitchStrength = new FloatSetting("PitchRandomizeStrength", this, () -> smoothModes.get("Basic"), 0, 20, 5, 0.1f);
 
     private final FloatSetting linearSmoothStrength = new FloatSetting(
         "LinearSmoothStrength", this,
-        () -> smoothMode.get("Linear"),
+        () -> smoothModes.get("Linear"),
         1, 5, 1.5f, 0.1f
     );
 
-    public final TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothMode.get("Recorded"));
-    private final FloatSetting recordedMultiplier = new FloatSetting("RecordedMultiplier", this, () -> smoothMode.get("Recorded"), 0, 10, 1, 0.01f);
+    public final TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothModes.get("Recorded"));
+    private final FloatSetting recordedMultiplier = new FloatSetting("RecordedMultiplier", this, () -> smoothModes.get("Recorded"), 0, 10, 1, 0.01f);
 
     private final DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
 
@@ -164,14 +170,19 @@ public class KillAura extends Module {
 
         if (hitVec.is("Nearest")) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), box);
 
-        if (smoothMode.get("MouseDelta")) {
-            Rot mouseDelta = RotUtils.getDelta(CameraRot.INST.getPrevRot(), CameraRot.INST);
-            mouseDelta = mouseDelta.multiplier((float) deltaMultiplier.getRandomizedDoubleValue());
+        if (smoothModes.get("MouseDelta")) {
+            Rot mouseDelta = invertDelta.isToggled() ?
+                RotUtils.getDeltaInvert(CameraRot.INST.getPrevRot(), CameraRot.INST) :
+                RotUtils.getDelta(CameraRot.INST.getPrevRot(), CameraRot.INST);
+
+            float multipleDelta = (float) deltaMultiplier.getRandomizedDoubleValue();
+
+            mouseDelta = mouseDelta.multiplier(multipleDelta);
 
             needRot = needRot.add(mouseDelta);
         }
 
-        if (smoothMode.get("Recorded")) {
+        if (smoothModes.get("Recorded")) {
             if (recordedIndex >= recordedOffset.offsets.size()) recordedIndex = 0;
 
             Rot recordedDelta = recordedOffset.getByIndex(recordedIndex++);
@@ -211,7 +222,7 @@ public class KillAura extends Module {
         Rot delta = RotUtils.getDelta(lr, needRotation);
 
         if (!teleport) {
-            if (smoothMode.get("Basic")) {
+            if (smoothModes.get("Basic")) {
                 Rot rot = new Rot(
                     RandomUtils.nextFloat(-yawStrength.getValue(), yawStrength.getValue()),
                     RandomUtils.nextFloat(-pitchStrength.getValue(), pitchStrength.getValue())
@@ -220,7 +231,7 @@ public class KillAura extends Module {
                 delta = delta.add(rot);
             }
 
-            if (smoothMode.get("Linear")) {
+            if (smoothModes.get("Linear")) {
                 delta = delta.divine(linearSmoothStrength.getValue(), linearSmoothStrength.getValue());
             }
 
@@ -231,7 +242,7 @@ public class KillAura extends Module {
 
             RotUtils.limitDelta(delta, speed);
 
-            if (smoothMode.get("MixDelta")) {
+            if (smoothModes.get("MixDelta")) {
                 delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedIntValue() / 100f, lastDelta.getYaw(), delta.getYaw()));
                 delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedIntValue() / 100f, lastDelta.getPitch(), delta.getPitch()));
             }

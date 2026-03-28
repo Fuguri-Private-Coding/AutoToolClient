@@ -27,6 +27,12 @@ public class FileUtils {
         }
     }
 
+    public static void unpackIfNeeded(File file, String assetsPath) throws IOException {
+        if (!file.exists()) {
+            FileUtils.unpackFile(file, assetsPath);
+        }
+    }
+
     public static void createDirectoriesIfNotExists(File... files) throws IOException {
         for (File file : files) {
             if (!file.exists()) {

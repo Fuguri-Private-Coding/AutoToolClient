@@ -15,9 +15,18 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.projection.Convertors;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.util.RayTrace;
+import net.minecraft.util.Vec3;
+
+import java.awt.*;
 
 @ModuleInfo(name = "DeltaRecorder", category = Category.MISC)
 public class DeltaRecorder extends Module {
@@ -70,6 +79,25 @@ public class DeltaRecorder extends Module {
             ClientFont font = Fonts.fonts.get("SFPro");
 
             font.drawString("Recording: " + recording, 5, 5, Colors.WHITE);
+
+            if (recording) {
+                RayTrace mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks),4.5f,4.5f, current, mc.timer.renderPartialTicks);
+                if (mouse == null) return;
+
+                mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
+                Vec3 pos = mouse.hitVec.subtract(RenderManager.getRenderPosition());
+                float[] positions = Convertors.convert2D(pos, mc.gameSettings.guiScale);
+                mc.entityRenderer.setupOverlayRendering();
+
+                if (positions == null || positions[2] > 1) return;
+
+                float size = 0.5f * 10;
+
+                float x = positions[0] - (size / 2f);
+                float y = positions[1] - (size / 2f);
+
+                RoundedUtils.drawRect(x, y, size, size, 0, Color.WHITE);
+            }
         }
     }
 }

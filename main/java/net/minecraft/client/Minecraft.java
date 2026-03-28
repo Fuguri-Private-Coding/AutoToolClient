@@ -199,7 +199,7 @@ import org.lwjgl.util.glu.GLU;
 
 public class Minecraft implements IThreadListener, IPlayerUsage {
     private static final Logger logger = LogManager.getLogger();
-    public static ResourceLocation locationMojangPng = new ResourceLocation("minecraft", "autotool/splashscreen/splash.png");
+    public static ResourceLocation locationMojangPng = Client.INST.of("image/splash.png");
     public static final boolean isRunningOnMac = Util.getOSType() == Util.EnumOS.OSX;
     public static byte[] memoryReserve = new byte[10485760];
     private static final List<DisplayMode> macDisplayModes = Lists.newArrayList(new DisplayMode(2560, 1600), new DisplayMode(2880, 1800));

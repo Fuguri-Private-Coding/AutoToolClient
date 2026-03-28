@@ -38,7 +38,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @ModuleInfo(name = "DynamicIsland", category = Category.VISUAL)
 public class DynamicIsland extends Module {
@@ -82,8 +81,6 @@ public class DynamicIsland extends Module {
 
             Colors whiteColor = Colors.WHITE;
 
-            float currentMediaTime = Client.INST.getMediaController().getInterpolatedPositionMs();
-
             MediaController mediaController = Client.INST.getMediaController();
 
             TrackInfo info = mediaController.getCurrent();
@@ -92,18 +89,22 @@ public class DynamicIsland extends Module {
             String artist = info.artist();
             boolean playing = info.isPlaying();
 
-            if (!Objects.equals(title, Client.INST.getSongName())) {
-                BufferedImage img = mediaController.getArtworkImage();
+            BufferedImage image = mediaController.getArtworkImage();
+            BufferedImage lastImage = mediaController.getLastArtworkImage();
 
-                if (img != null) {
-                    dynamicTexture = new DynamicTexture(img);
-
-                    String name = "song_image_" + info.title();
-                    ResourceLocation songImage = mc.getTextureManager().getDynamicTextureLocation(name, dynamicTexture);
-
-                    Client.INST.setSongImg(songImage);
-                    Client.INST.setSongName(info.title());
+            if (image != null && image != lastImage) {
+                if (mediaController.getSongLocation() != null) {
+                    mc.getTextureManager().deleteTexture(mediaController.getSongLocation());
                 }
+
+                dynamicTexture = new DynamicTexture(image);
+
+                String name = "song_image_" + info.title();
+                ResourceLocation songImage = mc.getTextureManager()
+                    .getDynamicTextureLocation(name, dynamicTexture);
+
+                mediaController.setSongLocation(songImage);
+                mediaController.setLastArtworkImage(image);
             }
 
             boolean hoveredRect = GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + (opened ? 50 : 15));
@@ -115,7 +116,7 @@ public class DynamicIsland extends Module {
                 float needWidth = Math.max(titleWidth, artistWidth);
 
                 updateRun(() -> {
-                    ResourceLocation songImage = Client.INST.getSongImg();
+                    ResourceLocation songImage = mediaController.getSongLocation();
 
                     if (songImage != null) {
                         ColorUtils.glColor(whiteColor.withAlpha(textAlpha.getValue()));
@@ -137,7 +138,7 @@ public class DynamicIsland extends Module {
                 String playText = playing ? "||" : "|>";
                 float playTextWidth = boldFont.width(playText, 8);
 
-                float buttonsY = rectY + height.getValue() + 15;
+                float buttonsY = rectY + height.getValue() + 5;
 
                 float elementAlpha = height.getValue() / (additionalHeight + 15);
 
@@ -157,25 +158,13 @@ public class DynamicIsland extends Module {
                 Color playColor = isHoveredPlay ? color.darker() : color;
                 Color prevColor = isHoveredPrev ? color.darker() : color;
 
-                float maxDurationWidth = width.getValue() - 30;
-
-                float durationWidth = currentMediaTime / info.durationMs();
-                float currentWidth = maxDurationWidth * durationWidth;
-
-                RoundedUtils.drawRect(rectX + 7.5f, rectY + height.getValue() - 1.25f, width.getValue() - 25f, 3f + 5, 4.75f, Colors.BLACK.withAlpha(elementAlpha * 0.5f));
-                RoundedUtils.drawRect(rectX + 10, rectY + height.getValue() + 1f, width.getValue() - 30, 3f, 1.5f, Colors.BLACK.withAlpha(elementAlpha * 0.5f));
-                RoundedUtils.drawRect(rectX + 10, rectY + height.getValue() + 1f, currentWidth, 3f, 1.5f, Colors.WHITE.withAlpha(elementAlpha));
-
-                RoundedUtils.drawRect(renderX, rectY + height.getValue() + 10, widthRect, 15, 7.5f, Colors.BLACK.withAlpha(elementAlpha * 0.5f));
+                RoundedUtils.drawRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, Colors.BLACK.withAlpha(elementAlpha * 0.5f));
                 regularFont.draw("<", prevX, buttonsY + 1, 12, prevColor);
                 boldFont.draw(playText, playX, buttonsY - 1, 8, playColor);
                 regularFont.draw(">", nextX, buttonsY + 1, 12, nextColor);
 
                 if (blur.isToggled()) {
-                    BlurUtils.addToDraw(() -> {
-                        RoundedUtils.drawRect(rectX + 7.5f, rectY + height.getValue() - 1.25f, width.getValue() - 25f, 3f + 5, 4.75f, Colors.WHITE.withAlpha(elementAlpha));
-                        RoundedUtils.drawRect(renderX, rectY + height.getValue() + 10, widthRect, 15, 7.5f, Colors.WHITE.withAlpha(elementAlpha));
-                    });
+                    BlurUtils.addToDraw(() -> RoundedUtils.drawRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, Colors.WHITE.withAlpha(elementAlpha)));
                 }
 
                 if (this.width.getValue() == 10 + this.additionalWidth) {
@@ -278,14 +267,10 @@ public class DynamicIsland extends Module {
             float translateX = x + 5;
             float translateY = y + 5;
 
-            float scaleFactor = 0.95f + textAlpha.getMultipleValue(0.05f);
-
             GL11.glPushMatrix();
 
-            ScaleUtils.startScaling(x, y, width, height, scaleFactor);
             GL11.glTranslated(translateX, translateY, 0);
             currentRun.run();
-            ScaleUtils.stopScaling();
 
             GL11.glPopMatrix();
 
@@ -296,9 +281,9 @@ public class DynamicIsland extends Module {
             float internetX = x + width + 5;
             float internetY = y + 5;
 
-            RoundedUtils.drawRect(internetX, internetY + 2, 0.5f, 2, 0, Colors.WHITE);
-            RoundedUtils.drawRect(internetX + 2.5f, internetY + 1, 0.5f, 3, 0, Colors.WHITE);
-            RoundedUtils.drawRect(internetX + 2.5f + 2.5f, internetY, 0.5f, 4, 0, Colors.WHITE);
+            RenderUtils.drawRect(internetX, internetY + 2, 1f, 2, Colors.WHITE);
+            RenderUtils.drawRect(internetX + 2f, internetY + 1, 1f, 3, Colors.WHITE);
+            RenderUtils.drawRect(internetX + 2f + 2f, internetY, 1f, 4, Colors.WHITE);
         }
     }
 

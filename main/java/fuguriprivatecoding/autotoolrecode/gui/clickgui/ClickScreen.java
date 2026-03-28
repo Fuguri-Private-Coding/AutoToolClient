@@ -53,7 +53,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
     public boolean binding;
 
 	boolean showConsoleAfterClose, showConfigAfterClose;
-	int settingsScroll, settingsTotalHeight, modulesScroll, modulesTotalHeight;
+	int settingsScroll, settingsTotalHeight, modulesScroll, modulesTotalHeight, recordedIndex = 0;
 
 	Vector2f pos, size, lastMouse, lastSize, lastPos, clickedCategoryPos, clickedModulePos;
 
@@ -71,6 +71,8 @@ public class ClickScreen extends GuiScreen implements EventListener {
 	Module clickedModule;
 
 	final Animation2D settingLine, background, sizeBackground, modulesScrolls, moduleLine, settingsScrolls;
+
+	Rot offsetRot = Rot.ZERO, prevOffsetRot = Rot.ZERO;
 
 	final EasingAnimation guis = new EasingAnimation();
 
@@ -726,7 +728,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
                             0,
                             rectHeight,
                             0,
-                            Color.WHITE
+                            Colors.WHITE.withAlpha(0.2f)
                         );
                         RoundedUtils.drawRect(
                             rectX,
@@ -734,7 +736,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
                             rectWidth,
                             0,
                             0,
-                            Color.WHITE
+                            Colors.WHITE.withAlpha(0.2f)
                         );
 
                         RoundedUtils.drawRect(
@@ -768,6 +770,12 @@ public class ClickScreen extends GuiScreen implements EventListener {
 //                            rectY + 3,
 //                            Color.WHITE
 //                        );
+						Rot smoothRot = prevOffsetRot.add(offsetRot.subtract(prevOffsetRot).multiplier(mc.timer.renderPartialTicks));
+
+						float dotX = rectCenterX + smoothRot.getYaw();
+						float dotY = rectCenterY + smoothRot.getPitch();
+
+						RoundedUtils.drawRect(dotX - 1, dotY - 1, 2, 2, 1, Color.WHITE);
 
 						fontRenderer.drawString(text, rectX + rectWidth / 2f - fontRenderer.getStringWidth(text) / 2f, rectY + 5, Colors.WHITE);
                         offset += 110;
@@ -1291,6 +1299,19 @@ public class ClickScreen extends GuiScreen implements EventListener {
     @Override
 	public void onEvent(Event event) {
 		if (event instanceof TickEvent) {
+			if (selectedModule != null) {
+				for (Setting setting : selectedModule.getSettings()) {
+					if (!setting.isVisible()) continue;
+					if (setting instanceof TestRotationOffsetSetting rotOffset) {
+						if (rotOffset.offsets.isEmpty()) continue;
+						if (recordedIndex >= rotOffset.offsets.size()) recordedIndex = 0;
+
+						prevOffsetRot = offsetRot;
+						offsetRot = rotOffset.getByIndex(recordedIndex++);
+					}
+				}
+			}
+
 			if (delay > 0) {
 				delay--;
 				return;

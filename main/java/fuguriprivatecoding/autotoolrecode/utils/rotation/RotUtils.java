@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.rotation;
 
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
@@ -66,21 +67,22 @@ public class RotUtils implements Imports {
 	public static Rot getRotationFromDiff(Vec3 diff) {
 		double distance = sqrt(diff.xCoord * diff.xCoord + diff.zCoord * diff.zCoord);
 		return new Rot(
-			(float) (Math.toDegrees(Math.atan2(diff.zCoord, diff.xCoord)) - 90),
+			MathHelper.wrapDegree((float) (Math.toDegrees(Math.atan2(diff.zCoord, diff.xCoord)) - 90)),
 			(float) -Math.toDegrees(Math.atan2(diff.yCoord, distance))
 		);
 	}
 
 	public static Rot getNearestRotation(Rot current, AxisAlignedBB bb) {
+
 		Vec3[] points = {
 			new Vec3(bb.minX, bb.minY, bb.minZ),
 			new Vec3(bb.maxX, bb.minY, bb.minZ),
 			new Vec3(bb.maxX, bb.minY, bb.maxZ),
 			new Vec3(bb.minX, bb.minY, bb.maxZ),
+			new Vec3(bb.minX, bb.maxY, bb.minZ),
 			new Vec3(bb.maxX, bb.maxY, bb.minZ),
 			new Vec3(bb.maxX, bb.maxY, bb.maxZ),
-			new Vec3(bb.minX, bb.maxY, bb.maxZ),
-			new Vec3(bb.maxX, bb.maxY, bb.maxZ)
+			new Vec3(bb.minX, bb.maxY, bb.maxZ)
 		};
 
 		List<Rot> rotations = Arrays.stream(points).map(RotUtils::getRotationToPoint).toList();
@@ -153,6 +155,10 @@ public class RotUtils implements Imports {
 			MathHelper.wrapDegree(end.getYaw() - start.getYaw()),
 			end.getPitch() - start.getPitch()
 		);
+	}
+
+	public static Rot getDeltaInvert(Rot start, Rot end) {
+		return getDelta(end, start);
 	}
 
 	public static void limitDelta(Rot delta, Rot speed) {

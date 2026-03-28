@@ -66,8 +66,8 @@ public class CustomCape extends Module {
 
                 dynamicTexture = new DynamicTexture(capeImage);
                 return mc.getTextureManager().getDynamicTextureLocation(
-                        "custom_cape_" + capeMode.getMode().toLowerCase(),
-                        dynamicTexture
+                    "custom_cape_" + capeMode.getMode().toLowerCase(),
+                    dynamicTexture
                 );
             } catch (IOException e) {
                 System.out.println(e.getMessage());

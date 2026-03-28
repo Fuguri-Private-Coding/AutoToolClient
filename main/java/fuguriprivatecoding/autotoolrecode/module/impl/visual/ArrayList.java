@@ -68,18 +68,22 @@ public class ArrayList extends Module {
 
             int size = fontScale.getValue();
 
+            float hSpacing = horizontalSpacing.getValue();
+            float vSpacing = verticalSpacing.getValue();
+
             sort(moduleList, font, size);
 
-            float xOffset = this.xPos.getValue() + horizontalSpacing.getValue();
+            float xOffset = this.xPos.getValue() + hSpacing;
             float yOffset = this.yPos.getValue();
             for (Module module : moduleList) {
                 EasingAnimation slideAnim = module.getArrayListAnim();
                 slideAnim.update(animSpeed.getValue(), Easing.OUT_CUBIC);
 
-                float width = font.width(module.getName(), size) + horizontalSpacing.getValue() * 2 + 8;
+                float width = font.width(module.getName(), size) + hSpacing * 2 + 8;
 
                 float slideValue = slideAnim.getValue();
                 float alpha = slideAnim.getClampValue();
+                float moduleTextHeight = font.height(module.getName(), size);
 
                 drawLine(
                     xOffset - width + slideValue * width,
@@ -92,7 +96,7 @@ public class ArrayList extends Module {
                     size
                 );
 
-                yOffset += (font.height(module.getName(), size) + verticalSpacing.getValue()) * slideValue;
+                yOffset += (moduleTextHeight + vSpacing) * slideValue;
             }
         }
     }

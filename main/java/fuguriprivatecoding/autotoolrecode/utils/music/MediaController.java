@@ -1,6 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.utils.music;
 
 import lombok.Getter;
+import lombok.Setter;
+import net.minecraft.util.ResourceLocation;
 import smtc.SmtcNative;
 import smtc.TrackInfo;
 import javax.imageio.ImageIO;
@@ -14,8 +16,15 @@ public final class MediaController {
     @Getter private final ScheduledExecutorService executor;
     @Getter private volatile TrackInfo current = TrackInfo.EMPTY;
     @Getter private volatile BufferedImage artworkImage;
+
+    @Getter @Setter
+    private volatile BufferedImage lastArtworkImage;
+
     @Getter private volatile long lastVersion = -1L;
     @Getter private volatile long artworkVersion = -1L;
+
+    @Getter @Setter
+    private ResourceLocation songLocation;
 
     public MediaController() {
         this.executor = Executors.newSingleThreadScheduledExecutor();
@@ -46,24 +55,6 @@ public final class MediaController {
         } catch (Throwable ignored) {}
     }
 
-    public long getInterpolatedPositionMs() {
-        TrackInfo info = current;
-        if (!info.available()) {
-            return 0L;
-        }
-
-        long base = info.positionMs();
-        if (!info.isPlaying()) {
-            return Math.clamp(base, 0L, info.durationMs());
-        }
-
-        long now = System.currentTimeMillis();
-        long delta = now - info.lastUpdatedEpochMs();
-
-        long interpolated = base + delta;
-        return Math.clamp(interpolated, 0L, info.durationMs());
-    }
-
     public boolean next() {
         if (!current.available()) return false;
         return SmtcNative.nNext();
@@ -92,16 +83,6 @@ public final class MediaController {
     public boolean pause() {
         if (!current.available()) return false;
         return SmtcNative.nPause();
-    }
-
-    public boolean seek(long positionMs) {
-        TrackInfo info = current;
-        if (!info.available() || !info.seekSupported()) {
-            return false;
-        }
-
-        long clamped = Math.clamp(positionMs, 0L, info.durationMs());
-        return SmtcNative.nSeek(clamped);
     }
 
     public void close() {
