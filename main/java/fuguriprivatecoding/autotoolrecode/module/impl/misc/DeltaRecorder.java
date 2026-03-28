@@ -28,7 +28,7 @@ import net.minecraft.util.Vec3;
 
 import java.awt.*;
 
-@ModuleInfo(name = "DeltaRecorder", category = Category.MISC)
+@ModuleInfo(name = "DeltaRecorder", category = Category.MISC, description = "Записывает ротацию/дельту камеры для KillAura")
 public class DeltaRecorder extends Module {
 
     Mode recordType = new Mode("RecordType", this)

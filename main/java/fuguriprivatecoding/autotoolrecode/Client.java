@@ -58,7 +58,7 @@ public enum Client implements Imports, EventListener {
 	INST;
 
 	public final String CLIENT_NAME = "AutoTool";
-    public final ClientVersion CLIENT_VERSION = new ClientVersion(4, 6, 4);
+    public final ClientVersion CLIENT_VERSION = new ClientVersion(4, 6, 5);
 
     private final String RESOURCES_ID = "minecraft";
     private final String RESOURCES_CLIENT_ID = "autotool/";

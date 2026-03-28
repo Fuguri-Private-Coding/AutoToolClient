@@ -730,6 +730,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
                             0,
                             Colors.WHITE.withAlpha(0.2f)
                         );
+
                         RoundedUtils.drawRect(
                             rectX,
                             rectCenterY - 1,
@@ -739,37 +740,6 @@ public class ClickScreen extends GuiScreen implements EventListener {
                             Colors.WHITE.withAlpha(0.2f)
                         );
 
-                        RoundedUtils.drawRect(
-                            rectX,
-                            rectY + rectHeight + 5,
-                            45,
-                            12,
-                            5,
-                            Color.GREEN
-                        );
-//
-//                        fontRenderer.drawCenteredString(
-//                            "Start recording",
-//                            rectX + 45 / 2,
-//                            rectY + 3,
-//                            Color.WHITE
-//                        );
-
-                        RoundedUtils.drawRect(
-                            rectX + 55,
-                            rectY + rectHeight + 5,
-                            45,
-                            12,
-                            5,
-                            Color.RED
-                        );
-//
-//                        fontRenderer.drawCenteredString(
-//                            "Stop recording",
-//                            rectX + 55,
-//                            rectY + 3,
-//                            Color.WHITE
-//                        );
 						Rot smoothRot = prevOffsetRot.add(offsetRot.subtract(prevOffsetRot).multiplier(mc.timer.renderPartialTicks));
 
 						float dotX = rectCenterX + smoothRot.getYaw();
