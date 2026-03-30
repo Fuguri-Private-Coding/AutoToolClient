@@ -51,6 +51,7 @@ public class TimerRange extends Module {
 
         if (event instanceof TickEvent e && !teleporting) {
             if (balance > 0) {
+                if (target != null && target.hurtTime > 0) target.hurtTime--;
                 e.cancel();
                 balance--;
                 return;

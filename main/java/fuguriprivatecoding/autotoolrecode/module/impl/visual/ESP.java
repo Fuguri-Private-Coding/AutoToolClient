@@ -25,6 +25,7 @@ public class ESP extends Module {
 
     final MultiMode modes = new MultiMode("Modes", this)
         .add("HitBox")
+        .add("Corner")
         .add("Glow")
         ;
 
@@ -32,36 +33,47 @@ public class ESP extends Module {
 
     final CheckBox useRealPositions = new CheckBox("UseRealPositions", this, renderBox, false);
 
-    final ColorSetting color = new ColorSetting("Color", this, renderBox);
+    final ColorSetting color = new ColorSetting("Color", this, () -> !modes.get("Glow"));
+    final CheckBox glow = new CheckBox("Glow", this, false);
+    final ColorSetting glowColor = new ColorSetting("GlowColor", this, () -> !modes.get("Glow") && glow.isToggled());
+
     final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f, 5f, 1f, 0.1f);
 
     @Override
     public void onEvent(Event event) {
         if (event instanceof Render3DEvent) {
-            if (modes.get("HitBox")) {
-                RenderUtils.start3D();
-                for (EntityPlayer player : mc.theWorld.playerEntities) {
-                    if (shouldContinueRender(player)) continue;
+            RenderUtils.start3D();
+            for (EntityPlayer player : mc.theWorld.playerEntities) {
+                if (shouldContinueRender(player)) continue;
 
-                    Vec3 pos = player == mc.thePlayer || !useRealPositions.isToggled() ?
-                        RenderUtils.getAbsoluteSmoothPos(player.getLastPositionVector(), player.getPositionVector()).subtract(RenderManager.getRenderPosition()) :
-                        player.getRealPosition();
+                Vec3 pos = player == mc.thePlayer || !useRealPositions.isToggled() ?
+                    RenderUtils.getAbsoluteSmoothPos(player.getLastPositionVector(), player.getPositionVector()).subtract(RenderManager.getRenderPosition()) :
+                    player.getRealPosition();
 
+                if (modes.get("HitBox")) {
                     AxisAlignedBB bb = player.getEntityBoundingBox().offset(pos.xCoord - player.posX, pos.yCoord - player.posY, pos.zCoord - player.posZ);
                     RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());
+
+                    if (glow.isToggled()) {
+                        BloomUtils.addToDraw(() -> RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue()));
+                    }
                 }
-                RenderUtils.stop3D();
-            }
 
-            if (modes.get("Glow")) {
-                for (final EntityPlayer player : mc.theWorld.playerEntities) {
-                    if (shouldContinueRender(player)) continue;
+                if (modes.get("Corner")) {
+                    RenderUtils.drawCornerESP(player, color.getFadedColor());
 
+                    if (glow.isToggled()) {
+                        BloomUtils.addToDraw(() -> RenderUtils.drawCornerESP(player, glowColor.getFadedColor()));
+                    }
+                }
+
+                if (modes.get("Glow")) {
                     BloomUtils.addToDraw(() -> mc.renderManager.renderEntitySimple(player, mc.timer.renderPartialTicks));
+                    RenderHelper.disableStandardItemLighting();
+                    mc.entityRenderer.disableLightmap();
                 }
-                RenderHelper.disableStandardItemLighting();
-                mc.entityRenderer.disableLightmap();
             }
+            RenderUtils.stop3D();
         }
     }
 

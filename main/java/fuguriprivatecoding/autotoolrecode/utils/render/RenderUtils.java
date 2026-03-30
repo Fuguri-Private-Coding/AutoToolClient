@@ -4,12 +4,15 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
@@ -214,6 +217,47 @@ public class RenderUtils implements Imports {
         glDepthMask(true);
         glDisable(GL_BLEND);
         GlStateManager.popMatrix();
+    }
+
+
+    public static void drawCornerESP(EntityLivingBase entity, Color color) {
+        Vec3 pos = getAbsoluteSmoothPos(entity.getLastPositionVector(), entity.getPositionVector(), mc.timer.renderPartialTicks).subtract(RenderManager.getRenderPosition());
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(pos.xCoord, pos.yCoord + entity.height / 2.0F, pos.zCoord);
+        GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.scale(-0.1, -0.1, 0.1);
+        ColorUtils.glColor(color);
+        float width = 23.3f * entity.width / 2.0f;
+        float height = entity instanceof EntityPlayer ? 12.0F : 11.98F * entity.height / 2.0F;
+        draw3DRect(width - 4, height - 1.0F, width - 1.0F, height);
+        draw3DRect(-width + 4, height - 1.0F, -width + 1.0F, height);
+        draw3DRect(-width, height, -width + 1.0F, height - 4.0F);
+        draw3DRect(width, height, width - 1.0F, height - 4.0F);
+        draw3DRect(width, -height, width - 4.0F, -height + 1.0F);
+        draw3DRect(-width, -height, -width + 4.0F, -height + 1.0F);
+        draw3DRect(-width, -height + 1.0F, -width + 1.0F, -height + 4.0F);
+        draw3DRect(width, -height + 1.0F, width - 1.0F, -height + 4.0F);
+        ColorUtils.glColor(Color.BLACK, 1f);
+        draw3DRect(width, height, width - 4.0F, height + 0.2F);
+        draw3DRect(-width, height, -width + 4.0F, height + 0.2F);
+        draw3DRect(-width - 0.2F, height + 0.2F, -width, height - 4.0F);
+        draw3DRect(width + 0.2F, height + 0.2F, width, height - 4.0F);
+        draw3DRect(width + 0.2F, -height, width - 4.0F, -height - 0.2F);
+        draw3DRect(-width - 0.2F, -height, -width + 4.0F, -height - 0.2F);
+        draw3DRect(-width - 0.2F, -height, -width, -height + 4.0F);
+        draw3DRect(width + 0.2F, -height, width, -height + 4.0F);
+        ColorUtils.resetColor();
+        GlStateManager.popMatrix();
+    }
+
+    public static void draw3DRect(float x1, float y1, float x2, float y2) {
+        GL11.glBegin(7);
+        GL11.glVertex2d(x2, y1);
+        GL11.glVertex2d(x1, y1);
+        GL11.glVertex2d(x1, y2);
+        GL11.glVertex2d(x2, y2);
+        GL11.glEnd();
     }
 
     public static void drawBoundingBox(AxisAlignedBB abb, Color color) {

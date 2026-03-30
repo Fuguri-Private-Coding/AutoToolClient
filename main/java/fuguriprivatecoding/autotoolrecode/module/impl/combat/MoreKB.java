@@ -39,7 +39,7 @@ public class MoreKB extends Module {
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
             EntityLivingBase ent = TargetStorage.getTargetOrSelectedEntity();
-            if (ent != null && ent.hurtTime == 10 && !notWhile(ent) && delay == 0 && reset == 0) {
+            if (ent != null && ent.hurtResistantTime == 20 && !notWhile(ent) && delay == 0 && reset == 0) {
                 delay = delayTicks.getRandomizedIntValue();
                 reset = resetTicks.getRandomizedIntValue();
             }

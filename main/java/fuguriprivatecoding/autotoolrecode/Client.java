@@ -81,7 +81,7 @@ public enum Client implements Imports, EventListener {
 		long start = System.nanoTime();
 		starting = true;
 
-        File msdf_gen_file = new File("msdf-gen.zip");
+        File msdf_gen_file = new File(CLIENT_DIR, "msdf-gen.zip");
         FileUtils.unpackIfNeeded(msdf_gen_file, "assets/minecraft/autotool/msdf-gen/msdf-gen.zip");
 
         File smtc_bridge_native_file = new File(NATIVES_DIR, "smtc_bridge.dll");
