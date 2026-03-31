@@ -15,6 +15,7 @@ public class Commands {
         commands.add(new CommandBind());
         commands.add(new CommandIRC());
         commands.add(new CommandHelp());
+        commands.add(new CommandBinds());
     }
 	
 	public static boolean handle(String msg) {
