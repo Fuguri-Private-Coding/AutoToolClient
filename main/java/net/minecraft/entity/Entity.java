@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import fuguriprivatecoding.autotoolrecode.event.events.player.FallDistanceEvent;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import lombok.Getter;
 import lombok.Setter;
@@ -892,7 +893,13 @@ public abstract class Entity implements ICommandSender
                 }
                 else
                 {
-                    this.fall(this.fallDistance, 1.0F);
+                    if (this == mc.thePlayer) {
+                        FallDistanceEvent event = new FallDistanceEvent(this.fallDistance, 1.0f);
+                        event.call();
+                        if (!event.isCanceled()) this.fall(event.getFallDistance(), event.getDamageMultiplier());
+                    } else {
+                        this.fall(this.fallDistance, 1f);
+                    }
                 }
 
                 this.fallDistance = 0.0F;

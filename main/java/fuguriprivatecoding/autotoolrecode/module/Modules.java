@@ -61,6 +61,8 @@ public class Modules {
             new InvManager(),
             new CustomCrosshair(),
             new ESP(),
+			new ItemESP(),
+			new NoFall(),
 			new BackTrack(),
 			new RotationHandler(),
 			new Glow(),
