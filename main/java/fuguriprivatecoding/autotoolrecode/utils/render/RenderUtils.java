@@ -190,23 +190,16 @@ public class RenderUtils implements Imports {
     public static void drawBlockESP(BlockPos blockPos, float red, float green, float blue, float alpha) {
         glColor4f(red, green, blue, alpha);
 
-        double x = blockPos.getX() - RenderManager.renderPosX;
-        double y = blockPos.getY() - RenderManager.renderPosY;
-        double z = blockPos.getZ() - RenderManager.renderPosZ;
-
         Block block = mc.theWorld.getBlockState(blockPos).getBlock();
 
-        AxisAlignedBB bb = new AxisAlignedBB(
-            x + block.getBlockBoundsMinX(),
-            y + block.getBlockBoundsMinY(),
-            z + block.getBlockBoundsMinZ(),
-            x + block.getBlockBoundsMaxX(),
-            y + block.getBlockBoundsMaxY(),
-            z + block.getBlockBoundsMaxZ()
-        );
+        AxisAlignedBB bb = block.getSelectedBoundingBox(mc.theWorld, blockPos)
+            .offset(RenderManager.getRenderPosition().invert());
+
+        block.setBlockBoundsBasedOnState(mc.theWorld, blockPos);
 
         drawBoundingBox(bb);
         ColorUtils.resetColor();
+        GlStateManager.resetColor();
     }
 
     public static void drawDot(Vec3 pos, double size, Color color) {

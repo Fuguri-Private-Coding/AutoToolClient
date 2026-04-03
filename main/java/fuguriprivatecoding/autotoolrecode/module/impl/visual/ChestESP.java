@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
@@ -44,7 +43,6 @@ public class ChestESP extends Module {
                         if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, Color.WHITE));
 
                         RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
-                        GlStateManager.resetColor();
                     }
 
                     case TileEntityEnderChest tileEntityEnderChest when enderChest.isToggled() -> {
@@ -54,7 +52,6 @@ public class ChestESP extends Module {
                         if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, Color.WHITE));
 
                         RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
-                        GlStateManager.resetColor();
                     }
                     default -> {}
                 }

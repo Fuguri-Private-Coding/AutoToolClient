@@ -249,7 +249,7 @@ public class Scaffold extends Module {
                     currentAirTicks = airTicks.getRandomizedIntValue();
                     rotation = new Rot(needYaw, lastRotation.getPitch());
                 } else {
-                    rotation = getBestRotation(needYaw, offset, sortYawOffset.isToggled(), 5);
+                    rotation = getBestRotation(needYaw, offset, sortYawOffset.isToggled(), 2);
                 }
             }
 

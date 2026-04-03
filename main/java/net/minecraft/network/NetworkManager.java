@@ -155,9 +155,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
             return;
         }
 
-
-        if (this.channel.isOpen())
-        {
+        if (this.channel.isOpen()) {
             try {
                 p_channelRead0_2_.processPacket(this.packetListener);
             }

@@ -90,6 +90,10 @@ public class Vec3
     {
         return new Vec3(this.xCoord + x, this.yCoord + y, this.zCoord + z);
     }
+    
+    public Vec3 invert() {
+        return new Vec3(-this.xCoord, -this.yCoord, -this.zCoord);
+    }
 
     public double distanceTo(Vec3 vec)
     {
@@ -109,7 +113,7 @@ public class Vec3
 
     public double lengthVector()
     {
-        return (double)MathHelper.sqrt_double(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
+        return MathHelper.sqrt_double(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
     }
 
     public Vec3 getIntermediateWithXValue(Vec3 vec, double x)
