@@ -156,6 +156,14 @@ public class RenderUtils implements Imports {
         Gui.drawRect(x, y, x + width, y + height, color.getRGB());
     }
 
+    public static void drawHorizontalLine(float x, float width, float y, float lineWidth, Color color) {
+        Gui.drawRect(x, y, x + width + lineWidth, y + lineWidth, color.getRGB());
+    }
+
+    public static void drawVerticalLine(float x, float y, float height, float lineWidth, Color color) {
+        Gui.drawRect(x, y, x + lineWidth, y + height, color.getRGB());
+    }
+
     public static void glColor(final int n) {
         GL11.glColor4f((float) (n >> 16 & 0xFF) / 255.0f, (float) (n >> 8 & 0xFF) / 255.0f, (float) (n & 0xFF) / 255.0f, (float) (n >> 24 & 0xFF) / 255.0f);
     }

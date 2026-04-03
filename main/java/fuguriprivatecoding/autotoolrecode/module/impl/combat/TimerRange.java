@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -14,11 +15,15 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
+
+import java.awt.*;
 
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
 public class TimerRange extends Module {
@@ -103,9 +108,9 @@ public class TimerRange extends Module {
     }
 
     private AxisAlignedBB getRealBB(EntityLivingBase target, Vec3 newPos, Vec3 pos) {
-        double offsetX = BackTrack.working ? pos.xCoord - target.posX : newPos.xCoord - target.posX;
-        double offsetY = BackTrack.working ? pos.yCoord - target.posY : newPos.yCoord - target.posY;
-        double offsetZ = BackTrack.working ? pos.zCoord - target.posZ : newPos.zCoord - target.posZ;
+        double offsetX = BackTrack.working ? target.posX - pos.xCoord : newPos.xCoord - target.posX;
+        double offsetY = BackTrack.working ? target.posY - pos.yCoord : newPos.yCoord - target.posY;
+        double offsetZ = BackTrack.working ? target.posZ - pos.zCoord : newPos.zCoord - target.posZ;
 
         return target.getEntityBoundingBox().offset(offsetX, offsetY, offsetZ);
     }

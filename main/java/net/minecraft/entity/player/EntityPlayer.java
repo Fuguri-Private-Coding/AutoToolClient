@@ -1948,7 +1948,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
 
     public boolean isBot() {
         AntiBot antiBot = Modules.getModule(AntiBot.class);
-        return antiBot.isToggled() && antiBot.isBot(this);
+        return antiBot.isToggled() && AntiBot.isBot(this);
     }
 
     public boolean isTeam() {
