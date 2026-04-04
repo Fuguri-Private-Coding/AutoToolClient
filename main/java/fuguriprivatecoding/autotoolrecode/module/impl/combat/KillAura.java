@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
@@ -156,12 +157,19 @@ public class KillAura extends Module {
 
         AxisAlignedBB fullBox = RotUtils.getHitBox(target, 100, 100).expand(0.1);
 
-        Vec3 needPoint = switch (hitVec.getMode()) {
-            case "Best" -> RotUtils.getBestHitVec(box);
-            case "Head" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight(), 0);
-            case "Body" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight() / 2f, 0);
-            default -> Vec3.ZERO;
-        };
+//        Vec3 needPoint = switch (hitVec.getMode()) {
+//            case "Best" -> RotUtils.getBestHitVec(box);
+//            case "Head" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight(), 0);
+//            case "Body" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight() / 2f, 0);
+//            default -> Vec3.ZERO;
+//      };
+
+        Vec3 needPoint = RotUtils.getBestHitVec(box).subtract(0, 0.25, 0);
+
+        if (!box.isVecInside(needPoint)) {
+            needPoint = box.getCenter();
+            ClientUtils.chatLog("force body " + mc.thePlayer.ticksExisted % 100);
+        }
 
         Rot needRot = RotUtils.getRotationToPoint(needPoint);
 

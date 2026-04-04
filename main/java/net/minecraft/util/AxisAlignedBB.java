@@ -225,7 +225,7 @@ public class AxisAlignedBB
 
     public boolean isVecInside(Vec3 vec)
     {
-        return vec.xCoord > this.minX && vec.xCoord < this.maxX && (vec.yCoord > this.minY && vec.yCoord < this.maxY && vec.zCoord > this.minZ && vec.zCoord < this.maxZ);
+        return vec.xCoord >= this.minX && vec.xCoord <= this.maxX && (vec.yCoord >= this.minY && vec.yCoord <= this.maxY && vec.zCoord >= this.minZ && vec.zCoord <= this.maxZ);
     }
 
     public Vec3 clampVecToInside(Vec3 vec) {
