@@ -204,10 +204,13 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     public static byte[] memoryReserve = new byte[10485760];
     private static final List<DisplayMode> macDisplayModes = Lists.newArrayList(new DisplayMode(2560, 1600), new DisplayMode(2880, 1800));
     private final File fileResourcepacks;
-    @Getter private final PropertyMap twitchDetails;
+    @Getter
+    private final PropertyMap twitchDetails;
     private final PropertyMap profileProperties;
-    @Getter private ServerData currentServerData;
-    @Getter private TextureManager renderEngine;
+    @Getter
+    private ServerData currentServerData;
+    @Getter
+    private TextureManager renderEngine;
     private static Minecraft theMinecraft;
     public PlayerControllerMP playerController;
     private boolean fullscreen;
@@ -216,21 +219,30 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     private CrashReport crashReporter;
     public int displayWidth;
     public int displayHeight;
-    @Setter @Getter private boolean connectedToRealms = false;
+    @Setter
+    @Getter
+    private boolean connectedToRealms = false;
     public Timer timer = new Timer(20.0F);
     public Timer fakeTimer = new Timer(20.0F);
     private final PlayerUsageSnooper usageSnooper = new PlayerUsageSnooper("client", this, MinecraftServer.getCurrentTimeMillis());
     public WorldClient theWorld;
     public RenderGlobal renderGlobal;
-    @Getter public RenderManager renderManager;
-    @Getter private RenderItem renderItem;
-    @Getter private ItemRenderer itemRenderer;
+    @Getter
+    public RenderManager renderManager;
+    @Getter
+    private RenderItem renderItem;
+    @Getter
+    private ItemRenderer itemRenderer;
     public EntityPlayerSP thePlayer;
-    @Getter private Entity renderViewEntity;
+    @Getter
+    private Entity renderViewEntity;
     public Entity pointedEntity;
     public EffectRenderer effectRenderer;
-    @Setter @Getter private Session session;
-    @Getter private boolean isGamePaused;
+    @Setter
+    @Getter
+    private Session session;
+    @Getter
+    private boolean isGamePaused;
     public FontRenderer fontRendererObj;
     public FontRenderer standardGalacticFontRenderer;
     public GuiScreen currentScreen;
@@ -240,7 +252,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     private final int tempDisplayWidth;
     private final int tempDisplayHeight;
     private IntegratedServer theIntegratedServer;
-    @Getter private final long startMillisTime = System.currentTimeMillis();
+    @Getter
+    private final long startMillisTime = System.currentTimeMillis();
     public GuiAchievement guiAchievement;
     public GuiIngame ingameGUI;
     public boolean skipRenderWorld;
@@ -250,16 +263,20 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     public final File mcDataDir;
     private final File fileAssets;
     private final String launchedVersion;
-    @Getter private final Proxy proxy;
-    @Getter private ISaveFormat saveLoader;
-    @Getter private static int debugFPS;
+    @Getter
+    private final Proxy proxy;
+    @Getter
+    private ISaveFormat saveLoader;
+    @Getter
+    private static int debugFPS;
     public int rightClickDelayTimer;
     private String serverName;
     private int serverPort;
     public boolean inGameHasFocus;
     long systemTime = getSystemTime();
     private int joinPlayerCounter;
-    @Getter public final FrameTimer frameTimer = new FrameTimer();
+    @Getter
+    public final FrameTimer frameTimer = new FrameTimer();
     long startNanoTime = System.nanoTime();
     private final boolean jvm64bit;
     private final boolean isDemo;
@@ -275,12 +292,15 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     private LanguageManager mcLanguageManager;
     private IStream stream;
     private Framebuffer framebufferMc;
-    @Getter private TextureMap textureMapBlocks;
+    @Getter
+    private TextureMap textureMapBlocks;
     private SoundHandler mcSoundHandler;
     private MusicTicker mcMusicTicker;
     private ResourceLocation mojangLogo;
-    @Getter private final MinecraftSessionService sessionService;
-    @Getter private SkinManager skinManager;
+    @Getter
+    private final MinecraftSessionService sessionService;
+    @Getter
+    private SkinManager skinManager;
     private final Queue<FutureTask<?>> scheduledTasks = Queues.newArrayDeque();
     private final Thread mcThread = Thread.currentThread();
     private ModelManager modelManager;
@@ -357,7 +377,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             } catch (ReportedException reportedexception) {
                 this.addGraphicsAndWorldToCrashReport(reportedexception.getCrashReport());
                 this.freeMemory();
-                logger.fatal( "Reported exception thrown!", reportedexception);
+                logger.fatal("Reported exception thrown!", reportedexception);
                 this.displayCrashReport(reportedexception.getCrashReport());
                 break;
             } catch (Throwable throwable1) {
@@ -408,8 +428,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         this.fontRendererObj = new FontRenderer(this.gameSettings, new ResourceLocation("textures/font/ascii.png"), this.renderEngine, false);
 
         WindowIconHelper.setWindowIcon(
-                new ResourceLocation("minecraft", "autotool/image/logo16.png"),
-                new ResourceLocation("minecraft", "autotool/image/logo32.png")
+            new ResourceLocation("minecraft", "autotool/image/logo16.png"),
+            new ResourceLocation("minecraft", "autotool/image/logo32.png")
         );
 
         Client.INST.init();
@@ -708,7 +728,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        worldrenderer.pos(0.0D,this.displayHeight, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
+        worldrenderer.pos(0.0D, this.displayHeight, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
         worldrenderer.pos(this.displayWidth, this.displayHeight, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
         worldrenderer.pos(this.displayWidth, 0.0D, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
         worldrenderer.pos(0.0D, 0.0D, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
@@ -731,10 +751,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         float f1 = 0.00390625F;
         WorldRenderer worldrenderer = Tessellator.getInstance().getWorldRenderer();
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        worldrenderer.pos(posX, (posY + height), 0.0D).tex( ( texU * f),  ((texV + height) * f1)).color(red, green, blue, alpha).endVertex();
-        worldrenderer.pos((posX + width), (posY + height), 0.0D).tex(( (texU + width) * f),  ( (texV + height) * f1)).color(red, green, blue, alpha).endVertex();
-        worldrenderer.pos((posX + width), posY, 0.0D).tex( ( (texU + width) * f),  ( texV * f1)).color(red, green, blue, alpha).endVertex();
-        worldrenderer.pos(posX, posY, 0.0D).tex((texU * f), ( texV * f1)).color(red, green, blue, alpha).endVertex();
+        worldrenderer.pos(posX, (posY + height), 0.0D).tex((texU * f), ((texV + height) * f1)).color(red, green, blue, alpha).endVertex();
+        worldrenderer.pos((posX + width), (posY + height), 0.0D).tex(((texU + width) * f), ((texV + height) * f1)).color(red, green, blue, alpha).endVertex();
+        worldrenderer.pos((posX + width), posY, 0.0D).tex(((texU + width) * f), (texV * f1)).color(red, green, blue, alpha).endVertex();
+        worldrenderer.pos(posX, posY, 0.0D).tex((texU * f), (texV * f1)).color(red, green, blue, alpha).endVertex();
         Tessellator.getInstance().draw();
     }
 
@@ -1051,10 +1071,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             int k = this.displayHeight - i * 2;
             GlStateManager.enableBlend();
             worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            worldrenderer.pos((float) j - (float) i * 1.1F,  ((float) k - (float) i * 0.6F - 16.0F), 0.0D).color(200, 0, 0, 0).endVertex();
-            worldrenderer.pos(((float) j - (float) i * 1.1F),  (k + i * 2), 0.0D).color(200, 0, 0, 0).endVertex();
-            worldrenderer.pos(((float) j + (float) i * 1.1F),  (k + i * 2), 0.0D).color(200, 0, 0, 0).endVertex();
-            worldrenderer.pos(((float) j + (float) i * 1.1F),  ((float) k - (float) i * 0.6F - 16.0F), 0.0D).color(200, 0, 0, 0).endVertex();
+            worldrenderer.pos((float) j - (float) i * 1.1F, ((float) k - (float) i * 0.6F - 16.0F), 0.0D).color(200, 0, 0, 0).endVertex();
+            worldrenderer.pos(((float) j - (float) i * 1.1F), (k + i * 2), 0.0D).color(200, 0, 0, 0).endVertex();
+            worldrenderer.pos(((float) j + (float) i * 1.1F), (k + i * 2), 0.0D).color(200, 0, 0, 0).endVertex();
+            worldrenderer.pos(((float) j + (float) i * 1.1F), ((float) k - (float) i * 0.6F - 16.0F), 0.0D).color(200, 0, 0, 0).endVertex();
             tessellator.draw();
             GlStateManager.disableBlend();
             double d0 = 0.0D;

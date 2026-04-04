@@ -9,7 +9,6 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
-import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.util.RayTrace;
 import org.lwjgl.input.Mouse;
@@ -17,12 +16,8 @@ import org.lwjgl.input.Mouse;
 @ModuleInfo(name = "AutoClicker", category = Category.LEGIT, description = "Автоматически кликает за вас.")
 public class AutoClicker extends Module {
 
-    MultiMode buttons = new MultiMode("Buttons", this)
-        .addModes("Left")
-        ;
-
-    DoubleSlider leftCPS = new DoubleSlider("LeftCPS", this, () -> buttons.get("Left"), 0, 40, 20, 1);
-    CheckBox breakBlocks = new CheckBox("BreakBlocks", this, () -> buttons.get("Left"), true);
+    DoubleSlider leftCPS = new DoubleSlider("LeftCPS", this, 0, 40, 20, 1);
+    CheckBox breakBlocks = new CheckBox("BreakBlocks", this, true);
 
     long leftDelay;
 
@@ -31,15 +26,13 @@ public class AutoClicker extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof RunGameLoopEvent) {
-            if (buttons.get("Left")) {
-                if (leftStopWatch.reachedMS(leftDelay)) {
-                    leftDelay = getLeftDelay();
-                    leftStopWatch.reset();
+            if (leftStopWatch.reachedMS(leftDelay)) {
+                leftDelay = getLeftDelay();
+                leftStopWatch.reset();
 
-                    if (shouldStopClicking() || shouldBreak()) return;
+                if (shouldStopClicking() || shouldBreak()) return;
 
-                    Clicks.addClick();
-                }
+                Clicks.addClick();
             }
         }
 
