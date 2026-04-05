@@ -93,11 +93,15 @@ public class Notifications extends Module {
                 Color backgroundGlowColorSecond = new Colors(this.glowColor.getFadeColor()).withAlphaClamp(openAnim.getValue());
 
                 if (glow.isToggled()) {
-                    BloomUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed()));
+                    BloomUtils.startWrite();
+                    RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed());
+                    BloomUtils.stopWrite();
                 }
 
                 if (blur.isToggled()) {
-                    BlurUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed()));
+                    BlurUtils.startWrite();
+                    RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed());
+                    BlurUtils.stopWrite();
                 }
 
                 RoundedUtils.drawRect(x, y, width + 5, height, 7.5f, backgroundColor);

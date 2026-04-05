@@ -164,7 +164,9 @@ public class DynamicIsland extends Module {
                 regularFont.draw(">", nextX, buttonsY + 1, 12, nextColor);
 
                 if (blur.isToggled()) {
-                    BlurUtils.addToDraw(() -> RoundedUtils.drawRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, Colors.WHITE.withAlpha(elementAlpha)));
+                    BlurUtils.startWrite();
+                    RoundedUtils.drawRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, Colors.WHITE.withAlpha(elementAlpha));
+                    BlurUtils.stopWrite();
                 }
 
                 if (this.width.getValue() == 10 + this.additionalWidth) {
@@ -258,7 +260,9 @@ public class DynamicIsland extends Module {
             RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.BLACK.withAlpha(0.5f));
 
             if (blur.isToggled()) {
-                BlurUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.WHITE.withAlpha(1f)));
+                BlurUtils.startWrite();
+                RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.WHITE.withAlpha(1f));
+                BlurUtils.stopWrite();
             }
 
             ScissorUtils.enableScissor();

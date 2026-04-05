@@ -11,8 +11,6 @@ import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
-import java.awt.*;
-
 @UtilityClass
 public class MotionBlurUtils implements Imports {
     public static Framebuffer inputFramebuffer = mc.getFramebuffer();
@@ -27,7 +25,7 @@ public class MotionBlurUtils implements Imports {
         update();
 
         MotionBlur mb = Modules.getModule(MotionBlur.class);
-        Shader program = Shaders.mb;
+        Shader program = Shaders.motionBlur;
 
         Framebuffer prev = ping ? historyA : historyB;
         Framebuffer curr = ping ? historyB : historyA;

@@ -63,7 +63,11 @@ public class Dot extends Module {
             switch (dotType.getMode()) {
                 case "3D" -> {
                     if (event instanceof Render3DEvent) {
-                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, glowColor.getFadedColor()));
+                        if (glow.isToggled()) {
+                            BloomUtils.startWrite();
+                            RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, glowColor.getFadedColor());
+                            BloomUtils.stopWrite();
+                        }
                         RenderUtils.drawDot(mouse.hitVec, size.getValue() / 10, color.getFadedColor());
                     }
                 }
@@ -82,7 +86,11 @@ public class Dot extends Module {
                         float x = positions[0] - (size / 2f);
                         float y = positions[1] - (size / 2f);
 
-                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RoundedUtils.drawRect(x, y, size, size, rounding.getValue(), glowColor.getFadedColor()));
+                        if (glow.isToggled()) {
+                            BloomUtils.startWrite();
+                            RoundedUtils.drawRect(x, y, size, size, rounding.getValue(), glowColor.getFadedColor());
+                            BloomUtils.stopWrite();
+                        }
                         RoundedUtils.drawRect(x, y, size, size, rounding.getValue(), color.getFadedColor());
                     }
                 }

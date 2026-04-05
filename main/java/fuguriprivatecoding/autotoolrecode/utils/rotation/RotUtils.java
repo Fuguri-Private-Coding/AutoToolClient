@@ -1,15 +1,12 @@
 package fuguriprivatecoding.autotoolrecode.utils.rotation;
 
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
-
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import static java.lang.Math.*;

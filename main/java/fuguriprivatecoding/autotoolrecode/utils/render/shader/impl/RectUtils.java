@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,7 +12,7 @@ public class RectUtils {
     private static Shader program;
 
     private static void draw(final float x, final float y, final float width, final float height, final float factor, Color color) {
-        if (program == null) program = Shaders.testelips;
+        if (program == null) program = Shaders.roundedRectTest;
         float factorPenis = (1 / factor) * height;
 
         program.start();

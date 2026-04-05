@@ -48,8 +48,11 @@ public class TargetESP extends Module {
                 float hurt = changeHitColor.isToggled() ? target.hurtTime / 10f : 0;
 
                 if (mode.getMode().equals("Sigma")) {
-                    if (glow.isToggled())
-                        BloomUtils.addToDraw(() -> renderSigma(target, hurt, instantChangeColor.isToggled()));
+                    if (glow.isToggled()) {
+                        BloomUtils.startWrite();
+                        renderSigma(target, hurt, instantChangeColor.isToggled());
+                        BloomUtils.stopWrite();
+                    }
                     renderSigma(target, hurt, instantChangeColor.isToggled());
                 }
             }

@@ -149,7 +149,11 @@ public class Scaffold extends Module {
         if (event instanceof Render3DEvent && targetBlock != null && render.isToggled()) {
             RenderUtils.start3D();
 
-            if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(targetBlock, glowColor.getFadedFloatColor()));
+            if (glow.isToggled()) {
+                BloomUtils.startWrite();
+                RenderUtils.drawBlockESP(targetBlock, glowColor.getFadedFloatColor());
+                BloomUtils.stopWrite();
+            }
             RenderUtils.drawBlockESP(targetBlock, color.getFadedFloatColor());
 
             ColorUtils.resetColor();
@@ -263,7 +267,7 @@ public class Scaffold extends Module {
                     currentAirTicks = airTicks.getRandomizedIntValue();
                     rotation = new Rot(needYaw, lastRotation.getPitch());
                 } else {
-                    rotation = getBestRotation(needYaw, offset, sortYawOffset.isToggled(), 2);
+                    rotation = getBestRotation(needYaw, offset, sortYawOffset.isToggled(), 5);
                 }
             }
 

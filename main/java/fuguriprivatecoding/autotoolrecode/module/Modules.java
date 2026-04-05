@@ -119,7 +119,6 @@ public class Modules {
 			new ScoreBoard(),
 			new IRC(),
 			new TimeChanger(),
-			new TargetHUD(),
 			new Scaffold(),
 			new HighJump(),
 			new LongJump(),

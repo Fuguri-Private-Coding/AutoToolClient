@@ -22,10 +22,11 @@ public class BlurUtils implements Imports {
 
     private static Blur blur;
 
-    public static void addToDraw(Runnable run) {
-        if (blur != null && !blur.isToggled()) return;
+    public static void startWrite() {
         inputFramebuffer.bindFramebuffer(true);
-        run.run();
+    }
+
+    public static void stopWrite() {
         mc.getFramebuffer().bindFramebuffer(true);
     }
 

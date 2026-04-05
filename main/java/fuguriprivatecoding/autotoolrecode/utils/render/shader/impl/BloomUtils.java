@@ -22,10 +22,11 @@ public class BloomUtils implements Imports {
 
     public static Glow shadows;
 
-    public static void addToDraw(Runnable run) {
-        if (shadows != null && !shadows.isToggled()) return;
+    public static void startWrite() {
         inputFramebuffer.bindFramebuffer(true);
-        run.run();
+    }
+
+    public static void stopWrite() {
         mc.getFramebuffer().bindFramebuffer(true);
     }
 

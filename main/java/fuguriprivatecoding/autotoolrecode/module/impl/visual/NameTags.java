@@ -105,13 +105,13 @@ public class NameTags extends Module {
         mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
 
         if (glow.isToggled()) {
-            BloomUtils.addToDraw(() -> {
-                if (background.isToggled()) {
-                    Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glowColor.getFadedColor().getRGB());
-                } else {
-                    mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
-                }
-            });
+            BloomUtils.startWrite();
+            if (background.isToggled()) {
+                Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glowColor.getFadedColor().getRGB());
+            } else {
+                mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
+            }
+            BloomUtils.stopWrite();
         }
 
         glPopMatrix();

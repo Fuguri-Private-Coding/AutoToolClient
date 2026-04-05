@@ -137,7 +137,11 @@ public class Fucker extends Module {
 
                 RenderUtils.start3D();
 
-                if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(bedPos, bedGlowColor));
+                if (glow.isToggled()) {
+                    BloomUtils.startWrite();
+                    RenderUtils.drawBlockESP(bedPos, bedGlowColor);
+                    BloomUtils.stopWrite();
+                }
                 RenderUtils.drawBlockESP(bedPos, bedColor);
 
                 ColorUtils.resetColor();

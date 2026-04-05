@@ -69,7 +69,7 @@ public class Module implements Imports, SettingAble, EventListener {
 
 	void playSound(float volume) {
 		if (Client.INST.isStarting() || name.equalsIgnoreCase("ClickGui")) return;
-        (toggled ? Sounds.getEnableVlSound() : Sounds.getDisableVlSound()).asyncPlay(volume);
+        (toggled ? Sounds.getEnableVlSound() : Sounds.getDisableVlSound()).playSound(volume);
 	}
 
 	public void onEnable() {

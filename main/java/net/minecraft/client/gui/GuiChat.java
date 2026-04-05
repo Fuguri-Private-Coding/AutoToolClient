@@ -221,7 +221,9 @@ public class GuiChat extends GuiScreen {
         animation2D.update(6f, Easing.OUT_CUBIC);
 
         if (glow != null && glow.isToggled() && glow.module.get("Chat")) {
-            BloomUtils.addToDraw(() -> RenderUtils.drawMixedRect(2f, this.height - 14f, animation2D.getValue(), 12, glow.chatColor.getColor(), glow.chatColor.getFadeColor(), glow.chatColor.getSpeed()));
+            BloomUtils.startWrite();
+            RenderUtils.drawMixedRect(2f, this.height - 14f, animation2D.getValue(), 12, glow.chatColor.getColor(), glow.chatColor.getFadeColor(), glow.chatColor.getSpeed());
+            BloomUtils.stopWrite();
         }
 
         drawRect(2f, this.height - 14f, 2f + animation2D.getValue(), this.height - 2f, Integer.MIN_VALUE);

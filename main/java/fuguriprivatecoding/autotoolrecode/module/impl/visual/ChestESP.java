@@ -39,8 +39,16 @@ public class ChestESP extends Module {
                     case TileEntityChest tileEntityChest -> {
                         BlockPos pos = tileEntityChest.getPos();
 
-                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor()));
-                        if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, Color.WHITE));
+                        if (glow.isToggled()) {
+                            BloomUtils.startWrite();
+                            RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor());
+                            BloomUtils.stopWrite();
+                        }
+                        if (blur.isToggled()) {
+                            BlurUtils.startWrite();
+                            RenderUtils.drawBlockESP(pos, Color.WHITE);
+                            BlurUtils.stopWrite();
+                        }
 
                         RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
                     }
@@ -48,8 +56,16 @@ public class ChestESP extends Module {
                     case TileEntityEnderChest tileEntityEnderChest when enderChest.isToggled() -> {
                         BlockPos pos = tileEntityEnderChest.getPos();
 
-                        if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor()));
-                        if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, Color.WHITE));
+                        if (glow.isToggled()) {
+                            BloomUtils.startWrite();
+                            RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor());
+                            BloomUtils.stopWrite();
+                        }
+                        if (blur.isToggled()) {
+                            BlurUtils.startWrite();
+                            RenderUtils.drawBlockESP(pos, Color.WHITE);
+                            BlurUtils.stopWrite();
+                        }
 
                         RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
                     }

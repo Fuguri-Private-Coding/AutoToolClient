@@ -105,12 +105,12 @@ public class ItemESP extends Module {
                 RenderUtils.drawVerticalLine(minX, minY, height, boxLineWidth.getValue(), color);
                 RenderUtils.drawVerticalLine(maxX, minY, height, boxLineWidth.getValue(), color);
 
-                BloomUtils.addToDraw(() -> {
-                    RenderUtils.drawHorizontalLine(minX, width, minY, boxLineWidth.getValue(), glowColor.getFadedColor());
-                    RenderUtils.drawHorizontalLine(minX, width, maxY, boxLineWidth.getValue(), glowColor.getFadedColor());
-                    RenderUtils.drawVerticalLine(minX, minY, height, boxLineWidth.getValue(), glowColor.getFadedColor());
-                    RenderUtils.drawVerticalLine(maxX, minY, height, boxLineWidth.getValue(), glowColor.getFadedColor());
-                });
+                BloomUtils.startWrite();
+                RenderUtils.drawHorizontalLine(minX, width, minY, boxLineWidth.getValue(), glowColor.getFadedColor());
+                RenderUtils.drawHorizontalLine(minX, width, maxY, boxLineWidth.getValue(), glowColor.getFadedColor());
+                RenderUtils.drawVerticalLine(minX, minY, height, boxLineWidth.getValue(), glowColor.getFadedColor());
+                RenderUtils.drawVerticalLine(maxX, minY, height, boxLineWidth.getValue(), glowColor.getFadedColor());
+                BloomUtils.stopWrite();
 
                 GL11.glScalef(scaleFactor, scaleFactor, 1);
             }
@@ -129,7 +129,9 @@ public class ItemESP extends Module {
                     RenderUtils.drawHitBox(bb, color, hitBoxLineWidth.getValue());
 
                     if (glow.isToggled()) {
-                        BloomUtils.addToDraw(() -> RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), hitBoxLineWidth.getValue()));
+                        BloomUtils.startWrite();
+                        RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), hitBoxLineWidth.getValue());
+                        BloomUtils.stopWrite();
                     }
                 }
             }

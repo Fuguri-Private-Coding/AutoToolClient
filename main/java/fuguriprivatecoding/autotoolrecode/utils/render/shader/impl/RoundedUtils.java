@@ -15,7 +15,7 @@ public class RoundedUtils implements Imports {
         if (color.getAlpha() == 0)
             return;
 
-        if (program == null) program = Shaders.rounded;
+        if (program == null) program = Shaders.roundedRect;
         program.start();
         program.uniform("u_size", width, height);
         program.uniform("u_radius", leftUp, leftDown, rightUp, rightDown);

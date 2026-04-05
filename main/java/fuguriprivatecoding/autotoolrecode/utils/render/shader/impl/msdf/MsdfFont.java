@@ -3,12 +3,10 @@ package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf;
 import com.google.gson.Gson;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
@@ -37,7 +35,7 @@ public class MsdfFont implements Imports {
     @Setter private float size;
 
     public void draw(String text, float x, float y, float size, float thickness, float spacing, Color color) {
-        Shader program = Shaders.msdf;
+        Shader program = Shaders.msdfFonts;
 
         y += height(text, size) - 2;
 

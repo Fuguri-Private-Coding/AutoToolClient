@@ -85,27 +85,20 @@ public class MoveUtils implements Imports {
         return rotationYaw;
     }
 
-    public static boolean isMoving() {
-        return mc.thePlayer.moveForward != 0.0F || mc.thePlayer.moveStrafing != 0.0F && !mc.thePlayer.isCollidedHorizontally;
+    private static float normalizeYaw(float yaw) {
+        yaw %= 360.0f;
+        if (yaw < 0) yaw += 360.0f;
+        return yaw;
     }
 
-    public static void setSpeed(float f2) {
-        mc.thePlayer.motionX = -(Math.sin(direction()) * (double)f2);
-        mc.thePlayer.motionZ = Math.cos(direction()) * (double)f2;
+    public static boolean isMoving() {
+        return mc.thePlayer.moveForward != 0.0F || mc.thePlayer.moveStrafing != 0.0F && !mc.thePlayer.isCollidedHorizontally;
     }
 
     public static void setSpeed(float f2, boolean strafe) {
         double d = Math.toRadians(getYaw(strafe));
         mc.thePlayer.motionX = -(Math.sin(d) * (double)f2);
         mc.thePlayer.motionZ = Math.cos(d) * (double)f2;
-    }
-
-    public static void strafe(double d) {
-        if (isMoving()) {
-            double direction = direction();
-            mc.thePlayer.motionX = -Math.sin(direction) * d;
-            mc.thePlayer.motionZ = Math.cos(direction) * d;
-        }
     }
 
     public static float getYaw(boolean strafe) {

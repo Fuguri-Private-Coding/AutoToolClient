@@ -2,9 +2,6 @@ package fuguriprivatecoding.autotoolrecode.utils.render;
 
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.*;
@@ -174,22 +171,7 @@ public class RenderUtils implements Imports {
         Gui.drawScaledCustomSizeModalRect(x, y, 40f, 8f, 8, 8, width, height, 64f, 64f);
     }
 
-    public static void renderWithAbsolutePosition(Runnable runnable) {
-        final RenderManager renderManager = mc.getRenderManager();
-        double x = renderManager.viewerPosX, y = renderManager.viewerPosY, z = renderManager.viewerPosZ;
-
-        GlStateManager.translate(-x, -y, -z);
-        runnable.run();
-        GlStateManager.translate(x, y, z);
-    }
-
     public static void drawBlockESP(BlockPos blockPos, Color color) {
-        drawBlockESP(blockPos, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
-    }
-
-    public static void drawBlockESP(BlockPos blockPos, float red, float green, float blue, float alpha) {
-        glColor4f(red, green, blue, alpha);
-
         Block block = mc.theWorld.getBlockState(blockPos).getBlock();
 
         AxisAlignedBB bb = block.getSelectedBoundingBox(mc.theWorld, blockPos)
@@ -197,9 +179,7 @@ public class RenderUtils implements Imports {
 
         block.setBlockBoundsBasedOnState(mc.theWorld, blockPos);
 
-        drawBoundingBox(bb);
-        ColorUtils.resetColor();
-        GlStateManager.resetColor();
+        drawBoundingBox(bb, color);
     }
 
     public static void drawDot(Vec3 pos, double size, Color color) {
@@ -212,7 +192,11 @@ public class RenderUtils implements Imports {
         glDisable(2929);
         glDepthMask(false);
         glLineWidth(2.0F);
-        renderWithAbsolutePosition(() -> drawBoundingBox(box, color));
+        final RenderManager renderManager = mc.getRenderManager();
+        double x = renderManager.viewerPosX, y = renderManager.viewerPosY, z = renderManager.viewerPosZ;
+        GlStateManager.translate(-x, -y, -z);
+        drawBoundingBox(box, color);
+        GlStateManager.translate(x, y, z);
         glEnable(GL_TEXTURE_2D);
         glEnable(2929);
         glDepthMask(true);
@@ -231,23 +215,36 @@ public class RenderUtils implements Imports {
         ColorUtils.glColor(color);
         float width = 23.3f * entity.width / 2.0f;
         float height = entity instanceof EntityPlayer ? 12.0F : 11.98F * entity.height / 2.0F;
-        draw3DRect(width - 4, height - 1.0F, width - 1.0F, height);
-        draw3DRect(-width + 4, height - 1.0F, -width + 1.0F, height);
-        draw3DRect(-width, height, -width + 1.0F, height - 4.0F);
-        draw3DRect(width, height, width - 1.0F, height - 4.0F);
-        draw3DRect(width, -height, width - 4.0F, -height + 1.0F);
-        draw3DRect(-width, -height, -width + 4.0F, -height + 1.0F);
-        draw3DRect(-width, -height + 1.0F, -width + 1.0F, -height + 4.0F);
-        draw3DRect(width, -height + 1.0F, width - 1.0F, -height + 4.0F);
+
+        float inner = 1.0F;
+        float outer = 4.0F;
+        float offset = 0.2F;
+
+        draw3DRect(width - outer, height - inner, width - inner, height);
+        draw3DRect(-width + outer, height - inner, -width + inner, height);
+
+        draw3DRect(-width, height, -width + inner, height - outer);
+        draw3DRect(width, height, width - inner, height - outer);
+
+        draw3DRect(width, -height, width - outer, -height + inner);
+        draw3DRect(-width, -height, -width + outer, -height + inner);
+
+        draw3DRect(-width, -height + inner, -width + inner, -height + outer);
+        draw3DRect(width, -height + inner, width - inner, -height + outer);
+
         ColorUtils.glColor(Color.BLACK, 1f);
-        draw3DRect(width, height, width - 4.0F, height + 0.2F);
-        draw3DRect(-width, height, -width + 4.0F, height + 0.2F);
-        draw3DRect(-width - 0.2F, height + 0.2F, -width, height - 4.0F);
-        draw3DRect(width + 0.2F, height + 0.2F, width, height - 4.0F);
-        draw3DRect(width + 0.2F, -height, width - 4.0F, -height - 0.2F);
-        draw3DRect(-width - 0.2F, -height, -width + 4.0F, -height - 0.2F);
-        draw3DRect(-width - 0.2F, -height, -width, -height + 4.0F);
-        draw3DRect(width + 0.2F, -height, width, -height + 4.0F);
+
+        draw3DRect(width, height, width - outer, height + offset);
+        draw3DRect(-width, height, -width + outer, height + offset);
+
+        draw3DRect(-width - offset, height + offset, -width, height - outer);
+        draw3DRect(width + offset, height + offset, width, height - outer);
+
+        draw3DRect(width + offset, -height, width - outer, -height - offset);
+        draw3DRect(-width - offset, -height, -width + outer, -height - offset);
+
+        draw3DRect(-width - offset, -height, -width, -height + outer);
+        draw3DRect(width + offset, -height, width, -height + outer);
         ColorUtils.resetColor();
         GlStateManager.popMatrix();
     }
@@ -261,10 +258,6 @@ public class RenderUtils implements Imports {
         GL11.glEnd();
     }
 
-    public static void drawBoundingBox(AxisAlignedBB abb, Color color) {
-        drawBoundingBox(abb, color.getRed() / 255f,color.getGreen() / 255f,color.getBlue() / 255f,color.getAlpha() / 255f);
-    }
-
     public static void drawHitBox(AxisAlignedBB bb, Color color, float lineWidth) {
         drawBoundingBox(bb.expand(0.1f,0.1f,0.1f), color);
 
@@ -275,7 +268,12 @@ public class RenderUtils implements Imports {
         }
     }
 
-    public static void drawBoundingBox(AxisAlignedBB abb, float r, float g, float b, float a) {
+    public static void drawBoundingBox(AxisAlignedBB abb, Color color) {
+        float r = color.getRed() / 255f;
+        float g = color.getGreen() / 255f;
+        float b = color.getBlue() / 255f;
+        float a = color.getAlpha() / 255f;
+
         Tessellator ts = Tessellator.getInstance();
         WorldRenderer vb = ts.getWorldRenderer();
         GlStateManager.color(r, g, b, a);
@@ -355,71 +353,6 @@ public class RenderUtils implements Imports {
         mc.getRenderManager().doRenderEntity(target, pos.xCoord, pos.yCoord, pos.zCoord, rotationYawHead, partialTicks, true);
         mc.entityRenderer.disableLightmap();
         RenderHelper.disableStandardItemLighting();
-    }
-
-    public static void drawBoundingBox(AxisAlignedBB bb) {
-        Tessellator var1 = Tessellator.getInstance();
-        WorldRenderer var2 = var1.getWorldRenderer();
-        var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
-        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
-        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
-        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
-        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
-        var1.draw();
-        var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
-        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
-        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
-        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
-        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
-        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
-        var1.draw();
-        var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
-        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
-        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
-        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
-        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
-        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
-        var1.draw();
-        var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
-        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
-        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
-        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
-        var1.draw();
-        var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
-        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
-        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
-        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
-        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
-        var1.draw();
-        var2.begin(7, DefaultVertexFormats.POSITION);
-        var2.pos(bb.minX, bb.maxY, bb.maxZ).endVertex();
-        var2.pos(bb.minX, bb.minY, bb.maxZ).endVertex();
-        var2.pos(bb.minX, bb.maxY, bb.minZ).endVertex();
-        var2.pos(bb.minX, bb.minY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.maxY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.minZ).endVertex();
-        var2.pos(bb.maxX, bb.maxY, bb.maxZ).endVertex();
-        var2.pos(bb.maxX, bb.minY, bb.maxZ).endVertex();
-        var1.draw();
     }
 
     public static void renderHitBox(AxisAlignedBB bb, int type) {

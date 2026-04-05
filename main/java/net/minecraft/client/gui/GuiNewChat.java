@@ -80,7 +80,9 @@ public class GuiNewChat extends Gui {
                                 Glow glow = Modules.getModule(Glow.class);
 
                                 if (glow != null && glow.isToggled() && glow.module.get("Chat")) {
-                                    BloomUtils.addToDraw(() -> RenderUtils.drawMixedRoundedRect(i2, j2 - 9, l + 4, 9, 0, glow.chatColor.getColor(), glow.chatColor.getFadeColor(), glow.chatColor.getSpeed()));
+                                    BloomUtils.startWrite();
+                                    RenderUtils.drawMixedRoundedRect(i2, j2 - 9, l + 4, 9, 0, glow.chatColor.getColor(), glow.chatColor.getFadeColor(), glow.chatColor.getSpeed());
+                                    BloomUtils.stopWrite();
                                 }
 
                                 drawRect(i2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);

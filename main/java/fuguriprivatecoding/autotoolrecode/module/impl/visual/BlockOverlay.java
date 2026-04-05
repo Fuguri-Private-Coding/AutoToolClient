@@ -15,6 +15,8 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.RayTrace;
 
+import java.awt.*;
+
 @ModuleInfo(name = "BlockOverlay", category = Category.VISUAL, description = "Выделяет блок на который вы смотрите.")
 public class BlockOverlay extends Module {
 
@@ -35,8 +37,16 @@ public class BlockOverlay extends Module {
                 BlockPos pos = hit.getBlockPos();
 
                 RenderUtils.start3D();
-                if (glow.isToggled()) BloomUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor()));
-                if (blur.isToggled()) BlurUtils.addToDraw(() -> RenderUtils.drawBlockESP(pos, 1,1,1,1));
+                if (glow.isToggled()) {
+                    BloomUtils.startWrite();
+                    RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor());
+                    BloomUtils.stopWrite();
+                }
+                if (blur.isToggled()) {
+                    BlurUtils.startWrite();
+                    RenderUtils.drawBlockESP(pos, Color.WHITE);
+                    BlurUtils.stopWrite();
+                }
                 RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
                 RenderUtils.stop3D();
             }

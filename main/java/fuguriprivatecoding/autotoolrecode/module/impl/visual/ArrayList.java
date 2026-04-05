@@ -128,11 +128,15 @@ public class ArrayList extends Module {
             Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, bgColor.getRGB());
 
             if (glow.isToggled()) {
-                BloomUtils.addToDraw(() -> Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, glowBgColor.getRGB()));
+                BloomUtils.startWrite();
+                Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, glowBgColor.getRGB());
+                BloomUtils.stopWrite();
             }
 
             if (blur.isToggled()) {
-                BlurUtils.addToDraw(() -> Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, Colors.WHITE.withAlpha(alpha).getRGB()));
+                BlurUtils.startWrite();
+                Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, Colors.WHITE.withAlpha(alpha).getRGB());
+                BlurUtils.stopWrite();
             }
         }
 
