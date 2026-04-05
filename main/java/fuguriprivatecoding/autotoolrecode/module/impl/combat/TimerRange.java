@@ -3,7 +3,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -18,7 +17,6 @@ import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
@@ -36,10 +34,8 @@ public class TimerRange extends Module {
     final CheckBox onlyWhenPing = new CheckBox("OnlyWhenPing", this, false);
 
     public static boolean teleporting = false, click = false;
-    int teleportTicks, posRotIncrement;
     public static int balance = 0;
-
-    Vec3 targetPos, pos;
+    int teleportTicks;
 
     @Override
     public void onEvent(Event event) {
@@ -71,13 +67,9 @@ public class TimerRange extends Module {
             float yaw = RotUtils.getBestRotation(box).getYaw();
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, yaw);
 
-            pos = target.getPositionVector();
-            targetPos = target.getNewPosition();
-            posRotIncrement = target.newPosRotationIncrements;
-
             teleportTicks = 0;
             for (int i = 0; i < maxTicks.getValue(); i++) {
-                updateCashedIncrementPos();
+                Vec3 pos = RenderUtils.getAbsoluteSmoothPos(target.getPositionVector(), target.getLastPositionVector(), 0f);
 
                 AxisAlignedBB targetBox = getRealBB(target, target.getNPosition(), pos).expand(-0.1D);
                 boolean skip = DistanceUtils.getDistance(simulatedPlayer, targetBox) > 3.0D;
@@ -100,17 +92,10 @@ public class TimerRange extends Module {
         }
     }
 
-    private void updateCashedIncrementPos() {
-        if (posRotIncrement > 0) {
-            pos = pos.add(targetPos.subtract(pos).divine(posRotIncrement));
-            posRotIncrement--;
-        }
-    }
-
     private AxisAlignedBB getRealBB(EntityLivingBase target, Vec3 newPos, Vec3 pos) {
-        double offsetX = BackTrack.working ? target.posX - pos.xCoord : newPos.xCoord - target.posX;
-        double offsetY = BackTrack.working ? target.posY - pos.yCoord : newPos.yCoord - target.posY;
-        double offsetZ = BackTrack.working ? target.posZ - pos.zCoord : newPos.zCoord - target.posZ;
+        double offsetX = BackTrack.working ? pos.xCoord - target.posX : newPos.xCoord - target.posX;
+        double offsetY = BackTrack.working ? pos.yCoord - target.posY : newPos.yCoord - target.posY;
+        double offsetZ = BackTrack.working ? pos.zCoord - target.posZ : newPos.zCoord - target.posZ;
 
         return target.getEntityBoundingBox().offset(offsetX, offsetY, offsetZ);
     }
