@@ -1,9 +1,9 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -45,7 +45,7 @@ public class Dot extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof TickEvent) {
+        if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.POST) {
             prevPos = pos;
             pos = mc.thePlayer.getRotation();
         }
@@ -56,10 +56,10 @@ public class Dot extends Module {
             Rot smoothPos = prevPos.add(pos.subtract(prevPos).multiplier(mc.timer.renderPartialTicks));
             mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks), 4.5f, 4.5f, smoothPos, mc.timer.renderPartialTicks);
         } else {
-            mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(-1),4.5f,4.5f, pos, -1);
+            mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(0f),4.5f,4.5f, pos, 0f);
         }
 
-        if (mouse != null && CameraRot.INST.isUnlocked()) {
+        if (mouse != null && CameraRot.INST.isUnlocked() && CameraRot.INST.isWillChange()) {
             switch (dotType.getMode()) {
                 case "3D" -> {
                     if (event instanceof Render3DEvent) {

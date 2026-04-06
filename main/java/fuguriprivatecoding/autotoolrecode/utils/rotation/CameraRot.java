@@ -14,7 +14,7 @@ public class CameraRot extends Rot {
     }
 
     @Getter private boolean unlocked;
-    @Setter private boolean willChange;
+    @Setter @Getter private boolean willChange;
 
     public boolean needBackRotate() {
         return unlocked && !willChange;

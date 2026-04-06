@@ -55,7 +55,7 @@ public class ViaVersionScreen extends GuiScreen {
 
         font.draw(currentVersion, sc.getScaledWidth() / 2f - font.width(currentVersion, 8) / 2f, 15, 8, Color.WHITE);
 
-        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 200, 30, 400, sc.getScaledHeight() - 65, 7.5f, Colors.WHITE.withAlpha(0.5f));
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 200, 30, 400, sc.getScaledHeight() - 65, 7.5f, Colors.BLACK.withAlpha(0.5f));
 
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(new ScaledResolution(mc), sc.getScaledWidth() / 2f - 200, 30, 400, sc.getScaledHeight() - 65);
@@ -63,7 +63,7 @@ public class ViaVersionScreen extends GuiScreen {
         float offset = scrolls.y;
         scrollTotalHeight = 0;
         for (ProtocolVersion protocol : ViaLoadingBase.PROTOCOLS.reversed()) {
-            Color hoveredColor = ViaLoadingBase.getInstance().getTargetVersion() == protocol ? new Color(0.2f, 0.2f, 0.2f, 0.5f) : Colors.WHITE.withAlpha(0.5f);
+            Color hoveredColor = ViaLoadingBase.getInstance().getTargetVersion() == protocol ? new Color(0.2f, 0.2f, 0.2f, 0.5f) : Colors.BLACK.withAlpha(0.5f);
             RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 195, 35 + offset, 390, 20, 10, hoveredColor);
             font.draw(protocol.getName(), sc.getScaledWidth() / 2f - font.width(protocol.getName(), 8) / 2f, 30f + 11.5f + 2 + offset, 8, ViaLoadingBase.getInstance().getTargetVersion() == protocol ? Color.green : Color.WHITE);
             offset += 25;
@@ -122,8 +122,8 @@ public class ViaVersionScreen extends GuiScreen {
         scroll = Math.min(scroll, 0);
 
         if (scrollTotalHeight >= versionVisibleHeight) {
-            RoundedUtils.drawRect(sc.getScaledWidth() / 2f + 205, 30, 15, sc.getScaledHeight() - 65, 7.5f, Colors.WHITE.withAlpha(0.5f));
-            RoundedUtils.drawRect(scrollbarX, scrollbarY, scrollbarWidth, scrollbarTrackHeight, 2, Colors.WHITE.withAlpha(0.5f));
+            RoundedUtils.drawRect(sc.getScaledWidth() / 2f + 205, 30, 15, sc.getScaledHeight() - 65, 7.5f, Colors.BLACK.withAlpha(0.5f));
+            RoundedUtils.drawRect(scrollbarX, scrollbarY, scrollbarWidth, scrollbarTrackHeight, 2, Colors.BLACK.withAlpha(0.5f));
             RoundedUtils.drawRect(scrollbarX, thumbY, scrollbarWidth, thumbHeight, 2, Color.WHITE);
         }
     }

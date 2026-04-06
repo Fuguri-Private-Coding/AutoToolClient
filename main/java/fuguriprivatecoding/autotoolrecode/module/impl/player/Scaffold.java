@@ -239,22 +239,7 @@ public class Scaffold extends Module {
 
         float roundedYaw = (float) MathUtils.round(MathHelper.wrapDegree(yaw + 180), 45);
 
-        double playerX = mc.thePlayer.posX;
-        double playerZ = mc.thePlayer.posZ;
-
-        float xBlock = targetBlock.getX();
-        float zBlock = targetBlock.getZ();
-
-        double dx = xBlock + 0.5 - playerX;
-        double dz = zBlock + 0.5 - playerZ;
-
-        double yawRad = Math.toRadians(roundedYaw);
-        double lookX = Math.cos(yawRad);
-        double lookZ = Math.sin(yawRad);
-
-        double dot = dx * lookX + dz * lookZ;
-
-        boolean isOnRightSide = dot < 0;
+        boolean isOnRightSide = MoveUtils.isOnRightSide(targetBlock, roundedYaw);
 
         float needYaw = strictYaw.isToggled() ? roundedYaw - 180 : yaw;
 

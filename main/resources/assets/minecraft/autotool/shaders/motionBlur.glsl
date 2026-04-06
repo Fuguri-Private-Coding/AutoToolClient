@@ -4,7 +4,6 @@ uniform sampler2D DiffuseSampler;
 uniform sampler2D PrevSampler;
 
 uniform vec3 Phosphor = vec3(0.7, 0.0, 0.0);
-uniform float LerpFactor = 1.0;
 
 void main() {
     vec2 uv = gl_TexCoord[0].st;

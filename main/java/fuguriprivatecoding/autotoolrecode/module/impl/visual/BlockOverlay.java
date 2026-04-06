@@ -42,6 +42,7 @@ public class BlockOverlay extends Module {
                     RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor());
                     BloomUtils.stopWrite();
                 }
+
                 if (blur.isToggled()) {
                     BlurUtils.startWrite();
                     RenderUtils.drawBlockESP(pos, Color.WHITE);

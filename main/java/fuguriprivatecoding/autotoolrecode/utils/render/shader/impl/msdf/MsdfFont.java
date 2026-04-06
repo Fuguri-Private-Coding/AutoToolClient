@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf;
 import com.google.gson.Gson;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import lombok.AllArgsConstructor;
@@ -51,6 +52,7 @@ public class MsdfFont implements Imports {
         program.uniform("Range", atlas.getRange());
         program.uniform("Thickness", 0.05f);
         program.uniform("Smoothness", 0.4f);
+
         program.uniform("Color", color);
 
         GL11.glBegin(GL11.GL_QUADS);
@@ -67,7 +69,7 @@ public class MsdfFont implements Imports {
                 x += kerning.getOrDefault((int) c, 0.0f) * size;
             }
 
-            x += msdfGlyph.apply(x, y, size, color) + thickness + spacing;
+            x += msdfGlyph.apply(x, y, size) + thickness + spacing;
             prevChar = c;
 
         }

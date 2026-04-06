@@ -157,19 +157,19 @@ public class KillAura extends Module {
 
         AxisAlignedBB fullBox = RotUtils.getHitBox(target, 100, 100).expand(0.1);
 
-//        Vec3 needPoint = switch (hitVec.getMode()) {
-//            case "Best" -> RotUtils.getBestHitVec(box);
-//            case "Head" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight(), 0);
-//            case "Body" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight() / 2f, 0);
-//            default -> Vec3.ZERO;
-//      };
+        Vec3 needPoint = switch (hitVec.getMode()) {
+            case "Best" -> RotUtils.getBestHitVec(box);
+            case "Head" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight(), 0);
+            case "Body" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight() / 2f, 0);
+            default -> Vec3.ZERO;
+      };
 
-        Vec3 needPoint = RotUtils.getBestHitVec(box).subtract(0, 0.25, 0);
+//        Vec3 needPoint = RotUtils.getBestHitVec(box).subtract(0, 0.25, 0);
 
-        if (!box.isVecInside(needPoint)) {
-            needPoint = box.getCenter();
-            ClientUtils.chatLog("force body " + mc.thePlayer.ticksExisted % 100);
-        }
+//        if (!box.isVecInside(needPoint)) {
+//            needPoint = box.getCenter();
+//            ClientUtils.chatLog("force body " + mc.thePlayer.ticksExisted % 100);
+//        }
 
         Rot needRot = RotUtils.getRotationToPoint(needPoint);
 

@@ -35,7 +35,7 @@ public class MsdfGlyph {
         }
     }
 
-    public float apply(float x, float y, float size, Color color) {
+    public float apply(float x, float y, float size) {
         y -= this.topPosition * size;
         float width = this.width * size;
         float height = this.height * size;
