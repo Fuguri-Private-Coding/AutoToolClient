@@ -2,6 +2,7 @@ package net.minecraft.client.multiplayer;
 
 import fuguriprivatecoding.autotoolrecode.event.events.player.BlockDamageEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.BlockHitDelayEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.PreAttackEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.InventoryManager;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
@@ -484,13 +485,15 @@ public class PlayerControllerMP
         attackEntity(playerIn, targetEntity);
     }
 
-    public void attackEntity(EntityPlayer playerIn, Entity targetEntity)
-    {
+    public void attackEntity(EntityPlayer playerIn, Entity targetEntity) {
+        PreAttackEvent event = new PreAttackEvent(targetEntity);
+
+        event.call();
         this.syncCurrentPlayItem();
+
         this.netClientHandler.addToSendQueue(new C02PacketUseEntity(targetEntity, C02PacketUseEntity.Action.ATTACK));
 
-        if (this.currentGameType != WorldSettings.GameType.SPECTATOR)
-        {
+        if (this.currentGameType != WorldSettings.GameType.SPECTATOR) {
             playerIn.attackTargetEntityWithCurrentItem(targetEntity);
         }
     }

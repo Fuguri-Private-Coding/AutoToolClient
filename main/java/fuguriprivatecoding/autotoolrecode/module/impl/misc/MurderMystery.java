@@ -1,6 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.PreAttackEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -8,10 +10,13 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,14 +26,16 @@ public class MurderMystery extends Module {
     CheckBox checkMurders = new CheckBox("CheckMurders", this);
     CheckBox checkDetectives = new CheckBox("CheckDetectives", this);
 
+    CheckBox silentMurder = new CheckBox("SilentMurder", this);
+    IntegerSetting switchBackDelay = new IntegerSetting("SwitchBackDelay", this, silentMurder::isToggled, 0, 10, 1);
+
     CheckBox debug = new CheckBox("Debug", this);
 
-    public static List<String> murders, detectives;
+    public static List<String> murders = new ArrayList<>(), detectives = new ArrayList<>();
 
-    public MurderMystery() {
-        murders = new ArrayList<>();
-        detectives = new ArrayList<>();
-    }
+    private boolean swapped = false;
+
+    StopWatch watch = new StopWatch();
 
     @Override
     public void onDisable() {
@@ -43,6 +50,24 @@ public class MurderMystery extends Module {
             if (!murders.isEmpty()) murders.clear();
             if (!detectives.isEmpty()) detectives.clear();
         }
+
+        if (silentMurder.isToggled()) {
+            if (event instanceof PreAttackEvent e && e.getHittingEntity() instanceof EntityPlayer player && !player.isFriend()) {
+                int slot = getSwordSlot();
+
+                if (slot != -1) {
+                    mc.thePlayer.inventory.currentItem = slot;
+                    watch.reset();
+                    swapped = true;
+                }
+            }
+
+            if (event instanceof LegitClickTimingEvent && swapped && watch.reachedMS(switchBackDelay.getValue() * 50L)) {
+                mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+                swapped = false;
+            }
+        }
+
         if (event instanceof TickEvent) {
             for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
                 if (checkMurders.isToggled() && !murders.contains(playerEntity.getName()) && playerEntity.getHeldItem() != null && playerEntity.getHeldItem().getItem() == Items.iron_sword) {
@@ -58,6 +83,20 @@ public class MurderMystery extends Module {
                 }
             }
         }
+    }
+
+    private int getSwordSlot() {
+        int bestSlot = -1;
+
+        for (int i = 0; i < 9; i++) {
+            ItemStack item = mc.thePlayer.inventory.mainInventory[i];
+
+            if (item == null || !(item.getItem() instanceof ItemSword)) continue;
+
+            bestSlot = i;
+        }
+
+        return bestSlot;
     }
 
     public static boolean isMurder(String name) {
