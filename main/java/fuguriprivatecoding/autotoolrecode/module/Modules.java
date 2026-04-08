@@ -38,6 +38,7 @@ public class Modules {
 			new FovModifier(),
             new Notifications(),
 			new ItemPhysics(),
+            new CPSBooster(),
 			new Trajectory(),
             new FastBreak(),
             new EntityColor(),
