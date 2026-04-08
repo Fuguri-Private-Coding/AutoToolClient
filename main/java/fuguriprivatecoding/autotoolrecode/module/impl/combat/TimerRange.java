@@ -20,7 +20,6 @@ import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
-
 import java.awt.*;
 
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
@@ -58,16 +57,17 @@ public class TimerRange extends Module {
                 return;
             }
 
-            if ((!Ping.isWorking() && onlyWhenPing.isToggled())
-                || target.hurtTime > maxTargetHurtTime.getValue()
-            ) return;
-
             AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100).expand(0.1D);
 
             float yaw = RotUtils.getBestRotation(box).getYaw();
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, yaw);
 
             teleportTicks = 0;
+
+            if ((!Ping.isWorking() && onlyWhenPing.isToggled())
+                || target.hurtTime > maxTargetHurtTime.getValue()
+            ) return;
+
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 Vec3 pos = RenderUtils.getAbsoluteSmoothPos(target.getPositionVector(), target.getLastPositionVector(), 0f);
 

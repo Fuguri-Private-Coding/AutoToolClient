@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.TimerRange;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
@@ -83,6 +84,7 @@ public class Clicks implements Imports, EventListener {
     }
 
     public static void addClick() {
+        if (TimerRange.isTeleporting()) return;
         clicks++;
 
         if (clickSettings.simulateDoubleClick.isToggled() && clicks > 0) {
