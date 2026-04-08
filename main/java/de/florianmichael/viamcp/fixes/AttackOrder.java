@@ -23,22 +23,25 @@ import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.RayTrace;
 
 public class AttackOrder {
     private final static Minecraft mc = Minecraft.getMinecraft();
 
-    public static void sendConditionalSwing(RayTrace mop) {
-        if (mop != null && mop.typeOfHit != RayTrace.RayType.ENTITY) mc.thePlayer.swingItem();
-    }
-
-    public static void sendFixedAttack(EntityPlayer entityIn, Entity target) {
+    public static void sendSwingIf1_8() {
         if (ViaLoadingBase.getInstance().getTargetVersion().olderThanOrEqualTo(ProtocolVersion.v1_8)) {
             mc.thePlayer.swingItem();
-            mc.playerController.attackEntity(entityIn, target);
-        } else {
-            mc.playerController.attackEntity(entityIn, target);
+        }
+    }
+
+    public static void sendSwingIf1_9() {
+        if (ViaLoadingBase.getInstance().getTargetVersion().newerThan(ProtocolVersion.v1_8)) {
             mc.thePlayer.swingItem();
         }
+    }
+
+    public static void sendFixedAttack(EntityPlayer playerIn, Entity targetEntity) {
+        sendSwingIf1_8();
+        mc.playerController.attackEntity(playerIn, targetEntity);
+        sendSwingIf1_9();
     }
 }

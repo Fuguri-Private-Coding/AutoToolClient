@@ -1200,7 +1200,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     public void clickMouse() {
         if (this.leftClickCounter <= 0) {
-            AttackOrder.sendConditionalSwing(this.objectMouseOver);
+            AttackOrder.sendSwingIf1_8();
 
             if (this.objectMouseOver == null) {
                 logger.error("Null returned as 'hitResult', this shouldn't happen!");
@@ -1211,7 +1211,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             } else {
                 switch (this.objectMouseOver.typeOfHit) {
                     case ENTITY:
-                        AttackOrder.sendFixedAttack(this.thePlayer, this.objectMouseOver.entityHit);
+                        playerController.attackEntity(thePlayer, objectMouseOver.entityHit);
                         break;
 
                     case BLOCK:
@@ -1228,6 +1228,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                             this.leftClickCounter = 10;
                         }
                 }
+
+                AttackOrder.sendSwingIf1_9();
             }
         }
     }
