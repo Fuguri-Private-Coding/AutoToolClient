@@ -44,6 +44,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.world.FakeTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.Fixes;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCrosshair;
 import fuguriprivatecoding.autotoolrecode.utils.file.WindowIconHelper;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.MotionBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
@@ -1199,6 +1200,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     }
 
     public void clickMouse() {
+        CustomCrosshair.cps.add(System.currentTimeMillis() + 1000L);
         if (this.leftClickCounter <= 0) {
             AttackOrder.sendSwingIf1_8();
 
@@ -1210,23 +1212,21 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 }
             } else {
                 switch (this.objectMouseOver.typeOfHit) {
-                    case ENTITY:
-                        playerController.attackEntity(thePlayer, objectMouseOver.entityHit);
-                        break;
+                    case ENTITY -> playerController.attackEntity(thePlayer, objectMouseOver.entityHit);
 
-                    case BLOCK:
+                    case BLOCK -> {
                         BlockPos blockpos = this.objectMouseOver.getBlockPos();
-
                         if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air) {
                             this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
                             break;
                         }
+                    }
 
-                    case MISS:
-                    default:
+                    default -> {
                         if (this.playerController.isNotCreative()) {
                             this.leftClickCounter = 10;
                         }
+                    }
                 }
 
                 AttackOrder.sendSwingIf1_9();
@@ -1616,7 +1616,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 this.displayGuiScreen(new GuiChat("/"));
             }
 
-            ClickEvent clickEvent = new ClickEvent(ClickEvent.Button.RIGHT);
+            ClickEvent clickEvent;
 
             if (this.thePlayer.isUsingItem()) {
                 if (!this.gameSettings.keyBindUseItem.isKeyDown()) {

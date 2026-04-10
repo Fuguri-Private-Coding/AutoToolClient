@@ -123,7 +123,7 @@ public class DynamicIsland extends Module {
                         StencilUtils.initStencil();
                         GL11.glEnable(2960);
                         StencilUtils.bindWriteStencilBuffer();
-                        RectUtils.drawRect(0, 0, 30, 30, 7.5f, Color.WHITE);
+                        RectUtils.drawRect(0, 0, 30, 30, 5f, Color.WHITE);
                         StencilUtils.writeTexture();
                         RenderUtils.drawImage(songImage, 0, 0, 30, 30, true);
                         StencilUtils.endWriteTexture();

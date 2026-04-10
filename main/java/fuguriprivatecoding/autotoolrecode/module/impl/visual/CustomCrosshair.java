@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -9,7 +10,13 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import net.minecraft.client.gui.ScaledResolution;
+
+import java.awt.*;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "CustomCrosshair", category = Category.VISUAL, description = "Позволяет сделать свой прицел.")
 public class CustomCrosshair extends Module {
@@ -24,10 +31,20 @@ public class CustomCrosshair extends Module {
     FloatSetting length = new FloatSetting("Length", this, () -> mode.is("Cross"), 1, 50, 4, 0.1f);
     FloatSetting scale = new FloatSetting("Scale", this, 0,20,2, 0.1f);
 
+    public static List<Long> cps = new CopyOnWriteArrayList<>();
+
     @Override
     public void onEvent(Event event) {
+
+        if (event instanceof RunGameLoopEvent) {
+            cps.removeIf(l -> l <= System.currentTimeMillis());
+        }
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = new ScaledResolution(mc);
+
+            MsdfFont font = Fonts.get("Bold");
+
+            font.draw("cps: " + cps.size(), 50, 50, Color.WHITE);
 
             switch (mode.getMode()) {
                 case "Cross" -> {

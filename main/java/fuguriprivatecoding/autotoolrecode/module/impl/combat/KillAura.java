@@ -9,7 +9,6 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
@@ -84,9 +83,16 @@ public class KillAura extends Module {
     );
 
     public final TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothModes.get("Recorded"));
-    private final FloatSetting recordedMultiplier = new FloatSetting("RecordedMultiplier", this, () -> smoothModes.get("Recorded"), 0, 10, 1, 0.01f);
+    private final DoubleSlider recordedMultiplier = new DoubleSlider("RecordedMultiplier", this, () -> smoothModes.get("Recorded"), 0, 10, 1, 0.01f);
+    private final FloatSetting recordedStd = new FloatSetting("YawStd", this, () -> smoothModes.get("Basic"), 0, 20, 5, 0.1f);
+    private final FloatSetting recordedMean = new FloatSetting("YawMean", this, () -> smoothModes.get("Basic"), 0, 20, 5, 0.1f);
 
     private final DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
+    private final DoubleSlider cpsLimiter = new DoubleSlider("CPSLimiter", this, 0, 40, 20, 1);
+
+    private final FloatSetting consistency = new FloatSetting("Consistency", this, 0, 2, 0.2f, 0.01f);
+    private final FloatSetting instability = new FloatSetting("Instability", this, 0, 2, 0.2f, 0.01f);
+    private final FloatSetting fatigue = new FloatSetting("Fatigue", this, -1, 1, 0, 0.01f);
 
     private final Mode moveFix = new Mode("MoveFix", this)
         .addModes("OFF", "Legit", "Silent")
@@ -124,7 +130,21 @@ public class KillAura extends Module {
         if (target != null) {
             if (event instanceof RunGameLoopEvent && needClicking(target)) {
                 if (clickTimer.reachedMS(delay)) {
-                    delay = Math.round(1000f / CPS.getRandomizedIntValue());
+                    double baseDelay = 1000D / CPS.getRandomizedDoubleValue();
+
+                    double minDelay = 1000D / cpsLimiter.getMaxValue();
+                    double maxDelay = 1000D / cpsLimiter.getMinValue();
+
+                    double consistency = this.consistency.getValue();
+                    double instability = this.instability.getValue();
+                    double fatigue = this.fatigue.getValue();
+
+                    double gaussian = RandomUtils.random.nextGaussian() * consistency;
+                    double noise = ((RandomUtils.random.nextDouble() - 0.5) + fatigue * 0.5) * instability;
+
+                    double delay = baseDelay * (1 + gaussian + noise);
+
+                    this.delay = (long) Math.clamp(delay, minDelay, maxDelay);
                     Clicks.addClick();
                     clickTimer.reset();
                 }
@@ -162,14 +182,7 @@ public class KillAura extends Module {
             case "Head" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight(), 0);
             case "Body" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight() / 2f, 0);
             default -> Vec3.ZERO;
-      };
-
-//        Vec3 needPoint = RotUtils.getBestHitVec(box).subtract(0, 0.25, 0);
-
-//        if (!box.isVecInside(needPoint)) {
-//            needPoint = box.getCenter();
-//            ClientUtils.chatLog("force body " + mc.thePlayer.ticksExisted % 100);
-//        }
+        };
 
         Rot needRot = RotUtils.getRotationToPoint(needPoint);
 
@@ -191,7 +204,10 @@ public class KillAura extends Module {
             if (recordedIndex >= recordedOffset.offsets.size()) recordedIndex = 0;
 
             Rot recordedDelta = recordedOffset.getByIndex(recordedIndex++);
-            needRot = needRot.add(recordedDelta.multiplier(recordedMultiplier.getValue()));
+
+            float recordedMultiple = (float) RandomUtils.nextGaussianInRange(recordedMultiplier.getMinValue(), recordedMultiplier.getMaxValue(), recordedMean.getValue(), recordedStd.getValue());
+
+            needRot = needRot.add(recordedDelta.multiplier(recordedMultiple));
         }
 
         if (teleport) needRot = RotUtils.getBestRotation(box);

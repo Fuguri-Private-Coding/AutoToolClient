@@ -40,13 +40,15 @@ public class ClientIRC extends ListenerAdapter implements Imports {
     }
 
     private ClientIRC() {
+        {
         String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GGhvgp.juE97JuncYJRgH-Rzca0OV2a8ieMd2g6XzV1IA";
-
-        try {
-            jda = JDABuilder.createDefault(token).addEventListeners(this).build();
-        } catch (Exception e) {
-            System.out.println("Failed create connection.");
-            System.exit(-1);
+            try {
+                jda = JDABuilder.createDefault(token)
+                    .addEventListeners(this).build();
+            } catch (Exception e) {
+                System.out.println("Failed create connection.");
+                System.exit(-1);
+            }
         }
     }
 

@@ -9,6 +9,8 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.util.RayTrace;
 import org.lwjgl.input.Mouse;
@@ -17,6 +19,12 @@ import org.lwjgl.input.Mouse;
 public class AutoClicker extends Module {
 
     DoubleSlider leftCPS = new DoubleSlider("LeftCPS", this, 0, 40, 20, 1);
+    DoubleSlider cpsLimiter = new DoubleSlider("CPSLimiter", this, 0, 40, 20, 1);
+
+    FloatSetting consistency = new FloatSetting("Consistency", this, 0, 2, 0.2f, 0.01f);
+    FloatSetting instability = new FloatSetting("Instability", this, 0, 2, 0.2f, 0.01f);
+    FloatSetting fatigue = new FloatSetting("Fatigue", this, -1, 1, 0, 0.01f);
+
     CheckBox breakBlocks = new CheckBox("BreakBlocks", this, true);
 
     long leftDelay;
@@ -51,6 +59,20 @@ public class AutoClicker extends Module {
     }
 
     private long getLeftDelay() {
-        return (long) (1000D / leftCPS.getRandomizedDoubleValue());
+        double baseDelay = 1000D / leftCPS.getRandomizedDoubleValue();
+
+        double minDelay = 1000D / cpsLimiter.getMaxValue();
+        double maxDelay = 1000D / cpsLimiter.getMinValue();
+
+        double consistency = this.consistency.getValue();
+        double instability = this.instability.getValue();
+        double fatigue = this.fatigue.getValue();
+
+        double gaussian = RandomUtils.random.nextGaussian() * consistency;
+        double noise = ((RandomUtils.random.nextDouble() - 0.5) + fatigue * 0.5) * instability;
+
+        double delay = baseDelay * (1 + gaussian + noise);
+
+        return (long) Math.clamp(delay, minDelay, maxDelay);
     }
 }
