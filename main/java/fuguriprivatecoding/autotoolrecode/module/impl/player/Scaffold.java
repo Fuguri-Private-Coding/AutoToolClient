@@ -176,9 +176,9 @@ public class Scaffold extends Module {
 
                 if (sneakIf.get("NinjaBridge")) {
                     if (!isClutch() || sneakIfNinjaBridgeWithClutch.isToggled()) {
-                        BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.1f);
+                        BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.5f);
 
-                        if (mc.theWorld.isAirBlock(pos)) {
+                        if (mc.theWorld.isAirBlock(pos) && !shouldNinePitch()) {
                             e.setSneak(true);
                         }
                     }
