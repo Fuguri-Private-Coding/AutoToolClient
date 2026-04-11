@@ -88,11 +88,16 @@ public class KillAura extends Module {
     private final FloatSetting recordedMean = new FloatSetting("YawMean", this, () -> smoothModes.get("Basic"), 0, 20, 5, 0.1f);
 
     private final DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
-    private final DoubleSlider cpsLimiter = new DoubleSlider("CPSLimiter", this, 0, 40, 20, 1);
 
-    private final FloatSetting consistency = new FloatSetting("Consistency", this, 0, 2, 0.2f, 0.01f);
-    private final FloatSetting instability = new FloatSetting("Instability", this, 0, 2, 0.2f, 0.01f);
-    private final FloatSetting fatigue = new FloatSetting("Fatigue", this, -1, 1, 0, 0.01f);
+    private final Mode randomizeMode = new Mode("RandomizeMode", this)
+        .addModes("None", "Gaussian")
+        .setMode("Gaussian");
+
+    private final BooleanSupplier gaussianMode = () -> randomizeMode.is("Gaussian");
+
+    private final DoubleSlider cpsLimiter = new DoubleSlider("CPSLimiter", this, gaussianMode, 0, 40, 20, 1);
+    private final FloatSetting consistency = new FloatSetting("Consistency", this, gaussianMode, 0, 2, 0.2f, 0.01f);
+    private final FloatSetting instability = new FloatSetting("Instability", this, gaussianMode, 0, 2, 0.2f, 0.01f);
 
     private final Mode moveFix = new Mode("MoveFix", this)
         .addModes("OFF", "Legit", "Silent")
@@ -130,21 +135,7 @@ public class KillAura extends Module {
         if (target != null) {
             if (event instanceof RunGameLoopEvent && needClicking(target)) {
                 if (clickTimer.reachedMS(delay)) {
-                    double baseDelay = 1000D / CPS.getRandomizedDoubleValue();
-
-                    double minDelay = 1000D / cpsLimiter.getMaxValue();
-                    double maxDelay = 1000D / cpsLimiter.getMinValue();
-
-                    double consistency = this.consistency.getValue();
-                    double instability = this.instability.getValue();
-                    double fatigue = this.fatigue.getValue();
-
-                    double gaussian = RandomUtils.random.nextGaussian() * consistency;
-                    double noise = ((RandomUtils.random.nextDouble() - 0.5) + fatigue * 0.5) * instability;
-
-                    double delay = baseDelay * (1 + gaussian + noise);
-
-                    this.delay = (long) Math.clamp(delay, minDelay, maxDelay);
+                    this.delay = getDelay();
                     Clicks.addClick();
                     clickTimer.reset();
                 }
@@ -274,6 +265,27 @@ public class KillAura extends Module {
 
         CameraRot.INST.setUnlocked(true);
         mc.thePlayer.moveRotation(delta);
+    }
+
+    private long getDelay() {
+        double baseDelay = 1000D / CPS.getRandomizedDoubleValue();
+
+        if (randomizeMode.is("Gaussian")) {
+            double minDelay = 1000D / cpsLimiter.getMaxValue();
+            double maxDelay = 1000D / cpsLimiter.getMinValue();
+
+            double consistency = this.consistency.getValue();
+            double instability = this.instability.getValue();
+
+            double gaussian = RandomUtils.random.nextGaussian() * consistency;
+            double noise = (RandomUtils.random.nextDouble() - 0.5) * instability;
+
+            double delay = baseDelay * (1 + gaussian + noise);
+
+            return (long) Math.clamp(delay, minDelay, maxDelay);
+        }
+
+        return (long) baseDelay;
     }
 
     private boolean needClicking(EntityLivingBase target) {

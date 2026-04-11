@@ -9,21 +9,30 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.util.RayTrace;
 import org.lwjgl.input.Mouse;
 
+import java.util.function.BooleanSupplier;
+
 @ModuleInfo(name = "AutoClicker", category = Category.LEGIT, description = "Автоматически кликает за вас.")
 public class AutoClicker extends Module {
 
     DoubleSlider CPS = new DoubleSlider("CPS", this, 0, 40, 20, 1);
-    DoubleSlider cpsLimiter = new DoubleSlider("CPSLimiter", this, 0, 40, 20, 1);
 
-    FloatSetting consistency = new FloatSetting("Consistency", this, 0, 2, 0.2f, 0.01f);
-    FloatSetting instability = new FloatSetting("Instability", this, 0, 2, 0.2f, 0.01f);
-    FloatSetting fatigue = new FloatSetting("Fatigue", this, -1, 1, 0, 0.01f);
+    Mode randomizeMode = new Mode("RandomizeMode", this)
+        .addModes("None", "Gaussian")
+        .setMode("Gaussian");
+
+    BooleanSupplier gaussianMode = () -> randomizeMode.is("Gaussian");
+
+    DoubleSlider cpsLimiter = new DoubleSlider("CPSLimiter", this, gaussianMode, 0, 40, 20, 1);
+
+    FloatSetting consistency = new FloatSetting("Consistency", this, gaussianMode, 0, 2, 0.2f, 0.01f);
+    FloatSetting instability = new FloatSetting("Instability", this, gaussianMode, 0, 2, 0.2f, 0.01f);
 
     MultiMode stopClickingWhen = new MultiMode("StopClickingWhen", this)
         .addModes("UsingItem", "BreakBlock")
@@ -62,18 +71,21 @@ public class AutoClicker extends Module {
     private long getLeftDelay() {
         double baseDelay = 1000D / CPS.getRandomizedDoubleValue();
 
-        double minDelay = 1000D / cpsLimiter.getMaxValue();
-        double maxDelay = 1000D / cpsLimiter.getMinValue();
+        if (randomizeMode.is("Gaussian")) {
+            double minDelay = 1000D / cpsLimiter.getMaxValue();
+            double maxDelay = 1000D / cpsLimiter.getMinValue();
 
-        double consistency = this.consistency.getValue();
-        double instability = this.instability.getValue();
-        double fatigue = this.fatigue.getValue();
+            double consistency = this.consistency.getValue();
+            double instability = this.instability.getValue();
 
-        double gaussian = RandomUtils.random.nextGaussian() * consistency;
-        double noise = ((RandomUtils.random.nextDouble() - 0.5) + fatigue * 0.5) * instability;
+            double gaussian = RandomUtils.random.nextGaussian() * consistency;
+            double noise = (RandomUtils.random.nextDouble() - 0.5) * instability;
 
-        double delay = baseDelay * (1 + gaussian + noise);
+            double delay = baseDelay * (1 + gaussian + noise);
 
-        return (long) Math.clamp(delay, minDelay, maxDelay);
+            return (long) Math.clamp(delay, minDelay, maxDelay);
+        }
+
+        return (long) baseDelay;
     }
 }
