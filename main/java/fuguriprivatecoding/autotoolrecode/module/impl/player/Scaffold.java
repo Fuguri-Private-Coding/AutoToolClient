@@ -125,7 +125,6 @@ public class Scaffold extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            targetBlock = PlayerUtils.getPossibleBlockPos();
             switch (type) {
                 case ACTIVE -> rotate();
                 case NONACTIVE -> updateScaffoldType();
@@ -143,6 +142,7 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof RunGameLoopEvent) {
+            targetBlock = PlayerUtils.getPossibleBlockPos();
             if (type == ScaffoldType.ACTIVE) updateClicks();
         }
 

@@ -41,6 +41,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
 import java.awt.*;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import static java.lang.Math.*;
@@ -158,12 +159,17 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		};
 		final ClientFont fontRenderer = Fonts.fonts.get(clickGui.fonts.getMode());
 
-		Modules.getModules().sort((o1, o2) -> {
-			int width1 = (int) fontRenderer.getStringWidth(o1.getName());
-			int width2 = (int) fontRenderer.getStringWidth(o2.getName());
+		switch (clickGui.sortType.getMode()) {
+			case "Alphabet" -> Modules.getModules().sort(Comparator.comparing(Module::getName));
+			case "Width" -> {
+				Modules.getModules().sort((o1, o2) -> {
+					int width1 = (int) fontRenderer.getStringWidth(o1.getName());
+					int width2 = (int) fontRenderer.getStringWidth(o2.getName());
 
-			return Integer.compare(width2, width1);
-		});
+					return Integer.compare(width2, width1);
+				});
+			}
+		}
 
 		if (resizing
 		&& mouseX > pos.x + 100

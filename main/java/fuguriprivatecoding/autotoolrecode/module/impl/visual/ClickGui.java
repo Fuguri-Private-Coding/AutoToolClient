@@ -13,6 +13,11 @@ public class ClickGui extends Module {
 
     public Mode fonts = new Mode("Fonts", this);
 
+	public Mode sortType = new Mode("SortType", this)
+		.addModes("Width", "Alphabet")
+		.setMode("Width")
+		;
+
 	public FloatSetting animationSpeed = new FloatSetting("AnimationSpeed", this, 1, 20, 10, 0.5f) {};
 	public IntegerSetting backgroundAlpha = new IntegerSetting("BackgroundAlpha", this, 0, 255, 100);
 

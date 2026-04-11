@@ -84,8 +84,6 @@ public class KillAura extends Module {
 
     public final TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothModes.get("Recorded"));
     private final DoubleSlider recordedMultiplier = new DoubleSlider("RecordedMultiplier", this, () -> smoothModes.get("Recorded"), 0, 10, 1, 0.01f);
-    private final FloatSetting recordedStd = new FloatSetting("YawStd", this, () -> smoothModes.get("Basic"), 0, 20, 5, 0.1f);
-    private final FloatSetting recordedMean = new FloatSetting("YawMean", this, () -> smoothModes.get("Basic"), 0, 20, 5, 0.1f);
 
     private final DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
 
@@ -196,7 +194,7 @@ public class KillAura extends Module {
 
             Rot recordedDelta = recordedOffset.getByIndex(recordedIndex++);
 
-            float recordedMultiple = (float) RandomUtils.nextGaussianInRange(recordedMultiplier.getMinValue(), recordedMultiplier.getMaxValue(), recordedMean.getValue(), recordedStd.getValue());
+            float recordedMultiple = (float) recordedMultiplier.getRandomizedDoubleValue();
 
             needRot = needRot.add(recordedDelta.multiplier(recordedMultiple));
         }

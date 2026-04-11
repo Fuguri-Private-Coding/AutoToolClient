@@ -60,31 +60,4 @@ public class RandomUtils {
         }
         return random.nextLong(min, max);
     }
-
-    public static double nextGaussianInRange(double min, double max, double mean, double stdDev) {
-        if (min >= max) {
-            min = max;
-        }
-        if (stdDev < 0) {
-            stdDev = 0;
-        }
-
-        double value = random.nextGaussian() * stdDev + mean;
-
-        // мягкое "заворачивание" в диапазон (reflection), без циклов
-        if (value < min) {
-            value = min + (min - value);
-            if (value > max) { // если перелетело через весь диапазон
-                value = min + (value - min) % (max - min);
-            }
-        } else if (value > max) {
-            value = max - (value - max);
-            if (value < min) {
-                value = max - (max - value) % (max - min);
-            }
-        }
-
-        return value;
-    }
-
 }
