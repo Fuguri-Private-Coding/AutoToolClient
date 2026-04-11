@@ -31,20 +31,10 @@ public class CustomCrosshair extends Module {
     FloatSetting length = new FloatSetting("Length", this, () -> mode.is("Cross"), 1, 50, 4, 0.1f);
     FloatSetting scale = new FloatSetting("Scale", this, 0,20,2, 0.1f);
 
-    public static List<Long> cps = new CopyOnWriteArrayList<>();
-
     @Override
     public void onEvent(Event event) {
-
-        if (event instanceof RunGameLoopEvent) {
-            cps.removeIf(l -> l <= System.currentTimeMillis());
-        }
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = new ScaledResolution(mc);
-
-            MsdfFont font = Fonts.get("Bold");
-
-            font.draw("cps: " + cps.size(), 50, 50, Color.WHITE);
 
             switch (mode.getMode()) {
                 case "Cross" -> {

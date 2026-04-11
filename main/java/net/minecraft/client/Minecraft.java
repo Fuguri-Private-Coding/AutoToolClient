@@ -44,6 +44,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.world.FakeTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.Fixes;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.CPSCounter;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCrosshair;
 import fuguriprivatecoding.autotoolrecode.utils.file.WindowIconHelper;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
@@ -1199,7 +1200,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     }
 
     public void clickMouse() {
-        CustomCrosshair.cps.add(System.currentTimeMillis() + 1000L);
+        CPSCounter cpsCounter = Modules.getModule(CPSCounter.class);
+        if (cpsCounter.isToggled()) {
+            CPSCounter.leftCps.add(System.currentTimeMillis() + 1000L);
+        }
         if (this.leftClickCounter <= 0) {
             AttackOrder.sendSwingIf1_8();
 
@@ -1236,6 +1240,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     @SuppressWarnings("incomplete-switch")
     public void rightClickMouse(boolean swing) {
         if (!this.playerController.getIsHittingBlock()) {
+            CPSCounter cpsCounter = Modules.getModule(CPSCounter.class);
+            if (cpsCounter.isToggled()) {
+                CPSCounter.rightCps.add(System.currentTimeMillis() + 1000L);
+            }
+
             this.rightClickDelayTimer = 4;
             boolean flag = true;
             ItemStack itemstack = this.thePlayer.inventory.getCurrentItem();

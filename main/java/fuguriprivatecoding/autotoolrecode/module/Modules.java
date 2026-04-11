@@ -60,6 +60,7 @@ public class Modules {
             new MurderMystery(),
             new InvManager(),
 			new KeyStrokes(),
+			new CPSCounter(),
             new CustomCrosshair(),
             new ESP(),
 			new ItemESP(),
