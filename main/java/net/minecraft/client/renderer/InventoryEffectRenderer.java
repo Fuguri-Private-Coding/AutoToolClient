@@ -1,6 +1,9 @@
 package net.minecraft.client.renderer;
 
 import java.util.Collection;
+
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.CenteredInventory;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.Container;
@@ -26,7 +29,10 @@ public abstract class InventoryEffectRenderer extends GuiContainer
     {
         if (!this.mc.thePlayer.getActivePotionEffects().isEmpty())
         {
-            this.guiLeft = 160 + (this.width - this.xSize - 200) / 2;
+            CenteredInventory centeredInventory = Modules.getModule(CenteredInventory.class);
+            if (centeredInventory.isToggled()) this.guiLeft = (this.width - this.xSize) / 2;
+            else this.guiLeft = 160 + (this.width - this.xSize - 200) / 2;
+
             this.hasActivePotionEffects = true;
         }
         else

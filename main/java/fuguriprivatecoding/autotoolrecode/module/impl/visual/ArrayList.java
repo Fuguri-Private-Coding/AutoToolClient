@@ -62,6 +62,7 @@ public class ArrayList extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent e) {
+
             font = Fonts.get(fonts.getMode());
             List<Module> moduleList = new CopyOnWriteArrayList<>(Modules.getEnabledModules());
             ScaledResolution sc = e.getScaledResolution();

@@ -61,6 +61,7 @@ public class Modules {
             new InvManager(),
 			new KeyStrokes(),
 			new CPSCounter(),
+			new CenteredInventory(),
             new CustomCrosshair(),
             new ESP(),
 			new ItemESP(),
