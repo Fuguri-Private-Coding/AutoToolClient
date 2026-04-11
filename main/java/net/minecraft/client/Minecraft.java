@@ -46,7 +46,6 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.Fixes;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCrosshair;
 import fuguriprivatecoding.autotoolrecode.utils.file.WindowIconHelper;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.MotionBlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
@@ -258,7 +257,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     public GuiAchievement guiAchievement;
     public GuiIngame ingameGUI;
     public boolean skipRenderWorld;
-    public RayTrace objectMouseOver;
+    public RayTrace rayTrace;
     public GameSettings gameSettings;
     public MouseHelper mouseHelper;
     public final File mcDataDir;
@@ -1186,11 +1185,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         }
 
         if (this.leftClickCounter <= 0 && !this.thePlayer.isUsingItem()) {
-            if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK) {
-                BlockPos blockpos = this.objectMouseOver.getBlockPos();
+            if (leftClick && this.rayTrace != null && this.rayTrace.typeOfHit == RayTrace.RayType.BLOCK) {
+                BlockPos blockpos = this.rayTrace.getBlockPos();
 
-                if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air && this.playerController.onPlayerDamageBlock(blockpos, this.objectMouseOver.sideHit)) {
-                    this.effectRenderer.addBlockHitEffects(blockpos, this.objectMouseOver.sideHit);
+                if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air && this.playerController.onPlayerDamageBlock(blockpos, this.rayTrace.sideHit)) {
+                    this.effectRenderer.addBlockHitEffects(blockpos, this.rayTrace.sideHit);
                     this.thePlayer.swingItem();
                 }
             } else {
@@ -1204,20 +1203,20 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         if (this.leftClickCounter <= 0) {
             AttackOrder.sendSwingIf1_8();
 
-            if (this.objectMouseOver == null) {
+            if (this.rayTrace == null) {
                 logger.error("Null returned as 'hitResult', this shouldn't happen!");
 
                 if (this.playerController.isNotCreative()) {
                     this.leftClickCounter = 10;
                 }
             } else {
-                switch (this.objectMouseOver.typeOfHit) {
-                    case ENTITY -> playerController.attackEntity(thePlayer, objectMouseOver.entityHit);
+                switch (this.rayTrace.typeOfHit) {
+                    case ENTITY -> playerController.attackEntity(thePlayer, rayTrace.entityHit);
 
                     case BLOCK -> {
-                        BlockPos blockpos = this.objectMouseOver.getBlockPos();
+                        BlockPos blockpos = this.rayTrace.getBlockPos();
                         if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air) {
-                            this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
+                            this.playerController.clickBlock(blockpos, this.rayTrace.sideHit);
                             break;
                         }
                     }
@@ -1241,26 +1240,26 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             boolean flag = true;
             ItemStack itemstack = this.thePlayer.inventory.getCurrentItem();
 
-            if (this.objectMouseOver == null) {
+            if (this.rayTrace == null) {
                 logger.warn("Null returned as 'hitResult', this shouldn't happen!");
             } else {
-                switch (this.objectMouseOver.typeOfHit) {
+                switch (this.rayTrace.typeOfHit) {
                     case ENTITY:
-                        if (this.playerController.isPlayerRightClickingOnEntity(this.thePlayer, this.objectMouseOver.entityHit, this.objectMouseOver)) {
+                        if (this.playerController.isPlayerRightClickingOnEntity(this.thePlayer, this.rayTrace.entityHit, this.rayTrace)) {
                             flag = false;
-                        } else if (this.playerController.interactWithEntitySendPacket(this.thePlayer, this.objectMouseOver.entityHit)) {
+                        } else if (this.playerController.interactWithEntitySendPacket(this.thePlayer, this.rayTrace.entityHit)) {
                             flag = false;
                         }
 
                         break;
 
                     case BLOCK:
-                        BlockPos blockpos = this.objectMouseOver.getBlockPos();
+                        BlockPos blockpos = this.rayTrace.getBlockPos();
 
                         if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air) {
                             int i = itemstack != null ? itemstack.stackSize : 0;
 
-                            if (this.playerController.onPlayerRightClick(this.thePlayer, this.theWorld, itemstack, blockpos, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec)) {
+                            if (this.playerController.onPlayerRightClick(this.thePlayer, this.theWorld, itemstack, blockpos, this.rayTrace.sideHit, this.rayTrace.hitVec)) {
                                 flag = false;
                                 if (swing) {
                                     this.thePlayer.swingItem();
@@ -1890,15 +1889,15 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     }
 
     private void middleClickMouse() {
-        if (this.objectMouseOver != null) {
+        if (this.rayTrace != null) {
             boolean flag = this.thePlayer.capabilities.isCreativeMode;
             int i = 0;
             boolean flag1 = false;
             TileEntity tileentity = null;
             Item item;
 
-            if (this.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK) {
-                BlockPos blockpos = this.objectMouseOver.getBlockPos();
+            if (this.rayTrace.typeOfHit == RayTrace.RayType.BLOCK) {
+                BlockPos blockpos = this.rayTrace.getBlockPos();
                 Block block = this.theWorld.getBlockState(blockpos).getBlock();
 
                 if (block.getMaterial() == Material.air) {
@@ -1919,11 +1918,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 i = block1.getDamageValue(this.theWorld, blockpos);
                 flag1 = item.getHasSubtypes();
             } else {
-                if (this.objectMouseOver.typeOfHit != RayTrace.RayType.ENTITY || this.objectMouseOver.entityHit == null || !flag) {
+                if (this.rayTrace.typeOfHit != RayTrace.RayType.ENTITY || this.rayTrace.entityHit == null || !flag) {
                     return;
                 }
 
-                switch (this.objectMouseOver.entityHit) {
+                switch (this.rayTrace.entityHit) {
                     case EntityPainting _ -> item = Items.painting;
                     case EntityLeashKnot _ -> item = Items.lead;
                     case EntityItemFrame entityitemframe -> {
@@ -1949,7 +1948,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                     case EntityArmorStand _ -> item = Items.armor_stand;
                     default -> {
                         item = Items.spawn_egg;
-                        i = EntityList.getEntityID(this.objectMouseOver.entityHit);
+                        i = EntityList.getEntityID(this.rayTrace.entityHit);
                         flag1 = true;
 
                         if (!EntityList.entityEggs.containsKey(i)) {

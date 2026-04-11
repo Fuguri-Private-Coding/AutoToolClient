@@ -30,7 +30,7 @@ public class BlockOverlay extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof DrawBlockHighlightEvent e && !Modules.getModule(Scaffold.class).isToggled()) {
-            RayTrace hit = mc.objectMouseOver;
+            RayTrace hit = mc.rayTrace;
 
             e.cancel();
             if (hit.typeOfHit == RayTrace.RayType.BLOCK) {

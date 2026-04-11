@@ -52,7 +52,7 @@ public class FastPlace extends Module {
     }
 
     private boolean needClick() {
-        RayTrace hit = mc.objectMouseOver;
+        RayTrace hit = mc.rayTrace;
 
         boolean oneClick = true;
         boolean flag = false;

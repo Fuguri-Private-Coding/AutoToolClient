@@ -9,7 +9,6 @@ import fuguriprivatecoding.autotoolrecode.event.events.render.ScoreboardRenderEv
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCrosshair;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -449,8 +448,8 @@ public class GuiIngame extends Gui {
             if (this.mc.pointedEntity != null) {
                 return true;
             } else {
-                if (this.mc.objectMouseOver != null && this.mc.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK) {
-                    BlockPos blockpos = this.mc.objectMouseOver.getBlockPos();
+                if (this.mc.rayTrace != null && this.mc.rayTrace.typeOfHit == RayTrace.RayType.BLOCK) {
+                    BlockPos blockpos = this.mc.rayTrace.getBlockPos();
 
                     return this.mc.theWorld.getTileEntity(blockpos) instanceof IInventory;
                 }

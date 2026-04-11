@@ -32,7 +32,7 @@ public class AutoTool extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof LegitClickTimingEvent) {
-            needSwitch = shouldSwitch(mc.objectMouseOver);
+            needSwitch = shouldSwitch(mc.rayTrace);
 
             long switchDelay = switchDelayTick.getRandomizedIntValue() * 50L;
 
@@ -89,7 +89,7 @@ public class AutoTool extends Module {
     }
 
     void switchTool() {
-        final BlockPos block = mc.objectMouseOver.getBlockPos();
+        final BlockPos block = mc.rayTrace.getBlockPos();
         mc.thePlayer.inventory.currentItem = getBestSlot(mc.theWorld.getBlockState(block).getBlock());
     }
 

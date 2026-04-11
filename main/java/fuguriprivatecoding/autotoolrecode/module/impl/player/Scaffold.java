@@ -204,7 +204,7 @@ public class Scaffold extends Module {
     }
 
     private void click() {
-        RayTrace hit = mc.objectMouseOver;
+        RayTrace hit = mc.rayTrace;
 
         int iters = clicks;
         clicks = 0;

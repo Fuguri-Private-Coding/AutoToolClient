@@ -2,18 +2,15 @@ package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.Blur;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.network.play.client.C14PacketTabComplete;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -186,8 +183,8 @@ public class GuiChat extends GuiScreen {
         if (p_146405_1_.length() >= 1) {
             BlockPos blockpos = null;
 
-            if (this.mc.objectMouseOver != null && this.mc.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK) {
-                blockpos = this.mc.objectMouseOver.getBlockPos();
+            if (this.mc.rayTrace != null && this.mc.rayTrace.typeOfHit == RayTrace.RayType.BLOCK) {
+                blockpos = this.mc.rayTrace.getBlockPos();
             }
 
             this.mc.thePlayer.sendQueue.addToSendQueue(new C14PacketTabComplete(p_146405_1_, blockpos));

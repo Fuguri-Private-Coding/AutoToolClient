@@ -104,15 +104,15 @@ public class Phase extends Module {
                 moveButtonEvent.setSneak(true);
             }
         }
-        if (event instanceof TickEvent && mc != null && mc.objectMouseOver != null) {
-            BlockPos newBreakingBlock = mc.objectMouseOver.getBlockPos();
+        if (event instanceof TickEvent && mc != null && mc.rayTrace != null) {
+            BlockPos newBreakingBlock = mc.rayTrace.getBlockPos();
             if (newBreakingBlock == null || !Mouse.isButtonDown(0) || !intaveClip.isToggled() || (double)newBreakingBlock.getY() >= mc.thePlayer.posY) return;
             if (currentBreakingBlock != null && System.currentTimeMillis() - lastBreakTime > 500L || !newBreakingBlock.equals(currentBreakingBlock)) resetBreaking();
             
             currentBreakingBlock = newBreakingBlock;
             lastBreakTime = System.currentTimeMillis();
             
-            EnumFacing sideHit = mc.objectMouseOver.sideHit;
+            EnumFacing sideHit = mc.rayTrace.sideHit;
             mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, currentBreakingBlock, sideHit));
             for (int i = 0; i < packetCount.getValue(); ++i) {
                 mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));

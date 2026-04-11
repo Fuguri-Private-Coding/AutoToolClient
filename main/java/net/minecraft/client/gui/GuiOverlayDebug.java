@@ -247,9 +247,9 @@ public class GuiOverlayDebug extends Gui
                 list.add("Shader: " + this.mc.entityRenderer.getShaderGroup().getShaderGroupName());
             }
 
-            if (this.mc.objectMouseOver != null && this.mc.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK && this.mc.objectMouseOver.getBlockPos() != null)
+            if (this.mc.rayTrace != null && this.mc.rayTrace.typeOfHit == RayTrace.RayType.BLOCK && this.mc.rayTrace.getBlockPos() != null)
             {
-                BlockPos blockpos1 = this.mc.objectMouseOver.getBlockPos();
+                BlockPos blockpos1 = this.mc.rayTrace.getBlockPos();
                 list.add(String.format("Looking at: %d %d %d", new Object[] {Integer.valueOf(blockpos1.getX()), Integer.valueOf(blockpos1.getY()), Integer.valueOf(blockpos1.getZ())}));
             }
 
@@ -283,9 +283,9 @@ public class GuiOverlayDebug extends Gui
         }
         else
         {
-            if (this.mc.objectMouseOver != null && this.mc.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK && this.mc.objectMouseOver.getBlockPos() != null)
+            if (this.mc.rayTrace != null && this.mc.rayTrace.typeOfHit == RayTrace.RayType.BLOCK && this.mc.rayTrace.getBlockPos() != null)
             {
-                BlockPos blockpos = this.mc.objectMouseOver.getBlockPos();
+                BlockPos blockpos = this.mc.rayTrace.getBlockPos();
                 IBlockState iblockstate = this.mc.theWorld.getBlockState(blockpos);
 
                 if (this.mc.theWorld.getWorldType() != WorldType.DEBUG_WORLD)

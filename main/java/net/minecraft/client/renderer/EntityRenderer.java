@@ -14,7 +14,6 @@ import fuguriprivatecoding.autotoolrecode.event.events.render.*;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
-import fuguriprivatecoding.autotoolrecode.module.impl.player.ChestStealer;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -30,7 +29,6 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.gui.MapItemRenderer;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.culling.ClippingHelper;
@@ -370,7 +368,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.mc.mcProfiler.startSection("pick");
             this.mc.pointedEntity = null;
             double d0 = this.mc.playerController.getBlockReachDistance() + Reach.getAddRange();
-            this.mc.objectMouseOver = entity.rayTrace(d0, partialTicks);
+            this.mc.rayTrace = entity.rayTrace(d0, partialTicks);
             double d1 = d0;
             Vec3 vec3 = entity.getPositionEyes(partialTicks);
             boolean flag = false;
@@ -382,8 +380,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 flag = true;
             }
 
-            if (this.mc.objectMouseOver != null) {
-                d1 = this.mc.objectMouseOver.hitVec.distanceTo(vec3);
+            if (this.mc.rayTrace != null) {
+                d1 = this.mc.rayTrace.hitVec.distanceTo(vec3);
             }
 
             Vec3 vec31 = entity.getLook(partialTicks);
@@ -431,11 +429,11 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             if (pointedEntity != null && flag && vec3.distanceTo(vec33) > 3.0D + Reach.getAddRange()) {
                 pointedEntity = null;
-                this.mc.objectMouseOver = new RayTrace(RayTrace.RayType.MISS, vec33, null, new BlockPos(vec33));
+                this.mc.rayTrace = new RayTrace(RayTrace.RayType.MISS, vec33, null, new BlockPos(vec33));
             }
 
-            if (pointedEntity != null && (d2 < d1 || this.mc.objectMouseOver == null)) {
-                this.mc.objectMouseOver = new RayTrace(pointedEntity, vec33);
+            if (pointedEntity != null && (d2 < d1 || this.mc.rayTrace == null)) {
+                this.mc.rayTrace = new RayTrace(pointedEntity, vec33);
 
                 if (pointedEntity instanceof EntityLivingBase || pointedEntity instanceof EntityItemFrame) {
                     this.mc.pointedEntity = pointedEntity;
@@ -1231,8 +1229,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             if (flag && !((EntityPlayer) entity).capabilities.allowEdit) {
                 ItemStack itemstack = ((EntityPlayer) entity).getCurrentEquippedItem();
 
-                if (this.mc.objectMouseOver != null && this.mc.objectMouseOver.typeOfHit == RayTrace.RayType.BLOCK) {
-                    BlockPos blockpos = this.mc.objectMouseOver.getBlockPos();
+                if (this.mc.rayTrace != null && this.mc.rayTrace.typeOfHit == RayTrace.RayType.BLOCK) {
+                    BlockPos blockpos = this.mc.rayTrace.getBlockPos();
                     IBlockState iblockstate = this.mc.theWorld.getBlockState(blockpos);
                     Block block = iblockstate.getBlock();
 
@@ -1483,11 +1481,11 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             GlStateManager.popMatrix();
             GlStateManager.pushMatrix();
 
-            if (this.mc.objectMouseOver != null && entity.isInsideOfMaterial(Material.water) && flag1) {
+            if (this.mc.rayTrace != null && entity.isInsideOfMaterial(Material.water) && flag1) {
                 EntityPlayer entityplayer = (EntityPlayer) entity;
                 GlStateManager.disableAlpha();
                 this.mc.mcProfiler.endStartSection("outline");
-                renderglobal.drawSelectionBox(entityplayer, this.mc.objectMouseOver, 0, partialTicks);
+                renderglobal.drawSelectionBox(entityplayer, this.mc.rayTrace, 0, partialTicks);
                 GlStateManager.enableAlpha();
             }
         }
@@ -1495,16 +1493,16 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         GlStateManager.matrixMode(5888);
         GlStateManager.popMatrix();
 
-        if (flag1 && this.mc.objectMouseOver != null && !entity.isInsideOfMaterial(Material.water)) {
+        if (flag1 && this.mc.rayTrace != null && !entity.isInsideOfMaterial(Material.water)) {
             EntityPlayer entityplayer1 = (EntityPlayer) entity;
             GlStateManager.disableAlpha();
             this.mc.mcProfiler.endStartSection("outline");
 
-            if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, new Object[]{renderglobal, entityplayer1, this.mc.objectMouseOver, Integer.valueOf(0), entityplayer1.getHeldItem(), Float.valueOf(partialTicks)})) && !this.mc.gameSettings.hideGUI) {
+            if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, new Object[]{renderglobal, entityplayer1, this.mc.rayTrace, Integer.valueOf(0), entityplayer1.getHeldItem(), Float.valueOf(partialTicks)})) && !this.mc.gameSettings.hideGUI) {
                 DrawBlockHighlightEvent.INST.setCanceled(false);
                 DrawBlockHighlightEvent.INST.call();
 
-                if (!DrawBlockHighlightEvent.INST.isCanceled()) renderglobal.drawSelectionBox(entityplayer1, this.mc.objectMouseOver, 0, partialTicks);
+                if (!DrawBlockHighlightEvent.INST.isCanceled()) renderglobal.drawSelectionBox(entityplayer1, this.mc.rayTrace, 0, partialTicks);
             }
             GlStateManager.enableAlpha();
         }
