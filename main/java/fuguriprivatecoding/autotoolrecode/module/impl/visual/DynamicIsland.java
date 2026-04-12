@@ -110,8 +110,10 @@ public class DynamicIsland extends Module {
             boolean hoveredRect = GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + (opened ? 50 : 15));
 
             if (mc.currentScreen != null && hoveredRect) {
-                float titleWidth = Math.max(regularFont.width(info.title(), 8), 105 - 35);
-                float artistWidth = Math.max(regularFont.width(info.artist(), 6), 105 - 35);
+                float rectWidthWithImage = 105 - 35;
+
+                float titleWidth = Math.max(regularFont.width(info.title(), 8), rectWidthWithImage);
+                float artistWidth = Math.max(regularFont.width(info.artist(), 6), rectWidthWithImage);
 
                 float needWidth = Math.max(titleWidth, artistWidth);
 
@@ -129,8 +131,15 @@ public class DynamicIsland extends Module {
                         StencilUtils.endWriteTexture();
                     }
 
-                    regularFont.draw(title, 35, 7, 8, whiteColor.withAlpha(textAlpha.getValue()));
-                    regularFont.draw(artist, 35, 7 + regularFont.height(title, 8) + 3, 6, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                    float textX = 35;
+                    float textY = 7;
+
+                    float heightTitle = regularFont.height(title, 8);
+
+                    Color textColor = whiteColor.withAlpha(textAlpha.getValue());
+
+                    regularFont.draw(title, textX, textY, 8, textColor);
+                    regularFont.draw(artist, textX, textY + heightTitle + 3, 6, textColor);
                 }, needWidth + 35, 25);
 
                 float widthRect = 50;
@@ -272,10 +281,8 @@ public class DynamicIsland extends Module {
             float translateY = y + 5;
 
             GL11.glPushMatrix();
-
             GL11.glTranslated(translateX, translateY, 0);
             currentRun.run();
-
             GL11.glPopMatrix();
 
             ScissorUtils.disableScissor();

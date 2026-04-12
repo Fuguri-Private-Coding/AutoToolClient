@@ -59,7 +59,7 @@ public class Effects extends Module {
                     if (mc.theWorld.getLoadedEntityList().contains(target)) {
                         targetPos = target.getPositionVector();
                     } else {
-                        if (effects.getMode().equals("Lightning")) {
+                        if (effects.is("Lightning")) {
                             bolt = new EntityLightningBolt(mc.theWorld, targetPos.xCoord, targetPos.yCoord, targetPos.zCoord);
                             bolt.setEntityId(-777);
                             mc.theWorld.addEntityToWorld(bolt.getEntityId(), bolt);
