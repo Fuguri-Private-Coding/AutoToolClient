@@ -32,8 +32,8 @@ public class CPSCounter extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof RunGameLoopEvent) {
-            leftCps.removeIf(l -> l <= System.currentTimeMillis());
-            rightCps.removeIf(l -> l <= System.currentTimeMillis());
+            leftCps.removeIf(l -> System.currentTimeMillis() - l > 1000);
+            rightCps.removeIf(l -> System.currentTimeMillis() - l > 1000);
         }
 
         if (event instanceof Render2DEvent e) {

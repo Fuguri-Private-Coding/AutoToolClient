@@ -1202,7 +1202,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     public void clickMouse() {
         CPSCounter cpsCounter = Modules.getModule(CPSCounter.class);
         if (cpsCounter.isToggled()) {
-            CPSCounter.leftCps.add(System.currentTimeMillis() + 1000L);
+            CPSCounter.leftCps.add(System.currentTimeMillis());
         }
         if (this.leftClickCounter <= 0) {
             AttackOrder.sendSwingIf1_8();
@@ -1242,7 +1242,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         if (!this.playerController.getIsHittingBlock()) {
             CPSCounter cpsCounter = Modules.getModule(CPSCounter.class);
             if (cpsCounter.isToggled()) {
-                CPSCounter.rightCps.add(System.currentTimeMillis() + 1000L);
+                CPSCounter.rightCps.add(System.currentTimeMillis());
             }
 
             this.rightClickDelayTimer = 4;
@@ -1626,13 +1626,13 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
             ClickEvent clickEvent;
 
+            new LegitClickTimingEvent().call();
+
             if (this.thePlayer.isUsingItem()) {
                 if (!this.gameSettings.keyBindUseItem.isKeyDown()) {
                     this.playerController.onStoppedUsingItem(this.thePlayer);
                 }
             } else {
-                new LegitClickTimingEvent().call();
-
                 while (this.gameSettings.keyBindAttack.isPressed()) {
                     clickEvent = new ClickEvent(ClickEvent.Button.LEFT);
                     clickEvent.call();

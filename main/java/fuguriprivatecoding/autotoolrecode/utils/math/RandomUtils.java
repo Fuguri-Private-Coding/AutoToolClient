@@ -85,4 +85,37 @@ public class RandomUtils {
 
         return value;
     }
+
+    /**
+     * Генерирует значение с нормальным распределением в диапазоне от {@code min} до {@code max}
+     * Среднее значение устанавливается в центр диапазона, стандартное отклонение = 1/6 от диапазона
+     *
+     * @param min Минимум диапазона
+     * @param max Максимум диапазона
+     * @return Значение с нормальным распределением
+     */
+    public double nextGaussian(double min, double max) {
+        if (min >= max) {
+            return min;
+        }
+
+        double mean = (min + max) / 2.0;
+        double range = max - min;
+        double stdDev = range / 6.0;
+
+        double value = random.nextGaussian() * stdDev + mean;
+
+        return Math.max(min, Math.min(max, value));
+    }
+
+    /**
+     * Генерирует целое значение с нормальным распределением в диапазоне от {@code min} до {@code max}
+     *
+     * @param min Минимум диапазона
+     * @param max Максимум диапазона
+     * @return Целое значение с нормальным распределением
+     */
+    public int nextGaussianInt(int min, int max) {
+        return (int) Math.round(nextGaussian(min, max));
+    }
 }
