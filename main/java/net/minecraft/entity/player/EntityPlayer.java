@@ -1956,6 +1956,10 @@ public abstract class EntityPlayer extends EntityLivingBase {
         return teams.isToggled() && teams.getTeamList().contains(this);
     }
 
+    public boolean isValid() {
+        return !isBot() && !isTeam() && !isFriend();
+    }
+
     public boolean hasReducedDebug()
     {
         return this.hasReducedDebug;

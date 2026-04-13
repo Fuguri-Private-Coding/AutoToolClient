@@ -44,21 +44,15 @@ public class Clicks implements Imports, EventListener {
             int iters = clicks;
             clicks = 0;
 
-            EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
-
-            if (rayCast != null && (rayCast.isFriend() || rayCast.isTeam() || rayCast.isBot()) || !clicking) {
-                return;
-            }
-
-            for (int i = 0; i < iters; i++) {
-                click(target);
+            if (clicking) {
+                for (int i = 0; i < iters; i++) {
+                    click(target);
+                }
             }
         }
 
         if (event instanceof ClickEvent e) {
-            EntityPlayer rayCast = (EntityPlayer) RayCastUtils.raycastEntity(3.0, entity -> entity instanceof EntityPlayer);
-
-            if (rayCast != null && (rayCast.isFriend() || rayCast.isTeam() || rayCast.isBot()) || !clicking) {
+            if (target instanceof EntityPlayer player && !player.isValid() && clickSettings.noFriendDamage.isToggled()) {
                 e.cancel();
             }
         }
@@ -67,6 +61,10 @@ public class Clicks implements Imports, EventListener {
     public boolean needClick(EntityLivingBase target) {
         if (target == null || !clickSettings.isToggled()) {
             return true;
+        }
+
+        if (target instanceof EntityPlayer player && !player.isValid() && clickSettings.noFriendDamage.isToggled()) {
+            return false;
         }
 
         if (clickSettings.forceClickReduce.isToggled()) {
@@ -86,18 +84,10 @@ public class Clicks implements Imports, EventListener {
     public static void addClick() {
         if (TimerRange.isTeleporting()) return;
         clicks++;
-
-        if (clickSettings.simulateDoubleClick.isToggled() && clicks > 0) {
-            float chance = clickSettings.chanceDoubleClick.getValue() / 100f;
-
-            if (Math.random() <= chance) {
-                clicks++;
-            }
-        }
     }
 
     public static void click(EntityLivingBase target) {
-        if (clickSettings.ignoreWalls.isToggled() && target != null) {
+        if (clickSettings.ignoreWalls.isToggled() && clickSettings.isToggled() && target != null) {
             RayTrace hit = RayCastUtils.rayCast(mc.thePlayer.getRotation(), 8, 0);
             RayTrace hits = RayCastUtils.rayCast(DistanceUtils.getDistance(target) + 0.2f, 0, mc.thePlayer.getRotation());
 

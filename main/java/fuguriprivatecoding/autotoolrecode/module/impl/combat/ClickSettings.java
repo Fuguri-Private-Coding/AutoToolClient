@@ -13,10 +13,10 @@ public class ClickSettings extends Module {
     public DoubleSlider startHurtTime = new DoubleSlider("StartHurtTime", this, 0,10,3,1);
     public DoubleSlider endHurtTime = new DoubleSlider("EndHurtTime", this, 0,10,3,1);
 
-    public CheckBox simulateDoubleClick = new CheckBox("SimulateDoubleClick", this, false);
-    public IntegerSetting chanceDoubleClick = new IntegerSetting("ChanceDoubleClick", this, simulateDoubleClick::isToggled, 0, 100, 100);
     public CheckBox forceClickReduce = new CheckBox("ForceClickReduce", this);
     public IntegerSetting minDiffToForce = new IntegerSetting("MinDiffToForce", this, forceClickReduce::isToggled, 0, 180, 45);
+
+    public CheckBox noFriendDamage = new CheckBox("NoFriendDamage", this);
 
     public CheckBox ignoreWalls = new CheckBox("IgnoreWalls", this, false);
 
