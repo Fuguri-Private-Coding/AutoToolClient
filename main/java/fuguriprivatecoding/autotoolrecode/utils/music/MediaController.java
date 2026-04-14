@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.music;
 
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.util.ResourceLocation;
@@ -33,6 +34,7 @@ public final class MediaController {
     public void start() {
         if (!SmtcNative.nInit()) return;
         executor.scheduleWithFixedDelay(this::tick, 0L, 200L, TimeUnit.MILLISECONDS);
+        ClientUtils.chatLog("Медиаконтроллер запущен.");
     }
 
     private void tick() {

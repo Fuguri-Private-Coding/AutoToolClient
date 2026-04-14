@@ -30,7 +30,7 @@ public class Configs implements Imports {
     @Getter Config defaultConfig = new Config("default");
 
     public void init() {
-        if (CONFIG_DIRECTORY.mkdirs()) System.out.println("Successful created Configs Directory.");
+        if (CONFIG_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию для конфигов.");
 
         refreshConfigs();
     }

@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.connect.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.legit.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
 
@@ -127,6 +128,8 @@ public class Modules {
 			new LongJump(),
 			new RawMouseInput()
         );
+
+		ClientUtils.chatLog("Успешно инициализировал модули.");
 	}
 
 	private void register(Module... modulesToRegister) {

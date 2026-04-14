@@ -152,17 +152,17 @@ public enum Client implements Imports, EventListener {
 	}
 
 	public void onClose() {
+        ClientIRC.shutdown();
 		Configs.saveConfig(Configs.getDefaultConfig());
 		KeyBinds.saveBinds();
-        ClientIRC.disconnectClientServer();
         scheduler.shutdown();
         mediaController.close();
     }
 
     private void createDirectories() {
-        if (CLIENT_DIR.mkdirs()) System.out.println("Successful created Client Directory.");
-        if (SKIN_DIRECTORY.mkdirs()) System.out.println("Successful created Skin Directory.");
-        if (CAPE_DIRECTORY.mkdirs()) System.out.println("Successful created Cape Directory.");
+        if (CLIENT_DIR.mkdirs()) ClientUtils.chatLog("Успешно создал директорию клиента.");
+        if (SKIN_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию скинов.");
+        if (CAPE_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию плащей.");
     }
 
     @Override

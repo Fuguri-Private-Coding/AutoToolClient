@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.utils.render.font;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import lombok.experimental.UtilityClass;
 import net.dv8tion.jda.api.entities.Message;
@@ -28,7 +29,7 @@ public class Fonts implements Imports {
     public void init() {
         checkFonts();
         if (FONT_DIRECTORY.mkdirs()) {
-            System.out.println("Successful created Fonts Directory.");
+            ClientUtils.chatLog("Успешно создал директорию для шрифтов.");
             downloadFonts();
             initFonts();
             return;
@@ -63,7 +64,7 @@ public class Fonts implements Imports {
                 message.getAttachments().forEach(attachment -> {
                     if (attachment.getFileName().endsWith(".ttf") || attachment.getFileName().endsWith(".otf")) {
                         CompletableFuture<Void> future = attachment.getProxy().downloadToFile(new File(FONT_DIRECTORY + "/" + attachment.getFileName()))
-                            .thenAccept(_ -> System.out.println("Successful installed: " + attachment.getFileName()));
+                            .thenAccept(_ -> ClientUtils.chatLog("Successful installed: " + attachment.getFileName()));
                         downloadFutures.add(future);
                     }
                 });
@@ -78,7 +79,7 @@ public class Fonts implements Imports {
             }
 
         } catch (Exception e) {
-            System.out.println("Failed download fonts: " + e.getMessage());
+            ClientUtils.chatLog("Failed download fonts: " + e.getMessage());
         }
     }
 
@@ -90,7 +91,7 @@ public class Fonts implements Imports {
             File[] fontFiles = FONT_DIRECTORY.listFiles((_, name) -> name.toLowerCase().endsWith(".ttf") || name.toLowerCase().endsWith(".otf"));
 
             if (fontFiles != null && fontFiles.length >= fontsCount) {
-                System.out.println("Шрифты успешно загружены, найдено файлов: " + fontFiles.length);
+                ClientUtils.chatLog("Шрифты успешно инициализированны, найдено файлов: " + fontFiles.length);
                 break;
             }
 
@@ -107,7 +108,7 @@ public class Fonts implements Imports {
         );
 
         if (fontFiles == null || fontFiles.length == 0) {
-            System.out.println("Не удалось загрузить шрифты");
+            ClientUtils.chatLog("Не удалось загрузить шрифты");
             return;
         }
 
@@ -117,7 +118,7 @@ public class Fonts implements Imports {
                 Font font = generateFontFromFile(fontFile, 32, true);
                 if (font != null) fonts.put(fontName, new ClientFont(font));
             } catch (Exception e) {
-                System.out.println("Ошибка загрузки шрифта " + fontFile.getName() + ": " + e.getMessage());
+                ClientUtils.chatLog("Ошибка загрузки шрифта " + fontFile.getName() + ": " + e.getMessage());
             }
         }
     }
@@ -135,7 +136,7 @@ public class Fonts implements Imports {
             Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
             return font.deriveFont(bold ? Font.BOLD : Font.PLAIN, size);
         } catch (Exception e) {
-            System.out.println("Ошибка создания шрифта из файла " + fontFile.getName() + ": " + e.getMessage());
+            ClientUtils.chatLog("Ошибка создания шрифта из файла " + fontFile.getName() + ": " + e.getMessage());
         }
         return null;
     }

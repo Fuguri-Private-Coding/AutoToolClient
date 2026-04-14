@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.command;
 
 import fuguriprivatecoding.autotoolrecode.command.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ public class Commands {
         commands.add(new CommandIRC());
         commands.add(new CommandHelp());
         commands.add(new CommandBinds());
+
+		ClientUtils.chatLog("Успешно инициализировал команды.");
     }
 	
 	public static boolean handle(String msg) {

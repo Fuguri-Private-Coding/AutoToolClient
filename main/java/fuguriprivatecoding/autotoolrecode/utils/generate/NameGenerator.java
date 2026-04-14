@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.generate;
 
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.experimental.UtilityClass;
 
 import java.io.BufferedReader;
@@ -27,6 +28,8 @@ public class NameGenerator {
 
         prefixes = extractPrefixes(fullNicks);
         suffixes = extractSuffixes(fullNicks);
+
+        ClientUtils.chatLog("Успешно инициализировал генератор имен.");
     }
 
     private static List<String> loadNicknamesFromResource(String resourcePath) throws IOException {

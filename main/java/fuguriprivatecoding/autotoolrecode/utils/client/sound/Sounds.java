@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.client.sound;
 
 import fuguriprivatecoding.autotoolrecode.Client;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import lombok.experimental.UtilityClass;
@@ -15,7 +16,7 @@ public class Sounds {
     @Getter static Sound enableSound, disableSound, enableVlSound, disableVlSound;
 
     public void init() throws IOException {
-        if (SOUND_DIRECTORY.mkdirs()) System.out.println("Successful created Sounds Directory.");
+        if (SOUND_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию для звуков.");
 
         File enable = new File(SOUND_DIRECTORY, "enable.wav");
         File enableVl = new File(SOUND_DIRECTORY, "enablevl.wav");
@@ -31,5 +32,7 @@ public class Sounds {
         disableSound = new Sound(disable);
         enableVlSound = new Sound(enableVl);
         disableVlSound = new Sound(disableVl);
+
+        ClientUtils.chatLog("Успешно инициализировал звуки.");
     }
 }

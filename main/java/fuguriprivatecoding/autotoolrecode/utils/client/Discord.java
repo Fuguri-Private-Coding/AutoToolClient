@@ -27,11 +27,10 @@ public class Discord implements Imports {
         thread.start();
 
         DiscordEventHandlers.Builder handle = new DiscordEventHandlers.Builder();
-
         handle.setReadyEventHandler(user -> {
             if (user.userId != null) {
-                ConsoleScreen.logWithoutPrefix("§f[§9Discord§f]§a Подключен к " + user.username + ".");
-                ConsoleScreen.logWithoutPrefix("§f[§9Discord§f]§a Активность запущенна.");
+                ConsoleScreen.log("Подключен к " + user.username + ".");
+                ConsoleScreen.log("Активность запущенна.");
                 timestamp = System.currentTimeMillis();
 
                 name = user.username;
@@ -47,7 +46,7 @@ public class Discord implements Imports {
     }
 
     public static void stop() {
-        ConsoleScreen.logWithoutPrefix("§f[§9Discord§f]§4 Активность остановлена.");
+        ConsoleScreen.log("Активность остановлена.");
         DiscordRPC.discordShutdown();
         running = false;
     }

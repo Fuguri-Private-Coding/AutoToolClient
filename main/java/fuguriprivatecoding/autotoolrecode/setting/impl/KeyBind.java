@@ -9,7 +9,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import lombok.Getter;
 import lombok.Setter;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.util.function.BooleanSupplier;
