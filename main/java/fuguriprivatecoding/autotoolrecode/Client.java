@@ -58,7 +58,7 @@ public enum Client implements Imports, EventListener {
 	INST;
 
 	public final String CLIENT_NAME = "AutoTool";
-    public final ClientVersion CLIENT_VERSION = new ClientVersion(4, 6, 5);
+    public final ClientVersion CLIENT_VERSION = new ClientVersion(4, 6, 6);
 
     private final String RESOURCES_ID = "minecraft";
     private final String RESOURCES_CLIENT_ID = "autotool/";
@@ -80,6 +80,8 @@ public enum Client implements Imports, EventListener {
 	public void init() throws IOException {
 		long start = System.nanoTime();
 		starting = true;
+
+        VersionCheck.validateClientVersion(ClientIRC.getClientVersionChannel());
 
         File msdf_gen_file = new File(CLIENT_DIR, "msdf-gen.zip");
         FileUtils.unpackIfNeeded(msdf_gen_file, "assets/minecraft/autotool/msdf-gen/msdf-gen.zip");
@@ -103,7 +105,6 @@ public enum Client implements Imports, EventListener {
 
         Display.setTitle(getFullName());
 
-        VersionCheck.validateClientVersion(ClientIRC.getClientVersionChannel());
         Runtime.getRuntime().addShutdownHook(new Thread(this::onClose));
 
         ClientIRC.connectClient();
