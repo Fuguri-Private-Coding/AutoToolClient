@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.profile.Role;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
@@ -13,9 +14,10 @@ import java.security.MessageDigest;
 
 public class HWID {
 
-    public static long lastTimeConnection;
-    public static boolean noConnection;
-    static boolean user;
+    public static boolean isConnectionLost;
+    static boolean isValidUser;
+
+    public static StopWatch connectionTimer = new StopWatch();
 
     public static EasingAnimation noConnectionAnim = new EasingAnimation(0);
 
@@ -59,23 +61,26 @@ public class HWID {
                     Role userRole = Role.fromRoleName(args[2]);
 
                     Client.INST.setProfile(new Profile(username, userRole));
-                    user = true;
-                    noConnection = false;
+                    isValidUser = true;
+                    isConnectionLost = false;
                     noConnectionAnim.setEnd(false);
                     return true;
                 }
             }
 
+            isValidUser = false;
+
             String userName = System.getProperty("user.name");
             String denialMessage = "[" + hwid + "] " + userName + " This user does not have access to the client.";
 
             ClientIRC.sendMessage(ClientIRC.getLoginChannel(), denialMessage);
-            return user = false;
+            return isValidUser;
         } catch (Exception e) {
-            if (!noConnection) lastTimeConnection = System.currentTimeMillis();
-            noConnection = true;
+            if (!isConnectionLost) connectionTimer.reset();
+            isConnectionLost = true;
             noConnectionAnim.setEnd(true);
         }
-        return System.currentTimeMillis() - lastTimeConnection < 30000 || !noConnection;
+
+        return !connectionTimer.reachedMS(30000) || !isConnectionLost;
     }
 }

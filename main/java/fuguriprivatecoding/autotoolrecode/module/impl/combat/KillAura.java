@@ -96,6 +96,8 @@ public class KillAura extends Module {
     private final BooleanSupplier gaussianMode = () -> randomizeMode.is("Gaussian");
 
     private final DoubleSlider cpsLimiter = new DoubleSlider("CPSLimiter", this, gaussianMode, 0, 40, 20, 1);
+
+    private final DoubleSlider clickDutyCycle = new DoubleSlider("ClickDutyCycle", this, gaussianMode, 0, 1, 0.5, 0.01f);
     private final FloatSetting consistency = new FloatSetting("Consistency", this, gaussianMode, 0, 2, 0.2f, 0.01f);
     private final FloatSetting instability = new FloatSetting("Instability", this, gaussianMode, 0, 2, 0.2f, 0.01f);
 
@@ -110,6 +112,8 @@ public class KillAura extends Module {
     private long delay;
 
     private int recordedIndex;
+
+    private double currentDutyCycle;
 
     private Rot lastDelta = new Rot();
 
@@ -136,9 +140,14 @@ public class KillAura extends Module {
             if (event instanceof RunGameLoopEvent && needClicking(target)) {
                 if (clickTimer.reachedMS(delay)) {
                     this.delay = getDelay();
-                    Clicks.addClick();
+                    currentDutyCycle = clickDutyCycle.getRandomizedDoubleValue();
                     clickTimer.reset();
+
+                    Clicks.addClick();
                 }
+
+                long timeInCycle = clickTimer.reachedMS();
+                mc.gameSettings.keyBindAttack.pressed = timeInCycle < (delay * currentDutyCycle);
             }
 
             if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.LEFT) {

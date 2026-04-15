@@ -1,7 +1,10 @@
 package fuguriprivatecoding.autotoolrecode.utils.time;
 
+import lombok.Getter;
+
 public class StopWatch {
 
+	@Getter
 	long lastMS, lastNS;
 
 	public StopWatch() {

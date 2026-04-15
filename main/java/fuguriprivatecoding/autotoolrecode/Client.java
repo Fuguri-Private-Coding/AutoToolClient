@@ -182,7 +182,7 @@ public enum Client implements Imports, EventListener {
             EasingAnimation anim = HWID.noConnectionAnim;
             anim.update(1f, Easing.OUT_BACK);
 
-            long time = System.currentTimeMillis() - HWID.lastTimeConnection;
+            long time = System.currentTimeMillis() - HWID.connectionTimer.getLastMS();
             int sec = Integer.parseInt(String.valueOf(time / 1000L));
 
             int remainingSec = 30 - sec;

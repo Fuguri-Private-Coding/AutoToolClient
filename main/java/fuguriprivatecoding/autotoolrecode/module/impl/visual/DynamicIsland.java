@@ -188,8 +188,8 @@ public class DynamicIsland extends Module {
                     pressed = Mouse.isButtonDown(0);
                 }
             } else {
-                if (HWID.noConnection) {
-                    long time = System.currentTimeMillis() - HWID.lastTimeConnection;
+                if (HWID.isConnectionLost) {
+                    long time = System.currentTimeMillis() - HWID.connectionTimer.getLastMS();
                     int sec = Integer.parseInt(String.valueOf(time / 1000L));
 
                     int remainingSec = 30 - sec;

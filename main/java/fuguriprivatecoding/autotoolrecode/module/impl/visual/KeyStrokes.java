@@ -82,6 +82,11 @@ public class KeyStrokes extends Module {
             RoundedUtils.drawRect(posX_D, posY_D, size, size, radius, dColor);
             RoundedUtils.drawRect(posX_S, posY_S, size, size, radius, sColor);
 
+            boolean attackpress = mc.gameSettings.keyBindAttack.isKeyDown();
+
+
+            RoundedUtils.drawRect(pos.x + sizeWithGap + sizeWithGap, pos.y, size, size, radius, attackpress ? toggleColor : unToggleColor);
+
             if (glow.isToggled()) {
                 Color glowUnToggleColor = this.glowUnToggleColor.getFadedColor();
                 Color glowToggleColor = this.glowToggleColor.getFadedColor();

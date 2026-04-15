@@ -108,11 +108,10 @@ public class ChestStealer extends Module {
                     if (needClick) {
                         if (delayStopWatch.reachedMS(lootDelayTick * 50L) && slots.contains(currentSlot)) {
                             mouse.click();
+                            delayStopWatch.reset();
                         }
-                    } else {
-                        lootDelayTick = delay.getRandomizedIntValue();
-                        delayStopWatch.reset();
                     }
+                    lootDelayTick = delay.getRandomizedIntValue();
 
                     if (fail.isToggled() && Math.random() <= failChance.getRandomizedIntValue() / 100f) {
                         mouse.click();
