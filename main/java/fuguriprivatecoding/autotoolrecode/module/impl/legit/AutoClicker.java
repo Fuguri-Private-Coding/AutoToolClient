@@ -32,8 +32,6 @@ public class AutoClicker extends Module {
 
     DoubleSlider cpsLimiter = new DoubleSlider("CPSLimiter", this, gaussianMode, 0, 40, 20, 1);
 
-    DoubleSlider clickDutyCycle = new DoubleSlider("ClickDutyCycle", this, gaussianMode, 0, 1, 0.5, 0.01);
-
     FloatSetting consistency = new FloatSetting("Consistency", this, gaussianMode, 0, 2, 0.2f, 0.01f);
     FloatSetting instability = new FloatSetting("Instability", this, gaussianMode, 0, 2, 0.2f, 0.01f);
 

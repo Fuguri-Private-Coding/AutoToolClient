@@ -3,12 +3,16 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
@@ -97,7 +101,6 @@ public class KillAura extends Module {
 
     private final DoubleSlider cpsLimiter = new DoubleSlider("CPSLimiter", this, gaussianMode, 0, 40, 20, 1);
 
-    private final DoubleSlider clickDutyCycle = new DoubleSlider("ClickDutyCycle", this, gaussianMode, 0, 1, 0.5, 0.01f);
     private final FloatSetting consistency = new FloatSetting("Consistency", this, gaussianMode, 0, 2, 0.2f, 0.01f);
     private final FloatSetting instability = new FloatSetting("Instability", this, gaussianMode, 0, 2, 0.2f, 0.01f);
 
@@ -112,8 +115,6 @@ public class KillAura extends Module {
     private long delay;
 
     private int recordedIndex;
-
-    private double currentDutyCycle;
 
     private Rot lastDelta = new Rot();
 
@@ -137,17 +138,18 @@ public class KillAura extends Module {
         if (Modules.getModule(Scaffold.class).isToggled()) return;
 
         if (target != null) {
+            if (event instanceof Render2DEvent && smoothModes.get("Basic")) {
+                animX.update((float) RandomUtils.nextGaussian(0.2f, 2f), Easing.OUT_BACK);
+                animY.update((float) RandomUtils.nextGaussian(0.2f, 2f), Easing.OUT_BACK);
+            }
+
             if (event instanceof RunGameLoopEvent && needClicking(target)) {
                 if (clickTimer.reachedMS(delay)) {
                     this.delay = getDelay();
-                    currentDutyCycle = clickDutyCycle.getRandomizedDoubleValue();
                     clickTimer.reset();
 
                     Clicks.addClick();
                 }
-
-                long timeInCycle = clickTimer.reachedMS();
-                mc.gameSettings.keyBindAttack.pressed = timeInCycle < (delay * currentDutyCycle);
             }
 
             if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.LEFT) {
@@ -171,6 +173,9 @@ public class KillAura extends Module {
             }
         }
     }
+
+    EasingAnimation animX = new EasingAnimation();
+    EasingAnimation animY = new EasingAnimation();
 
     private Rot getRotation(EntityLivingBase target, AxisAlignedBB box) {
         boolean teleport = (TimerRange.isTeleporting()) && snapForTeleport.isToggled();
@@ -244,11 +249,16 @@ public class KillAura extends Module {
         if (!teleport) {
             if (smoothModes.get("Basic")) {
                 Rot rot = new Rot(
-                    RandomUtils.nextFloat(-yawStrength.getValue(), yawStrength.getValue()),
-                    RandomUtils.nextFloat(-pitchStrength.getValue(), pitchStrength.getValue())
+                    (float) RandomUtils.nextGaussian(-yawStrength.getValue(), yawStrength.getValue()),
+                    (float) RandomUtils.nextGaussian(-pitchStrength.getValue(), pitchStrength.getValue())
                 );
 
-                delta = delta.add(rot);
+                animX.setEnd(rot.getYaw());
+                animY.setEnd(rot.getPitch());
+
+                Rot d = new Rot(animX.getValue(), animY.getValue());
+
+                delta = delta.add(d);
             }
 
             if (smoothModes.get("Linear")) {
