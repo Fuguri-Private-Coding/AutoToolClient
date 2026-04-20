@@ -4,7 +4,6 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
@@ -182,6 +181,8 @@ public class KillAura extends Module {
 
         AxisAlignedBB fullBox = RotUtils.getHitBox(target, 100, 100).expand(0.1);
 
+        Vec3 eyes = mc.thePlayer.getPositionEyes(1f);
+
         Vec3 needPoint = switch (hitVec.getMode()) {
             case "Best" -> RotUtils.getBestHitVec(box);
             case "Head" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight(), 0);
@@ -190,6 +191,10 @@ public class KillAura extends Module {
         };
 
         Rot needRot = RotUtils.getRotationToPoint(needPoint);
+
+        if (fullBox.isVecInside(eyes)) {
+            needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), fullBox);
+        }
 
         if (hitVec.is("Nearest")) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), box);
 

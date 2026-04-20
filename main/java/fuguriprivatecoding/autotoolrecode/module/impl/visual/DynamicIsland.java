@@ -161,7 +161,7 @@ public class DynamicIsland extends Module {
                 boolean isHoveredPlay = GuiUtils.isMouseHovered(playX, buttonsY, 10, 10);
                 boolean isHoveredNext = GuiUtils.isMouseHovered(nextX, buttonsY, 10, 10);
 
-                Color color = whiteColor.withAlpha(elementAlpha);
+                Color color = whiteColor.withAlpha(Math.clamp(elementAlpha, 0, 1));
 
                 Color nextColor = isHoveredNext ? color.darker() : color;
                 Color playColor = isHoveredPlay ? color.darker() : color;
@@ -247,8 +247,8 @@ public class DynamicIsland extends Module {
 
             opened = additionalHeight > 0;
 
-            width.update(4, Easing.IN_OUT_CUBIC);
-            height.update(4, Easing.IN_OUT_CUBIC);
+            width.update(3, Easing.OUT_BACK);
+            height.update(3, Easing.OUT_BACK);
             textAlpha.update(5, Easing.OUT_CUBIC);
             rectRadius.update(4, Easing.IN_OUT_CUBIC);
 
