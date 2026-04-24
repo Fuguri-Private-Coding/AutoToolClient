@@ -149,7 +149,7 @@ public class DynamicIsland extends Module {
 
                 float buttonsY = rectY + height.getValue() + 5;
 
-                float elementAlpha = height.getValue() / (additionalHeight + 15);
+                float elementAlpha = Math.clamp(height.getValue() / (additionalHeight + 15), 0, 1);
 
                 float renderX = rectX + ((width.getValue() - 10) / 2f) - widthRect / 2f;
 
@@ -282,7 +282,9 @@ public class DynamicIsland extends Module {
 
             GL11.glPushMatrix();
             GL11.glTranslated(translateX, translateY, 0);
+            ScaleUtils.startScaling(0, 0, additionalWidth, additionalHeight, 0.90f + textAlpha.getValue() * 0.1f);
             currentRun.run();
+            ScaleUtils.stopScaling();
             GL11.glPopMatrix();
 
             ScissorUtils.disableScissor();
@@ -303,7 +305,7 @@ public class DynamicIsland extends Module {
             lastRun = run;
             this.additionalWidth = additionalWidth;
             this.additionalHeight = additionalHeight;
-            textAlpha.setEnd(0);
+            textAlpha.setEnd(0f);
         }
 
         if (width.getValue() - 10 == additionalWidth) {
