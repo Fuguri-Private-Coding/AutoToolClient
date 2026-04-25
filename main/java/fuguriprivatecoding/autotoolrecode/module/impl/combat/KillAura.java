@@ -238,12 +238,12 @@ public class KillAura extends Module {
 
         boolean teleport = (TimerRange.isTeleporting()) && snapForTeleport.isToggled();
 
-        double offset = target.getCollisionBorderSize();
+        double expand = target.getCollisionBorderSize();
         AxisAlignedBB box = RotUtils.getHitBox(
                 target,
                 teleport ? 100 : hBoxSize.getValue(),
                 teleport ? 100 : vBoxSize.getValue()
-        ).expand(offset, offset, offset);
+        ).expand(expand, expand, expand);
 
         Rot needRotation = getRotation(target, box);
 

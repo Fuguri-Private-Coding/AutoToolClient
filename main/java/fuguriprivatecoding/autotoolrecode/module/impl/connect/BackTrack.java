@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
@@ -28,6 +29,8 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "BackTrack", category = Category.CONNECTION, description = "Задержкой пакетов увеличивает дальность удара.")
 public class BackTrack extends Module {
 
+    final DoubleSlider distance = new DoubleSlider("Distance", this, 0,12,12,0.1f);
+
     final DoubleSlider delay = new DoubleSlider("Delay", this, 0,5000,200,1);
     final BooleanSupplier constantRandomSupplier = () -> delay.minValue != delay.maxValue;
     final CheckBox constantRandomize = new CheckBox("ConstantDelayRandomize", this, constantRandomSupplier, true);
@@ -37,7 +40,9 @@ public class BackTrack extends Module {
 
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenTrack", this, 0, 20, 0) ;
 
-    final DoubleSlider distance = new DoubleSlider("Distance", this, 0,12,12,0.1f);
+    public final CheckBox cancelHitsIfNeed = new CheckBox("CancelHitsIfNeed", this, false);
+
+    final CheckBox onlyWhenNeed = new CheckBox("OnlyWhenNeed", this, false);
 
     final MultiMode resetIf = new MultiMode("ResetIf", this)
         .addModes("TargetHurtTime", "PlayerHurtTime")
@@ -112,7 +117,7 @@ public class BackTrack extends Module {
                 if (constantRandomize.isToggled() && constantRandomSupplier.getAsBoolean()) saveDelay = delay.getRandomizedIntValue();
 
                 if (adaptiveDelay.isToggled()) {
-                    double minDistanceDelay = DistanceUtils.getDistance(target) / this.distance.getMinValue();
+                    double minDistanceDelay = DistanceUtils.getDistance(target) / Math.clamp(this.distance.getMinValue(), 0, 3);
                     double distanceFactor = Math.clamp(minDistanceDelay, 0, 1);
                     currentDelay = (long) (saveDelay * distanceFactor);
                 }
@@ -137,26 +142,29 @@ public class BackTrack extends Module {
             handle(false);
 
             if (target != null) {
-                Vec3 targetPos = target.getNPosition();
+                Vec3 realPos = target.getNPosition();
 
-                double offset = target.getCollisionBorderSize();
+                double expand = target.getCollisionBorderSize();
 
-                AxisAlignedBB realBox = target.getEntityBoundingBox().offset(targetPos.xCoord - target.posX, targetPos.yCoord - target.posY, targetPos.zCoord - target.posZ).expand(offset, offset, offset);
+                Vec3 offset = new Vec3(realPos.xCoord - target.posX, realPos.yCoord - target.posY, realPos.zCoord - target.posZ);
+
+                AxisAlignedBB realBox = target.getEntityBoundingBox().offset(offset).expand(expand, expand, expand);
 
                 double distanceToReal = DistanceUtils.getDistance(realBox);
                 double distanceToFake = DistanceUtils.getDistance(target);
 
                 boolean improve = distanceToFake + threshold.getValue() >= distanceToReal;
-                boolean distanceFake = distanceToFake > 3 && !adaptiveDelay.isToggled();
 
-                boolean distance = distanceToReal > this.distance.getMaxValue() || distanceFake || distanceToReal < this.distance.getMinValue();
+                boolean distance = distanceToReal < this.distance.getMaxValue() || distanceToReal > this.distance.getMaxValue();
 
-                boolean targetHurtTime = resetIf.get("TargetHurtTime") && target.hurtTime > minTargetHurtTime.getValue();
+                boolean targetHurtTime = target.hurtTime > minTargetHurtTime.getValue() && resetIf.get("TargetHurtTime");
                 boolean playerHurtTime = mc.thePlayer.hurtTime > minPlayerHurtTime.getValue() && resetIf.get("PlayerHurtTime");
 
-                working = !improve && !distance && !targetHurtTime && !playerHurtTime;
+                boolean onlyWhenNeed = this.onlyWhenNeed.isToggled() && mc.thePlayer.hurtTime < 8 && mc.thePlayer.hurtTime > 3 && distanceToReal > 3;
 
-                if (improve || distance || targetHurtTime || playerHurtTime) {
+                working = !improve && !distance && !targetHurtTime && !playerHurtTime && !onlyWhenNeed;
+
+                if (improve || distance || targetHurtTime || playerHurtTime || onlyWhenNeed) {
                     handle(true);
 
                     delayBetweenBackTracks = delayBetweenTicks.getValue();
@@ -166,10 +174,12 @@ public class BackTrack extends Module {
                     if (renderOnlyIfWorking.isToggled()) return;
                 }
 
-                targetPos = target.getRealPosition();
-                Vec3 pos = targetPos;
+                realPos = target.getRealPosition();
+                Vec3 pos = realPos;
 
-                AxisAlignedBB bb = target.getEntityBoundingBox().offset(pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ);
+                Vec3 renderOffset = new Vec3(pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ);
+
+                AxisAlignedBB bb = target.getEntityBoundingBox().offset(renderOffset);
                 switch (render.getMode()) {
                     case "Player" -> {
                         if (glow.isToggled()) {
@@ -233,6 +243,10 @@ public class BackTrack extends Module {
                 return TargetFinder.findTarget(distance, true, false, false);
             }
         }
+    }
+
+    public static boolean needCancel(EntityLivingBase target) {
+        return working && Modules.getModule(BackTrack.class).cancelHitsIfNeed.isToggled() && DistanceUtils.getDistance(target.getNPosition()) > 6;
     }
 
     @Override

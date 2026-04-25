@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.TimerRange;
+import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
@@ -59,6 +60,10 @@ public class Clicks implements Imports, EventListener {
     }
 
     public boolean needClick(EntityLivingBase target) {
+        if (target != null && BackTrack.needCancel(target)) {
+            return false;
+        }
+
         if (target == null || !clickSettings.isToggled()) {
             return true;
         }
