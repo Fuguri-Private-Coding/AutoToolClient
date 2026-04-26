@@ -71,10 +71,10 @@ public class IRC extends Module {
                         String role = args[2].replace("[", "").replace("]", "");
 
                         if (usersOnline.containsKey(ign)
-                            && usersOnline.containsValue(new Profile(clientName, Role.fromRoleName(role))))
+                            && usersOnline.containsValue(Profile.builder().username(clientName).role(Role.fromRoleName(role)).build()))
                             continue;
 
-                        usersOnline.put(ign, new Profile(clientName, Role.fromRoleName(role)));
+                        usersOnline.put(ign, Profile.builder().username(clientName).role(Role.fromRoleName(role)).build());
                     }
                 }
             }

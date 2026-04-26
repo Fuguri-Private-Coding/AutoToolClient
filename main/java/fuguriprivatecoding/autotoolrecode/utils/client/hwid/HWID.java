@@ -60,7 +60,7 @@ public class HWID {
                     String username = args[1];
                     Role userRole = Role.fromRoleName(args[2]);
 
-                    Client.INST.setProfile(new Profile(username, userRole));
+                    Client.INST.setProfile(Profile.builder().username(username).role(userRole).build());
                     isValidUser = true;
                     isConnectionLost = false;
                     noConnectionAnim.setEnd(false);
