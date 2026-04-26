@@ -148,16 +148,14 @@ public class BackTrack extends Module {
 
                 double expand = target.getCollisionBorderSize();
 
-                Vec3 offset = new Vec3(realPos.xCoord - target.posX, realPos.yCoord - target.posY, realPos.zCoord - target.posZ);
-
-                AxisAlignedBB realBox = target.getEntityBoundingBox().offset(offset).expand(expand, expand, expand);
+                AxisAlignedBB realBox = target.getEntityBoundingBox().offset(realPos.xCoord - target.posX, realPos.yCoord - target.posY, realPos.zCoord - target.posZ).expand(expand, expand, expand);
 
                 double distanceToReal = DistanceUtils.getDistance(realBox);
                 double distanceToFake = DistanceUtils.getDistance(target);
 
                 boolean improve = distanceToFake + threshold.getValue() >= distanceToReal;
 
-                boolean distance = distanceToReal < this.distance.getMaxValue() || distanceToReal > this.distance.getMaxValue();
+                boolean distance = distanceToReal > this.distance.getMaxValue() || distanceToReal < this.distance.getMinValue();
 
                 boolean targetHurtTime = target.hurtTime > minTargetHurtTime.getValue() && resetIf.get("TargetHurtTime");
                 boolean playerHurtTime = mc.thePlayer.hurtTime > minPlayerHurtTime.getValue() && resetIf.get("PlayerHurtTime");

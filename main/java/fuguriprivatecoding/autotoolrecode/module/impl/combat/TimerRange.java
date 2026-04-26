@@ -47,12 +47,12 @@ public class TimerRange extends Module {
             mc.timer.renderPartialTicks = partialTicks.getValue();
         }
 
-        if (event instanceof LegitClickTimingEvent && action == TimerAction.CLICK) {
+        if (event instanceof LegitClickTimingEvent && click) {
             Clicks.click(target);
-            action = TimerAction.WAIT;
+            click = false;
         }
 
-        if (event instanceof TickEvent e && action != TimerAction.TELEPORT) {
+        if (event instanceof TickEvent e && !teleporting) {
             if (balance > 0) {
                 if (target != null && target.hurtTime > 0) target.hurtTime--;
                 e.cancel();
@@ -82,16 +82,15 @@ public class TimerRange extends Module {
                     continue;
                 }
 
-                action = TimerAction.TELEPORT;
                 teleportTicks = i;
                 break;
             }
 
             if (teleportTicks > 0) {
-                action = TimerAction.TELEPORT;
                 teleporting = true;
                 balance = PlayerUtils.teleport(teleportTicks, additionalTicks.getValue());
-                action = TimerAction.CLICK;
+                if (balance > 0) click = true;
+                teleporting = false;
             }
         }
     }
