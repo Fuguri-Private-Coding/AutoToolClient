@@ -8,7 +8,6 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.module.impl.combat.timerrange.TimerAction;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.Ping;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
@@ -36,8 +35,6 @@ public class TimerRange extends Module {
     public static boolean teleporting = false, click = false;
     public static int balance = 0;
     int teleportTicks;
-
-    TimerAction action = TimerAction.WAIT;
 
     @Override
     public void onEvent(Event event) {
