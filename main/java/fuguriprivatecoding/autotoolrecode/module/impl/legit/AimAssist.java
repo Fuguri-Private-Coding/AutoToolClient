@@ -70,10 +70,10 @@ public class AimAssist extends Module {
             );
 
             if (needRot != null) {
-                Rot delta = RotUtils.getDelta(lr, needRot);
+                Rot delta = lr.deltaTo(needRot);
 
-                RotUtils.limitDelta(delta, speed);
-                delta = RotUtils.fixDelta(delta);
+                delta = delta.limit(speed);
+                delta = delta.fix();
 
                 mc.thePlayer.moveRotation(
                     delta.getYaw(),

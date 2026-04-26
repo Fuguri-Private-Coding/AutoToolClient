@@ -33,7 +33,6 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.*;
 
-import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -146,7 +145,6 @@ public class KillAura extends Module {
                 if (clickTimer.reachedMS(delay)) {
                     this.delay = getDelay();
                     clickTimer.reset();
-
                     Clicks.addClick();
                 }
             }
@@ -200,14 +198,14 @@ public class KillAura extends Module {
 
         if (smoothModes.get("MouseDelta")) {
             Rot mouseDelta = invertDelta.isToggled() ?
-                RotUtils.getDeltaInvert(CameraRot.INST.getPrevRot(), CameraRot.INST) :
-                RotUtils.getDelta(CameraRot.INST.getPrevRot(), CameraRot.INST);
+                CameraRot.INST.deltaTo(CameraRot.INST.getPrevRot()) :
+                CameraRot.INST.getPrevRot().deltaTo(CameraRot.INST);
 
             float multipleDelta = (float) deltaMultiplier.getRandomizedDoubleValue();
 
-            mouseDelta = mouseDelta.multiplier(multipleDelta);
+            mouseDelta = mouseDelta.multiple(multipleDelta);
 
-            needRot = needRot.add(mouseDelta);
+            needRot = needRot.plus(mouseDelta);
         }
 
         if (smoothModes.get("Recorded")) {
@@ -216,7 +214,7 @@ public class KillAura extends Module {
             Rot recordedDelta = recordedOffset.getByIndex(recordedIndex++);
 
             float recordedMultiple = (float) RandomUtils.nextGaussianInRange(recordedMultiplier.getMinValue(), recordedMultiplier.getMaxValue(), recordedMean.getValue(), recordedStd.getValue());
-            needRot = needRot.add(recordedDelta.multiplier(recordedMultiple));
+            needRot = needRot.plus(recordedDelta.multiple(recordedMultiple));
         }
 
         if (teleport) needRot = RotUtils.getBestRotation(box);
@@ -249,7 +247,7 @@ public class KillAura extends Module {
 
         if (needRotation == null) return;
 
-        Rot delta = RotUtils.getDelta(lr, needRotation);
+        Rot delta = lr.deltaTo(needRotation);
 
         if (!teleport) {
             if (smoothModes.get("Basic")) {
@@ -263,7 +261,7 @@ public class KillAura extends Module {
 
                 Rot d = new Rot(animX.getValue(), animY.getValue());
 
-                delta = delta.add(d);
+                delta = delta.plus(d);
             }
 
             if (smoothModes.get("Linear")) {
@@ -275,7 +273,7 @@ public class KillAura extends Module {
                 pitchSpeed.getRandomizedIntValue()
             );
 
-            RotUtils.limitDelta(delta, speed);
+            delta = delta.limit(speed);
 
             if (smoothModes.get("MixDelta")) {
                 delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedIntValue() / 100f, lastDelta.getYaw(), delta.getYaw()));
@@ -283,7 +281,7 @@ public class KillAura extends Module {
             }
         }
 
-        delta = RotUtils.fixDelta(delta);
+        delta = delta.fix();
         lastDelta = delta.copy();
 
         CameraRot.INST.setUnlocked(true);

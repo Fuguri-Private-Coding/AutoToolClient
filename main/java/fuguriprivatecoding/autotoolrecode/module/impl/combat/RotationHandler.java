@@ -21,13 +21,13 @@ public class RotationHandler extends Module {
     final DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 1, 180, 30, 1);
     final DoubleSlider mixDelta = new DoubleSlider("MixDelta", this, 0, 100, 1, 1f);
 
-    Rot lastDelta = Rot.ZERO;
+    Rot lastDelta = RotUtils.ZERO;
 
     @Override
     public void onEvent(Event event) {
         if (CameraRot.INST.needBackRotate()) {
             if (event instanceof TickEvent) {
-                Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), CameraRot.INST);
+                Rot delta = mc.thePlayer.getRotation().deltaTo(CameraRot.INST);
                 if (isToggled()) delta = delta.limit((float) yawSpeed.getRandomizedDoubleValue(), (float) pitchSpeed.getRandomizedDoubleValue());
 
                 delta.setYaw(MathHelper.lerp((float) mixDelta.getRandomizedIntValue() / 100f, lastDelta.getYaw(), delta.getYaw()));
@@ -37,9 +37,9 @@ public class RotationHandler extends Module {
 
                 mc.thePlayer.moveRotation(delta.fix());
 
-                delta = RotUtils.getDelta(mc.thePlayer.getRotation(), CameraRot.INST);
+                delta = mc.thePlayer.getRotation().deltaTo(CameraRot.INST);
 
-                if (delta.hypot() <= RotUtils.getMouseGCD()) {
+                if (delta.length() <= RotUtils.getMouseGCD()) {
                     CameraRot.INST.setUnlocked(false);
                 }
             }

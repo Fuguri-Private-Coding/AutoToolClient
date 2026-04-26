@@ -3,7 +3,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.connect;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
-import fuguriprivatecoding.autotoolrecode.event.events.player.ChangeSprintEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
@@ -21,6 +20,7 @@ import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
+import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -38,38 +38,29 @@ import java.util.function.BooleanSupplier;
 @ModuleInfo(name = "Ping", category = Category.CONNECTION, description = "Задерживает пакеты для получения преимущевства.")
 public class Ping extends Module {
 
-    DoubleSlider delay = new DoubleSlider("Delay", this, 0,1000,200,1);
+    final DoubleSlider delay = new DoubleSlider("Delay", this, 0,1000,200,1);
 
-    Mode delayIncreaseType = new Mode("DelayIncreaseType", this)
-            .addModes("Smooth", "Instant").setMode("Instant");
+    final Mode delayIncreaseType = new Mode("DelayIncreaseType", this)
+            .addModes("Smooth", "Instant").setMode("Smooth");
 
-    DoubleSlider addingDelayPerTick = new DoubleSlider("AddingDelayPerTick", this, () -> delayIncreaseType.is("Smooth"), 0,100,20,1);
-
-    CheckBox resetIfDistance = new CheckBox("ResetIfDistance", this);
-    FloatSetting distance = new FloatSetting("Distance", this, resetIfDistance::isToggled, 2.5f, 6f,3f,0.01f);
+    final DoubleSlider addingDelayPerTick = new DoubleSlider("AddingDelayPerTick", this, () -> delayIncreaseType.is("Smooth"), 0,100,100,1);
 
     private final MultiMode actions = new MultiMode("ActionsToReset", this)
-        .add("Attack", true)
-        .add("Damage")
-        .add("Velocity")
-        .add("Flag")
-        .add("UsingItem")
-        .add("PlaceBlock")
-        .add("ChangeSprint")
-        .add("ClickWindow")
-        .add("Scaffold")
-        .add("OpenedGui");
+        .addModes("Attack", "Damage", "Velocity", "Flag", "UsingItem",
+            "PlaceBlock", "ClickWindow", "Scaffold", "OpenedGui", "Distance", "ChatMessage");
 
-    final IntegerSetting attackTimeCondition = new IntegerSetting("AttackTimeCondition", this, () -> actions.get("Attack"),0, 1000, 0);
-    final IntegerSetting damageTimeCondition = new IntegerSetting("DamageTimeCondition", this, () -> actions.get("Damage"),0, 1000, 0);
-    final IntegerSetting velocityTimeCondition = new IntegerSetting("VelocityTimeCondition", this, () -> actions.get("Velocity"),0, 1000, 0);
-    final IntegerSetting flagTimeCondition = new IntegerSetting("FlagTimeCondition", this, () -> actions.get("Flag"),0, 1000, 0);
-    final IntegerSetting usingItemTimeCondition = new IntegerSetting("UsingItemTimeCondition", this, () -> actions.get("UsingItem"),0, 1000, 0);
-    final IntegerSetting placeBlockTimeCondition = new IntegerSetting("PlaceBlockTimeCondition", this, () -> actions.get("PlaceBlock"),0, 1000, 0);
-    final IntegerSetting changeSprintTimeCondition = new IntegerSetting("ChangeSprintTimeCondition", this, () -> actions.get("ChangeSprint"),0, 1000, 0);
-    final IntegerSetting clickWindowTimeCondition = new IntegerSetting("ClickWindowTimeCondition", this, () -> actions.get("ClickWindow"),0, 1000, 0);
-    final IntegerSetting scaffoldTimeCondition = new IntegerSetting("ScaffoldTimeCondition", this, () -> actions.get("Scaffold"),0, 1000, 0);
-    final IntegerSetting openedGuiTimeCondition = new IntegerSetting("OpenedGuiTimeCondition", this, () -> actions.get("OpenedGui"),0, 1000, 0);
+    final FloatSetting distanceToReset = new FloatSetting("DistanceToReset", this, () -> actions.get("Distance"), 2.5f, 6f,3f,0.01f);
+
+    final IntegerSetting chatMessageDelay = new IntegerSetting("ChatMessageDelay", this, () -> actions.get("ChatMessage"),0, 1000, 0);
+    final IntegerSetting attackDelay = new IntegerSetting("AttackDelay", this, () -> actions.get("Attack"),0, 1000, 0);
+    final IntegerSetting damageDelay = new IntegerSetting("DamageDelay", this, () -> actions.get("Damage"),0, 1000, 0);
+    final IntegerSetting velocityDelay = new IntegerSetting("VelocityDelay", this, () -> actions.get("Velocity"),0, 1000, 0);
+    final IntegerSetting flagDelay = new IntegerSetting("FlagDelay", this, () -> actions.get("Flag"),0, 1000, 0);
+    final IntegerSetting usingItemDelay = new IntegerSetting("UsingItemDelay", this, () -> actions.get("UsingItem"),0, 1000, 0);
+    final IntegerSetting placeBlockDelay = new IntegerSetting("PlaceBlockDelay", this, () -> actions.get("PlaceBlock"),0, 1000, 0);
+    final IntegerSetting clickWindowDelay = new IntegerSetting("ClickWindowDelay", this, () -> actions.get("ClickWindow"),0, 1000, 0);
+    final IntegerSetting scaffoldDelay = new IntegerSetting("ScaffoldDelay", this, () -> actions.get("Scaffold"),0, 1000, 0);
+    final IntegerSetting openedGuiDelay = new IntegerSetting("OpenedGuiDelay", this, () -> actions.get("OpenedGui"),0, 1000, 0);
 
     private final Mode renderModes = new Mode("RenderMode", this)
             .addModes("Player", "HitBox", "OFF")
@@ -83,13 +74,15 @@ public class Ping extends Module {
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this);
 
-    private int delays = 50;
-    private long lastResetTime, delayBeforeNextLag;
+    private int currentDelay = 50;
+    private long resetDelay;
 
     private static final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
     private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
 
     Vec3 lastPos, currentPos;
+
+    StopWatch delayTimer = new StopWatch();
 
     @Override
     public void onDisable() {
@@ -99,13 +92,11 @@ public class Ping extends Module {
     @Override
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null || mc.isIntegratedServerRunning()) return;
-        long currentTime = System.currentTimeMillis();
         switch (event) {
-            case ChangeSprintEvent _ when actions.get("ChangeSprint") -> reset(changeSprintTimeCondition.getValue());
             case WorldChangeEvent _ -> reset(3000);
 
             case PacketEvent e -> {
-                if (currentTime - lastResetTime < delayBeforeNextLag) {
+                if (!delayTimer.reachedMS(resetDelay)) {
                     resetAllPackets();
                     break;
                 }
@@ -113,25 +104,32 @@ public class Ping extends Module {
                 Packet packet = e.getPacket();
 
                 switch (packet) {
-                    case C01PacketChatMessage _ -> reset(50);
-                    case C0EPacketClickWindow _ when actions.get("ClickWindow") -> reset(clickWindowTimeCondition.getValue());
-                    case S08PacketPlayerPosLook _ when actions.get("Flag") -> reset(flagTimeCondition.getValue());
-                    case C08PacketPlayerBlockPlacement _ when actions.get("PlaceBlock") -> reset(placeBlockTimeCondition.getValue());
+                    case C01PacketChatMessage _ when actions.get("ChatMessage") ->
+                        reset(chatMessageDelay.getValue());
+
+                    case C0EPacketClickWindow _ when actions.get("ClickWindow") ->
+                        reset(clickWindowDelay.getValue());
+
+                    case S08PacketPlayerPosLook _ when actions.get("Flag") ->
+                        reset(flagDelay.getValue());
+
+                    case C08PacketPlayerBlockPlacement _ when actions.get("PlaceBlock") ->
+                        reset(placeBlockDelay.getValue());
 
                     case C02PacketUseEntity c02 when actions.get("Attack") && c02.getAction() == C02PacketUseEntity.Action.ATTACK ->
-                        reset(attackTimeCondition.getValue());
+                        reset(attackDelay.getValue());
 
                     case S12PacketEntityVelocity s12 when actions.get("Velocity") && s12.getId() == mc.thePlayer.getEntityId() ->
-                        reset(velocityTimeCondition.getValue());
+                        reset(velocityDelay.getValue());
 
                     default -> {}
                 }
 
                 if (e.getDirection() == PacketDirection.OUTGOING) {
                     e.cancel();
-                    buffer.add(new PacketWithTime(packet, currentTime));
+                    buffer.add(new PacketWithTime(packet, System.currentTimeMillis()));
                     if (packet instanceof C03PacketPlayer c03 && c03.isMoving()) {
-                        posBuffer.add(new VecWithTime(c03.getPosVec(), currentTime));
+                        posBuffer.add(new VecWithTime(c03.getPosVec(), System.currentTimeMillis()));
                     }
                 }
             }
@@ -140,19 +138,23 @@ public class Ping extends Module {
 
             case TickEvent _ -> {
                 if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChest) && actions.get("OpenedGui"))
-                    reset(openedGuiTimeCondition.getValue());
-                if (Modules.getModule(Scaffold.class).isToggled() && actions.get("Scaffold"))
-                    reset(scaffoldTimeCondition.getValue());
+                    reset(openedGuiDelay.getValue());
 
-                if (actions.get("Damage") && mc.thePlayer.hurtTime != 0) reset(damageTimeCondition.getValue());
-                if (actions.get("UsingItem") && mc.thePlayer.isUsingItem()) reset(usingItemTimeCondition.getValue());
+                if (actions.get("Scaffold") && Modules.getModule(Scaffold.class).isToggled())
+                    reset(scaffoldDelay.getValue());
 
-                handleSmoothDelay(currentTime);
+                if (actions.get("Damage") && mc.thePlayer.hurtTime != 0)
+                    reset(damageDelay.getValue());
 
-                if (resetIfDistance.isToggled()) {
+                if (actions.get("UsingItem") && mc.thePlayer.isUsingItem())
+                    reset(usingItemDelay.getValue());
+
+                handleSmoothDelay();
+
+                if (actions.get("Distance")) {
                     EntityLivingBase target = TargetFinder.findTarget(6f, true, false, false);
 
-                    if (target != null && DistanceUtils.getDistance(target) <= distance.getValue()) {
+                    if (target != null && DistanceUtils.getDistance(target) <= distanceToReset.getValue()) {
                         reset(50);
                     }
                 }
@@ -161,7 +163,7 @@ public class Ping extends Module {
                 currentPos = posBuffer.isEmpty() ? mc.thePlayer.getPositionVector() : posBuffer.getFirst().pos();
             }
 
-            case Render3DEvent _ when !(mc.gameSettings.thirdPersonView == 0 || currentTime - lastResetTime < delayBeforeNextLag || lastPos == null || currentPos == null || renderModes.getMode().equalsIgnoreCase("OFF")) -> {
+            case Render3DEvent _ when !(mc.gameSettings.thirdPersonView == 0 || !delayTimer.reachedMS(resetDelay) || lastPos == null || currentPos == null || renderModes.getMode().equalsIgnoreCase("OFF")) -> {
                 Vec3 pos = RenderUtils.getAbsoluteSmoothPos(lastPos, currentPos).subtract(RenderManager.getRenderPosition());
                 switch (renderModes.getMode()) {
                     case "HitBox" -> {
@@ -194,20 +196,20 @@ public class Ping extends Module {
     private void handlePackets() {
         buffer.removeIf(packetWithTime -> {
             long packetTime = System.currentTimeMillis() - packetWithTime.time();
-            if (packetTime >= delays) {
+            if (packetTime >= currentDelay) {
                 PacketUtils.sendPacket(packetWithTime.packet());
                 return true;
             }
 
             return false;
         });
-        posBuffer.removeIf(pos -> System.currentTimeMillis() - pos.time() >= delays);
+        posBuffer.removeIf(pos -> System.currentTimeMillis() - pos.time() >= currentDelay);
     }
 
-    private void handleSmoothDelay(long currentTime) {
-        if (currentTime - lastResetTime > delayBeforeNextLag &&
+    private void handleSmoothDelay() {
+        if (!delayTimer.reachedMS(resetDelay) &&
             delayIncreaseType.is("Smooth") &&
-            delays != delay.getMaxValue()) {
+            currentDelay != delay.getMaxValue()) {
             updateDelay(addingDelayPerTick.getRandomizedIntValue());
         }
     }
@@ -220,13 +222,13 @@ public class Ping extends Module {
 
     private void reset(int time) {
         resetAllPackets();
-        lastResetTime = System.currentTimeMillis();
-        delayBeforeNextLag = time;
-        delays = delayIncreaseType.is("Smooth") ? 0 : delay.getRandomizedIntValue();
+        delayTimer.reset();
+        resetDelay = time;
+        currentDelay = delayIncreaseType.is("Smooth") ? 0 : delay.getRandomizedIntValue();
     }
 
     private void updateDelay(int addDelay) {
-        delays = (int) Math.clamp(delays + addDelay, 0, delay.getMaxValue());
+        currentDelay = (int) Math.clamp(currentDelay + addDelay, 0, delay.getMaxValue());
     }
 
     public static boolean isWorking() {

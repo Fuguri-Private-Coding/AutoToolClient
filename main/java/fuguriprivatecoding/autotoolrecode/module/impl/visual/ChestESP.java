@@ -10,7 +10,6 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
@@ -27,7 +26,6 @@ public class ChestESP extends Module {
 
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
-    final CheckBox blur = new CheckBox("Blur", this);
 
     @Override
     public void onEvent(Event event) {
@@ -36,43 +34,22 @@ public class ChestESP extends Module {
             RenderUtils.start3D();
             for (TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {
                 switch (tileEntity) {
-                    case TileEntityChest tileEntityChest -> {
-                        BlockPos pos = tileEntityChest.getPos();
-
-                        if (glow.isToggled()) {
-                            BloomUtils.startWrite();
-                            RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor());
-                            BloomUtils.stopWrite();
-                        }
-                        if (blur.isToggled()) {
-                            BlurUtils.startWrite();
-                            RenderUtils.drawBlockESP(pos, Color.WHITE);
-                            BlurUtils.stopWrite();
-                        }
-
-                        RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
-                    }
-
-                    case TileEntityEnderChest tileEntityEnderChest when enderChest.isToggled() -> {
-                        BlockPos pos = tileEntityEnderChest.getPos();
-
-                        if (glow.isToggled()) {
-                            BloomUtils.startWrite();
-                            RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor());
-                            BloomUtils.stopWrite();
-                        }
-                        if (blur.isToggled()) {
-                            BlurUtils.startWrite();
-                            RenderUtils.drawBlockESP(pos, Color.WHITE);
-                            BlurUtils.stopWrite();
-                        }
-
-                        RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
-                    }
+                    case TileEntityChest e -> draw(e.getPos());
+                    case TileEntityEnderChest e when enderChest.isToggled() -> draw(e.getPos());
                     default -> {}
                 }
             }
             RenderUtils.stop3D();
         }
+    }
+
+    private void draw(BlockPos pos) {
+        if (glow.isToggled()) {
+            BloomUtils.startWrite();
+            RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor());
+            BloomUtils.stopWrite();
+        }
+
+        RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
     }
 }

@@ -4,7 +4,6 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -54,7 +53,7 @@ public class Dot extends Module {
         RayTrace mouse;
 
         if (smooth.isToggled()) {
-            Rot smoothPos = prevPos.add(pos.subtract(prevPos).multiplier(mc.timer.renderPartialTicks));
+            Rot smoothPos = prevPos.copy().plus(pos.copy().minus(prevPos.copy()).multiple(mc.timer.renderPartialTicks));
             mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks), 4.5f, 4.5f, smoothPos, mc.timer.renderPartialTicks);
         } else {
             mouse = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(-1f),4.5f,4.5f, pos, -1f);

@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.utils.client.ChatUtils;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
@@ -73,12 +74,12 @@ public class AutoRegister extends Module {
     }
 
     private void register(String password) {
-        PacketUtils.sendPacket(new C01PacketChatMessage("/register " + password + " " + password));
+        ChatUtils.chatLog("/register " + password + " " + password);
         ClientUtils.chatLog("Successful register.");
     }
 
     private void login(String password) {
-        PacketUtils.sendPacket(new C01PacketChatMessage("/login " + password));
+        ChatUtils.chatLog("/login " + password);
         ClientUtils.chatLog("Successful login.");
     }
 

@@ -1499,7 +1499,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.mc.mcProfiler.endStartSection("outline");
 
             if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, new Object[]{renderglobal, entityplayer1, this.mc.rayTrace, Integer.valueOf(0), entityplayer1.getHeldItem(), Float.valueOf(partialTicks)})) && !this.mc.gameSettings.hideGUI) {
-                DrawBlockHighlightEvent.INST.setCanceled(false);
                 DrawBlockHighlightEvent.INST.call();
 
                 if (!DrawBlockHighlightEvent.INST.isCanceled()) renderglobal.drawSelectionBox(entityplayer1, this.mc.rayTrace, 0, partialTicks);

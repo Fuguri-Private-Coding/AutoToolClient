@@ -172,10 +172,16 @@ public class RenderUtils implements Imports {
     }
 
     public static void drawBlockESP(BlockPos blockPos, Color color) {
+        drawBlockESP(blockPos, color, 1);
+    }
+
+    public static void drawBlockESP(BlockPos blockPos, Color color, float expand) {
         Block block = mc.theWorld.getBlockState(blockPos).getBlock();
 
+        float expandValue = 1 - expand;
+
         AxisAlignedBB bb = block.getSelectedBoundingBox(mc.theWorld, blockPos)
-            .offset(RenderManager.getRenderPosition().invert());
+            .offset(RenderManager.getRenderPosition().invert()).expand(expandValue, expandValue, expandValue);
 
         block.setBlockBoundsBasedOnState(mc.theWorld, blockPos);
 

@@ -12,7 +12,6 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -30,7 +29,6 @@ public class BedESP extends Module {
 
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
-    final CheckBox blur = new CheckBox("Blur", this);
 
     public static final List<BlockPos[]> beds = new ArrayList<>();
 
@@ -76,11 +74,6 @@ public class BedESP extends Module {
                     RenderUtils.renderBed(bed, glowColor.getFadedFloatColor());
                     BloomUtils.stopWrite();
                 }
-                if (blur.isToggled()) {
-                    BlurUtils.startWrite();
-                    RenderUtils.renderBed(bed, Color.white);
-                    BlurUtils.stopWrite();
-                }
                 RenderUtils.renderBed(bed, color.getFadedFloatColor());
             }
             RenderUtils.stop3D();
@@ -123,7 +116,6 @@ public class BedESP extends Module {
                     }
 
                     synchronized (beds) {
-
                         beds.removeIf(bedPair -> {
                             if (bedPair == null || bedPair[0] == null) return true;
                             return foundBeds.stream()

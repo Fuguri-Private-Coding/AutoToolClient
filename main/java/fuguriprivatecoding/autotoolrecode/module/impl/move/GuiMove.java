@@ -21,11 +21,6 @@ public class GuiMove extends Module {
         .set("Client", true)
         ;
 
-    MultiMode availableMoveInGui = new MultiMode("AvailableMoveInGui", this)
-        .add("Jump", true)
-        .add("Sneak")
-        ;
-
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {

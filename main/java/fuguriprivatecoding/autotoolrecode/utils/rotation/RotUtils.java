@@ -12,6 +12,9 @@ import java.util.List;
 import static java.lang.Math.*;
 
 public class RotUtils implements Imports {
+    public static final Rot ZERO = new Rot(0, 0);
+    public static final Rot MAX = new Rot(180, 180);
+
 	public static Vec3 getBestHitVec(Entity entity) {
 		return getBestHitVec(getEntityExpandedBB(entity));
 	}
@@ -54,7 +57,7 @@ public class RotUtils implements Imports {
 
 	public static Rot getDeltaToPoint(Rot startRotation, Vec3 needPoint) {
 		Rot endRotation = getRotationToPoint(needPoint);
-		return getDelta(startRotation, endRotation);
+		return startRotation.deltaTo(endRotation);
 	}
 
 	public static Rot getRotationToPoint(Vec3 needPoint) {
@@ -137,30 +140,6 @@ public class RotUtils implements Imports {
 	public static float getMouseGCD() {
         float f = mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;
         return f * f * f * 8.0F * 0.15F;
-	}
-
-	public static Rot fixDelta(Rot delta) {
-		final float gcd = getMouseGCD();
-		return new Rot(
-            (float) MathUtils.round(delta.getYaw(), gcd),
-            (float) MathUtils.round(delta.getPitch(), gcd)
-        );
-	}
-
-	public static Rot getDelta(Rot start, Rot end) {
-		return new Rot(
-			MathHelper.wrapDegree(end.getYaw() - start.getYaw()),
-			end.getPitch() - start.getPitch()
-		);
-	}
-
-	public static Rot getDeltaInvert(Rot start, Rot end) {
-		return getDelta(end, start);
-	}
-
-	public static void limitDelta(Rot delta, Rot speed) {
-		delta.setYaw(Math.clamp(delta.getYaw(), -speed.getYaw(), speed.getYaw()));
-		delta.setPitch(Math.clamp(delta.getPitch(), -speed.getPitch(), speed.getPitch()));
 	}
 
 	public static Vec3 getVectorForRotation(Rot rotation) {

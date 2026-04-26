@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.timerrange.TimerAction;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.Ping;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
@@ -36,6 +37,8 @@ public class TimerRange extends Module {
     public static int balance = 0;
     int teleportTicks;
 
+    TimerAction action = TimerAction.WAIT;
+
     @Override
     public void onEvent(Event event) {
         EntityLivingBase target = TargetStorage.getTarget();
@@ -44,12 +47,12 @@ public class TimerRange extends Module {
             mc.timer.renderPartialTicks = partialTicks.getValue();
         }
 
-        if (event instanceof LegitClickTimingEvent && click) {
+        if (event instanceof LegitClickTimingEvent && action == TimerAction.CLICK) {
             Clicks.click(target);
-            click = false;
+            action = TimerAction.WAIT;
         }
 
-        if (event instanceof TickEvent e && !teleporting) {
+        if (event instanceof TickEvent e && action != TimerAction.TELEPORT) {
             if (balance > 0) {
                 if (target != null && target.hurtTime > 0) target.hurtTime--;
                 e.cancel();
@@ -79,15 +82,16 @@ public class TimerRange extends Module {
                     continue;
                 }
 
+                action = TimerAction.TELEPORT;
                 teleportTicks = i;
                 break;
             }
 
             if (teleportTicks > 0) {
+                action = TimerAction.TELEPORT;
                 teleporting = true;
                 balance = PlayerUtils.teleport(teleportTicks, additionalTicks.getValue());
-                click = true;
-                teleporting = false;
+                action = TimerAction.CLICK;
             }
         }
     }

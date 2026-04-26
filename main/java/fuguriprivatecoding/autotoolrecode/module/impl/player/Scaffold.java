@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.player;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
+import fuguriprivatecoding.autotoolrecode.event.events.render.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Player;
@@ -19,11 +20,11 @@ import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -99,7 +100,7 @@ public class Scaffold extends Module {
     private final CheckBox glow = new CheckBox("Glow", this);
     private final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
 
-    private Rot rotation = Rot.ZERO, lastRotation = Rot.ZERO, lastDelta = Rot.ZERO;
+    private Rot rotation = RotUtils.ZERO, lastRotation = RotUtils.ZERO, lastDelta = RotUtils.ZERO;
 
     private BlockPos targetBlock = new BlockPos(0, 0, 0);
 
@@ -146,6 +147,10 @@ public class Scaffold extends Module {
             if (type == ScaffoldType.ACTIVE) updateClicks();
         }
 
+        if (event instanceof DrawBlockHighlightEvent e) {
+            e.cancel();
+        }
+
         if (event instanceof Render3DEvent && targetBlock != null && render.isToggled()) {
             RenderUtils.start3D();
 
@@ -166,7 +171,7 @@ public class Scaffold extends Module {
 
         if (event instanceof MoveButtonEvent e) {
             if (rotMode.is("Normal")) {
-                if (sneakIf.get("Rotate") && lastDelta.hypot() > minDeltaToSneak.getValue()) {
+                if (sneakIf.get("Rotate") && lastDelta.length() > minDeltaToSneak.getValue()) {
                     if (!isClutch() || sneakIfRotateWithClutch.isToggled()) {
                         e.setSneak(true);
                     }
@@ -271,11 +276,11 @@ public class Scaffold extends Module {
 
         if (shouldNinePitch()) rotation.setPitch(90);
 
-        Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), rotation);
+        Rot delta = mc.thePlayer.getRotation().deltaTo(rotation);
         Rot speed = getDeltaSpeed();
 
         delta = delta.limit(speed);
-        delta = RotUtils.fixDelta(delta);
+        delta = delta.fix();
 
         lastDelta = delta.copy();
 
@@ -349,13 +354,12 @@ public class Scaffold extends Module {
     }
 
     private Rot getDeltaSpeed() {
-        Rot speed = Rot.ZERO;
+        Rot speed = RotUtils.ZERO;
 
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (isTelly(speedTelly.isToggled(), currentAirTicks)) {
-                    speed.setYaw(180);
-                    speed.setPitch(180);
+                    speed = RotUtils.MAX;
                 } else {
                     speed.setYaw(yawSpeed.getRandomizedIntValue());
                     speed.setPitch(pitchSpeed.getRandomizedIntValue());
@@ -453,7 +457,7 @@ public class Scaffold extends Module {
         CameraRot.INST.setWillChange(false);
 
         targetBlock = null;
-        lastDelta = Rot.ZERO;
+        lastDelta = RotUtils.ZERO;
         clickDelay = 1L;
         clickTimer.reset();
         type = ScaffoldType.NONACTIVE;

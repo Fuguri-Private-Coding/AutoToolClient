@@ -32,8 +32,10 @@ public class BackTrack extends Module {
     final DoubleSlider distance = new DoubleSlider("Distance", this, 0,12,12,0.1f);
 
     final DoubleSlider delay = new DoubleSlider("Delay", this, 0,5000,200,1);
+
     final BooleanSupplier constantRandomSupplier = () -> delay.minValue != delay.maxValue;
     final CheckBox constantRandomize = new CheckBox("ConstantDelayRandomize", this, constantRandomSupplier, true);
+
     final CheckBox adaptiveDelay = new CheckBox("AdaptiveDelay", this, true);
 
     final FloatSetting threshold = new FloatSetting("Threshold", this, 0, 1, 0, 0.01f);

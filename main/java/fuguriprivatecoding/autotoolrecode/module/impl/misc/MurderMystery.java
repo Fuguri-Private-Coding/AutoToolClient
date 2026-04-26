@@ -17,8 +17,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
-import java.util.ArrayList;
-import java.util.List;
 
 @ModuleInfo(name = "MurderMystery", category = Category.MISC, description = "Позволяет видеть кто Убийца и Детектив.")
 public class MurderMystery extends Module {
@@ -31,7 +29,7 @@ public class MurderMystery extends Module {
 
     CheckBox debug = new CheckBox("Debug", this);
 
-    public static List<String> murders = new ArrayList<>(), detectives = new ArrayList<>();
+    public static EntityPlayer murder, detective;
 
     private boolean swapped = false;
 
@@ -39,18 +37,12 @@ public class MurderMystery extends Module {
 
     @Override
     public void onDisable() {
-        super.onDisable();
-        if (!murders.isEmpty()) murders.clear();
-        if (!detectives.isEmpty()) detectives.clear();
+        reset();
     }
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof WorldChangeEvent) {
-            if (!murders.isEmpty()) murders.clear();
-            if (!detectives.isEmpty()) detectives.clear();
-        }
-
+        if (event instanceof WorldChangeEvent) reset();
         if (silentMurder.isToggled()) {
             if (event instanceof PreAttackEvent e && e.getHittingEntity() instanceof EntityPlayer player && !player.isFriend()) {
                 int slot = getSwordSlot();
@@ -69,20 +61,28 @@ public class MurderMystery extends Module {
         }
 
         if (event instanceof TickEvent) {
-            for (EntityPlayer playerEntity : mc.theWorld.playerEntities) {
-                if (checkMurders.isToggled() && !murders.contains(playerEntity.getName()) && playerEntity.getHeldItem() != null && playerEntity.getHeldItem().getItem() == Items.iron_sword) {
-                    murders.add(playerEntity.getName());
-                    if (debug.isToggled()) ClientUtils.chatLog("Murder is " + playerEntity.getName());
-                }
-                if (checkDetectives.isToggled()) {
-                    if (!detectives.contains(playerEntity.getName()) && playerEntity.getHeldItem() != null && playerEntity.getHeldItem().getItem() == Items.bow) {
-                        detectives.add(playerEntity.getName());
-                        if (debug.isToggled()) ClientUtils.chatLog("Detective is " + playerEntity.getName());
+            for (EntityPlayer player : mc.theWorld.playerEntities) {
+                ItemStack item = player.getHeldItem();
+                String name = player.getName();
+
+                if (player != mc.thePlayer) {
+                    if (checkMurders.isToggled() && !isMurder(player) && item != null && item.getItem() == Items.iron_sword) {
+                        if (debug.isToggled()) ClientUtils.chatLog("Murder is " + name);
+                        murder = player;
                     }
-                    if (detectives.contains(playerEntity.getName()) && playerEntity.isDead) detectives.remove(playerEntity.getName());
+
+                    if (checkDetectives.isToggled() && !isDetective(player) && item != null && item.getItem() == Items.bow) {
+                        if (debug.isToggled()) ClientUtils.chatLog("Detective is " + name);
+                        detective = player;
+                    }
                 }
             }
         }
+    }
+
+    private void reset() {
+        murder = null;
+        detective = null;
     }
 
     private int getSwordSlot() {
@@ -100,7 +100,7 @@ public class MurderMystery extends Module {
     }
 
     public static boolean isMurder(String name) {
-        return Modules.getModule(MurderMystery.class).isToggled() && !murders.isEmpty() && murders.contains(name);
+        return Modules.getModule(MurderMystery.class).isToggled() && murder != null && murder.getName().equalsIgnoreCase(name);
     }
 
     public static boolean isMurder(EntityPlayer entity) {
@@ -108,7 +108,7 @@ public class MurderMystery extends Module {
     }
 
     public static boolean isDetective(String name) {
-        return Modules.getModule(MurderMystery.class).isToggled() && !detectives.isEmpty() && detectives.contains(name);
+        return Modules.getModule(MurderMystery.class).isToggled() && detective != null && detective.getName().equalsIgnoreCase(name);
     }
 
     public static boolean isDetective(EntityPlayer entity) {

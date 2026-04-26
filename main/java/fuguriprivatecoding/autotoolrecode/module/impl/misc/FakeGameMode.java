@@ -1,5 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
+import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -25,14 +27,26 @@ public class FakeGameMode extends Module {
     @Override
     public void onEnable() {
         lastGameType = mc.playerController.getCurrentGameType();
-        setGameMode(
-            switch (mode.getMode()) {
-                case "Creative" -> WorldSettings.GameType.CREATIVE;
-                case "Spectator" -> WorldSettings.GameType.SPECTATOR;
-                case "Adventure" -> WorldSettings.GameType.ADVENTURE;
-                default -> WorldSettings.GameType.SURVIVAL;
+        setGameMode(getGameType(mode.getMode()));
+    }
+
+    @Override
+    public void onEvent(Event event) {
+        WorldSettings.GameType newGameType = getGameType(mode.getMode());
+        if (mc.playerController.getCurrentGameType() != newGameType) {
+            if (event instanceof TickEvent) {
+                setGameMode(newGameType);
             }
-        );
+        }
+    }
+
+    private WorldSettings.GameType getGameType(String mode) {
+        return switch (mode) {
+            case "Creative" -> WorldSettings.GameType.CREATIVE;
+            case "Spectator" -> WorldSettings.GameType.SPECTATOR;
+            case "Adventure" -> WorldSettings.GameType.ADVENTURE;
+            default -> WorldSettings.GameType.SURVIVAL;
+        };
     }
 
     private void setGameMode(WorldSettings.GameType gameType) {

@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.KeyBind;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.utils.client.ChatUtils;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import org.lwjgl.input.Keyboard;
 
@@ -29,12 +30,12 @@ public class AutoLeave extends Module {
         switch (mode.getMode()) {
             case "HotKey" -> {
                 if (event instanceof KeyEvent keyEvent && keyEvent.getKey() == key.getKey()) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C01PacketChatMessage("/hub"));
+                    ChatUtils.chatLog("/hub");
                 }
             }
             case "Health" -> {
                 if (event instanceof TickEvent && mc.thePlayer.getHealth() <= health.getValue()) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C01PacketChatMessage("/hub"));
+                    ChatUtils.chatLog("/hub");
                 }
             }
         }

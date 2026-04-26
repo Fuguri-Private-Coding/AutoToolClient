@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
+import fuguriprivatecoding.autotoolrecode.event.events.render.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -11,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.ItemUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
@@ -51,7 +53,7 @@ public class Fucker extends Module {
     CheckBox glow = new CheckBox("Glow", this, renderBreaking::isToggled, true);
     ColorSetting glowColor = new ColorSetting("GlowColor", this, () -> renderBreaking.isToggled() && glow.isToggled());
 
-    private Vec3 block, home;
+    public Vec3 block, home;
     private double damage;
 
     private int needSlot;
@@ -110,7 +112,7 @@ public class Fucker extends Module {
 
             Rot needRot = RotUtils.getBestRotation(bb);
 
-            Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), needRot);
+            Rot delta = mc.thePlayer.getRotation().deltaTo(needRot);
 
             CameraRot.INST.setUnlocked(true);
             mc.thePlayer.moveRotation(delta.fix());
@@ -127,22 +129,25 @@ public class Fucker extends Module {
         }
 
         if (block != null) {
+            if (event instanceof DrawBlockHighlightEvent e) {
+                e.cancel();
+            }
             if (event instanceof Render3DEvent && renderBreaking.isToggled()) {
                 BlockPos bedPos = new BlockPos(this.block);
 
-                float damage = (float) (this.damage / 3f);
+                float damage = (float) ((this.damage / 3f) + 1);
 
-                Color bedColor = new Colors(color.getFadedColor()).withMultiplyAlpha(damage);
-                Color bedGlowColor = new Colors(glowColor.getFadedColor()).withMultiplyAlpha(damage);
+                Color bedColor = color.getFadedColor();
+                Color bedGlowColor = glowColor.getFadedColor();
 
                 RenderUtils.start3D();
 
                 if (glow.isToggled()) {
                     BloomUtils.startWrite();
-                    RenderUtils.drawBlockESP(bedPos, bedGlowColor);
+                    RenderUtils.drawBlockESP(bedPos, bedGlowColor, damage);
                     BloomUtils.stopWrite();
                 }
-                RenderUtils.drawBlockESP(bedPos, bedColor);
+                RenderUtils.drawBlockESP(bedPos, bedColor, damage);
 
                 ColorUtils.resetColor();
                 RenderUtils.stop3D();
@@ -151,6 +156,8 @@ public class Fucker extends Module {
             if (event instanceof MoveEvent e) {
                 MoveUtils.moveFix(e, MoveUtils.getDirection(CameraRot.INST.getYaw(), e.getForward(), e.getStrafe()));
             }
+        } else {
+            CameraRot.INST.setWillChange(false);
         }
     }
 
@@ -191,6 +198,7 @@ public class Fucker extends Module {
     }
 
     public void reset() {
+        block = null;
         delay = breakDelay.getValue();
         damage = 0;
         switchBack();

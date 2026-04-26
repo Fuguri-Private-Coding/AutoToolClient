@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
 import fuguriprivatecoding.autotoolrecode.module.impl.move.Speed;
 import fuguriprivatecoding.autotoolrecode.module.impl.move.speed.AbstractSpeedMode;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Fucker;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
@@ -23,12 +24,12 @@ public class Degree45Mode extends AbstractSpeedMode {
 
     @Override
     public void onDisable(Speed speed) {
-        if (!Modules.getModule(Scaffold.class).isToggled() && !Modules.getModule(KillAura.class).isToggled()) CameraRot.INST.setWillChange(false);
+        if (!Modules.getModule(Scaffold.class).isToggled() && !Modules.getModule(KillAura.class).isToggled() && !Modules.getModule(Fucker.class).isToggled()) CameraRot.INST.setWillChange(false);
     }
 
     @Override
     public void handleEvent(Event event, Speed speed) {
-        if (Modules.getModule(Scaffold.class).isToggled() || Modules.getModule(KillAura.class).isToggled()) return;
+        if (Modules.getModule(Scaffold.class).isToggled() || Modules.getModule(KillAura.class).isToggled() || Modules.getModule(Fucker.class).isToggled()) return;
 
         if (event instanceof TickEvent) {
             float yaw = speed.rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();
@@ -39,7 +40,7 @@ public class Degree45Mode extends AbstractSpeedMode {
 
             Rot rotation = new Rot(yaw, CameraRot.INST.getPitch());
 
-            Rot delta = RotUtils.getDelta(mc.thePlayer.getRotation(), rotation);
+            Rot delta = mc.thePlayer.getRotation().deltaTo(rotation);
             CameraRot.INST.setUnlocked(true);
             mc.thePlayer.moveRotation(delta.fix());
         }

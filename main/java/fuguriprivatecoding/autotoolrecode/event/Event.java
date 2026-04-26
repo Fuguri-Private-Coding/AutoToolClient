@@ -17,6 +17,7 @@ public class Event {
     }
 
     public void call() {
+        setCanceled(false);
         call(true);
     }
 }

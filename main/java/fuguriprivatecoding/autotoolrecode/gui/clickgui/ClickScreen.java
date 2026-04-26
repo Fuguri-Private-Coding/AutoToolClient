@@ -26,6 +26,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import fuguriprivatecoding.autotoolrecode.utils.value.Doubles;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
@@ -73,7 +74,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 	final Animation2D settingLine, background, sizeBackground, modulesScrolls, moduleLine, settingsScrolls;
 
-	Rot offsetRot = Rot.ZERO, prevOffsetRot = Rot.ZERO;
+	Rot offsetRot = RotUtils.ZERO, prevOffsetRot = RotUtils.ZERO;
 
 	final EasingAnimation guis = new EasingAnimation();
 
@@ -746,7 +747,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
                             Colors.WHITE.withAlpha(0.2f)
                         );
 
-						Rot smoothRot = prevOffsetRot.add(offsetRot.subtract(prevOffsetRot).multiplier(mc.timer.renderPartialTicks));
+						Rot smoothRot = prevOffsetRot.plus(offsetRot.minus(prevOffsetRot).multiple(mc.timer.renderPartialTicks));
 
 						float dotX = rectCenterX + smoothRot.getYaw();
 						float dotY = rectCenterY + smoothRot.getPitch();
