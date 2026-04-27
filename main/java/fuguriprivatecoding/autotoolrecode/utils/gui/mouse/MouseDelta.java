@@ -11,14 +11,18 @@ public class MouseDelta {
     int deltaX, deltaY;
 
     public MouseDelta divine(float smooth) {
-        return new MouseDelta((int) (deltaX / smooth), (int) (deltaY / smooth));
+        this.deltaX /= (int) smooth;
+        this.deltaY /= (int) smooth;
+        return this;
     }
 
     public MouseDelta limit(int speed) {
-        return new MouseDelta(Math.clamp(deltaX, -speed, speed), Math.clamp(deltaY, -speed, speed));
+        this.deltaX = Math.clamp(deltaX, -speed, speed);
+        this.deltaY = Math.clamp(deltaY, -speed, speed);
+        return this;
     }
 
-    public double hypot() {
+    public double length() {
         return Math.hypot(deltaX, deltaY);
     }
 }

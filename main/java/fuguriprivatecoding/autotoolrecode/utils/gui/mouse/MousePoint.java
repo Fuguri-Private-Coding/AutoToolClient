@@ -21,9 +21,7 @@ public class MousePoint implements Imports {
 
     public void click() {
         try {
-            GuiContainer.forceShift = true;
             mc.currentScreen.mouseClick(mouseX, mouseY, 1);
-            GuiContainer.forceShift = false;
         } catch (Exception ignored) {}
     }
 
@@ -38,7 +36,7 @@ public class MousePoint implements Imports {
         mouseY = sc.getScaledHeight() / 2;
     }
 
-    public MouseDelta getDelta(Vector2i end) {
+    public MouseDelta deltaTo(Vector2i end) {
         return new MouseDelta(end.x - mouseX, end.y - mouseY);
     }
 

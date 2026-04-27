@@ -32,7 +32,7 @@ public class ChestStealer extends Module {
 
     private final DoubleSlider moveSpeed = new DoubleSlider("MoveSpeed", this, 0, 100, 50, 1);
     private final DoubleSlider smooth = new DoubleSlider("Smooth", this, 1, 3, 2, 0.1f);
-    private final FloatSetting minOffsetToClick = new FloatSetting("MinOffsetToClick", this, 0, 7, 1, 1f);
+    private final IntegerSetting minOffsetToClick = new IntegerSetting("MinOffsetToClick", this, 0, 7, 1);
 
     private final CheckBox fail = new CheckBox("Fail", this, false);
     private final DoubleSlider failChance = new DoubleSlider("FailChance", this, fail::isToggled, 0, 100, 20, 1);
@@ -80,24 +80,26 @@ public class ChestStealer extends Module {
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
 
-                if (!opened) opened = true;
+                opened = true;
 
                 slots = getSlots(container);
 
                 if (sortType.is("Nearest")) {
-                    slots.sort(Comparator.comparingInt(slot -> (int) mouse.getDelta(slot.centerPos).hypot()));
+                    slots.sort(Comparator.comparingInt(slot -> (int) mouse.deltaTo(slot.centerPos).length()));
                 }
 
                 StealerSlot currentSlot = slots.getFirst();
 
-                MouseDelta delta = mouse.getDelta(currentSlot.centerPos)
+                Vector2i needPos = currentSlot.centerPos;
+
+                MouseDelta delta = mouse.deltaTo(needPos)
                     .limit(this.moveSpeed.getRandomizedIntValue())
                     .divine((float) smooth.getRandomizedDoubleValue());
 
                 if (currentSlot.centerPos.x != -666) {
                     mouse.move(delta);
 
-                    int offset = (int) minOffsetToClick.getValue();
+                    int offset = minOffsetToClick.getValue();
 
                     int x = currentSlot.pos.x + offset;
                     int y = currentSlot.pos.y + offset;
@@ -107,14 +109,19 @@ public class ChestStealer extends Module {
 
                     if (needClick) {
                         if (delayStopWatch.reachedMS(lootDelayTick * 50L) && slots.contains(currentSlot)) {
+                            GuiContainer.forceShift = true;
                             mouse.click();
+                            GuiContainer.forceShift = false;
                             delayStopWatch.reset();
                         }
                     }
+
                     lootDelayTick = delay.getRandomizedIntValue();
 
                     if (fail.isToggled() && Math.random() <= failChance.getRandomizedIntValue() / 100f) {
+                        GuiContainer.forceShift = true;
                         mouse.click();
+                        GuiContainer.forceShift = false;
                     }
                 }
 
@@ -163,10 +170,10 @@ public class ChestStealer extends Module {
 
             final Slot slot = container.getSlot(i);
             if (slot.getHasStack()) {
-                GuiContainer cont = (GuiContainer) mc.currentScreen;
+                GuiContainer guiContainer = (GuiContainer) mc.currentScreen;
 
-                int slotX = cont.getGuiLeft() + slot.xDisplayPosition;
-                int slotY = cont.getGuiTop() + slot.yDisplayPosition;
+                int slotX = guiContainer.getGuiLeft() + slot.xDisplayPosition;
+                int slotY = guiContainer.getGuiTop() + slot.yDisplayPosition;
 
                 Vector2i centerPos = new Vector2i(slotX + 8, slotY + 8);
                 Vector2i pos = new Vector2i(slotX, slotY);
