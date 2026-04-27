@@ -207,7 +207,7 @@ public class Ping extends Module {
     }
 
     private void handleSmoothDelay() {
-        if (!delayTimer.reachedMS(resetDelay) &&
+        if (delayTimer.reachedMS(resetDelay) &&
             delayIncreaseType.is("Smooth") &&
             currentDelay != delay.getMaxValue()) {
             updateDelay(addingDelayPerTick.getRandomizedIntValue());
@@ -224,7 +224,8 @@ public class Ping extends Module {
         resetAllPackets();
         delayTimer.reset();
         resetDelay = time;
-        currentDelay = delayIncreaseType.is("Smooth") ? 0 : delay.getRandomizedIntValue();
+        if (delayIncreaseType.is("Smooth")) currentDelay = 0;
+        else currentDelay = delay.getRandomizedIntValue();
     }
 
     private void updateDelay(int addDelay) {
