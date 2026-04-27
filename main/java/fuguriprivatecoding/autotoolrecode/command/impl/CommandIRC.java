@@ -20,7 +20,7 @@ public class CommandIRC extends Command {
 
         if (args[0].equalsIgnoreCase("irc")) {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(Client.INST.getProfile().toColoredString()).append("§r").append(" ");
+            stringBuilder.append(Client.profile.toColoredString()).append("§r").append(" ");
             for (String arg : args) {
                 if (arg.equalsIgnoreCase(args[0])) continue;
                 stringBuilder.append(arg).append(" ");
@@ -28,7 +28,7 @@ public class CommandIRC extends Command {
             ClientIRC.sendIRCMessage(stringBuilder.toString());
         }
 
-        if (args[0].equalsIgnoreCase("bc") && Client.INST.getProfile().getRole().isEquals(Role.OWNER)) {
+        if (args[0].equalsIgnoreCase("bc") && Client.profile.getRole().isEquals(Role.OWNER)) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("§f[§7Server§f]§f").append(" ");
             for (String arg : args) {

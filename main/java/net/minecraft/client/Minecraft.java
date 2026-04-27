@@ -200,7 +200,7 @@ import org.lwjgl.util.glu.GLU;
 
 public class Minecraft implements IThreadListener, IPlayerUsage {
     private static final Logger logger = LogManager.getLogger();
-    public static ResourceLocation locationMojangPng = Client.INST.of("image/splash.png");
+    public static ResourceLocation locationMojangPng = Client.of("image/splash.png");
     public static final boolean isRunningOnMac = Util.getOSType() == Util.EnumOS.OSX;
     public static byte[] memoryReserve = new byte[10485760];
     private static final List<DisplayMode> macDisplayModes = Lists.newArrayList(new DisplayMode(2560, 1600), new DisplayMode(2880, 1800));
@@ -433,7 +433,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             new ResourceLocation("minecraft", "autotool/image/logo32.png")
         );
 
-        Client.INST.init();
+        Client.init();
 
         if (this.gameSettings.language != null) {
             this.fontRendererObj.setUnicodeFlag(this.isUnicode());
@@ -865,17 +865,17 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         this.mcProfiler.endSection();
         this.mcProfiler.startSection("tick");
 
+        for (int j = 0; j < this.fakeTimer.elapsedTicks; ++j) {
+            FakeTickEvent fakeTickEvent = new FakeTickEvent();
+            fakeTickEvent.call();
+        }
+
         for (int j = 0; j < this.timer.elapsedTicks; ++j) {
             TickEvent tickEvent = new TickEvent();
             tickEvent.call();
             if (tickEvent.isCanceled()) continue;
 
             runTick();
-        }
-
-        for (int j = 0; j < this.fakeTimer.elapsedTicks; ++j) {
-            FakeTickEvent fakeTickEvent = new FakeTickEvent();
-            fakeTickEvent.call();
         }
 
         this.mcProfiler.endStartSection("preRenderErrors");

@@ -14,7 +14,6 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.entity.EntityLivingBase;
@@ -35,6 +34,8 @@ public class TimerRange extends Module {
     public static boolean teleporting = false, click = false;
     public static int balance = 0;
     int teleportTicks;
+
+    Vec3 pos = Vec3.ZERO;
 
     @Override
     public void onEvent(Event event) {
@@ -69,10 +70,8 @@ public class TimerRange extends Module {
             ) return;
 
             for (int i = 0; i < maxTicks.getValue(); i++) {
-                Vec3 pos = RenderUtils.getAbsoluteSmoothPos(target.getPositionVector(), target.getLastPositionVector(), 0f);
-
-                AxisAlignedBB targetBox = getRealBB(target, target.getNPosition(), pos).expand(-0.1D);
-                boolean skip = DistanceUtils.getDistance(simulatedPlayer, targetBox) > 3.0D;
+                AxisAlignedBB targetBox = getRealBB(target, target.getNPosition(), target.getPositionVector()).expand(-0.1D);
+                boolean skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), targetBox) > 3.0D;
 
                 if (skip) {
                     simulatedPlayer.tick();

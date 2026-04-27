@@ -22,7 +22,7 @@ public class Fonts implements Imports {
 
     public HashMap<String, ClientFont> fonts = new HashMap<>();
 
-    final File FONT_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/fonts");
+    final File FONT_DIRECTORY = new File(Client.CLIENT_DIR + "/fonts");
 
     int fontsCount;
 

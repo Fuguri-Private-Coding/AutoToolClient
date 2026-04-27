@@ -53,7 +53,7 @@ public class MainScreen extends GuiScreen {
         final ScaledResolution sc = new ScaledResolution(mc);
         final ClientFont font = Fonts.fonts.get("SFPro");
 
-        final String hello = "Привет §a" + Client.INST.getProfile().toColoredString() + ".";
+        final String hello = "Привет §a" + Client.profile.toColoredString() + ".";
 
         final String welcome = "Добро пожаловать в §9AutoTool§f!";
 

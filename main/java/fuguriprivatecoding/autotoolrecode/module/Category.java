@@ -7,14 +7,14 @@ import lombok.Getter;
 
 @Getter
 public enum Category {
-	COMBAT("Combat", Client.INST.of("category/combat.png")),
-	MOVE("Move", Client.INST.of("category/move.png")),
-	VISUAL("Visual", Client.INST.of("category/visual.png")),
-	CONNECTION("Connect", Client.INST.of("category/connection.png")),
-	LEGIT("Legit", Client.INST.of("category/legit.png")),
-	PLAYER("Player", Client.INST.of("category/player.png")),
-	MISC("Misc", Client.INST.of("category/misc.png")),
-	CLIENT("Client", Client.INST.of("category/client.png")),
+	COMBAT("Combat", Client.of("category/combat.png")),
+	MOVE("Move", Client.of("category/move.png")),
+	VISUAL("Visual", Client.of("category/visual.png")),
+	CONNECTION("Connect", Client.of("category/connection.png")),
+	LEGIT("Legit", Client.of("category/legit.png")),
+	PLAYER("Player", Client.of("category/player.png")),
+	MISC("Misc", Client.of("category/misc.png")),
+	CLIENT("Client", Client.of("category/client.png")),
 	;
 
 	public final String name;

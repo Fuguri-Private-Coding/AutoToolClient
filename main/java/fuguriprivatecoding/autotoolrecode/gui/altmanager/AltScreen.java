@@ -44,7 +44,7 @@ public class AltScreen extends GuiScreen {
 
     public static List<Account> accounts = new CopyOnWriteArrayList<>();
 
-    ResourceLocation removeLogo = Client.INST.of("image/exit.png");
+    ResourceLocation removeLogo = Client.of("image/exit.png");
 
     public static AltScreen INST;
 

@@ -12,7 +12,7 @@ import java.util.Map;
 // created by dicves_recode on 18.02.2026
 @UtilityClass
 public class Fonts {
-    private final File FONTS_DIR = new File(Client.INST.CLIENT_DIR, "test-fonts");
+    private final File FONTS_DIR = new File(Client.CLIENT_DIR, "test-fonts");
     public final Map<String, MsdfFont> FONTS = new HashMap<>();
 
     public void init() {

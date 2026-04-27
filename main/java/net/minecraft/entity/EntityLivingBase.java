@@ -99,7 +99,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     protected float unused180;
     protected int scoreValue;
     protected float lastDamage;
-    protected boolean isJumping;
+    public boolean isJumping;
     public float moveStrafing;
     public float moveForward;
     protected float randomYawVelocity;
@@ -109,6 +109,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     public double newPosZ;
     public double newRotationYaw;
     public double newRotationPitch;
+
     private boolean potionsNeedUpdate = true;
     private EntityLivingBase entityLivingToAttack;
     @Getter

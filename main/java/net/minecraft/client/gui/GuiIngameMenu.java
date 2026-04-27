@@ -2,7 +2,6 @@ package net.minecraft.client.gui;
 
 import java.io.IOException;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.gui.main.MainScreen;
 import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraft.client.gui.achievement.GuiStats;

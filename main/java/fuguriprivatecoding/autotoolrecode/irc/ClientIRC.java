@@ -49,9 +49,9 @@ public class ClientIRC extends ListenerAdapter implements Imports {
         try {
             jda.awaitStatus(JDA.Status.CONNECTED);
             initializeChannels(jda);
-            System.out.println("[" + Client.INST.CLIENT_NAME + "] " + "Успешно подключено к серверу.");
+            System.out.println("[" + Client.CLIENT_NAME + "] " + "Успешно подключено к серверу.");
         } catch (InterruptedException e) {
-            System.out.println("[" + Client.INST.CLIENT_NAME + "] " + "Не удалось подключится к серверу.");
+            System.out.println("[" + Client.CLIENT_NAME + "] " + "Не удалось подключится к серверу.");
             System.exit(-1);
         }
     }
@@ -65,9 +65,9 @@ public class ClientIRC extends ListenerAdapter implements Imports {
                     .setEnableShutdownHook(false)
                     .build();
 
-                System.out.println("[" + Client.INST.CLIENT_NAME + "] " + "Подключение к серверу...");
+                System.out.println("[" + Client.CLIENT_NAME + "] " + "Подключение к серверу...");
             } catch (Exception e) {
-                System.out.println("[" + Client.INST.CLIENT_NAME + "] " + "Не удалось создать подключение.");
+                System.out.println("[" + Client.CLIENT_NAME + "] " + "Не удалось создать подключение.");
                 System.exit(-1);
             }
         }
@@ -75,13 +75,13 @@ public class ClientIRC extends ListenerAdapter implements Imports {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (Client.INST.isStarting()) return;
+        if (Client.starting) return;
 
         MessageChannel currentChannel = event.getChannel();
 
         if (currentChannel == chatChannel) {
             String message = event.getMessage().getContentRaw();
-            message = message.replaceAll(Client.INST.getProfile().toString(), Client.INST.getProfile().toColoredString());
+            message = message.replaceAll(Client.profile.toString(), Client.profile.toColoredString());
             ConsoleScreen.logWithoutPrefix("§f[§2IRC§f] " + message);
         }
     }
@@ -99,7 +99,7 @@ public class ClientIRC extends ListenerAdapter implements Imports {
 
     public static void connectClient() {
         MessageChannel onlineChannel = getOnlineChannel();
-        String messageContent = Client.INST.getProfile().toString() + " " + Client.INST.getCLIENT_VERSION();
+        String messageContent = Client.profile.toString() + " " + Client.CLIENT_VERSION;
 
         onlineChannel.sendMessage(messageContent).queue(
             message -> ONLINE_MESSAGE_ID.set(message.getIdLong()),
@@ -178,7 +178,7 @@ public class ClientIRC extends ListenerAdapter implements Imports {
 
     private static void sendServerConnectionMessage(MessageChannel channel) {
         String username = mc.getSession().getUsername();
-        Profile profile = Client.INST.getProfile();
+        Profile profile = Client.profile;
         String messageContent = username + " " + profile;
 
         channel.sendMessage(messageContent).queue(

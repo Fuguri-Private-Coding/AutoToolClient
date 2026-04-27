@@ -23,6 +23,6 @@ public class Shaders {
 	}
 
 	private ResourceLocation getShaderSource(String name) {
-		return Client.INST.of("shaders/" + name);
+		return Client.of("shaders/" + name);
 	}
 }

@@ -390,7 +390,7 @@ public class FontRenderer implements IResourceManagerReloadListener
     {
 
         if (Modules.getModule(NameProtect.class).isToggled()) {
-            text = text.replaceAll(Minecraft.getMinecraft().getSession().getUsername(), Client.INST.getProfile().getUsername());
+            text = text.replaceAll(Minecraft.getMinecraft().getSession().getUsername(), Client.profile.getUsername());
         }
 
         for (int i = 0; i < text.length(); ++i)
@@ -618,7 +618,7 @@ public class FontRenderer implements IResourceManagerReloadListener
         {
 
             if (Modules.getModule(NameProtect.class).isToggled()) {
-                text = text.replaceAll(Minecraft.getMinecraft().getSession().getUsername(), Client.INST.getProfile().getUsername());
+                text = text.replaceAll(Minecraft.getMinecraft().getSession().getUsername(), Client.profile.getUsername());
             }
 
             float f = 0.0F;

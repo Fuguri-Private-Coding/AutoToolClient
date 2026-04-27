@@ -8,7 +8,6 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -28,10 +27,8 @@ public class MoreKB extends Module {
     DoubleSlider resetTicks = new DoubleSlider("ResetTicks", this, 1,20,2,1);
 
     final MultiMode notWhile = new MultiMode("NotWhile", this)
-            .addModes("Target Eating", "Has KnockBack Enchantment", "Target is Burning", "Target is Leaving")
+            .addModes("Target Eating", "Has KnockBack Enchantment")
             ;
-
-    final IntegerSetting maxDiff = new IntegerSetting("MaxDiff", this, () -> notWhile.get("Target is Leaving"), 0, 180, 90);
 
     int delay, reset;
 
@@ -73,13 +70,8 @@ public class MoreKB extends Module {
     }
 
     boolean notWhile(EntityLivingBase target) {
-        float targetMoveYaw = RotUtils.getRotationFromDiff(target.getPositionVector().subtract(target.getPrevPositionVector())).getYaw();
-        float delta = MathHelper.wrapDegree(mc.thePlayer.rotationYaw - targetMoveYaw);
-
         return notWhile.get("Target Eating") && target.isEating() ||
-            notWhile.get("Has KnockBack Enchantment") && hasKnockBackEnchantment(mc.thePlayer.inventory.getCurrentItem()) ||
-            notWhile.get("Target is Burning") && target.isBurning() ||
-            notWhile.get("Target is Leaving") && delta <= maxDiff.getValue();
+            notWhile.get("Has KnockBack Enchantment") && hasKnockBackEnchantment(mc.thePlayer.inventory.getCurrentItem());
     }
 
     private boolean hasKnockBackEnchantment(ItemStack itemStack) {

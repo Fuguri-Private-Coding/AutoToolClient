@@ -13,7 +13,7 @@ public class ClientUtils implements Imports {
 
     public void chatLog(Object message) {
         if (!Utils.nullCheck()) {
-            System.out.println("[" + Client.INST.CLIENT_NAME + "] " + message);
+            System.out.println("[" + Client.CLIENT_NAME + "] " + message);
         } else {
             mc.thePlayer.addChatMessage(new ChatComponentText(prefixLog + message));
         }

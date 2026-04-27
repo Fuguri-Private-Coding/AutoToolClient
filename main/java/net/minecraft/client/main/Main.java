@@ -33,7 +33,7 @@ public class Main {
         );
         HWID.check();
         ClientIRC.sendMessage(ClientIRC.getLoginChannel(),
-                "[" + hwid + "] [" + user + "] [" + name + "]" + " Successful connect. " + Client.INST.getProfile()
+                "[" + hwid + "] [" + user + "] [" + name + "]" + " Successful connect. " + Client.profile
         );
         System.setProperty("java.net.preferIPv4Stack", "true");
         OptionParser optionparser = new OptionParser();

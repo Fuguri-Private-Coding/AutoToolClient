@@ -24,8 +24,8 @@ public class VersionCheck {
 
         ClientVersion newVersion = new ClientVersion(global, version, microUpdate);
 
-        if (Client.INST.CLIENT_VERSION.isLowerThen(newVersion)) {
-            showVersionMismatchDialog(Client.INST.CLIENT_VERSION.toString(), serverVersion);
+        if (Client.CLIENT_VERSION.isLowerThen(newVersion)) {
+            showVersionMismatchDialog(Client.CLIENT_VERSION.toString(), serverVersion);
         }
     }
 

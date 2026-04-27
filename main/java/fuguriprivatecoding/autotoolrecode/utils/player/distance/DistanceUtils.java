@@ -10,33 +10,35 @@ import net.minecraft.util.Vec3;
 
 public class DistanceUtils implements Imports {
 
-	/**
-	 * @param entity Ентити до хитбокса которого будет вычислятся расстояние.
-	 */
-	public static double getDistance(Entity entity) {
-		Vec3 nearestPoint = RotUtils.getBestHitVec(entity);
-		Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
-		return eyes.distanceTo(nearestPoint);
+    public static double getDistance(Entity entity) {
+        return getDistance(mc.thePlayer.getPositionEyes(1.0F), entity);
+    }
+
+    public static double getDistance(Vec3 eyes, Entity entity) {
+        return eyes.distanceTo(RotUtils.getBestHitVec(entity));
+    }
+
+	public static double getDistance(Vec3 pos) {
+		return getDistance(mc.thePlayer.getPositionEyes(1.0F), pos);
 	}
 
-	/**
-	 * @param pos трех-мерный вектор до которого будет вычислятся расстояние.
-	 */
-	public static double getDistance(Vec3 pos) {
-		Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
-		return eyes.distanceTo(pos);
-	}
+    public static double getDistance(Vec3 eyes, Vec3 pos) {
+        return eyes.distanceTo(pos);
+    }
 
     public static double getDistance(BlockPos pos) {
-        Vec3 eyes = mc.thePlayer.getPositionEyes(1.0F);
-        return eyes.distanceTo(new Vec3(pos.getX(), pos.getY(), pos.getZ()));
+        return getDistance(mc.thePlayer.getPositionEyes(1.0F), new Vec3(pos.getX(), pos.getY(), pos.getZ()));
+    }
+
+    public static double getDistance(Vec3 eyes, BlockPos pos) {
+        return getDistance(eyes, new Vec3(pos.getX(), pos.getY(), pos.getZ()));
     }
 
 	public static double getDistance(AxisAlignedBB bb) {
-		return mc.thePlayer.getPositionEyes(1.0f).distanceTo(RotUtils.getBestHitVec(bb));
+		return getDistance(mc.thePlayer.getPositionEyes(1.0F), bb);
 	}
 
-    public static double getDistance(SimulatedPlayer simulatedPlayer, AxisAlignedBB bb) {
-        return simulatedPlayer.getPosEyes().distanceTo(RotUtils.getBestHitVec(bb));
+    public static double getDistance(Vec3 eyes, AxisAlignedBB bb) {
+        return eyes.distanceTo(RotUtils.getBestHitVec(bb));
     }
 }

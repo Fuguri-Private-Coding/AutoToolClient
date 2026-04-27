@@ -147,7 +147,7 @@ public class ChestStealer extends Module {
                         float y = mouse.getPrevY() + (mouse.getMouseY() - mouse.getPrevY()) * mc.timer.renderPartialTicks;
 
                         ColorUtils.glColor(color.getFadedColor());
-                        RenderUtils.drawImage(Client.INST.of("image/cursor.png"), x - 2, y, 10, 10, true);
+                        RenderUtils.drawImage(Client.of("image/cursor.png"), x - 2, y, 10, 10, true);
                     }
                 }
             }

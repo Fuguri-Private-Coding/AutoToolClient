@@ -1,14 +1,15 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MoveButtonEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.AttackEvent;
+import fuguriprivatecoding.autotoolrecode.handle.Player;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
@@ -30,12 +31,7 @@ public class Velocity extends Module {
     final CheckBox intaveJump = new CheckBox("IntaveJump", this, () -> mode.is("Intave"));
 
     final IntegerSetting jumpChance = new IntegerSetting("Chance", this, () -> mode.is("Jump") || (mode.is("Intave") && intaveJump.isToggled()), 0,100,80);
-    final DoubleSlider jumpDelay = new DoubleSlider("JumpDelay", this, () -> mode.is("Jump") || (mode.is("Intave") && intaveJump.isToggled()), 0, 500,80,1);
 
-    private boolean jumps, gotHit;
-    private int delay, lastHurtTime;
-
-    private final StopWatch timer = new StopWatch();
     private final Random rand = new Random();
 
     @Override
@@ -82,49 +78,23 @@ public class Velocity extends Module {
 
                 if (event instanceof MoveButtonEvent e && intaveJump.isToggled()) {
                     if (needJump()) {
-                        delay = jumpDelay.getRandomizedIntValue();
-                        gotHit = true;
-                        timer.reset();
-                    }
-
-                    lastHurtTime = mc.thePlayer.hurtTime;
-
-                    if (timer.reachedMS(delay) && !jumps && gotHit) {
                         e.setJump(true);
-                        jumps = true;
-                        gotHit = false;
-                        timer.reset();
                     }
-
-                    if (mc.thePlayer.onGround) jumps = false;
                 }
             }
 
             case "Jump" -> {
                 if (event instanceof MoveButtonEvent e) {
                     if (needJump()) {
-                        delay = jumpDelay.getRandomizedIntValue();
-                        gotHit = true;
-                        timer.reset();
-                    }
-
-                    lastHurtTime = mc.thePlayer.hurtTime;
-
-                    if (timer.reachedMS(delay) && !jumps && gotHit) {
                         e.setJump(true);
-                        jumps = true;
-                        gotHit = false;
-                        timer.reset();
                     }
-
-                    if (mc.thePlayer.onGround) jumps = false;
                 }
             }
         }
     }
 
     private boolean needJump() {
-        return mc.thePlayer.hurtTime == 10 && mc.thePlayer.hurtTime != lastHurtTime && rand.nextInt(100) <= jumpChance.getValue();
+        return Player.fallDistance == 0 && mc.thePlayer.hurtTime == 9 && mc.thePlayer.onGround && mc.thePlayer.isSprinting() && rand.nextInt(100) <= jumpChance.getValue();
     }
 
     @Override

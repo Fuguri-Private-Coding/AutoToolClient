@@ -70,7 +70,7 @@ public class Discord implements Imports {
     public static void update(String line1, String line2) {
         DiscordRichPresence.Builder rpc = new DiscordRichPresence.Builder(line2)
             .setDetails(line1)
-            .setBigImage("logo", "AutoTool " + Client.INST.getCLIENT_VERSION())
+            .setBigImage("logo", "AutoTool " + Client.CLIENT_VERSION)
             .setStartTimestamps(timestamp);
 
         DiscordRPC.discordUpdatePresence(rpc.build());

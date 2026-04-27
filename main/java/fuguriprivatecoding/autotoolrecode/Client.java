@@ -1,25 +1,15 @@
 package fuguriprivatecoding.autotoolrecode;
 
 import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
-import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.DynamicIsland;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
-import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
-import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
-import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 
-import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
+
 import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
 import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.config.Configs;
@@ -40,8 +30,7 @@ import fuguriprivatecoding.autotoolrecode.event.*;
 import fuguriprivatecoding.autotoolrecode.irc.*;
 
 import de.florianmichael.viamcp.ViaMCP;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import net.minecraft.client.gui.ScaledResolution;
+import lombok.experimental.UtilityClass;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import lombok.*;
@@ -53,9 +42,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-@Getter
-public enum Client implements Imports, EventListener {
-	INST;
+@UtilityClass
+public class Client implements Imports {
 
 	public final String CLIENT_NAME = "AutoTool";
     public final ClientVersion CLIENT_VERSION = new ClientVersion(4, 6, 6);
@@ -68,11 +56,11 @@ public enum Client implements Imports, EventListener {
     public final File SKIN_DIRECTORY = new File(CLIENT_DIR + "/skins");
     public final File CAPE_DIRECTORY = new File(CLIENT_DIR + "/capes");
 
-	@Setter Profile profile;
+	@Setter public Profile profile;
 
-    private final MediaController mediaController = new MediaController();
+    public final MediaController MEDIA_CONTROLLER = new MediaController();
 
-	boolean starting = true;
+	public boolean starting = true;
 
     private final ScheduledExecutorService scheduler =
         Executors.newSingleThreadScheduledExecutor();
@@ -80,6 +68,8 @@ public enum Client implements Imports, EventListener {
 	public void init() throws IOException {
 		long start = System.nanoTime();
 		starting = true;
+
+        new Debl();
 
         VersionCheck.validateClientVersion(ClientIRC.getClientVersionChannel());
 
@@ -96,20 +86,18 @@ public enum Client implements Imports, EventListener {
             TimeUnit.SECONDS
         );
 
-        if (this.profile == null) System.exit(-1);
+        if (profile == null) System.exit(-1);
 
         SmtcNative.init();
-        mediaController.start();
+        MEDIA_CONTROLLER.start();
 
         createDirectories();
 
         Display.setTitle(getFullName());
 
-        Runtime.getRuntime().addShutdownHook(new Thread(this::onClose));
+        Runtime.getRuntime().addShutdownHook(new Thread(Client::onClose));
 
         ClientIRC.connectClient();
-
-		Events.register(this);
 
 		ConsoleScreen.init();
 
@@ -157,7 +145,7 @@ public enum Client implements Imports, EventListener {
 		Configs.saveConfig(Configs.getDefaultConfig());
 		KeyBinds.saveBinds();
         scheduler.shutdown();
-        mediaController.close();
+        MEDIA_CONTROLLER.close();
     }
 
     private void createDirectories() {
@@ -166,53 +154,11 @@ public enum Client implements Imports, EventListener {
         if (CAPE_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию плащей.");
     }
 
-    @Override
-	public void onEvent(Event event) {
-		if (event instanceof ServerJoinEvent && Modules.getModule(IRC.class).isToggled()) ClientIRC.connectServer();
-		if (event instanceof KeyEvent keyEvent) {
-            Modules.getModules().forEach(module -> {
-                if (module.getKey() == keyEvent.getKey()) module.toggle();
-            });
-        }
-
-        if (event instanceof RenderScreenEvent && !Modules.getModule(DynamicIsland.class).isToggled()) {
-            ClientFont fontRenderer = Fonts.fonts.get("SFPro");
-            ScaledResolution sc = new ScaledResolution(mc);
-
-            EasingAnimation anim = HWID.noConnectionAnim;
-            anim.update(1f, Easing.OUT_BACK);
-
-            long time = System.currentTimeMillis() - HWID.connectionTimer.getLastMS();
-            int sec = Integer.parseInt(String.valueOf(time / 1000L));
-
-            int remainingSec = 30 - sec;
-
-            String text = ClientUtils.prefixLog + "Нет интернет подключения, клиент закроется через §9" + remainingSec + "§f s.";
-
-            float x = sc.getScaledWidth() / 2f - fontRenderer.getStringWidth(text) / 2f - 5;
-            float y = 5;
-
-            float width = fontRenderer.getStringWidth(text);
-            float height = 15;
-
-            ScaleUtils.startScaling(x, y, width, height, anim.getValue());
-
-            RoundedUtils.drawRect(sc.getScaledWidth() / 2f - width / 2f - 5, 5f, width + 5, 15f, 7.5f, Colors.BLACK.withAlphaClamp(0.7f * anim.getValue()));
-            fontRenderer.drawCenteredString(text, sc.getScaledWidth() / 2f, 10, Colors.WHITE.withAlphaClamp(anim.getValue()));
-            ScaleUtils.stopScaling();
-        }
-	}
-
     public String getFullName() {
         return CLIENT_NAME + " " + CLIENT_VERSION;
     }
 
     public ResourceLocation of(String path) {
         return new ResourceLocation(RESOURCES_ID, RESOURCES_CLIENT_ID + path);
-    }
-
-    @Override
-    public boolean listen() {
-        return true;
     }
 }

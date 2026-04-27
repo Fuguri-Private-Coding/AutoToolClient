@@ -146,7 +146,7 @@ public class MsdfFont implements Imports {
         return maxHeight;
     }
 
-    private static final ResourceLocation FONTS_LOCATION = Client.INST.of("fonts/");
+    private static final ResourceLocation FONTS_LOCATION = Client.of("fonts/");
 
     public static MsdfFont create(String name) {
         ResourceLocation fontLocation = new ResourceLocation(FONTS_LOCATION + name + "/");

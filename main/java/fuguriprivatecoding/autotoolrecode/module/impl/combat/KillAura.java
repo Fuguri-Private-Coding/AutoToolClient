@@ -276,8 +276,7 @@ public class KillAura extends Module {
             delta = delta.limit(speed);
 
             if (smoothModes.get("MixDelta")) {
-                delta.setYaw(MathHelper.lerp((float) mixYawDelta.getRandomizedIntValue() / 100f, lastDelta.getYaw(), delta.getYaw()));
-                delta.setPitch(MathHelper.lerp((float) mixPitchDelta.getRandomizedIntValue() / 100f, lastDelta.getPitch(), delta.getPitch()));
+                delta = lastDelta.lerp(delta, (float) mixYawDelta.getRandomizedIntValue() / 100f, (float) mixPitchDelta.getRandomizedIntValue() / 100f);
             }
         }
 

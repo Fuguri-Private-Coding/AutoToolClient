@@ -185,7 +185,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 			lastMouse.set(mouseX, mouseY);
 		}
 
-		final float clientNameWidth = fontRenderer.getStringWidth(Client.INST.CLIENT_NAME);
+		final float clientNameWidth = fontRenderer.getStringWidth(Client.CLIENT_NAME);
 
 		modulesScrolls.endY	= modulesScroll;
 		settingsScrolls.endY = settingsScroll;
@@ -955,7 +955,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 		if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y) return;
 
-		final float clientNameWidth = fontRenderer.getStringWidth(Client.INST.CLIENT_NAME);
+		final float clientNameWidth = fontRenderer.getStringWidth(Client.CLIENT_NAME);
 
 		boolean resize = mouseX > background.x + sizeBackground.x - 5 && mouseX < background.x + sizeBackground.x && mouseY > background.y + sizeBackground.y - 5 && mouseY < background.y + sizeBackground.y;
 

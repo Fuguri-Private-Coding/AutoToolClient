@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @UtilityClass
 public class Configs implements Imports {
 
-    @Getter final File CONFIG_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/configs");
+    @Getter final File CONFIG_DIRECTORY = new File(Client.CLIENT_DIR + "/configs");
     @Getter private final List<Config> configs = new CopyOnWriteArrayList<>();
     @Getter Config defaultConfig = new Config("default");
 

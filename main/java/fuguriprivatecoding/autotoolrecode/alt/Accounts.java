@@ -15,7 +15,7 @@ import java.util.Map;
 @UtilityClass
 public class Accounts {
 
-    final File ACCOUNT_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/account");
+    final File ACCOUNT_DIRECTORY = new File(Client.CLIENT_DIR + "/account");
     File accountFile = new File(ACCOUNT_DIRECTORY, "accounts.json");
 
     public void init() {

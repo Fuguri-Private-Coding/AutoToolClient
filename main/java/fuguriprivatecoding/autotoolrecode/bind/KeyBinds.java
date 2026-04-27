@@ -15,7 +15,7 @@ import java.util.Map;
 @UtilityClass
 public class KeyBinds {
 
-    @Getter final File BIND_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/binds");
+    @Getter final File BIND_DIRECTORY = new File(Client.CLIENT_DIR + "/binds");
     @Getter File bindFile = new File(BIND_DIRECTORY, "binds.json");
 
     public void init() {

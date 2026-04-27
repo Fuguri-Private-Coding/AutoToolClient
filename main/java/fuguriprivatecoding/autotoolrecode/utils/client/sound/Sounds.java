@@ -11,7 +11,7 @@ import java.io.IOException;
 @UtilityClass
 public class Sounds {
 
-    final File SOUND_DIRECTORY = new File(Client.INST.CLIENT_DIR + "/sounds");
+    final File SOUND_DIRECTORY = new File(Client.CLIENT_DIR + "/sounds");
 
     @Getter static Sound enableSound, disableSound, enableVlSound, disableVlSound;
 

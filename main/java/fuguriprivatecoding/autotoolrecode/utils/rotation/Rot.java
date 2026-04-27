@@ -27,6 +27,20 @@ public class Rot {
 		this.pitch = pitch;
 	}
 
+    public Rot lerp(Rot end, float deltaX, float deltaY) {
+        return new Rot(
+            MathHelper.lerp(deltaX, yaw, end.getYaw()),
+            MathHelper.lerp(deltaY, pitch, end.getPitch())
+        );
+    }
+
+    public Rot lerp(Rot end, float delta) {
+        return new Rot(
+            MathHelper.lerp(delta, yaw, end.getYaw()),
+            MathHelper.lerp(delta, pitch, end.getPitch())
+        );
+    }
+
     public Rot deltaTo(Rot end) {
         return new Rot(
             MathHelper.wrapDegree(end.getYaw() - yaw),

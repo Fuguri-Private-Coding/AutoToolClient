@@ -3,6 +3,8 @@ package fuguriprivatecoding.autotoolrecode.utils.packet;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.FakeTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;

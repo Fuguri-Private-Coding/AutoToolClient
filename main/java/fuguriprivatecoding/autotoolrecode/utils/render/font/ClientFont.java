@@ -92,7 +92,7 @@ public class ClientFont implements Imports {
         }
 
         if (Modules.getModule(NameProtect.class).isToggled()) {
-            text = text.replaceAll(mc.getSession().getUsername(), Client.INST.getProfile().getUsername());
+            text = text.replaceAll(mc.getSession().getUsername(), Client.profile.getUsername());
         }
 
         char COLOR_INVOKER = '§';
@@ -204,7 +204,7 @@ public class ClientFont implements Imports {
         }
 
         if (Modules.getModule(NameProtect.class).isToggled()) {
-            text = text.replaceAll(mc.getSession().getUsername(), Client.INST.getProfile().getUsername());
+            text = text.replaceAll(mc.getSession().getUsername(), Client.profile.getUsername());
         }
 
         x -= 1.0;

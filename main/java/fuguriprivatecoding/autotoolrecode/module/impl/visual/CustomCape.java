@@ -41,7 +41,7 @@ public class CustomCape extends Module {
     public void updateCape() {
         capeMode.getModes().clear();
         capeMode.addMode("None");
-        for (File cape : Objects.requireNonNull(Client.INST.CAPE_DIRECTORY.listFiles())) {
+        for (File cape : Objects.requireNonNull(Client.CAPE_DIRECTORY.listFiles())) {
             capeMode.addMode(cape.getName().replaceAll(".png", ""));
         }
     }
@@ -53,7 +53,7 @@ public class CustomCape extends Module {
 
     public ResourceLocation getCape() {
         if (!selectedCape.equalsIgnoreCase(capeMode.getMode())) {
-            capeFile = new File(Client.INST.CAPE_DIRECTORY, capeMode.getMode() + ".png");
+            capeFile = new File(Client.CAPE_DIRECTORY, capeMode.getMode() + ".png");
             if (!capeFile.exists()) return null;
 
             try (InputStream inputStream = new FileInputStream(capeFile)) {

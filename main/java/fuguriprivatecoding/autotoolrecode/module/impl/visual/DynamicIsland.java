@@ -81,7 +81,7 @@ public class DynamicIsland extends Module {
 
             Colors whiteColor = Colors.WHITE;
 
-            MediaController mediaController = Client.INST.getMediaController();
+            MediaController mediaController = Client.MEDIA_CONTROLLER;
 
             TrackInfo info = mediaController.getCurrent();
 
@@ -235,8 +235,8 @@ public class DynamicIsland extends Module {
 
                         if (!needDesc) {
                             updateRun(() -> {
-                                regularFont.draw(Client.INST.getFullName(), 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
-                            }, regularFont.width(Client.INST.getFullName(), 8), 0);
+                                regularFont.draw(Client.getFullName(), 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
+                            }, regularFont.width(Client.getFullName(), 8), 0);
                         }
                     }
                 }
