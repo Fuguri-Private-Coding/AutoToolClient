@@ -66,6 +66,10 @@ public class Scaffold extends Module {
         .setMode("Legit")
         ;
 
+    private final CheckBox sprintJumpOnGround = new CheckBox("SprintJumpOnGround", this, () -> sprintMode.is("JumpSprint"));
+
+    private final IntegerSetting sprintTicksAfterGround = new IntegerSetting("SpringTicksAfterGround", this, () -> sprintMode.is("JumpSprint") && sprintJumpOnGround.isToggled(), 1, 10, 1);
+
     private final CheckBox startAtEdge = new CheckBox("StartAtEdge", this, normalVisible, false);
     private final FloatSetting startEdgeOffset = new FloatSetting("StartEdgeOffset", this, () -> normalVisible.getAsBoolean() && startAtEdge.isToggled(), -0.1f,0.1f,0.05f, 0.01f);
 
@@ -199,7 +203,10 @@ public class Scaffold extends Module {
                     }
                 }
 
-                case "JumpSprint" -> e.setSprinting(mc.gameSettings.keyBindJump.isKeyDown() && MoveUtils.isMoving());
+                case "JumpSprint" -> {
+                    boolean sprint = mc.gameSettings.keyBindJump.isKeyDown() && MoveUtils.isMoving();
+                    e.setSprinting(sprintJumpOnGround.isToggled() ? sprint && Player.airTicks <= sprintTicksAfterGround.getValue() : sprint);
+                }
                 case "None" -> e.setSprinting(false);
             }
         }
@@ -301,7 +308,7 @@ public class Scaffold extends Module {
 
         float needYaw = strictYaw ? roundedYaw : yaw;
 
-        return !sprintMode.is("JumpSprint") ? mc.thePlayer.rotationYaw : needYaw;
+        return !sprintMode.is("JumpSprint") && !sprintMode.is("NotFullyJumpSprint") ? mc.thePlayer.rotationYaw : needYaw;
     }
 
     private void updateClicks() {

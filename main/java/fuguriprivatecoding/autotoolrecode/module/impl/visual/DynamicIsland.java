@@ -55,7 +55,7 @@ public class DynamicIsland extends Module {
 
     private final Date date = new Date();
 
-    private boolean opened, pressed = false;
+    private boolean opened, pressed = false, player = false;
 
     DynamicTexture dynamicTexture;
 
@@ -107,9 +107,17 @@ public class DynamicIsland extends Module {
                 mediaController.setLastArtworkImage(image);
             }
 
-            boolean hoveredRect = GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + (opened ? 50 : 15));
+            boolean hoveredRect = GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + 15);
 
-            if (mc.currentScreen != null && hoveredRect) {
+            if (hoveredRect) {
+                if (Mouse.isButtonDown(0) && !pressed) {
+                    player = !player;
+                }
+
+                pressed = Mouse.isButtonDown(0);
+            }
+
+            if (mc.currentScreen != null && player) {
                 float rectWidthWithImage = 105 - 35;
 
                 float titleWidth = Math.max(regularFont.width(info.title(), 8), rectWidthWithImage);

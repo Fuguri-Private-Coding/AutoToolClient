@@ -20,7 +20,7 @@ public class BloomUtils implements Imports {
     private static Framebuffer outputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static GaussianKernel gaussianKernel = new GaussianKernel(0);
 
-    public static Glow shadows;
+    public static Glow glow;
 
     public static void startWrite() {
         inputFramebuffer.bindFramebuffer(true);
@@ -31,13 +31,13 @@ public class BloomUtils implements Imports {
     }
 
     public static void draw() {
-        if (shadows == null) shadows = Modules.getModule(Glow.class);
-        if (!Display.isActive() || !Display.isVisible() || !shadows.isToggled()) return;
+        if (glow == null) glow = Modules.getModule(Glow.class);
+        if (!Display.isActive() || !Display.isVisible() || !glow.isToggled()) return;
         Shader program = Shaders.bloom;
 
         inputFramebuffer.bindFramebuffer(true);
 
-        final int radius = shadows.radius.getValue();
+        final int radius = glow.radius.getValue();
 
         outputFramebuffer.bindFramebuffer(true);
         program.start();
@@ -56,9 +56,9 @@ public class BloomUtils implements Imports {
             program.uniform("image2", 20);
         }
 
-        program.uniform("brightness", shadows.brightness.getValue());
+        program.uniform("brightness", glow.brightness.getValue());
         program.uniform("texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
-        program.uniform("direction", shadows.offset1.getValue(), 0);
+        program.uniform("direction", glow.offset1.getValue(), 0);
         program.uniform("time", System.currentTimeMillis());
 
         GlStateManager.enableBlend();
@@ -69,7 +69,7 @@ public class BloomUtils implements Imports {
 
         mc.getFramebuffer().bindFramebuffer(true);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        program.uniform("direction", 0.0f, shadows.offset2.getValue());
+        program.uniform("direction", 0.0f, glow.offset2.getValue());
         outputFramebuffer.bindFramebufferTexture();
         GL13.glActiveTexture(GL13.GL_TEXTURE20);
         inputFramebuffer.bindFramebufferTexture();
