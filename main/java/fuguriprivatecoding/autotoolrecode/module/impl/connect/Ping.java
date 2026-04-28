@@ -77,6 +77,9 @@ public class Ping extends Module {
     private int currentDelay = 50;
     private long resetDelay;
 
+    private int lastMinDelay = 0;
+    private int lastMaxDelay = 0;
+
     private static final ConcurrentLinkedQueue<PacketWithTime> buffer = new ConcurrentLinkedQueue<>();
     private final List<VecWithTime> posBuffer = new CopyOnWriteArrayList<>();
 
@@ -150,6 +153,21 @@ public class Ping extends Module {
                     reset(usingItemDelay.getValue());
 
                 handleSmoothDelay();
+
+                if (delayIncreaseType.is("Instant")) {
+                    boolean reset = false;
+                    if (delay.getMaxValue() != lastMaxDelay) {
+                        lastMaxDelay = (int) delay.getMaxValue();
+                        reset = true;
+                    }
+
+                    if (delay.getMinValue() != lastMinDelay) {
+                        lastMinDelay = (int) delay.getMinValue();
+                        reset = true;
+                    }
+
+                    if (reset) reset(0);
+                }
 
                 if (actions.get("Distance")) {
                     EntityLivingBase target = TargetFinder.findTarget(6f, true, false, false);
