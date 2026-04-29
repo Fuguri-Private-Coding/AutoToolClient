@@ -58,7 +58,7 @@ public class ClientIRC extends ListenerAdapter implements Imports {
 
     private ClientIRC() {
         {
-        String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GGhvgp.juE97JuncYJRgH-Rzca0OV2a8ieMd2g6XzV1IA";
+        String token = "MTM3MjE2NTc2MTk3MTUyMzYxNQ.GVRc3u.kEDR46zFFGDIIDZg8kqfK7I3vWC8y6nlc1mcKI";
             try {
                 jda = JDABuilder.createDefault(token)
                     .addEventListeners(this)

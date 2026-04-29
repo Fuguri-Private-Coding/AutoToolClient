@@ -64,14 +64,14 @@ public class DeltaRecorder extends Module {
         if (event instanceof TickEvent) {
             if (recording) {
                 Rot delta = switch (recordType.getMode()) {
-                    case "Delta" -> CameraRot.INST.getPrevRot().deltaTo(CameraRot.INST);
-                    case "Rotation" -> current.deltaTo(CameraRot.INST);
+                    case "Delta" -> CameraRot.INST.getPrevRot().deltaTo(CameraRot.INST.copy()).copy();
+                    case "Rotation" -> current.deltaTo(CameraRot.INST.copy()).copy();
                     default -> RotUtils.ZERO;
                 };
 
                 killAura.recordedOffset.offsets.add(delta);
             } else  {
-                current = mc.thePlayer.getRotation();
+                current = mc.thePlayer.getRotation().copy();
             }
         }
 

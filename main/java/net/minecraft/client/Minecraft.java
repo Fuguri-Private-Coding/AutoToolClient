@@ -39,6 +39,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MouseEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.MBlurEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.FakeTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
@@ -1430,13 +1431,21 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
             while (Mouse.next()) {
                 int i = Mouse.getEventButton();
-                KeyBinding.setKeyBindState(i - 100, Mouse.getEventButtonState());
 
-                if (Mouse.getEventButtonState()) {
-                    if (this.thePlayer.isSpectator() && i == 2) {
-                        this.ingameGUI.getSpectatorGui().func_175261_b();
-                    } else {
-                        KeyBinding.onTick(i - 100);
+                MouseEvent event = new MouseEvent(i);
+                event.call();
+
+                i = event.getKey();
+
+                if (!event.isCanceled()) {
+                    KeyBinding.setKeyBindState(i - 100, Mouse.getEventButtonState());
+
+                    if (Mouse.getEventButtonState()) {
+                        if (this.thePlayer.isSpectator() && i == 2) {
+                            this.ingameGUI.getSpectatorGui().func_175261_b();
+                        } else {
+                            KeyBinding.onTick(i - 100);
+                        }
                     }
                 }
 
