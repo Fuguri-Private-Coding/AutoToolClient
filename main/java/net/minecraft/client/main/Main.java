@@ -13,8 +13,6 @@ import java.net.Proxy.Type;
 import java.util.List;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
-import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -23,18 +21,6 @@ import net.minecraft.util.Session;
 
 public class Main {
     public static void main(String[] p_main_0_) {
-        ClientIRC.init();
-
-        String hwid = HWID.generateHWID();
-        String user = System.getProperty("user.name");
-        String name = System.getenv("COMPUTERNAME");
-        ClientIRC.sendMessage(ClientIRC.getLoginChannel(),
-                "[" + hwid + "] [" + user + "] [" + name + "]" + " Trying to connect..."
-        );
-        HWID.check();
-        ClientIRC.sendMessage(ClientIRC.getLoginChannel(),
-                "[" + hwid + "] [" + user + "] [" + name + "]" + " Successful connect. " + Client.profile
-        );
         System.setProperty("java.net.preferIPv4Stack", "true");
         OptionParser optionparser = new OptionParser();
         optionparser.allowsUnrecognizedOptions();

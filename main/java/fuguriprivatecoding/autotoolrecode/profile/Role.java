@@ -7,9 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Role {
 
-    USER(0, "User", "§b"),
-    MODERATOR(1, "Moderator", "§a"),
-    OWNER(2, "Owner", "§c");
+    GOVNOED(0, "Говноед", "§b");
 
     private final int level;
     private final String name;

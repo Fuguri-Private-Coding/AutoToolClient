@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import fuguriprivatecoding.autotoolrecode.handle.Friends;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
 import net.minecraft.client.Minecraft;
@@ -50,12 +49,12 @@ public class GuiPlayerTabOverlay extends Gui
         boolean friend = Friends.isFriend(currentName, midClick.reverseFriends.isToggled());
         boolean murder = MurderMystery.isMurder(currentName);
         boolean detective = MurderMystery.isDetective(currentName);
-        boolean user = IRC.isClientUser(currentName);
 
         String detectiveText = detective ? "§6[Detective]§6 " : "";
         String murderText = murder ? "§4[Murder]§4 " : "";
         String friendText = friend ? "§2[Friend]§9 " : "";
-        String userText = user ? IRC.usersOnline.get(currentName).toColoredString() + " " : "";
+
+        String userText = profile.getDisplayName() != null && profile.getDisplayName().getFormattedText().equals(profile.getGameProfile().getName()) ? "§c[§l§nЁбаныйГовноед§c]§c " : "";
 
         String name = profile.getDisplayName() != null ? profile.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(profile.getPlayerTeam(), profile.getGameProfile().getName());
 

@@ -11,8 +11,6 @@ import net.minecraft.client.gui.GuiMultiplayer;
 
 public class Discord implements Imports {
 
-    private static volatile boolean running = false;
-
     @Getter private static String name, id;
     private static long timestamp;
 
@@ -21,7 +19,6 @@ public class Discord implements Imports {
     }
 
     public static void start() {
-        running = true;
         DiscordThread thread = new DiscordThread();
         thread.setDaemon(true);
         thread.start();
@@ -43,12 +40,6 @@ public class Discord implements Imports {
         DiscordRPC.discordInitialize("1356982126746140713", handle.build(), true);
 
         update("Запускается игра.", "А пока поешьте печенье.");
-    }
-
-    public static void stop() {
-        ConsoleScreen.log("Активность остановлена.");
-        DiscordRPC.discordShutdown();
-        running = false;
     }
 
     private static void updateInformation() {
@@ -80,7 +71,7 @@ public class Discord implements Imports {
     private static class DiscordThread extends Thread {
         @Override
         public void run() {
-            while (running) {
+            while (true) {
                 updateInformation();
 
                 try {

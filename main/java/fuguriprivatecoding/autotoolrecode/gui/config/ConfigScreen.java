@@ -7,7 +7,6 @@ import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.TextButton;
-import fuguriprivatecoding.autotoolrecode.irc.ClientIRC;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
@@ -21,8 +20,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -31,9 +28,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import static java.lang.Math.min;
 
@@ -279,7 +274,6 @@ public class ConfigScreen extends GuiScreen implements EventListener {
         boolean delete = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 20 + 15;
         boolean folder = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 20 + 20 + 15;
         boolean refresh = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 20 + 20 + 20 + 15;
-        boolean online = mouseX > background.x + sizeBackground.x - 55 && mouseX < background.x + sizeBackground.x -5 && mouseY > background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20 && mouseY < background.y + 20 + 20 + 20 + 20 + 20 + 20 + 20 + 15;
 
         float offset = 0;
         float yOffset = scrolls.y;
@@ -336,10 +330,6 @@ public class ConfigScreen extends GuiScreen implements EventListener {
                 }
             }
 
-            if (online) {
-                new Thread(this::downloadOnlineConfigs).start();
-            }
-
             if (refresh) {
                 Configs.refreshConfigs();
                 ClientUtils.chatLog("Successful refreshed.");
@@ -367,32 +357,6 @@ public class ConfigScreen extends GuiScreen implements EventListener {
                     Configs.saveConfig(Configs.getDefaultConfig());
                 }
             }
-        }
-    }
-
-    private void downloadOnlineConfigs() {
-        try {
-            ClientUtils.chatLog("Downloading online configs and models...");
-            MessageChannel configsChannel = ClientIRC.getOnlineConfigsChannel();
-
-            List<Message> messages = configsChannel.getIterableHistory().takeAsync(100).get();
-
-            for (Message message : messages) {
-                if (message.getAttachments().isEmpty()) continue;
-
-                message.getAttachments().forEach(attachment -> {
-                    try {
-                        if (attachment.getFileName().endsWith(".json")) {
-                            attachment.getProxy().downloadToFile(new File(Configs.getCONFIG_DIRECTORY() + "/" + attachment.getFileName()))
-                                    .thenAccept(_ -> Configs.refreshConfigs());
-                        }
-                    } catch (Exception _) {
-                        ClientUtils.chatLog("Failed download configs or models.");
-                    }
-                });
-            }
-        } catch (Exception e) {
-            ClientUtils.chatLog("У ВАС ИНТЕРНЕТ ХУЕТА ПОЛНАЯ ИЛИ ЗАПРЕТ ПОЙДИ СКАЧАЙ ТУПОЙ УЕБАН!");
         }
     }
 

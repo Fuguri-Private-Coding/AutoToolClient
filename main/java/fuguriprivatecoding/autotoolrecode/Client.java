@@ -1,10 +1,10 @@
 package fuguriprivatecoding.autotoolrecode;
 
 import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
+import fuguriprivatecoding.autotoolrecode.profile.Role;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
-import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
@@ -27,7 +27,6 @@ import fuguriprivatecoding.autotoolrecode.command.*;
 import fuguriprivatecoding.autotoolrecode.handle.*;
 import fuguriprivatecoding.autotoolrecode.module.*;
 import fuguriprivatecoding.autotoolrecode.event.*;
-import fuguriprivatecoding.autotoolrecode.irc.*;
 
 import de.florianmichael.viamcp.ViaMCP;
 import lombok.experimental.UtilityClass;
@@ -38,15 +37,12 @@ import smtc.SmtcNative;
 import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
 
 import java.io.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @UtilityClass
 public class Client implements Imports {
 
 	public final String CLIENT_NAME = "AutoTool";
-    public final ClientVersion CLIENT_VERSION = new ClientVersion(4, 6, 6);
+    public final ClientVersion CLIENT_VERSION = new ClientVersion(6, 7, 0);
 
     private final String RESOURCES_ID = "minecraft";
     private final String RESOURCES_CLIENT_ID = "autotool/";
@@ -62,16 +58,11 @@ public class Client implements Imports {
 
 	public boolean starting = true;
 
-    private final ScheduledExecutorService scheduler =
-        Executors.newSingleThreadScheduledExecutor();
-
 	public void init() throws IOException {
 		long start = System.nanoTime();
 		starting = true;
 
         new Debl();
-
-        VersionCheck.validateClientVersion(ClientIRC.getClientVersionChannel());
 
         File msdf_gen_file = new File(CLIENT_DIR, "msdf-gen.zip");
         FileUtils.unpackIfNeeded(msdf_gen_file, "assets/minecraft/autotool/msdf-gen/msdf-gen.zip");
@@ -79,14 +70,19 @@ public class Client implements Imports {
         File smtc_bridge_native_file = new File(NATIVES_DIR, "smtc_bridge.dll");
         FileUtils.unpackFile(smtc_bridge_native_file, "assets/minecraft/autotool/native/smtc_bridge.dll");
 
-        scheduler.scheduleAtFixedRate(
-            HWID::check,
-            0,
-            10,
-            TimeUnit.SECONDS
-        );
+        File museoSans_font = new File(Fonts.FONT_DIRECTORY, "MuseoSans.ttf");
+        FileUtils.unpackFile(museoSans_font, "assets/minecraft/autotool/fonts/MuseoSans.ttf");
 
-        if (profile == null) System.exit(-1);
+        File sfPro_font = new File(Fonts.FONT_DIRECTORY, "SFPro.ttf");
+        FileUtils.unpackFile(sfPro_font, "assets/minecraft/autotool/fonts/SFPro.ttf");
+
+        File sfProRegular_font = new File(Fonts.FONT_DIRECTORY, "SFProRegular.otf");
+        FileUtils.unpackFile(sfProRegular_font, "assets/minecraft/autotool/fonts/SFProRegular.otf");
+
+        File sfProRounded_font = new File(Fonts.FONT_DIRECTORY, "SFProRounded.ttf");
+        FileUtils.unpackFile(sfProRounded_font, "assets/minecraft/autotool/fonts/SFProRounded.ttf");
+
+        profile = Profile.builder().username("Ёбаный Бомж").role(Role.GOVNOED).build();
 
         SmtcNative.init();
         MEDIA_CONTROLLER.start();
@@ -96,8 +92,6 @@ public class Client implements Imports {
         Display.setTitle(getFullName());
 
         Runtime.getRuntime().addShutdownHook(new Thread(Client::onClose));
-
-        ClientIRC.connectClient();
 
 		ConsoleScreen.init();
 
@@ -141,10 +135,8 @@ public class Client implements Imports {
 	}
 
 	public void onClose() {
-        ClientIRC.shutdown();
 		Configs.saveConfig(Configs.getDefaultConfig());
 		KeyBinds.saveBinds();
-        scheduler.shutdown();
         MEDIA_CONTROLLER.close();
     }
 

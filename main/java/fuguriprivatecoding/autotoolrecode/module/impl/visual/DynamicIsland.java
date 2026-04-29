@@ -12,7 +12,6 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notifi
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.client.hwid.HWID;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
@@ -196,56 +195,40 @@ public class DynamicIsland extends Module {
                     pressed = Mouse.isButtonDown(0);
                 }
             } else {
-                if (HWID.isConnectionLost) {
-                    long time = System.currentTimeMillis() - HWID.connectionTimer.getLastMS();
-                    int sec = Integer.parseInt(String.valueOf(time / 1000L));
+                Notifications notifications = Modules.getModule(Notifications.class);
 
-                    int remainingSec = 30 - sec;
+                if (notifications.isToggled() && !Notifications.notifications.isEmpty()) {
+                    Notification notification = Notifications.notifications.getLast();
 
-                    String text = "Нет интернет подключения, клиент закроется через " + remainingSec + " s.";
-                    String staticText = "Нет интернет подключения, клиент закроется через " + 30 + " s.";
+                    String toggleText = notification.isToggled() ? "включен" : "выключен";
+                    String notificationText = "Модуль " + notification.getText() + " был " + toggleText + ".";
 
-                    float connectionWidth = regularFont.width(staticText, 8);
+                    float notificationTextWidth = regularFont.width(notificationText, 8);
 
                     updateRun(() -> {
-                        regularFont.draw(text, 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
-                    }, connectionWidth, 0);
+                        regularFont.draw(notificationText, 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
+                    }, notificationTextWidth, 0);
                 } else {
-                    Notifications notifications = Modules.getModule(Notifications.class);
+                    boolean needDesc = false;
+                    if (mc.currentScreen instanceof ClickScreen) {
+                        List<Module> moduleList = Modules.getModulesByCategory(ClickScreen.selectedCategory);
 
-                    if (notifications.isToggled() && !Notifications.notifications.isEmpty()) {
-                        Notification notification = Notifications.notifications.getLast();
+                        for (Module module : moduleList) {
+                            if (module.isHovered() && !module.getDescription().equalsIgnoreCase("")) {
+                                String descText = module.getDescription();
 
-                        String toggleText = notification.isToggled() ? "включен" : "выключен";
-                        String notificationText = "Модуль " + notification.getText() + " был " + toggleText + ".";
-
-                        float notificationTextWidth = regularFont.width(notificationText, 8);
-
-                        updateRun(() -> {
-                            regularFont.draw(notificationText, 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
-                        }, notificationTextWidth, 0);
-                    } else {
-                        boolean needDesc = false;
-                        if (mc.currentScreen instanceof ClickScreen) {
-                            List<Module> moduleList = Modules.getModulesByCategory(ClickScreen.selectedCategory);
-
-                            for (Module module : moduleList) {
-                                if (module.isHovered() && !module.getDescription().equalsIgnoreCase("")) {
-                                    String descText = module.getDescription();
-
-                                    needDesc = true;
-                                    updateRun(() -> {
-                                        regularFont.draw(descText, 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
-                                    }, regularFont.width(descText, 8), 0);
-                                }
+                                needDesc = true;
+                                updateRun(() -> {
+                                    regularFont.draw(descText, 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
+                                }, regularFont.width(descText, 8), 0);
                             }
                         }
+                    }
 
-                        if (!needDesc) {
-                            updateRun(() -> {
-                                regularFont.draw(Client.getFullName(), 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
-                            }, regularFont.width(Client.getFullName(), 8), 0);
-                        }
+                    if (!needDesc) {
+                        updateRun(() -> {
+                            regularFont.draw(Client.getFullName(), 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
+                        }, regularFont.width(Client.getFullName(), 8), 0);
                     }
                 }
             }

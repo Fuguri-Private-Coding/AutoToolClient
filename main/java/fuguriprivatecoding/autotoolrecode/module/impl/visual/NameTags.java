@@ -6,7 +6,6 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.client.IRC;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
@@ -70,12 +69,11 @@ public class NameTags extends Module {
         boolean friend = midClick.showInName.isToggled() && ent.isFriend();
         boolean murder = MurderMystery.isMurder(ent);
         boolean detective = MurderMystery.isDetective(ent);
-        boolean user = IRC.isClientUser(ent);
 
         String detectiveText = detective ? "§6[Detective]§6 " : "";
         String murderText = murder ? "§4[Murder]§4 " : "";
         String friendText = friend ? "§2[Friend]§a " : "";
-        String userText = user ? IRC.usersOnline.get(ent.getName()).toColoredString() + " " : "";
+        String userText = ent == mc.thePlayer ? "§4[§l§nЁбаныйГовноед§4]§4 " : "";
 
         return detectiveText + murderText + friendText + userText + ent.getDisplayName().getFormattedText();
     }

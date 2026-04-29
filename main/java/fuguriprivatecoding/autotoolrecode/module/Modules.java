@@ -75,7 +75,6 @@ public class Modules {
 			new AutoTool(),
 			new AntiFireball(),
 			new ChestESP(),
-			new DiscordRPCModule(),
 			new Phase(),
 			new NoScreenClose(),
 			new AirStuck(),
@@ -121,9 +120,9 @@ public class Modules {
 			new GuiMove(),
 			new ClientSettings(),
 			new ScoreBoard(),
-			new IRC(),
 			new TimeChanger(),
 			new Scaffold(),
+            new ClientLogo(),
 			new HighJump(),
 			new LongJump(),
 			new RawMouseInput()

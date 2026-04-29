@@ -14,7 +14,6 @@ public class Commands {
     public static void init() {
         commands.add(new CommandToggle());
         commands.add(new CommandBind());
-        commands.add(new CommandIRC());
         commands.add(new CommandHelp());
         commands.add(new CommandBinds());
 
