@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
+import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
@@ -64,75 +65,14 @@ public class FloatSetting extends Setting {
         return (animatedValue - min) / (max - min);
     }
 
-//    @Override
-//    public void render() {
-//        ImGui.pushID(hashCode());
-//        float[] v = new float[] {value};
-//        if (ImGui.sliderFloat(getName(), v, min, max)) {
-//            setValue(v[0]);
-//        }
-//        ImGui.popID();
-//    }
-
     @Override
-    public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
-        font.drawString(getName(), x, y, Colors.WHITE.withAlphaClamp(alpha));
-
-        EasingAnimation sliderAnim = getSliderAnim();
-
-        sliderAnim.update(4f, Easing.OUT_CUBIC);
-        sliderAnim.setEnd(value);
-
-        setAnimatedValue(sliderAnim.getValue());
-
-        float animatedFilledFactor = getAnimatedNormalize();
-        final float length = 100;
-        final float sliderLength = animatedFilledFactor * length;
-
-        RoundedUtils.drawRect(x, y + font.FONT_HEIGHT, length, 4, 1.5f, Colors.GRAY.withAlphaClamp(0.3f * alpha));
-        RoundedUtils.drawRect(x, y + font.FONT_HEIGHT, sliderLength, 4, 1.5f, elementColor);
-        RoundedUtils.drawRect(x + sliderLength - 2, y - 1 + font.FONT_HEIGHT, 6, 6, 3f, Color.WHITE);
-
-        String valueText = String.format("%.2f", getValue());
-        float valueWidth = font.getStringWidth(valueText);
-
-        font.drawString(valueText, x + length - valueWidth, y, Color.WHITE);
-
-        boolean hovered = GuiUtils.isMouseHovered(x - 2, y - 2 + font.FONT_HEIGHT, length + 4, 8);
-
-        if (hovered) {
-            final ScaledResolution sc = new ScaledResolution(mc);
-            int i1 = sc.getScaledWidth();
-
-            final int mouseX = Mouse.getX() * i1 / mc.displayWidth;
-            
-            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-                setValue(getValue() + signum(DeltaTracker.getDeltaScroll()) * getStep());
-            } else if (Mouse.isButtonDown(0)) {
-                float mx = mouseX - (x);
-                float p = mx / length;
-                float normalize = getMin() + (getMax() - getMin()) * p;
-                setValue(normalize);
-            }
+    public void render() {
+        ImGui.pushID(hashCode());
+        float[] v = new float[] {value};
+        if (ImGui.sliderFloat(getName(), v, min, max)) {
+            setValue(v[0]);
         }
-        
-        return 20;
-    }
-
-    @Override
-    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-
-        return 20;
-    }
-
-    @Override
-    public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-        return 20;
-    }
-
-    @Override
-    public void keyTyped(int key) {
-
+        ImGui.popID();
     }
 
     @Override

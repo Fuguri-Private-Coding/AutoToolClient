@@ -6,6 +6,8 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
+import imgui.ImGui;
+import imgui.type.ImInt;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
@@ -37,110 +39,19 @@ public class Mode extends Setting {
         initAnimation();
     }
 
+
     @Override
-    public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
-        updateAnimation();
-        font.drawString(getName(), x, y, Color.WHITE);
+    public void render() {
+        ImGui.pushID(hashCode());
+        ImGui.text(getName());
+        ImGui.sameLine();
 
-        float modesX = x;
-        float modesY = y + 10;
-
-        float modesOffsetX = 0;
-        float modesOffsetY = 0;
-
-        for (String s : modes) {
-            float modeX = modesX + modesOffsetX;
-            float modeY = modesY + modesOffsetY;
-
-            Color modeColor = ColorUtils.interpolateColor(Colors.WHITE, elementColor, modeProgress.getOrDefault(s, 0f));
-            font.drawString(s, modeX, modeY, modeColor);
-
-            modesOffsetX += font.getStringWidth(s);
-
-            if (!s.equals(modes.getLast())) {
-                modeX = modesX + modesOffsetX;
-                modeY = modesY + modesOffsetY;
-
-                font.drawString(",", modeX, modeY, Color.WHITE);
-                modesOffsetX += font.getStringWidth(", ");
-            }
-
+        ImInt index = new ImInt(modes.indexOf(mode));
+        if (ImGui.combo("", index, modes.toArray(String[]::new), 5)) {
+            mode = modes.get(index.get());
         }
-
-        return 10 + 10 + modesOffsetY;
+        ImGui.popID();
     }
-
-    @Override
-    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-        float modesX = x;
-        float modesY = y + 10;
-
-        float modesOffsetX = 0;
-        float modesOffsetY = 0;
-
-        for (String s : modes) {
-            float modeX = modesX + modesOffsetX;
-            float modeY = modesY + modesOffsetY;
-
-//            font.drawString(s, modeX, modeY, modeColor);
-
-            if (GuiUtils.isHovered(
-                mouseX,
-                mouseY,
-                modeX,
-                modeY,
-                font.getStringWidth(s),
-                10
-            ) && key == 0) {
-                mode = s;
-            }
-
-            modesOffsetX += font.getStringWidth(s);
-
-            if (!s.equals(modes.getLast())) {
-                modesOffsetX += font.getStringWidth(", ");
-            }
-
-        }
-
-        return 10 + 10 + modesOffsetY;
-    }
-
-    @Override
-    public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-        float modesX = x;
-        float modesY = y + 10;
-
-        float modesOffsetX = 0;
-        float modesOffsetY = 0;
-
-        for (String s : modes) {
-            modesOffsetX += font.getStringWidth(s);
-
-            if (!s.equals(modes.getLast()))
-                modesOffsetX += font.getStringWidth(", ");
-        }
-
-        return 10 + 10 + modesOffsetY;
-    }
-
-    @Override
-    public void keyTyped(int key) {
-
-    }
-//
-//    @Override
-//    public void render() {
-//        ImGui.pushID(hashCode());
-//        ImGui.text(getName());
-//        ImGui.sameLine();
-//
-//        ImInt index = new ImInt(modes.indexOf(mode));
-//        if (ImGui.combo("", index, modes.toArray(String[]::new), 5)) {
-//            mode = modes.get(index.get());
-//        }
-//        ImGui.popID();
-//    }
 
     @Override
     public JsonObject getObject() {

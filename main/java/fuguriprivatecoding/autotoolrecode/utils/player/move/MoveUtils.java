@@ -34,18 +34,32 @@ public class MoveUtils implements Imports {
     public static boolean isMoveDiagonally(float yaw) {
         return Math.round(yaw / 45f) % 2 != 0;
     }
+//
+//    public static boolean isOnRightSide(BlockPos targetBlock, float yaw) {
+//        double dx = targetBlock.getX() + 0.5 - mc.thePlayer.posX;
+//        double dz = targetBlock.getZ() + 0.5 - mc.thePlayer.posZ;
+//
+//        double yawRad = Math.toRadians(yaw);
+//        double lookX = Math.cos(yawRad);
+//        double lookZ = Math.sin(yawRad);
+//
+//        double dot = dx * lookX + dz * lookZ;
+//
+//        return dot < 0;
+//    }
 
     public static boolean isOnRightSide(BlockPos targetBlock, float yaw) {
         double dx = targetBlock.getX() + 0.5 - mc.thePlayer.posX;
         double dz = targetBlock.getZ() + 0.5 - mc.thePlayer.posZ;
 
         double yawRad = Math.toRadians(yaw);
-        double lookX = Math.cos(yawRad);
-        double lookZ = Math.sin(yawRad);
 
-        double dot = dx * lookX + dz * lookZ;
+        double lookX = -Math.sin(yawRad);
+        double lookZ =  Math.cos(yawRad);
 
-        return dot < 0;
+        double cross = dx * lookZ - dz * lookX;
+
+        return cross < 0;
     }
 
     public void strafe(double speed, double strength) {

@@ -6,7 +6,7 @@ import lombok.Getter;
 
 public abstract class ImGuiWindow {
     @Getter
-    protected final String name;  // Unique window name
+    protected final String name;
     @Getter
     protected boolean isOpen;
     protected ImBoolean openFlag = new ImBoolean(true);

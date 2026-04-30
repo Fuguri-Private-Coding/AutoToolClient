@@ -1,5 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.client;
 
+import fuguriprivatecoding.autotoolrecode.profile.Profile;
+import fuguriprivatecoding.autotoolrecode.profile.Role;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
@@ -32,6 +34,8 @@ public class Discord implements Imports {
 
                 name = user.username;
                 id = user.userId;
+
+                Client.profile = Profile.builder().username(name).role(Role.USER).build();
             } else {
                 System.exit(0);
             }

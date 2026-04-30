@@ -5,6 +5,8 @@ import com.google.common.collect.Ordering;
 import com.mojang.authlib.GameProfile;
 import java.util.Comparator;
 import java.util.List;
+
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.handle.Friends;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
@@ -54,7 +56,7 @@ public class GuiPlayerTabOverlay extends Gui
         String murderText = murder ? "§4[Murder]§4 " : "";
         String friendText = friend ? "§2[Friend]§9 " : "";
 
-        String userText = profile.getDisplayName() != null && profile.getDisplayName().getFormattedText().equals(profile.getGameProfile().getName()) ? "§c[§l§nЁбаныйГовноед§c]§c " : "";
+        String userText = profile.getDisplayName() != null && profile.getDisplayName().getUnformattedText().equalsIgnoreCase(profile.getGameProfile().getName()) ? Client.profile.toColoredString() + " " : "";
 
         String name = profile.getDisplayName() != null ? profile.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(profile.getPlayerTeam(), profile.getGameProfile().getName());
 

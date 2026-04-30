@@ -14,7 +14,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
-import net.minecraft.util.MathHelper;
 
 @ModuleInfo(name = "MoreKB", category = Category.COMBAT, description = "Автоматический ресет спринта после удара.")
 public class MoreKB extends Module {

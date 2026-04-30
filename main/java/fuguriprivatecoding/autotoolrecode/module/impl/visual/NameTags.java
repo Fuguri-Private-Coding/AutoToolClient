@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -73,7 +74,7 @@ public class NameTags extends Module {
         String detectiveText = detective ? "§6[Detective]§6 " : "";
         String murderText = murder ? "§4[Murder]§4 " : "";
         String friendText = friend ? "§2[Friend]§a " : "";
-        String userText = ent == mc.thePlayer ? "§4[§l§nЁбаныйГовноед§4]§4 " : "";
+        String userText = ent == mc.thePlayer ? Client.profile.toColoredString() + " " : "";
 
         return detectiveText + murderText + friendText + userText + ent.getDisplayName().getFormattedText();
     }

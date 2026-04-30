@@ -29,22 +29,7 @@ public class TestRotationOffsetSetting extends Setting {
     }
 
     @Override
-    public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
-        return 0;
-    }
-
-    @Override
-    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-        return 0;
-    }
-
-    @Override
-    public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-        return 0;
-    }
-
-    @Override
-    public void keyTyped(int key) {
+    public void render() {
 
     }
 

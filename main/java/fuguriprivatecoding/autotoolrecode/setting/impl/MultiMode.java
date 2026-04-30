@@ -3,12 +3,14 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
+import imgui.ImGui;
 import lombok.Getter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.value.Doubles;
 import lombok.Setter;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.HashMap;
@@ -36,64 +38,44 @@ public class MultiMode extends Setting {
         values = new CopyOnWriteArrayList<>();
     }
 
-    @Override
-    public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
-        return 0;
-    }
 
     @Override
-    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
+    public void render() {
+        ImGui.pushID(hashCode());
+        ImGui.text(getName());
+        ImGui.sameLine();
+        if (ImGui.button("Select Modes")) {
+            ImGui.openPopup("multiModePopup");
+        }
 
-        return 0;
+        if (ImGui.beginPopup("multiModePopup")) {
+            for (Doubles<String, Boolean> mode : values) {
+                if (ImGui.checkbox(mode.getFirst(), mode.getSecond())) mode.setSecond(!mode.getSecond());
+            }
+            ImGui.endPopup();
+        }
+
+        StringBuilder current = new StringBuilder();
+
+        List<Doubles<String, Boolean>> toggledModes = new ArrayList<>();
+
+        for (Doubles<String, Boolean> mode : values) {
+            if (mode.getSecond()) {
+                toggledModes.add(mode);
+            }
+        }
+
+        for (Doubles<String, Boolean> toggledMode : toggledModes) {
+            current.append(toggledMode.getFirst());
+            if (toggledMode != toggledModes.getLast()) {
+                current.append(", ");
+            }
+        }
+
+        ImGui.sameLine();
+        ImGui.text(current.toString());
+        ImGui.popID();
     }
-
-    @Override
-    public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-        return 0;
-    }
-
-    @Override
-    public void keyTyped(int key) {
-
-    }
-//
-//    @Override
-//    public void render() {
-//        ImGui.pushID(hashCode());
-//        ImGui.text(getName());
-//        ImGui.sameLine();
-//        if (ImGui.button("Select Modes")) {
-//            ImGui.openPopup("multiModePopup");
-//        }
-//
-//        if (ImGui.beginPopup("multiModePopup")) {
-//            for (Doubles<String, Boolean> mode : values) {
-//                if (ImGui.checkbox(mode.getFirst(), mode.getSecond())) mode.setSecond(!mode.getSecond());
-//            }
-//            ImGui.endPopup();
-//        }
-//
-//        StringBuilder current = new StringBuilder();
-//
-//        List<Doubles<String, Boolean>> toggledModes = new ArrayList<>();
-//
-//        for (Doubles<String, Boolean> mode : values) {
-//            if (mode.getSecond()) {
-//                toggledModes.add(mode);
-//            }
-//        }
-//
-//        for (Doubles<String, Boolean> toggledMode : toggledModes) {
-//            current.append(toggledMode.getFirst());
-//            if (toggledMode != toggledModes.getLast()) {
-//                current.append(", ");
-//            }
-//        }
-//
-//        ImGui.sameLine();
-//        ImGui.text(current.toString());
-//        ImGui.popID();
-//    }
 
     @Override
     public JsonObject getObject() {

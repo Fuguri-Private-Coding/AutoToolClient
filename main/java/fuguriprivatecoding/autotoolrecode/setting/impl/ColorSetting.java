@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
+import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
@@ -60,27 +61,6 @@ public class ColorSetting extends Setting {
         this.maxOffset = maxOffset;
         this.fade = false;
         this.hide = false;
-    }
-
-    @Override
-    public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
-        return 0;
-    }
-
-    @Override
-    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-
-        return 0;
-    }
-
-    @Override
-    public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-        return 0;
-    }
-
-    @Override
-    public void keyTyped(int key) {
-
     }
 
     public ColorSetting(String name, SettingAble parent) {
@@ -166,51 +146,51 @@ public class ColorSetting extends Setting {
         this.blue = color.getBlue() / 255.0f;
         this.alpha = color.getAlpha() / 255.0f;
     }
-//
-//    @Override
-//    public void render() {
-//        if (ImGui.collapsingHeader(getName())) {
-//            ImGui.pushID(hashCode());
-//            ImGui.indent();
-//            ImGui.separator();
-//
-//
-//            if (ImGui.checkbox("Fade", fade)) {
-//                fade = !fade;
-//            }
-//
-//            float[] color = new float[] { red, green, blue, alpha };
-//            float[] color2 = new float[] { fadeRed, fadeGreen, fadeBlue, fadeAlpha };
-//
-//            if (ImGui.colorEdit4("First color", color)) {
-//                red = color[0];
-//                green = color[1];
-//                blue = color[2];
-//                alpha = color[3];
-//            }
-//
-//            if (fade) {
-//                if (ImGui.colorEdit4("Second color", color2)) {
-//                    fadeRed = color2[0];
-//                    fadeGreen = color2[1];
-//                    fadeBlue = color2[2];
-//                    fadeAlpha = color2[3];
-//                }
-//
-//                float[] speedV = new float[] { speed };
-//                if (ImGui.sliderFloat("Speed: ", speedV, 0, 20, "%.1f")) {
-//                    speed = speedV[0];
-//                }
-//
-//                float[] offsetV = new float[] { offset };
-//                if (ImGui.sliderFloat("Offset: ", offsetV, 0, 20, "%.1f")) {
-//                    offset = offsetV[0];
-//                }
-//            }
-//            ImGui.unindent();
-//            ImGui.popID();
-//        }
-//    }
+
+    @Override
+    public void render() {
+        if (ImGui.collapsingHeader(getName())) {
+            ImGui.pushID(hashCode());
+            ImGui.indent();
+            ImGui.separator();
+
+
+            if (ImGui.checkbox("Fade", fade)) {
+                fade = !fade;
+            }
+
+            float[] color = new float[] { red, green, blue, alpha };
+            float[] color2 = new float[] { fadeRed, fadeGreen, fadeBlue, fadeAlpha };
+
+            if (ImGui.colorEdit4("First color", color)) {
+                red = color[0];
+                green = color[1];
+                blue = color[2];
+                alpha = color[3];
+            }
+
+            if (fade) {
+                if (ImGui.colorEdit4("Second color", color2)) {
+                    fadeRed = color2[0];
+                    fadeGreen = color2[1];
+                    fadeBlue = color2[2];
+                    fadeAlpha = color2[3];
+                }
+
+                float[] speedV = new float[] { speed };
+                if (ImGui.sliderFloat("Speed: ", speedV, 0, 20, "%.1f")) {
+                    speed = speedV[0];
+                }
+
+                float[] offsetV = new float[] { offset };
+                if (ImGui.sliderFloat("Offset: ", offsetV, 0, 20, "%.1f")) {
+                    offset = offsetV[0];
+                }
+            }
+            ImGui.unindent();
+            ImGui.popID();
+        }
+    }
 
     @Override
     public JsonObject getObject() {

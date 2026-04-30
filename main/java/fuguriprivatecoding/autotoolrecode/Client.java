@@ -54,7 +54,7 @@ public class Client implements Imports {
     public final File SKIN_DIRECTORY = new File(CLIENT_DIR + "/skins");
     public final File CAPE_DIRECTORY = new File(CLIENT_DIR + "/capes");
 
-	@Setter public Profile profile;
+	public static Profile profile;
 
     public final MediaController MEDIA_CONTROLLER = new MediaController();
 
@@ -84,7 +84,7 @@ public class Client implements Imports {
         File sfProRounded_font = new File(Fonts.FONT_DIRECTORY, "SFProRounded.ttf");
         FileUtils.unpackFile(sfProRounded_font, "assets/minecraft/autotool/fonts/SFProRounded.ttf");
 
-        profile = Profile.builder().username("Ёбаный Бомж").role(Role.GOVNOED).build();
+        profile = Profile.builder().username(System.getProperty("user.name")).role(Role.USER).build();
 
         SmtcNative.init();
         MEDIA_CONTROLLER.start();

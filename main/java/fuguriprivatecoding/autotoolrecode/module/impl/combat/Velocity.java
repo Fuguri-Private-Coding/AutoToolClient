@@ -92,7 +92,7 @@ public class Velocity extends Module {
     }
 
     private boolean needJump() {
-        return Player.fallDistance == 0 && mc.thePlayer.hurtTime == 9 && mc.thePlayer.onGround && mc.thePlayer.isSprinting() && rand.nextInt(100) <= jumpChance.getValue();
+        return !mc.thePlayer.isBurning() && Player.fallDistance == 0 && mc.thePlayer.hurtTime == 9 && mc.thePlayer.onGround && mc.thePlayer.isSprinting() && rand.nextInt(100) <= jumpChance.getValue();
     }
 
     @Override

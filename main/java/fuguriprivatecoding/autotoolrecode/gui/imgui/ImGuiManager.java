@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.gui.imgui;
 
 import com.github.koxx12dev.fuckyou.ImGuiGL3;
 import com.github.koxx12dev.fuckyou.ImGuiLwjgl2;
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
@@ -46,7 +47,7 @@ public class ImGuiManager implements Imports, EventListener {
         try {
             InputStream is = Minecraft.getMinecraft()
                     .getResourceManager()
-                    .getResource(new ResourceLocation("minecraft", "autotool/fonts/SFProRegular.ttf"))
+                    .getResource(Client.of("fonts/SFProRegular.ttf"))
                     .getInputStream();
 
             byte[] fontData = new byte[is.available()];
@@ -58,10 +59,6 @@ public class ImGuiManager implements Imports, EventListener {
             }
 
             ImFont font = atlas.addFontFromMemoryTTF(fontData, 20, config);
-            if (font == null) {
-                System.err.println("Failed to load custom font!");
-                atlas.addFontDefault();
-            }
 
             is.close();
         } catch (IOException e) {
