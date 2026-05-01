@@ -16,7 +16,7 @@ public class ClickGuiWindow extends ImGuiWindow {
         super("ClickGui");
     }
 
-    private Module featureListeningForKey;
+    public Module featureListeningForKey;
     private Category selectedCategory = Category.COMBAT;
 
     @Override
@@ -27,7 +27,7 @@ public class ClickGuiWindow extends ImGuiWindow {
 
         if (ImGui.begin(name)) {
             String[] categoryNames = Arrays.stream(Category.values())
-                    .map(category -> category.name().toLowerCase())
+                    .map(Category::name)
                     .toArray(String[]::new);
 
             ImInt currentIndex = new ImInt(selectedCategory.ordinal());

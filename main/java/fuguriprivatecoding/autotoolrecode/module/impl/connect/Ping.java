@@ -11,6 +11,8 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
+import fuguriprivatecoding.autotoolrecode.module.impl.legit.AimAssist;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
@@ -20,6 +22,7 @@ import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -50,6 +53,7 @@ public class Ping extends Module {
             "PlaceBlock", "ClickWindow", "Scaffold", "OpenedGui", "Distance", "ChatMessage");
 
     final FloatSetting distanceToReset = new FloatSetting("DistanceToReset", this, () -> actions.get("Distance"), 2.5f, 6f,3f,0.01f);
+        final IntegerSetting distanceDelay = new IntegerSetting("DistanceDelay", this, () -> actions.get("Distance"),0, 1000, 0);
 
     final IntegerSetting chatMessageDelay = new IntegerSetting("ChatMessageDelay", this, () -> actions.get("ChatMessage"),0, 1000, 0);
     final IntegerSetting attackDelay = new IntegerSetting("AttackDelay", this, () -> actions.get("Attack"),0, 1000, 0);
@@ -171,9 +175,12 @@ public class Ping extends Module {
 
                 if (actions.get("Distance")) {
                     EntityLivingBase target = TargetFinder.findTarget(6f, true, false, false);
+                    if (Modules.getModule(KillAura.class).isToggled() || Modules.getModule(AimAssist.class).isToggled()) {
+                        target = TargetStorage.getTarget();
+                    }
 
                     if (target != null && DistanceUtils.getDistance(target) <= distanceToReset.getValue()) {
-                        reset(50);
+                        reset(distanceDelay.getValue());
                     }
                 }
 

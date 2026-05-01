@@ -19,12 +19,13 @@ public class TargetFinder implements Imports {
         List<Entity> copiedList = new CopyOnWriteArrayList<>(mc.theWorld.loadedEntityList);
 
         return (EntityLivingBase) copiedList.stream()
-                .filter(entity -> entity != mc.thePlayer)
-                .filter(entity -> entity instanceof EntityLivingBase)
-                .filter(entity -> (entity instanceof EntityPlayer && players) || (entity instanceof EntityMob && mobs) || (entity instanceof EntityAnimal && animal))
-                .filter(entity -> !(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isFriend() || !((EntityPlayer) entity).isTeam() || !((EntityPlayer) entity).isBot())
-                .filter(entity -> DistanceUtils.getDistance(entity) < distance)
-                .min(Comparator.comparing(RotUtils::getFovToEntity)).orElse(null);
+            .filter(entity -> entity != mc.thePlayer)
+            .filter(entity -> entity instanceof EntityLivingBase)
+            .filter(entity -> (entity instanceof EntityPlayer && players) || (entity instanceof EntityMob && mobs) || (entity instanceof EntityAnimal && animal))
+            .filter(entity -> players && entity instanceof EntityPlayer player && player.isValid())
+            .filter(entity -> DistanceUtils.getDistance(entity) < distance)
+            .min(Comparator.comparing(RotUtils::getFovToEntity)).orElse(null);
+
     }
 
 }

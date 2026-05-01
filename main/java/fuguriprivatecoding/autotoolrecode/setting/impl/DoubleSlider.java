@@ -12,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
+import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.ScaledResolution;
@@ -90,6 +91,25 @@ public class DoubleSlider extends Setting {
 
     public double getRandomizedDoubleValue() {
         return RandomUtils.nextDouble(minValue, maxValue);
+    }
+
+    @Override
+    public void render() {
+        ImGui.pushID(hashCode());
+        float[] vMin = new float[] {(float) minValue};
+        float[] vMax = new float[] {(float) minValue};
+
+        float min = (float) this.min;
+        float max = (float) this.max;
+
+        if (ImGui.sliderFloat("Min" + getName(), vMin, min, max)) {
+            setMinValue(vMin[0]);
+        }
+
+        if (ImGui.sliderFloat("Max" + getName(), vMax, min, max)) {
+            setMaxValue(vMax[0]);
+        }
+        ImGui.popID();
     }
 
     @Override

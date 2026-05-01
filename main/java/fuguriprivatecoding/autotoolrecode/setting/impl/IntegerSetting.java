@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
+import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
@@ -60,77 +61,14 @@ public class IntegerSetting extends Setting {
         return (animatedValue - min) / (max - min);
     }
 
-//    @Override
-//    public void render() {
-//        ImGui.pushID(hashCode());
-//        float[] v = new float[] {value};
-//        if (ImGui.sliderFloat(getName(), v, min, max)) {
-//            setValue( Math.round(v[0]));
-//        }
-//        ImGui.popID();
-//    }
-
     @Override
-    public float draw(float x, float y, ClientFont font, Color elementColor, float alpha) {
-        font.drawString(getName(), x, y, Color.WHITE);
-
-        EasingAnimation sliderAnim = getSliderAnim();
-        sliderAnim.update(4, Easing.OUT_CUBIC);
-        sliderAnim.setEnd(value);
-
-        setAnimatedValue(sliderAnim.getValue());
-
-        float sliderX = x;
-        float sliderY = y + font.FONT_HEIGHT;
-
-        float sliderLength = 100;
-        float filledLength = sliderLength * getAnimatedNormalize();
-
-        RoundedUtils.drawRect(sliderX, sliderY, sliderLength, 4, 1.5f, Colors.GRAY.withAlphaClamp(0.3f));
-        RoundedUtils.drawRect(sliderX, sliderY, filledLength, 4, 1.5f, elementColor);
-        RoundedUtils.drawRect(sliderX + filledLength - 2, sliderY - 1, 6, 6, 3f, Color.WHITE);
-
-        String valueText = String.valueOf(getValue());
-        float valueWidth = font.getStringWidth(valueText);
-
-        font.drawString(String.valueOf(getValue()), x + sliderLength - valueWidth, y, Color.WHITE);
-
-        boolean hovered = GuiUtils.isMouseHovered(x - 2, y - 2, sliderLength + 4, font.FONT_HEIGHT + 8);
-        //RoundedUtils.drawRect(x - 2, y - 2, sliderLength + 4, font.FONT_HEIGHT + 8, 0, Colors.WHITE.withAlpha(0.3f));
-
-        if (hovered) {
-            final ScaledResolution sc = new ScaledResolution(mc);
-            int i1 = sc.getScaledWidth();
-
-            final int mouseX = Mouse.getX() * i1 / mc.displayWidth;
-
-            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-                setValue((int) (getValue() + signum(DeltaTracker.getDeltaScroll())));
-            } else if (Mouse.isButtonDown(0)) {
-                float mx = mouseX - x;
-                float p = mx / sliderLength;
-                float normalize = getMin() + (getMax() - getMin()) * p;
-                setValue(round(normalize));
-            }
+    public void render() {
+        ImGui.pushID(hashCode());
+        float[] v = new float[] {value};
+        if (ImGui.sliderFloat(getName(), v, min, max)) {
+            setValue( Math.round(v[0]));
         }
-
-        return 20;
-    }
-
-    @Override
-    public float mouseClicked(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-
-        return 20;
-    }
-
-    @Override
-    public float mouseReleased(int mouseX, int mouseY, float x, float y, int key, ClientFont font) {
-        return 20;
-    }
-
-    @Override
-    public void keyTyped(int key) {
-
+        ImGui.popID();
     }
 
     @Override

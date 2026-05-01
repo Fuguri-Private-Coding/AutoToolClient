@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode;
 
 import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
+import fuguriprivatecoding.autotoolrecode.gui.imgui.ImGuiManager;
 import fuguriprivatecoding.autotoolrecode.profile.Role;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
@@ -29,6 +30,7 @@ import fuguriprivatecoding.autotoolrecode.module.*;
 import fuguriprivatecoding.autotoolrecode.event.*;
 
 import de.florianmichael.viamcp.ViaMCP;
+import imgui.ImGui;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
@@ -55,6 +57,8 @@ public class Client implements Imports {
     public final File CAPE_DIRECTORY = new File(CLIENT_DIR + "/capes");
 
 	public static Profile profile;
+
+    public static ImGuiManager imGuiManager;
 
     public final MediaController MEDIA_CONTROLLER = new MediaController();
 
@@ -85,6 +89,11 @@ public class Client implements Imports {
         FileUtils.unpackFile(sfProRounded_font, "assets/minecraft/autotool/fonts/SFProRounded.ttf");
 
         profile = Profile.builder().username(System.getProperty("user.name")).role(Role.USER).build();
+
+        imGuiManager = new ImGuiManager();
+        imGuiManager.init();
+
+        NewClickScreen.init();
 
         SmtcNative.init();
         MEDIA_CONTROLLER.start();

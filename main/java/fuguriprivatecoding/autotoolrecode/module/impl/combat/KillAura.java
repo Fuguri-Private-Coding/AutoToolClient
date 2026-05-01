@@ -175,7 +175,7 @@ public class KillAura extends Module {
     EasingAnimation animY = new EasingAnimation();
 
     private Rot getRotation(EntityLivingBase target, AxisAlignedBB box) {
-        boolean teleport = (TimerRange.isTeleporting()) && snapForTeleport.isToggled();
+        boolean teleport = (TimerRange.needSnap()) && snapForTeleport.isToggled();
 
         AxisAlignedBB fullBox = RotUtils.getHitBox(target, 100, 100).expand(0.1);
 
@@ -234,7 +234,7 @@ public class KillAura extends Module {
     private void rotate(EntityLivingBase target) {
         Rot lr = mc.thePlayer.getRotation();
 
-        boolean teleport = (TimerRange.isTeleporting()) && snapForTeleport.isToggled();
+        boolean teleport = (TimerRange.needSnap()) && snapForTeleport.isToggled();
 
         double expand = target.getCollisionBorderSize();
         AxisAlignedBB box = RotUtils.getHitBox(

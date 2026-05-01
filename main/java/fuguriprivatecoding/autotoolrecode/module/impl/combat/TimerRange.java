@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.Ping;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
@@ -19,7 +20,6 @@ import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
-import java.awt.*;
 
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
 public class TimerRange extends Module {
@@ -30,6 +30,11 @@ public class TimerRange extends Module {
     final IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
 
     final CheckBox onlyWhenPing = new CheckBox("OnlyWhenPing", this, false);
+
+    final Mode fixModes = new Mode("FixModes", this)
+        .addModes("ToClick", "ToTeleport")
+        .setMode("ToClick")
+        ;
 
     public static boolean teleporting = false, click = false;
     public static int balance = 0;
@@ -99,7 +104,11 @@ public class TimerRange extends Module {
         return target.getEntityBoundingBox().offset(offsetX, offsetY, offsetZ);
     }
 
-    public static boolean isTeleporting() {
-        return click;
+    public static boolean needSnap() {
+        return switch (Modules.getModule(TimerRange.class).fixModes.getMode()) {
+            case "ToTeleport" -> teleporting && balance > 0;
+            case "ToClick" -> click;
+            default -> false;
+        };
     }
 }

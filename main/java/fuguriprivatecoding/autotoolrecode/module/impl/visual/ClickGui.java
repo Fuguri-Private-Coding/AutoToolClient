@@ -1,6 +1,9 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
+import fuguriprivatecoding.autotoolrecode.gui.clickgui.NewClickScreen;
+import fuguriprivatecoding.autotoolrecode.gui.imgui.ClickGuiWindow;
+import fuguriprivatecoding.autotoolrecode.gui.imgui.ImGuiManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -10,6 +13,11 @@ import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "ClickGui", category = Category.VISUAL, key = Keyboard.KEY_RSHIFT, description = "ХАЛЯЛЬ #НАСТРОЙКА КЛИК ГУИ ЙОУ.")
 public class ClickGui extends Module {
+
+    public Mode guiMode = new Mode("GuiMode", this)
+        .addModes("Java", "ImGui")
+        .setMode("Java")
+        ;
 
     public Mode fonts = new Mode("Fonts", this);
 
@@ -32,9 +40,20 @@ public class ClickGui extends Module {
         fonts.setMode("SFProRounded");
     }
 
+    public static ClickGuiWindow window = new ClickGuiWindow();
+
 	@Override
 	public void onEnable() {
-		mc.displayGuiScreen(ClickScreen.INST);
+        switch (guiMode.getMode()) {
+            case "ImGui" -> {
+                mc.displayGuiScreen(NewClickScreen.INST);
+                ImGuiManager.addWindow(window);
+            }
+            case "Java" -> {
+                mc.displayGuiScreen(ClickScreen.INST);
+            }
+        }
+
 		toggle();
 	}
 }

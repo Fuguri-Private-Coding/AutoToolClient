@@ -178,12 +178,12 @@ public class ColorSetting extends Setting {
                 }
 
                 float[] speedV = new float[] { speed };
-                if (ImGui.sliderFloat("Speed: ", speedV, 0, 20, "%.1f")) {
+                if (ImGui.sliderFloat("Speed: ", speedV, 0, maxSpeed, "%.1f")) {
                     speed = speedV[0];
                 }
 
                 float[] offsetV = new float[] { offset };
-                if (ImGui.sliderFloat("Offset: ", offsetV, 0, 20, "%.1f")) {
+                if (ImGui.sliderFloat("Offset: ", offsetV, 0, maxOffset, "%.1f")) {
                     offset = offsetV[0];
                 }
             }

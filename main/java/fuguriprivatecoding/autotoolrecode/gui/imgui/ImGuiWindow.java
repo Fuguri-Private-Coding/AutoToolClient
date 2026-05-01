@@ -5,10 +5,8 @@ import imgui.type.ImBoolean;
 import lombok.Getter;
 
 public abstract class ImGuiWindow {
-    @Getter
-    protected final String name;
-    @Getter
-    protected boolean isOpen;
+    @Getter protected final String name;
+    @Getter protected boolean isOpen;
     protected ImBoolean openFlag = new ImBoolean(true);
 
     public ImGuiWindow(String name) {

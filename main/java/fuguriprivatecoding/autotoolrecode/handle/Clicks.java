@@ -87,7 +87,7 @@ public class Clicks implements Imports, EventListener {
     }
 
     public static void addClick() {
-        if (TimerRange.isTeleporting()) return;
+        if (TimerRange.needSnap()) return;
         clicks++;
     }
 
