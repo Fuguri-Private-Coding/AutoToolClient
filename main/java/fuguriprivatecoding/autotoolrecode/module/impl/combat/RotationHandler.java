@@ -12,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.util.MathHelper;
 
 @ModuleInfo(name = "RotationHandler", category = Category.COMBAT, description = "Плавный разворот ротации при ее изменении.")
@@ -21,7 +22,7 @@ public class RotationHandler extends Module {
     final DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, 1, 180, 30, 1);
     final DoubleSlider mixDelta = new DoubleSlider("MixDelta", this, 0, 100, 100, 1f);
 
-    Rot lastDelta = RotUtils.ZERO;
+    Rot lastDelta = Constants.ROT_ZERO;
 
     @Override
     public void onEvent(Event event) {

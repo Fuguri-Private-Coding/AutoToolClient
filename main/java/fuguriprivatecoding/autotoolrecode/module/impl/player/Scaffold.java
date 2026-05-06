@@ -26,6 +26,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
@@ -104,7 +105,7 @@ public class Scaffold extends Module {
     private final CheckBox glow = new CheckBox("Glow", this);
     private final ColorSetting glowColor = new ColorSetting("GlowColor", this, glow::isToggled);
 
-    private Rot rotation = RotUtils.ZERO, lastRotation = RotUtils.ZERO, lastDelta = RotUtils.ZERO;
+    private Rot rotation = Constants.ROT_ZERO, lastRotation = Constants.ROT_ZERO, lastDelta = Constants.ROT_ZERO;
 
     private BlockPos targetBlock = new BlockPos(0, 0, 0);
 
@@ -130,6 +131,7 @@ public class Scaffold extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
+            targetBlock = PlayerUtils.getPossibleBlockPos();
             switch (type) {
                 case ACTIVE -> rotate();
                 case NONACTIVE -> updateScaffoldType();
@@ -147,7 +149,6 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof RunGameLoopEvent) {
-            targetBlock = PlayerUtils.getPossibleBlockPos();
             if (type == ScaffoldType.ACTIVE) updateClicks();
         }
 
@@ -361,12 +362,12 @@ public class Scaffold extends Module {
     }
 
     private Rot getDeltaSpeed() {
-        Rot speed = RotUtils.ZERO;
+        Rot speed = Constants.ROT_ZERO;
 
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {
                 if (isTelly(speedTelly.isToggled(), currentAirTicks)) {
-                    speed = RotUtils.MAX;
+                    speed = Constants.ROT_MAX;
                 } else {
                     speed.setYaw(yawSpeed.getRandomizedIntValue());
                     speed.setPitch(pitchSpeed.getRandomizedIntValue());
@@ -464,7 +465,7 @@ public class Scaffold extends Module {
         CameraRot.INST.setWillChange(false);
 
         targetBlock = null;
-        lastDelta = RotUtils.ZERO;
+        lastDelta = Constants.ROT_ZERO;
         clickDelay = 1L;
         clickTimer.reset();
         type = ScaffoldType.NONACTIVE;

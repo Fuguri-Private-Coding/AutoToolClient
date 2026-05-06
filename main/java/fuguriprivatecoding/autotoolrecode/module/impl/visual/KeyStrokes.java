@@ -11,7 +11,6 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -29,7 +28,7 @@ public class KeyStrokes extends Module {
     FloatSetting radius = new FloatSetting("Radius", this, 0, 10, 5, 0.1f);
     FloatSetting size = new FloatSetting("Size", this, 10, 50, 25, 0.1f);
 
-    FloatSetting gandon = new FloatSetting("Gap", this, 0, 10, 2, 0.1f);
+    FloatSetting gap = new FloatSetting("Gap", this, 0, 10, 2, 0.1f);
 
     ColorSetting unToggleColor = new ColorSetting("UnToggleColor", this);
     ColorSetting toggleColor = new ColorSetting("ToggleColor", this);
@@ -63,7 +62,7 @@ public class KeyStrokes extends Module {
             Color dColor = dHold ? toggleColor : unToggleColor;
             Color sColor = sHold ? toggleColor : unToggleColor;
 
-            float sizeWithGap = size + gandon.getValue() + 1;
+            float sizeWithGap = size + gap.getValue() + 1;
 
             float posX_W = pos.x + sizeWithGap;
             float posY_W = pos.y;
@@ -81,11 +80,6 @@ public class KeyStrokes extends Module {
             RoundedUtils.drawRect(posX_A, posY_A, size, size, radius, aColor);
             RoundedUtils.drawRect(posX_D, posY_D, size, size, radius, dColor);
             RoundedUtils.drawRect(posX_S, posY_S, size, size, radius, sColor);
-
-            boolean attackpress = mc.gameSettings.keyBindAttack.isKeyDown();
-
-
-            RoundedUtils.drawRect(pos.x + sizeWithGap + sizeWithGap, pos.y, size, size, radius, attackpress ? toggleColor : unToggleColor);
 
             if (glow.isToggled()) {
                 Color glowUnToggleColor = this.glowUnToggleColor.getFadedColor();

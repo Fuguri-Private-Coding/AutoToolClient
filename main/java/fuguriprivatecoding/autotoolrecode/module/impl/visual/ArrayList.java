@@ -8,7 +8,6 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -18,8 +17,8 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import java.awt.*;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "ArrayList", category = Category.VISUAL, description = "Показывает список включенных модулей.")
 public class ArrayList extends Module {
@@ -36,7 +35,6 @@ public class ArrayList extends Module {
     final IntegerSetting xPos = new IntegerSetting("XPos", this,0, 100, 5);
     final IntegerSetting yPos = new IntegerSetting("YPos", this,0, 100, 5);
 
-    final FloatSetting textYPos = new FloatSetting("TextYPos", this,-5f, 5, 0, 0.01f);
     final ColorSetting textColor = new ColorSetting("TextColor", this, 40);
 
     final IntegerSetting fontScale = new IntegerSetting("FontScale", this, 1, 12,8);
@@ -54,61 +52,79 @@ public class ArrayList extends Module {
 
     public ArrayList() {
         Fonts.FONTS.forEach((fontName, _) -> fonts.addMode(fontName));
-        fonts.setMode("SFProRegular");
     }
 
     MsdfFont font = Fonts.get("SFProRegular");
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof Render2DEvent e) {
-            font = Fonts.get(fonts.getMode());
-            List<Module> moduleList = new CopyOnWriteArrayList<>(Modules.getEnabledModules());
-            ScaledResolution sc = e.getScaledResolution();
+        if (event instanceof Render2DEvent render2DEvent) {
+            List<Module> moduleList = Modules.getEnabledModules();
 
             int size = fontScale.getValue();
+            if (font != Fonts.get(fonts.getMode())) {
+                font = Fonts.get(fonts.getMode());
+            }
+
+            sort(moduleList, size);
+
+            List<RenderEntry> entries = new java.util.ArrayList<>();
+
+            boolean left = pos.is("LeftUp");
+
+            ScaledResolution sc = render2DEvent.getScaledResolution();
 
             float hSpacing = horizontalSpacing.getValue();
             float vSpacing = verticalSpacing.getValue();
 
-            sort(moduleList, font, size);
-
             float xOffset = this.xPos.getValue() + hSpacing;
             float yOffset = this.yPos.getValue();
-            for (Module module : moduleList) {
-                EasingAnimation slideAnim = module.getArrayListAnim();
-                slideAnim.update(animSpeed.getValue(), Easing.OUT_CUBIC);
+            for (Module module : moduleList.reversed()) {
+                EasingAnimation anim = module.getArrayListAnim();
+                anim.update(animSpeed.getValue(), Easing.OUT_BACK);
+
+                float slideValue = anim.getValue();
+                float height = font.height(module.getName(), size);
 
                 float width = font.width(module.getName(), size) + hSpacing * 2 + 8;
 
-                float slideValue = slideAnim.getValue();
-                float alpha = slideAnim.getClampValue();
-                float moduleTextHeight = font.height(module.getName(), size);
+                entries.add(new RenderEntry(module, yOffset, slideValue, width));
+                yOffset += (height + vSpacing) * Math.clamp(slideValue, 0, 1);
+            }
 
-                drawLine(
-                    xOffset - width + slideValue * width,
-                    yOffset,
-                    module,
-                    sc,
-                    moduleList,
-                    alpha,
-                    pos.is("LeftUp"),
-                    size
-                );
+            if (glow.isToggled()) {
+                BloomUtils.startWrite();
+                for (RenderEntry e : entries) {
+                    float x = xOffset - e.width() + e.slideValue() * e.width();
+                    drawLine(x, e.yOffset(), e.module(), moduleList, sc, left, size, e.slideValue(), true, false);
+                }
+                BloomUtils.stopWrite();
+            }
 
-                yOffset += (moduleTextHeight + vSpacing) * slideValue;
+            if (blur.isToggled()) {
+                BlurUtils.startWrite();
+                for (RenderEntry e : entries) {
+                    float x = xOffset - e.width() + e.slideValue() * e.width();
+                    drawLine(x, e.yOffset(), e.module(), moduleList, sc, left, size, e.slideValue(), false, true);
+                }
+                BlurUtils.stopWrite();
+            }
+
+            for (RenderEntry e : entries) {
+                float x = xOffset - e.width() + e.slideValue() * e.width();
+                drawLine(x, e.yOffset(), e.module(), moduleList, sc, left, size, e.slideValue(), false, false);
             }
         }
     }
 
-    private void drawLine(float xOffset, float yOffset, Module module, ScaledResolution sc, List<Module> moduleList, float alpha, boolean left, int size) {
+    private void drawLine(float xOffset, float yOffset, Module module, List<Module> moduleList, ScaledResolution sc, boolean left, int size, float alpha, boolean glow, boolean blur) {
         float textWidth = font.width(module.getName(), size);
         float textHeight = font.height(module.getName(), size) + verticalSpacing.getValue();
 
         float textX = left ? xOffset :
             sc.getScaledWidth() - xOffset - textWidth;
 
-        float textY = yOffset - textYPos.getValue() + textHeight / 2f - 2f;
+        float textY = yOffset + 2 + textHeight / 2f - size / 2f;
 
         float bgX = left ? xOffset - horizontalSpacing.getValue() :
             sc.getScaledWidth() - xOffset - horizontalSpacing.getValue() - textWidth;
@@ -124,31 +140,16 @@ public class ArrayList extends Module {
         Color glowBgColor = new Colors(mixedGlowColor).withMultiplyAlphaClamp(alpha);
 
         if (background.isToggled()) {
-            ColorUtils.glColor(bgColor);
-            Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, bgColor.getRGB());
-
-            if (glow.isToggled()) {
-                BloomUtils.startWrite();
-                Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, glowBgColor.getRGB());
-                BloomUtils.stopWrite();
-            }
-
-            if (blur.isToggled()) {
-                BlurUtils.startWrite();
-                Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, Colors.WHITE.withAlpha(alpha).getRGB());
-                BlurUtils.stopWrite();
-            }
+            Color color = glow ? glowBgColor : blur ? Colors.WHITE.withAlphaClamp(alpha) : bgColor;
+            Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, color.getRGB());
         }
 
-        font.draw(module.getName(), textX, textY, size, 0, 0, textColor);
+        if (!blur && !glow) font.draw(module.getName(), textX, textY, size, 0, 0, textColor);
     }
 
-    void sort(final List<Module> toSort, MsdfFont font, float scale) {
-        toSort.sort((m1, m2) -> {
-            final double width1 = font.width(m1.getName(), scale);
-            final double width2 = font.width(m2.getName(), scale);
-
-            return Double.compare(width2, width1);
-        });
+    private void sort(final List<Module> list, float scale) {
+        list.sort(Comparator.comparingDouble(module -> font.width(module.getName(), scale)));
     }
+
+    public record RenderEntry(Module module, float yOffset, float slideValue, float width) {};
 }

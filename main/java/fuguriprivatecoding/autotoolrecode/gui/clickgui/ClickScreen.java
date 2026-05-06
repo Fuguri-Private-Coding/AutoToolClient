@@ -28,6 +28,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import fuguriprivatecoding.autotoolrecode.utils.value.Doubles;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
@@ -74,7 +75,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 	final Animation2D settingLine, background, sizeBackground, modulesScrolls, moduleLine, settingsScrolls;
 
-	Rot offsetRot = RotUtils.ZERO, prevOffsetRot = RotUtils.ZERO;
+	Rot offsetRot = Constants.ROT_ZERO, prevOffsetRot = Constants.ROT_ZERO;
 
 	final EasingAnimation guis = new EasingAnimation();
 

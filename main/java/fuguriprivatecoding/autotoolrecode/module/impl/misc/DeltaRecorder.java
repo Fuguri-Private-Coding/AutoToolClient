@@ -22,6 +22,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.RayTrace;
 import net.minecraft.util.Vec3;
@@ -66,7 +67,7 @@ public class DeltaRecorder extends Module {
                 Rot delta = switch (recordType.getMode()) {
                     case "Delta" -> CameraRot.INST.getPrevRot().deltaTo(CameraRot.INST.copy()).copy();
                     case "Rotation" -> current.deltaTo(CameraRot.INST.copy()).copy();
-                    default -> RotUtils.ZERO;
+                    default -> Constants.ROT_ZERO;
                 };
 
                 killAura.recordedOffset.offsets.add(delta);

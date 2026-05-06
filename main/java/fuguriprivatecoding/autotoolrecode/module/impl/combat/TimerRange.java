@@ -17,6 +17,7 @@ import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
@@ -40,7 +41,7 @@ public class TimerRange extends Module {
     public static int balance = 0;
     int teleportTicks;
 
-    Vec3 pos = Vec3.ZERO;
+    Vec3 pos = Constants.VEC3_ZERO;
 
     @Override
     public void onEvent(Event event) {
@@ -106,7 +107,7 @@ public class TimerRange extends Module {
 
     public static boolean needSnap() {
         return switch (Modules.getModule(TimerRange.class).fixModes.getMode()) {
-            case "ToTeleport" -> teleporting && balance > 0;
+            case "ToTeleport" -> teleporting || balance > 0;
             case "ToClick" -> click;
             default -> false;
         };

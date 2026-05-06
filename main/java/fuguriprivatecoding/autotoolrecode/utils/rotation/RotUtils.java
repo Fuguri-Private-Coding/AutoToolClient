@@ -12,9 +12,6 @@ import java.util.List;
 import static java.lang.Math.*;
 
 public class RotUtils implements Imports {
-    public static final Rot ZERO = new Rot(0, 0);
-    public static final Rot MAX = new Rot(180, 180);
-
 	public static Vec3 getBestHitVec(Entity entity) {
 		return getBestHitVec(getEntityExpandedBB(entity));
 	}
@@ -73,17 +70,7 @@ public class RotUtils implements Imports {
 	}
 
 	public static Rot getNearestRotation(Rot current, AxisAlignedBB bb) {
-
-		Vec3[] points = {
-			new Vec3(bb.minX, bb.minY, bb.minZ),
-			new Vec3(bb.maxX, bb.minY, bb.minZ),
-			new Vec3(bb.maxX, bb.minY, bb.maxZ),
-			new Vec3(bb.minX, bb.minY, bb.maxZ),
-			new Vec3(bb.minX, bb.maxY, bb.minZ),
-			new Vec3(bb.maxX, bb.maxY, bb.minZ),
-			new Vec3(bb.maxX, bb.maxY, bb.maxZ),
-			new Vec3(bb.minX, bb.maxY, bb.maxZ)
-		};
+		Vec3[] points = getPoints(bb);
 
 		List<Rot> rotations = Arrays.stream(points).map(RotUtils::getRotationToPoint).toList();
 
@@ -95,6 +82,19 @@ public class RotUtils implements Imports {
 		return new Rot(Math.clamp(MathHelper.wrapDegree(current.getYaw()), (float) minYaw, (float) maxYaw),
 			Math.clamp(current.getPitch(), (float) minPitch, (float) maxPitch));
 	}
+
+    public static Vec3[] getPoints(AxisAlignedBB bb) {
+        return new Vec3[] {
+            new Vec3(bb.minX, bb.minY, bb.minZ),
+            new Vec3(bb.maxX, bb.minY, bb.minZ),
+            new Vec3(bb.maxX, bb.minY, bb.maxZ),
+            new Vec3(bb.minX, bb.minY, bb.maxZ),
+            new Vec3(bb.minX, bb.maxY, bb.minZ),
+            new Vec3(bb.maxX, bb.maxY, bb.minZ),
+            new Vec3(bb.maxX, bb.maxY, bb.maxZ),
+            new Vec3(bb.minX, bb.maxY, bb.maxZ)
+        };
+    }
 
 	public static AxisAlignedBB getEntityExpandedBB(Entity entity) {
 		return entity.getEntityBoundingBox().expand(

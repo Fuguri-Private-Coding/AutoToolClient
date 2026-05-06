@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
+import com.viaversion.viaversion.libs.snakeyaml.scanner.Constant;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
@@ -25,6 +26,7 @@ import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -185,16 +187,12 @@ public class KillAura extends Module {
             case "Best" -> RotUtils.getBestHitVec(box);
             case "Head" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight(), 0);
             case "Body" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight() / 2f, 0);
-            default -> Vec3.ZERO;
+            default -> Constants.VEC3_ZERO;
         };
 
         Rot needRot = RotUtils.getRotationToPoint(needPoint);
 
-        if (fullBox.isVecInside(eyes)) {
-            needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), fullBox);
-        }
-
-        if (hitVec.is("Nearest")) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), box);
+        if (hitVec.is("Nearest") || fullBox.isVecInside(eyes)) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), box);
 
         if (smoothModes.get("MouseDelta")) {
             Rot mouseDelta = invertDelta.isToggled() ?
@@ -203,9 +201,7 @@ public class KillAura extends Module {
 
             float multipleDelta = (float) deltaMultiplier.getRandomizedDoubleValue();
 
-            mouseDelta = mouseDelta.multiple(multipleDelta);
-
-            needRot = needRot.plus(mouseDelta);
+            needRot.plus(mouseDelta.multiple(multipleDelta));
         }
 
         if (smoothModes.get("Recorded")) {
@@ -213,11 +209,11 @@ public class KillAura extends Module {
 
             Rot recordedDelta = recordedOffset.getByIndex(recordedIndex++);
 
-            float recordedMultiple = (float) RandomUtils.nextGaussianInRange(recordedMultiplier.getMinValue(), recordedMultiplier.getMaxValue(), recordedMean.getValue(), recordedStd.getValue());
-            needRot = needRot.plus(recordedDelta.multiple(recordedMultiple));
+            float recordedMultiple = (float) recordedMultiplier.getRandomizedDoubleValue();
+            needRot.plus(recordedDelta.multiple(recordedMultiple));
         }
 
-        if (teleport) needRot = RotUtils.getBestRotation(box);
+        if (teleport) needRot = RotUtils.getBestRotation(fullBox);
 
         if (smartAim.isToggled()) {
             RayTrace hit = RayCastUtils.rayCast(needRot, findDistance.getValue(), 0);
@@ -237,11 +233,8 @@ public class KillAura extends Module {
         boolean teleport = (TimerRange.needSnap()) && snapForTeleport.isToggled();
 
         double expand = target.getCollisionBorderSize();
-        AxisAlignedBB box = RotUtils.getHitBox(
-                target,
-                teleport ? 100 : hBoxSize.getValue(),
-                teleport ? 100 : vBoxSize.getValue()
-        ).expand(expand, expand, expand);
+        AxisAlignedBB box = RotUtils.getHitBox(target, hBoxSize.getValue(), vBoxSize.getValue())
+            .expand(expand, expand, expand);
 
         Rot needRotation = getRotation(target, box);
 
@@ -251,21 +244,16 @@ public class KillAura extends Module {
 
         if (!teleport) {
             if (smoothModes.get("Basic")) {
-                Rot rot = new Rot(
-                    (float) RandomUtils.nextGaussian(-yawStrength.getValue(), yawStrength.getValue()),
-                    (float) RandomUtils.nextGaussian(-pitchStrength.getValue(), pitchStrength.getValue())
-                );
-
-                animX.setEnd(rot.getYaw());
-                animY.setEnd(rot.getPitch());
+                animX.setEnd((float) RandomUtils.nextGaussian(-yawStrength.getValue(), yawStrength.getValue()));
+                animY.setEnd((float) RandomUtils.nextGaussian(-pitchStrength.getValue(), pitchStrength.getValue()));
 
                 Rot d = new Rot(animX.getValue(), animY.getValue());
 
-                delta = delta.plus(d);
+                delta.plus(d);
             }
 
             if (smoothModes.get("Linear")) {
-                delta = delta.divine(linearSmoothStrength.getValue(), linearSmoothStrength.getValue());
+                delta.divine(linearSmoothStrength.getValue(), linearSmoothStrength.getValue());
             }
 
             Rot speed = new Rot(
@@ -273,14 +261,14 @@ public class KillAura extends Module {
                 pitchSpeed.getRandomizedIntValue()
             );
 
-            delta = delta.limit(speed);
+            delta.limit(speed);
 
             if (smoothModes.get("MixDelta")) {
                 delta = lastDelta.lerp(delta, (float) mixYawDelta.getRandomizedIntValue() / 100f, (float) mixPitchDelta.getRandomizedIntValue() / 100f);
             }
         }
 
-        delta = delta.fix();
+        delta.fix();
         lastDelta = delta.copy();
 
         CameraRot.INST.setUnlocked(true);

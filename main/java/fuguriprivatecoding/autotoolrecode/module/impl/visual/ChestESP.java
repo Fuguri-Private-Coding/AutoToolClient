@@ -13,8 +13,6 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
-import net.minecraft.util.BlockPos;
-
 import java.awt.*;
 
 @ModuleInfo(name = "ChestESP", category = Category.VISUAL, description = "Показывает где находятся сундуки.")
@@ -32,24 +30,25 @@ public class ChestESP extends Module {
         if (!Utils.isWorldLoaded()) return;
         if (event instanceof Render3DEvent) {
             RenderUtils.start3D();
-            for (TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {
-                switch (tileEntity) {
-                    case TileEntityChest e -> draw(e.getPos());
-                    case TileEntityEnderChest e when enderChest.isToggled() -> draw(e.getPos());
-                    default -> {}
-                }
+            draw(color.getFadedFloatColor());
+
+            if (glow.isToggled()) {
+                BloomUtils.startWrite();
+                draw(glowColor.getFadedFloatColor());
+                BloomUtils.stopWrite();
             }
+
             RenderUtils.stop3D();
         }
     }
 
-    private void draw(BlockPos pos) {
-        if (glow.isToggled()) {
-            BloomUtils.startWrite();
-            RenderUtils.drawBlockESP(pos, glowColor.getFadedFloatColor());
-            BloomUtils.stopWrite();
+    private void draw(Color color) {
+        for (TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {
+            switch (tileEntity) {
+                case TileEntityChest e -> RenderUtils.drawBlockESP(e.getPos(), color);
+                case TileEntityEnderChest e when enderChest.isToggled() -> RenderUtils.drawBlockESP(e.getPos(), color);
+                default -> {}
+            }
         }
-
-        RenderUtils.drawBlockESP(pos, color.getFadedFloatColor());
     }
 }

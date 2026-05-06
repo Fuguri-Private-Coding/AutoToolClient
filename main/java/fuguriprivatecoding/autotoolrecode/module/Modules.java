@@ -153,7 +153,16 @@ public class Modules {
                 .findFirst().orElse(null);
     }
 
-	public List<Module> getEnabledModules() {
-		return modules.stream().filter(module -> !module.isHide() && (module.isToggled() || (!module.toggled && module.arrayListAnim.isAnimating()))).toList();
-	}
+    public List<Module> getEnabledModules() {
+        List<Module> moduleList = new java.util.ArrayList<>();
+
+        for (Module module : modules) {
+            if (module.isHide() || (!module.isToggled() && !module.getArrayListAnim().isAnimating()))
+                continue;
+
+            moduleList.add(module);
+        }
+
+        return moduleList;
+    }
 }

@@ -62,8 +62,7 @@ public class Shader implements Imports {
 	}
 
 	private int createShader(String oskar, int shaderType) {
-		final int shader;
-		shader = GL20.glCreateShader(shaderType);
+		int shader = GL20.glCreateShader(shaderType);
 		GL20.glShaderSource(shader, oskar);
 		GL20.glCompileShader(shader);
 		return shader;

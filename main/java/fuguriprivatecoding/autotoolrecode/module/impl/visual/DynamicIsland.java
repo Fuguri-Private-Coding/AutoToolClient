@@ -273,9 +273,7 @@ public class DynamicIsland extends Module {
 
             GL11.glPushMatrix();
             GL11.glTranslated(translateX, translateY, 0);
-            ScaleUtils.startScaling(0, 0, additionalWidth, additionalHeight, 0.90f + textAlpha.getValue() * 0.1f);
             currentRun.run();
-            ScaleUtils.stopScaling();
             GL11.glPopMatrix();
 
             ScissorUtils.disableScissor();

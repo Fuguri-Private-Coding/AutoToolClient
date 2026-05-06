@@ -42,9 +42,7 @@ public class RandomUtils {
      @param max Максимум рандомного значения
      */
     public double nextDouble(double min, double max) {
-        if (min >= max) {
-            return min;
-        }
+        if (min >= max) return min;
         return random.nextDouble(min, max);
     }
 
@@ -55,35 +53,8 @@ public class RandomUtils {
      @param max Максимум рандомного значения
      */
     public long nextLong(long min, long max) {
-        if (min >= max) {
-            return min;
-        }
+        if (min >= max) return min;
         return random.nextLong(min, max);
-    }
-
-    public static double nextGaussianInRange(double min, double max, double mean, double stdDev) {
-        if (min >= max) {
-            min = max;
-        }
-        if (stdDev < 0) {
-            stdDev = 0;
-        }
-
-        double value = random.nextGaussian() * stdDev + mean;
-
-        if (value < min) {
-            value = min + (min - value);
-            if (value > max) {
-                value = min + (value - min) % (max - min);
-            }
-        } else if (value > max) {
-            value = max - (value - max);
-            if (value < min) {
-                value = max - (max - value) % (max - min);
-            }
-        }
-
-        return value;
     }
 
     /**
@@ -95,9 +66,7 @@ public class RandomUtils {
      * @return Значение с нормальным распределением
      */
     public double nextGaussian(double min, double max) {
-        if (min >= max) {
-            return min;
-        }
+        if (min >= max) return min;
 
         double mean = (min + max) / 2.0;
         double range = max - min;
@@ -105,17 +74,6 @@ public class RandomUtils {
 
         double value = random.nextGaussian() * stdDev + mean;
 
-        return Math.max(min, Math.min(max, value));
-    }
-
-    /**
-     * Генерирует целое значение с нормальным распределением в диапазоне от {@code min} до {@code max}
-     *
-     * @param min Минимум диапазона
-     * @param max Максимум диапазона
-     * @return Целое значение с нормальным распределением
-     */
-    public int nextGaussianInt(int min, int max) {
-        return (int) Math.round(nextGaussian(min, max));
+        return Math.clamp(value, min, max);
     }
 }

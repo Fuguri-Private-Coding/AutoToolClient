@@ -44,15 +44,15 @@ public class ClickGui extends Module {
 
 	@Override
 	public void onEnable() {
-        switch (guiMode.getMode()) {
-            case "ImGui" -> {
-                mc.displayGuiScreen(NewClickScreen.INST);
-                ImGuiManager.addWindow(window);
-            }
-            case "Java" -> {
-                mc.displayGuiScreen(ClickScreen.INST);
-            }
-        }
+        mc.displayGuiScreen(ClickScreen.INST);
+//        switch (guiMode.getMode()) {
+//            case "ImGui" -> {
+//                mc.displayGuiScreen(NewClickScreen.INST);
+//                ImGuiManager.addWindow(window);
+//            }
+//            case "Java" -> {
+//            }
+//        }
 
 		toggle();
 	}

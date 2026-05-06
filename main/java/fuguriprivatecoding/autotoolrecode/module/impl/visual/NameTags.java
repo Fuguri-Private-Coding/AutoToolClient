@@ -18,6 +18,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
@@ -54,16 +55,33 @@ public class NameTags extends Module {
         if (event instanceof Render3DEvent) {
             RenderUtils.start3D();
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
-                if (mc.getRenderManager() == null || (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || entity.isDead || DistanceUtils.getDistance(entity) > maxDistanceToRender.getValue())
-                    continue;
+                if (shouldContinue(entity)) continue;
 
-                Vec3 pos = RenderUtils.getAbsoluteSmoothPos(entity.getLastPositionVector(), entity.getPositionVector()).subtract(RenderManager.getRenderPosition());;
+                Vec3 pos = RenderUtils.getAbsoluteSmoothPos(entity.getLastPositionVector(), entity.getPositionVector()).subtract(RenderManager.getRenderPosition());
                 Vec3 addPos = new Vec3(0, entity.getEyeHeight() + yOffset.getValue(), 0);
 
-                renderNameTag(getText(entity), pos.add(addPos));
+                renderNameTag(getText(entity), pos.add(addPos), false);
             }
+
+            if (glow.isToggled()) {
+                BloomUtils.startWrite();
+                for (EntityPlayer entity : mc.theWorld.playerEntities) {
+                    if (shouldContinue(entity)) continue;
+
+                    Vec3 pos = RenderUtils.getAbsoluteSmoothPos(entity.getLastPositionVector(), entity.getPositionVector()).subtract(RenderManager.getRenderPosition());
+                    Vec3 addPos = new Vec3(0, entity.getEyeHeight() + yOffset.getValue(), 0);
+
+                    renderNameTag(getText(entity), pos.add(addPos), true);
+                }
+                BloomUtils.stopWrite();
+            }
+
             RenderUtils.stop3D();
         }
+    }
+
+    private boolean shouldContinue(EntityPlayer entity) {
+        return mc.getRenderManager() == null || (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) || entity.isDead || DistanceUtils.getDistance(entity) > maxDistanceToRender.getValue();
     }
 
     private String getText(EntityPlayer ent) {
@@ -79,7 +97,7 @@ public class NameTags extends Module {
         return detectiveText + murderText + friendText + userText + ent.getDisplayName().getFormattedText();
     }
 
-    private void renderNameTag(String name, Vec3 pos) {
+    private void renderNameTag(String name, Vec3 pos, boolean glow) {
         Vec3 playerPos = RenderUtils.getAbsoluteSmoothPos(mc.thePlayer.getLastPositionVector(), mc.thePlayer.getPositionVector()).subtract(RenderManager.getRenderPosition());
 
         float distance = (float) playerPos.distanceTo(pos);
@@ -99,19 +117,12 @@ public class NameTags extends Module {
         float backgroundWidth = nameWidth + 5;
         float backgroundHeight = mc.fontRendererObj.FONT_HEIGHT + 4;
 
-        Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, backgroundColor.getFadedColor().getRGB());
-
-        mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
-
-        if (glow.isToggled()) {
-            BloomUtils.startWrite();
-            if (background.isToggled()) {
-                Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glowColor.getFadedColor().getRGB());
-            } else {
-                mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
-            }
-            BloomUtils.stopWrite();
+        if (background.isToggled()) {
+            Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glow ? glowColor.getFadedColor().getRGB() : backgroundColor.getFadedColor().getRGB());
         }
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
 
         glPopMatrix();
     }
