@@ -1,5 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.utils.player;
 
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import lombok.experimental.UtilityClass;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.block.*;
@@ -50,13 +52,11 @@ public class PlayerUtils implements Imports {
     }
 
     public BlockPos getPossibleBlockPos() {
-        final double playerX = mc.thePlayer.posX;
-        final double playerY = mc.thePlayer.posY;
-        final double playerZ = mc.thePlayer.posZ;
+        Vec3 playerPos = mc.thePlayer.getPositionVector();
 
-        final int baseX = (int) playerX;
-        final int baseY = (int) (playerY - 1.0);
-        final int baseZ = (int) playerZ;
+        final int baseX = (int) playerPos.xCoord;
+        final int baseY = (int) (playerPos.yCoord - 1.0);
+        final int baseZ = (int) playerPos.zCoord;
 
         BlockPos bestPos = null;
         double bestDist = Double.MAX_VALUE;
@@ -64,7 +64,6 @@ public class PlayerUtils implements Imports {
         for (int x = baseX - 5; x <= baseX + 5; x++) {
             for (int y = baseY - 3; y <= baseY; y++) {
                 for (int z = baseZ - 5; z <= baseZ + 5; z++) {
-
                     BlockPos blockPos = new BlockPos(x, y, z);
 
                     if (PlayerUtils.isReplaceable(blockPos)) {
@@ -77,9 +76,9 @@ public class PlayerUtils implements Imports {
                         continue;
                     }
 
-                    double ex = MathHelper.clamp(playerX, x, x + block.getBlockBoundsMaxX());
-                    double ey = MathHelper.clamp(playerY, y, y + block.getBlockBoundsMaxY());
-                    double ez = MathHelper.clamp(playerZ, z, z + block.getBlockBoundsMaxZ());
+                    double ex = MathHelper.clamp(playerPos.xCoord, x, x + block.getBlockBoundsMaxX());
+                    double ey = MathHelper.clamp(playerPos.yCoord, y, y + block.getBlockBoundsMaxY());
+                    double ez = MathHelper.clamp(playerPos.zCoord, z, z + block.getBlockBoundsMaxZ());
 
                     double dist = mc.thePlayer.getDistanceSq(ex, ey, ez);
 
@@ -93,7 +92,6 @@ public class PlayerUtils implements Imports {
 
         return bestPos;
     }
-
 
     public int teleport(int ticks, int additionalTicks) {
         int balance = 0;

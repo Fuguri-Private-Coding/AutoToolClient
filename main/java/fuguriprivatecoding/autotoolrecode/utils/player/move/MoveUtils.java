@@ -192,16 +192,14 @@ public class MoveUtils implements Imports {
         double y = mc.thePlayer.posY - yOffset;
         double z = mc.thePlayer.posZ;
 
-        boolean movingX = Math.abs(mc.thePlayer.motionX) > 0.1;
-        boolean movingZ = Math.abs(mc.thePlayer.motionZ) > 0.1;
+        double motionX = mc.thePlayer.motionX;
+        double motionZ = mc.thePlayer.motionZ;
 
-        if (movingX || movingZ) {
-            if (Math.abs(mc.thePlayer.motionX) > Math.abs(mc.thePlayer.motionZ)) {
-                x += (mc.thePlayer.motionX > 0) ? -edgeOffset : edgeOffset;
-            } else {
-                z += (mc.thePlayer.motionZ > 0) ? -edgeOffset : edgeOffset;
-            }
-        }
+        boolean movingX = Math.abs(motionX) > 0.001;
+        boolean movingZ = Math.abs(motionZ) > 0.001;
+
+        if (movingX) x += (motionX > 0) ? -edgeOffset : edgeOffset;
+        if (movingZ) z += (motionZ > 0) ? -edgeOffset : edgeOffset;
 
         return new BlockPos(x, y, z);
     }
