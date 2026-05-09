@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
-import com.viaversion.viaversion.libs.snakeyaml.scanner.Constant;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
@@ -13,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.math.FastNoiseLite;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
@@ -69,7 +69,16 @@ public class KillAura extends Module {
     private final CheckBox snapForTeleport = new CheckBox("SnapForTeleport", this);
 
     private final MultiMode smoothModes = new MultiMode("SmoothModes", this)
-        .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Recorded");
+        .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Recorded", "Noise");
+
+    private final Mode noiseType = new Mode("NoiseType", this, () -> smoothModes.get("Noise"))
+        .addModes("OpenSimplex2", "OpenSimplex2S", "Cellular", "Perlin", "ValueCubic", "Value")
+        .setMode("Perlin")
+        ;
+    private final FloatSetting noiseSpeed = new FloatSetting("NoiseSpeed", this, () -> smoothModes.get("Noise"), 0.1f, 10f, 2f, 0.1f);
+
+    private final FloatSetting yawNoiseStrength = new FloatSetting("YawNoiseStrength", this, () -> smoothModes.get("Noise"), 0, 20, 5, 0.1f);
+    private final FloatSetting pitchNoiseStrength = new FloatSetting("PitchNoiseStrength", this, () -> smoothModes.get("Noise"), 0, 20, 5, 0.1f);
 
     private final DoubleSlider deltaMultiplier = new DoubleSlider("DeltaMultiplier", this, () -> smoothModes.get("MouseDelta"), 1, 15, 8, 0.1f);
     private final CheckBox invertDelta = new CheckBox("InvertDelta", this, () -> smoothModes.get("MouseDelta"), false);
@@ -88,8 +97,6 @@ public class KillAura extends Module {
 
     public final TestRotationOffsetSetting recordedOffset = new TestRotationOffsetSetting("RecordedOffset", this, () -> smoothModes.get("Recorded"));
     private final DoubleSlider recordedMultiplier = new DoubleSlider("RecordedMultiplier", this, () -> smoothModes.get("Recorded"), 0, 10, 1, 0.01f);
-    private final FloatSetting recordedStd = new FloatSetting("YawStd", this, () -> smoothModes.get("Recorded"), 0, 20, 5, 0.1f);
-    private final FloatSetting recordedMean = new FloatSetting("YawMean", this, () -> smoothModes.get("Recorded"), 0, 20, 5, 0.1f);
 
     private final DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
 
@@ -113,6 +120,8 @@ public class KillAura extends Module {
 
     private final StopWatch clickTimer = new StopWatch();
     private long delay;
+
+    private final FastNoiseLite noise = new FastNoiseLite((int) (System.currentTimeMillis() / 1000f));
 
     private int recordedIndex;
 
@@ -243,13 +252,25 @@ public class KillAura extends Module {
         Rot delta = lr.deltaTo(needRotation);
 
         if (!teleport) {
+            if (smoothModes.get("Noise")) {
+                FastNoiseLite.NoiseType type = FastNoiseLite.NoiseType.valueOf(noiseType.getMode());
+
+                noise.SetNoiseType(type);
+                noise.SetFrequency(noiseSpeed.getValue());
+
+                float strengthYaw = yawNoiseStrength.getValue();
+                float strengthPitch = pitchNoiseStrength.getValue();
+
+                float t = System.nanoTime() / 1_000_000_000f;
+
+                float randomYaw = noise.GetNoise(t, 0f) * strengthYaw;
+                float randomPitch = noise.GetNoise(0f, t) * strengthPitch;
+
+                delta.plus(randomYaw, randomPitch);
+            }
+
             if (smoothModes.get("Basic")) {
-                animX.setEnd((float) RandomUtils.nextGaussian(-yawStrength.getValue(), yawStrength.getValue()));
-                animY.setEnd((float) RandomUtils.nextGaussian(-pitchStrength.getValue(), pitchStrength.getValue()));
-
-                Rot d = new Rot(animX.getValue(), animY.getValue());
-
-                delta.plus(d);
+                delta.plus(RandomUtils.nextFloat(-yawStrength.getValue(), yawStrength.getValue()), RandomUtils.nextFloat(-pitchStrength.getValue(), pitchStrength.getValue()));
             }
 
             if (smoothModes.get("Linear")) {
@@ -337,6 +358,7 @@ public class KillAura extends Module {
     private boolean isWithinDistance(Entity entity) {
         return DistanceUtils.getDistance(entity) < findDistance.getValue();
     }
+
 
     private boolean matchesTargetType(EntityLivingBase entity) {
         return switch (entity) {

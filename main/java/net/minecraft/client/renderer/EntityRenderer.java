@@ -544,14 +544,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
     private void setupViewBobbing(float partialTicks) {
         if (this.mc.getRenderViewEntity() instanceof EntityPlayer entityplayer) {
-            ViewBobbing viewBobbing = Modules.getModule(ViewBobbing.class);
-
-            float factor = viewBobbing == null || !viewBobbing.isToggled() ? 1 : viewBobbing.strength.getValue();
-
-            float f = (entityplayer.distanceWalkedModified - entityplayer.prevDistanceWalkedModified) * factor;
-            float f1 = (-(entityplayer.distanceWalkedModified + f * partialTicks)) * factor;
-            float f2 = (entityplayer.prevCameraYaw + (entityplayer.cameraYaw - entityplayer.prevCameraYaw) * partialTicks) * factor;
-            float f3 = (entityplayer.prevCameraPitch + (entityplayer.cameraPitch - entityplayer.prevCameraPitch) * partialTicks) * factor;
+            float f = entityplayer.distanceWalkedModified - entityplayer.prevDistanceWalkedModified;
+            float f1 = -(entityplayer.distanceWalkedModified + f * partialTicks);
+            float f2 = entityplayer.prevCameraYaw + (entityplayer.cameraYaw - entityplayer.prevCameraYaw) * partialTicks;
+            float f3 = entityplayer.prevCameraPitch + (entityplayer.cameraPitch - entityplayer.prevCameraPitch) * partialTicks;
             GlStateManager.translate(MathHelper.sin(f1 * (float) Math.PI) * f2 * 0.5F, -Math.abs(MathHelper.cos(f1 * (float) Math.PI) * f2), 0.0F);
             GlStateManager.rotate(MathHelper.sin(f1 * (float) Math.PI) * f2 * 3.0F, 0.0F, 0.0F, 1.0F);
             GlStateManager.rotate(Math.abs(MathHelper.cos(f1 * (float) Math.PI - 0.2F) * f2) * 5.0F, 1.0F, 0.0F, 0.0F);

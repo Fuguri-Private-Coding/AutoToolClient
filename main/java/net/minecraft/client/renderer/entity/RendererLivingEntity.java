@@ -153,7 +153,6 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
         GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA);
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
         return true;
-
     }
 
     public static void unsetShaderBrightness() {

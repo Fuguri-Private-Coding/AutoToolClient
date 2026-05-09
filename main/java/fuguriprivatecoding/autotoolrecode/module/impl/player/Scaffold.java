@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
 import fuguriprivatecoding.autotoolrecode.event.events.render.DrawBlockHighlightEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
@@ -20,12 +19,10 @@ import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
-import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -97,8 +94,6 @@ public class Scaffold extends Module {
 
     private final FloatSetting edgeOffset = new FloatSetting("EdgeOffset", this, () -> normalVisible.getAsBoolean() && sneakIf.get("NinjaBridge"), -0.1f,0.1f,0.05f, 0.01f);
 
-    private final DoubleSlider cps = new DoubleSlider("CPS", this, 0, 80, 20, 1);
-
     private final CheckBox render = new CheckBox("Render", this, true);
     private final ColorSetting color = new ColorSetting("Color", this);
 
@@ -111,21 +106,11 @@ public class Scaffold extends Module {
 
     private ScaffoldType type = ScaffoldType.NONACTIVE;
 
-    private int clicks = 0, currentAirTicks = 0;
-
-    private final StopWatch clickTimer = new StopWatch();
-    private long clickDelay = 1L;
+    private int currentAirTicks = 0;
 
     @Override
     public void onDisable() {
         resetValues();
-    }
-
-    @Override
-    public void onEnable() {
-        if (mc.thePlayer.isUsingItem()) {
-            mc.thePlayer.clearItemInUse();
-        }
     }
 
     @Override
@@ -139,6 +124,8 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof LegitClickTimingEvent) {
+            if (mc.thePlayer.isUsingItem()) mc.thePlayer.clearItemInUse();
+
             int slot = ItemUtils.findBlockInHotBar();
 
             if (mc.thePlayer.inventory.currentItem != slot && slot != -1) {
@@ -146,10 +133,6 @@ public class Scaffold extends Module {
             }
 
             if (type == ScaffoldType.ACTIVE) click();
-        }
-
-        if (event instanceof RunGameLoopEvent) {
-            if (type == ScaffoldType.ACTIVE) updateClicks();
         }
 
         if (event instanceof DrawBlockHighlightEvent e) {
@@ -161,10 +144,10 @@ public class Scaffold extends Module {
 
             if (glow.isToggled()) {
                 BloomUtils.startWrite();
-                RenderUtils.drawBlockESP(targetBlock, glowColor.getFadedFloatColor());
+                RenderUtils.drawBlockESP(targetBlock, glowColor.getFadedColor());
                 BloomUtils.stopWrite();
             }
-            RenderUtils.drawBlockESP(targetBlock, color.getFadedFloatColor());
+            RenderUtils.drawBlockESP(targetBlock, color.getFadedColor());
 
             ColorUtils.resetColor();
             RenderUtils.stop3D();
@@ -188,7 +171,7 @@ public class Scaffold extends Module {
                     if (!isClutch() || sneakIfNinjaBridgeWithClutch.isToggled()) {
                         BlockPos pos = MoveUtils.getDirectionalBlockPos(edgeOffset.getValue(), 0.5f);
 
-                        if (mc.theWorld.isAirBlock(pos) && !shouldNinePitch()) {
+                        if (mc.theWorld.isAirBlock(pos) && !needUp()) {
                             e.setSneak(true);
                         }
                     }
@@ -219,9 +202,6 @@ public class Scaffold extends Module {
     private void click() {
         RayTrace hit = mc.rayTrace;
 
-        int iters = clicks;
-        clicks = 0;
-
         boolean oneClick = true;
 
         ItemStack heldStack = mc.thePlayer.getHeldItem();
@@ -232,16 +212,20 @@ public class Scaffold extends Module {
             }
         }
 
-        if (hit.typeOfHit == RayTrace.RayType.BLOCK
-            && (shouldNinePitch() || (isSameY(hit, sameY.isToggled()) && targetBlock.equals(hit.getBlockPos())))
-            && mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBlock && oneClick) {
+        if (!oneClick || heldStack == null)
+            return;
 
-            for (int i = 0; i < iters; i++) {
-                mc.rightClickMouse(false);
+        if (!(heldStack.getItem() instanceof ItemBlock))
+            return;
 
-                if (!removeSwing.get("On Client")) mc.thePlayer.swingItemNoPacket();
-                if (!removeSwing.get("On Server")) mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
-            }
+        if (hit.typeOfHit != RayTrace.RayType.BLOCK)
+            return;
+
+        if ((needUp() || (isSameY(hit, sameY.isToggled()) && targetBlock.equals(hit.getBlockPos())))) {
+            mc.rightClickMouse(false);
+
+            if (!removeSwing.get("On Client")) mc.thePlayer.swingItemNoPacket();
+            if (!removeSwing.get("On Server")) mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
         }
     }
 
@@ -274,7 +258,7 @@ public class Scaffold extends Module {
                 float rotPitch = getPitch(rotYaw, true);
 
                 rotation = new Rot(rotYaw, rotPitch);
-                RayTrace hit = RayCastUtils.rayCast(3f, 4.5f, rotation);
+                RayTrace hit = RayCastUtils.rayCast(3f, 6f, rotation);
 
                 if ((hit.typeOfHit != RayTrace.RayType.BLOCK || isClutch()) && clutch.isToggled()) {
                     rotation = getBestRotation(0, 0, false, 2);
@@ -282,13 +266,13 @@ public class Scaffold extends Module {
             }
         }
 
-        if (shouldNinePitch()) rotation.setPitch(90);
+        if (needUp()) rotation.setPitch(90);
 
         Rot delta = mc.thePlayer.getRotation().deltaTo(rotation);
         Rot speed = getDeltaSpeed();
 
-        delta = delta.limit(speed);
-        delta = delta.fix();
+        delta.limit(speed);
+        delta.fix();
 
         lastDelta = delta.copy();
 
@@ -309,18 +293,10 @@ public class Scaffold extends Module {
 
         float needYaw = strictYaw ? roundedYaw : yaw;
 
-        return !sprintMode.is("JumpSprint") && !sprintMode.is("NotFullyJumpSprint") ? mc.thePlayer.rotationYaw : needYaw;
+        return !sprintMode.is("JumpSprint") ? mc.thePlayer.rotationYaw : needYaw;
     }
 
-    private void updateClicks() {
-        if (clickTimer.reachedMS(clickDelay)) {
-            clicks++;
-            clickDelay = Math.round(1000f / cps.getRandomizedIntValue());
-            clickTimer.reset();
-        }
-    }
-
-    private boolean shouldNinePitch() {
+    private boolean needUp() {
         return !MoveUtils.isMoving() && mc.gameSettings.keyBindJump.isKeyDown()
             && mc.thePlayer.motionX == 0 && mc.thePlayer.motionZ == 0;
     }
@@ -338,15 +314,19 @@ public class Scaffold extends Module {
     }
 
     private boolean isTelly(boolean speedTelly, int airTicks) {
-        if (MoveUtils.isMoving()) {
-            if (mc.gameSettings.keyBindJump.isKeyDown()) {
-                int needAirTicks = (speedTelly ? 0 : airTicks);
-                return mc.thePlayer.onGround || Player.airTicks < needAirTicks;
-            } else if (flick.isToggled()) {
-                BlockPos pos = new BlockPos(mc.thePlayer.getPositionVector());
-                return !mc.theWorld.isAirBlock(pos.add(0.0, -0.1, 0.0));
-            }
+        if (!MoveUtils.isMoving())
+            return false;
+
+        if (mc.gameSettings.keyBindJump.isKeyDown()) {
+            int currentAirTicks = (speedTelly ? 0 : airTicks);
+            return mc.thePlayer.onGround || Player.airTicks < currentAirTicks;
         }
+
+        if (flick.isToggled()) {
+            BlockPos pos = new BlockPos(mc.thePlayer.getPositionVector());
+            return !mc.theWorld.isAirBlock(pos.add(0.0, -0.1, 0.0));
+        }
+
         return false;
     }
 
@@ -398,7 +378,7 @@ public class Scaffold extends Module {
         for (float pitch = minPitch; pitch <= maxPitch; pitch += step) {
             Rot rot = new Rot(yaw, pitch);
 
-            RayTrace hit = RayCastUtils.rayCast(4.5, 4.5f, rot);
+            RayTrace hit = RayCastUtils.rayCast(0f, 6f, rot);
 
             if (hit != null) {
                 RotData data = new RotData(rot, hit);
@@ -427,7 +407,7 @@ public class Scaffold extends Module {
 
             Rot rot = new Rot(yaw, pitch);
 
-            RayTrace hit = RayCastUtils.rayCast(4.5, 4.5f, rot);
+            RayTrace hit = RayCastUtils.rayCast(0, 6f, rot);
 
             if (hit != null) {
                 RotData data = new RotData(rot, hit);
@@ -450,14 +430,11 @@ public class Scaffold extends Module {
             return Math.hypot(yawDiff, pitchDiff) + sortDistance;
         }));
 
-        RotData rotData = validRotations.getFirst();
-
-        lastRotation = rotData.rotation();
-        return lastRotation;
+        return lastRotation = validRotations.getFirst().rotation();
     }
 
     private boolean isOverBlock(RayTrace hit, BlockPos targetBlock) {
-        return hit.typeOfHit == RayTrace.RayType.BLOCK && hit.hitVec.yCoord < mc.thePlayer.posY && hit.getBlockPos().equals(targetBlock) && hit.sideHit != EnumFacing.DOWN;
+        return hit.typeOfHit == RayTrace.RayType.BLOCK && hit.hitVec.yCoord <= mc.thePlayer.posY && hit.getBlockPos().equals(targetBlock) && hit.sideHit != EnumFacing.DOWN;
     }
 
     private void resetValues() {
@@ -466,8 +443,6 @@ public class Scaffold extends Module {
 
         targetBlock = null;
         lastDelta = Constants.ROT_ZERO;
-        clickDelay = 1L;
-        clickTimer.reset();
         type = ScaffoldType.NONACTIVE;
     }
 }

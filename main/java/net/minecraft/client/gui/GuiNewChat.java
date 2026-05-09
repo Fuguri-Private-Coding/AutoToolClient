@@ -2,7 +2,6 @@ package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
 
-import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 
@@ -79,7 +78,7 @@ public class GuiNewChat extends Gui {
 
                                 Glow glow = Modules.getModule(Glow.class);
 
-                                if (glow != null && glow.isToggled() && glow.module.get("Chat")) {
+                                if (glow != null && glow.isToggled() && glow.toGlow.get("Chat")) {
                                     BloomUtils.startWrite();
                                     RenderUtils.drawMixedRoundedRect(i2, j2 - 9, l + 4, 9, 0, glow.chatColor.getColor(), glow.chatColor.getFadeColor(), glow.chatColor.getSpeed());
                                     BloomUtils.stopWrite();

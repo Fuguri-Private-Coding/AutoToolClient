@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -348,9 +349,9 @@ public class RenderUtils implements Imports {
     }
 
     public static void renderPlayer(Entity target, Vec3 pos, float rotationYawHead, float partialTicks, Color color) {
-        ColorUtils.glColor(color);
+        RendererLivingEntity.setShaderBrightness(color);
         renderPlayer(target, pos, rotationYawHead, partialTicks);
-        ColorUtils.resetColor();
+        RendererLivingEntity.unsetShaderBrightness();
     }
 
     public static void renderPlayer(Entity target, Vec3 pos, float rotationYawHead, float partialTicks) {

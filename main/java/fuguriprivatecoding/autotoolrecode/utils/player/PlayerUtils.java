@@ -48,38 +48,6 @@ public class PlayerUtils implements Imports {
     public Block blockRelativeToPlayer(final double offsetX, final double offsetY, final double offsetZ) {
         return mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(offsetX, offsetY, offsetZ)).getBlock();
     }
-//
-//    public BlockPos getPossibleBlockPos() {
-//        BlockPos playerPos = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ);
-//        ArrayList<Vec3> positions = new ArrayList<>();
-//        HashMap<Vec3, BlockPos> hashMap = new HashMap<>();
-//
-//        for (float x = playerPos.getX() - 5; x <= playerPos.getX() + 5; ++x) {
-//            for (float y = playerPos.getY() - 3; y <= playerPos.getY(); ++y) {
-//                for (float z = playerPos.getZ() - 5; z <= playerPos.getZ() + 5; ++z) {
-//                    if (!PlayerUtils.isReplaceable(new BlockPos(x, y, z))) {
-//                        BlockPos blockPos = new BlockPos(x, y, z);
-//                        Block block = mc.theWorld.getBlockState(blockPos).getBlock();
-//                        double ex = MathHelper.clamp(mc.thePlayer.posX, blockPos.getX(), (double) blockPos.getX() + block.getBlockBoundsMaxX());
-//                        double ey = MathHelper.clamp(mc.thePlayer.posY, blockPos.getY(), (double) blockPos.getY() + block.getBlockBoundsMaxY());
-//                        double ez = MathHelper.clamp(mc.thePlayer.posZ, blockPos.getZ(), (double) blockPos.getZ() + block.getBlockBoundsMaxZ());
-//                        Vec3 vec3 = new Vec3(ex, ey, ez);
-//                        if (!BLACKLIST_MATERIAL.contains(block.getMaterial()) && !BLACKLIST_BLOCK.contains(block)) {
-//                            positions.add(vec3);
-//                            hashMap.put(vec3, blockPos);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (!positions.isEmpty()) {
-//            positions.sort(Comparator.comparingDouble(pos -> mc.thePlayer.getDistanceSq(pos.xCoord, pos.yCoord, pos.zCoord)));
-//            return hashMap.get(positions.getFirst());
-//        }
-//
-//        return null;
-//    }
 
     public BlockPos getPossibleBlockPos() {
         final double playerX = mc.thePlayer.posX;
@@ -125,6 +93,7 @@ public class PlayerUtils implements Imports {
 
         return bestPos;
     }
+
 
     public int teleport(int ticks, int additionalTicks) {
         int balance = 0;

@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
+import de.florianmichael.viamcp.fixes.AttackOrder;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
@@ -50,7 +51,7 @@ public class AntiFireball extends Module {
         }
 
         if (event instanceof LegitClickTimingEvent && target != null && stopWatch.reachedMS(delay.getValue())) {
-            mc.playerController.attackEntity(mc.thePlayer, target);
+            AttackOrder.sendFixedAttack(mc.thePlayer, target);
             stopWatch.reset();
         }
     }

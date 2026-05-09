@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.rotation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
