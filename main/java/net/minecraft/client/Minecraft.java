@@ -1483,6 +1483,16 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 --this.leftClickCounter;
             }
 
+            if (this.gameSettings.keyBindTogglePerspective.isPressed()) {
+                ++this.gameSettings.thirdPersonView;
+
+                if (this.gameSettings.thirdPersonView > 2) {
+                    this.gameSettings.thirdPersonView = 0;
+                }
+
+                this.renderGlobal.setDisplayListEntitiesDirty();
+            }
+
             this.mcProfiler.endStartSection("keyboard");
 
             while (Keyboard.next()) {
@@ -1585,16 +1595,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                         }
                     }
                 }
-            }
-
-            if (this.gameSettings.keyBindTogglePerspective.isPressed()) {
-                ++this.gameSettings.thirdPersonView;
-
-                if (this.gameSettings.thirdPersonView > 2) {
-                    this.gameSettings.thirdPersonView = 0;
-                }
-
-                this.renderGlobal.setDisplayListEntitiesDirty();
             }
 
             for (int l = 0; l < 9; ++l) {
