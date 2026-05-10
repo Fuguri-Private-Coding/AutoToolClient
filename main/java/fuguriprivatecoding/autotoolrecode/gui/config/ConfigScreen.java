@@ -11,6 +11,8 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -151,7 +153,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
             BlurUtils.stopWrite();
         }
 
-        RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Colors.BLACK.withAlphaClamp(clickGui.backgroundAlpha.getValue() / 255f));
 
         ScissorUtils.enableScissor();
         ScissorUtils.scissor(sc, background.x, background.y - 1, sizeBackground.x + 2, sizeBackground.y);
@@ -177,8 +179,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
         final float buttonWidth = 50;
         final float buttonHeight = 15;
         final float buttonSpacing = 20;
-        final float borderRadius = clientSettings.backgroundRadius.getValue() * 1.7f;
-        final int borderColor = Color.BLACK.getRGB();
+        final float borderRadius = clientSettings.backgroundRadius.getValue();
         final Color textColor = Color.WHITE;
         final float textOffset = 3 + 2;
         final float centerX = buttonX + buttonWidth / 2f;
@@ -187,7 +188,11 @@ public class ConfigScreen extends GuiScreen implements EventListener {
 
         for (int i = 0; i < buttonLabels.length; i++) {
             float buttonY = startY + i * buttonSpacing;
-            RenderUtils.drawRoundedOutLineRectangle(buttonX, buttonY, buttonWidth, buttonHeight, borderRadius, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(), borderColor, borderColor);
+            boolean hovered = GuiUtils.isHovered(mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight);
+
+            Color color = hovered ? Colors.BLACK.withAlphaClamp(0.7f * (clickGui.backgroundAlpha.getValue() / 255f)) : Colors.BLACK.withAlphaClamp(0.5f * (clickGui.backgroundAlpha.getValue() / 255f));
+
+            RoundedUtils.drawRect(buttonX, buttonY, buttonWidth, buttonHeight, borderRadius, color);
             font.drawCenteredString(buttonLabels[i], centerX, buttonY + textOffset, textColor);
         }
 
@@ -198,8 +203,23 @@ public class ConfigScreen extends GuiScreen implements EventListener {
         float yOffset = scrolls.y;
         totalHeight = 0;
         for (Config config : Configs.getConfigs()) {
-            Color selectedColor = selectedConfig != null ? selectedConfig == config ? new Color(50,50,50,150) : new Color(0,0,0,150) : new Color(0,0,0,150);
-            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clientSettings.backgroundRadius.getValue(), selectedColor);
+            Color defaultColor = Colors.BLACK.withAlphaClamp(0.5f);
+
+            if (selectedConfig != null && selectedConfig == config) {
+                defaultColor = Colors.DARK_GRAY.withAlphaClamp(0.5f);
+            }
+
+            boolean hovered = GuiUtils.isHovered(mouseX, mouseY, background.x + 5 + offset, background.y + 20 + yOffset, 100, 30);
+
+            if (hovered) {
+                if (selectedConfig != null && selectedConfig == config) {
+                    defaultColor = defaultColor.darker();
+                } else {
+                    defaultColor = Colors.BLACK.withAlphaClamp(0.7f);
+                }
+            }
+
+            RoundedUtils.drawRect(background.x + 5 + offset, background.y + 20 + yOffset, 100, 30, clientSettings.backgroundRadius.getValue(), defaultColor);
             font.drawString(config.getName(), background.x + 10 + offset, background.y + 30 + 2 + yOffset, Color.WHITE);
             offset += 105;
 

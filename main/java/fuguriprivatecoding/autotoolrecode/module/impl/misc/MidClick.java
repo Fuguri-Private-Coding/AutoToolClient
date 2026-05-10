@@ -25,7 +25,7 @@ public class MidClick extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof TickEvent) {
+        if (event instanceof TickEvent && mc.currentScreen == null) {
             if (Mouse.isButtonDown(2)) {
                 if (!down) {
                     down = true;

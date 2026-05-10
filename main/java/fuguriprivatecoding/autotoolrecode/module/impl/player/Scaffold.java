@@ -255,7 +255,7 @@ public class Scaffold extends Module {
 
             case "Normal" -> {
                 float rotYaw = MathHelper.wrapDegree(needYaw + 180 + offset);
-                float rotPitch = getPitch(rotYaw, true);
+                float rotPitch = needUp() ? 90 : getPitch(rotYaw, true);
 
                 rotation = new Rot(rotYaw, rotPitch);
                 RayTrace hit = RayCastUtils.rayCast(3f, 6f, rotation);
@@ -265,8 +265,6 @@ public class Scaffold extends Module {
                 }
             }
         }
-
-        if (needUp()) rotation.setPitch(90);
 
         Rot delta = mc.thePlayer.getRotation().deltaTo(rotation);
         Rot speed = getDeltaSpeed();

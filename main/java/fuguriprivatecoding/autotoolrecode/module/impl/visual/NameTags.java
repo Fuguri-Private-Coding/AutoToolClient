@@ -120,6 +120,7 @@ public class NameTags extends Module {
         if (background.isToggled()) {
             Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glow ? glowColor.getFadedColor().getRGB() : backgroundColor.getFadedColor().getRGB());
         }
+
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
         mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());

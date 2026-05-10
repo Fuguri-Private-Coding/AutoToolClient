@@ -5,6 +5,7 @@ import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
@@ -63,8 +64,20 @@ public class ViaVersionScreen extends GuiScreen {
         float offset = scrolls.y;
         scrollTotalHeight = 0;
         for (ProtocolVersion protocol : ViaLoadingBase.PROTOCOLS.reversed()) {
-            Color hoveredColor = ViaLoadingBase.getInstance().getTargetVersion() == protocol ? new Color(0.2f, 0.2f, 0.2f, 0.5f) : Colors.BLACK.withAlpha(0.5f);
-            RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 195, 35 + offset, 390, 20, 10, hoveredColor);
+            Color defaultColor = Colors.BLACK.withAlphaClamp(0.3f);
+
+            boolean selected = ViaLoadingBase.getInstance().getTargetVersion() == protocol;
+            boolean hovered = GuiUtils.isHovered(mouseX, mouseY, sc.getScaledWidth() / 2f - 195, 35 + offset, 390, 20);
+
+            if (selected) {
+                defaultColor = Colors.BLACK.withAlpha(0.5f);
+            }
+
+            if (hovered) {
+                defaultColor = Colors.BLACK.withAlpha(0.5f);
+            }
+
+            RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 195, 35 + offset, 390, 20, 10, defaultColor);
             font.draw(protocol.getName(), sc.getScaledWidth() / 2f - font.width(protocol.getName(), 8) / 2f, 30f + 11.5f + 2 + offset, 8, ViaLoadingBase.getInstance().getTargetVersion() == protocol ? Color.green : Color.WHITE);
             offset += 25;
             scrollTotalHeight += 25;

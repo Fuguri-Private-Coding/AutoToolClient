@@ -42,7 +42,6 @@ public class Modules {
             new CPSBooster(),
 			new Trajectory(),
             new FastBreak(),
-            new EntityColor(),
             new Test2(),
 			new Regen(),
 			new Reach(),

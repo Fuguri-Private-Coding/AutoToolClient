@@ -217,9 +217,9 @@ public class ClickScreen extends GuiScreen implements EventListener {
 			BlurUtils.stopWrite();
 		}
 
-		RenderUtils.drawRoundedOutLineRectangle(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue() * 1.7f, new Color(0,0,0, clickGui.backgroundAlpha.getValue()).getRGB(),Color.BLACK.getRGB(),Color.BLACK.getRGB());
+        RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), Colors.BLACK.withAlphaClamp(clickGui.backgroundAlpha.getValue() / 255f));
 
-		ScissorUtils.enableScissor();
+        ScissorUtils.enableScissor();
 		ScissorUtils.scissor(sc, background.x, background.y - 1, sizeBackground.x + 2, sizeBackground.y);
 
 		RoundedUtils.drawRect(background.x, background.y, sizeBackground.x, 15, 0,clientSettings.backgroundRadius.getValue() / 1.25f,clientSettings.backgroundRadius.getValue() / 1.25f,0, Color.BLACK);
@@ -784,7 +784,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 				float optionY = categoryYPositions[i];
 				categoryClicks[i] = mouseX > textX && mouseX < textX + optionWidth && mouseY > optionY && mouseY < optionY + fontRenderer.FONT_HEIGHT;
 			}
-			RenderUtils.drawRoundedOutLineRectangle(menuX, menuY, textWidth, 43, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR.getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
+            RoundedUtils.drawRect(menuX, menuY, textWidth, 43, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR);
 			for (int i = 0; i < 4; i++) fontRenderer.drawString(categoryOptions[i], textX, categoryYPositions[i] + textOffset, categoryClicks[i] ? MAIN_COLOR : Color.WHITE);
 		}
 
@@ -804,7 +804,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 				float optionY = moduleYPositions[i];
 				moduleClicks[i] = mouseX > textX && mouseX < textX + optionWidth && mouseY > optionY && mouseY < optionY + fontRenderer.FONT_HEIGHT;
 			}
-			RenderUtils.drawRoundedOutLineRectangle(menuX, menuY, textWidth, 33, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR.getRGB(), Color.BLACK.getRGB(), Color.BLACK.getRGB());
+            RoundedUtils.drawRect(menuX, menuY, textWidth, 33, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR);
 			for (int i = 0; i < 3; i++) fontRenderer.drawString(moduleOptions[i], textX, moduleYPositions[i] + textOffset, moduleClicks[i] ? MAIN_COLOR : Color.WHITE);
 		}
 
@@ -843,8 +843,8 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 		guis.setEnd(sidePanel ? 25 : 0);
 
-		RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.getValue(), 50, 2, 0, Color.BLACK.getRGB(), Color.black.getRGB(), Color.BLACK.getRGB());
-		RenderUtils.drawRoundedOutLineRectangle(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue() * 2.5f, BACKGROUND_COLOR.getRGB(), Color.black.getRGB(),Color.black.getRGB());
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.getValue(), 50, 2, 0, Color.BLACK);
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue(), BACKGROUND_COLOR);
 
 		boolean console = mouseX > sc.getScaledWidth() / 2f - 50 + 10 && mouseX < sc.getScaledWidth() / 2f - 50 + 10 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;
 		boolean config = mouseX > sc.getScaledWidth() / 2f - 50 + 75 && mouseX < sc.getScaledWidth() / 2f - 50 + 75 + 15 && mouseY > sc.getScaledHeight() - guis.getValue() && mouseY < sc.getScaledHeight() - guis.getValue() + 18;

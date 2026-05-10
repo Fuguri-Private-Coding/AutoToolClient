@@ -29,14 +29,17 @@ public class ColorUtils {
     }
 
     public static Color mix(int c1, int c2, double size, double max) {
-        Color col1 = new Color(c1);
-        Color col2 = new Color(c2);
-        int diffR = (int) Math.clamp(((double)col1.getRed() - (double)(col1.getRed() - col2.getRed()) / max * size), 0, 255);
-        int diffG = (int) Math.clamp(((double)col1.getGreen() - (double)(col1.getGreen() - col2.getGreen()) / max * size), 0, 255);
-        int diffB = (int) Math.clamp(((double)col1.getBlue() - (double)(col1.getBlue() - col2.getBlue()) / max * size), 0, 255);
-        int diffA = (int) Math.clamp(((double)col1.getAlpha() - (double)(col1.getAlpha() - col2.getAlpha()) / max * size), 0, 255);
+        Color start = new Color(c1);
+        Color end = new Color(c2);
 
-        return (new Color(diffR, diffG, diffB, diffA));
+        float progress = (float) (size / max);
+
+        int r = (int) Math.clamp(start.getRed() + (end.getRed() - start.getRed()) * progress, 0, 255);
+        int g = (int) Math.clamp(start.getGreen() + (end.getGreen() - start.getGreen()) * progress, 0, 255);
+        int b = (int) Math.clamp(start.getBlue() + (end.getBlue() - start.getBlue()) * progress, 0, 255);
+        int a = (int) Math.clamp(start.getAlpha() + (end.getAlpha() - start.getAlpha()) * progress, 0, 255);
+
+        return new Color(r, g, b, a);
     }
 
     public Color mixColor(final Color color1, final Color color2, final int i, final double offset, final double speed) {
