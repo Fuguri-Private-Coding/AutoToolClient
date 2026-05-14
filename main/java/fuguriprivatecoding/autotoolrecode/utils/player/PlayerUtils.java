@@ -1,7 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.utils.player;
 
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
-import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import lombok.experimental.UtilityClass;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import net.minecraft.block.*;
@@ -91,6 +89,17 @@ public class PlayerUtils implements Imports {
         }
 
         return bestPos;
+    }
+
+    private boolean isValidBlock(BlockPos pos) {
+        if (PlayerUtils.isReplaceable(pos)) {
+            return false;
+        }
+
+        Block block = mc.theWorld.getBlockState(pos).getBlock();
+
+        return !BLACKLIST_MATERIAL.contains(block.getMaterial())
+            && !BLACKLIST_BLOCK.contains(block);
     }
 
     public int teleport(int ticks, int additionalTicks) {

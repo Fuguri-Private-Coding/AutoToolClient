@@ -43,13 +43,15 @@ public class AutoSoup extends Module {
     private boolean switchBack;
     private int lastSoupSlot;
 
+    boolean needDrop = false;
+
     @Override
     public void onEvent(Event event) {
         if (mc.currentScreen == null) {
             if (event instanceof LegitClickTimingEvent) {
                 if (soupTimer.reachedMS(soupSwitchTime * 50L)) {
                     if (switchBack) {
-                        mc.thePlayer.inventory.currentItem = lastSoupSlot;
+                        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
 
                         switchBack = false;
                         soupSwitchTime = switchDelay.getRandomizedIntValue();
@@ -63,8 +65,6 @@ public class AutoSoup extends Module {
                     int soupSlot = getSoupSlot();
 
                     if (soupSlot != -1 && mc.thePlayer.getHealth() < health.getRandomizedIntValue()) {
-                        lastSoupSlot = mc.thePlayer.inventory.currentItem;
-
                         mc.thePlayer.inventory.currentItem = soupSlot;
 
                         if (useTimer.reachedMS(soupUseTime * 50L)) {
@@ -97,9 +97,12 @@ public class AutoSoup extends Module {
 
                                     if (hotbarStack == null) {
                                         mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 0, 1, mc.thePlayer);
-                                        refillTime = refillDelay.getRandomizedIntValue();
-                                        refillTimer.reset();
-                                        return;
+
+                                        if (refillDelay.getRandomizedIntValue() != 0) {
+                                            refillTime = refillDelay.getRandomizedIntValue();
+                                            refillTimer.reset();
+                                            return;
+                                        }
                                     }
                                 }
                             } else if (stack.getItem() == Items.bowl) {

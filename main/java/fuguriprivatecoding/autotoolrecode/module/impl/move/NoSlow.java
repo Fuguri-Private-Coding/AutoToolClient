@@ -59,18 +59,18 @@ public class NoSlow extends Module {
 
                 if (event instanceof SlowDownEvent e) {
                     if (isUsingSword() && itemToSlow.get("Sword")) {
-                        e.setForward(forwardSwordSlow.getValue());
-                        e.setStrafe(strafeSwordSlow.getValue());
+                        e.setForward(1f);
+                        e.setStrafe(1f);
                     }
 
                     if (isUsingConsumable() && itemToSlow.get("Consumable")) {
-                        e.setForward(forwardConsumableSlow.getValue());
-                        e.setStrafe(strafeConsumableSlow.getValue());
+                        e.setForward(1f);
+                        e.setStrafe(1f);
                     }
 
                     if (isUsingBow() && itemToSlow.get("Bow")) {
-                        e.setForward(forwardBowSlow.getValue());
-                        e.setStrafe(strafeBowSlow.getValue());
+                        e.setForward(1f);
+                        e.setStrafe(1f);
                     }
                 }
             }

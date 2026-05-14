@@ -36,9 +36,4 @@ public class ClientSpoofer extends Module {
         }
         return "";
     }
-
-    @Override
-    public String getSuffix() {
-        return brand.getMode();
-    }
 }

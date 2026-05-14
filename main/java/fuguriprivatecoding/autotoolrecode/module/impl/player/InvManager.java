@@ -18,6 +18,7 @@ import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.network.play.client.C16PacketClientStatus;
 import net.minecraft.network.play.server.S2DPacketOpenWindow;
 import java.util.*;
+import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "InvManager", category = Category.PLAYER, description = "Автоматически сортирует ваш инвентарь и выкидывает мусор.")
 public class InvManager extends Module {
@@ -29,14 +30,18 @@ public class InvManager extends Module {
 
     private final DoubleSlider startDelay = new DoubleSlider("StartDelay", this, 0, 10, 0, 1f);
 
-    private final CheckBox autoArmor = new CheckBox("AutoArmor", this);
-    private final DoubleSlider armorDelay = new DoubleSlider("ArmorDelay", this, autoArmor::isToggled, 0, 10, 0, 1f);
+    private final CheckBox instant = new CheckBox("Instant", this, false);
 
-    private final CheckBox sortItems = new CheckBox("SortItems", this);
-    private final DoubleSlider sortDelay = new DoubleSlider("SortDelay", this, sortItems::isToggled, 0, 10, 0, 1f);
+    BooleanSupplier notInstant = () -> !instant.isToggled();
 
-    private final CheckBox dropItems = new CheckBox("DropItems", this);
-    private final DoubleSlider dropDelay = new DoubleSlider("DropDelay", this, dropItems::isToggled, 0, 10, 0, 1f);
+    private final CheckBox autoArmor = new CheckBox("AutoArmor", this, notInstant);
+    private final DoubleSlider armorDelay = new DoubleSlider("ArmorDelay", this, () -> autoArmor.isToggled() && notInstant.getAsBoolean(), 0, 10, 0, 1f);
+
+    private final CheckBox sortItems = new CheckBox("SortItems", this, notInstant);
+    private final DoubleSlider sortDelay = new DoubleSlider("SortDelay", this, () -> sortItems.isToggled() && notInstant.getAsBoolean(), 0, 10, 0, 1f);
+
+    private final CheckBox dropItems = new CheckBox("DropItems", this, notInstant);
+    private final DoubleSlider dropDelay = new DoubleSlider("DropDelay", this, () -> dropItems.isToggled() && notInstant.getAsBoolean(), 0, 10, 0, 1f);
 
     private final int[] bestArmorPieces = new int[4];
     private final int[] bestToolSlots = new int[3];
@@ -119,13 +124,17 @@ public class InvManager extends Module {
 
                     boolean busy = false;
 
-                    if (armorReady && this.equipArmor()) {
+                    if (armorReady && this.equipArmor(instant.isToggled())) {
                         busy = true;
                         resetTimings();
-                    } else if (dropReady && this.dropItem(this.trash)) {
+                    }
+
+                    if (dropReady && this.dropItem(this.trash, instant.isToggled())) {
                         busy = true;
                         resetTimings();
-                    } else if (sortReady && this.sortItems()) {
+                    }
+
+                    if (sortReady && this.sortItems(instant.isToggled())) {
                         busy = true;
                         resetTimings();
                     }
@@ -149,11 +158,17 @@ public class InvManager extends Module {
         }
     }
 
-    private boolean dropItem(final List<Integer> listOfSlots) {
+    private boolean dropItem(final List<Integer> listOfSlots, boolean instant) {
         if (this.dropItems.isToggled()) {
             if (!listOfSlots.isEmpty()) {
-                int slot = listOfSlots.removeFirst();
-                windowClick(slot, 1, 4);
+                if (instant) {
+                    for (Integer slot : listOfSlots) {
+                        windowClick(slot, 1, 4);
+                    }
+                } else {
+                    int slot = listOfSlots.removeFirst();
+                    windowClick(slot, 1, 4);
+                }
                 return true;
             }
         }
@@ -241,13 +256,13 @@ public class InvManager extends Module {
         sortWait = sortDelay.getRandomizedIntValue() * 50;
     }
 
-    private boolean sortItems() {
+    private boolean sortItems(boolean instant) {
         if (this.sortItems.isToggled()) {
             if (this.bestSwordSlot != -1) {
                 if (this.bestSwordSlot != 36) {
                     this.putItemInSlot(36, this.bestSwordSlot);
                     this.bestSwordSlot = 36;
-                    return true;
+                    if (!instant) return true;
                 }
             }
 
@@ -255,7 +270,7 @@ public class InvManager extends Module {
                 if (this.bestBowSlot != 38) {
                     this.putItemInSlot(38, this.bestBowSlot);
                     this.bestBowSlot = 38;
-                    return true;
+                    if (!instant) return true;
                 }
             }
 
@@ -267,7 +282,7 @@ public class InvManager extends Module {
                 if (bestGappleSlot != 37) {
                     this.putItemInSlot(37, bestGappleSlot);
                     this.gappleStackSlots.set(0, 37);
-                    return true;
+                    if (!instant) return true;
                 }
             }
 
@@ -279,7 +294,7 @@ public class InvManager extends Module {
                 if (blockSlot != 42) {
                     this.putItemInSlot(42, blockSlot);
                     this.blockSlot.set(0, 42);
-                    return true;
+                    if (!instant) return true;
                 }
             }
 
@@ -292,7 +307,7 @@ public class InvManager extends Module {
                     if (type != -1) {
                         if (toolSlot != toolSlots[type]) {
                             this.putToolsInSlot(type, toolSlots);
-                            return true;
+                            if (!instant) return true;
                         }
                     }
                 }
@@ -301,7 +316,7 @@ public class InvManager extends Module {
         return false;
     }
 
-    private boolean equipArmor() {
+    private boolean equipArmor(boolean instant) {
         if (this.autoArmor.isToggled()) {
             for (int i = 0; i < this.bestArmorPieces.length; i++) {
                 final int piece = this.bestArmorPieces[i];
@@ -314,9 +329,10 @@ public class InvManager extends Module {
 
                     windowClick(piece, 0, 1);
 
-                    return true;
+                    if (!instant) return true;
                 }
             }
+            return true;
         }
         return false;
     }

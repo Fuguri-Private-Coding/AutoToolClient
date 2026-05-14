@@ -302,7 +302,7 @@ public class DynamicIsland extends Module {
             currentRun = lastRun;
         }
 
-        if (!width.isAnimating() && !height.isAnimating()) {
+        if (width.getProgress() > 0.8 && height.getProgress() > 0.8) {
             if (textAlpha.getValue() == 0f) {
                 currentRun = lastRun;
             }

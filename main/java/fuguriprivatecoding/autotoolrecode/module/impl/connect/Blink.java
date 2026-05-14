@@ -96,9 +96,4 @@ public class Blink extends Module {
         positions.clear();
         timer.reset();
     }
-
-    @Override
-    public String getSuffix() {
-        return String.valueOf(buffer.size());
-    }
 }

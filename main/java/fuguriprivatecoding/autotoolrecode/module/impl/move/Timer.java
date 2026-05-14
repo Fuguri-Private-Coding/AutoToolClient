@@ -22,9 +22,4 @@ public class Timer extends Module {
             mc.timer.timerSpeed = timerSpeed.getValue();
 		}
 	}
-
-	@Override
-	public String getSuffix() {
-		return String.valueOf(timerSpeed.getValue());
-	}
 }

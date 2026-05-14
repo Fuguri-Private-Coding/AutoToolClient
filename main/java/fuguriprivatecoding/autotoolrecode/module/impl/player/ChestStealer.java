@@ -80,7 +80,7 @@ public class ChestStealer extends Module {
 
                 final ContainerChest container = (ContainerChest) mc.thePlayer.openContainer;
 
-                opened = true;
+                if (!opened) opened = true;
 
                 slots = getSlots(container);
 
@@ -138,8 +138,11 @@ public class ChestStealer extends Module {
             } else {
                 startDelayTick = startDelay.getRandomizedIntValue();
                 startDelayStopWatch.reset();
-                mouse.reset();
-                opened = false;
+
+                if (opened) {
+                    mouse.reset();
+                    opened = false;
+                }
             }
         }
 

@@ -118,8 +118,10 @@ public class ArrayList extends Module {
     }
 
     private void drawLine(float xOffset, float yOffset, Module module, List<Module> moduleList, ScaledResolution sc, boolean left, int size, float alpha, boolean glow, boolean blur) {
-        float textWidth = font.width(module.getName(), size);
-        float textHeight = font.height(module.getName(), size) + verticalSpacing.getValue();
+        String name = module.getName();
+
+        float textWidth = font.width(name, size);
+        float textHeight = font.height(name, size) + verticalSpacing.getValue();
 
         float textX = left ? xOffset :
             sc.getScaledWidth() - xOffset - textWidth;
@@ -144,7 +146,7 @@ public class ArrayList extends Module {
             Gui.drawRect(bgX, yOffset, bgX + bgWidth, yOffset + textHeight, color.getRGB());
         }
 
-        if (!blur && !glow) font.draw(module.getName(), textX, textY, size, 0, 0, textColor);
+        if (!blur && !glow) font.draw(name, textX, textY, size, 0, 0, textColor);
     }
 
     private void sort(final List<Module> list, float scale) {

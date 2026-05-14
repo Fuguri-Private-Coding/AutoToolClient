@@ -76,9 +76,4 @@ public class MoreKB extends Module {
     private boolean hasKnockBackEnchantment(ItemStack itemStack) {
         return itemStack != null && itemStack.getItem() != null && EnchantmentHelper.getEnchantments(itemStack).containsKey(Enchantment.knockback.effectId);
     }
-
-    @Override
-    public String getSuffix() {
-        return String.valueOf(mode.getMode());
-    }
 }

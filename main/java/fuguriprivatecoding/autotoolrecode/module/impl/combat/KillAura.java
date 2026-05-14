@@ -3,14 +3,12 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
-import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.math.FastNoiseLite;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -147,11 +145,6 @@ public class KillAura extends Module {
         if (Modules.getModule(Scaffold.class).isToggled()) return;
 
         if (target != null) {
-            if (event instanceof Render2DEvent && smoothModes.get("Basic")) {
-                animX.update((float) RandomUtils.nextGaussian(0.2f, 2f), Easing.OUT_BACK);
-                animY.update((float) RandomUtils.nextGaussian(0.2f, 2f), Easing.OUT_BACK);
-            }
-
             if (event instanceof RunGameLoopEvent && needClicking(target)) {
                 if (clickTimer.reachedMS(delay)) {
                     this.delay = getDelay();
@@ -181,9 +174,6 @@ public class KillAura extends Module {
             }
         }
     }
-
-    EasingAnimation animX = new EasingAnimation();
-    EasingAnimation animY = new EasingAnimation();
 
     private Rot getRotation(EntityLivingBase target, AxisAlignedBB box) {
         boolean teleport = (TimerRange.needSnap()) && snapForTeleport.isToggled();

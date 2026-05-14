@@ -13,11 +13,11 @@ public class Event {
     }
 
     public void call(boolean onlyInWorld) {
+        setCanceled(false);
         Events.call(this, onlyInWorld);
     }
 
     public void call() {
-        setCanceled(false);
         call(true);
     }
 }

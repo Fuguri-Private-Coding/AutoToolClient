@@ -75,14 +75,27 @@ public class RotUtils implements Imports {
 
 		List<Rot> rotations = Arrays.stream(points).map(RotUtils::getRotationToPoint).toList();
 
-		double minYaw = rotations.stream().mapToDouble(Rot::getYaw).min().orElse(0D);
-		double maxYaw = rotations.stream().mapToDouble(Rot::getYaw).max().orElse(0D);
+		double minYaw = rotations.stream().mapToDouble(rot -> MathHelper.wrapDegree(rot.getYaw())).min().orElse(0D);
+		double maxYaw = rotations.stream().mapToDouble(rot -> MathHelper.wrapDegree(rot.getYaw())).max().orElse(0D);
 		double minPitch = rotations.stream().mapToDouble(Rot::getPitch).min().orElse(0D);
 		double maxPitch = rotations.stream().mapToDouble(Rot::getPitch).max().orElse(0D);
 
-		return new Rot(Math.clamp(MathHelper.wrapDegree(current.getYaw()), (float) minYaw, (float) maxYaw),
-			Math.clamp(current.getPitch(), (float) minPitch, (float) maxPitch));
+        float yaw = (float) Math.clamp(MathHelper.wrapDegree(current.getYaw()), minYaw, maxYaw);
+        float pitch = (float) Math.clamp(current.getPitch(), minPitch, maxPitch);
+
+        current.setYaw(yaw);
+        current.setPitch(pitch);
+
+		return current;
 	}
+
+    public static Vec3 getNearestPoint(Vec3 current, AxisAlignedBB bb) {
+        double x = Math.clamp(current.xCoord, bb.minX, bb.maxX);
+        double y = Math.clamp(current.yCoord, bb.minY, bb.maxY);
+        double z = Math.clamp(current.zCoord, bb.minZ, bb.maxZ);
+
+        return new Vec3(x, y, z);
+    }
 
     public static Vec3[] getPoints(AxisAlignedBB bb) {
         return new Vec3[] {

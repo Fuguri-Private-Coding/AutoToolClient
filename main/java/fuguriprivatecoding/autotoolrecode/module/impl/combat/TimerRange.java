@@ -17,7 +17,6 @@ import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
-import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
@@ -40,8 +39,6 @@ public class TimerRange extends Module {
     public static boolean teleporting = false, click = false;
     public static int balance = 0;
     int teleportTicks;
-
-    Vec3 pos = Constants.VEC3_ZERO;
 
     @Override
     public void onEvent(Event event) {
@@ -72,11 +69,12 @@ public class TimerRange extends Module {
             teleportTicks = 0;
 
             if ((!Ping.isWorking() && onlyWhenPing.isToggled())
-                || target.hurtTime > maxTargetHurtTime.getValue()
+                || target.hurtTime > maxTargetHurtTime.getValue() ||
+                DistanceUtils.getDistance(target) <= 3.0D
             ) return;
 
+            AxisAlignedBB targetBox = getRealBB(target, target.getNPosition(), target.getPositionVector()).expand(-0.1D);
             for (int i = 0; i < maxTicks.getValue(); i++) {
-                AxisAlignedBB targetBox = getRealBB(target, target.getNPosition(), target.getPositionVector()).expand(-0.1D);
                 boolean skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), targetBox) > 3.0D;
 
                 if (skip) {

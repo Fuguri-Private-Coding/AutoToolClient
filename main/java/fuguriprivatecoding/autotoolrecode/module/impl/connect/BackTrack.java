@@ -248,9 +248,4 @@ public class BackTrack extends Module {
     public static boolean needCancel(EntityLivingBase target) {
         return working && Modules.getModule(BackTrack.class).cancelHitsIfNeed.isToggled() && DistanceUtils.getDistance(target.getNPosition()) > 6;
     }
-
-    @Override
-    public String getSuffix() {
-        return currentDelay + " ms";
-    }
 }

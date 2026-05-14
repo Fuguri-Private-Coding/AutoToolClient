@@ -84,9 +84,4 @@ public class Speed extends Module {
             currentSpeedMode.handleEvent(event, this);
         }
     }
-
-    @Override
-    public String getSuffix() {
-        return mode.getMode();
-    }
 }
