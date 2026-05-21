@@ -4,29 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Friends {
-    static List<String> friendsNames = new ArrayList<>();
-
-    public Friends() {
-        friendsNames = new ArrayList<>();
-    }
-
-    public List<String> getFriendNames() {
-        return friendsNames;
-    }
+    private static final List<String> FRIENDS_NAMES = new ArrayList<>();
 
     public static void onClick(String name) {
-        if (friendsNames.contains(name)) {
-            friendsNames.remove(name);
-        } else {
-            friendsNames.add(name);
+        if (FRIENDS_NAMES.contains(name)) {
+            FRIENDS_NAMES.remove(name);
+            return;
         }
+
+        FRIENDS_NAMES.add(name);
     }
 
     public static boolean isFriend(String name, boolean reverseFriends) {
-        if (friendsNames.contains(name)) {
-            return !reverseFriends;
-        } else {
-            return reverseFriends;
-        }
+        return FRIENDS_NAMES.contains(name) != reverseFriends;
     }
 }

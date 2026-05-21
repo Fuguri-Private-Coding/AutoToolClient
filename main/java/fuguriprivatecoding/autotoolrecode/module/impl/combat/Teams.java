@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import lombok.Getter;
 import net.minecraft.entity.Entity;
@@ -21,31 +22,20 @@ public class Teams extends Module {
         .setMode("Color")
         ;
 
-    @Getter
-    List<EntityPlayer> teamList = new CopyOnWriteArrayList<>();
+    public static boolean isTeammate(EntityPlayer entity) {
+        Teams teams = Modules.getModule(Teams.class);
 
-    @Override
-    public void onDisable() {
-        if (!teamList.isEmpty()) teamList.clear();
-    }
+        if (!teams.isToggled())
+            return false;
 
-    @Override
-    public void onEvent(Event event) {
-        if (event instanceof TickEvent) {
-            teamList.clear();
-            for (Entity entity : mc.theWorld.playerEntities) {
-                if (isTeammate(entity) && entity instanceof EntityPlayer entityPlayer) {
-                    teamList.add(entityPlayer);
-                }
-            }
-        }
-    }
-
-    private boolean isTeammate(Entity entity) {
         ScorePlayerTeam entityTeam = mc.theWorld.getScoreboard().getPlayersTeam(entity.getName());
         ScorePlayerTeam myTeam = mc.theWorld.getScoreboard().getPlayersTeam(mc.thePlayer.getName());
-        return entity instanceof EntityPlayer && (entityTeam != null && myTeam != null &&
-            entityTeam.getColorPrefix().equals(myTeam.getColorPrefix()) && teamMode.is("Color") ||
-            entityTeam != null && myTeam != null && entityTeam.getTeamName().equals(myTeam.getTeamName()) && teamMode.is("Name"));
+
+        if (entityTeam == null || myTeam == null) {
+            return false;
+        }
+
+        return (teams.teamMode.is("Color") && entityTeam.getColorPrefix().equals(myTeam.getColorPrefix()))
+            || (teams.teamMode.is("Name") && entityTeam.getTeamName().equals(myTeam.getTeamName()));
     }
 }

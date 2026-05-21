@@ -376,7 +376,7 @@ public class Scaffold extends Module {
         for (float pitch = minPitch; pitch <= maxPitch; pitch += step) {
             Rot rot = new Rot(yaw, pitch);
 
-            RayTrace hit = RayCastUtils.rayCast(0f, 6f, rot);
+            RayTrace hit = RayCastUtils.rayCast(0f, 12f, rot);
 
             if (hit != null) {
                 RotData data = new RotData(rot, hit);
@@ -405,7 +405,7 @@ public class Scaffold extends Module {
 
             Rot rot = new Rot(yaw, pitch);
 
-            RayTrace hit = RayCastUtils.rayCast(0, 6f, rot);
+            RayTrace hit = RayCastUtils.rayCast(0, 12f, rot);
 
             if (hit != null) {
                 RotData data = new RotData(rot, hit);

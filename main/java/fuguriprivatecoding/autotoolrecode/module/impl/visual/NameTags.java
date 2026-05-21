@@ -7,7 +7,6 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MurderMystery;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
@@ -45,12 +44,10 @@ public class NameTags extends Module {
     final ColorSetting glowColor = new ColorSetting("GlowColor", this);
 
     MurderMystery murderDetector;
-    MidClick midClick;
 
     @Override
     public void onEvent(Event event) {
         if (murderDetector == null) murderDetector = Modules.getModule(MurderMystery.class);
-        if (midClick == null) midClick = Modules.getModule(MidClick.class);
 
         if (event instanceof Render3DEvent) {
             RenderUtils.start3D();
@@ -85,7 +82,7 @@ public class NameTags extends Module {
     }
 
     private String getText(EntityPlayer ent) {
-        boolean friend = midClick.showInName.isToggled() && ent.isFriend();
+        boolean friend = ent.isFriend();
         boolean murder = MurderMystery.isMurder(ent);
         boolean detective = MurderMystery.isDetective(ent);
 

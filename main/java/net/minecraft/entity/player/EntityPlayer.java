@@ -1942,18 +1942,15 @@ public abstract class EntityPlayer extends EntityLivingBase {
     }
 
     public boolean isFriend() {
-        MidClick midClick = Modules.getModule(MidClick.class);
-        return midClick.isToggled() && Friends.isFriend(getName(), midClick.reverseFriends.isToggled());
+        return MidClick.isFriend(this);
     }
 
     public boolean isBot() {
-        AntiBot antiBot = Modules.getModule(AntiBot.class);
-        return antiBot.isToggled() && AntiBot.isBot(this);
+        return AntiBot.isBot(this);
     }
 
     public boolean isTeam() {
-        Teams teams = Modules.getModule(Teams.class);
-        return teams.isToggled() && teams.getTeamList().contains(this);
+        return Teams.isTeammate(this);
     }
 
     public boolean isValid() {

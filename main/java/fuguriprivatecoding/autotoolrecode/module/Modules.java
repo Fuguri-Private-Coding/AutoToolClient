@@ -121,7 +121,6 @@ public class Modules {
 			new ScoreBoard(),
 			new TimeChanger(),
 			new Scaffold(),
-            new ClientLogo(),
 			new HighJump(),
 			new LongJump(),
 			new RawMouseInput()

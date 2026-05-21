@@ -9,7 +9,6 @@ import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.math.FastNoiseLite;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
@@ -56,7 +55,7 @@ public class KillAura extends Module {
         .addModes("Best", "Nearest", "Head", "Body")
         .setMode("Best");
 
-    private final BooleanSupplier boxSize = () -> hitVec.is("Best") || hitVec.is("Nearest") || hitVec.is("Camera");
+    private final BooleanSupplier boxSize = () -> hitVec.is("Best") || hitVec.is("Nearest");
     private final IntegerSetting hBoxSize = new IntegerSetting("HBoxSize", this, boxSize, 1, 100, 100);
     private final IntegerSetting vBoxSize = new IntegerSetting("VBoxSize", this, boxSize, 1, 100, 100);
 
@@ -73,6 +72,7 @@ public class KillAura extends Module {
         .addModes("OpenSimplex2", "OpenSimplex2S", "Cellular", "Perlin", "ValueCubic", "Value")
         .setMode("Perlin")
         ;
+
     private final FloatSetting noiseSpeed = new FloatSetting("NoiseSpeed", this, () -> smoothModes.get("Noise"), 0.1f, 10f, 2f, 0.1f);
 
     private final FloatSetting yawNoiseStrength = new FloatSetting("YawNoiseStrength", this, () -> smoothModes.get("Noise"), 0, 20, 5, 0.1f);
@@ -348,7 +348,6 @@ public class KillAura extends Module {
     private boolean isWithinDistance(Entity entity) {
         return DistanceUtils.getDistance(entity) < findDistance.getValue();
     }
-
 
     private boolean matchesTargetType(EntityLivingBase entity) {
         return switch (entity) {

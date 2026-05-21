@@ -19,8 +19,8 @@ import net.minecraft.network.play.client.C0BPacketEntityAction;
 public class MoreKB extends Module {
 
     final Mode mode = new Mode("Mode", this)
-            .addModes("WTap", "LegitFast", "One")
-            .setMode("LegitFast");
+            .addModes("WTap", "Sprint", "Packet")
+            .setMode("Sprint");
 
     DoubleSlider delayTicks = new DoubleSlider("DelayTicks", this, 0,20,2,1);
     DoubleSlider resetTicks = new DoubleSlider("ResetTicks", this, 1,20,2,1);
@@ -34,11 +34,19 @@ public class MoreKB extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            EntityLivingBase ent = TargetStorage.getTargetOrSelectedEntity();
-            if (ent != null && ent.hurtResistantTime == 20 && !notWhile(ent) && delay == 0 && reset == 0) {
+            EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
+
+            if (target == null)
+                return;
+
+            if (delay == 0 && reset == 0)
+                return;
+
+            if (target.hurtResistantTime == 20 && !notWhile(target)) {
                 delay = delayTicks.getRandomizedIntValue();
                 reset = resetTicks.getRandomizedIntValue();
             }
+
             if (delay > 0) delay--;
         }
 
@@ -46,20 +54,20 @@ public class MoreKB extends Module {
 
         switch (mode.getMode()) {
             case "WTap" -> {
-                if (event instanceof MoveButtonEvent moveButtonEvent) {
-                    moveButtonEvent.setForward(false);
+                if (event instanceof MoveButtonEvent e) {
+                    e.setForward(false);
                     reset--;
                 }
             }
 
-            case "LegitFast" -> {
+            case "Sprint" -> {
                 if (event instanceof SprintEvent e && mc.thePlayer.isSprinting()) {
                     e.setSprinting(false);
                     reset--;
                 }
             }
 
-            case "One" -> {
+            case "Packet" -> {
                 if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
                     mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
                     reset--;
@@ -69,11 +77,11 @@ public class MoreKB extends Module {
     }
 
     boolean notWhile(EntityLivingBase target) {
-        return notWhile.get("Target Eating") && target.isEating() ||
-            notWhile.get("Has KnockBack Enchantment") && hasKnockBackEnchantment(mc.thePlayer.inventory.getCurrentItem());
+        return (notWhile.get("Target Eating") && target.isEating()) ||
+            (notWhile.get("Has KnockBack Enchantment") && hasEnchant(mc.thePlayer.inventory.getCurrentItem()));
     }
 
-    private boolean hasKnockBackEnchantment(ItemStack itemStack) {
+    private boolean hasEnchant(ItemStack itemStack) {
         return itemStack != null && itemStack.getItem() != null && EnchantmentHelper.getEnchantments(itemStack).containsKey(Enchantment.knockback.effectId);
     }
 }

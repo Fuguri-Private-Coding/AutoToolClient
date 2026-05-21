@@ -19,6 +19,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 @ModuleInfo(name = "ArrayList", category = Category.VISUAL, description = "Показывает список включенных модулей.")
 public class ArrayList extends Module {
@@ -29,6 +30,11 @@ public class ArrayList extends Module {
             .addModes("LeftUp", "RightUp")
             .setMode("RightUp")
             ;
+
+    final Mode fontCase = new Mode("FontCase", this)
+        .addModes("LowerCase", "Default", "UpperCase")
+        .setMode("Default")
+        ;
 
     final FloatSetting animSpeed = new FloatSetting("AnimSpeed", this,0.1f, 10, 2, 0.1f);
 
@@ -118,7 +124,7 @@ public class ArrayList extends Module {
     }
 
     private void drawLine(float xOffset, float yOffset, Module module, List<Module> moduleList, ScaledResolution sc, boolean left, int size, float alpha, boolean glow, boolean blur) {
-        String name = module.getName();
+        String name = getName(module);
 
         float textWidth = font.width(name, size);
         float textHeight = font.height(name, size) + verticalSpacing.getValue();
@@ -150,7 +156,15 @@ public class ArrayList extends Module {
     }
 
     private void sort(final List<Module> list, float scale) {
-        list.sort(Comparator.comparingDouble(module -> font.width(module.getName(), scale)));
+        list.sort(Comparator.comparingDouble(module -> font.width(getName(module), scale)));
+    }
+
+    private String getName(Module module) {
+        return switch (fontCase.getMode()) {
+            case "LowerCase" -> module.getName().toLowerCase();
+            case "UpperCase" -> module.getName().toUpperCase();
+            default -> module.getName();
+        };
     }
 
     public record RenderEntry(Module module, float yOffset, float slideValue, float width) {};

@@ -62,9 +62,7 @@ public class TimerRange extends Module {
             }
 
             AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100).expand(0.1D);
-
-            float yaw = RotUtils.getBestRotation(box).getYaw();
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, yaw);
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, RotUtils.getBestRotation(box).getYaw());
 
             teleportTicks = 0;
 
@@ -73,7 +71,15 @@ public class TimerRange extends Module {
                 DistanceUtils.getDistance(target) <= 3.0D
             ) return;
 
-            AxisAlignedBB targetBox = getRealBB(target, target.getNPosition(), target.getPositionVector()).expand(-0.1D);
+            Vec3 pos = target.getPositionVector();
+            Vec3 realPos = target.getNPosition();
+
+            double offsetX = (BackTrack.working ? pos.xCoord : realPos.xCoord) - target.posX;
+            double offsetY = (BackTrack.working ? pos.yCoord : realPos.yCoord) - target.posY;
+            double offsetZ = (BackTrack.working ? pos.zCoord : realPos.zCoord) - target.posZ;
+
+            AxisAlignedBB targetBox = target.getEntityBoundingBox().offset(offsetX, offsetY, offsetZ).expand(-0.1D);
+
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 boolean skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), targetBox) > 3.0D;
 
@@ -86,21 +92,14 @@ public class TimerRange extends Module {
                 break;
             }
 
-            if (teleportTicks > 0) {
-                teleporting = true;
-                balance = PlayerUtils.teleport(teleportTicks, additionalTicks.getValue());
-                if (balance > 0) click = true;
-                teleporting = false;
-            }
+            if (teleportTicks == 0)
+                return;
+
+            teleporting = true;
+            balance = PlayerUtils.teleport(teleportTicks, additionalTicks.getValue());
+            if (balance > 0) click = true;
+            teleporting = false;
         }
-    }
-
-    private AxisAlignedBB getRealBB(EntityLivingBase target, Vec3 newPos, Vec3 pos) {
-        double offsetX = BackTrack.working ? pos.xCoord - target.posX : newPos.xCoord - target.posX;
-        double offsetY = BackTrack.working ? pos.yCoord - target.posY : newPos.yCoord - target.posY;
-        double offsetZ = BackTrack.working ? pos.zCoord - target.posZ : newPos.zCoord - target.posZ;
-
-        return target.getEntityBoundingBox().offset(offsetX, offsetY, offsetZ);
     }
 
     public static boolean needSnap() {

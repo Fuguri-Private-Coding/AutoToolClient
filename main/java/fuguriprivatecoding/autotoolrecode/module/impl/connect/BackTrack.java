@@ -54,8 +54,8 @@ public class BackTrack extends Module {
     final IntegerSetting minPlayerHurtTime = new IntegerSetting("MinPlayerHurtTime", this, () -> resetIf.get("PlayerHurtTime"), 0, 10, 10);
 
     final CheckBox onlyKillAura = new CheckBox("OnlyKillAura", this, true);
-    final CheckBox legacyTargetFinding = new CheckBox("LegacyTargetFinding", this, () -> !onlyKillAura.isToggled(), true);
-    final FloatSetting findTargetDistance = new FloatSetting("FindTargetDistance", this, () -> !onlyKillAura.isToggled() && legacyTargetFinding.isToggled(), 3.0f, 12.0f, 6.0f, 0.1f) {};
+    final CheckBox legacyTargetFinding = new CheckBox("LegacyTargetFinding", this, () -> !onlyKillAura.isToggled(), false);
+    final FloatSetting findTargetDistance = new FloatSetting("FindTargetDistance", this, () -> !onlyKillAura.isToggled() && !legacyTargetFinding.isToggled(), 3.0f, 12.0f, 6.0f, 0.1f) {};
     final CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
 
     final CheckBox renderOnlyIfWorking = new CheckBox("RenderOnlyIfWorking", this, true);

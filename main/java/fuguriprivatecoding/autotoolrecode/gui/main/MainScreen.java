@@ -67,7 +67,7 @@ public class MainScreen extends GuiScreen {
         float heightAnim = 15 * anim.getValue();
 
         ScissorUtils.enableScissor();
-        ScissorUtils.scissor(sc, sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f - 25 - heightAnim, 160, 25f + 4 + heightAnim);
+        ScissorUtils.scissor(sc, sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f - 25 - heightAnim - 3, 160, 25f + 4 + heightAnim);
 
         RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f - 25 - heightAnim, 160, 25f + heightAnim, 2, 12.5f, 12.5f, 2, Colors.BLACK.withAlpha(0.5f));
         String discord = "нах ты открыл, ладно нажимай.";
