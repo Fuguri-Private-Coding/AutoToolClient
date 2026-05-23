@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import fuguriprivatecoding.autotoolrecode.event.events.player.AttackEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.HitSlowDownEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Friends;
@@ -18,6 +19,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.misc.Test;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.Test2;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Phase;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockDirectional;
@@ -1354,18 +1356,19 @@ public abstract class EntityPlayer extends EntityLivingBase {
     {
     }
 
-    public void jump()
-    {
+    public void jump() {
         super.jump();
+        float f = ViaLoadingBase.getInstance().getTargetVersion().getVersion() <= 47 ? 0.8F : 0.2F;
+        float f2 = ViaLoadingBase.getInstance().getTargetVersion().getVersion() <= 47 ? 0.2F : 0.05F;
         this.triggerAchievement(StatList.jumpStat);
 
         if (this.isSprinting())
         {
-            this.addExhaustion(0.8F);
+            this.addExhaustion(f);
         }
         else
         {
-            this.addExhaustion(0.2F);
+            this.addExhaustion(f2);
         }
     }
 

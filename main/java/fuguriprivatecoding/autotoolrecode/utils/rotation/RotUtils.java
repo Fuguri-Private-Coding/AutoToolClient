@@ -83,10 +83,7 @@ public class RotUtils implements Imports {
         float yaw = (float) Math.clamp(MathHelper.wrapDegree(current.getYaw()), minYaw, maxYaw);
         float pitch = (float) Math.clamp(current.getPitch(), minPitch, maxPitch);
 
-        current.setYaw(yaw);
-        current.setPitch(pitch);
-
-		return current;
+		return new Rot(yaw, pitch);
 	}
 
     public static Vec3 getNearestPoint(Vec3 current, AxisAlignedBB bb) {

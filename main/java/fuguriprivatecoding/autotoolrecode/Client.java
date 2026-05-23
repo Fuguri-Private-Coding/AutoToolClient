@@ -30,7 +30,6 @@ import fuguriprivatecoding.autotoolrecode.module.*;
 import fuguriprivatecoding.autotoolrecode.event.*;
 
 import de.florianmichael.viamcp.ViaMCP;
-import imgui.ImGui;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;

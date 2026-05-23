@@ -182,16 +182,20 @@ public class KillAura extends Module {
 
         Vec3 eyes = mc.thePlayer.getPositionEyes(1f);
 
+        Vec3 targetPos = RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks);
+
         Vec3 needPoint = switch (hitVec.getMode()) {
             case "Best" -> RotUtils.getBestHitVec(box);
-            case "Head" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight(), 0);
-            case "Body" -> RenderUtils.getAbsoluteSmoothPos(target.getLastPositionVector(), target.getPositionVector(), mc.timer.renderPartialTicks).addVector(0, target.getEyeHeight() / 2f, 0);
+            case "Head" -> targetPos.addVector(0, target.getEyeHeight(), 0);
+            case "Body" -> targetPos.addVector(0, target.getEyeHeight() / 2f, 0);
             default -> Constants.VEC3_ZERO;
         };
 
         Rot needRot = RotUtils.getRotationToPoint(needPoint);
 
-        if (hitVec.is("Nearest") || fullBox.isVecInside(eyes)) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), box);
+        if (hitVec.is("Nearest")) needRot = RotUtils.getNearestRotation(needRot, box);
+
+        if (fullBox.isVecInside(eyes)) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), fullBox);
 
         if (smoothModes.get("MouseDelta")) {
             Rot mouseDelta = invertDelta.isToggled() ?

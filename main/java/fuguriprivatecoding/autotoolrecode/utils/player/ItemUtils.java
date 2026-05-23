@@ -28,7 +28,8 @@ public class ItemUtils {
         Blocks.enchanting_table,
         Blocks.hopper,
         Blocks.dispenser,
-        Blocks.dropper
+        Blocks.dropper,
+        Blocks.tnt
     );
 
     public float getPlayerRelativeBlockHardness(final World worldIn, final BlockPos pos, final int slot) {

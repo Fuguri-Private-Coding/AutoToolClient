@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import de.florianmichael.vialoadingbase.ViaLoadingBase;
 import fuguriprivatecoding.autotoolrecode.event.events.player.JumpEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Hand;
@@ -1442,15 +1443,15 @@ public abstract class EntityLivingBase extends Entity implements Imports {
             this.motionZ *= 0.98D;
         }
 
-        if (Math.abs(this.motionX) < 0.005D) {
+        if (Math.abs(this.motionX) < (ViaLoadingBase.getInstance().getTargetVersion().getVersion() <= 47 ? 0.005D : 0.003D)) {
             this.motionX = 0.0D;
         }
 
-        if (Math.abs(this.motionY) < 0.005D) {
+        if (Math.abs(this.motionY) < (ViaLoadingBase.getInstance().getTargetVersion().getVersion() <= 47 ? 0.005D : 0.003D)) {
             this.motionY = 0.0D;
         }
 
-        if (Math.abs(this.motionZ) < 0.005D) {
+        if (Math.abs(this.motionZ) < (ViaLoadingBase.getInstance().getTargetVersion().getVersion() <= 47 ? 0.005D : 0.003D)) {
             this.motionZ = 0.0D;
         }
 
