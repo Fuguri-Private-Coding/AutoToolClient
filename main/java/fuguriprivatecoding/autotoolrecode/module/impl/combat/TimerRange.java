@@ -61,7 +61,7 @@ public class TimerRange extends Module {
                 return;
             }
 
-            AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100).expand(0.1D);
+            AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100);
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, RotUtils.getBestRotation(box).getYaw());
 
             teleportTicks = 0;
@@ -71,14 +71,8 @@ public class TimerRange extends Module {
                 DistanceUtils.getDistance(target) <= 3.0D
             ) return;
 
-            Vec3 pos = target.getPositionVector();
-            Vec3 realPos = target.getNPosition();
-
-            double offsetX = (BackTrack.working ? pos.xCoord : realPos.xCoord) - target.posX;
-            double offsetY = (BackTrack.working ? pos.yCoord : realPos.yCoord) - target.posY;
-            double offsetZ = (BackTrack.working ? pos.zCoord : realPos.zCoord) - target.posZ;
-
-            AxisAlignedBB targetBox = target.getEntityBoundingBox().offset(offsetX, offsetY, offsetZ).expand(-0.1D);
+            Vec3 targetPosition = target.getServerPosition().divine(32.0D).subtract(target.getPositionVector());
+            AxisAlignedBB targetBox = target.getEntityBoundingBox().offset(targetPosition).expand(-0.1D);
 
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 boolean skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), targetBox) > 3.0D;

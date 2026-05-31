@@ -124,19 +124,32 @@ public class InvManager extends Module {
 
                     boolean busy = false;
 
-                    if (armorReady && this.equipArmor(instant.isToggled())) {
-                        busy = true;
-                        resetTimings();
-                    }
+                    if (instant.isToggled()) {
+                        if (armorReady && this.equipArmor(true)) {
+                            busy = true;
+                            resetTimings();
+                        }
 
-                    if (dropReady && this.dropItem(this.trash, instant.isToggled())) {
-                        busy = true;
-                        resetTimings();
-                    }
+                        if (dropReady && this.dropItem(this.trash, true)) {
+                            busy = true;
+                            resetTimings();
+                        }
 
-                    if (sortReady && this.sortItems(instant.isToggled())) {
-                        busy = true;
-                        resetTimings();
+                        if (sortReady && this.sortItems(true)) {
+                            busy = true;
+                            resetTimings();
+                        }
+                    } else {
+                        if (armorReady && this.equipArmor(false)) {
+                            busy = true;
+                            resetTimings();
+                        } else if (dropReady && this.dropItem(this.trash, false)) {
+                            busy = true;
+                            resetTimings();
+                        } else if (sortReady && this.sortItems(false)) {
+                            busy = true;
+                            resetTimings();
+                        }
                     }
 
                     if (!busy) {

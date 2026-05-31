@@ -10,6 +10,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
@@ -1193,7 +1194,7 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
 
     public BlockPos getPosition()
     {
-        return BlockPos.ORIGIN;
+        return Constants.BlOCKPOS_ZERO;
     }
 
     public Vec3 getPositionVector()

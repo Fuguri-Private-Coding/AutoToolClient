@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.item.*;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.BlockPos;
@@ -54,7 +55,7 @@ public class NoSlow extends Module {
         switch (mode.getMode()) {
             case "Intave" -> {
                 if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE && work) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP));
+                    mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, Constants.BlOCKPOS_ZERO, EnumFacing.UP));
                 }
 
                 if (event instanceof SlowDownEvent e) {

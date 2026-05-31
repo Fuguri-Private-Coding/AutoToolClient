@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai;
 
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;
@@ -12,7 +13,7 @@ import net.minecraft.util.BlockPos;
 public abstract class EntityAIDoorInteract extends EntityAIBase
 {
     protected EntityLiving theEntity;
-    protected BlockPos doorPosition = BlockPos.ORIGIN;
+    protected BlockPos doorPosition = Constants.BlOCKPOS_ZERO;
     protected BlockDoor doorBlock;
     boolean hasStoppedDoorInteraction;
     float entityPositionX;

@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
-import fuguriprivatecoding.autotoolrecode.gui.clickgui.NewClickScreen;
 import fuguriprivatecoding.autotoolrecode.gui.imgui.ClickGuiWindow;
 import fuguriprivatecoding.autotoolrecode.gui.imgui.ImGuiManager;
 import fuguriprivatecoding.autotoolrecode.module.Category;

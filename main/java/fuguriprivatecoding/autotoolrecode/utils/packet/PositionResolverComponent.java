@@ -29,10 +29,9 @@ public class PositionResolverComponent implements Imports, EventListener {
     @Override
     public boolean listen() {
         BackTrack backTrack = Modules.getModule(BackTrack.class);
-        TimerRange timerRange = Modules.getModule(TimerRange.class);
         ESP esp = Modules.getModule(ESP.class);
 
-        return Utils.isWorldLoaded() && (backTrack.isToggled() || timerRange.isToggled() || esp.isToggled());
+        return Utils.isWorldLoaded() && (backTrack.isToggled() || esp.isToggled());
     }
 
     @Override

@@ -21,10 +21,8 @@ public class NoScreenClose extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof PacketEvent packetEvent &&
-                packetEvent.getPacket() instanceof S2EPacketCloseWindow &&
-                guiClosed(mc.currentScreen)) {
-            packetEvent.setCanceled(true);
+        if (event instanceof PacketEvent e && e.getPacket() instanceof S2EPacketCloseWindow && guiClosed(mc.currentScreen)) {
+            e.cancel();
         }
     }
 

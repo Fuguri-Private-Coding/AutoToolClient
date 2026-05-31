@@ -151,6 +151,10 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         return new Vec3(nx, ny, nz);
     }
 
+    public Vec3 getServerPosition() {
+        return new Vec3(serverPosX, serverPosY, serverPosZ);
+    }
+
     public Vec3 getRealPosition() {
         return new Vec3(
             lrx + (rx - lrx) * mc.timer.renderPartialTicks - RenderManager.renderPosX,

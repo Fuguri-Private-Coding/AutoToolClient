@@ -5,9 +5,11 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import org.lwjgl.input.Keyboard;
 import fuguriprivatecoding.autotoolrecode.command.Command;
 
+import java.util.List;
+
 public class CommandBind extends Command {
     public CommandBind() {
-        super("Bind", "/bind clear/<module> <key>", "b", "bind");
+        super("Bind", "/b /bind clear || list || <name> <key>", "b", "bind");
     }
 
 	@Override
@@ -22,6 +24,15 @@ public class CommandBind extends Command {
 			if (args[1].equalsIgnoreCase("clear")) {
 				Modules.getModules().forEach(module -> module.setKey(Keyboard.KEY_NONE));
                 addMessage("All binds are cleared!");
+			}
+
+			if (args[1].equalsIgnoreCase("list")) {
+				List<Module> modules = Modules.getModules().stream()
+					.filter(module -> module.getKey() != Keyboard.KEY_NONE).toList();
+
+				for (Module module : modules) {
+					addMessage(module.getName() + " Zabindjen on " + Keyboard.getKeyName(module.getKey()));
+				}
 			}
 		} else if (args.length == 3) {
 			Module module = Modules.getModule(args[1]);

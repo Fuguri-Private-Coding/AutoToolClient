@@ -1,6 +1,8 @@
 package net.minecraft.entity.item;
 
 import java.util.List;
+
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -20,7 +22,7 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
 {
     private boolean isBlocked = true;
     private int transferTicker = -1;
-    private BlockPos field_174900_c = BlockPos.ORIGIN;
+    private BlockPos field_174900_c = Constants.BlOCKPOS_ZERO;
 
     public EntityMinecartHopper(World worldIn)
     {

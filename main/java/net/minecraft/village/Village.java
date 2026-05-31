@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
+
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;
@@ -27,8 +29,8 @@ public class Village
 {
     private World worldObj;
     private final List<VillageDoorInfo> villageDoorInfoList = Lists.<VillageDoorInfo>newArrayList();
-    private BlockPos centerHelper = BlockPos.ORIGIN;
-    private BlockPos center = BlockPos.ORIGIN;
+    private BlockPos centerHelper = Constants.BlOCKPOS_ZERO;
+    private BlockPos center = Constants.BlOCKPOS_ZERO;
     private int villageRadius;
     private int lastAddDoorTimestamp;
     private int tickCounter;

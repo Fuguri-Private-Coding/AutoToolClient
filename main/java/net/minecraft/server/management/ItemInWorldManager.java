@@ -1,5 +1,6 @@
 package net.minecraft.server.management;
 
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.material.Material;
@@ -27,10 +28,10 @@ public class ItemInWorldManager
     private WorldSettings.GameType gameType = WorldSettings.GameType.NOT_SET;
     private boolean isDestroyingBlock;
     private int initialDamage;
-    private BlockPos field_180240_f = BlockPos.ORIGIN;
+    private BlockPos field_180240_f = Constants.BlOCKPOS_ZERO;
     private int curblockDamage;
     private boolean receivedFinishDiggingPacket;
-    private BlockPos field_180241_i = BlockPos.ORIGIN;
+    private BlockPos field_180241_i = Constants.BlOCKPOS_ZERO;
     private int initialBlockDamage;
     private int durabilityRemainingOnBlock = -1;
 

@@ -2,6 +2,8 @@ package net.minecraft.inventory;
 
 import java.util.List;
 import java.util.Random;
+
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,7 +28,7 @@ public class ContainerEnchantment extends Container
 
     public ContainerEnchantment(InventoryPlayer playerInv, World worldIn)
     {
-        this(playerInv, worldIn, BlockPos.ORIGIN);
+        this(playerInv, worldIn, Constants.BlOCKPOS_ZERO);
     }
 
     public ContainerEnchantment(InventoryPlayer playerInv, World worldIn, BlockPos pos)

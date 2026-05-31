@@ -72,7 +72,7 @@ public class Vec3
         return this.subtract(vec.xCoord, vec.yCoord, vec.zCoord);
     }
 
-    public Vec3 divine(float value) {
+    public Vec3 divine(double value) {
         return new Vec3(this.xCoord / value, this.yCoord / value, this.zCoord / value);
     }
 

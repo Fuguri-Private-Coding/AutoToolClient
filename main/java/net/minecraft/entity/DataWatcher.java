@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.item.ItemStack;
@@ -26,7 +28,7 @@ public class DataWatcher
     private boolean objectChanged;
     private ReadWriteLock lock = new ReentrantReadWriteLock();
     public BiomeGenBase spawnBiome = BiomeGenBase.plains;
-    public BlockPos spawnPosition = BlockPos.ORIGIN;
+    public BlockPos spawnPosition = Constants.BlOCKPOS_ZERO;
 
     public DataWatcher(Entity owner)
     {

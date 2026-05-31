@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import lombok.Getter;
 import net.minecraft.entity.Entity;
 
@@ -15,7 +16,7 @@ public class RayTrace {
     }
 
     public RayTrace(Vec3 p_i45552_1_, EnumFacing facing) {
-        this(RayType.BLOCK, p_i45552_1_, facing, BlockPos.ORIGIN);
+        this(RayType.BLOCK, p_i45552_1_, facing, Constants.BlOCKPOS_ZERO);
     }
 
     public RayTrace(Entity entityIn) {

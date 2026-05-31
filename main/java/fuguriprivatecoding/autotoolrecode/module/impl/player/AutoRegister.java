@@ -11,9 +11,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.client.ChatUtils;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
-import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
-import net.minecraft.network.play.client.C01PacketChatMessage;
 
 import java.security.SecureRandom;
 

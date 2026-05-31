@@ -102,7 +102,7 @@ public class Scaffold extends Module {
 
     private Rot rotation = Constants.ROT_ZERO, lastRotation = Constants.ROT_ZERO, lastDelta = Constants.ROT_ZERO;
 
-    private BlockPos targetBlock = new BlockPos(0, 0, 0);
+    private BlockPos targetBlock = Constants.BlOCKPOS_ZERO;
 
     private ScaffoldType type = ScaffoldType.NONACTIVE;
 

@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import lombok.Setter;
 import lombok.experimental.UtilityClass;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -28,6 +29,7 @@ public class Configs implements Imports {
     @Getter final File CONFIG_DIRECTORY = new File(Client.CLIENT_DIR + "/configs");
     @Getter private final List<Config> configs = new CopyOnWriteArrayList<>();
     @Getter Config defaultConfig = new Config("default");
+    @Getter @Setter Config lastLoadedConfig = new Config("default");
 
     public void init() {
         if (CONFIG_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию для конфигов.");

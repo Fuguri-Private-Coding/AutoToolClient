@@ -88,11 +88,11 @@ public class Client implements Imports {
         FileUtils.unpackFile(sfProRounded_font, "assets/minecraft/autotool/fonts/SFProRounded.ttf");
 
         profile = Profile.builder().username(System.getProperty("user.name")).role(Role.USER).build();
+//
+//        imGuiManager = new ImGuiManager();
+//        imGuiManager.init();
 
-        imGuiManager = new ImGuiManager();
-        imGuiManager.init();
-
-        NewClickScreen.init();
+//        NewClickScreen.init();
 
         SmtcNative.init();
         MEDIA_CONTROLLER.start();
@@ -145,6 +145,7 @@ public class Client implements Imports {
 	}
 
 	public void onClose() {
+		Configs.saveConfig(Configs.getLastLoadedConfig());
 		Configs.saveConfig(Configs.getDefaultConfig());
 		KeyBinds.saveBinds();
         MEDIA_CONTROLLER.close();

@@ -3,6 +3,8 @@ package net.minecraft.tileentity;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.concurrent.Callable;
+
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockJukebox;
 import net.minecraft.block.state.IBlockState;
@@ -21,7 +23,7 @@ public abstract class TileEntity
     private static Map < String, Class <? extends TileEntity >> nameToClassMap = Maps.newHashMap();
     private static Map < Class <? extends TileEntity > , String > classToNameMap = Maps.newHashMap();
     protected World worldObj;
-    protected BlockPos pos = BlockPos.ORIGIN;
+    protected BlockPos pos = Constants.BlOCKPOS_ZERO;
     protected boolean tileEntityInvalid;
     private int blockMetadata = -1;
     protected Block blockType;

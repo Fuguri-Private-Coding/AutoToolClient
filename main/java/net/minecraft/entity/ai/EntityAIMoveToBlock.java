@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai;
 
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
@@ -11,7 +12,7 @@ public abstract class EntityAIMoveToBlock extends EntityAIBase
     protected int runDelay;
     private int timeoutCounter;
     private int field_179490_f;
-    protected BlockPos destinationBlock = BlockPos.ORIGIN;
+    protected BlockPos destinationBlock = Constants.BlOCKPOS_ZERO;
     private boolean isAboveDestination;
     private int searchLength;
 

@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.player.PreAttackEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.InventoryManager;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -548,7 +549,7 @@ public class PlayerControllerMP
     public void onStoppedUsingItem(EntityPlayer playerIn)
     {
         this.syncCurrentPlayItem();
-        this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+        this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, Constants.BlOCKPOS_ZERO, EnumFacing.DOWN));
         playerIn.stopUsingItem();
     }
 

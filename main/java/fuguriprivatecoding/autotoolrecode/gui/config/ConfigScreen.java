@@ -249,8 +249,6 @@ public class ConfigScreen extends GuiScreen implements EventListener {
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (creatingConfig) textField.textboxKeyTyped(typedChar, keyCode);
 
-        float scale = clientSettings.scale.getValue();
-
         if (keyCode == 1 && creatingConfig) {
             textField.setText("");
             textField.setFocused(false);
@@ -271,6 +269,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
                 textField.setText("");
                 textField.setFocused(false);
                 creatingConfig = false;
+                Configs.setLastLoadedConfig(selectedConfig);
             }
         }
     }
@@ -364,6 +363,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
                 if (load) {
                     Configs.loadConfig(selectedConfig);
                     ClientUtils.chatLog("Successful loaded config: " + selectedConfig.getName() + ".");
+                    Configs.setLastLoadedConfig(selectedConfig);
                 }
 
                 if (delete) {
@@ -375,6 +375,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
                     Configs.saveConfig(selectedConfig);
                     ClientUtils.chatLog("Successful saved config: " + selectedConfig.getName() + ".");
                     Configs.saveConfig(Configs.getDefaultConfig());
+                    Configs.setLastLoadedConfig(selectedConfig);
                 }
             }
         }

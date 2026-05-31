@@ -3,6 +3,8 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLog;
@@ -17,7 +19,7 @@ public class WorldGenBigTree extends WorldGenAbstractTree
 {
     private Random rand;
     private World world;
-    private BlockPos basePos = BlockPos.ORIGIN;
+    private BlockPos basePos = Constants.BlOCKPOS_ZERO;
     int heightLimit;
     int height;
     double heightAttenuation = 0.618D;

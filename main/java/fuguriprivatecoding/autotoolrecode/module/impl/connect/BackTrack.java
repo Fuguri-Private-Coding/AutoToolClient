@@ -146,9 +146,7 @@ public class BackTrack extends Module {
             if (target != null) {
                 Vec3 realPos = target.getNPosition();
 
-                double expand = target.getCollisionBorderSize();
-
-                AxisAlignedBB realBox = target.getEntityBoundingBox().offset(realPos.xCoord - target.posX, realPos.yCoord - target.posY, realPos.zCoord - target.posZ).expand(expand, expand, expand);
+                AxisAlignedBB realBox = target.getExpandedBoundingBox().offset(realPos.subtract(target.getPositionVector()));
 
                 double distanceToReal = DistanceUtils.getDistance(realBox);
                 double distanceToFake = DistanceUtils.getDistance(target);
@@ -164,7 +162,7 @@ public class BackTrack extends Module {
 
                 working = !improve && !distance && !targetHurtTime && !playerHurtTime && !onlyWhenNeed;
 
-                if (improve || distance || targetHurtTime || playerHurtTime || onlyWhenNeed) {
+                if (!working) {
                     handle(true);
 
                     delayBetweenBackTracks = delayBetweenTicks.getValue();
@@ -175,11 +173,10 @@ public class BackTrack extends Module {
                 }
 
                 realPos = target.getRealPosition();
-                Vec3 pos = realPos;
+                Vec3 pos = realPos.subtract(target.getPositionVector());
 
-                Vec3 renderOffset = new Vec3(pos.xCoord - target.posX, pos.yCoord - target.posY, pos.zCoord - target.posZ);
+                AxisAlignedBB bb = target.getEntityBoundingBox().offset(pos);
 
-                AxisAlignedBB bb = target.getEntityBoundingBox().offset(renderOffset);
                 switch (render.getMode()) {
                     case "Player" -> {
                         if (glow.isToggled()) {

@@ -13,6 +13,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEventData;
 import net.minecraft.block.material.Material;
@@ -766,11 +768,11 @@ public class WorldServer extends World implements IThreadListener
     {
         if (!this.provider.canRespawnHere())
         {
-            this.worldInfo.setSpawn(BlockPos.ORIGIN.up(this.provider.getAverageGroundLevel()));
+            this.worldInfo.setSpawn(Constants.BlOCKPOS_ZERO.up(this.provider.getAverageGroundLevel()));
         }
         else if (this.worldInfo.getTerrainType() == WorldType.DEBUG_WORLD)
         {
-            this.worldInfo.setSpawn(BlockPos.ORIGIN.up());
+            this.worldInfo.setSpawn(Constants.BlOCKPOS_ZERO.up());
         }
         else
         {

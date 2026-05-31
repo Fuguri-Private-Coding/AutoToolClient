@@ -14,7 +14,7 @@ public class GuiCrafting extends GuiContainer
 
     public GuiCrafting(InventoryPlayer playerInv, World worldIn)
     {
-        this(playerInv, worldIn, BlockPos.ORIGIN);
+        this(playerInv, worldIn, Constants.BlOCKPOS_ZERO);
     }
 
     public GuiCrafting(InventoryPlayer playerInv, World worldIn, BlockPos blockPosition)

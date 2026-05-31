@@ -2,6 +2,8 @@ package net.minecraft.inventory;
 
 import java.util.Iterator;
 import java.util.Map;
+
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
@@ -31,7 +33,7 @@ public class ContainerRepair extends Container
 
     public ContainerRepair(InventoryPlayer playerInventory, World worldIn, EntityPlayer player)
     {
-        this(playerInventory, worldIn, BlockPos.ORIGIN, player);
+        this(playerInventory, worldIn, Constants.BlOCKPOS_ZERO, player);
     }
 
     public ContainerRepair(InventoryPlayer playerInventory, final World worldIn, final BlockPos blockPosIn, EntityPlayer player)

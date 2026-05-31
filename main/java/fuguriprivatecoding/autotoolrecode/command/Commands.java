@@ -15,7 +15,6 @@ public class Commands {
         commands.add(new CommandToggle());
         commands.add(new CommandBind());
         commands.add(new CommandHelp());
-        commands.add(new CommandBinds());
 
 		ClientUtils.chatLog("Успешно инициализировал команды.");
     }

@@ -26,7 +26,7 @@ public class RotUtils implements Imports {
     }
 
     public static AxisAlignedBB getHitBox(EntityLivingBase target, double horizontal, double vertical) {
-        AxisAlignedBB box = target.getEntityBoundingBox();
+        AxisAlignedBB box = target.getExpandedBoundingBox();
 
         double horizontalPercent = horizontal / 200d;
         double verticalPercent = vertical / 200d;

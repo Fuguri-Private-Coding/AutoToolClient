@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.block.BlockPortal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockPattern;
@@ -72,7 +74,7 @@ public class Teleporter
         int j = MathHelper.floor_double(entityIn.posX);
         int k = MathHelper.floor_double(entityIn.posZ);
         boolean flag = true;
-        BlockPos blockpos = BlockPos.ORIGIN;
+        BlockPos blockpos = Constants.BlOCKPOS_ZERO;
         long l = ChunkCoordIntPair.chunkXZ2Int(j, k);
 
         if (this.destinationCoordinateCache.containsItem(l))

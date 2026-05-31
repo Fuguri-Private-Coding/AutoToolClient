@@ -178,7 +178,7 @@ public class KillAura extends Module {
     private Rot getRotation(EntityLivingBase target, AxisAlignedBB box) {
         boolean teleport = (TimerRange.needSnap()) && snapForTeleport.isToggled();
 
-        AxisAlignedBB fullBox = RotUtils.getHitBox(target, 100, 100).expand(0.1);
+        AxisAlignedBB fullBox = RotUtils.getHitBox(target, 100, 100);
 
         Vec3 eyes = mc.thePlayer.getPositionEyes(1f);
 
@@ -193,8 +193,7 @@ public class KillAura extends Module {
 
         Rot needRot = RotUtils.getRotationToPoint(needPoint);
 
-        if (hitVec.is("Nearest")) needRot = RotUtils.getNearestRotation(needRot, box);
-
+        if (hitVec.is("Nearest")) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), box);
         if (fullBox.isVecInside(eyes)) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), fullBox);
 
         if (smoothModes.get("MouseDelta")) {

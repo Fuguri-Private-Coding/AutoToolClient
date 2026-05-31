@@ -12,6 +12,6 @@ public class AntiBot extends Module {
 
     public static boolean isBot(Entity ent) {
         AntiBot antiBot = Modules.getModule(AntiBot.class);
-        return antiBot.isToggled() && Objects.equals(ent.getCustomNameTag(), "");
+        return antiBot.isToggled() && ent.getCustomNameTag() == "";
     }
 }
