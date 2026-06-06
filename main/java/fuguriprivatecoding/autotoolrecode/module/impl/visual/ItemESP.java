@@ -6,10 +6,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
-import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
-import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
+import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.projection.Convertors;
@@ -42,7 +39,7 @@ public class ItemESP extends Module {
     BooleanSupplier renderBox = () -> modes.get("Box");
 
     final ColorSetting hitBoxColor = new ColorSetting("HitBoxColor", this, renderHitBox);
-    final FloatSetting hitBoxLineWidth = new FloatSetting("HitBoxLineWidth", this, renderHitBox, 1, 10, 2, 0.1f);
+    final IntegerSetting hitBoxLineWidth = new IntegerSetting("HitBoxLineWidth", this, renderHitBox, 0, 10, 2);
     final ColorSetting boxColor = new ColorSetting("BoxColor", this, renderBox);
     final FloatSetting boxLineWidth = new FloatSetting("BoxLineWidth", this, renderBox, 1, 10, 2, 0.1f);
 

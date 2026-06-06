@@ -16,8 +16,8 @@ public class WindowIconHelper {
     public static void setWindowIcon(ResourceLocation icon16x16, ResourceLocation icon32x32) {
         try {
             ByteBuffer[] icons = new ByteBuffer[]{
-                    loadIcon(icon16x16),
-                    loadIcon(icon32x32)
+                loadIcon(icon16x16),
+                loadIcon(icon32x32)
             };
 
             Display.setIcon(icons);

@@ -194,11 +194,13 @@ public class RenderUtils implements Imports {
     }
 
     public static void drawHitBox(AxisAlignedBB bb, Color color, float lineWidth) {
-        drawBoundingBox(bb.expand(0.1f,0.1f,0.1f), color);
+        bb = bb.expand(0.1f);
 
-        if (lineWidth > 0) {
-            glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1f);
-            renderHitBox(bb.expand(0.1f,0.1f,0.1f), lineWidth);
+        drawBoundingBox(bb, color);
+
+        if (lineWidth >= 1) {
+            ColorUtils.glColor(color, 1f);
+            renderHitBox(bb, lineWidth);
             ColorUtils.resetColor();
         }
     }

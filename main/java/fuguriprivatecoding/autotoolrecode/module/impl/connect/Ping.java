@@ -73,7 +73,7 @@ public class Ping extends Module {
     BooleanSupplier renderBox = () -> (renderModes.getMode().equalsIgnoreCase("HitBox"));
 
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
-    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f,5f,1f,0.1f);
+    final IntegerSetting lineWidth = new IntegerSetting("LineWidth", this, renderBox, 0,5,1);
 
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this);

@@ -109,6 +109,12 @@ public class KillAura extends Module {
     private final FloatSetting consistency = new FloatSetting("Consistency", this, gaussianMode, 0, 2, 0.2f, 0.01f);
     private final FloatSetting instability = new FloatSetting("Instability", this, gaussianMode, 0, 2, 0.2f, 0.01f);
 
+    private final CheckBox lockView = new CheckBox("LockView", this, false);
+
+    private final Mode eventToRotate = new Mode("EventToRotate", this)
+        .addModes("Tick", "Motion")
+        ;
+
     private final Mode moveFix = new Mode("MoveFix", this)
         .addModes("OFF", "Legit", "Silent")
         .setMode("Silent");
@@ -162,8 +168,14 @@ public class KillAura extends Module {
                 return;
             }
 
-            if (event instanceof TickEvent) {
-                rotate(target);
+            switch (eventToRotate.getMode()) {
+                case "Tick" -> {
+                    if (event instanceof TickEvent) rotate(target);
+                }
+
+                case "Motion" -> {
+                    if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.POST) rotate(target);
+                }
             }
 
             if (moveFix.is("OFF")) {
@@ -178,7 +190,7 @@ public class KillAura extends Module {
     private Rot getRotation(EntityLivingBase target, AxisAlignedBB box) {
         boolean teleport = (TimerRange.needSnap()) && snapForTeleport.isToggled();
 
-        AxisAlignedBB fullBox = RotUtils.getHitBox(target, 100, 100);
+        AxisAlignedBB fullBox = target.getExpandedBoundingBox();
 
         Vec3 eyes = mc.thePlayer.getPositionEyes(1f);
 
@@ -194,7 +206,29 @@ public class KillAura extends Module {
         Rot needRot = RotUtils.getRotationToPoint(needPoint);
 
         if (hitVec.is("Nearest")) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), box);
+
+        AxisAlignedBB nearBox = RotUtils.getHitBox(target, 20, 60);
+
+        if (mc.gameSettings.keyBindJump.isKeyDown()) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), nearBox);
+
         if (fullBox.isVecInside(eyes)) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), fullBox);
+
+        if (smoothModes.get("Noise")) {
+            FastNoiseLite.NoiseType type = FastNoiseLite.NoiseType.valueOf(noiseType.getMode());
+
+            noise.SetNoiseType(type);
+            noise.SetFrequency(noiseSpeed.getValue());
+
+            float strengthYaw = yawNoiseStrength.getValue();
+            float strengthPitch = pitchNoiseStrength.getValue();
+
+            float t = System.nanoTime() / 1_000_000_000f;
+
+            float randomYaw = noise.GetNoise(t, 0f) * strengthYaw;
+            float randomPitch = noise.GetNoise(0f, t) * strengthPitch;
+
+            needRot.plus(randomYaw, randomPitch);
+        }
 
         if (smoothModes.get("MouseDelta")) {
             Rot mouseDelta = invertDelta.isToggled() ?
@@ -234,9 +268,7 @@ public class KillAura extends Module {
 
         boolean teleport = (TimerRange.needSnap()) && snapForTeleport.isToggled();
 
-        double expand = target.getCollisionBorderSize();
-        AxisAlignedBB box = RotUtils.getHitBox(target, hBoxSize.getValue(), vBoxSize.getValue())
-            .expand(expand, expand, expand);
+        AxisAlignedBB box = RotUtils.getHitBox(target, hBoxSize.getValue(), vBoxSize.getValue());
 
         Rot needRotation = getRotation(target, box);
 
@@ -245,23 +277,6 @@ public class KillAura extends Module {
         Rot delta = lr.deltaTo(needRotation);
 
         if (!teleport) {
-            if (smoothModes.get("Noise")) {
-                FastNoiseLite.NoiseType type = FastNoiseLite.NoiseType.valueOf(noiseType.getMode());
-
-                noise.SetNoiseType(type);
-                noise.SetFrequency(noiseSpeed.getValue());
-
-                float strengthYaw = yawNoiseStrength.getValue();
-                float strengthPitch = pitchNoiseStrength.getValue();
-
-                float t = System.nanoTime() / 1_000_000_000f;
-
-                float randomYaw = noise.GetNoise(t, 0f) * strengthYaw;
-                float randomPitch = noise.GetNoise(0f, t) * strengthPitch;
-
-                delta.plus(randomYaw, randomPitch);
-            }
-
             if (smoothModes.get("Basic")) {
                 delta.plus(RandomUtils.nextFloat(-yawStrength.getValue(), yawStrength.getValue()), RandomUtils.nextFloat(-pitchStrength.getValue(), pitchStrength.getValue()));
             }
@@ -285,7 +300,7 @@ public class KillAura extends Module {
         delta.fix();
         lastDelta = delta.copy();
 
-        CameraRot.INST.setUnlocked(true);
+        CameraRot.INST.setUnlocked(!lockView.isToggled());
         mc.thePlayer.moveRotation(delta);
     }
 
@@ -360,5 +375,10 @@ public class KillAura extends Module {
             case EntityVillager ignore -> targets.get("Villagers");
             default -> false;
         };
+    }
+
+    public static boolean canSnapTeleport() {
+        KillAura killAura = Modules.getModule(KillAura.class);
+        return killAura.snapForTeleport.isToggled() && killAura.isToggled();
     }
 }

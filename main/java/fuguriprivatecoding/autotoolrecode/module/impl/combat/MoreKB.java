@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -33,21 +34,24 @@ public class MoreKB extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof TickEvent) {
+        if (event instanceof TickEvent e) {
             EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
 
-            if (target == null)
+            if (target == null) {
+                delay = 0;
+                reset = 0;
                 return;
+            }
 
-            if (delay == 0 && reset == 0)
-                return;
-
-            if (target.hurtResistantTime == 20 && !notWhile(target)) {
+            if (target.hurtResistantTime == 20 && !notWhile(target) && delay == 0 && reset == 0) {
                 delay = delayTicks.getRandomizedIntValue();
                 reset = resetTicks.getRandomizedIntValue();
             }
 
-            if (delay > 0) delay--;
+            if (delay > 0 && !TimerRange.teleporting && TimerRange.balance == 0 && !e.isCanceled()) {
+                ClientUtils.chatLog(delay + "delay");
+                delay--;
+            }
         }
 
         if (reset == 0 || delay > 0) return;
@@ -63,6 +67,7 @@ public class MoreKB extends Module {
             case "Sprint" -> {
                 if (event instanceof SprintEvent e && mc.thePlayer.isSprinting()) {
                     e.setSprinting(false);
+                    ClientUtils.chatLog(reset + "debil");
                     reset--;
                 }
             }

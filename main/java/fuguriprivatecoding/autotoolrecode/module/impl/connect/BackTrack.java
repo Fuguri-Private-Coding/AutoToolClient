@@ -66,7 +66,7 @@ public class BackTrack extends Module {
     final BooleanSupplier renderBox = () -> (render.getMode().equalsIgnoreCase("Box") || render.getMode().equalsIgnoreCase("HitBox"));
 
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
-    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, () -> render.getMode().equalsIgnoreCase("HitBox"), 1f,5f,1f,0.1f);
+    final IntegerSetting lineWidth = new IntegerSetting("LineWidth", this, () -> render.getMode().equalsIgnoreCase("HitBox"), 0,5,1);
 
     final CheckBox glow = new CheckBox("Glow", this);
     final ColorSetting glowColor = new ColorSetting("GlowColor", this);
@@ -173,18 +173,17 @@ public class BackTrack extends Module {
                 }
 
                 realPos = target.getRealPosition();
-                Vec3 pos = realPos.subtract(target.getPositionVector());
 
-                AxisAlignedBB bb = target.getEntityBoundingBox().offset(pos);
+                AxisAlignedBB bb = target.getEntityBoundingBox().offset(realPos.subtract(target.getPositionVector()));
 
                 switch (render.getMode()) {
                     case "Player" -> {
                         if (glow.isToggled()) {
                             BloomUtils.startWrite();
-                            RenderUtils.renderPlayer(target, pos, target.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor());
+                            RenderUtils.renderPlayer(target, realPos, target.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor());
                             BloomUtils.stopWrite();
                         }
-                        RenderUtils.renderPlayer(target, pos, target.rotationYawHead, mc.timer.renderPartialTicks);
+                        RenderUtils.renderPlayer(target, realPos, target.rotationYawHead, mc.timer.renderPartialTicks);
                     }
 
                     case "Box" -> {

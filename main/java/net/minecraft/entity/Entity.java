@@ -1329,6 +1329,10 @@ public abstract class Entity implements ICommandSender
         return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true);
     }
 
+    public RayTrace rayTrace(Vec3 eye, Vec3 lookVec, float blockDistance, float partialTicks) {
+        return this.worldObj.rayTraceBlocks(eye, eye.add(lookVec.multiple(blockDistance)), false, false, true);
+    }
+
     public boolean canBeCollidedWith()
     {
         return false;

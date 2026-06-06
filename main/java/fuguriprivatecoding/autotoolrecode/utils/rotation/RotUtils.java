@@ -31,11 +31,7 @@ public class RotUtils implements Imports {
         double horizontalPercent = horizontal / 200d;
         double verticalPercent = vertical / 200d;
 
-        Vec3 center = new Vec3(
-            (box.maxX + box.minX) / 2,
-            (box.maxY + box.minY) / 2,
-            (box.maxZ + box.minZ) / 2
-        );
+        Vec3 center = box.getCenter();
 
         box = new AxisAlignedBB(
             center.xCoord - box.getLengthX() * horizontalPercent,

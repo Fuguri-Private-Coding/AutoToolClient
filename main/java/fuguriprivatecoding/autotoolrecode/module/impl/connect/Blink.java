@@ -34,7 +34,7 @@ public class Blink extends Module {
     BooleanSupplier renderBox = () -> (renderModes.getMode().equalsIgnoreCase("HitBox"));
 
     final ColorSetting color = new ColorSetting("Color", this, renderBox);
-    final FloatSetting lineWidth = new FloatSetting("LineWidth", this, renderBox, 1f,5f,1f,0.1f);
+    final IntegerSetting lineWidth = new IntegerSetting("LineWidth", this, renderBox, 0,5,1);
 
     private final List<Packet> buffer = new CopyOnWriteArrayList<>();
     private final List<Vec3> positions = new CopyOnWriteArrayList<>();

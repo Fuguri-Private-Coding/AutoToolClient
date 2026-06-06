@@ -9,16 +9,16 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
-import fuguriprivatecoding.autotoolrecode.module.impl.connect.Ping;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.RayTrace;
 import net.minecraft.util.Vec3;
 
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
@@ -29,9 +29,7 @@ public class TimerRange extends Module {
     final FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0, 2.5f, 1, 0.1f);
     final IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
 
-    final CheckBox onlyWhenPing = new CheckBox("OnlyWhenPing", this, false);
-
-    final Mode fixModes = new Mode("FixModes", this)
+    final Mode snapConditions = new Mode("SnapConditions", this)
         .addModes("ToClick", "ToTeleport")
         .setMode("ToClick")
         ;
@@ -61,21 +59,32 @@ public class TimerRange extends Module {
                 return;
             }
 
-            AxisAlignedBB box = RotUtils.getHitBox(target, 100, 100);
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, RotUtils.getBestRotation(box).getYaw());
+            boolean canSnap = KillAura.canSnapTeleport();
+
+            AxisAlignedBB box = target.getExpandedBoundingBox();
+
+            float yaw = mc.thePlayer.rotationYaw;
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, yaw);
 
             teleportTicks = 0;
 
-            if ((!Ping.isWorking() && onlyWhenPing.isToggled())
-                || target.hurtTime > maxTargetHurtTime.getValue() ||
-                DistanceUtils.getDistance(target) <= 3.0D
-            ) return;
+            if (target.hurtTime > maxTargetHurtTime.getValue() || (canSnap && DistanceUtils.getDistance(box) < 3.0)) return;
 
             Vec3 targetPosition = target.getServerPosition().divine(32.0D).subtract(target.getPositionVector());
-            AxisAlignedBB targetBox = target.getEntityBoundingBox().offset(targetPosition).expand(-0.1D);
+            AxisAlignedBB targetBox = box.offset(targetPosition);
 
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 boolean skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), targetBox) > 3.0D;
+
+                if (!canSnap) {
+                    RayTrace hit = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(1f), 12, 6, mc.thePlayer.getRotation(), 1f);
+
+                    if (hit == null || hit.entityHit != target)
+                        break;
+                    ClientUtils.chatLog(DistanceUtils.getDistance(hit.hitVec));
+
+                    skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), hit.hitVec) > 3.0D;
+                }
 
                 if (skip) {
                     simulatedPlayer.tick();
@@ -97,7 +106,7 @@ public class TimerRange extends Module {
     }
 
     public static boolean needSnap() {
-        return switch (Modules.getModule(TimerRange.class).fixModes.getMode()) {
+        return switch (Modules.getModule(TimerRange.class).snapConditions.getMode()) {
             case "ToTeleport" -> teleporting || balance > 0;
             case "ToClick" -> click;
             default -> false;

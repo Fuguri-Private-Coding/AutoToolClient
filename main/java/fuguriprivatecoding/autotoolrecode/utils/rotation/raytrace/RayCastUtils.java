@@ -6,7 +6,6 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.*;
 import org.joml.Vector2f;
-
 import java.util.List;
 
 public class RayCastUtils implements Imports {
@@ -149,15 +148,11 @@ public class RayCastUtils implements Imports {
     }
 
     public static RayTrace rayCast(final Rot rotation, final double range) {
-        return rayCast(rotation.getVec2f(), range, 0);
+        return rayCast(rotation.getVec2f(), range, 0, mc.thePlayer);
     }
 
     public static RayTrace rayCast(final Rot rotation, final double range, final float expand) {
-        return rayCast(rotation.getVec2f(), range, expand);
-    }
-
-    public static RayTrace rayCast(final Vector2f rotation, final double range, final float expand) {
-        return rayCast(rotation, range, expand, mc.thePlayer);
+        return rayCast(rotation.getVec2f(), range, expand, mc.thePlayer);
     }
 
     public static RayTrace rayCast(final Vector2f rotation, final double range, final float expand, Entity entity) {

@@ -54,12 +54,12 @@ public class AutoSoup extends Module {
                         mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
 
                         switchBack = false;
-                        soupSwitchTime = switchDelay.getRandomizedIntValue();
-                        soupUseTime = useDelay.getRandomizedIntValue();
-                        soupDropTime = dropDelay.getRandomizedIntValue();
-                        soupTimer.reset();
-                        useTimer.reset();
-                        dropTimer.reset();
+//                        soupSwitchTime = switchDelay.getRandomizedIntValue();
+//                        soupUseTime = useDelay.getRandomizedIntValue();
+//                        soupDropTime = dropDelay.getRandomizedIntValue();
+//                        soupTimer.reset();
+//                        useTimer.reset();
+//                        dropTimer.reset();
                     }
 
                     int soupSlot = getSoupSlot();
@@ -67,16 +67,16 @@ public class AutoSoup extends Module {
                     if (soupSlot != -1 && mc.thePlayer.getHealth() < health.getRandomizedIntValue()) {
                         mc.thePlayer.inventory.currentItem = soupSlot;
 
-                        if (useTimer.reachedMS(soupUseTime * 50L)) {
+//                        if (useTimer.reachedMS(soupUseTime * 50L)) {
                             mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
-                            if (dropTimer.reachedMS(soupDropTime * 50L)) {
+//                            if (dropTimer.reachedMS(soupDropTime * 50L)) {
                                 mc.thePlayer.dropOneItem(false);
-                            }
-                        }
+//                            }
+//                        }
 
                         switchBack = true;
-                        soupSwitchTime = switchDelay.getRandomizedIntValue();
-                        soupTimer.reset();
+//                        soupSwitchTime = switchDelay.getRandomizedIntValue();
+//                        soupTimer.reset();
                     }
                 } else if (mc.thePlayer.getCurrentEquippedItem().getItem() == Items.bowl) {
                     mc.thePlayer.dropOneItem(false);

@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.PrePostTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -44,8 +45,8 @@ public class Dot extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE) {
-            prev = rot;
+        if (event instanceof PrePostTickEvent) {
+            prev = mc.thePlayer.getPrevRotation();
             rot = mc.thePlayer.getRotation();
         }
 

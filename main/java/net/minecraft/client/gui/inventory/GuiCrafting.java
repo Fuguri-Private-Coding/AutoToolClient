@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.inventory;
 
+import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;

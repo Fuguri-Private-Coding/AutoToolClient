@@ -260,6 +260,7 @@ public class InvManager extends Module {
     }
 
     private void resetTimings() {
+        if (instant.isToggled()) return;
         armorTimer.reset();
         dropTimer.reset();
         sortTimer.reset();
