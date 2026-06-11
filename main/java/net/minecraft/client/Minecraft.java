@@ -36,18 +36,13 @@ import javax.imageio.ImageIO;
 
 import de.florianmichael.viamcp.fixes.AttackOrder;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
-import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.KeyEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.MouseEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.*;
 import fuguriprivatecoding.autotoolrecode.event.events.render.MBlurEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.world.FakeTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PrePostTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.Fixes;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.CPSCounter;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.CustomCrosshair;
 import fuguriprivatecoding.autotoolrecode.utils.file.WindowIconHelper;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import lombok.Getter;
@@ -1192,9 +1187,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     public void clickMouse() {
         CPSCounter cpsCounter = Modules.getModule(CPSCounter.class);
-        if (cpsCounter.isToggled()) {
+        if (cpsCounter.isToggled())
             CPSCounter.leftCps.add(System.currentTimeMillis());
-        }
+
         if (this.leftClickCounter <= 0) {
             AttackOrder.sendSwingIf1_8();
 
@@ -1212,7 +1207,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                         BlockPos blockpos = this.rayTrace.getBlockPos();
                         if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air) {
                             this.playerController.clickBlock(blockpos, this.rayTrace.sideHit);
-                            break;
                         }
                     }
 
@@ -1367,7 +1361,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         }
 
         this.mcProfiler.endSection();
-        this.entityRenderer.getMouseOver(1.0F);
+        this.entityRenderer.getMouseOver(1.0f);
         this.mcProfiler.startSection("gameMode");
 
         if (!this.isGamePaused && this.theWorld != null) {
@@ -1625,13 +1619,27 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
             ClickEvent clickEvent;
 
-            new LegitClickTimingEvent().call();
+            new BestClickTimingEvent().call();
 
             if (this.thePlayer.isUsingItem()) {
                 if (!this.gameSettings.keyBindUseItem.isKeyDown()) {
                     this.playerController.onStoppedUsingItem(this.thePlayer);
                 }
+
+                while (this.gameSettings.keyBindAttack.isPressed()) {
+
+                }
+
+                while (this.gameSettings.keyBindUseItem.isPressed()) {
+
+                }
+
+                while (this.gameSettings.keyBindPickBlock.isPressed()) {
+
+                }
             } else {
+                new LegitClickTimingEvent().call();
+
                 while (this.gameSettings.keyBindAttack.isPressed()) {
                     clickEvent = new ClickEvent(ClickEvent.Button.LEFT);
                     clickEvent.call();

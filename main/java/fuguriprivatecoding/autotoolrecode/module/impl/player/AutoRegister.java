@@ -20,7 +20,7 @@ public class AutoRegister extends Module {
 
     final CheckBox autoLogin = new CheckBox("AutoLogin", this, false);
 
-    final FloatSetting delay = new FloatSetting("Delay", this, 0, 1000, 500, 50);
+    final FloatSetting delayTicks = new FloatSetting("DelayTicks", this, 0, 100, 20, 50);
 
     final CheckBox randomPassword = new CheckBox("RandomPassword", this);
     final Mode password = new Mode("Password", this, () -> !randomPassword.isToggled())
@@ -35,7 +35,7 @@ public class AutoRegister extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof ChatMessageEvent e && e.getType() == ChatMessageEvent.Type.IN_CHAT) {
+        if (event instanceof ChatMessageEvent e && e.getType() == ChatMessageEvent.Type.IN_CHAT && !active) {
             String message = e.getMessage().getFormattedText();
             if (handleMessage(message)) setMessage(message);
         }
@@ -43,7 +43,7 @@ public class AutoRegister extends Module {
         if (mc.thePlayer.ticksExisted < 20) return;
 
         if (event instanceof TickEvent) {
-            if (active && timer.reachedMS((long) delay.getValue())) {
+            if (active && timer.reachedMS((long) delayTicks.getValue() * 50L)) {
                 handle(activeMessage);
             }
         }

@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.misc;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.BestClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.PreAttackEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
@@ -54,7 +54,7 @@ public class MurderMystery extends Module {
                 }
             }
 
-            if (event instanceof LegitClickTimingEvent && swapped && watch.reachedMS(switchBackDelay.getValue() * 50L)) {
+            if (event instanceof BestClickTimingEvent && swapped && watch.reachedMS(switchBackDelay.getValue() * 50L)) {
                 mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
                 swapped = false;
             }

@@ -26,7 +26,6 @@ public class NoSlow extends Module {
             ;
 
     BooleanSupplier vanillaGrim = () -> mode.is("Vanilla") || mode.is("Grim");
-    BooleanSupplier vanilla = () -> mode.is("Vanilla");
     BooleanSupplier grim = () -> mode.is("Grim");
 
     MultiMode itemToSlow = new MultiMode("Items To Slow", this, () -> vanillaGrim.getAsBoolean() || mode.is("Intave"))

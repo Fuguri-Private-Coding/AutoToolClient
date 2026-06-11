@@ -80,10 +80,9 @@ public class ESP extends Module {
                 boolean skip = false;
                 List<Vector2f> posList = new java.util.ArrayList<>();
 
+                mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
                 for (Vec3 vec3 : points) {
-                    mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0);
                     float[] positions = Convertors.convert2D(vec3.subtract(RenderManager.getRenderPosition()), 1);
-                    mc.entityRenderer.setupOverlayRendering();
 
                     if (positions == null || positions[2] > 1) {
                         skip = true;
@@ -92,6 +91,7 @@ public class ESP extends Module {
 
                     posList.add(new Vector2f(positions[0], positions[1]));
                 }
+                mc.entityRenderer.setupOverlayRendering();
 
                 if (skip) continue;
 
@@ -104,6 +104,8 @@ public class ESP extends Module {
             }
 
             float scaleFactor = ScaleUtils.getScaledResolution().scaleFactor;
+
+            GL11.glPushMatrix();
             GL11.glScalef(1 / scaleFactor, 1 / scaleFactor, 1);
 
             for (BoxRender box : boxes) {
@@ -123,17 +125,15 @@ public class ESP extends Module {
                     float width = box.maxX - box.minX;
                     float height = box.maxY - box.minY;
 
-                    Color glowColor = this.glowColor.getFadedColor();
-
-                    RenderUtils.drawHorizontalLine(box.minX, width, box.minY, boxLineWidth.getValue(), glowColor);
-                    RenderUtils.drawHorizontalLine(box.minX, width, box.maxY, boxLineWidth.getValue(), glowColor);
-                    RenderUtils.drawVerticalLine(box.minX, box.minY, height, boxLineWidth.getValue(), glowColor);
-                    RenderUtils.drawVerticalLine(box.maxX, box.minY, height, boxLineWidth.getValue(), glowColor);
+                    RenderUtils.drawHorizontalLine(box.minX, width, box.minY, boxLineWidth.getValue(), glowColor.getFadedColor());
+                    RenderUtils.drawHorizontalLine(box.minX, width, box.maxY, boxLineWidth.getValue(), glowColor.getFadedColor());
+                    RenderUtils.drawVerticalLine(box.minX, box.minY, height, boxLineWidth.getValue(), glowColor.getFadedColor());
+                    RenderUtils.drawVerticalLine(box.maxX, box.minY, height, boxLineWidth.getValue(), glowColor.getFadedColor());
                 }
 
                 BloomUtils.stopWrite();
             }
-            GL11.glScalef(scaleFactor, scaleFactor, 1f);
+            GL11.glPopMatrix();
         }
 
         if (event instanceof Render3DEvent) {

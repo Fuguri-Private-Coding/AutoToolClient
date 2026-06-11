@@ -8,26 +8,27 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
 @ModuleInfo(name = "AirStuck", category = Category.MOVE, description = "Позволяет вам зависнуть в воздухе.")
 public class AirStuck extends Module {
 
     Mode mode = new Mode("Mode", this)
-            .addModes("Default", "Tick")
-            .setMode("Default");
+            .addModes("Vanilla")
+            .setMode("Vanilla");
 
     @Override
     public void onEvent(Event event) {
         if (mode.getMode().equals("Default")) {
-            if (event instanceof PacketEvent packetEvent && packetEvent.getPacket() instanceof S08PacketPlayerPosLook) packetEvent.setCanceled(true);
-            if (event instanceof MoveButtonEvent moveButtonEvent) {
-                moveButtonEvent.setJump(false);
-                moveButtonEvent.setForward(false);
-                moveButtonEvent.setRight(false);
-                moveButtonEvent.setLeft(false);
-                moveButtonEvent.setBack(false);
+            if (event instanceof PacketEvent e && e.getPacket() instanceof S08PacketPlayerPosLook) e.setCanceled(true);
+            if (event instanceof MoveButtonEvent e) {
+                MoveUtils.keyBindStop();
+
+                e.setJump(false);
+                e.setSneak(false);
             }
+
             if (event instanceof TickEvent) {
                 if (mc.thePlayer.noClip) {
                     mc.thePlayer.motionY = 0.0;
@@ -37,9 +38,5 @@ public class AirStuck extends Module {
                 }
             }
         }
-//
-//        if (mode.is("Tick") && event instanceof TickEvent e) {
-//            e.cancel();
-//        }
     }
 }

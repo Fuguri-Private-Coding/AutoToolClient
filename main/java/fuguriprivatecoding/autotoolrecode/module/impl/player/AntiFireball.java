@@ -50,7 +50,7 @@ public class AntiFireball extends Module {
             }
         }
 
-        if (event instanceof LegitClickTimingEvent && target != null && stopWatch.reachedMS(delay.getValue())) {
+        if (event instanceof BestClickTimingEvent && target != null && stopWatch.reachedMS(delay.getValue())) {
             AttackOrder.sendFixedAttack(mc.thePlayer, target);
             stopWatch.reset();
         }

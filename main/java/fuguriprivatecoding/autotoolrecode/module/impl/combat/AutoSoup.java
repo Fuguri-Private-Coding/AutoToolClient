@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.player.BestClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -12,74 +13,68 @@ import fuguriprivatecoding.autotoolrecode.utils.player.inventory.InventoryUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @ModuleInfo(name = "AutoSoup", category = Category.COMBAT, description = "Автоматический хил супами")
 public class AutoSoup extends Module {
 
-    DoubleSlider health = new DoubleSlider("Health", this, 1, 20, 9, 1);
+    final DoubleSlider health = new DoubleSlider("Health", this, 1, 20, 9, 1);
 
-    DoubleSlider useDelay = new DoubleSlider("UseDelay", this, 0, 20, 9, 1);
-    DoubleSlider dropDelay = new DoubleSlider("DropDelay", this, 0, 20, 9, 1);
-    DoubleSlider switchDelay = new DoubleSlider("SwitchDelay", this, 0, 20, 9, 1);
+    final DoubleSlider useDelay = new DoubleSlider("UseDelay", this, 0, 20, 9, 1);
+    final DoubleSlider dropDelay = new DoubleSlider("DropDelay", this, 0, 20, 9, 1);
 
     final CheckBox refill = new CheckBox("Refill", this, true);
-    DoubleSlider refillDelay = new DoubleSlider("RefillDelay", this, refill::isToggled, 0, 20, 9, 1);
+    final DoubleSlider refillDelay = new DoubleSlider("RefillDelay", this, refill::isToggled, 0, 20, 9, 1);
 
-    private final StopWatch soupTimer = new StopWatch();
     private final StopWatch refillTimer = new StopWatch();
     private final StopWatch useTimer = new StopWatch();
     private final StopWatch dropTimer = new StopWatch();
 
-    private int soupSwitchTime = 0;
     private int soupUseTime = 0;
     private int soupDropTime = 0;
     private int refillTime = 0;
-    private boolean switchBack;
-    private int lastSoupSlot;
 
-    boolean needDrop = false;
+    private boolean eatingSoup = false;
+    private boolean usedSoup = false;
 
     @Override
     public void onEvent(Event event) {
         if (mc.currentScreen == null) {
             if (event instanceof LegitClickTimingEvent) {
-                if (soupTimer.reachedMS(soupSwitchTime * 50L)) {
-                    if (switchBack) {
-                        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
-
-                        switchBack = false;
-//                        soupSwitchTime = switchDelay.getRandomizedIntValue();
-//                        soupUseTime = useDelay.getRandomizedIntValue();
-//                        soupDropTime = dropDelay.getRandomizedIntValue();
-//                        soupTimer.reset();
-//                        useTimer.reset();
-//                        dropTimer.reset();
-                    }
-
+                if (!eatingSoup) {
                     int soupSlot = getSoupSlot();
 
                     if (soupSlot != -1 && mc.thePlayer.getHealth() < health.getRandomizedIntValue()) {
                         mc.thePlayer.inventory.currentItem = soupSlot;
 
-//                        if (useTimer.reachedMS(soupUseTime * 50L)) {
-                            mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
-//                            if (dropTimer.reachedMS(soupDropTime * 50L)) {
-                                mc.thePlayer.dropOneItem(false);
-//                            }
-//                        }
+                        eatingSoup = true;
+                        usedSoup = false;
 
-                        switchBack = true;
-//                        soupSwitchTime = switchDelay.getRandomizedIntValue();
-//                        soupTimer.reset();
+                        soupUseTime = useDelay.getRandomizedIntValue();
+                        soupDropTime = dropDelay.getRandomizedIntValue();
+
+                        useTimer.reset();
+                        dropTimer.reset();
                     }
-                } else if (mc.thePlayer.getCurrentEquippedItem().getItem() == Items.bowl) {
-                    mc.thePlayer.dropOneItem(false);
+                }
+
+                if (eatingSoup && !usedSoup) {
+                    if (useTimer.reachedMS(soupUseTime * 50L)) {
+                        mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem());
+                        usedSoup = true;
+                        dropTimer.reset();
+                    }
+                }
+
+                if (eatingSoup && usedSoup) {
+                    if (dropTimer.reachedMS(soupDropTime * 50L)) {
+                        mc.thePlayer.dropOneItem(false);
+                        mc.thePlayer.inventory.currentItem = mc.thePlayer.inventory.fakeCurrentItem;
+
+                        eatingSoup = false;
+                        usedSoup = false;
+                    }
                 }
 
                 refillTimer.reset();

@@ -742,6 +742,10 @@ public abstract class World implements IBlockAccess
         return this.provider.getLightBrightnessTable()[this.getLightFromNeighbors(pos)];
     }
 
+    public IBlockState getBlockState(Vec3 pos) {
+        return getBlockState(new BlockPos(pos));
+    }
+
     public IBlockState getBlockState(BlockPos pos)
     {
         if (!this.isValid(pos))

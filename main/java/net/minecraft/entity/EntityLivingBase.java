@@ -941,7 +941,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     }
 
     public EntityLivingBase getAttackingEntity() {
-        return (EntityLivingBase) (this._combatTracker.func_94550_c() != null ? this._combatTracker.func_94550_c() : (this.attackingPlayer != null ? this.attackingPlayer : (this.entityLivingToAttack != null ? this.entityLivingToAttack : null)));
+        return this._combatTracker.func_94550_c() != null ? this._combatTracker.func_94550_c() : (this.attackingPlayer != null ? this.attackingPlayer : (this.entityLivingToAttack != null ? this.entityLivingToAttack : null));
     }
 
     public final float getMaxHealth() {
@@ -957,16 +957,26 @@ public abstract class EntityLivingBase extends Entity implements Imports {
     }
 
     public int getArmSwingAnimationEnd() {
-        Hand hand = Modules.getModule(Hand.class);
+        int swingLength = 6;
 
-        int i = this.isPotionActive(Potion.digSpeed)
-                ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier())
-                : (this.isPotionActive(Potion.digSlowdown) ? 6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : 6);
+        PotionEffect haste = getActivePotionEffect(Potion.digSpeed);
+        PotionEffect miningFatigue = getActivePotionEffect(Potion.digSlowdown);
 
-        if (hand.isToggled() && hand.effect.get("Animations")) {
-            i = (int) ((double) i / hand.speed.getValue());
+        if (haste != null) {
+            swingLength -= haste.getAmplifier() + 1;
+        } else if (miningFatigue != null) {
+            swingLength += (miningFatigue.getAmplifier() + 1) * 2;
         }
-        return i;
+
+        if (mc.thePlayer == this) {
+            Hand hand = Modules.getModule(Hand.class);
+
+            if (hand.isToggled() && hand.effect.get("Animations")) {
+                swingLength = (int) (swingLength / hand.speed.getValue());
+            }
+        }
+
+        return swingLength;
     }
 
     public void swingItem() {

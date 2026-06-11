@@ -4,7 +4,7 @@ import de.florianmichael.viamcp.fixes.AttackOrder;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.BestClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.TimerRange;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
@@ -41,7 +41,7 @@ public class Clicks implements Imports, EventListener {
         EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
         boolean clicking = needClick(target);
 
-        if (event instanceof LegitClickTimingEvent) {
+        if (event instanceof BestClickTimingEvent) {
             int iters = clicks;
             clicks = 0;
 

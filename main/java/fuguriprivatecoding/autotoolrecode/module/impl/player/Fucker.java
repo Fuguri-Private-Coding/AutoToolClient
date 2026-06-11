@@ -12,14 +12,12 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.ItemUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
@@ -122,7 +120,7 @@ public class Fucker extends Module {
             }
         }
 
-        if (event instanceof LegitClickTimingEvent && block != null && CameraRot.INST.isUnlocked() && delay == 0) {
+        if (event instanceof BestClickTimingEvent && block != null && CameraRot.INST.isUnlocked() && delay == 0) {
             if (needSlot != -1) mc.thePlayer.inventory.currentItem = needSlot;
 
             mine();

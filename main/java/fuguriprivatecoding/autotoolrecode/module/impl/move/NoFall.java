@@ -18,7 +18,6 @@ public class NoFall extends Module {
 
     @Override
     public void onEvent(Event event) {
-
         switch (modes.getMode()) {
             case "Vanilla" -> {
                 if (event instanceof FallDistanceEvent e) {

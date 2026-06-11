@@ -30,20 +30,16 @@ import java.util.function.BooleanSupplier;
 public class BackTrack extends Module {
 
     final DoubleSlider distance = new DoubleSlider("Distance", this, 0,12,12,0.1f);
-
     final DoubleSlider delay = new DoubleSlider("Delay", this, 0,5000,200,1);
 
     final BooleanSupplier constantRandomSupplier = () -> delay.minValue != delay.maxValue;
     final CheckBox constantRandomize = new CheckBox("ConstantDelayRandomize", this, constantRandomSupplier, true);
 
     final CheckBox adaptiveDelay = new CheckBox("AdaptiveDelay", this, true);
-
     final FloatSetting threshold = new FloatSetting("Threshold", this, 0, 1, 0, 0.01f);
-
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenTrack", this, 0, 20, 0) ;
 
     public final CheckBox cancelHitsIfNeed = new CheckBox("CancelHitsIfNeed", this, false);
-
     final CheckBox onlyWhenNeed = new CheckBox("OnlyWhenNeed", this, false);
 
     final MultiMode resetIf = new MultiMode("ResetIf", this)

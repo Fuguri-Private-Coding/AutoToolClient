@@ -53,7 +53,7 @@ public class Ping extends Module {
             "PlaceBlock", "ClickWindow", "Scaffold", "OpenedGui", "Distance", "ChatMessage");
 
     final FloatSetting distanceToReset = new FloatSetting("DistanceToReset", this, () -> actions.get("Distance"), 2.5f, 6f,3f,0.01f);
-        final IntegerSetting distanceDelay = new IntegerSetting("DistanceDelay", this, () -> actions.get("Distance"),0, 1000, 0);
+    final IntegerSetting distanceDelay = new IntegerSetting("DistanceDelay", this, () -> actions.get("Distance"),0, 1000, 0);
 
     final IntegerSetting chatMessageDelay = new IntegerSetting("ChatMessageDelay", this, () -> actions.get("ChatMessage"),0, 1000, 0);
     final IntegerSetting attackDelay = new IntegerSetting("AttackDelay", this, () -> actions.get("Attack"),0, 1000, 0);

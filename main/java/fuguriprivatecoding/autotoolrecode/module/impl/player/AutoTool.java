@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.BestClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -25,13 +25,12 @@ public class AutoTool extends Module {
 
     @Override
     public void onDisable() {
-        super.onDisable();
         switchBack();
     }
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof LegitClickTimingEvent) {
+        if (event instanceof BestClickTimingEvent) {
             needSwitch = shouldSwitch(mc.rayTrace);
 
             long switchDelay = switchDelayTick.getRandomizedIntValue() * 50L;

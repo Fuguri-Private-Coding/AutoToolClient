@@ -49,7 +49,6 @@ public class MoreKB extends Module {
             }
 
             if (delay > 0 && !TimerRange.teleporting && TimerRange.balance == 0 && !e.isCanceled()) {
-                ClientUtils.chatLog(delay + "delay");
                 delay--;
             }
         }

@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 
 @ModuleInfo(name = "FastLadder", category = Category.MOVE, description = "Позволяет быстро подниматься по лестнице.")
@@ -18,25 +19,13 @@ public class FastLadder extends Module {
     final CheckBox polar = new CheckBox("Polar", this, false);
     final CheckBox stopBoostAtEnd = new CheckBox("Stop boost at end", this, polar::isToggled, true);
 
-
     @Override
     public void onEvent(Event event) {
         if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.PRE && mc.thePlayer.isOnLadder() && mc.gameSettings.keyBindJump.isKeyDown()) {
             if (polar.isToggled()) {
                 e.setOnGround(true);
-
-                if (stopBoostAtEnd.isToggled()) {
-                    BlockPos headPos = new BlockPos(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY + mc.thePlayer.getEyeHeight(),
-                        mc.thePlayer.posZ
-                    );
-
-                    IBlockState blockState = mc.theWorld.getBlockState(headPos);
-
-                    if (!(blockState.getBlock() instanceof BlockLadder))
-                        return;
-                }
+                if (mc.theWorld.getBlockState(mc.thePlayer.getPositionEyes(1f)).getBlock() != Blocks.ladder && stopBoostAtEnd.isToggled())
+                    return;
             }
 
             mc.thePlayer.motionY = motion.getValue();

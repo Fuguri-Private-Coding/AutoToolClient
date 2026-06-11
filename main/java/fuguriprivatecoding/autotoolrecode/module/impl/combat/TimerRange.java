@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
-import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.BestClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -10,7 +10,6 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
@@ -46,7 +45,7 @@ public class TimerRange extends Module {
             mc.timer.renderPartialTicks = partialTicks.getValue();
         }
 
-        if (event instanceof LegitClickTimingEvent && click) {
+        if (event instanceof BestClickTimingEvent && click) {
             Clicks.click(target);
             click = false;
         }
@@ -81,7 +80,6 @@ public class TimerRange extends Module {
 
                     if (hit == null || hit.entityHit != target)
                         break;
-                    ClientUtils.chatLog(DistanceUtils.getDistance(hit.hitVec));
 
                     skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), hit.hitVec) > 3.0D;
                 }

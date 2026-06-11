@@ -123,7 +123,7 @@ public class Scaffold extends Module {
             }
         }
 
-        if (event instanceof LegitClickTimingEvent) {
+        if (event instanceof BestClickTimingEvent) {
             if (mc.thePlayer.isUsingItem()) mc.thePlayer.clearItemInUse();
 
             int slot = ItemUtils.findBlockInHotBar();
@@ -270,6 +270,7 @@ public class Scaffold extends Module {
         Rot speed = getDeltaSpeed();
 
         delta.limit(speed);
+
         delta.fix();
 
         lastDelta = delta.copy();

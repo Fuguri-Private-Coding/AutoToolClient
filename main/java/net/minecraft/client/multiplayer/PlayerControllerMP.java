@@ -481,11 +481,6 @@ public class PlayerControllerMP
         return new EntityPlayerSP(this.mc, worldIn, this.netClientHandler, statWriter);
     }
 
-    public void attackEntity(EntityPlayer playerIn, Entity targetEntity, boolean swing) {
-        if (swing) mc.thePlayer.swingItem();
-        attackEntity(playerIn, targetEntity);
-    }
-
     public void attackEntity(EntityPlayer playerIn, Entity targetEntity) {
         PreAttackEvent event = new PreAttackEvent(targetEntity);
 

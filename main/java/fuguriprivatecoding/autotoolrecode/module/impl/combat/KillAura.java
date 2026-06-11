@@ -213,33 +213,6 @@ public class KillAura extends Module {
 
         if (fullBox.isVecInside(eyes)) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), fullBox);
 
-        if (smoothModes.get("Noise")) {
-            FastNoiseLite.NoiseType type = FastNoiseLite.NoiseType.valueOf(noiseType.getMode());
-
-            noise.SetNoiseType(type);
-            noise.SetFrequency(noiseSpeed.getValue());
-
-            float strengthYaw = yawNoiseStrength.getValue();
-            float strengthPitch = pitchNoiseStrength.getValue();
-
-            float t = System.nanoTime() / 1_000_000_000f;
-
-            float randomYaw = noise.GetNoise(t, 0f) * strengthYaw;
-            float randomPitch = noise.GetNoise(0f, t) * strengthPitch;
-
-            needRot.plus(randomYaw, randomPitch);
-        }
-
-        if (smoothModes.get("MouseDelta")) {
-            Rot mouseDelta = invertDelta.isToggled() ?
-                CameraRot.INST.deltaTo(CameraRot.INST.getPrevRot()) :
-                CameraRot.INST.getPrevRot().deltaTo(CameraRot.INST);
-
-            float multipleDelta = (float) deltaMultiplier.getRandomizedDoubleValue();
-
-            needRot.plus(mouseDelta.multiple(multipleDelta));
-        }
-
         if (smoothModes.get("Recorded")) {
             if (recordedIndex >= recordedOffset.offsets.size()) recordedIndex = 0;
 
@@ -277,8 +250,35 @@ public class KillAura extends Module {
         Rot delta = lr.deltaTo(needRotation);
 
         if (!teleport) {
+            if (smoothModes.get("Noise")) {
+                FastNoiseLite.NoiseType type = FastNoiseLite.NoiseType.valueOf(noiseType.getMode());
+
+                noise.SetNoiseType(type);
+                noise.SetFrequency(noiseSpeed.getValue());
+
+                float strengthYaw = yawNoiseStrength.getValue();
+                float strengthPitch = pitchNoiseStrength.getValue();
+
+                float t = System.nanoTime() / 1_000_000_000f;
+
+                float randomYaw = noise.GetNoise(t, 0f) * strengthYaw;
+                float randomPitch = noise.GetNoise(0f, t) * strengthPitch;
+
+                delta.plus(randomYaw, randomPitch);
+            }
+
             if (smoothModes.get("Basic")) {
                 delta.plus(RandomUtils.nextFloat(-yawStrength.getValue(), yawStrength.getValue()), RandomUtils.nextFloat(-pitchStrength.getValue(), pitchStrength.getValue()));
+            }
+
+            if (smoothModes.get("MouseDelta")) {
+                Rot mouseDelta = invertDelta.isToggled() ?
+                    CameraRot.INST.deltaTo(CameraRot.INST.getPrevRot()) :
+                    CameraRot.INST.getPrevRot().deltaTo(CameraRot.INST);
+
+                float multipleDelta = (float) deltaMultiplier.getRandomizedDoubleValue();
+
+                delta.plus(mouseDelta.multiple(multipleDelta));
             }
 
             if (smoothModes.get("Linear")) {

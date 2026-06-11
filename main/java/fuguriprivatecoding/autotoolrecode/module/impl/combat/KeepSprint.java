@@ -11,11 +11,12 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 @ModuleInfo(name = "KeepSprint", category = Category.COMBAT, description = "Позволяет не замедлятся от удара.")
 public class KeepSprint extends Module {
     
-    private final FloatSetting hurtHitMotion = new FloatSetting("HurtHitMotion",this, 0f,1f,0.6f,0.1f);
     private final FloatSetting hitMotion = new FloatSetting("HitMotion",this, 0f,1f,0.6f,0.1f);
+    private final FloatSetting hurtHitMotion = new FloatSetting("HurtHitMotion",this, 0f,1f,0.6f,0.1f);
 
-    private final CheckBox sprintSlowDownVelocity = new CheckBox("HurtHitSprint", this);
     private final CheckBox sprintSlowDownNormal = new CheckBox("HitSprint", this);
+    private final CheckBox sprintSlowDownVelocity = new CheckBox("HurtHitSprint", this);
+
     private final CheckBox onlyInAir = new CheckBox("OnlyInAir", this);
 
     @Override
