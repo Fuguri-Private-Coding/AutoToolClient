@@ -12,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.RotData;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.ScaffoldType;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.ItemUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
@@ -247,7 +248,9 @@ public class Scaffold extends Module {
             case "TellyBridge" -> {
                 if (isTelly(speedTelly.isToggled(), currentAirTicks)) {
                     currentAirTicks = airTicks.getRandomizedIntValue();
-                    rotation = new Rot(needYaw, lastRotation.getPitch());
+                    float pitch = Math.clamp(CameraRot.INST.getPitch(), 15, 90) + RandomUtils.nextFloat(-1f, 1f);
+
+                    rotation = new Rot(needYaw, pitch);
                 } else {
                     rotation = getBestRotation(needYaw, offset, sortYawOffset.isToggled(), 5);
                 }
@@ -415,7 +418,7 @@ public class Scaffold extends Module {
         }
 
         if (validRotations.isEmpty()) {
-            if (sortOffset) lastRotation = new Rot(finalOffsetYaw, lastRotation.getPitch());
+            if (sortOffset) lastRotation = new Rot(finalOffsetYaw, mc.thePlayer.rotationPitch);
             return lastRotation;
         }
 

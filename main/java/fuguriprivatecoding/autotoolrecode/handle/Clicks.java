@@ -60,6 +60,7 @@ public class Clicks implements Imports, EventListener {
     }
 
     public boolean needClick(EntityLivingBase target) {
+        if (mc.rayTrace.typeOfHit == RayTrace.RayType.BLOCK) return false;
         if (TimerRange.click) return false;
 
         if (target != null && BackTrack.needCancel(target)) {

@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.rect.Rect;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 import java.awt.*;
@@ -27,6 +28,10 @@ public class RoundedUtils implements Imports {
         program.renderShader(x, y, width, height);
         GlStateManager.disableBlend();
         Shader.stop();
+    }
+
+    public static void drawRect(final Rect rect, final float radius, final Color color) {
+        draw(rect.x() - 1f, rect.y() - 1f, rect.width() + 2, rect.height() + 2, radius, radius, radius, radius, color);
     }
 
     public static void drawRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {

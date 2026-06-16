@@ -181,8 +181,8 @@ public class InvManager extends Module {
                 } else {
                     int slot = listOfSlots.removeFirst();
                     windowClick(slot, 1, 4);
+                    return true;
                 }
-                return true;
             }
         }
         return false;
@@ -346,7 +346,7 @@ public class InvManager extends Module {
                     if (!instant) return true;
                 }
             }
-            return true;
+            if (instant) return true;
         }
         return false;
     }

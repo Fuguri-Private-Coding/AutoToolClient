@@ -17,6 +17,11 @@ public class NewClickScreen extends GuiScreen {
     }
 
     @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+
+    }
+
+    @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             mc.displayGuiScreen(null);
