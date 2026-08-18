@@ -45,7 +45,7 @@ import java.io.*;
 public class Client implements Imports {
 
 	public final String CLIENT_NAME = "AutoTool";
-    public final ClientVersion CLIENT_VERSION = new ClientVersion(6, 7, 0);
+    public final ClientVersion CLIENT_VERSION = new ClientVersion(6, 7, 1);
 
     private final String RESOURCES_ID = "minecraft";
     private final String RESOURCES_CLIENT_ID = "autotool/";
