@@ -1,14 +1,101 @@
 package fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace;
 
 import com.google.common.base.Predicates;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
+import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.util.*;
+import net.optifine.reflect.Reflector;
 import org.joml.Vector2f;
 import java.util.List;
 
 public class RayCastUtils implements Imports {
+
+    public static RayTrace getMouseOver(Rot rotation, double distance, float partialTicks) {
+        Entity entity = mc.getRenderViewEntity();
+
+        if (entity == null || mc.theWorld == null)
+            return null;
+
+        RayTrace trace = entity.rayTrace(distance, partialTicks, rotation);
+        double d1 = distance;
+        Vec3 vec3 = entity.getPositionEyes(partialTicks);
+        boolean flag = false;
+
+        if (mc.playerController.extendedReach()) {
+            distance = 6.0D;
+            d1 = 6.0D;
+        } else if (distance > 3.0D) {
+            flag = true;
+        }
+
+        if (trace != null) {
+            d1 = trace.hitVec.distanceTo(vec3);
+        }
+
+        Vec3 vec31 = RotUtils.getVectorForRotation(rotation);
+        Vec3 vec32 = vec3.add(vec31.multiple(distance));
+        Entity pointedEntity = null;
+        Vec3 vec33 = null;
+        float expand = 1.0F;
+
+        AxisAlignedBB targetBox = entity.getEntityBoundingBox()
+            .add(vec31.multiple(distance))
+            .expand(expand);
+
+        List<Entity> list = mc.theWorld.getEntitiesInAABBexcluding(entity, targetBox, Predicates.and(EntitySelectors.NOT_SPECTATING, Entity::canBeCollidedWith));
+
+        double d2 = d1;
+
+        for (Entity target : list) {
+            AxisAlignedBB axisalignedbb = target.getEntityBoundingBox().expand(target.getCollisionBorderSize());
+            RayTrace rayTrace = axisalignedbb.calculateIntercept(vec3, vec32);
+
+            if (axisalignedbb.isVecInside(vec3)) {
+                if (d2 >= 0.0D) {
+                    pointedEntity = target;
+                    vec33 = rayTrace == null ? vec3 : rayTrace.hitVec;
+                    d2 = 0.0D;
+                }
+            } else if (rayTrace != null) {
+                double d3 = vec3.distanceTo(rayTrace.hitVec);
+
+                if (d3 < d2 || d2 == 0.0D) {
+                    boolean flag1 = false;
+
+                    if (Reflector.ForgeEntity_canRiderInteract.exists()) {
+                        flag1 = Reflector.callBoolean(target, Reflector.ForgeEntity_canRiderInteract);
+                    }
+
+                    if (!flag1 && target == entity.ridingEntity) {
+                        if (d2 == 0.0D) {
+                            pointedEntity = target;
+                            vec33 = rayTrace.hitVec;
+                        }
+                    } else {
+                        pointedEntity = target;
+                        vec33 = rayTrace.hitVec;
+                        d2 = d3;
+                    }
+                }
+            }
+        }
+
+        if (pointedEntity != null && flag && vec3.distanceTo(vec33) > 3.0D) {
+            return new RayTrace(RayTrace.RayType.MISS, vec33, null, new BlockPos(vec33));
+        }
+
+        if (pointedEntity != null && (d2 < d1 || mc.rayTrace == null)) {
+            return new RayTrace(pointedEntity, vec33);
+        }
+
+        return trace;
+    }
 
     public static Entity raycastEntity(final double range, final IEntityFilter entityFilter) {
         return raycastEntity(range, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch,

@@ -40,6 +40,7 @@ public class BackTrack extends Module {
     final IntegerSetting delayBetweenTicks = new IntegerSetting("DelayBetweenTrack", this, 0, 20, 0) ;
 
     public final CheckBox cancelHitsIfNeed = new CheckBox("CancelHitsIfNeed", this, false);
+    public final FloatSetting distanceToCancelHits = new FloatSetting("DistanceToCancelHits", this, cancelHitsIfNeed::isToggled, 3, 10, 6, 0.1f);
     final CheckBox onlyWhenNeed = new CheckBox("OnlyWhenNeed", this, false);
 
     final MultiMode resetIf = new MultiMode("ResetIf", this)
@@ -238,6 +239,7 @@ public class BackTrack extends Module {
     }
 
     public static boolean needCancel(EntityLivingBase target) {
-        return working && Modules.getModule(BackTrack.class).cancelHitsIfNeed.isToggled() && DistanceUtils.getDistance(target.getNPosition()) > 6;
+        BackTrack backTrack = Modules.getModule(BackTrack.class);
+        return working && backTrack.cancelHitsIfNeed.isToggled() && DistanceUtils.getDistance(target.getNPosition()) > backTrack.distanceToCancelHits.getValue();
     }
 }

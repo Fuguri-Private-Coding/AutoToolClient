@@ -16,24 +16,17 @@ import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.TextureUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import smtc.TrackInfo;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -56,8 +49,6 @@ public class DynamicIsland extends Module {
     private final Date date = new Date();
 
     private boolean opened, pressed = false, player = false;
-
-    DynamicTexture dynamicTexture;
 
     ResourceLocation airplaneLogo = Client.of("image/airplane.png");
 
@@ -90,24 +81,6 @@ public class DynamicIsland extends Module {
             String title = info.title();
             String artist = info.artist();
             boolean playing = info.isPlaying();
-
-            BufferedImage image = mediaController.getArtworkImage();
-            BufferedImage lastImage = mediaController.getLastArtworkImage();
-
-            if (image != null && image != lastImage) {
-                if (mediaController.getSongLocation() != null) {
-                    mc.getTextureManager().deleteTexture(mediaController.getSongLocation());
-                }
-
-                dynamicTexture = new DynamicTexture(image);
-
-                String name = "song_image_" + info.title();
-                ResourceLocation songImage = mc.getTextureManager()
-                    .getDynamicTextureLocation(name, dynamicTexture);
-
-                mediaController.setSongLocation(songImage);
-                mediaController.setLastArtworkImage(image);
-            }
 
             boolean hoveredRect = GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + 15);
 
@@ -222,9 +195,16 @@ public class DynamicIsland extends Module {
                     }
 
                     if (!needDesc) {
+
                         updateRun(() -> {
-                            regularFont.draw(Client.getFullName(), 0, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
-                        }, regularFont.width(Client.getFullName(), 8), 0);
+                            ResourceLocation songImage = mediaController.getSongLocation();
+
+                            if (songImage != null) {
+                                TextureUtils.texture(songImage, -2.5f, -2.5f, 10, 10, 5, 1f, Colors.WHITE.withAlpha(textAlpha.getValue()));
+                            }
+
+                            regularFont.draw(Client.getFullName(), 10, 0, 8, whiteColor.withAlpha(textAlpha.getValue()));
+                        }, regularFont.width(Client.getFullName(), 8) + (mediaController.getSongLocation() != null ? 10 : 0), 0);
                     }
                 }
             }
@@ -261,18 +241,16 @@ public class DynamicIsland extends Module {
                 BlurUtils.stopWrite();
             }
 
-            ScissorUtils.enableScissor();
-            ScissorUtils.scissor(sc, x + 2, y + 2, width - 4, height - 4);
-
             float translateX = x + 5;
             float translateY = y + 5;
 
             GL11.glPushMatrix();
+            StencilUtils.setUpTexture(x, y, width, height, rectRadius.getValue());
+            StencilUtils.writeTexture();
             GL11.glTranslated(translateX, translateY, 0);
             currentRun.run();
+            StencilUtils.endWriteTexture();
             GL11.glPopMatrix();
-
-            ScissorUtils.disableScissor();
 
             boldFont.draw(currentTimeText, timeX, timeY, 8, Color.WHITE);
 

@@ -24,6 +24,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -230,7 +231,7 @@ public class KillAura extends Module {
 
         if (!teleport) delta = transformDelta(delta);
 
-        delta.fix();
+        delta = delta.fixed();
         lastDelta = delta.copy();
 
         CameraRot.INST.setUnlocked(!lockView.isToggled());
@@ -252,11 +253,15 @@ public class KillAura extends Module {
             float randomYaw = noise.GetNoise(t, 0f) * strengthYaw;
             float randomPitch = noise.GetNoise(0f, t) * strengthPitch;
 
-            delta.plus(randomYaw, randomPitch);
+            Rot add = new Rot(randomYaw, randomPitch);
+
+            delta = delta.plus(add);
         }
 
         if (smoothModes.get("Basic")) {
-            delta.plus(RandomUtils.nextFloat(-yawStrength.getValue(), yawStrength.getValue()), RandomUtils.nextFloat(-pitchStrength.getValue(), pitchStrength.getValue()));
+            Rot add = new Rot(RandomUtils.nextFloat(-yawStrength.getValue(), yawStrength.getValue()), RandomUtils.nextFloat(-pitchStrength.getValue(), pitchStrength.getValue()));
+
+            delta = delta.plus(add);
         }
 
         if (smoothModes.get("MouseDelta")) {
@@ -266,11 +271,11 @@ public class KillAura extends Module {
 
             float multipleDelta = (float) deltaMultiplier.getRandomizedDoubleValue();
 
-            delta.plus(mouseDelta.multiple(multipleDelta));
+            delta = delta.plus(mouseDelta.multiplied(multipleDelta));
         }
 
         if (smoothModes.get("Linear")) {
-            delta.divine(linearSmoothStrength.getValue(), linearSmoothStrength.getValue());
+            delta = delta.divided(linearSmoothStrength.getValue());
         }
 
         Rot speed = new Rot(
@@ -278,7 +283,7 @@ public class KillAura extends Module {
             pitchSpeed.getRandomizedIntValue()
         );
 
-        delta.limit(speed);
+        delta = delta.limitedLine(speed);
 
         if (smoothModes.get("MixDelta")) {
             delta = lastDelta.lerp(delta, (float) mixYawDelta.getRandomizedIntValue() / 100f, (float) mixPitchDelta.getRandomizedIntValue() / 100f);

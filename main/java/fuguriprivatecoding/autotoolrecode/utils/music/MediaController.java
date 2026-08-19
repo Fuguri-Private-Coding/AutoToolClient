@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.utils.music;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
 import smtc.SmtcNative;
 import smtc.TrackInfo;
@@ -12,6 +13,8 @@ import java.io.ByteArrayInputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import static fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports.mc;
 
 public final class MediaController {
     @Getter private final ScheduledExecutorService executor;
@@ -25,7 +28,9 @@ public final class MediaController {
     @Getter private volatile long artworkVersion = -1L;
 
     @Getter @Setter
-    private ResourceLocation songLocation;
+    private volatile ResourceLocation songLocation;
+
+    private volatile DynamicTexture dynamicTexture;
 
     public MediaController() {
         this.executor = Executors.newSingleThreadScheduledExecutor();
@@ -42,19 +47,62 @@ public final class MediaController {
             TrackInfo changed = SmtcNative.nFetchIfChanged(lastVersion);
             if (changed == null) return;
 
-            if (changed.available()) {
-                lastVersion = changed.version();
-                current = changed;
+            if (!changed.available()) return;
 
-                if (changed.artworkBytes() != null && changed.artworkBytes().length > 0) {
-                    artworkImage = ImageIO.read(new ByteArrayInputStream(changed.artworkBytes()));
-                } else {
-                    artworkImage = null;
+            lastVersion = changed.version();
+            current = changed;
+
+            byte[] bytes = changed.artworkBytes();
+
+            if (bytes != null && bytes.length > 0) {
+                BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
+
+                if (image != null) {
+                    mc.addScheduledTask(() -> updateTexture(image));
                 }
+            } else {
+                mc.addScheduledTask(() -> {
+                    artworkImage = null;
 
-                artworkVersion = changed.version();
+                    if (getSongLocation() != null) {
+                        mc.getTextureManager().deleteTexture(getSongLocation());
+                        setSongLocation(null);
+                    }
+                });
             }
-        } catch (Throwable ignored) {}
+
+            artworkVersion = changed.version();
+
+        } catch (Throwable e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void updateTexture(BufferedImage image) {
+        artworkImage = image;
+
+        BufferedImage lastImage = getLastArtworkImage();
+
+        if (image == lastImage) {
+            return;
+        }
+
+        if (getSongLocation() != null) {
+            mc.getTextureManager().deleteTexture(getSongLocation());
+        }
+
+        dynamicTexture = new DynamicTexture(image);
+
+        String name = "song_image_" + current.title();
+
+        ResourceLocation songImage =
+            mc.getTextureManager().getDynamicTextureLocation(
+                name,
+                dynamicTexture
+            );
+
+        setSongLocation(songImage);
+        setLastArtworkImage(image);
     }
 
     public boolean next() {

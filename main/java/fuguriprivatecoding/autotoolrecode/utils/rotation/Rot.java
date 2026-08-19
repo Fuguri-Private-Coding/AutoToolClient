@@ -4,9 +4,7 @@ import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
 import org.joml.Vector2f;
 
 @Setter
@@ -55,62 +53,93 @@ public class Rot {
         return this;
     }
 
-	public Rot plus(float yaw, float pitch) {
-        this.yaw += yaw;
-        this.pitch += pitch;
-        this.pitch = MathHelper.clamp(this.pitch, -90, 90);
-        return this;
-	}
+    public Rot fixed() {
+        final float gcd = RotUtils.getMouseGCD();
+        return new Rot(
+            (float) MathUtils.round(this.yaw, gcd),
+            (float) MathUtils.round(this.pitch, gcd)
+        );
+    }
 
 	public Rot plus(Rot add) {
-		return plus(add.yaw, add.pitch);
+		return new Rot(
+            this.yaw + add.yaw,
+            this.pitch + add.pitch
+        );
 	}
 
-    public Rot minus(float yaw, float pitch) {
-        this.yaw -= yaw;
-        this.pitch -= pitch;
-        this.pitch = MathHelper.clamp(this.pitch, -90, 90);
-        return this;
-    }
-
-	public Rot minus(Rot rotation) {
-		return minus(rotation.yaw, rotation.pitch);
+	public Rot minus(Rot rot) {
+		return new Rot(
+            this.yaw - rot.yaw,
+            this.pitch - rot.pitch
+        );
 	}
 
-    public Rot multiple(float multiplier) {
-        this.yaw *= multiplier;
-        this.pitch *= multiplier;
-        return this;
+    public Rot normalized() {
+        float length = lengthFloat();
+
+        if (length == 0) {
+            return new Rot();
+        }
+
+        return new Rot(
+            yaw / length,
+            pitch / length
+        );
     }
 
-    public Rot multiple(Rot multiplier) {
-        this.yaw *= multiplier.yaw;
-        this.pitch *= multiplier.pitch;
-        return this;
+    public float lengthFloat() {
+        return (float) Math.hypot(this.yaw, this.pitch);
     }
 
-    public Rot limit(float yaw, float pitch) {
-        this.yaw = MathHelper.clamp(this.yaw, -yaw, yaw);
-        this.pitch = MathHelper.clamp(this.pitch, -pitch, pitch);
-        return this;
+    public double lengthDouble() {
+        return Math.hypot(this.yaw, this.pitch);
     }
 
-	public Rot limit(Rot speed) {
-        this.yaw = MathHelper.clamp(this.yaw, -speed.yaw, speed.yaw);
-        this.pitch = MathHelper.clamp(this.pitch, -speed.pitch, speed.pitch);
-        return this;
-	}
-
-    public Rot divine(float yaw, float pitch) {
-        this.yaw /= yaw;
-        this.pitch /= pitch;
-        return this;
+    public Rot multiplied(Rot factor) {
+        return new Rot(
+            yaw * factor.yaw,
+            pitch * factor.pitch
+        );
     }
 
-    public Rot divide(Rot divisor) {
-        this.yaw /= divisor.yaw;
-        this.pitch /= divisor.pitch;
-        return this;
+    public Rot multiplied(float factor) {
+        return new Rot(
+            yaw * factor,
+            pitch * factor
+        );
+    }
+
+    public Rot divided(Rot factor) {
+        return new Rot(
+            yaw / factor.yaw,
+            pitch / factor.pitch
+        );
+    }
+
+    public Rot divided(float factor) {
+        return new Rot(
+            yaw / factor,
+            pitch / factor
+        );
+    }
+
+    public Rot limited(Rot speed) {
+        return new Rot(
+            Math.clamp(yaw, -speed.yaw, speed.yaw),
+            Math.clamp(pitch, -speed.pitch, speed.pitch)
+        );
+    }
+
+    public Rot limitedLine(Rot speed) {
+        return limited(normalized().abs().multiplied(speed));
+    }
+
+    public Rot abs() {
+        return new Rot(
+            Math.abs(yaw),
+            Math.abs(pitch)
+        );
     }
 
 	public Rot copy() {

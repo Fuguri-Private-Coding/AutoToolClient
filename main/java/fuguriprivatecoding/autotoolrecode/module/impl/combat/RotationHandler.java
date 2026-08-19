@@ -30,7 +30,7 @@ public class RotationHandler extends Module {
             if (event instanceof TickEvent) {
                 Rot speed = new Rot((float) yawSpeed.getRandomizedDoubleValue(), (float) pitchSpeed.getRandomizedDoubleValue());
 
-                Rot delta = mc.thePlayer.getRotation().deltaTo(CameraRot.INST).limit(speed);
+                Rot delta = mc.thePlayer.getRotation().deltaTo(CameraRot.INST).limitedLine(speed);
 
                 delta = lastDelta.lerp(delta, (float) mixDelta.getRandomizedIntValue() / 100f);
 

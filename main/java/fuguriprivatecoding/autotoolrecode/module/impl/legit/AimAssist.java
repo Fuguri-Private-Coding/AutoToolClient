@@ -72,13 +72,10 @@ public class AimAssist extends Module {
             if (needRot != null) {
                 Rot delta = lr.deltaTo(needRot);
 
-                delta.limit(speed);
-                delta.fix();
+                delta = delta.limitedLine(speed);
+                delta = delta.fixed();
 
-                mc.thePlayer.moveRotation(
-                    delta.getYaw(),
-                    delta.getPitch()
-                );
+                mc.thePlayer.moveRotation(delta);
             }
         }
     }

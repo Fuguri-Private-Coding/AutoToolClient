@@ -38,6 +38,10 @@ public class AxisAlignedBB
         this.maxZ = pos2.zCoord;
     }
 
+    public AxisAlignedBB add(Vec3 vec) {
+        return addCoord(vec.xCoord, vec.yCoord, vec.zCoord);
+    }
+
     public AxisAlignedBB addCoord(double x, double y, double z)
     {
         double d0 = this.minX;

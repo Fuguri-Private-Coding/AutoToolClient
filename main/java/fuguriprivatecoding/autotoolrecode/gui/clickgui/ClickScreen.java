@@ -748,7 +748,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
                             Colors.WHITE.withAlpha(0.2f)
                         );
 
-						Rot smoothRot = prevOffsetRot.copy().plus(offsetRot.copy().minus(prevOffsetRot.copy()).multiple(mc.timer.renderPartialTicks));
+						Rot smoothRot = prevOffsetRot.plus(offsetRot.minus(prevOffsetRot).multiplied(mc.timer.renderPartialTicks));
 
 						float dotX = rectCenterX + smoothRot.getYaw();
 						float dotY = rectCenterY + smoothRot.getPitch();

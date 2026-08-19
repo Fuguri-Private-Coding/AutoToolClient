@@ -272,7 +272,7 @@ public class Scaffold extends Module {
         Rot delta = mc.thePlayer.getRotation().deltaTo(rotation);
         Rot speed = getDeltaSpeed();
 
-        delta.limit(speed);
+        delta = delta.limitedLine(speed);
 
         delta.fix();
 
