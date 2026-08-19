@@ -8,7 +8,6 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -66,7 +65,6 @@ public class MoreKB extends Module {
             case "Sprint" -> {
                 if (event instanceof SprintEvent e && mc.thePlayer.isSprinting()) {
                     e.setSprinting(false);
-                    ClientUtils.chatLog(reset + "debil");
                     reset--;
                 }
             }

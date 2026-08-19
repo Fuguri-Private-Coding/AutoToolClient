@@ -10,10 +10,12 @@ import java.awt.*;
 
 public class RectUtils {
 
-    private static Shader program;
+    private static final Shader program = Shaders.roundedRectTest;
 
     private static void draw(final float x, final float y, final float width, final float height, final float factor, Color color) {
-        if (program == null) program = Shaders.roundedRectTest;
+        if (color.getAlpha() == 0)
+            return;
+
         float factorPenis = (1 / factor) * height;
 
         program.start();

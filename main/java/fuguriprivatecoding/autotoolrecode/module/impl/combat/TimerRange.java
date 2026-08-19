@@ -13,11 +13,9 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.RayTrace;
 import net.minecraft.util.Vec3;
 
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
@@ -58,31 +56,19 @@ public class TimerRange extends Module {
                 return;
             }
 
-            boolean canSnap = KillAura.canSnapTeleport();
-
-            AxisAlignedBB box = target.getExpandedBoundingBox();
-
-            float yaw = mc.thePlayer.rotationYaw;
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, yaw);
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, mc.thePlayer.rotationYaw);
 
             teleportTicks = 0;
 
-            if (target.hurtTime > maxTargetHurtTime.getValue() || (canSnap && DistanceUtils.getDistance(box) < 3.0)) return;
+            Vec3 targetPosition = target.getServerPosition().divine(32.0D)
+                .subtract(target.getPositionVector());
 
-            Vec3 targetPosition = target.getServerPosition().divine(32.0D).subtract(target.getPositionVector());
-            AxisAlignedBB targetBox = box.offset(targetPosition);
+            AxisAlignedBB box = target.getExpandedBoundingBox().offset(targetPosition);
+
+            if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) < 3.0) return;
 
             for (int i = 0; i < maxTicks.getValue(); i++) {
-                boolean skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), targetBox) > 3.0D;
-
-                if (!canSnap) {
-                    RayTrace hit = RayCastUtils.rayCast(mc.thePlayer.getPositionEyes(1f), 12, 6, mc.thePlayer.getRotation(), 1f);
-
-                    if (hit == null || hit.entityHit != target)
-                        break;
-
-                    skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), hit.hitVec) > 3.0D;
-                }
+                boolean skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), box) > 3.0D;
 
                 if (skip) {
                     simulatedPlayer.tick();

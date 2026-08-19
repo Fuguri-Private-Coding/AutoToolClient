@@ -2373,6 +2373,18 @@ public abstract class Entity implements ICommandSender
         return new Vec3(this.lastTickPosX, this.lastTickPosY, this.lastTickPosZ);
     }
 
+    public Vec3 getSmoothPositionVector(float partialTicks) {
+        return new Vec3(
+            this.lastTickPosX + (this.posX - this.lastTickPosX) * partialTicks,
+            this.lastTickPosY + (this.posY - this.lastTickPosY) * partialTicks,
+            this.lastTickPosZ + (this.posZ - this.lastTickPosZ) * partialTicks
+        );
+    }
+
+    public Vec3 getSmoothPositionVector() {
+        return getSmoothPositionVector(mc.timer.renderPartialTicks);
+    }
+
     public Vector3f getPositionVector3f()
     {
         return new Vector3f((float)this.posX,(float) this.posY,(float) this.posZ);

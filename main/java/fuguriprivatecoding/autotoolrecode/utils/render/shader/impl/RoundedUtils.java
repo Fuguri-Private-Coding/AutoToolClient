@@ -10,13 +10,12 @@ import java.awt.*;
 
 public class RoundedUtils implements Imports {
 
-    private static Shader program;
+    private static final Shader program = Shaders.roundedRect;
 
     private static void draw(final float x, final float y, final float width, final float height, final float leftDown, final float leftUp, final float rightUp, final float rightDown, Color color) {
         if (color.getAlpha() == 0)
             return;
 
-        if (program == null) program = Shaders.roundedRect;
         program.start();
         program.uniform("u_size", width, height);
         program.uniform("u_radius", leftUp, leftDown, rightUp, rightDown);
@@ -36,18 +35,6 @@ public class RoundedUtils implements Imports {
 
     public static void drawRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {
         draw(x - 1f, y - 1f, width + 2, height + 2, radius, radius, radius, radius, color);
-    }
-
-    public static void drawCenteredXRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {
-        drawRect(x - width / 2f, y, width, height, radius, color);
-    }
-
-    public static void drawCenteredYRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {
-        drawRect(x, y - height / 2f, width, height, radius, color);
-    }
-
-    public static void drawCenteredXYRect(final float x, final float y, final float width, final float height, final float radius, final Color color) {
-        drawRect(x - width / 2f, y - height / 2f, width, height, radius, color);
     }
 
     public static void drawRect(final float x, final float y, final float width, final float height, final float leftDown, final float leftUp, final float rightUp, final float rightDown, final Color color) {

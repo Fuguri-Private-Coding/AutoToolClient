@@ -861,11 +861,8 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		final float iconY = panelY + 3;
 		final int iconSize = 15;
 
-		ColorUtils.glColor(console ? MAIN_COLOR : Color.WHITE);
-		RenderUtils.drawImage(terminal, consoleX, iconY, iconSize, iconSize, true);
-
-		ColorUtils.glColor(config ? MAIN_COLOR : Color.WHITE);
-		RenderUtils.drawImage(configs, configX, iconY, iconSize, iconSize, true);
+		TextureUtils.texture(terminal, consoleX, iconY, iconSize, iconSize, 0f, 1f, console ? MAIN_COLOR : Color.WHITE);
+        TextureUtils.texture(configs, configX, iconY, iconSize, iconSize, 0f, 1f, config ? MAIN_COLOR : Color.WHITE);
 
 		guis.update(clickGui.animationSpeed.getValue() / 5, Easing.OUT_BACK);
 		moduleLine.update(clickGui.animationSpeed.getValue());

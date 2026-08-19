@@ -20,6 +20,8 @@ public class BloomUtils implements Imports {
     private static Framebuffer outputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static GaussianKernel gaussianKernel = new GaussianKernel(0);
 
+    private final static Shader program = Shaders.bloom;
+
     public static Glow glow;
 
     public static void startWrite() {
@@ -33,7 +35,6 @@ public class BloomUtils implements Imports {
     public static void draw() {
         if (glow == null) glow = Modules.getModule(Glow.class);
         if (!Display.isActive() || !Display.isVisible() || !glow.isToggled()) return;
-        Shader program = Shaders.bloom;
 
         inputFramebuffer.bindFramebuffer(true);
 

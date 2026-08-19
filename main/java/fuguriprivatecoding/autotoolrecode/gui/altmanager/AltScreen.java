@@ -17,12 +17,14 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.TextureUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Session;
 import org.lwjgl.Sys;
@@ -161,8 +163,7 @@ public class AltScreen extends GuiScreen {
             RoundedUtils.drawRect(accountX, accountY, accountWidth, accountHeight, 7.5f, accountRectColor);
             fontRenderer.draw(account.getName() + " " + account.getType(), accountX + 5, accountY + accountHeight / 2f - 2.5f, 8, textColor);
 
-            ColorUtils.glColor(removeColor);
-            RenderUtils.drawImage(removeLogo, deleteX, deleteY, deleteWidth, deleteHeight, true);
+            TextureUtils.texture(removeLogo, deleteX, deleteY, deleteWidth, deleteHeight, 0f, 1f, removeColor);
 
             scrollTotal += 30;
             offset += 30 * account.getDeleteAnim().getValue();

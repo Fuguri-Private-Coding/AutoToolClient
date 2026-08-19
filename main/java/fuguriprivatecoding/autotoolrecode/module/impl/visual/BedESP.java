@@ -63,7 +63,12 @@ public class BedESP extends Module {
     @Override
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
-        if (event instanceof WorldChangeEvent && !beds.isEmpty()) beds.clear();
+        if (event instanceof WorldChangeEvent && !beds.isEmpty()) {
+            synchronized (beds) {
+                beds.clear();
+            }
+        }
+
         if (event instanceof Render3DEvent) {
             if (beds.isEmpty()) return;
 

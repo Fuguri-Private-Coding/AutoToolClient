@@ -9,10 +9,9 @@ import org.lwjgl.opengl.GL11;
 
 public class BackgroundUtils implements Imports {
 
-    private static Shader program;
+    private static Shader program = Shaders.background;
 
     public static void run() {
-        if (program == null) program = Shaders.background;
         if (!Display.isVisible() || !Display.isActive()) return;
 
         GlStateManager.enableBlend();

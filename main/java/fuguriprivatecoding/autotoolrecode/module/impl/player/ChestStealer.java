@@ -12,8 +12,7 @@ import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.mouse.MouseDelta;
 import fuguriprivatecoding.autotoolrecode.utils.gui.mouse.MousePoint;
 import fuguriprivatecoding.autotoolrecode.utils.player.inventory.InventoryUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.TextureUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -156,8 +155,7 @@ public class ChestStealer extends Module {
                         float x = mouse.getPrevX() + (mouse.getMouseX() - mouse.getPrevX()) * mc.timer.renderPartialTicks;
                         float y = mouse.getPrevY() + (mouse.getMouseY() - mouse.getPrevY()) * mc.timer.renderPartialTicks;
 
-                        ColorUtils.glColor(color.getFadedColor());
-                        RenderUtils.drawImage(Client.of("image/cursor.png"), x - 2, y, 10, 10, true);
+                        TextureUtils.texture(Client.of("image/cursor.png"), x - 2, y, 10, 10, 0, 1f, color.getFadedColor());
                     }
                 }
             }

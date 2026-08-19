@@ -22,6 +22,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.TextureUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
@@ -57,6 +58,8 @@ public class DynamicIsland extends Module {
     private boolean opened, pressed = false, player = false;
 
     DynamicTexture dynamicTexture;
+
+    ResourceLocation airplaneLogo = Client.of("image/airplane.png");
 
     public DynamicIsland() {
         width = new EasingAnimation();
@@ -128,14 +131,7 @@ public class DynamicIsland extends Module {
                     ResourceLocation songImage = mediaController.getSongLocation();
 
                     if (songImage != null) {
-                        ColorUtils.glColor(whiteColor.withAlpha(textAlpha.getValue()));
-                        StencilUtils.initStencil();
-                        GL11.glEnable(2960);
-                        StencilUtils.bindWriteStencilBuffer();
-                        RectUtils.drawRect(0, 0, 30, 30, 5f, Color.WHITE);
-                        StencilUtils.writeTexture();
-                        RenderUtils.drawImage(songImage, 0, 0, 30, 30, true);
-                        StencilUtils.endWriteTexture();
+                        TextureUtils.texture(songImage, 0, 0, 30, 30, 5, 1f, Colors.WHITE.withAlpha(textAlpha.getValue()));
                     }
 
                     float textX = 35;

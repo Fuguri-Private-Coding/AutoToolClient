@@ -12,11 +12,6 @@ import org.lwjgl.input.Keyboard;
 @ModuleInfo(name = "ClickGui", category = Category.VISUAL, key = Keyboard.KEY_RSHIFT, description = "ХАЛЯЛЬ #НАСТРОЙКА КЛИК ГУИ ЙОУ.")
 public class ClickGui extends Module {
 
-    public Mode guiMode = new Mode("GuiMode", this)
-        .addModes("Java", "ImGui")
-        .setMode("Java")
-        ;
-
     public Mode fonts = new Mode("Fonts", this);
 
 	public Mode sortType = new Mode("SortType", this)
@@ -43,15 +38,6 @@ public class ClickGui extends Module {
 	@Override
 	public void onEnable() {
         mc.displayGuiScreen(ClickScreen.INST);
-//        switch (guiMode.getMode()) {
-//            case "ImGui" -> {
-//                mc.displayGuiScreen(NewClickScreen.INST);
-//                ImGuiManager.addWindow(window);
-//            }
-//            case "Java" -> {
-//            }
-//        }
-
 		toggle();
 	}
 }

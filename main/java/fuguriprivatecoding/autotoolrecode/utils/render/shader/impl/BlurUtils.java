@@ -20,6 +20,8 @@ public class BlurUtils implements Imports {
     private static Framebuffer outputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static GaussianKernel gaussianKernel = new GaussianKernel(0);
 
+    private final static Shader program = Shaders.gaussianBlur;
+
     private static Blur blur;
 
     public static void startWrite() {
@@ -33,7 +35,6 @@ public class BlurUtils implements Imports {
     public static void draw() {
         if (blur == null) blur = Modules.getModule(Blur.class);
         if (!Display.isActive() || !Display.isVisible() || !blur.isToggled()) return;
-        Shader program = Shaders.gaussianBlur;
 
         inputFramebuffer.bindFramebuffer(true);
 

@@ -54,8 +54,8 @@ public class Effects extends Module {
         }
 
         if (event instanceof TickEvent) {
-            if (target != null) {
-                if (effect.isToggled()) {
+            if (effect.isToggled()) {
+                if (target != null) {
                     if (mc.theWorld.getLoadedEntityList().contains(target)) {
                         targetPos = target.getPositionVector();
                     } else {

@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -26,25 +27,21 @@ public class Glow extends Module {
     public FloatSetting offset2 = new FloatSetting("Offset2", this, 1,5,1,0.1f);
 
     public final ColorSetting chatColor = new ColorSetting("ChatColor", this, () -> toGlow.get("Chat"));
-
     public final ColorSetting playersColor = new ColorSetting("PlayersColor", this, () -> toGlow.get("Players"));
-
-    private final CheckBox changeHurtColor = new CheckBox("ChangeHurtColor", this, () -> toGlow.get("Players"), true);
-    private final CheckBox instantChangeColor = new CheckBox("InstantHurtColor", this, () -> toGlow.get("Players") && changeHurtColor.isToggled(), true);
-    public final ColorSetting hurtPlayersColor = new ColorSetting("HurtPlayersColor", this, () -> toGlow.get("Players") && changeHurtColor.isToggled());
 
     @Override
     public void onEvent(Event event) {
         if (event instanceof Render3DEvent && toGlow.get("Players")) {
             BloomUtils.startWrite();
+            RendererLivingEntity.setShaderBrightness(playersColor.getFadedColor());
+            RenderUtils.startPlayer();
             for (EntityPlayer player : mc.theWorld.playerEntities) {
-                float instantHurtTime = player.hurtTime > 0 ? 1 : 0;
-                float hurtTime = instantChangeColor.isToggled() ? instantHurtTime : player.hurtTime / 10f;
-
-                Color color = playersColor.getInterpolateColor(hurtPlayersColor.getFadedColor(), hurtTime);
-
-                if (!shouldContinueRender(player)) RenderUtils.renderPlayer(player, RenderUtils.getAbsoluteSmoothPos(player.getLastPositionVector(), player.getPositionVector()).subtract(RenderManager.getRenderPosition()), player.rotationYawHead, mc.timer.renderPartialTicks, color);
+                if (shouldContinueRender(player))
+                    continue;
+                RenderUtils.drawPlayerModel(player, player.getSmoothPositionVector().subtract(RenderManager.getRenderPosition()), player.rotationYawHead, mc.timer.renderPartialTicks);
             }
+            RenderUtils.stopPlayer();
+            RendererLivingEntity.unsetShaderBrightness();
             BloomUtils.stopWrite();
         }
     }

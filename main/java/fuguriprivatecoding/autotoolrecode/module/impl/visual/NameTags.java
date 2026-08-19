@@ -54,7 +54,7 @@ public class NameTags extends Module {
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
                 if (shouldContinue(entity)) continue;
 
-                Vec3 pos = RenderUtils.getAbsoluteSmoothPos(entity.getLastPositionVector(), entity.getPositionVector()).subtract(RenderManager.getRenderPosition());
+                Vec3 pos = entity.getSmoothPositionVector().subtract(RenderManager.getRenderPosition());
                 Vec3 addPos = new Vec3(0, entity.getEyeHeight() + yOffset.getValue(), 0);
 
                 renderNameTag(getText(entity), pos.add(addPos), false);
@@ -65,7 +65,7 @@ public class NameTags extends Module {
                 for (EntityPlayer entity : mc.theWorld.playerEntities) {
                     if (shouldContinue(entity)) continue;
 
-                    Vec3 pos = RenderUtils.getAbsoluteSmoothPos(entity.getLastPositionVector(), entity.getPositionVector()).subtract(RenderManager.getRenderPosition());
+                    Vec3 pos = entity.getSmoothPositionVector().subtract(RenderManager.getRenderPosition());
                     Vec3 addPos = new Vec3(0, entity.getEyeHeight() + yOffset.getValue(), 0);
 
                     renderNameTag(getText(entity), pos.add(addPos), true);
@@ -95,7 +95,7 @@ public class NameTags extends Module {
     }
 
     private void renderNameTag(String name, Vec3 pos, boolean glow) {
-        Vec3 playerPos = RenderUtils.getAbsoluteSmoothPos(mc.thePlayer.getLastPositionVector(), mc.thePlayer.getPositionVector()).subtract(RenderManager.getRenderPosition());
+        Vec3 playerPos = mc.thePlayer.getSmoothPositionVector().subtract(RenderManager.getRenderPosition());
 
         float distance = (float) playerPos.distanceTo(pos);
         float scale = Math.max(distance * scaleFactor.getValue(), 5.0f);

@@ -7,6 +7,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.TextureUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
@@ -53,8 +54,7 @@ public class ImgButton extends GuiButton {
 
         Color imageColor = ColorUtils.interpolateColor(Color.WHITE, Color.RED, hoverAnim.getValue());
 
-        ColorUtils.glColor(imageColor);
-        RenderUtils.drawImage(image, x, y, width, height, true);
+        TextureUtils.texture(image, x, y, width, height, 0, 1f, imageColor);
     }
 }                                           
                                             

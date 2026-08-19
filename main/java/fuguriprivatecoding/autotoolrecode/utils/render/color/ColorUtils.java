@@ -28,10 +28,7 @@ public class ColorUtils {
         return new Color(red, green, blue, alpha);
     }
 
-    public static Color mix(int c1, int c2, double size, double max) {
-        Color start = new Color(c1);
-        Color end = new Color(c2);
-
+    public static Color mix(Color start, Color end, double size, double max) {
         float progress = (float) (size / max);
 
         int r = (int) Math.clamp(start.getRed() + (end.getRed() - start.getRed()) * progress, 0, 255);

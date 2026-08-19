@@ -21,11 +21,12 @@ public class MotionBlurUtils implements Imports {
     private static boolean ping = false;
     private static boolean firstFrame = true;
 
+    private static final Shader program = Shaders.motionBlur;
+
     public void draw() {
         update();
 
         MotionBlur mb = Modules.getModule(MotionBlur.class);
-        Shader program = Shaders.motionBlur;
 
         Framebuffer prev = ping ? historyA : historyB;
         Framebuffer curr = ping ? historyB : historyA;
