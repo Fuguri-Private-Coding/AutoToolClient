@@ -112,4 +112,9 @@ public class Notifications extends Module {
             }
         }
     }
+
+    public static boolean isEmpty() {
+        Notifications notifications = Modules.getModule(Notifications.class);
+        return notifications.isToggled() && Notifications.notifications.isEmpty();
+    }
 }

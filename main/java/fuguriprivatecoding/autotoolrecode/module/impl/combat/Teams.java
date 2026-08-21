@@ -1,18 +1,12 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
-import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
-import lombok.Getter;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.scoreboard.ScorePlayerTeam;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "Teams", description = "Добавляет тиммейтов в друзья.", category = Category.COMBAT)
 public class Teams extends Module {

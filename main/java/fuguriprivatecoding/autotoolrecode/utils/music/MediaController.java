@@ -47,7 +47,9 @@ public final class MediaController {
             TrackInfo changed = SmtcNative.nFetchIfChanged(lastVersion);
             if (changed == null) return;
 
-            if (!changed.available()) return;
+            if (!changed.available()) {
+                return;
+            }
 
             lastVersion = changed.version();
             current = changed;
@@ -61,20 +63,22 @@ public final class MediaController {
                     mc.addScheduledTask(() -> updateTexture(image));
                 }
             } else {
-                mc.addScheduledTask(() -> {
-                    artworkImage = null;
-
-                    if (getSongLocation() != null) {
-                        mc.getTextureManager().deleteTexture(getSongLocation());
-                        setSongLocation(null);
-                    }
-                });
+                mc.addScheduledTask(this::deleteTexture);
             }
 
             artworkVersion = changed.version();
 
         } catch (Throwable e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    private void deleteTexture() {
+        artworkImage = null;
+
+        if (getSongLocation() != null) {
+            mc.getTextureManager().deleteTexture(getSongLocation());
+            setSongLocation(null);
         }
     }
 

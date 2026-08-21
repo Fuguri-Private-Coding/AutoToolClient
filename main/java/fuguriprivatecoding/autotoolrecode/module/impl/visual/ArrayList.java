@@ -19,7 +19,6 @@ import net.minecraft.client.gui.ScaledResolution;
 import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 @ModuleInfo(name = "ArrayList", category = Category.VISUAL, description = "Показывает список включенных модулей.")
 public class ArrayList extends Module {

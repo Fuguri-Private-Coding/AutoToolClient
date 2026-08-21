@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
@@ -56,21 +57,26 @@ public class TimerRange extends Module {
                 return;
             }
 
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, mc.thePlayer.rotationYaw);
-
             teleportTicks = 0;
 
             Vec3 targetPosition = target.getServerPosition().divine(32.0D)
                 .subtract(target.getPositionVector());
 
-            AxisAlignedBB box = target.getExpandedBoundingBox().offset(targetPosition);
+            AxisAlignedBB box = target.getEntityBoundingBox().offset(targetPosition);
+
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, mc.thePlayer.rotationYaw);
+
+            AxisAlignedBB realBox = target.getEntityBoundingBox().offset(target.getNPosition().subtract(target.getPositionVector()));
+
+            BackTrack backTrack = Modules.getModule(BackTrack.class);
 
             if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) < 3.0) return;
 
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 boolean skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), box) > 3.0D;
+                boolean skipReal = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), realBox) > backTrack.distanceToCancelHits.getValue();
 
-                if (skip) {
+                if (skip || (skipReal && backTrack.isToggled() && backTrack.cancelHitsIfNeed.isToggled())) {
                     simulatedPlayer.tick();
                     continue;
                 }

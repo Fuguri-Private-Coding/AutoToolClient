@@ -5,6 +5,7 @@ import fuguriprivatecoding.autotoolrecode.event.events.render.RenderItemEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
@@ -21,6 +22,7 @@ public class Hand extends Module {
     public final MultiMode effect = new MultiMode("Effect", this)
         .add("Animations", true)
         .add("ItemPos", true)
+        .add("LegacyAnimations", true)
         ;
 
     BooleanSupplier animationsSupplier = () -> effect.get("Animations");
@@ -60,17 +62,17 @@ public class Hand extends Module {
             ItemRenderer itemRenderer = mc.getItemRenderer();
 
             float equipProgress = renderItemEvent.getEquipProgress();
-            float convertedProgress = (float) Math.sin(Math.sqrt(renderItemEvent.getSwingProgress()) * Math.PI);
+            float swingProgress = renderItemEvent.getSwingProgress();
+            float convertedProgress = (float) Math.sin(Math.sqrt(swingProgress) * Math.PI);
 
-            float y = -convertedProgress * 2.0F;
             switch (mode.getMode()) {
                 case "1.7" -> {
-                    itemRenderer.transformFirstPersonItem(equipProgress, renderItemEvent.getSwingProgress());
+                    itemRenderer.transformFirstPersonItem(equipProgress, swingProgress);
                     itemRenderer.doBlockTransformations();
                 }
 
                 case "Swong" -> {
-                    itemRenderer.transformFirstPersonItem(equipProgress / 2.0F, renderItemEvent.getSwingProgress());
+                    itemRenderer.transformFirstPersonItem(equipProgress / 2.0F, swingProgress);
                     GlStateManager.rotate(convertedProgress * 30.0F / 2.0F, -convertedProgress, -0.0F, 9.0F);
                     GlStateManager.rotate(convertedProgress * 40.0F, 1.0F, -convertedProgress / 2.0F, -0.0F);
                     GlStateManager.translate(0.0F, 0.2F, 0.0F);
@@ -85,19 +87,13 @@ public class Hand extends Module {
 
                 case "Slide" -> {
                     itemRenderer.transformFirstPersonItem(equipProgress, 0.0f);
-                    float var15 = MathHelper.sin(MathHelper.sqrt_float(renderItemEvent.getSwingProgress()) * 3.1415927F);
+                    float var15 = MathHelper.sin(MathHelper.sqrt_float(swingProgress) * 3.1415927F);
                     GlStateManager.rotate(-var15 * 55.0F / 2.0F, -8.0F, -0.0F, 9.0F);
                     GlStateManager.rotate(-var15 * 45.0F, 1.0F, var15 / 2.0F, -0.0F);
                     itemRenderer.doBlockTransformations();
                     GL11.glTranslated(1.2D, 0.3D, 0.5D);
                     GL11.glTranslatef(-1.0F, mc.thePlayer.isSneaking() ? -0.1F : -0.2F, 0.2F);
                     GlStateManager.scale(1.2F, 1.2F, 1.2F);
-                }
-
-                case "Basic" -> {
-                    itemRenderer.transformFirstPersonItem(-0.25F, 1.0F + convertedProgress / 10.0F);
-                    GL11.glRotated((-convertedProgress * 25.0F), 1.0, 0.0, 0.0);
-                    itemRenderer.doBlockTransformations();
                 }
 
                 case "Exhibition2" -> {
@@ -108,15 +104,6 @@ public class Hand extends Module {
                     itemRenderer.doBlockTransformations();
                 }
 
-                case "Sigma" -> {
-                    itemRenderer.transformFirstPersonItem(equipProgress, 0.0F);
-                    GlStateManager.translate(0.0F, y / 10.0F + 0.1F, 0.0F);
-                    GlStateManager.rotate(y * 10.0F, 0.0F, 1.0F, 0.0F);
-                    GlStateManager.rotate(250.0F, 0.2F, 1.0F, -0.6F);
-                    GlStateManager.rotate(-10.0F, 1.0F, 0.5F, 1.0F);
-                    GlStateManager.rotate(-y * 20.0F, 1.0F, 0.5F, 1.0F);
-                }
-
                 case "Exhibition" -> {
                     itemRenderer.transformFirstPersonItem(equipProgress / 2.0F, 0.0F);
                     GlStateManager.translate(0.0F, 0.3F, -0.0F);
@@ -124,17 +111,13 @@ public class Hand extends Module {
                     GlStateManager.rotate(-convertedProgress * 33.0F, 1.5F, convertedProgress / 1.1F, 0.0F);
                     itemRenderer.doBlockTransformations();
                 }
-
-                case "Sigma 2" -> {
-                    itemRenderer.transformFirstPersonItem(equipProgress, 0.0F);
-                    GlStateManager.scale(0.8F, 0.8F, 0.8F);
-                    GlStateManager.translate(0.0F, 0.1F, 0.0F);
-                    itemRenderer.doBlockTransformations();
-                    GlStateManager.rotate(convertedProgress * 35.0F / 2.0F, 0.0F, 1.0F, 1.5F);
-                    GlStateManager.rotate(-convertedProgress * 135.0F / 4.0F, 1.0F, 1.0F, 0.0F);
-                }
             }
-            GL11.glScaled(resetScale,resetScale, resetScale);
+            GL11.glScaled(resetScale, resetScale, resetScale);
         }
+    }
+
+    public static boolean isLegacy() {
+        Hand hand = Modules.getModule(Hand.class);
+        return hand != null && hand.isToggled() && hand.effect.get("LegacyAnimations");
     }
 }

@@ -4,13 +4,11 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.world.WorldChangeEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.math.FastNoiseLite;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
@@ -24,7 +22,6 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
-import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -94,18 +91,8 @@ public class KillAura extends Module {
         1, 5, 1.5f, 0.1f
     );
 
-    private final DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 80, 16, 1);
-
-    private final Mode randomizeMode = new Mode("RandomizeMode", this)
-        .addModes("None", "Gaussian")
-        .setMode("Gaussian");
-
-    private final BooleanSupplier gaussianMode = () -> randomizeMode.is("Gaussian");
-
-    private final DoubleSlider cpsLimiter = new DoubleSlider("CPSLimiter", this, gaussianMode, 0, 40, 20, 1);
-
-    private final FloatSetting consistency = new FloatSetting("Consistency", this, gaussianMode, 0, 2, 0.2f, 0.01f);
-    private final FloatSetting instability = new FloatSetting("Instability", this, gaussianMode, 0, 2, 0.2f, 0.01f);
+    private final DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 40, 16, 1);
+    private final DoubleSlider CPSUpdateDelay = new DoubleSlider("CPSUpdateDelay", this, 0, 20, 5, 1);
 
     private final CheckBox lockView = new CheckBox("LockView", this, false);
 
@@ -118,8 +105,8 @@ public class KillAura extends Module {
         .addModes("OFF", "Legit", "Silent")
         .setMode("Silent");
 
-    private final MultiMode autoDisableIf = new MultiMode("AutoDisableIf", this)
-        .addModes("ChangeWorld");
+    private double currentCps;
+    private int currentCpsUpdateDelay;
 
     private final StopWatch clickTimer = new StopWatch();
     private long delay;
@@ -136,10 +123,6 @@ public class KillAura extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof WorldChangeEvent && autoDisableIf.get("ChangeWorld")) {
-            setToggled(false);
-        }
-
         if (event instanceof TickEvent) {
             TargetStorage.setTarget(findNewTarget());
         }
@@ -150,10 +133,14 @@ public class KillAura extends Module {
         if (target != null) {
             if (event instanceof RunGameLoopEvent && needClicking(target)) {
                 if (clickTimer.reachedMS(delay)) {
-                    this.delay = getDelay();
+                    updateDelay();
                     clickTimer.reset();
                     Clicks.addClick();
                 }
+            }
+
+            if (event instanceof TickEvent) {
+                if (currentCpsUpdateDelay > 0) currentCpsUpdateDelay--;
             }
 
             if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.LEFT) {
@@ -181,6 +168,18 @@ public class KillAura extends Module {
             } else if (moveFix.is("Silent")) {
                 if (event instanceof MoveEvent e) MoveUtils.moveFix(e, MoveUtils.getDirection(CameraRot.INST.getYaw(), e.getForward(), e.getStrafe()));
             }
+        }
+    }
+
+    private void updateDelay() {
+        updateCps();
+        delay = Math.round(1000 / currentCps);
+    }
+
+    private void updateCps() {
+        if (currentCpsUpdateDelay == 0) {
+            currentCpsUpdateDelay = CPSUpdateDelay.getRandomizedIntValue();
+            currentCps = CPS.getRandomizedDoubleValue();
         }
     }
 
@@ -290,27 +289,6 @@ public class KillAura extends Module {
         }
 
         return delta;
-    }
-
-    private long getDelay() {
-        double baseDelay = 1000D / CPS.getRandomizedDoubleValue();
-
-        if (randomizeMode.is("Gaussian")) {
-            double minDelay = 1000D / cpsLimiter.getMaxValue();
-            double maxDelay = 1000D / cpsLimiter.getMinValue();
-
-            double consistency = this.consistency.getValue();
-            double instability = this.instability.getValue();
-
-            double gaussian = RandomUtils.random.nextGaussian() * consistency;
-            double noise = (RandomUtils.random.nextDouble() - 0.5) * instability;
-
-            double delay = baseDelay * (1 + gaussian + noise);
-
-            return (long) Math.clamp(delay, minDelay, maxDelay);
-        }
-
-        return (long) baseDelay;
     }
 
     private boolean needClicking(EntityLivingBase target) {
