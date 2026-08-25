@@ -17,8 +17,6 @@ import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.FresnelUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;

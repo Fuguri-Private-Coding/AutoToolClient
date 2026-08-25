@@ -18,7 +18,6 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.GradientBloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
@@ -1134,7 +1133,6 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.enableAlpha();
 
                     if (shadows.isToggled()) BloomUtils.draw();
-                    if (shadows.isToggled()) GradientBloomUtils.draw();
                     this.mc.getFramebuffer().bindFramebuffer(false);
                     this.framebuffer.bindFramebufferTexture();
                     Shader.drawQuad();
