@@ -1,0 +1,15 @@
+#version 120
+
+uniform vec2 RectPos;
+uniform vec2 RectSize;
+
+varying vec2 vFragCoord;
+varying vec2 vTexCoord;
+varying vec4 vFragColor;
+
+void main() {
+    vFragCoord = (gl_Vertex.xy - RectPos) / RectSize;
+    vTexCoord = gl_MultiTexCoord0.st;
+    vFragColor = gl_Color;
+    gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+}
