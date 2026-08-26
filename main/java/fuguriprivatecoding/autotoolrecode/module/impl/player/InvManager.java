@@ -231,7 +231,7 @@ public class InvManager extends Module {
                 return true;
             }
 
-            case ItemAppleGold _ when stack.getMetadata() > 0 -> {
+            case ItemAppleGold _ -> {
                 gappleStackSlots.add(slot);
                 return true;
             }

@@ -36,7 +36,7 @@ public class AutoRegister extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof ChatMessageEvent e && e.getType() == ChatMessageEvent.Type.IN_CHAT && !active) {
-            String message = e.getMessage().getFormattedText();
+            String message = e.getMessage().getUnformattedText();
             if (handleMessage(message)) setMessage(message);
         }
 
@@ -50,7 +50,7 @@ public class AutoRegister extends Module {
     }
 
     private boolean handleMessage(String message) {
-        return message.contains("/reg") || (autoLogin.isToggled() && message.contains("/login"));
+        return message.contains("reg") || (autoLogin.isToggled() && message.contains("login"));
     }
 
     private void setMessage(String message) {
@@ -62,9 +62,9 @@ public class AutoRegister extends Module {
     private void handle(String message) {
         String password = randomPassword.isToggled() ? generate() : this.password.getMode();
 
-        if (message.contains("/reg")) {
+        if (message.contains("reg")) {
             register(password);
-        } else if (message.contains("/login") && autoLogin.isToggled()) {
+        } else if (message.contains("login") && autoLogin.isToggled()) {
             login(password);
         }
 
