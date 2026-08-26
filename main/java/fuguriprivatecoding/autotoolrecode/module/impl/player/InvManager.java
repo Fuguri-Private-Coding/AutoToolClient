@@ -8,6 +8,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.player.inventory.InventoryUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
@@ -34,20 +35,36 @@ public class InvManager extends Module {
 
     BooleanSupplier notInstant = () -> !instant.isToggled();
 
-    private final CheckBox autoArmor = new CheckBox("AutoArmor", this, notInstant);
+    private final CheckBox autoArmor = new CheckBox("AutoArmor", this);
     private final DoubleSlider armorDelay = new DoubleSlider("ArmorDelay", this, () -> autoArmor.isToggled() && notInstant.getAsBoolean(), 0, 10, 0, 1f);
 
-    private final CheckBox sortItems = new CheckBox("SortItems", this, notInstant);
+    private final CheckBox sortItems = new CheckBox("SortItems", this);
     private final DoubleSlider sortDelay = new DoubleSlider("SortDelay", this, () -> sortItems.isToggled() && notInstant.getAsBoolean(), 0, 10, 0, 1f);
 
-    private final CheckBox dropItems = new CheckBox("DropItems", this, notInstant);
+    private final CheckBox dropItems = new CheckBox("DropItems", this);
     private final DoubleSlider dropDelay = new DoubleSlider("DropDelay", this, () -> dropItems.isToggled() && notInstant.getAsBoolean(), 0, 10, 0, 1f);
+
+    private final IntegerSetting swordSlot = new IntegerSetting("SwordSlot", this, sortItems::isToggled, 1, 9, 1);
+    private final IntegerSetting bowSlot = new IntegerSetting("BowSlot", this, sortItems::isToggled, 1, 9, 3);
+    private final IntegerSetting gappleSlot = new IntegerSetting("GappleSlot", this, sortItems::isToggled, 1, 9, 2);
+    private final IntegerSetting blockSlotSetting = new IntegerSetting("BlockSlot", this, sortItems::isToggled, 1, 9, 7);
+    private final IntegerSetting pickaxeSlot = new IntegerSetting("PickaxeSlot", this, sortItems::isToggled, 1, 9, 4);
+    private final IntegerSetting axeSlot = new IntegerSetting("AxeSlot", this, sortItems::isToggled, 1, 9, 5);
+    private final IntegerSetting spadeSlot = new IntegerSetting("SpadeSlot", this, sortItems::isToggled, 1, 9, 6);
+
+    private final IntegerSetting maxBlockStacks = new IntegerSetting("MaxBlockStacks", this, 0, 30, 5);
+    private final IntegerSetting maxRods = new IntegerSetting("MaxRods", this, 0, 9, 1);
+
+    private final IntegerSetting foodSlot = new IntegerSetting("FoodSlot", this, 1, 9, 8);
+    private final IntegerSetting maxFoodStacks = new IntegerSetting("MaxFoodStacks", this, 0, 30, 5);
 
     private final int[] bestArmorPieces = new int[4];
     private final int[] bestToolSlots = new int[3];
 
     private final List<Integer> gappleStackSlots = new ArrayList<>();
     private final List<Integer> blockSlot = new ArrayList<>();
+    private final List<Integer> fishingRods = new ArrayList<>();
+    private final List<Integer> foodSlotList = new ArrayList<>();
     private final List<Integer> trash = new ArrayList<>();
 
     private int bestSwordSlot;
@@ -117,6 +134,8 @@ public class InvManager extends Module {
 
                         if (stack != null) processInventoryItem(slot, stack);
                     }
+
+                    this.applyLimits();
 
                     boolean armorReady = armorTimer.reachedMS(armorWait);
                     boolean sortReady = sortTimer.reachedMS(sortWait);
@@ -194,6 +213,8 @@ public class InvManager extends Module {
         if (processCombatItems(slot, stack)) return;
         if (processToolsAndArmor(slot, stack)) return;
         if (processUtilityItems(slot, stack)) return;
+        if (processFishingRods(slot, stack)) return;
+        if (processGoodFood(slot, stack)) return;
 
         if (!trash.contains(slot) && !InventoryUtils.isValidStack(stack)) trash.add(slot);
     }
@@ -210,7 +231,7 @@ public class InvManager extends Module {
                 return true;
             }
 
-            case ItemAppleGold _ -> {
+            case ItemAppleGold _ when stack.getMetadata() > 0 -> {
                 gappleStackSlots.add(slot);
                 return true;
             }
@@ -238,8 +259,24 @@ public class InvManager extends Module {
     }
 
     private boolean processUtilityItems(int slot, ItemStack stack) {
-        if (stack.getItem() instanceof ItemBlock && slot == InventoryUtils.findBestBlockStack()) {
+        if (stack.getItem() instanceof ItemBlock && InventoryUtils.isGoodBlockStack(stack)) {
             blockSlot.add(slot);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean processFishingRods(int slot, ItemStack stack) {
+        if (stack.getItem() instanceof ItemFishingRod) {
+            fishingRods.add(slot);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean processGoodFood(int slot, ItemStack stack) {
+        if (stack.getItem() instanceof ItemFood && InventoryUtils.isGoodFood(stack) && !(stack.getItem() instanceof ItemAppleGold && stack.getMetadata() > 0)) {
+            foodSlotList.add(slot);
             return true;
         }
         return false;
@@ -270,49 +307,96 @@ public class InvManager extends Module {
         sortWait = sortDelay.getRandomizedIntValue() * 50;
     }
 
+    private void applyLimits() {
+        blockSlot.sort(Comparator.comparingInt(s -> -mc.thePlayer.inventoryContainer.getSlot(s).getStack().stackSize));
+        for (int i = maxBlockStacks.getValue(); i < blockSlot.size(); i++) {
+            trash.add(blockSlot.get(i));
+        }
+
+        fishingRods.sort(Comparator.comparingInt(s -> -rodDurability(mc.thePlayer.inventoryContainer.getSlot(s).getStack())));
+        for (int i = maxRods.getValue(); i < fishingRods.size(); i++) {
+            trash.add(fishingRods.get(i));
+        }
+
+        foodSlotList.sort(Comparator.comparingInt(s -> -foodValue(mc.thePlayer.inventoryContainer.getSlot(s).getStack())));
+        for (int i = maxFoodStacks.getValue(); i < foodSlotList.size(); i++) {
+            trash.add(foodSlotList.get(i));
+        }
+    }
+
+    private int rodDurability(ItemStack stack) {
+        return stack.getMaxDamage() - stack.getItemDamage();
+    }
+
+    private int foodValue(ItemStack stack) {
+        if (!(stack.getItem() instanceof ItemFood food)) return 0;
+        return food.getHealAmount(stack) + (int) (food.getSaturationModifier(stack) * food.getHealAmount(stack));
+    }
+
     private boolean sortItems(boolean instant) {
         if (this.sortItems.isToggled()) {
-            if (this.bestSwordSlot != -1) {
-                if (this.bestSwordSlot != 36) {
-                    this.putItemInSlot(36, this.bestSwordSlot);
-                    this.bestSwordSlot = 36;
-                    if (!instant) return true;
-                }
+            final int swordTarget = 35 + this.swordSlot.getValue();
+            if (this.bestSwordSlot != -1 && this.bestSwordSlot != swordTarget) {
+                this.putItemInSlot(swordTarget, this.bestSwordSlot);
+                this.bestSwordSlot = swordTarget;
+                if (!instant) return true;
             }
 
-            if (this.bestBowSlot != -1) {
-                if (this.bestBowSlot != 38) {
-                    this.putItemInSlot(38, this.bestBowSlot);
-                    this.bestBowSlot = 38;
-                    if (!instant) return true;
-                }
+            final int bowTarget = 35 + this.bowSlot.getValue();
+            if (this.bestBowSlot != -1 && this.bestBowSlot != bowTarget) {
+                this.putItemInSlot(bowTarget, this.bestBowSlot);
+                this.bestBowSlot = bowTarget;
+                if (!instant) return true;
             }
 
             if (!this.gappleStackSlots.isEmpty()) {
                 this.gappleStackSlots.sort(Comparator.comparingInt(slot -> mc.thePlayer.inventoryContainer.getSlot(slot).getStack().stackSize));
 
                 final int bestGappleSlot = this.gappleStackSlots.getFirst();
+                final int gappleTarget = 35 + this.gappleSlot.getValue();
 
-                if (bestGappleSlot != 37) {
-                    this.putItemInSlot(37, bestGappleSlot);
-                    this.gappleStackSlots.set(0, 37);
+                if (bestGappleSlot != gappleTarget) {
+                    this.putItemInSlot(gappleTarget, bestGappleSlot);
+                    this.gappleStackSlots.set(0, gappleTarget);
                     if (!instant) return true;
                 }
             }
 
-            if (!this.blockSlot.isEmpty()) {
+            if (!this.blockSlot.isEmpty() && this.maxBlockStacks.getValue() >= 1) {
                 this.blockSlot.sort(Comparator.comparingInt(slot -> -mc.thePlayer.inventoryContainer.getSlot(slot).getStack().stackSize));
 
                 final int blockSlot = this.blockSlot.getFirst();
+                final int blockTarget = 35 + this.blockSlotSetting.getValue();
 
-                if (blockSlot != 42) {
-                    this.putItemInSlot(42, blockSlot);
-                    this.blockSlot.set(0, 42);
+                final ItemStack atTarget = mc.thePlayer.inventoryContainer.getSlot(blockTarget).getStack();
+                final boolean targetHasBlock = atTarget != null && atTarget.getItem() instanceof ItemBlock
+                    && InventoryUtils.isGoodBlockStack(atTarget);
+
+                if (blockSlot != blockTarget && !targetHasBlock) {
+                    this.putItemInSlot(blockTarget, blockSlot);
+                    this.blockSlot.set(0, blockTarget);
                     if (!instant) return true;
                 }
             }
 
-            final int[] toolSlots = {39, 40, 41};
+            if (!this.foodSlotList.isEmpty() && this.maxFoodStacks.getValue() >= 1) {
+                this.foodSlotList.sort(Comparator.comparingInt(s -> -foodValue(mc.thePlayer.inventoryContainer.getSlot(s).getStack())));
+
+                final int foodSlot = this.foodSlotList.getFirst();
+                final int foodTarget = 35 + this.foodSlot.getValue();
+
+                final ItemStack atTarget = mc.thePlayer.inventoryContainer.getSlot(foodTarget).getStack();
+                final boolean targetHasFood = atTarget != null && atTarget.getItem() instanceof ItemFood && InventoryUtils.isGoodFood(atTarget)
+                    && !(atTarget.getItem() instanceof ItemAppleGold && atTarget.getMetadata() > 0);
+
+                if (foodSlot != foodTarget && !targetHasFood) {
+                    this.putItemInSlot(foodTarget, foodSlot);
+                    this.foodSlotList.set(0, foodTarget);
+                    if (!instant) return true;
+                }
+            }
+
+            final int[] toolSlots = {35 + this.pickaxeSlot.getValue(), 35 + this.axeSlot.getValue(), 35 + this.spadeSlot.getValue()};
 
             for (final int toolSlot : this.bestToolSlots) {
                 if (toolSlot != -1) {
@@ -346,7 +430,7 @@ public class InvManager extends Module {
                     if (!instant) return true;
                 }
             }
-            if (instant) return true;
+            return instant;
         }
         return false;
     }
@@ -389,6 +473,8 @@ public class InvManager extends Module {
         this.bestSwordSlot = -1;
         this.gappleStackSlots.clear();
         this.blockSlot.clear();
+        this.fishingRods.clear();
+        this.foodSlotList.clear();
         Arrays.fill(this.bestArmorPieces, -1);
         Arrays.fill(this.bestToolSlots, -1);
     }
