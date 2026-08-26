@@ -26,6 +26,7 @@ public class TimerRange extends Module {
     final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 4);
     final FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0, 2.5f, 1, 0.1f);
     final IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
+    final FloatSetting expandPredictHitBox = new FloatSetting("ExpandPredictHitBox", this, -0.1f, 0.1f, 0.0f, 0.01f);
 
     final Mode snapConditions = new Mode("SnapConditions", this)
         .addModes("ToClick", "ToTeleport")
@@ -59,18 +60,24 @@ public class TimerRange extends Module {
 
             teleportTicks = 0;
 
-            Vec3 targetPosition = target.getServerPosition().divine(32.0D)
+            Vec3 position = target.getServerPosition().divine(32.0D)
                 .subtract(target.getPositionVector());
 
-            AxisAlignedBB box = target.getEntityBoundingBox().offset(targetPosition);
+            AxisAlignedBB box = target.getEntityBoundingBox()
+                    .expand(expandPredictHitBox.getValue())
+                    .offset(position);
 
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, mc.thePlayer.rotationYaw);
+            Vec3 realPosition = target.getNPosition().subtract(target.getPositionVector());
 
-            AxisAlignedBB realBox = target.getEntityBoundingBox().offset(target.getNPosition().subtract(target.getPositionVector()));
+            AxisAlignedBB realBox = target.getEntityBoundingBox()
+                    .expand(expandPredictHitBox.getValue())
+                    .offset(realPosition);
+
+            if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) < 3.0) return;
 
             BackTrack backTrack = Modules.getModule(BackTrack.class);
 
-            if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) < 3.0) return;
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, mc.thePlayer.rotationYaw);
 
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 boolean skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), box) > 3.0D;

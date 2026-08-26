@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.IslandComponent;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.impl.*;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
@@ -17,6 +18,7 @@ import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.FresnelUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
@@ -35,6 +37,9 @@ import java.util.Date;
 @ModuleInfo(name = "DynamicIsland", category = Category.VISUAL)
 public class DynamicIsland extends Module {
     private final CheckBox blur = new CheckBox("Blur", this, false);
+    private final CheckBox glass = new CheckBox("Glass", this, false);
+
+    private final ColorSetting color = new ColorSetting("Color", this);
 
     private static final DateFormat FORMAT = new SimpleDateFormat("HH:mm");
 
@@ -129,7 +134,15 @@ public class DynamicIsland extends Module {
             Color playColor = isHoveredPlay ? color.darker() : color;
             Color prevColor = isHoveredPrev ? color.darker() : color;
 
-            RoundedUtils.drawRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, Colors.BLACK.withAlpha(ba * 0.5f));
+            if (glass.isToggled()) {
+                FresnelUtils.drawScreen(renderX, rectY + height.getValue(), widthRect, 15, 7.5f,2f, 10f, Colors.WHITE.withAlpha(0f), 1f,
+                        2f, true, 1f, 0.1f, Colors.WHITE.withAlpha(ba)
+                );
+            }
+
+            RenderUtils.drawMixedRoundedRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, new Colors(this.color.getColor()).withMultiplyAlpha(ba), new Colors(this.color.getFadeColor()).withMultiplyAlpha(ba), this.color.getSpeed());
+
+//            RoundedUtils.drawRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, Colors.BLACK.withAlpha(ba * 0.5f));
             regularFont.draw("<", prevX, buttonsY + 1, 12, prevColor);
             boldFont.draw(playText, playX, buttonsY - 1, 8, playColor);
             regularFont.draw(">", nextX, buttonsY + 1, 12, nextColor);
@@ -179,7 +192,13 @@ public class DynamicIsland extends Module {
         float timeX = x - timeWidth - 3;
         float timeY = y + 5;
 
-        RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.BLACK.withAlpha(0.5f));
+        if (glass.isToggled()) {
+            FresnelUtils.drawScreen(x, y, width, height, rectRadius.getValue(), 2f, 10f, Colors.WHITE.withAlpha(0f), 1f,
+                    2f, true, 1f, 0.1f, Colors.WHITE.withAlpha(1f)
+            );
+        }
+
+        RenderUtils.drawMixedRoundedRect(x, y, width, height, rectRadius.getValue(), new Colors(this.color.getColor()), new Colors(this.color.getFadeColor()), this.color.getSpeed());
 
         if (blur.isToggled()) {
             BlurUtils.startWrite();

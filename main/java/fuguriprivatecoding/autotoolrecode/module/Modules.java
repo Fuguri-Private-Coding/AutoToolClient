@@ -116,6 +116,7 @@ public class Modules {
 			new ClientSettings(),
 			new ScoreBoard(),
 			new TimeChanger(),
+			new TestRender(),
 			new Scaffold(),
 			new HighJump(),
 			new LongJump(),

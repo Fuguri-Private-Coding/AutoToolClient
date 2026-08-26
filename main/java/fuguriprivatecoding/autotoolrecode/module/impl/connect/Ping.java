@@ -28,6 +28,9 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemEnderPearl;
+import net.minecraft.item.ItemFishingRod;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
@@ -49,18 +52,21 @@ public class Ping extends Module {
     final DoubleSlider addingDelayPerTick = new DoubleSlider("AddingDelayPerTick", this, () -> delayIncreaseType.is("Smooth"), 0,100,100,1);
 
     private final MultiMode actions = new MultiMode("ActionsToReset", this)
-        .addModes("Attack", "Damage", "Velocity", "Flag", "UsingItem",
-            "PlaceBlock", "ClickWindow", "Scaffold", "OpenedGui", "Distance", "ChatMessage");
+        .addModes(
+                "Attack", "SelfHurtTime", "Velocity", "Flag", "UsingItem", "UsingRod", "UsingPearl",
+                "PlaceBlock", "ClickWindow", "Scaffold", "OpenedGui", "Distance"
+        );
 
     final FloatSetting distanceToReset = new FloatSetting("DistanceToReset", this, () -> actions.get("Distance"), 2.5f, 6f,3f,0.01f);
     final IntegerSetting distanceDelay = new IntegerSetting("DistanceDelay", this, () -> actions.get("Distance"),0, 1000, 0);
 
-    final IntegerSetting chatMessageDelay = new IntegerSetting("ChatMessageDelay", this, () -> actions.get("ChatMessage"),0, 1000, 0);
     final IntegerSetting attackDelay = new IntegerSetting("AttackDelay", this, () -> actions.get("Attack"),0, 1000, 0);
-    final IntegerSetting damageDelay = new IntegerSetting("DamageDelay", this, () -> actions.get("Damage"),0, 1000, 0);
+    final IntegerSetting selfHurtTimeDelay = new IntegerSetting("SelfHurtTimeDelay", this, () -> actions.get("Damage"),0, 1000, 0);
     final IntegerSetting velocityDelay = new IntegerSetting("VelocityDelay", this, () -> actions.get("Velocity"),0, 1000, 0);
     final IntegerSetting flagDelay = new IntegerSetting("FlagDelay", this, () -> actions.get("Flag"),0, 1000, 0);
     final IntegerSetting usingItemDelay = new IntegerSetting("UsingItemDelay", this, () -> actions.get("UsingItem"),0, 1000, 0);
+    final IntegerSetting usingRodDelay = new IntegerSetting("UsingRodDelay", this, () -> actions.get("UsingRod"),0, 1000, 0);
+    final IntegerSetting usingPearlDelay = new IntegerSetting("UsingPearlDelay", this, () -> actions.get("UsingPearl"),0, 1000, 0);
     final IntegerSetting placeBlockDelay = new IntegerSetting("PlaceBlockDelay", this, () -> actions.get("PlaceBlock"),0, 1000, 0);
     final IntegerSetting clickWindowDelay = new IntegerSetting("ClickWindowDelay", this, () -> actions.get("ClickWindow"),0, 1000, 0);
     final IntegerSetting scaffoldDelay = new IntegerSetting("ScaffoldDelay", this, () -> actions.get("Scaffold"),0, 1000, 0);
@@ -111,8 +117,8 @@ public class Ping extends Module {
                 Packet packet = e.getPacket();
 
                 switch (packet) {
-                    case C01PacketChatMessage _ when actions.get("ChatMessage") ->
-                        reset(chatMessageDelay.getValue());
+                    case C01PacketChatMessage _ ->
+                        reset(50);
 
                     case C0EPacketClickWindow _ when actions.get("ClickWindow") ->
                         reset(clickWindowDelay.getValue());
@@ -120,8 +126,7 @@ public class Ping extends Module {
                     case S08PacketPlayerPosLook _ when actions.get("Flag") ->
                         reset(flagDelay.getValue());
 
-                    case C08PacketPlayerBlockPlacement _ when actions.get("PlaceBlock") ->
-                        reset(placeBlockDelay.getValue());
+                    case C08PacketPlayerBlockPlacement c08 -> onItemUse(c08.getStack());
 
                     case C02PacketUseEntity c02 when actions.get("Attack") && c02.getAction() == C02PacketUseEntity.Action.ATTACK ->
                         reset(attackDelay.getValue());
@@ -150,8 +155,8 @@ public class Ping extends Module {
                 if (actions.get("Scaffold") && Modules.getModule(Scaffold.class).isToggled())
                     reset(scaffoldDelay.getValue());
 
-                if (actions.get("Damage") && mc.thePlayer.hurtTime != 0)
-                    reset(damageDelay.getValue());
+                if (actions.get("SelfHurtTime") && mc.thePlayer.hurtTime != 0)
+                    reset(selfHurtTimeDelay.getValue());
 
                 if (actions.get("UsingItem") && mc.thePlayer.isUsingItem())
                     reset(usingItemDelay.getValue());
@@ -215,6 +220,14 @@ public class Ping extends Module {
                 }
             }
             default -> {}
+        }
+    }
+
+    private void onItemUse(ItemStack stack) {
+        switch (stack.getItem()) {
+            case ItemFishingRod _ when actions.get("UsingRod") -> reset(usingRodDelay.getValue());
+            case ItemEnderPearl _ when actions.get("UsingPearl") -> reset(usingPearlDelay.getValue());
+            default -> reset(placeBlockDelay.getValue());
         }
     }
 

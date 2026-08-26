@@ -10,6 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -19,6 +20,7 @@ import fuguriprivatecoding.autotoolrecode.utils.time.TimedVar;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
@@ -55,6 +57,8 @@ public class BackTrack extends Module {
     final FloatSetting findTargetDistance = new FloatSetting("FindTargetDistance", this, () -> !onlyKillAura.isToggled() && !legacyTargetFinding.isToggled(), 3.0f, 12.0f, 6.0f, 0.1f) {};
     final CheckBox realTimeDamage = new CheckBox("RealTimeDamage", this, true);
 
+    final CheckBox debug = new CheckBox("Debug", this, false);
+
     final CheckBox renderOnlyIfWorking = new CheckBox("RenderOnlyIfWorking", this, true);
     final Mode render = new Mode("Render", this)
             .addModes("Player", "HitBox", "Box", "OFF")
@@ -90,6 +94,13 @@ public class BackTrack extends Module {
             Packet packet = e.getPacket();
 
             if (target == null || e.isCanceled() || e.getDirection() == PacketDirection.OUTGOING) return;
+
+            if (packet instanceof C02PacketUseEntity c02 && c02.getAction() == C02PacketUseEntity.Action.ATTACK && debug.isToggled()) {
+                Vec3 targetPosition = target.getNPosition().subtract(target.getPositionVector());
+                double distance = DistanceUtils.getDistance(target.getExpandedBoundingBox().offset(targetPosition));
+
+                if (distance > 3) ClientUtils.chatLog(String.format("%.2f", distance));
+            }
 
             if ((packet instanceof S06PacketUpdateHealth
                     || packet instanceof S02PacketChat

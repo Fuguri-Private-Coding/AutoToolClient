@@ -40,6 +40,6 @@ public class DefaultIsland extends IslandComponent {
                     (2.5f - img / 2f) * ctx.imageSize.getProgress(), img, img, 5, 1f, Colors.WHITE.withAlpha(alpha));
         }
 
-        ctx.regular.draw(Client.getFullName(), 10, 0, 8, ctx.whiteColor.withAlpha(alpha));
+        ctx.regular.draw(Client.getFullName(), songImage != null ? 10 : 0, 0, 8, ctx.whiteColor.withAlpha(alpha));
     }
 }

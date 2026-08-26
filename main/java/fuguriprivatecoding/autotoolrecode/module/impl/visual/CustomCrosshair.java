@@ -12,11 +12,9 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.FresnelUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.rect.Rect;
@@ -43,16 +41,6 @@ public class CustomCrosshair extends Module {
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent) {
             ScaledResolution sc = new ScaledResolution(mc);
-//
-//            FresnelUtils.drawScreen(50, 50, 100, 100,
-//                    10f, 2f, 15f, Colors.WHITE.withAlpha(0f), 1f,
-//                    2f, true, 1f, 0.1f, Colors.WHITE.withAlpha(1f)
-//            );
-//
-//            BlurUtils.startWrite();
-//            RectUtils.drawRect(50, 50, 100, 100, 10f, Colors.WHITE.withAlpha(1f));
-//            BlurUtils.stopWrite();
-//            RectUtils.drawRect(50, 50, 100, 100, 10f, Colors.WHITE.withAlpha(0.2f));
 
             switch (mode.getMode()) {
                 case "Cross" -> {
