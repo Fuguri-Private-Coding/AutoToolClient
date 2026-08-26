@@ -81,9 +81,9 @@ public class TimerRange extends Module {
 
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 boolean skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), box) > 3.0D;
-                boolean skipReal = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), realBox) > backTrack.distanceToCancelHits.getValue();
+//                boolean skipReal = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), realBox) > backTrack.distanceToCancelHits.getValue();
 
-                if (skip || (skipReal && backTrack.isToggled() && backTrack.cancelHitsIfNeed.isToggled())) {
+                if (skip) {
                     simulatedPlayer.tick();
                     continue;
                 }

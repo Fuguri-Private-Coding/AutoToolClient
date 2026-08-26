@@ -61,7 +61,7 @@ public class Ping extends Module {
     final IntegerSetting distanceDelay = new IntegerSetting("DistanceDelay", this, () -> actions.get("Distance"),0, 1000, 0);
 
     final IntegerSetting attackDelay = new IntegerSetting("AttackDelay", this, () -> actions.get("Attack"),0, 1000, 0);
-    final IntegerSetting selfHurtTimeDelay = new IntegerSetting("SelfHurtTimeDelay", this, () -> actions.get("Damage"),0, 1000, 0);
+    final IntegerSetting selfHurtTimeDelay = new IntegerSetting("SelfHurtTimeDelay", this, () -> actions.get("SelfHurtTime"),0, 1000, 0);
     final IntegerSetting velocityDelay = new IntegerSetting("VelocityDelay", this, () -> actions.get("Velocity"),0, 1000, 0);
     final IntegerSetting flagDelay = new IntegerSetting("FlagDelay", this, () -> actions.get("Flag"),0, 1000, 0);
     final IntegerSetting usingItemDelay = new IntegerSetting("UsingItemDelay", this, () -> actions.get("UsingItem"),0, 1000, 0);
@@ -227,7 +227,10 @@ public class Ping extends Module {
         switch (stack.getItem()) {
             case ItemFishingRod _ when actions.get("UsingRod") -> reset(usingRodDelay.getValue());
             case ItemEnderPearl _ when actions.get("UsingPearl") -> reset(usingPearlDelay.getValue());
-            default -> reset(placeBlockDelay.getValue());
+            default -> {
+                if (actions.get("PlaceBlock")) {
+                    reset(placeBlockDelay.getValue());                }
+            }
         }
     }
 
