@@ -67,28 +67,24 @@ public class TimerRange extends Module {
                     .expand(expandPredictHitBox.getValue())
                     .offset(position);
 
-            Vec3 realPosition = target.getNPosition().subtract(target.getPositionVector());
-
-            AxisAlignedBB realBox = target.getEntityBoundingBox()
-                    .expand(expandPredictHitBox.getValue())
-                    .offset(realPosition);
-
             if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) < 3.0) return;
-
-            BackTrack backTrack = Modules.getModule(BackTrack.class);
 
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, mc.thePlayer.rotationYaw);
 
-            for (int i = 0; i < maxTicks.getValue(); i++) {
-                boolean skip = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), box) > 3.0D;
-//                boolean skipReal = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), realBox) > backTrack.distanceToCancelHits.getValue();
+            BackTrack backTrack = Modules.getModule(BackTrack.class);
 
-                if (skip) {
+            for (int i = 0; i < maxTicks.getValue(); i++) {
+                double distance = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), box);
+
+                boolean skip = distance > 3.0D;
+                boolean backTrackSkip = distance > backTrack.distanceToCancelHits.getValue() && backTrack.isToggled();
+
+                if (skip || backTrackSkip) {
                     simulatedPlayer.tick();
                     continue;
                 }
 
-                teleportTicks = i;
+                teleportTicks = i + 1;
                 break;
             }
 

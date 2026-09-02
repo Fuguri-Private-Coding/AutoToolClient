@@ -13,7 +13,7 @@ public class DescriptionIsland extends IslandComponent {
     }
 
     public static IslandComponent create(IslandContext ctx) {
-        if (!(ctx.currentScreen instanceof ClickScreen)) {
+        if (!(ctx.currentScreen() instanceof ClickScreen)) {
             return null;
         }
 
@@ -33,7 +33,7 @@ public class DescriptionIsland extends IslandComponent {
 
     @Override
     public float getWidth(IslandContext ctx) {
-        return ctx.regular.width(text, 8);
+        return ctx.regular().width(text, 8);
     }
 
     @Override
@@ -43,6 +43,6 @@ public class DescriptionIsland extends IslandComponent {
 
     @Override
     public void draw(IslandContext ctx) {
-        ctx.regular.draw(text, 0, 0, 8, ctx.whiteColor.withAlpha(ctx.textAlpha.getValue()));
+        ctx.regular().draw(text, 0, 0, 8, ctx.whiteColor().withAlpha(ctx.textAlpha().getValue()));
     }
 }

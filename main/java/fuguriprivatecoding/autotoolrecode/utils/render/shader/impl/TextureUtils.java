@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl;
 
-import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import net.minecraft.client.Minecraft;

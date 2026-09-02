@@ -32,8 +32,8 @@ import net.minecraft.util.*;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
-import java.util.stream.Collectors;
 
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, description = "Автоматически целится и бьет противника.")
 public class KillAura extends Module {
@@ -46,7 +46,7 @@ public class KillAura extends Module {
         .addModes("Players", "Mobs", "Animals", "Villagers");
 
     private final Mode sortType = new Mode("SortType", this)
-        .addModes("Distance", "FOV", "HurtTime")
+        .addModes("Distance", "FOV", "Switch")
         .setMode("FOV");
 
     private final Mode hitVec = new Mode("HitVec", this)
@@ -95,11 +95,6 @@ public class KillAura extends Module {
     private final DoubleSlider CPSUpdateDelay = new DoubleSlider("CPSUpdateDelay", this, 0, 20, 5, 1);
 
     private final CheckBox lockView = new CheckBox("LockView", this, false);
-
-    private final Mode eventToRotate = new Mode("EventToRotate", this)
-        .addModes("Tick", "Motion")
-        .setMode("Tick")
-        ;
 
     private final Mode moveFix = new Mode("MoveFix", this)
         .addModes("OFF", "Legit", "Silent")
@@ -151,15 +146,10 @@ public class KillAura extends Module {
                 CameraRot.INST.setWillChange(false);
                 return;
             }
-
-            switch (eventToRotate.getMode()) {
-                case "Tick" -> {
-                    if (event instanceof TickEvent) rotate(target);
-                }
-
-                case "Motion" -> {
-                    if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.POST) rotate(target);
-                }
+            if (lockView.isToggled()) {
+                if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.POST) rotate(target);
+            } else {
+                if (event instanceof TickEvent) rotate(target);
             }
 
             if (moveFix.is("OFF")) {
@@ -235,6 +225,10 @@ public class KillAura extends Module {
 
         CameraRot.INST.setUnlocked(!lockView.isToggled());
         mc.thePlayer.moveRotation(delta);
+
+        if (lockView.isToggled()) {
+            mc.entityRenderer.getMouseOver(1f);
+        }
     }
 
     private Rot transformDelta(Rot delta) {
@@ -258,7 +252,10 @@ public class KillAura extends Module {
         }
 
         if (smoothModes.get("Basic")) {
-            Rot add = new Rot(RandomUtils.nextFloat(-yawStrength.getValue(), yawStrength.getValue()), RandomUtils.nextFloat(-pitchStrength.getValue(), pitchStrength.getValue()));
+            float randomYaw = RandomUtils.nextFloat(-yawStrength.getValue(), yawStrength.getValue());
+            float randomPitch = RandomUtils.nextFloat(-pitchStrength.getValue(), pitchStrength.getValue());
+
+            Rot add = new Rot(randomYaw, randomPitch);
 
             delta = delta.plus(add);
         }
@@ -285,7 +282,7 @@ public class KillAura extends Module {
         delta = delta.limitedLine(speed);
 
         if (smoothModes.get("MixDelta")) {
-            delta = lastDelta.lerp(delta, (float) mixYawDelta.getRandomizedIntValue() / 100f, (float) mixPitchDelta.getRandomizedIntValue() / 100f);
+            delta = lastDelta.lerp(delta, mixYawDelta.getRandomizedIntValue() / 100f, mixPitchDelta.getRandomizedIntValue() / 100f);
         }
 
         return delta;
@@ -296,41 +293,41 @@ public class KillAura extends Module {
     }
 
     private EntityLivingBase findNewTarget() {
-        List<EntityLivingBase> entityList = mc.theWorld.loadedEntityList.stream()
-            .filter(this::isValidTarget)
-            .filter(this::isWithinDistance)
-            .filter(EntityLivingBase.class::isInstance)
-            .map(EntityLivingBase.class::cast)
-            .filter(this::matchesTargetType)
-            .collect(Collectors.toList());
+        List<EntityLivingBase> entityList = new CopyOnWriteArrayList<>();
 
-        entityList.removeIf(ent -> DistanceUtils.getDistance(ent) > findDistance.getValue());
+        for (Entity entity : mc.theWorld.loadedEntityList) {
+            if (isValidTarget(entity) && entity instanceof EntityLivingBase base && matchesTargetType(base)) {
+                entityList.add(base);
+            }
+        }
 
         entityList.sort(
             switch (sortType.getMode()) {
                 case "Distance" -> Comparator.comparingDouble(DistanceUtils::getDistance);
-                case "HurtTime" -> Comparator.comparingDouble(ent -> ent.hurtTime);
+                case "Switch" -> Comparator.comparingDouble(ent -> {
+                    double distance = DistanceUtils.getDistance(ent);
+                    int hurtTime = ent.hurtTime;
+
+                    if (distance > 3) {
+                        return 10000;
+                    }
+
+                    return hurtTime + distance;
+                });
                 default -> Comparator.comparingDouble(RotUtils::getFovToEntity);
             }
         );
 
-        EntityLivingBase newTarget = null;
+        EntityLivingBase newTarget = !entityList.isEmpty() ? entityList.getFirst() : null;
 
-        if (!entityList.isEmpty()) {
-            newTarget = entityList.getFirst();
-        }
-
-        if (TargetStorage.getTarget() != null && newTarget == null) CameraRot.INST.setWillChange(false);
+        if (TargetStorage.getTarget() != null && newTarget == null)
+            CameraRot.INST.setWillChange(false);
 
         return newTarget;
     }
 
     private boolean isValidTarget(Entity entity) {
-        return entity != mc.thePlayer && !entity.isDead;
-    }
-
-    private boolean isWithinDistance(Entity entity) {
-        return DistanceUtils.getDistance(entity) < findDistance.getValue();
+        return entity != mc.thePlayer && entity.isEntityAlive() && DistanceUtils.getDistance(entity) <= findDistance.getValue();
     }
 
     private boolean matchesTargetType(EntityLivingBase entity) {

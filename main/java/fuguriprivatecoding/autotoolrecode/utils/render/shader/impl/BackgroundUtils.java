@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL11;
 
 public class BackgroundUtils implements Imports {
 
-    private static Shader program = Shaders.background;
+    private static final Shader program = Shaders.background;
 
     public static void run() {
         if (!Display.isVisible() || !Display.isActive()) return;

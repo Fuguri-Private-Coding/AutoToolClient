@@ -1457,15 +1457,17 @@ public abstract class EntityLivingBase extends Entity implements Imports {
             this.motionZ *= 0.98D;
         }
 
-        if (Math.abs(this.motionX) < (ViaLoadingBase.getInstance().getTargetVersion().getVersion() <= 47 ? 0.005D : 0.003D)) {
+        double motion = ViaLoadingBase.getInstance().getTargetVersion().getVersion() <= 47 ? 0.005D : 0.003D;
+
+        if (Math.abs(this.motionX) < motion) {
             this.motionX = 0.0D;
         }
 
-        if (Math.abs(this.motionY) < (ViaLoadingBase.getInstance().getTargetVersion().getVersion() <= 47 ? 0.005D : 0.003D)) {
+        if (Math.abs(this.motionY) < motion) {
             this.motionY = 0.0D;
         }
 
-        if (Math.abs(this.motionZ) < (ViaLoadingBase.getInstance().getTargetVersion().getVersion() <= 47 ? 0.005D : 0.003D)) {
+        if (Math.abs(this.motionZ) < motion) {
             this.motionZ = 0.0D;
         }
 

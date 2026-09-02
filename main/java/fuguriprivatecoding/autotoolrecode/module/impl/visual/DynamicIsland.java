@@ -54,7 +54,7 @@ public class DynamicIsland extends Module {
 
     private final Date date = new Date();
 
-    private boolean opened, pressed = false, player = false;
+    private boolean opened, pressed = false, media = false;
 
     public DynamicIsland() {
         width = new EasingAnimation();
@@ -92,14 +92,14 @@ public class DynamicIsland extends Module {
         boolean hoveredRect = GuiUtils.isMouseHovered(rectX - 5, rectY - 5, additionalWidth + 10, additionalHeight + 15);
 
         if (hoveredRect && Mouse.isButtonDown(0) && !pressed) {
-            player = !player;
+            media = !media;
         }
 
         if (hoveredRect) {
             pressed = Mouse.isButtonDown(0);
         }
 
-        IslandContext ctx = new IslandContext(boldFont, regularFont, whiteColor, mediaController, info, imageSize, textAlpha, player, mc.currentScreen);
+        IslandContext ctx = new IslandContext(boldFont, regularFont, whiteColor, mediaController, info, imageSize, textAlpha, media, mc.currentScreen);
 
         IslandComponent component = MediaIsland.create(ctx);
         if (component == null) component = NotificationIsland.create(ctx);
@@ -153,7 +153,7 @@ public class DynamicIsland extends Module {
                 BlurUtils.stopWrite();
             }
 
-            if (player && this.width.getValue() == 10 + this.additionalWidth) {
+            if (media && this.width.getValue() == 10 + this.additionalWidth) {
                 boolean clicked = Mouse.isButtonDown(0) && !pressed;
 
                 if (clicked && isHoveredPrev) mediaController.prev();
@@ -166,8 +166,8 @@ public class DynamicIsland extends Module {
 
         width.setEnd(10 + additionalWidth);
         height.setEnd(15 + additionalHeight);
-        imageSize.setEnd(mc.currentScreen != null && player ? 30f : 10f);
-        buttonAlpha.setEnd(player ? 1f : 0f);
+        imageSize.setEnd(mc.currentScreen != null && media ? 30f : 10f);
+        buttonAlpha.setEnd(media);
 
         opened = additionalHeight > 0;
 

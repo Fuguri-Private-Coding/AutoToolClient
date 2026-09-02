@@ -12,7 +12,6 @@ import net.minecraft.util.RayTrace;
 @UtilityClass
 public class TargetStorage implements Imports {
 
-    double entityReach = 3, blockReach = 4.5;
     @Getter @Setter EntityLivingBase target;
 
     public EntityLivingBase getTargetOrSelectedEntity() {

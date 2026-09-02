@@ -52,7 +52,7 @@ public class Clicks implements Imports, EventListener {
             }
         }
 
-        if (event instanceof ClickEvent e) {
+        if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.LEFT) {
             if (target instanceof EntityPlayer player && !player.isValid() && clickSettings.noFriendDamage.isToggled()) {
                 e.cancel();
             }
@@ -61,7 +61,7 @@ public class Clicks implements Imports, EventListener {
 
     public boolean needClick(EntityLivingBase target) {
         if (mc.rayTrace.typeOfHit == RayTrace.RayType.BLOCK) return false;
-        if (TimerRange.click) return false;
+        if (TimerRange.click || TimerRange.balance > 0 || TimerRange.teleporting) return false;
 
         if (target != null && BackTrack.needCancel(target)) {
             return false;

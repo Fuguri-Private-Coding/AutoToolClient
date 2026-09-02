@@ -33,10 +33,7 @@ public class Rot {
     }
 
     public Rot lerp(Rot end, float delta) {
-        return new Rot(
-            MathHelper.lerp(delta, yaw, end.getYaw()),
-            MathHelper.lerp(delta, pitch, end.getPitch())
-        );
+        return lerp(end, delta, delta);
     }
 
     public Rot deltaTo(Rot end) {
