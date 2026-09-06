@@ -65,7 +65,7 @@ public class TimerRange extends Module {
         if (event instanceof PacketEvent e && needAddPackets()) {
             Packet packet = e.getPacket();
 
-            if (cancelPackets.isToggled() && e.getDirection() == PacketDirection.INCOMING) {
+            if (cancelPackets.isToggled() && e.getDirection() == PacketDirection.OUTGOING) {
                 e.cancel();
                 packets.add(packet);
             }
