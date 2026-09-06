@@ -34,7 +34,7 @@ public class TimerRange extends Module {
     final IntegerSetting maxTargetHurtTime = new IntegerSetting("MaxTargetHurtTime", this, 0, 10, 4);
     final FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0, 2.5f, 1, 0.1f);
     final IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
-    final FloatSetting expandPredictHitBox = new FloatSetting("ExpandPredictHitBox", this, -0.1f, 0.1f, 0.0f, 0.01f);
+    final CheckBox useBestRotationForPredict = new CheckBox("UseBestRotationForPredict", this, true);
 
     final CheckBox cancelPackets = new CheckBox("CancelPackets", this, false);
     final Mode cancelMode = new Mode("CancelMode", this, cancelPackets::isToggled)
@@ -94,12 +94,13 @@ public class TimerRange extends Module {
                 .subtract(target.getPositionVector());
 
             AxisAlignedBB box = target.getEntityBoundingBox()
-                    .expand(expandPredictHitBox.getValue())
                     .offset(position);
 
             if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) < 3.0) return;
 
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, RotUtils.getBestRotation(box).getYaw());
+            float yaw = useBestRotationForPredict.isToggled() ? RotUtils.getBestRotation(box).getYaw() : mc.thePlayer.rotationYaw;
+
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, yaw);
 
             BackTrack backTrack = Modules.getModule(BackTrack.class);
 
