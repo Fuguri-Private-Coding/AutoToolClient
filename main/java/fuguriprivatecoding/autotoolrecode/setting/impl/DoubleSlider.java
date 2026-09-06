@@ -68,6 +68,18 @@ public class DoubleSlider extends Setting {
         this.step = step;
     }
 
+    public boolean in(int value) {
+        return value >= this.min && value <= this.max;
+    }
+
+    public boolean in(float value) {
+        return value >= this.min && value <= this.max;
+    }
+
+    public boolean in(double value) {
+        return value >= this.min && value <= this.max;
+    }
+
     public void setMinValue(double value) {
         if (minValue >= maxValue) this.maxValue = this.minValue;
         this.minValue = (float) Math.clamp(MathUtils.round(value, step), min, max);

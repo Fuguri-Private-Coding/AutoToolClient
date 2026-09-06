@@ -15,7 +15,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
-@ModuleInfo(name = "MoreKB", category = Category.COMBAT, description = "Автоматический ресет спринта после удара.")
+@ModuleInfo(name = "MoreKB", category = Category.COMBAT, description = "Автоматический ресет спринта после хита.")
 public class MoreKB extends Module {
 
     final Mode mode = new Mode("Mode", this)
@@ -42,7 +42,9 @@ public class MoreKB extends Module {
                 return;
             }
 
-            if (target.hurtResistantTime == 20 && !notWhile(target) && delay == 0 && reset == 0) {
+            boolean need = target.hurtResistantTime == 20 && !notWhile(target) && delay == 0 && reset == 0;
+
+            if (need) {
                 delay = delayTicks.getRandomizedIntValue();
                 reset = resetTicks.getRandomizedIntValue();
             }
@@ -79,8 +81,9 @@ public class MoreKB extends Module {
     }
 
     boolean notWhile(EntityLivingBase target) {
-        return (notWhile.get("Target Eating") && target.isEating()) ||
-            (notWhile.get("Has KnockBack Enchantment") && hasEnchant(mc.thePlayer.inventory.getCurrentItem()));
+        boolean eating = notWhile.get("Target Eating") && target.isEating();
+        boolean knockBackEnchant = notWhile.get("Has KnockBack Enchantment") || hasEnchant(mc.thePlayer.inventory.getCurrentItem());
+        return eating || knockBackEnchant;
     }
 
     private boolean hasEnchant(ItemStack itemStack) {

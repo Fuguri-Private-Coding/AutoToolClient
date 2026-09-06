@@ -1,5 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.music;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,14 +46,19 @@ public final class MediaController {
     private void tick() {
         try {
             TrackInfo changed = SmtcNative.nFetchIfChanged(lastVersion);
+
             if (changed == null) return;
 
             if (!changed.available()) {
-                return;
+                current = new TrackInfo(-253, "Нет информации.", "", TrackInfo.EMPTY.playbackStatus(), true, null);
+                setSongLocation(Client.of("image/unknown.png"));
+                setLastArtworkImage(null);
             }
 
-            lastVersion = changed.version();
-            current = changed;
+            if (changed.available()) {
+                lastVersion = changed.version();
+                current = changed;
+            }
 
             byte[] bytes = changed.artworkBytes();
 
@@ -63,7 +69,9 @@ public final class MediaController {
                     mc.addScheduledTask(() -> updateTexture(image));
                 }
             } else {
-                mc.addScheduledTask(this::deleteTexture);
+                if (current.version() != -253) {
+                    mc.addScheduledTask(this::deleteTexture);
+                }
             }
 
             artworkVersion = changed.version();

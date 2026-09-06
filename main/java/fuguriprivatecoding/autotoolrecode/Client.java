@@ -140,7 +140,6 @@ public class Client implements Imports {
 	}
 
 	public void onClose() {
-//		Configs.saveConfig(Configs.getLastLoadedConfig());
 		Configs.saveConfig(Configs.getDefaultConfig());
 		KeyBinds.saveBinds();
         MEDIA_CONTROLLER.close();

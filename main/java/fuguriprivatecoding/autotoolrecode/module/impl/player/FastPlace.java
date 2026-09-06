@@ -55,11 +55,10 @@ public class FastPlace extends Module {
         RayTrace hit = mc.rayTrace;
 
         boolean oneClick = true;
-        boolean flag = false;
 
         ItemStack heldStack = mc.thePlayer.getHeldItem();
 
-        if (!flag && heldStack != null && heldStack.getItem() instanceof ItemBlock itemblock) {
+        if (heldStack != null && heldStack.getItem() instanceof ItemBlock itemblock) {
             if (!itemblock.canPlaceBlockOnSide(mc.theWorld, hit.getBlockPos(), hit.sideHit, mc.thePlayer, heldStack)) {
                 oneClick = false;
             }
@@ -68,8 +67,8 @@ public class FastPlace extends Module {
         boolean item = mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
         boolean hitBlock = hit.typeOfHit == RayTrace.RayType.BLOCK;
 
-        boolean finas = !this.oneClick.isToggled() || oneClick;
+        boolean oneClickCheck = !this.oneClick.isToggled() || oneClick;
 
-        return Mouse.isButtonDown(1) && finas && item && hitBlock;
+        return Mouse.isButtonDown(1) && oneClickCheck && item && hitBlock;
     }
 }

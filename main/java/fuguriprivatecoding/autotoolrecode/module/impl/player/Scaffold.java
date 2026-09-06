@@ -54,7 +54,7 @@ public class Scaffold extends Module {
     private final FloatSetting pitchCorrectionMinStep = new FloatSetting("PitchCorrectionMinStep", this, 0.3f, 10, 1f, 0.01f);
 
     private final CheckBox sortYawOffset = new CheckBox("SortYawOffset", this, tellyVisible);
-    private final FloatSetting yawOffset = new FloatSetting("YawOffset", this, () -> sortYawOffset.isToggled() || normalVisible.getAsBoolean(), 0, 90, 45, 0.1f);
+    private final DoubleSlider yawOffset = new DoubleSlider("YawOffset", this, () -> sortYawOffset.isToggled() || normalVisible.getAsBoolean(), 0, 90, 45, 0.1f);
 
     private final MultiMode removeSwing = new MultiMode("RemoveSwing", this)
         .addModes("On Client", "On Server")
@@ -109,6 +109,13 @@ public class Scaffold extends Module {
 
     private int currentAirTicks = 0;
 
+    private float yawOffsetValue = 45f;
+
+    @Override
+    public void onEnable() {
+        yawOffsetValue = (float) yawOffset.getRandomizedDoubleValue();
+    }
+
     @Override
     public void onDisable() {
         resetValues();
@@ -117,6 +124,10 @@ public class Scaffold extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
+            if (!yawOffset.in(yawOffsetValue)) {
+                yawOffsetValue = (float) yawOffset.getRandomizedDoubleValue();
+            }
+
             targetBlock = PlayerUtils.getPossibleBlockPos();
             switch (type) {
                 case ACTIVE -> rotate();
@@ -242,7 +253,7 @@ public class Scaffold extends Module {
         float needYaw = strictYaw.isToggled() ? roundedYaw - 180 : yaw;
 
         boolean isDiagonally = MoveUtils.isMoveDiagonally(needYaw);
-        float offset = isDiagonally ? 0 : isOnRightSide ? yawOffset.getValue() : -yawOffset.getValue();
+        float offset = isDiagonally ? 0 : isOnRightSide ? yawOffsetValue : -yawOffsetValue;
 
         switch (rotMode.getMode()) {
             case "TellyBridge" -> {

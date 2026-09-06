@@ -118,17 +118,14 @@ public class RotUtils implements Imports {
 	}
 
     public static Rot getPossibleBestRotation(Rot startRot, AxisAlignedBB box) {
-        double accuracy = 5.0F;
-        double stepX = box.getLengthX() / accuracy;
-        double stepY = box.getLengthY() / accuracy;
-        double stepZ = box.getLengthZ() / accuracy;
+        double step = 0.07;
         double nearest = 15.0;
 
         Vec3 best = null;
 
-        for (double x = box.minX; x <= box.maxX; x += stepX) {
-            for (double z = box.minZ; z <= box.maxZ; z += stepZ) {
-                for (double y = box.minY; y <= box.maxY; y += stepY) {
+        for (double x = box.minX; x <= box.maxX; x += step) {
+            for (double z = box.minZ; z <= box.maxZ; z += step) {
+                for (double y = box.minY; y <= box.maxY; y += step) {
                     Vec3 pos = new Vec3(x, y, z);
                     if (mc.thePlayer.canVecBeSeen(pos)) {
                         double distance = DistanceUtils.getDistance(pos);

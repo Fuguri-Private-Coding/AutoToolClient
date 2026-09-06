@@ -8,46 +8,33 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.DoubleSlider;
-import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
-import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.setting.impl.MultiMode;
-import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.util.RayTrace;
 import org.lwjgl.input.Mouse;
 
-import java.util.function.BooleanSupplier;
-
 @ModuleInfo(name = "AutoClicker", category = Category.LEGIT, description = "Автоматически кликает за вас.")
 public class AutoClicker extends Module {
 
-    DoubleSlider CPS = new DoubleSlider("CPS", this, 0, 40, 20, 1);
-
-    Mode randomizeMode = new Mode("RandomizeMode", this)
-        .addModes("None", "Gaussian")
-        .setMode("Gaussian");
-
-    BooleanSupplier gaussianMode = () -> randomizeMode.is("Gaussian");
-
-    DoubleSlider cpsLimiter = new DoubleSlider("CPSLimiter", this, gaussianMode, 0, 40, 20, 1);
-
-    FloatSetting consistency = new FloatSetting("Consistency", this, gaussianMode, 0, 2, 0.2f, 0.01f);
-    FloatSetting instability = new FloatSetting("Instability", this, gaussianMode, 0, 2, 0.2f, 0.01f);
+    private final DoubleSlider CPS = new DoubleSlider("CPS", this, 1, 40, 16, 1);
+    private final DoubleSlider CPSUpdateDelay = new DoubleSlider("CPSUpdateDelay", this, 0, 20, 5, 1);
 
     MultiMode stopClickingWhen = new MultiMode("StopClickingWhen", this)
         .addModes("UsingItem", "BreakBlock")
         ;
 
-    long leftDelay;
+    private final StopWatch clickTimer = new StopWatch();
+    private long delay;
 
-    final StopWatch leftStopWatch = new StopWatch();
+    private double currentCps = 10;
+    private int currentCpsUpdateDelay = 1;
 
     @Override
     public void onEvent(Event event) {
         if (event instanceof RunGameLoopEvent) {
-            if (leftStopWatch.reachedMS(leftDelay)) {
-                leftDelay = getLeftDelay();
-                leftStopWatch.reset();
+            if (clickTimer.reachedMS(delay)) {
+                updateDelay();
+                clickTimer.reset();
 
                 if (shouldStopClicking()) return;
 
@@ -68,24 +55,15 @@ public class AutoClicker extends Module {
         return !Mouse.isButtonDown(0) || usingItem || breakBlock || mc.currentScreen != null;
     }
 
-    private long getLeftDelay() {
-        double baseDelay = 1000D / CPS.getRandomizedDoubleValue();
+    private void updateDelay() {
+        updateCps();
+        delay = Math.round(1000 / currentCps);
+    }
 
-        if (randomizeMode.is("Gaussian")) {
-            double minDelay = 1000D / cpsLimiter.getMaxValue();
-            double maxDelay = 1000D / cpsLimiter.getMinValue();
-
-            double consistency = this.consistency.getValue();
-            double instability = this.instability.getValue();
-
-            double gaussian = RandomUtils.random.nextGaussian() * consistency;
-            double noise = (RandomUtils.random.nextDouble() - 0.5) * instability;
-
-            double delay = baseDelay * (1 + gaussian + noise);
-
-            return (long) Math.clamp(delay, minDelay, maxDelay);
+    private void updateCps() {
+        if (currentCpsUpdateDelay == 0) {
+            currentCpsUpdateDelay = CPSUpdateDelay.getRandomizedIntValue();
+            currentCps = CPS.getRandomizedDoubleValue();
         }
-
-        return (long) baseDelay;
     }
 }

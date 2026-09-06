@@ -146,6 +146,7 @@ public class KillAura extends Module {
                 CameraRot.INST.setWillChange(false);
                 return;
             }
+
             if (lockView.isToggled()) {
                 if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.POST) rotate(target);
             } else {
@@ -178,7 +179,7 @@ public class KillAura extends Module {
 
         AxisAlignedBB fullBox = target.getExpandedBoundingBox();
 
-        Vec3 targetPos = target.getSmoothPositionVector();
+        Vec3 targetPos = target.getPositionVector();
 
         Vec3 needPoint = switch (hitVec.getMode()) {
             case "Best" -> RotUtils.getBestHitVec(box);

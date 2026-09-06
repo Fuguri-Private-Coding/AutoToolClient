@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
@@ -12,7 +13,7 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.RayTrace;
 import org.lwjgl.input.Mouse;
 import java.util.function.BooleanSupplier;
 
@@ -31,6 +32,8 @@ public class AimAssist extends Module {
     DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0, 20, 5, 0.1f);
     final CheckBox moveVertical = new CheckBox("MoveVertical", this, false);
     DoubleSlider pitchSpeed = new DoubleSlider("PitchSpeed", this, moveVertical::isToggled, 0, 20, 5, 0.1f);
+
+    final CheckBox smartAim = new CheckBox("SmartAim", this, false);
 
     final FloatSetting distance = new FloatSetting("Distance", this, 3.0f, 12.0f, 6.0f, 0.1f) {};
     final IntegerSetting fov = new IntegerSetting("Fov", this, 10, 180, 35);
@@ -81,12 +84,23 @@ public class AimAssist extends Module {
     }
 
     private Rot getRotation(EntityLivingBase target, AxisAlignedBB box) {
-        return switch (hitVec.getMode()) {
+        Rot needRot = switch (hitVec.getMode()) {
             case "Best" -> RotUtils.getBestRotation(box);
             case "Nearest" -> RotUtils.getNearestRotation(mc.thePlayer.getRotation(), box);
             case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
-            case "Body" -> RotUtils.getRotationToPoint(new Vec3(target.posX, target.posY + target.getEyeHeight() / 2f, target.posZ));
+            case "Body" -> RotUtils.getRotationToPoint(target.getPositionVector().addVector(0, target.height / 2f, 0));
             default -> null;
         };
+
+        if (smartAim.isToggled() && needRot != null) {
+            RayTrace hit = RayCastUtils.rayCast(needRot, distance.getValue(), 0);
+            RayTrace hits = RayCastUtils.rayCast(distance.getValue(), 0, needRot);
+
+            if (hit.typeOfHit == RayTrace.RayType.BLOCK && hits.typeOfHit == RayTrace.RayType.ENTITY) {
+                needRot = RotUtils.getPossibleBestRotation(needRot, box);
+            }
+        }
+
+        return needRot;
     }
 }

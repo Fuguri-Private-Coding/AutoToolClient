@@ -2,6 +2,7 @@ package fuguriprivatecoding.autotoolrecode.utils.packet;
 
 import lombok.experimental.UtilityClass;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.network.play.INetHandlerPlayServer;

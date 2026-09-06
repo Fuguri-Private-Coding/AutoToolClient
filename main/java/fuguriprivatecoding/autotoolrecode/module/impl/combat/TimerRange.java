@@ -1,8 +1,10 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
 import fuguriprivatecoding.autotoolrecode.event.events.*;
 import fuguriprivatecoding.autotoolrecode.event.events.player.BestClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -11,13 +13,19 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.network.Packet;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
 public class TimerRange extends Module {
@@ -28,6 +36,12 @@ public class TimerRange extends Module {
     final IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
     final FloatSetting expandPredictHitBox = new FloatSetting("ExpandPredictHitBox", this, -0.1f, 0.1f, 0.0f, 0.01f);
 
+    final CheckBox cancelPackets = new CheckBox("CancelPackets", this, false);
+    final Mode cancelMode = new Mode("CancelMode", this, cancelPackets::isToggled)
+            .addModes("Lag", "Both")
+            .setMode("Lag")
+            ;
+
     final Mode snapConditions = new Mode("SnapConditions", this)
         .addModes("ToClick", "ToTeleport")
         .setMode("ToClick")
@@ -37,9 +51,25 @@ public class TimerRange extends Module {
     public static int balance = 0;
     int teleportTicks;
 
+    List<Packet> packets = new CopyOnWriteArrayList<>();
+
     @Override
     public void onEvent(Event event) {
         EntityLivingBase target = TargetStorage.getTarget();
+
+        if (balance == 0) {
+            packets.forEach(PacketUtils::sendPacket);
+            packets.clear();
+        }
+
+        if (event instanceof PacketEvent e && needAddPackets()) {
+            Packet packet = e.getPacket();
+
+            if (cancelPackets.isToggled() && e.getDirection() == PacketDirection.INCOMING) {
+                e.cancel();
+                packets.add(packet);
+            }
+        }
 
         if (event instanceof RunGameLoopEvent && balance > 0) {
             mc.timer.renderPartialTicks = partialTicks.getValue();
@@ -69,7 +99,7 @@ public class TimerRange extends Module {
 
             if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) < 3.0) return;
 
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, mc.thePlayer.rotationYaw);
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, RotUtils.getBestRotation(box).getYaw());
 
             BackTrack backTrack = Modules.getModule(BackTrack.class);
 
@@ -96,6 +126,14 @@ public class TimerRange extends Module {
             if (balance > 0) click = true;
             teleporting = false;
         }
+    }
+
+    private boolean needAddPackets() {
+        return switch (cancelMode.getMode()) {
+            case "Lag" -> balance > 0 && !teleporting;
+            case "Both" -> teleporting || balance > 0;
+            default -> false;
+        };
     }
 
     public static boolean needSnap() {

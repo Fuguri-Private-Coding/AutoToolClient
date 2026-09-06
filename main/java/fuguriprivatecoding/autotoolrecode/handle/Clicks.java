@@ -60,7 +60,6 @@ public class Clicks implements Imports, EventListener {
     }
 
     public boolean needClick(EntityLivingBase target) {
-        if (mc.rayTrace.typeOfHit == RayTrace.RayType.BLOCK) return false;
         if (TimerRange.click || TimerRange.balance > 0 || TimerRange.teleporting) return false;
 
         if (target != null && BackTrack.needCancel(target)) {
@@ -97,7 +96,7 @@ public class Clicks implements Imports, EventListener {
     public static void click(EntityLivingBase target) {
         if (clickSettings.ignoreWalls.isToggled() && clickSettings.isToggled() && target != null) {
             RayTrace hit = RayCastUtils.rayCast(mc.thePlayer.getRotation(), 8, 0);
-            RayTrace hits = RayCastUtils.rayCast(DistanceUtils.getDistance(target) + 0.2f, 0, mc.thePlayer.getRotation());
+            RayTrace hits = RayCastUtils.rayCast(DistanceUtils.getDistance(target) + 1f, 0, mc.thePlayer.getRotation());
 
             if (shouldWallAttack(target, hit, hits)) {
                 AttackOrder.sendFixedAttack(mc.thePlayer, target);
