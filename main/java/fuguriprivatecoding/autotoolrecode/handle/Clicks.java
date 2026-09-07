@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.handle;
 
-import de.florianmichael.viamcp.fixes.AttackOrder;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
@@ -10,16 +9,13 @@ import fuguriprivatecoding.autotoolrecode.module.impl.combat.TimerRange;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.ClickSettings;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import lombok.Getter;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.RayTrace;
 
 public class Clicks implements Imports, EventListener {
@@ -60,6 +56,8 @@ public class Clicks implements Imports, EventListener {
     }
 
     public boolean needClick(EntityLivingBase target) {
+        if (mc.rayTrace.typeOfHit == RayTrace.RayType.BLOCK) return false;
+
         if (TimerRange.click || TimerRange.balance > 0 || TimerRange.teleporting) return false;
 
         if (target != null && BackTrack.needCancel(target)) {
@@ -74,14 +72,6 @@ public class Clicks implements Imports, EventListener {
             return false;
         }
 
-        if (clickSettings.forceClickReduce.isToggled()) {
-            float forceClickToReduce = MathHelper.wrapDegree(mc.thePlayer.rotationYaw - RotUtils.getRotationFromDiff(mc.thePlayer.getMotionVector()).getYaw());
-
-            if (Math.abs(forceClickToReduce) > clickSettings.minDiffToForce.getValue()) {
-                return true;
-            }
-        }
-
         int startHurtTime = clickSettings.startHurtTime.getRandomizedIntValue();
         int endHurtTime = clickSettings.endHurtTime.getRandomizedIntValue();
 
@@ -89,24 +79,11 @@ public class Clicks implements Imports, EventListener {
     }
 
     public static void addClick() {
-        if (TimerRange.needSnap()) return;
         clicks++;
     }
 
     public static void click(EntityLivingBase target) {
-        if (clickSettings.ignoreWalls.isToggled() && clickSettings.isToggled() && target != null) {
-            RayTrace hit = RayCastUtils.rayCast(mc.thePlayer.getRotation(), 8, 0);
-            RayTrace hits = RayCastUtils.rayCast(DistanceUtils.getDistance(target) + 1f, 0, mc.thePlayer.getRotation());
-
-            if (shouldWallAttack(target, hit, hits)) {
-                AttackOrder.sendFixedAttack(mc.thePlayer, target);
-                return;
-            }
-
-            mc.clickMouse();
-        } else {
-            mc.clickMouse();
-        }
+        mc.clickMouse();
     }
 
     public static boolean shouldWallAttack(EntityLivingBase target, RayTrace hit, RayTrace hits) {

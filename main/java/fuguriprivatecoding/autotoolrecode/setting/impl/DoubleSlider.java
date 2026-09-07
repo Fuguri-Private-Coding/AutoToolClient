@@ -69,15 +69,15 @@ public class DoubleSlider extends Setting {
     }
 
     public boolean in(int value) {
-        return value >= this.min && value <= this.max;
+        return value >= this.minValue && value <= this.maxValue;
     }
 
     public boolean in(float value) {
-        return value >= this.min && value <= this.max;
+        return value >= this.minValue && value <= this.maxValue;
     }
 
     public boolean in(double value) {
-        return value >= this.min && value <= this.max;
+        return value >= this.minValue && value <= this.maxValue;
     }
 
     public void setMinValue(double value) {

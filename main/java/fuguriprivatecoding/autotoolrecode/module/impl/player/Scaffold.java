@@ -12,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.RotData;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.scaffold.ScaffoldType;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.ItemUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
@@ -124,10 +125,7 @@ public class Scaffold extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof TickEvent) {
-            if (!yawOffset.in(yawOffsetValue)) {
-                yawOffsetValue = (float) yawOffset.getRandomizedDoubleValue();
-            }
-
+            if (!yawOffset.in(yawOffsetValue)) yawOffsetValue = (float) yawOffset.getRandomizedDoubleValue();
             targetBlock = PlayerUtils.getPossibleBlockPos();
             switch (type) {
                 case ACTIVE -> rotate();
@@ -233,7 +231,9 @@ public class Scaffold extends Module {
         if (hit.typeOfHit != RayTrace.RayType.BLOCK)
             return;
 
-        if ((needUp() || (isSameY(hit, sameY.isToggled()) && targetBlock.equals(hit.getBlockPos())))) {
+        BlockPos downPos = new BlockPos(mc.thePlayer.getPositionVector());
+
+        if ((needUp() && hit.getBlockPos().getX() == downPos.getX() && hit.getBlockPos().getZ() == downPos.getZ()) || (isSameY(hit, sameY.isToggled()) && targetBlock.equals(hit.getBlockPos()))) {
             mc.rightClickMouse(false);
 
             if (!removeSwing.get("On Client")) mc.thePlayer.swingItemNoPacket();
