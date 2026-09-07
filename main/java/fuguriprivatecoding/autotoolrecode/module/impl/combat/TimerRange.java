@@ -93,7 +93,7 @@ public class TimerRange extends Module {
             Vec3 position = target.getServerPosition().divine(32.0D)
                 .subtract(target.getPositionVector());
 
-            AxisAlignedBB box = target.getEntityBoundingBox()
+            AxisAlignedBB box = target.getExpandedBoundingBox()
                     .offset(position);
 
             if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) < 3.0) return;
