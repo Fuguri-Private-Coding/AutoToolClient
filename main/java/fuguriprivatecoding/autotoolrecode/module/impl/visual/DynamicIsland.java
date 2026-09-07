@@ -140,9 +140,7 @@ public class DynamicIsland extends Module {
                 );
             }
 
-            RenderUtils.drawMixedRoundedRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, new Colors(this.color.getColor()).withMultiplyAlpha(ba), new Colors(this.color.getFadeColor()).withMultiplyAlpha(ba), this.color.getSpeed());
-
-//            RoundedUtils.drawRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, Colors.BLACK.withAlpha(ba * 0.5f));
+            RoundedUtils.drawRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, new Colors(this.color.getFadedColor()).withMultiplyAlphaClamp(ba));
             regularFont.draw("<", prevX, buttonsY + 1, 12, prevColor);
             boldFont.draw(playText, playX, buttonsY - 1, 8, playColor);
             regularFont.draw(">", nextX, buttonsY + 1, 12, nextColor);
@@ -198,11 +196,11 @@ public class DynamicIsland extends Module {
             );
         }
 
-        RenderUtils.drawMixedRoundedRect(x, y, width, height, rectRadius.getValue(), new Colors(this.color.getColor()), new Colors(this.color.getFadeColor()), this.color.getSpeed());
+        RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), new Colors(this.color.getFadedColor()));
 
         if (blur.isToggled()) {
             BlurUtils.startWrite();
-            RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.WHITE.withAlpha(1f));
+            RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.WHITE);
             BlurUtils.stopWrite();
         }
 

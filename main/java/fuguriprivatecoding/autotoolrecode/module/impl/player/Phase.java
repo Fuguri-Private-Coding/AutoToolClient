@@ -97,11 +97,11 @@ public class Phase extends Module {
                 mc.thePlayer.onGround = true;
             }
         }
-        if (event instanceof MoveButtonEvent moveButtonEvent) {
+        if (event instanceof MoveButtonEvent moveEvent) {
             if (mc == null || mc.thePlayer == null || mc.theWorld == null) return;
-            if (mc.thePlayer.noClip && !fastUP.isToggled()) moveButtonEvent.setJump(false);
+            if (mc.thePlayer.noClip && !fastUP.isToggled()) moveEvent.setJump(false);
             if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox()).isEmpty() && sneak.isToggled()) {
-                moveButtonEvent.setSneak(true);
+                moveEvent.setSneak(true);
             }
         }
         if (event instanceof TickEvent && mc != null && mc.rayTrace != null) {

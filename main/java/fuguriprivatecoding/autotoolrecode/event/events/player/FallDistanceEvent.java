@@ -7,8 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class FallDistanceEvent extends Event {
+    @Getter
+    private static final FallDistanceEvent instance = new FallDistanceEvent();
+    private FallDistanceEvent() {}
+
     float fallDistance;
     float damageMultiplier;
 }

@@ -951,7 +951,9 @@ public abstract class EntityPlayer extends EntityLivingBase {
     public void attackTargetEntityWithCurrentItem(Entity targetEntity) {
         if (targetEntity.canAttackWithItem()) {
             if (!targetEntity.hitByEntity(this)) {
-                AttackEvent event = new AttackEvent(targetEntity, true);
+                AttackEvent event = AttackEvent.getInstance();
+                event.setHittingEntity(targetEntity);
+                event.setCancelSprint(true);
                 event.call();
 
                 if (event.isCanceled()) {
@@ -999,7 +1001,9 @@ public abstract class EntityPlayer extends EntityLivingBase {
                         if (i > 0) {
                             targetEntity.addVelocity(-MathHelper.sin(this.rotationYaw * (float) Math.PI / 180.0F) * (float) i * 0.5F, 0.1D, (double) (MathHelper.cos(this.rotationYaw * (float) Math.PI / 180.0F) * (float) i * 0.5F));
 
-                            HitSlowDownEvent hitSlowDownEvent = new HitSlowDownEvent(0.6, false);
+                            HitSlowDownEvent hitSlowDownEvent = HitSlowDownEvent.getInstance();
+                            hitSlowDownEvent.setSlowDown(0.6);
+                            hitSlowDownEvent.setSprint(false);
                             hitSlowDownEvent.call();
 
                             this.motionX *= hitSlowDownEvent.getSlowDown();

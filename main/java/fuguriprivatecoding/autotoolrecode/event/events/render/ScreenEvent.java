@@ -8,9 +8,10 @@ import net.minecraft.client.gui.GuiScreen;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class ScreenEvent extends Event {
-    public static final ScreenEvent INST = new ScreenEvent(Type.PRE);
+    @Getter
+    private static final ScreenEvent instance = new ScreenEvent();
+    private ScreenEvent() {}
 
     Type type;
 

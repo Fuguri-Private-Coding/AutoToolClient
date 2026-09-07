@@ -218,7 +218,9 @@ public class PlayerControllerMP {
             } else {
                 float damage = block.getPlayerRelativeBlockHardness(this.mc.thePlayer, this.mc.thePlayer.worldObj, posBlock);
 
-                BlockDamageEvent event = new BlockDamageEvent(this.curBlockDamageMP, damage);
+                BlockDamageEvent event = BlockDamageEvent.getInstance();
+                event.setCurrentDamage(this.curBlockDamageMP);
+                event.setAddingDamage(damage);
                 event.call();
 
                 this.curBlockDamageMP = event.getCurrentDamage();
@@ -239,7 +241,8 @@ public class PlayerControllerMP {
                     this.onPlayerDestroyBlock(posBlock, directionFacing);
                     this.curBlockDamageMP = 0.0F;
                     this.stepSoundTickCounter = 0.0F;
-                    BlockHitDelayEvent blockHitDelayEvent = new BlockHitDelayEvent(5);
+                    BlockHitDelayEvent blockHitDelayEvent = BlockHitDelayEvent.getInstance();
+                    blockHitDelayEvent.setDelay(5);
                     blockHitDelayEvent.call();
 
                     if (!blockHitDelayEvent.isCanceled()) this.blockHitDelay = blockHitDelayEvent.getDelay();
@@ -416,7 +419,8 @@ public class PlayerControllerMP {
     }
 
     public void attackEntity(EntityPlayer playerIn, Entity targetEntity) {
-        PreAttackEvent event = new PreAttackEvent(targetEntity);
+        PreAttackEvent event = PreAttackEvent.getInstance();
+        event.setHittingEntity(playerIn);
 
         event.call();
         this.syncCurrentPlayItem();

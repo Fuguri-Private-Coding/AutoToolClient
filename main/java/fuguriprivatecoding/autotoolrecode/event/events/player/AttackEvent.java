@@ -8,8 +8,11 @@ import net.minecraft.entity.Entity;
 
 @Setter
 @Getter
-@AllArgsConstructor
 public class AttackEvent extends Event {
-	final Entity hittingEntity;
+	@Getter
+	private static final AttackEvent instance = new AttackEvent();
+	private AttackEvent() {}
+
+	Entity hittingEntity;
 	private boolean cancelSprint;
 }

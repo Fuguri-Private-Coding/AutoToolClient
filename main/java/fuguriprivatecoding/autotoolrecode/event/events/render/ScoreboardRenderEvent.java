@@ -1,7 +1,9 @@
 package fuguriprivatecoding.autotoolrecode.event.events.render;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import lombok.Getter;
 
 public class ScoreboardRenderEvent extends Event {
-    public static final ScoreboardRenderEvent INST = new ScoreboardRenderEvent();
+    @Getter private static final ScoreboardRenderEvent instance = new ScoreboardRenderEvent();
+    private ScoreboardRenderEvent() {}
 }

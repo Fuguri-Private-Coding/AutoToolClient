@@ -468,10 +468,8 @@ public class GuiIngame extends Gui {
     private void renderScoreboard(ScoreObjective objective, ScaledResolution scaledRes) {
         GlStateManager.resetColor();
 
-        ScoreboardRenderEvent.INST.setCanceled(false);
-        ScoreboardRenderEvent.INST.call();
-
-        if (ScoreboardRenderEvent.INST.isCanceled()) return;
+        ScoreboardRenderEvent.getInstance().call();
+        if (ScoreboardRenderEvent.getInstance().isCanceled()) return;
 
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<Score> collection = scoreboard.getSortedScores(objective);

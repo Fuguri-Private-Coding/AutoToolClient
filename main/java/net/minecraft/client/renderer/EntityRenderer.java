@@ -2,14 +2,6 @@ package net.minecraft.client.renderer;
 
 import com.google.common.base.Predicates;
 import com.google.gson.JsonSyntaxException;
-
-import java.awt.*;
-import java.io.IOException;
-import java.nio.FloatBuffer;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.Callable;
-
 import fuguriprivatecoding.autotoolrecode.event.events.render.*;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
@@ -65,20 +57,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.src.Config;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.EnumWorldBlockLayer;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MouseFilter;
-import net.minecraft.util.RayTrace;
-import net.minecraft.util.ReportedException;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldSettings;
@@ -105,6 +84,13 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.util.glu.Project;
+
+import java.awt.*;
+import java.io.IOException;
+import java.nio.FloatBuffer;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Callable;
 
 public class EntityRenderer implements IResourceManagerReloadListener {
     private static final Logger logger = LogManager.getLogger();
@@ -1122,10 +1108,13 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.bindTexture(0);
 
                     GlStateManager.pushMatrix();
-                    Render2DEvent.INST.setScaledResolution(scaledresolution);
-                    Render2DEvent.INST.setMouseX(k1);
-                    Render2DEvent.INST.setMouseY(l1);
-                    Render2DEvent.INST.call();
+                    Render2DEvent render2DEvent = Render2DEvent.getInstance();
+
+                    render2DEvent.setScaledResolution(scaledresolution);
+                    render2DEvent.setMouseX(k1);
+                    render2DEvent.setMouseY(l1);
+                    render2DEvent.call();
+
                     GlStateManager.popMatrix();
 
                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1167,11 +1156,14 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     if (Reflector.ForgeHooksClient_drawScreen.exists()) {
                         Reflector.callVoid(Reflector.ForgeHooksClient_drawScreen, this.mc.currentScreen, k1, l1, partialTicks);
                     } else {
-                        ScreenEvent event = ScreenEvent.INST;
+                        ScreenEvent event = ScreenEvent.getInstance();
+
                         event.setCanceled(false);
                         event.setType(ScreenEvent.Type.PRE);
                         event.call();
+
                         if (!event.isCanceled()) this.mc.currentScreen.drawScreen(k1, l1, partialTicks);
+
                         event.setType(ScreenEvent.Type.POST);
                         event.call();
                     }
@@ -1207,7 +1199,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.mc.gameSettings.showDebugProfilerChart = true;
         }
 
-        RenderScreenEvent.INST.call(false);
+        RenderScreenEvent.getInstance().call(false);
     }
 
     public void renderStreamIndicator(float partialTicks) {
@@ -1495,9 +1487,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             this.mc.mcProfiler.endStartSection("outline");
 
             if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, new Object[]{renderglobal, entityplayer1, this.mc.rayTrace, Integer.valueOf(0), entityplayer1.getHeldItem(), Float.valueOf(partialTicks)})) && !this.mc.gameSettings.hideGUI) {
-                DrawBlockHighlightEvent.INST.call();
+                DrawBlockHighlightEvent event = DrawBlockHighlightEvent.getInstance();
+                event.call();
 
-                if (!DrawBlockHighlightEvent.INST.isCanceled()) renderglobal.drawSelectionBox(entityplayer1, this.mc.rayTrace, 0, partialTicks);
+                if (!event.isCanceled()) renderglobal.drawSelectionBox(entityplayer1, this.mc.rayTrace, 0, partialTicks);
             }
             GlStateManager.enableAlpha();
         }
@@ -1615,7 +1608,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             Reflector.callVoid(Reflector.ForgeHooksClient_dispatchRenderLast, renderglobal, partialTicks);
         }
 
-        Render3DEvent.INST.call();
+        Render3DEvent.getInstance().call();
 
         this.mc.mcProfiler.endStartSection("hand");
 

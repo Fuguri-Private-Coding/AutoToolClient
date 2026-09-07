@@ -16,8 +16,13 @@ public class VanillaMode extends AbstractSpeedMode {
     @Override
     public void handleEvent(Event event, Speed speed) {
         if (MoveUtils.isMoving()) {
-            if (event instanceof MoveButtonEvent e && speed.jump.isToggled()) e.setJump(true);
-            if (event instanceof MoveEvent) MoveUtils.setSpeed(0.1f * speed.speed.getValue(), true);
+            if (event instanceof MoveButtonEvent e) {
+                if (speed.jump.isToggled()) e.setJump(true);
+            }
+
+            if (event instanceof MoveEvent e) {
+                MoveUtils.setSpeed(0.1f * speed.speed.getValue(), true);
+            }
         }
     }
 }

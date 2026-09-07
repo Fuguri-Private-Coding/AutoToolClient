@@ -396,7 +396,13 @@ public class Block
     public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
         AxisAlignedBB axisalignedbb = this.getCollisionBoundingBox(worldIn, pos, state);
         if (collidingEntity == Minecraft.getMinecraft().thePlayer) {
-            BlockBBEvent event = new BlockBBEvent(worldIn, this, pos, axisalignedbb, mask);
+            BlockBBEvent event = BlockBBEvent.getInstance();
+            event.setWorld(worldIn);
+            event.setBlock(this);
+            event.setBlockPos(pos);
+            event.setBoundingBox(axisalignedbb);
+            event.setMaskBoundingBox(mask);
+
             event.call();
 
             if (event.isCanceled()) return;

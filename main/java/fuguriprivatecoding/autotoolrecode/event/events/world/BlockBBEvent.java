@@ -11,11 +11,13 @@ import net.minecraft.world.World;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class BlockBBEvent extends Event {
-    private final World world;
-    private final Block block;
-    private final BlockPos blockPos;
-    private AxisAlignedBB boundingBox, maskBoundingBox;
+    @Getter
+    private static final BlockBBEvent instance = new BlockBBEvent();
+    private BlockBBEvent() {}
 
+    private World world;
+    private Block block;
+    private BlockPos blockPos;
+    private AxisAlignedBB boundingBox, maskBoundingBox;
 }

@@ -6,7 +6,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
-import fuguriprivatecoding.autotoolrecode.event.events.world.ServerJoinEvent;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
 import fuguriprivatecoding.autotoolrecode.gui.multiplayer.ViaVersionScreen;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
@@ -306,7 +305,6 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
 
     private void connectToServer(ServerData server) {
         this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, server));
-        new ServerJoinEvent(server).call(false);
     }
 
     public void selectServer(int index) {

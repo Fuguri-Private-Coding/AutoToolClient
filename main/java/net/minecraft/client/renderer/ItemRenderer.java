@@ -365,9 +365,11 @@ public class ItemRenderer {
                         GL11.glRotatef(hand.blockRotateZ.getValue(), 0,0,1);
                     }
 
-                    RenderItemEvent.INST.setSwingProgress(f1);
-                    RenderItemEvent.INST.setEquipProgress(f);
-                    RenderItemEvent.INST.call();
+                    RenderItemEvent itemEvent = RenderItemEvent.getInstance();
+
+                    itemEvent.setSwingProgress(f1);
+                    itemEvent.setEquipProgress(f);
+                    itemEvent.call();
                 } else if (abstractclientplayer.getItemInUseCount() > 0) {
                     switch (enumaction) {
                         case NONE:

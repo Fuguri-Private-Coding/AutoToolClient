@@ -9,9 +9,10 @@ import net.minecraft.util.IChatComponent;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class ChatMessageEvent extends Event {
+    @Getter private static final ChatMessageEvent instance = new ChatMessageEvent();
+    private ChatMessageEvent() {}
+
     IChatComponent message;
     Type type;
 

@@ -6,7 +6,6 @@ import java.awt.*;
 import java.nio.FloatBuffer;
 import java.util.List;
 
-import fuguriprivatecoding.autotoolrecode.event.events.render.DrawEntityEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -200,14 +199,6 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
 
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
         if (!Reflector.RenderLivingEvent_Pre_Constructor.exists() || !Reflector.postForgeBusEvent(Reflector.RenderLivingEvent_Pre_Constructor, new Object[]{entity, this, Double.valueOf(x), Double.valueOf(y), Double.valueOf(z)})) {
-            DrawEntityEvent event = new DrawEntityEvent(entity);
-            if (entity != null) {
-                event.call();
-            }
-
-            if (event.isCanceled())
-                return;
-
             if (animateModelLiving) {
                 entity.limbSwingAmount = 1.0F;
             }

@@ -1134,8 +1134,11 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         float height = getJumpUpwardsMotion();
 
         if (this instanceof EntityPlayerSP) {
-            JumpEvent event = new JumpEvent(yaw, height);
+            JumpEvent event = JumpEvent.getInstance();
+            event.setYaw(yaw);
+            event.setHeight(height);
             event.call();
+
             yaw = event.getYaw();
             height = event.getHeight();
         }

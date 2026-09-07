@@ -7,8 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class HitSlowDownEvent extends Event {
-    public double slowDown;
-    public boolean sprint;
+    @Getter
+    private static final HitSlowDownEvent instance = new HitSlowDownEvent();
+    private HitSlowDownEvent() {}
+
+    double slowDown;
+    boolean sprint;
 }

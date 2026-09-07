@@ -1,15 +1,16 @@
 package fuguriprivatecoding.autotoolrecode.event.events.player;
 
-import lombok.AllArgsConstructor;
+import fuguriprivatecoding.autotoolrecode.event.Event;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.event.Event;
 
 @Setter
 @Getter
-@AllArgsConstructor
 public class MoveEvent extends Event {
+	@Getter
+	private static final MoveEvent instance = new MoveEvent();
+	private MoveEvent() {}
+
 	float forward, strafe;
-	boolean jump, sneak;
 	float sneakSlowDown;
 }

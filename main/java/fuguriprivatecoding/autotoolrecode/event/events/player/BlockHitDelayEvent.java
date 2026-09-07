@@ -7,7 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class BlockHitDelayEvent extends Event {
+    @Getter
+    private static final BlockHitDelayEvent instance = new BlockHitDelayEvent();
+    private BlockHitDelayEvent() {}
     int delay;
 }

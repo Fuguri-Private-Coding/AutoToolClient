@@ -1,21 +1,12 @@
 package net.minecraft.entity;
 
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-
 import fuguriprivatecoding.autotoolrecode.event.events.player.FallDistanceEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MoveFlyingEvent;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.event.events.player.MoveFlyingEvent;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockFence;
-import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.BlockWall;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockPattern;
@@ -44,6 +35,11 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import org.lwjgl.util.vector.Vector3f;
+
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.Callable;
 
 import static fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports.mc;
 
@@ -894,7 +890,9 @@ public abstract class Entity implements ICommandSender
                 else
                 {
                     if (this == mc.thePlayer) {
-                        FallDistanceEvent event = new FallDistanceEvent(this.fallDistance, 1.0f);
+                        FallDistanceEvent event = FallDistanceEvent.getInstance();
+                        event.setFallDistance(this.fallDistance);
+                        event.setDamageMultiplier(1.0f);
                         event.call();
                         if (!event.isCanceled()) this.fall(event.getFallDistance(), event.getDamageMultiplier());
                     } else {
@@ -1053,7 +1051,11 @@ public abstract class Entity implements ICommandSender
         float yaw = rotationYaw;
 
         if (this == Minecraft.getMinecraft().thePlayer) {
-            MoveFlyingEvent event = new MoveFlyingEvent(yaw, strafe, forward, friction);
+            MoveFlyingEvent event = MoveFlyingEvent.getInstance();
+            event.setForward(forward);
+            event.setStrafe(strafe);
+            event.setFriction(friction);
+            event.setYaw(yaw);
             event.call();
 
             yaw = event.getYaw();

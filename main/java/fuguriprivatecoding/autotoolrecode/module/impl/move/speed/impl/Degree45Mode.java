@@ -1,18 +1,18 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.move.speed.impl;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.player.*;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MoveButtonEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
 import fuguriprivatecoding.autotoolrecode.module.impl.move.Speed;
 import fuguriprivatecoding.autotoolrecode.module.impl.move.speed.AbstractSpeedMode;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Fucker;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
-import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -53,8 +53,10 @@ public class Degree45Mode extends AbstractSpeedMode {
             ));
         }
 
-        if (event instanceof MoveButtonEvent e && MoveUtils.isMoving() && speed.jump.isToggled()) {
-            e.setJump(true);
+        if (event instanceof MoveButtonEvent e) {
+            if (MoveUtils.isMoving() && speed.jump.isToggled()) {
+                e.setJump(true);
+            }
         }
     }
 }

@@ -148,7 +148,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     }
 
     public void onUpdate() {
-        UpdateEvent event = new UpdateEvent();
+        UpdateEvent event = UpdateEvent.getInstance();
         event.call();
 
         if (event.isCanceled()) {
@@ -185,12 +185,15 @@ public class EntityPlayerSP extends AbstractClientPlayer {
         }
 
         if (this.isCurrentViewEntity()) {
-            MotionEvent event = new MotionEvent(
-                    posX, posY, posZ,
-                    onGround, MotionEvent.Type.PRE
-            );
+            MotionEvent event = MotionEvent.getInstance();
 
+            event.setX(posX);
+            event.setY(posY);
+            event.setZ(posZ);
+            event.setOnGround(onGround);
+            event.setType(MotionEvent.Type.PRE);
             event.call();
+
             if (event.isCanceled()) return;
 
             double d0 = event.getX() - lastReportedPosX;
@@ -232,7 +235,11 @@ public class EntityPlayerSP extends AbstractClientPlayer {
                 this.lastReportedPitch = rotationPitch;
             }
 
-            event = new MotionEvent(event.getX(), event.getY(), event.getZ(), event.isOnGround(), MotionEvent.Type.POST);
+            event.setX(event.getX());
+            event.setY(event.getY());
+            event.setZ(event.getZ());
+            event.setOnGround(event.isOnGround());
+            event.setType(MotionEvent.Type.POST);
             event.call();
         }
     }
@@ -406,8 +413,6 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     }
 
     public void setSprinting(boolean sprinting) {
-        ChangeSprintEvent event = new ChangeSprintEvent();
-        event.call();
         super.setSprinting(sprinting);
         this.sprintingTicksLeft = sprinting ? 600 : 0;
     }
@@ -594,7 +599,10 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             float strafe = 0.2F;
             float forward = 0.2f;
 
-            SlowDownEvent slowDownEvent = new SlowDownEvent(strafe, forward, true);
+            SlowDownEvent slowDownEvent = SlowDownEvent.getInstance();
+            slowDownEvent.setForward(forward);
+            slowDownEvent.setStrafe(strafe);
+            slowDownEvent.setSprinting(true);
             slowDownEvent.call();
 
             if (!slowDownEvent.isCanceled()) {
@@ -635,7 +643,8 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             this.setSprinting(false);
         }
 
-        SprintEvent event = new SprintEvent(this.isSprinting());
+        SprintEvent event = SprintEvent.getInstance();
+        event.setSprinting(this.isSprinting());
         event.call();
 
         this.setSprinting(event.isSprinting());

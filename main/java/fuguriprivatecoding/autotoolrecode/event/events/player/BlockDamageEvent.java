@@ -7,7 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class BlockDamageEvent extends Event {
+    @Getter
+    private static final BlockDamageEvent instance = new BlockDamageEvent();
+
+    private BlockDamageEvent() {}
+
     float currentDamage, addingDamage;
 }

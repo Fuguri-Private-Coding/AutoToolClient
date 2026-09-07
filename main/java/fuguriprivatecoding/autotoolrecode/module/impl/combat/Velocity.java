@@ -1,16 +1,20 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.player.AttackEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MoveButtonEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.AttackEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Player;
-import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
+
 import java.util.Random;
 
 @ModuleInfo(name = "Velocity", category = Category.COMBAT, description = "Позволяет откидыватся меньше.")

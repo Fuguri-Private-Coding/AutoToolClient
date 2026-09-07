@@ -1,9 +1,9 @@
 package fuguriprivatecoding.autotoolrecode.event.events;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import lombok.Getter;
 
 public class RunGameLoopEvent extends Event {
-    public static final RunGameLoopEvent INST = new RunGameLoopEvent();
-
+    @Getter private static final RunGameLoopEvent instance = new RunGameLoopEvent();
     private RunGameLoopEvent() {}
 }
