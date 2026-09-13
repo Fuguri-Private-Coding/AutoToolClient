@@ -46,6 +46,7 @@ public class MovementInputFromOptions extends MovementInput {
         MoveEvent moveEvent = MoveEvent.getInstance();
         moveEvent.setForward(moveForward);
         moveEvent.setStrafe(moveStrafe);
+        moveEvent.setSneakSlowDown(0.3f);
         moveEvent.call();
 
         moveStrafe = moveEvent.getStrafe();

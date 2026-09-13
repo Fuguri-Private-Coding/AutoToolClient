@@ -14,6 +14,4 @@ public class ClickSettings extends Module {
     public DoubleSlider endHurtTime = new DoubleSlider("EndHurtTime", this, 0,10,3,1);
 
     public CheckBox noFriendDamage = new CheckBox("NoFriendDamage", this);
-    public CheckBox ignoreWalls = new CheckBox("IgnoreWalls", this, false);
-
 }

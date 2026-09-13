@@ -17,6 +17,7 @@ import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.FresnelUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
@@ -151,6 +152,10 @@ public class DynamicIsland extends Module {
                 BlurUtils.stopWrite();
             }
 
+            BloomUtils.startWrite();
+            RenderUtils.drawMixedRoundedRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, new Colors(this.color.getFadedColor()).withMultiplyAlphaClamp(ba), new Colors(this.color.getFadedColor()).withMultiplyAlphaClamp(ba), 3f);
+            BloomUtils.stopWrite();
+
             if (media && this.width.getValue() == 10 + this.additionalWidth) {
                 boolean clicked = Mouse.isButtonDown(0) && !pressed;
 
@@ -203,6 +208,10 @@ public class DynamicIsland extends Module {
             RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), Colors.WHITE);
             BlurUtils.stopWrite();
         }
+
+        BloomUtils.startWrite();
+        RenderUtils.drawMixedRoundedRect(x, y, width, height, rectRadius.getValue(), new Colors(this.color.getFadedColor()), new Colors(this.color.getFadedColor()), 3f);
+        BloomUtils.stopWrite();
 
         float translateX = x + 5;
         float translateY = y + 5;
