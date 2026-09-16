@@ -8,7 +8,10 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.notification.Notification;
-import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
+import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
+import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
@@ -21,9 +24,10 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.ScaledResolution;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.List;
+
 import java.awt.*;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "Notifications", category = Category.VISUAL, description = "Показывает информаци и включении/выключении модулей.")
 public class Notifications extends Module {
@@ -89,26 +93,70 @@ public class Notifications extends Module {
 
                 Color textColor = Colors.WHITE.withAlphaClamp(openAnim.getValue());
                 Color backgroundColor = new Colors(this.backgroundColor.getMixedColor(notifications.indexOf(notification))).withMultiplyAlphaClamp(openAnim.getValue());
-                Color backgroundGlowColorFirst = new Colors(this.glowColor.getColor()).withAlphaClamp(openAnim.getValue());
-                Color backgroundGlowColorSecond = new Colors(this.glowColor.getFadeColor()).withAlphaClamp(openAnim.getValue());
-
-                if (glow.isToggled()) {
-                    BloomUtils.startWrite();
-                    RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed());
-                    BloomUtils.stopWrite();
-                }
-
-                if (blur.isToggled()) {
-                    BlurUtils.startWrite();
-                    RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed());
-                    BlurUtils.stopWrite();
-                }
 
                 RoundedUtils.drawRect(x, y, width + 5, height, 7.5f, backgroundColor);
                 fontRenderer.drawString(text, x + 5, y + 5f, textColor);
 
                 ScaleUtils.stopScaling();
                 yOffset += (15 + gapOffset.getValue()) * openAnim.getValue();
+            }
+
+            if (glow.isToggled()) {
+                yOffset = 0;
+                BloomUtils.startWrite();
+                for (Notification notification : notifications) {
+                    EasingAnimation openAnim = notification.getOpenAnim();
+                    if (Modules.getModule(DynamicIsland.class).isToggled()) continue;
+
+                    String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
+                    String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
+
+                    float width = fontRenderer.getStringWidth(text);
+
+                    float x = sc.getScaledWidth() / 2f - width / 2f;
+                    float y = 5 + yOffset;
+                    float height = 15;
+
+                    ScaleUtils.startScaling(x, y, width + 5, height, openAnim.getValue());
+
+                    Color backgroundGlowColorFirst = new Colors(this.glowColor.getColor()).withAlphaClamp(openAnim.getValue());
+                    Color backgroundGlowColorSecond = new Colors(this.glowColor.getFadeColor()).withAlphaClamp(openAnim.getValue());
+
+                    RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed());
+
+                    ScaleUtils.stopScaling();
+                    yOffset += (15 + gapOffset.getValue()) * openAnim.getValue();
+                }
+                BloomUtils.stopWrite();
+            }
+
+            if (blur.isToggled()) {
+                yOffset = 0;
+                BlurUtils.startWrite();
+                for (Notification notification : notifications) {
+                    EasingAnimation openAnim = notification.getOpenAnim();
+                    if (Modules.getModule(DynamicIsland.class).isToggled()) continue;
+
+                    String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
+                    String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
+
+                    float width = fontRenderer.getStringWidth(text);
+
+                    float x = sc.getScaledWidth() / 2f - width / 2f;
+                    float y = 5 + yOffset;
+                    float height = 15;
+
+                    ScaleUtils.startScaling(x, y, width + 5, height, openAnim.getValue());
+
+                    Color backgroundGlowColorFirst = new Colors(this.glowColor.getColor()).withAlphaClamp(openAnim.getValue());
+                    Color backgroundGlowColorSecond = new Colors(this.glowColor.getFadeColor()).withAlphaClamp(openAnim.getValue());
+
+                    RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed());
+
+                    ScaleUtils.stopScaling();
+                    yOffset += (15 + gapOffset.getValue()) * openAnim.getValue();
+                }
+                BlurUtils.stopWrite();
             }
         }
     }
