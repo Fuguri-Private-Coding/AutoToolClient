@@ -12,4 +12,5 @@ public class KeyEvent extends Event {
 	private KeyEvent() {}
 
 	int key;
+	boolean pressed;
 }

@@ -1392,11 +1392,18 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.mcProfiler.endStartSection("keyboard");
 
             while (Keyboard.next()) {
-                int k = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
-                KeyBinding.setKeyBindState(k, Keyboard.getEventKeyState());
+                int key = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
 
+                KeyEvent keyEvent = KeyEvent.getInstance();
+                keyEvent.setKey(key);
+                keyEvent.setPressed(Keyboard.getEventKeyState());
+                keyEvent.call();
+
+                key = keyEvent.getKey();
+
+                KeyBinding.setKeyBindState(key, Keyboard.getEventKeyState());
                 if (Keyboard.getEventKeyState()) {
-                    KeyBinding.onTick(k);
+                    KeyBinding.onTick(key);
                 }
 
                 if (this.debugCrashKeyPressTime > 0L) {
@@ -1414,62 +1421,52 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 this.dispatchKeypresses();
 
                 if (Keyboard.getEventKeyState()) {
-                    if (k == 62 && this.entityRenderer != null) {
+                    if (key == 62 && this.entityRenderer != null) {
                         this.entityRenderer.switchUseShader();
                     }
 
                     if (this.currentScreen != null) {
                         this.currentScreen.handleKeyboardInput();
                     } else {
-                        KeyEvent keyEvent = KeyEvent.getInstance();
-                        keyEvent.setKey(k);
-
-                        keyEvent.call();
-                        k = keyEvent.getKey();
-
-                        if (k == 1) {
+                        if (key == 1) {
                             this.displayInGameMenu();
                         }
 
-                        if (k == 32 && Keyboard.isKeyDown(61) && this.ingameGUI != null) {
+                        if (key == 32 && Keyboard.isKeyDown(61) && this.ingameGUI != null) {
                             this.ingameGUI.getChatGUI().clearChatMessages();
                         }
 
-                        if (k == 31 && Keyboard.isKeyDown(61)) {
+                        if (key == 20 && Keyboard.isKeyDown(61)) {
                             this.refreshResources();
                         }
 
-                        if (k == 20 && Keyboard.isKeyDown(61)) {
-                            this.refreshResources();
-                        }
-
-                        if (k == 33 && Keyboard.isKeyDown(61)) {
+                        if (key == 33 && Keyboard.isKeyDown(61)) {
                             this.gameSettings.setOptionValue(GameSettings.Options.RENDER_DISTANCE, GuiScreen.isShiftKeyDown() ? -1 : 1);
                         }
 
-                        if (k == 30 && Keyboard.isKeyDown(61)) {
+                        if (key == 30 && Keyboard.isKeyDown(61)) {
                             this.renderGlobal.loadRenderers();
                         }
 
-                        if (k == 35 && Keyboard.isKeyDown(61)) {
+                        if (key == 35 && Keyboard.isKeyDown(61)) {
                             this.gameSettings.advancedItemTooltips = !this.gameSettings.advancedItemTooltips;
                             this.gameSettings.saveOptions();
                         }
 
-                        if (k == 48 && Keyboard.isKeyDown(61)) {
+                        if (key == 48 && Keyboard.isKeyDown(61)) {
                             this.renderManager.setDebugBoundingBox(!this.renderManager.isDebugBoundingBox());
                         }
 
-                        if (k == 25 && Keyboard.isKeyDown(61)) {
+                        if (key == 25 && Keyboard.isKeyDown(61)) {
                             this.gameSettings.pauseOnLostFocus = !this.gameSettings.pauseOnLostFocus;
                             this.gameSettings.saveOptions();
                         }
 
-                        if (k == 59) {
+                        if (key == 59) {
                             this.gameSettings.hideGUI = !this.gameSettings.hideGUI;
                         }
 
-                        if (k == 61) {
+                        if (key == 61) {
                             this.gameSettings.showDebugInfo = !this.gameSettings.showDebugInfo;
                             this.gameSettings.showDebugProfilerChart = GuiScreen.isShiftKeyDown();
                             this.gameSettings.showLagometer = GuiScreen.isAltKeyDown();
@@ -1481,12 +1478,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                     }
 
                     if (this.gameSettings.showDebugInfo && this.gameSettings.showDebugProfilerChart) {
-                        if (k == 11) {
+                        if (key == 11) {
                             this.updateDebugProfilerName(0);
                         }
 
                         for (int j1 = 0; j1 < 9; ++j1) {
-                            if (k == 2 + j1) {
+                            if (key == 2 + j1) {
                                 this.updateDebugProfilerName(j1 + 1);
                             }
                         }

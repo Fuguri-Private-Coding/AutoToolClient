@@ -29,7 +29,7 @@ public class Hand extends Module {
     BooleanSupplier itemPosSupplier = () -> effect.get("ItemPos");
 
     Mode mode = new Mode("Mode", this, animationsSupplier)
-        .addModes("1.7", "Swong", "Sigma", "Sigma 2", "Scale", "Exhibition", "Exhibition2", "Basic", "Slide")
+        .addModes("1.7", "Swong", "Scale", "Exhibition", "Exhibition2", "Slide")
         .setMode("1.7");
 
     FloatSetting blockScale = new FloatSetting("BlockScale", this, animationsSupplier, -1, 1f, 0.1f, 0.01f);

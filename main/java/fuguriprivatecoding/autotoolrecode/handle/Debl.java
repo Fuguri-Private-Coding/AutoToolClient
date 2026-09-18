@@ -21,7 +21,7 @@ public class Debl implements EventListener {
     public void onEvent(Event event) {
         if (event instanceof KeyEvent e) {
             Modules.getModules().forEach(module -> {
-                if (module.getKey() == e.getKey()) module.toggle();
+                if (module.getKey() == e.getKey() && e.isPressed()) module.toggle();
             });
         }
     }
