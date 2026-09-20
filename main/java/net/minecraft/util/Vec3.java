@@ -169,7 +169,7 @@ public class Vec3
 
     public String toString()
     {
-        return "(" + this.xCoord + ", " + this.yCoord + ", " + this.zCoord + ")";
+        return String.format("(%.3f, %.3f, %.3f)", this.xCoord, this.yCoord, this.zCoord);
     }
 
     public Vec3 rotatePitch(float pitch)

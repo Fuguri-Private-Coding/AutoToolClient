@@ -1,43 +1,42 @@
 package fuguriprivatecoding.autotoolrecode;
 
+import de.florianmichael.viamcp.ViaMCP;
+import fuguriprivatecoding.autotoolrecode.alt.Accounts;
+import fuguriprivatecoding.autotoolrecode.bind.KeyBinds;
+import fuguriprivatecoding.autotoolrecode.command.Commands;
+import fuguriprivatecoding.autotoolrecode.config.Configs;
 import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
+import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
+import fuguriprivatecoding.autotoolrecode.gui.config.ConfigScreen;
+import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
 import fuguriprivatecoding.autotoolrecode.gui.imgui.ImGuiManager;
+import fuguriprivatecoding.autotoolrecode.gui.main.MainScreen;
+import fuguriprivatecoding.autotoolrecode.handle.Clicks;
+import fuguriprivatecoding.autotoolrecode.handle.Debl;
+import fuguriprivatecoding.autotoolrecode.handle.Player;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.profile.Profile;
 import fuguriprivatecoding.autotoolrecode.profile.Role;
+import fuguriprivatecoding.autotoolrecode.utils.ai.NeuralNet;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
+import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
+import fuguriprivatecoding.autotoolrecode.utils.client.sound.Sounds;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
-
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
+import fuguriprivatecoding.autotoolrecode.utils.packet.PositionResolverComponent;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-
-import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
-import fuguriprivatecoding.autotoolrecode.profile.Profile;
-import fuguriprivatecoding.autotoolrecode.config.Configs;
-import fuguriprivatecoding.autotoolrecode.bind.KeyBinds;
-import fuguriprivatecoding.autotoolrecode.alt.Accounts;
-
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.sound.*;
-import fuguriprivatecoding.autotoolrecode.gui.clickgui.*;
-import fuguriprivatecoding.autotoolrecode.utils.packet.*;
-import fuguriprivatecoding.autotoolrecode.gui.console.*;
-import fuguriprivatecoding.autotoolrecode.gui.config.*;
-import fuguriprivatecoding.autotoolrecode.gui.main.*;
-import fuguriprivatecoding.autotoolrecode.command.*;
-import fuguriprivatecoding.autotoolrecode.handle.*;
-import fuguriprivatecoding.autotoolrecode.module.*;
-import fuguriprivatecoding.autotoolrecode.event.*;
-
-import de.florianmichael.viamcp.ViaMCP;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
-import lombok.*;
+import ru.govnoteam.core.NeuralNetwork;
 import smtc.SmtcNative;
-import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 // TODO: СПАСТЕШЬ МАТЬ ИСЧЕЗНЕТ!
 
@@ -134,6 +133,17 @@ public class Client implements Imports {
         Discord.init();
 
         starting = false;
+
+        File file = new File("test123.json");
+
+        if (file.exists()) {
+            ClientUtils.chatLog("Зовгрузко модели нахуй.");
+            try {
+                NeuralNet.NN = NeuralNetwork.loadFromJson(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
 		double elapsedNanos = System.nanoTime() - start;
 		ConsoleScreen.log("Клиент инициализировался за " + String.format("%.2f", (float) (elapsedNanos / 1000000000D)) + " секунд.");

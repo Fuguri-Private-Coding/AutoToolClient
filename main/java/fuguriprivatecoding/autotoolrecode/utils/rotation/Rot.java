@@ -20,6 +20,12 @@ public class Rot {
 		pitch = 0;
 	}
 
+
+    public Rot(float[] array) {
+        this.yaw = array[0];
+        this.pitch = array[1];
+    }
+
 	public Rot(float yaw, float pitch) {
 		this.yaw = yaw;
 		this.pitch = pitch;

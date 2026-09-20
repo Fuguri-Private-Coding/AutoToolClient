@@ -1,25 +1,26 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
-import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
-import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.math.FastNoiseLite;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
-import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
-import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
+import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.ai.NeuralNet;
+import fuguriprivatecoding.autotoolrecode.utils.math.FastNoiseLite;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.entity.Entity;
@@ -28,7 +29,9 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.*;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.RayTrace;
+import net.minecraft.util.Vec3;
 
 import java.util.Comparator;
 import java.util.List;
@@ -64,12 +67,15 @@ public class KillAura extends Module {
     private final CheckBox snapForTeleport = new CheckBox("SnapForTeleport", this);
 
     private final MultiMode smoothModes = new MultiMode("SmoothModes", this)
-        .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Noise");
+        .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Noise", "Neuro");
 
     private final Mode noiseType = new Mode("NoiseType", this, () -> smoothModes.get("Noise"))
         .addModes("OpenSimplex2", "OpenSimplex2S", "Cellular", "Perlin", "ValueCubic", "Value")
         .setMode("Perlin")
         ;
+
+    private final FloatSetting correctDelta = new FloatSetting("CorrectDelta", this, () -> smoothModes.get("Neural"), 0, 0.1f, 1f, 0.01f);
+    private final FloatSetting multipleDelta = new FloatSetting("MultipleDelta", this, () -> smoothModes.get("Neural"), 0, 1, 3, 0.1f);
 
     private final FloatSetting noiseSpeed = new FloatSetting("NoiseSpeed", this, () -> smoothModes.get("Noise"), 0.1f, 10f, 2f, 0.1f);
 
@@ -208,7 +214,7 @@ public class KillAura extends Module {
     }
 
     private void rotate(EntityLivingBase target) {
-        boolean teleport = (TimerRange.needSnap()) && snapForTeleport.isToggled();
+        boolean teleport = TimerRange.needSnap() && snapForTeleport.isToggled();
 
         AxisAlignedBB box = RotUtils.getHitBox(target, hBoxSize.getValue(), vBoxSize.getValue());
 
@@ -219,7 +225,7 @@ public class KillAura extends Module {
 
         Rot delta = mc.thePlayer.getRotation().deltaTo(needRotation);
 
-        if (!teleport) delta = transformDelta(delta);
+        if (!teleport) delta = transformDelta(target, delta);
 
         delta = delta.fixed();
         lastDelta = delta.copy();
@@ -232,7 +238,11 @@ public class KillAura extends Module {
         }
     }
 
-    private Rot transformDelta(Rot delta) {
+    private Rot transformDelta(EntityLivingBase target, Rot delta) {
+        if (smoothModes.get("Neuro")) {
+            delta = NeuralNet.computeDelta(mc.thePlayer.getRotation(), target, false).multiplied(multipleDelta.getValue()).lerp(delta, correctDelta.getValue());
+        }
+
         if (smoothModes.get("Noise")) {
             FastNoiseLite.NoiseType type = FastNoiseLite.NoiseType.valueOf(noiseType.getMode());
 
