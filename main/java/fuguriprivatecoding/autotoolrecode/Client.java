@@ -9,14 +9,11 @@ import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
 import fuguriprivatecoding.autotoolrecode.gui.config.ConfigScreen;
 import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
-import fuguriprivatecoding.autotoolrecode.gui.imgui.ImGuiManager;
 import fuguriprivatecoding.autotoolrecode.gui.main.MainScreen;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.handle.Debl;
 import fuguriprivatecoding.autotoolrecode.handle.Player;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.profile.Profile;
-import fuguriprivatecoding.autotoolrecode.profile.Role;
 import fuguriprivatecoding.autotoolrecode.utils.ai.NeuralNet;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientVersion;
@@ -54,12 +51,6 @@ public class Client implements Imports {
     public final File SKIN_DIRECTORY = new File(CLIENT_DIR + "/skins");
     public final File CAPE_DIRECTORY = new File(CLIENT_DIR + "/capes");
 
-	public static Profile profile;
-
-    public static ImGuiManager imGuiManager;
-
-    public final MediaController MEDIA_CONTROLLER = new MediaController();
-
 	public boolean starting = true;
 
 	public void init() throws IOException {
@@ -86,10 +77,8 @@ public class Client implements Imports {
         File sfProRounded_font = new File(Fonts.FONT_DIRECTORY, "SFProRounded.ttf");
         FileUtils.unpackFile(sfProRounded_font, "assets/minecraft/autotool/fonts/SFProRounded.ttf");
 
-        profile = Profile.builder().username(System.getProperty("user.name")).role(Role.USER).build();
-
         SmtcNative.init();
-        MEDIA_CONTROLLER.start();
+        MediaController.getInstance().start();
 
         createDirectories();
 
@@ -136,6 +125,8 @@ public class Client implements Imports {
 
         File file = new File("test123.json");
 
+        // todo("Тут Просто Тест Нейросети Был Ну Да Пукнуть")
+
         if (file.exists()) {
             ClientUtils.chatLog("Зовгрузко модели нахуй.");
             try {
@@ -152,7 +143,7 @@ public class Client implements Imports {
 	public void onClose() {
 		Configs.saveConfig(Configs.getDefaultConfig());
 		KeyBinds.saveBinds();
-        MEDIA_CONTROLLER.close();
+        MediaController.getInstance().close();
     }
 
     private void createDirectories() {

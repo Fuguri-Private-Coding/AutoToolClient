@@ -57,14 +57,10 @@ public class GuiPlayerTabOverlay extends Gui
         String friendText = friend ? "§2[Friend]§9 " : "";
 
         boolean profileNotNull = profile.getGameProfile() != null;
-        boolean selfProfileNotNull = mc.thePlayer.getGameProfile() != null;
-        boolean user = mc.thePlayer.getGameProfile().getName().equalsIgnoreCase(currentName);
-
-        String userText = selfProfileNotNull && profileNotNull && user ? Client.profile.toColoredString() + " " : "";
 
         String name = profileNotNull && profile.getDisplayName() != null ? profile.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(profile.getPlayerTeam(), currentName);
 
-        return detectiveText + murderText + friendText + userText + name;
+        return detectiveText + murderText + friendText + name;
     }
 
     public void updatePlayerList(boolean willBeRendered)

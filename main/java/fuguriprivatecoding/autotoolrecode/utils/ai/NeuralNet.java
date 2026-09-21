@@ -29,15 +29,16 @@ public class NeuralNet implements Imports {
         Vec3 targetMotion = target.getPositionVector().subtract(target.getLastPositionVector());
         Vec3 playerMotion = mc.thePlayer.getPositionVector().subtract(mc.thePlayer.getLastPositionVector());
 
-        Vec3 velocity = targetMotion.subtract(playerMotion);
+        // TODO Тут кароче типа 1.8.9 тупая и нормально увидеть моушн противника нельзя поэтому тут сделано вот так :3
+        Vec3 relativeVelocity = targetMotion.subtract(playerMotion);
 
         return new float[] {
-                (float) velocity.xCoord,
-                (float) velocity.yCoord,
-                (float) velocity.zCoord,
-                delta.getYaw() / 180.0f,
-                delta.getPitch() / 180.0f,
-                (float) Math.clamp(mc.thePlayer.getDistance(target.posX, target.posY, target.posZ) / 6.0f, 0.0f, 1.0f)
+            (float) relativeVelocity.xCoord,
+            (float) relativeVelocity.yCoord,
+            (float) relativeVelocity.zCoord,
+            delta.getYaw() / 180.0f,
+            delta.getPitch() / 180.0f,
+            (float) Math.clamp(mc.thePlayer.getDistance(target.posX, target.posY, target.posZ) / 6.0f, 0.0f, 1.0f)
         };
     }
 
@@ -53,7 +54,7 @@ public class NeuralNet implements Imports {
     private final List<float[]> history = new ArrayList<>();
     private EntityLivingBase lastTarget;
 
-    public Rot computeDelta(Rot current, EntityLivingBase target, boolean willHit) {
+    public Rot computeDelta(Rot current, EntityLivingBase target) {
         if (target != lastTarget) {
             lastTarget = target;
             history.clear();

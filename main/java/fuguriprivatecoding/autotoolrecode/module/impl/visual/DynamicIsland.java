@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.RenderScreenEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -84,7 +83,7 @@ public class DynamicIsland extends Module {
 
         Colors whiteColor = Colors.WHITE;
 
-        MediaController mediaController = Client.MEDIA_CONTROLLER;
+        MediaController mediaController = MediaController.getInstance();
 
         TrackInfo info = mediaController.getCurrent();
 

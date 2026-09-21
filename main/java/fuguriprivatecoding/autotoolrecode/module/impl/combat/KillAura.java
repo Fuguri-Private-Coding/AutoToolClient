@@ -69,13 +69,15 @@ public class KillAura extends Module {
     private final MultiMode smoothModes = new MultiMode("SmoothModes", this)
         .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Noise", "Neuro");
 
+    private final Mode neuroModel = new Mode("NeuroModel", this);
+
+    private final FloatSetting correctDelta = new FloatSetting("CorrectDelta", this, () -> smoothModes.get("Neuro"), 0, 1f, 0.1f, 0.01f);
+    private final FloatSetting multipleDelta = new FloatSetting("MultipleDelta", this, () -> smoothModes.get("Neuro"), 0, 3, 1, 0.1f);
+
     private final Mode noiseType = new Mode("NoiseType", this, () -> smoothModes.get("Noise"))
         .addModes("OpenSimplex2", "OpenSimplex2S", "Cellular", "Perlin", "ValueCubic", "Value")
         .setMode("Perlin")
         ;
-
-    private final FloatSetting correctDelta = new FloatSetting("CorrectDelta", this, () -> smoothModes.get("Neural"), 0, 0.1f, 1f, 0.01f);
-    private final FloatSetting multipleDelta = new FloatSetting("MultipleDelta", this, () -> smoothModes.get("Neural"), 0, 1, 3, 0.1f);
 
     private final FloatSetting noiseSpeed = new FloatSetting("NoiseSpeed", this, () -> smoothModes.get("Noise"), 0.1f, 10f, 2f, 0.1f);
 
@@ -240,7 +242,7 @@ public class KillAura extends Module {
 
     private Rot transformDelta(EntityLivingBase target, Rot delta) {
         if (smoothModes.get("Neuro")) {
-            delta = NeuralNet.computeDelta(mc.thePlayer.getRotation(), target, false).multiplied(multipleDelta.getValue()).lerp(delta, correctDelta.getValue());
+            delta = NeuralNet.computeDelta(mc.thePlayer.getRotation(), target).multiplied(multipleDelta.getValue()).lerp(delta, correctDelta.getValue());
         }
 
         if (smoothModes.get("Noise")) {

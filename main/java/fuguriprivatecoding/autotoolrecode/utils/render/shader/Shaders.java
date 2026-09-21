@@ -8,11 +8,10 @@ import net.minecraft.util.ResourceLocation;
 @UtilityClass
 public class Shaders {
 
-	public Shader roundedRect, background, gaussianBlur, bloom, motionBlur, roundedRectTest, msdfFonts, texture, fresnelTexture;
+	public Shader roundedRect, background, gaussianBlur, bloom, motionBlur, msdfFonts, texture, fresnelTexture;
 
 	public void init() {
 		roundedRect = new Shader(getShaderSource("roundedRect.glsl"), getShaderSource("vertex.txt"));
-		roundedRectTest = new Shader(getShaderSource("roundedRectTest.glsl"), getShaderSource("vertex.txt"));
 		msdfFonts = new Shader(getShaderSource("msdfFonts.glsl"), getShaderSource("vertex.txt"));
 		gaussianBlur = new Shader(getShaderSource("gaussianBlur.glsl"), getShaderSource("vertex.txt"));
         bloom = new Shader(getShaderSource("bloom.glsl"), getShaderSource("vertex.txt"));

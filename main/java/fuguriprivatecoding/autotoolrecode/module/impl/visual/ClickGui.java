@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
-import fuguriprivatecoding.autotoolrecode.gui.imgui.ClickGuiWindow;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -32,8 +31,6 @@ public class ClickGui extends Module {
         Fonts.fonts.forEach((fontName, _) -> fonts.addMode(fontName));
         fonts.setMode("SFProRounded");
     }
-
-    public static ClickGuiWindow window = new ClickGuiWindow();
 
 	@Override
 	public void onEnable() {

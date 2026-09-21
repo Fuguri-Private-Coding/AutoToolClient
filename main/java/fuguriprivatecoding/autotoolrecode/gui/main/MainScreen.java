@@ -1,22 +1,23 @@
 package fuguriprivatecoding.autotoolrecode.gui.main;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.ImgButton;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
+import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
-import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
@@ -53,7 +54,9 @@ public class MainScreen extends GuiScreen {
         final ScaledResolution sc = new ScaledResolution(mc);
         final ClientFont font = Fonts.fonts.get("SFPro");
 
-        final String hello = "Привет §a" + Client.profile.toColoredString() + ".";
+        final String profileName = Discord.getName() != null ? Discord.getName() : "Человек";
+
+        final String hello = "Привет §a" + profileName + ".";
 
         final String welcome = "Добро пожаловать в §9AutoTool§f!";
 

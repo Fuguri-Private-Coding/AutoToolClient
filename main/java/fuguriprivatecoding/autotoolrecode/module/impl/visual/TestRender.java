@@ -7,10 +7,7 @@ import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.FresnelUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RectUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.*;
 
 @ModuleInfo(name = "TestRender", category = Category.VISUAL)
 public class TestRender extends Module {
@@ -24,7 +21,7 @@ public class TestRender extends Module {
             );
 
             BlurUtils.startWrite();
-            RectUtils.drawRect(50, 50, 100, 100, 15, Colors.WHITE.withAlpha(1f));
+            RoundedUtils.drawRect(50, 50, 100, 100, 15, Colors.WHITE.withAlpha(1f));
             BlurUtils.stopWrite();
 
             RenderUtils.drawMixedRoundedRect(50, 50, 100, 100, 15, Colors.YELLOW.withAlpha(0.2f), Colors.GREEN.withAlpha(0.2f), 3f);

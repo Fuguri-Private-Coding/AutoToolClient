@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -13,14 +12,15 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
+
 import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -89,9 +89,8 @@ public class NameTags extends Module {
         String detectiveText = detective ? "§6[Detective]§6 " : "";
         String murderText = murder ? "§4[Murder]§4 " : "";
         String friendText = friend ? "§2[Friend]§a " : "";
-        String userText = ent == mc.thePlayer ? Client.profile.toColoredString() + " " : "";
 
-        return detectiveText + murderText + friendText + userText + ent.getDisplayName().getFormattedText();
+        return detectiveText + murderText + friendText + ent.getDisplayName().getFormattedText();
     }
 
     private void renderNameTag(String name, Vec3 pos, boolean glow) {

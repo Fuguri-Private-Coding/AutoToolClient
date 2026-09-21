@@ -47,7 +47,6 @@ public class Modules {
             new Blur(),
             new Dot(),
             new FastPlace(),
-            new NameProtect(),
             new BedESP(),
             new CustomSkin(),
             new Booster(),

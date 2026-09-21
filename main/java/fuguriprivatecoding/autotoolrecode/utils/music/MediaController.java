@@ -18,7 +18,11 @@ import java.util.concurrent.TimeUnit;
 import static fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports.mc;
 
 public final class MediaController {
-    @Getter private final ScheduledExecutorService executor;
+
+    @Getter
+    private static final MediaController instance = new MediaController();
+
+    @Getter private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();;
     @Getter private volatile TrackInfo current = TrackInfo.EMPTY;
     @Getter private volatile BufferedImage artworkImage;
 
@@ -32,10 +36,6 @@ public final class MediaController {
     private volatile ResourceLocation songLocation;
 
     private volatile DynamicTexture dynamicTexture;
-
-    public MediaController() {
-        this.executor = Executors.newSingleThreadScheduledExecutor();
-    }
 
     public void start() {
         if (!SmtcNative.nInit()) return;

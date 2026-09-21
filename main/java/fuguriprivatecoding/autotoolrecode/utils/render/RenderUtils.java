@@ -435,6 +435,10 @@ public class RenderUtils implements Imports {
         stop2D();
     }
 
+    public void drawMixedRect(float x, float y, float width, float height, float speed, Color color1, Color color2) {
+        drawMixedRect(x, y, (double) x + width, (double) y + height, speed, color1, color2);
+    }
+
     public void drawMixedRect(double x, double y, double x1, double y1, float speed, Color color1, Color color2) {
         double time = (double) (System.nanoTime() / 1000000L / 10L) * speed;
 
