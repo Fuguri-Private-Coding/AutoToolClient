@@ -69,7 +69,7 @@ public class KillAura extends Module {
     private final MultiMode smoothModes = new MultiMode("SmoothModes", this)
         .addModes("MouseDelta", "Linear", "Basic", "MixDelta", "Noise", "Neuro");
 
-    private final Mode neuroModel = new Mode("NeuroModel", this);
+    private final Mode neuroModel = new Mode("NeuroModel", this, () -> smoothModes.get("Neuro"));
 
     private final FloatSetting correctDelta = new FloatSetting("CorrectDelta", this, () -> smoothModes.get("Neuro"), 0, 1f, 0.1f, 0.01f);
     private final FloatSetting multipleDelta = new FloatSetting("MultipleDelta", this, () -> smoothModes.get("Neuro"), 0, 3, 1, 0.1f);
@@ -187,12 +187,12 @@ public class KillAura extends Module {
 
         AxisAlignedBB fullBox = target.getExpandedBoundingBox();
 
-        Vec3 targetPos = target.getPositionVector();
+        Vec3 targetPos = fullBox.getCenter();
 
         Vec3 needPoint = switch (hitVec.getMode()) {
             case "Best" -> RotUtils.getBestHitVec(box);
-            case "Head" -> targetPos.addVector(0, target.getEyeHeight(), 0);
-            case "Body" -> targetPos.addVector(0, target.getEyeHeight() / 2f, 0);
+            case "Head" -> targetPos.addVector(0, target.getEyeHeight() / 2f, 0);
+            case "Body" -> targetPos;
             default -> Constants.VEC3_ZERO;
         };
 

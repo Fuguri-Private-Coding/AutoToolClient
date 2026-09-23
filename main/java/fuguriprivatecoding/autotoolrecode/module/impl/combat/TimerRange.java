@@ -69,26 +69,34 @@ public class TimerRange extends Module {
 
             teleportTicks = 0;
 
-            Vec3 position = target.getServerPosition().divine(32.0D)
+            Vec3 pos = target.getServerPosition().divine(32.0D)
                 .subtract(target.getPositionVector());
 
+            Vec3 newPos = target.getNPosition().subtract(target.getPositionVector());
+
             AxisAlignedBB box = target.getExpandedBoundingBox()
-                    .offset(position);
+                .offset(pos);
 
-            if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) < 3.0 || !timer.reachedMS(tickDelay.getValue() * 50L)) return;
+            AxisAlignedBB newBox = target.getExpandedBoundingBox()
+                .offset(newPos);
 
-            float yaw = useBestRotationForPredict.isToggled() ? RotUtils.getBestRotation(box).getYaw() : mc.thePlayer.rotationYaw;
+            if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) < 3.0 || !timer.reachedMS(tickDelay.getValue() * 50L))
+                return;
 
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(mc.thePlayer.movementInput, yaw);
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(
+                mc.thePlayer.movementInput,
+                useBestRotationForPredict.isToggled() ? RotUtils.getBestRotation(box).getYaw() : mc.thePlayer.rotationYaw
+            );
 
             BackTrack backTrack = Modules.getModule(BackTrack.class);
 
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 double distance = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), box);
+                double newDistance = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), newBox);
 
                 boolean skip = distance > 3.0D;
-                boolean distanceSkip = distance > 6.0D && checkHittableDistance.isToggled();
-                boolean backTrackSkip = distance > backTrack.distanceToCancelHits.getValue() && backTrack.isToggled();
+                boolean distanceSkip = newDistance > 6.0D && checkHittableDistance.isToggled();
+                boolean backTrackSkip = newDistance > backTrack.distanceToCancelHits.getValue() && backTrack.isToggled();
 
                 if (backTrackSkip || distanceSkip) {
                     teleportTicks = 0;
