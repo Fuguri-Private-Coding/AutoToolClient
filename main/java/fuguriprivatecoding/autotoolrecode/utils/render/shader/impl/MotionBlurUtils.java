@@ -26,7 +26,7 @@ public class MotionBlurUtils implements Imports {
     public void draw() {
         update();
 
-        MotionBlur mb = Modules.getModule(MotionBlur.class);
+        MotionBlur mb = Modules.getInstance().getModule(MotionBlur.class);
 
         Framebuffer prev = ping ? historyA : historyB;
         Framebuffer curr = ping ? historyB : historyA;

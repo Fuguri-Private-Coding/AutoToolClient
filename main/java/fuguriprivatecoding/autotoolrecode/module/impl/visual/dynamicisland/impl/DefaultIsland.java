@@ -20,7 +20,7 @@ public class DefaultIsland extends IslandComponent {
 
     @Override
     public float getWidth(IslandContext ctx) {
-        return ctx.regular().width(Client.getFullName(), 8)
+        return ctx.regular().width(Client.getInstance().getFullName(), 8)
                 + (ctx.mediaController().getSongLocation() != null ? ctx.imageSize().getValue() : 0);
     }
 
@@ -40,6 +40,6 @@ public class DefaultIsland extends IslandComponent {
                     (2.5f - img / 2f) * ctx.imageSize().getProgress(), img, img, 5, 1f, Colors.WHITE.withAlpha(alpha));
         }
 
-        ctx.regular().draw(Client.getFullName(), songImage != null ? 10 : 0, 0, 8, ctx.whiteColor().withAlpha(alpha));
+        ctx.regular().draw(Client.getInstance().getFullName(), songImage != null ? 10 : 0, 0, 8, ctx.whiteColor().withAlpha(alpha));
     }
 }

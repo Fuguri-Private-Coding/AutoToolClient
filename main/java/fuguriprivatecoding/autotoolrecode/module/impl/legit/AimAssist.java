@@ -15,6 +15,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.RayTrace;
 import org.lwjgl.input.Mouse;
+
+import java.lang.annotation.Target;
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "AimAssist", category = Category.LEGIT, description = "Помощь в прицеливании.")
@@ -43,8 +45,10 @@ public class AimAssist extends Module {
         ;
 
     @Override
-    public void onDisable() {
-        TargetStorage.setTarget(null);
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            TargetStorage.setTarget(null);
+        }
     }
 
     @Override

@@ -47,7 +47,7 @@ public class NameTags extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (murderDetector == null) murderDetector = Modules.getModule(MurderMystery.class);
+        if (murderDetector == null) murderDetector = Modules.getInstance().getModule(MurderMystery.class);
 
         if (event instanceof Render3DEvent) {
             RenderUtils.start3D();

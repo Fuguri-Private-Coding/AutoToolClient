@@ -29,7 +29,7 @@ public class FastPlace extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (Modules.getModule(Scaffold.class).isToggled() || mc.currentScreen != null) return;
+        if (Modules.getInstance().getModule(Scaffold.class).isToggled() || mc.currentScreen != null) return;
 
         if (event instanceof RunGameLoopEvent) {
             if (timer.reachedMS(delay)) {
@@ -64,7 +64,7 @@ public class FastPlace extends Module {
             }
         }
 
-        boolean item = mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
+        boolean item = heldStack != null && heldStack.getItem() instanceof ItemBlock;
         boolean hitBlock = hit.typeOfHit == RayTrace.RayType.BLOCK;
 
         boolean oneClickCheck = !this.oneClick.isToggled() || oneClick;

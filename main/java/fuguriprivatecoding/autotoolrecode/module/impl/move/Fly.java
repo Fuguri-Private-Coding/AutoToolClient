@@ -32,8 +32,10 @@ public class Fly extends Module {
     List<Packet> packets = new CopyOnWriteArrayList<>();
 
     @Override
-    public void onDisable() {
-        reset();
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            reset();
+        }
     }
 
     private void reset() {

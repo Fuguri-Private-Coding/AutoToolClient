@@ -98,8 +98,10 @@ public class Ping extends Module {
     StopWatch delayTimer = new StopWatch();
 
     @Override
-    public void onDisable() {
-        resetAllPackets();
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            resetAllPackets();
+        }
     }
 
     @Override
@@ -152,7 +154,7 @@ public class Ping extends Module {
                 if ((mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChest) && actions.get("OpenedGui"))
                     reset(openedGuiDelay.getValue());
 
-                if (actions.get("Scaffold") && Modules.getModule(Scaffold.class).isToggled())
+                if (actions.get("Scaffold") && Modules.getInstance().getModule(Scaffold.class).isToggled())
                     reset(scaffoldDelay.getValue());
 
                 if (actions.get("SelfHurtTime") && mc.thePlayer.hurtTime != 0)
@@ -180,7 +182,7 @@ public class Ping extends Module {
 
                 if (actions.get("Distance")) {
                     EntityLivingBase target = TargetFinder.findTarget(6f, true, false, false);
-                    if (Modules.getModule(KillAura.class).isToggled() || Modules.getModule(AimAssist.class).isToggled()) {
+                    if (Modules.getInstance().getModule(KillAura.class).isToggled() || Modules.getInstance().getModule(AimAssist.class).isToggled()) {
                         target = TargetStorage.getTarget();
                     }
 
@@ -274,6 +276,6 @@ public class Ping extends Module {
     }
 
     public static boolean isWorking() {
-        return Modules.getModule(Ping.class).isToggled() && !buffer.isEmpty();
+        return Modules.getInstance().getModule(Ping.class).isToggled() && !buffer.isEmpty();
     }
 }

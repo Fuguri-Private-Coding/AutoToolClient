@@ -59,8 +59,10 @@ public class Fucker extends Module {
     private int delay;
 
     @Override
-    public void onDisable() {
-        reset();
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            reset();
+        }
     }
 
     @Override
@@ -75,7 +77,7 @@ public class Fucker extends Module {
             }
         }
 
-        if (Modules.getModule(Scaffold.class).isToggled() || TargetStorage.getTarget() != null) return;
+        if (Modules.getInstance().getModule(Scaffold.class).isToggled() || TargetStorage.getTarget() != null) return;
 
         if (event instanceof TickEvent) {
             if (delay != 0) delay--;

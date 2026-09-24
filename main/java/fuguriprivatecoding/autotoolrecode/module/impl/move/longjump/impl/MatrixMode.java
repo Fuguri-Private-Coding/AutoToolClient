@@ -24,15 +24,17 @@ public class MatrixMode extends AbstractLongJumpMode {
     private int ticks;
 
     @Override
-    public void onEnable(LongJump longJump) {
-        this.canBoost = false;
-        this.flag = false;
-        this.sent = false;
-        this.ticks = 0;
-        this.x = mc.thePlayer.posX;
-        this.z = mc.thePlayer.posZ;
-        this.y = mc.thePlayer.posY;
-        this.firstDir = mc.thePlayer.rotationYaw;
+    public void tick(LongJump longJump, boolean toggled) {
+        if (toggled) {
+            this.canBoost = false;
+            this.flag = false;
+            this.sent = false;
+            this.ticks = 0;
+            this.x = mc.thePlayer.posX;
+            this.z = mc.thePlayer.posZ;
+            this.y = mc.thePlayer.posY;
+            this.firstDir = mc.thePlayer.rotationYaw;
+        }
     }
 
     public MatrixMode() {

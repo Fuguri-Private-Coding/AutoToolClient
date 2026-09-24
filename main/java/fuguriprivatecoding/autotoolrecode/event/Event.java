@@ -14,7 +14,7 @@ public class Event {
 
     public void call(boolean onlyInWorld) {
         setCanceled(false);
-        Events.call(this, onlyInWorld);
+        EventCaller.getInstance().call(this, onlyInWorld);
     }
 
     public void call() {

@@ -82,7 +82,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
 
     public ResourceLocation getLocationSkin() {
         if (this instanceof EntityPlayerSP) {
-            CustomSkin customSkin = Modules.getModule(CustomSkin.class);
+            CustomSkin customSkin = Modules.getInstance().getModule(CustomSkin.class);
             if (!customSkin.selectedSkin.equalsIgnoreCase(customSkin.skinMode.getMode())) {
                 skin = customSkin.getSkin();
             }
@@ -98,7 +98,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
 
     public ResourceLocation getLocationCape() {
         if (this instanceof EntityPlayerSP) {
-            CustomCape customCape = Modules.getModule(CustomCape.class);
+            CustomCape customCape = Modules.getInstance().getModule(CustomCape.class);
             if (!customCape.selectedCape.equalsIgnoreCase(customCape.capeMode.getMode())) {
                 locationCape = customCape.getCape();
             }
@@ -155,7 +155,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     {
         NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
 
-        CustomSkin customSkin = Modules.getModule(CustomSkin.class);
+        CustomSkin customSkin = Modules.getInstance().getModule(CustomSkin.class);
 
         if (this == mc.thePlayer && customSkin.isToggled()) {
             return CustomSkin.getType();

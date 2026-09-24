@@ -969,7 +969,7 @@ public abstract class EntityLivingBase extends Entity implements Imports {
         }
 
         if (mc.thePlayer == this) {
-            Hand hand = Modules.getModule(Hand.class);
+            Hand hand = Modules.getInstance().getModule(Hand.class);
 
             if (hand.isToggled() && hand.effect.get("Animations")) {
                 swingLength = (int) (swingLength / hand.speed.getValue());

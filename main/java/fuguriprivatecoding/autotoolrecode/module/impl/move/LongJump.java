@@ -48,16 +48,9 @@ public class LongJump extends Module {
     }
 
     @Override
-    public void onDisable() {
+    public void tick(boolean toggled) {
         if (currentLongJumpMode != null) {
-            currentLongJumpMode.onDisable(this);
-        }
-    }
-
-    @Override
-    public void onEnable() {
-        if (currentLongJumpMode != null) {
-            currentLongJumpMode.onEnable(this);
+            currentLongJumpMode.tick(this, toggled);
         }
     }
 

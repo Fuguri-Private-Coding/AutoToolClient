@@ -84,8 +84,10 @@ public class BackTrack extends Module {
     public static boolean working;
 
     @Override
-    public void onDisable() {
-        working = false;
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            working = false;
+        }
     }
 
     @Override
@@ -251,7 +253,7 @@ public class BackTrack extends Module {
     }
 
     public static boolean needCancel(EntityLivingBase target) {
-        BackTrack backTrack = Modules.getModule(BackTrack.class);
+        BackTrack backTrack = Modules.getInstance().getModule(BackTrack.class);
         return working && backTrack.cancelHitsIfNeed.isToggled() && DistanceUtils.getDistance(target.getNPosition()) > backTrack.distanceToCancelHits.getValue();
     }
 }

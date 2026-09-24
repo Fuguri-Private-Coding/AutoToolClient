@@ -8,7 +8,7 @@ public class ClientBrandRetriever
 {
     public static String getClientModName()
     {
-        final ClientSpoofer clientSpoofer = Modules.getModule(ClientSpoofer.class);
+        final ClientSpoofer clientSpoofer = Modules.getInstance().getModule(ClientSpoofer.class);
         if (clientSpoofer.isToggled()) {
             return clientSpoofer.getBrand();
         } else {

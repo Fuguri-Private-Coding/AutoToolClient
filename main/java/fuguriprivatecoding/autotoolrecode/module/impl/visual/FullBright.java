@@ -17,12 +17,14 @@ public class FullBright extends Module {
             .setMode("NightVision");
 
     @Override
-    public void onDisable() {
-        if (mc.thePlayer.isPotionActive(Potion.nightVision)) {
-            mc.thePlayer.removePotionEffect(Potion.nightVision.id);
-        }
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            if (mc.thePlayer.isPotionActive(Potion.nightVision)) {
+                mc.thePlayer.removePotionEffect(Potion.nightVision.id);
+            }
 
-        if (mc.gameSettings.gammaSetting == 10000) mc.gameSettings.gammaSetting = 1;
+            if (mc.gameSettings.gammaSetting == 10000) mc.gameSettings.gammaSetting = 1;
+        }
     }
 
     @Override

@@ -46,7 +46,7 @@ public class Notifications extends Module {
     public static final List<Notification> notifications = new CopyOnWriteArrayList<>();
 
     public static void addNotification(String name, boolean toggled) {
-        Notifications notificationsModule = Modules.getModule(Notifications.class);
+        Notifications notificationsModule = Modules.getInstance().getModule(Notifications.class);
         if (notificationsModule == null || !notificationsModule.isToggled()) return;
 
         Notification notification = new Notification(name, toggled, System.currentTimeMillis(), (long) notificationsModule.removeTime.getValue());
@@ -78,7 +78,7 @@ public class Notifications extends Module {
             float yOffset = 0;
             for (Notification notification : notifications) {
                 EasingAnimation openAnim = notification.getOpenAnim();
-                if (Modules.getModule(DynamicIsland.class).isToggled()) continue;
+                if (Modules.getInstance().getModule(DynamicIsland.class).isToggled()) continue;
 
                 String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
                 String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
@@ -106,7 +106,7 @@ public class Notifications extends Module {
                 BloomUtils.startWrite();
                 for (Notification notification : notifications) {
                     EasingAnimation openAnim = notification.getOpenAnim();
-                    if (Modules.getModule(DynamicIsland.class).isToggled()) continue;
+                    if (Modules.getInstance().getModule(DynamicIsland.class).isToggled()) continue;
 
                     String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
                     String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
@@ -135,7 +135,7 @@ public class Notifications extends Module {
                 BlurUtils.startWrite();
                 for (Notification notification : notifications) {
                     EasingAnimation openAnim = notification.getOpenAnim();
-                    if (Modules.getModule(DynamicIsland.class).isToggled()) continue;
+                    if (Modules.getInstance().getModule(DynamicIsland.class).isToggled()) continue;
 
                     String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
                     String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
@@ -162,7 +162,7 @@ public class Notifications extends Module {
     }
 
     public static boolean isEmpty() {
-        Notifications notifications = Modules.getModule(Notifications.class);
+        Notifications notifications = Modules.getInstance().getModule(Notifications.class);
         return notifications.isToggled() && Notifications.notifications.isEmpty();
     }
 }

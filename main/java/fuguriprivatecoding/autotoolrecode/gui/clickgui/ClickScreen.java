@@ -4,7 +4,6 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.config.Configs;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
-import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.gui.config.ConfigScreen;
 import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
@@ -16,22 +15,24 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.DynamicIsland;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
+import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
+import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.TextureUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import fuguriprivatecoding.autotoolrecode.utils.value.Doubles;
-import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -41,11 +42,13 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
+
 import java.awt.*;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
 import static java.lang.Math.*;
 
 public class ClickScreen extends GuiScreen implements EventListener {
@@ -60,8 +63,8 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 	Vector2f pos, size, lastMouse, lastSize, lastPos, clickedCategoryPos, clickedModulePos;
 
-	ClickGui clickGui = Modules.getModule(ClickGui.class);
-	ClientSettings clientSettings = Modules.getModule(ClientSettings.class);
+	ClickGui clickGui = Modules.getInstance().getModule(ClickGui.class);
+	ClientSettings clientSettings = Modules.getInstance().getModule(ClientSettings.class);
 
 	Color BACKGROUND_COLOR;
 	Color MAIN_COLOR = new Color(255, 255, 209, 255);
@@ -94,7 +97,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 		BACKGROUND_COLOR = new Color(0, 0, 0, clickGui.backgroundAlpha.getValue());
 
-        Events.register(this);
+        registerToEvents();
 
 		sizeBackground = new Animation2D();
 		background = new Animation2D();
@@ -162,9 +165,9 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		final ClientFont fontRenderer = Fonts.fonts.get(clickGui.fonts.getMode());
 
 		switch (clickGui.sortType.getMode()) {
-			case "Alphabet" -> Modules.getModules().sort(Comparator.comparing(Module::getName));
+			case "Alphabet" -> Modules.getInstance().getModules().sort(Comparator.comparing(Module::getName));
 			case "Width" -> {
-				Modules.getModules().sort((o1, o2) -> {
+				Modules.getInstance().getModules().sort((o1, o2) -> {
 					int width1 = (int) fontRenderer.getStringWidth(o1.getName());
 					int width2 = (int) fontRenderer.getStringWidth(o2.getName());
 
@@ -186,7 +189,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 			lastMouse.set(mouseX, mouseY);
 		}
 
-		final float clientNameWidth = fontRenderer.getStringWidth(Client.CLIENT_NAME);
+		final float clientNameWidth = fontRenderer.getStringWidth(Client.getInstance().CLIENT_NAME);
 
 		modulesScrolls.endY	= modulesScroll;
 		settingsScrolls.endY = settingsScroll;
@@ -242,7 +245,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		ScissorUtils.disableScissor();
 
 		float widthsModule = 0;
-		for (Module module : Modules.getModules()) {
+		for (Module module : Modules.getInstance().getModules()) {
 			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			if (moduleWidth > widthsModule) widthsModule = moduleWidth;
 		}
@@ -285,7 +288,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		ScissorUtils.enableScissor();
 		ScissorUtils.scissor(sc, background.x, background.y + 15 + 1, widthsModule + 5, sizeBackground.y - 15 - 5);
 
-		List<Module> moduleList = Modules.getModulesByCategory(selectedCategory);
+		List<Module> moduleList = Modules.getInstance().getModulesByCategory(selectedCategory);
 
 		for (Module module : moduleList) {
             EasingAnimation toggleModuleAnim = module.getToggleAnimation();
@@ -822,7 +825,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
             module.getDescAnim().setEnd(module.isHovered());
 
             if (!module.getDescription().equalsIgnoreCase("") && module.getDescAnim().getValue() != 0) {
-                if (!Modules.getModule(DynamicIsland.class).isToggled()) {
+                if (!Modules.getInstance().getModule(DynamicIsland.class).isToggled()) {
 					float descriptionWidth = fontRenderer.getStringWidth(module.getDescription());
 					ScaleUtils.startScaling(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 5, descriptionWidth + 6, 14, module.getDescAnim().getValue());
 
@@ -921,7 +924,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 			boolean clickExportFromConfig = mouseX > clickedCategoryPos.x + 3 && mouseX < clickedCategoryPos.x + 3 + fontRenderer.getStringWidth("Export") && mouseY > clickedCategoryPos.y + 33 && mouseY < clickedCategoryPos.y + 33 + fontRenderer.FONT_HEIGHT;
 
 			if (clickRectangle) {
-				List<Module> moduleList = new CopyOnWriteArrayList<>(Modules.getModulesByCategory(clickedCategory));
+				List<Module> moduleList = new CopyOnWriteArrayList<>(Modules.getInstance().getModulesByCategory(clickedCategory));
 				for (Module module : moduleList) {
 					if (clickHideCategory) module.setHide(!module.isHide());
 				}
@@ -953,7 +956,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 		if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y) return;
 
-		final float clientNameWidth = fontRenderer.getStringWidth(Client.CLIENT_NAME);
+		final float clientNameWidth = fontRenderer.getStringWidth(Client.getInstance().CLIENT_NAME);
 
 		boolean resize = mouseX > background.x + sizeBackground.x - 5 && mouseX < background.x + sizeBackground.x && mouseY > background.y + sizeBackground.y - 5 && mouseY < background.y + sizeBackground.y;
 
@@ -963,7 +966,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		}
 
 		float widthsModule = 0;
-		for (Module module : Modules.getModules()) {
+		for (Module module : Modules.getInstance().getModules()) {
 			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			if (moduleWidth > widthsModule) widthsModule = moduleWidth;
 		}
@@ -980,7 +983,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 		float offset = modulesScrolls.y;
 
-		for (Module module : Modules.getModulesByCategory(selectedCategory))	{
+		for (Module module : Modules.getInstance().getModulesByCategory(selectedCategory))	{
 			float moduleWidth = fontRenderer.getStringWidth(module.getName() + (!module.isHide() ? " ✓" : " ×"));
 			boolean moduleCondition = mouseX > background.x + 3 && mouseX < background.x + 3 + moduleWidth && mouseY > background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset && mouseY < background.y + 3 + 2 + fontRenderer.FONT_HEIGHT + 5 + offset + 9;
 			if (mouseX > background.x + sizeBackground.x || mouseY > background.y + sizeBackground.y || mouseY < background.y + 15) continue;
@@ -1267,7 +1270,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 	}
 
     @Override
-    public boolean listen() {
+    public boolean shouldListenEvents() {
         return mc.currentScreen == this;
     }
 

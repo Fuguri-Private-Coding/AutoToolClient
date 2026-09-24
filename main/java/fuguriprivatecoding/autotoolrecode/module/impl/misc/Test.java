@@ -19,8 +19,9 @@ public class Test extends Module {
 //    private EntityLivingBase target;
 
     @Override
-    public void onDisable() {
-//        target = null;
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            //        target = null;
 //        mc.thePlayer.noClip = false;
 //        for (C0FPacketConfirmTransaction c0f : c0fs) {
 //            PacketUtils.sendPacket(c0f);
@@ -29,21 +30,22 @@ public class Test extends Module {
 //        perdet = false;
 
 
-        for (Packet packet : incoming) {
-            if (packet instanceof S12PacketEntityVelocity s12 && s12.getId() == mc.thePlayer.getEntityId()) {
-                double mx = s12.getMotionX() / 8000d;
-                double my = s12.getMotionY() / 8000d;
-                double mz = s12.getMotionZ() / 8000d;
+            for (Packet packet : incoming) {
+                if (packet instanceof S12PacketEntityVelocity s12 && s12.getId() == mc.thePlayer.getEntityId()) {
+                    double mx = s12.getMotionX() / 8000d;
+                    double my = s12.getMotionY() / 8000d;
+                    double mz = s12.getMotionZ() / 8000d;
 
 //                System.out.printf("packet motion=%.2f %.2f %.2f%n", mx, my, mz);
-            }
+                }
 
-            try {
-                packet.processPacket(mc.getNetHandler().getNetworkManager().packetListener);
-            } catch (Exception ignored) {}
-        }
+                try {
+                    packet.processPacket(mc.getNetHandler().getNetworkManager().packetListener);
+                } catch (Exception ignored) {}
+            }
 //        System.out.printf("final motion=%.2f %.2f %.2f%n", mc.thePlayer.motionX, mc.thePlayer.motionY, mc.thePlayer.motionZ);
-        incoming.clear();
+            incoming.clear();
+        }
     }
 
     private boolean perdet;

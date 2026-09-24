@@ -20,35 +20,34 @@ public class RawMouseInput extends Module {
     public static MouseThread thread;
 
     @Override
-    public void onEnable() {
-        if (!initialised) {
-            initialised = true;
-            available = true;
+    public void tick(boolean toggled) {
+        if (toggled) {
+            if (!initialised) {
+                initialised = true;
+                available = true;
 
-            try {
-                ControllerEnvironment env = ControllerEnvironment.getDefaultEnvironment();
+                try {
+                    ControllerEnvironment env = ControllerEnvironment.getDefaultEnvironment();
 
-                if (env.isSupported()) {
-                    for (Controller controller : env.getControllers()) {
-                        if (controller instanceof Mouse) mouseList.add((Mouse) controller);
+                    if (env.isSupported()) {
+                        for (Controller controller : env.getControllers()) {
+                            if (controller instanceof Mouse) mouseList.add((Mouse) controller);
+                        }
+                    } else {
+                        available = false;
                     }
-                } else {
+                } catch (Exception e) {
                     available = false;
                 }
-            } catch (Exception e) {
-                available = false;
             }
+
+            running = true;
+            thread = new MouseThread();
+            thread.setDaemon(true);
+            thread.start();
+        } else {
+            running = false;
         }
-
-        running = true;
-        thread = new MouseThread();
-        thread.setDaemon(true);
-        thread.start();
-    }
-
-    @Override
-    public void onDisable() {
-        running = false;
     }
 
     public class MouseThread extends Thread {

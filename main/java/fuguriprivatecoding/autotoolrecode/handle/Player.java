@@ -2,50 +2,49 @@ package fuguriprivatecoding.autotoolrecode.handle;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
-import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import net.minecraft.network.Packet;
+import lombok.Getter;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 
 public class Player implements Imports, EventListener {
 
-    public static int airTicks;
-    public static int groundTicks;
+    @Getter
+    private static final Player instance = new Player();
+    private Player() {}
 
-    public static int velocity;
-    public static int hurtTime;
-    public static int fallDistance;
+    public int airTicks;
+    public int groundTicks;
 
-    public Player() {
-        Events.register(this);
-    }
+    public int velocity;
+    public int hurtTime;
+    public int fallDistance;
 
-    @Override
-    public boolean listen() {
-        return Utils.isWorldLoaded();
+    public void init() {
+        registerToEvents();
     }
 
     @Override
     public void onEvent(Event event) {
         if (mc.thePlayer == null || mc.theWorld == null) return;
-        if (event instanceof TickEvent) {
-            update();
-        }
+        if (event instanceof TickEvent)
+            tick();
 
         if (event instanceof PacketEvent e) {
-            Packet packet = e.getPacket();
-
-            switch (packet) {
-                case S12PacketEntityVelocity s12 when s12.getId() == mc.thePlayer.getEntityId() -> velocity = 20;
-                default -> {}
+            if (e.getPacket() instanceof S12PacketEntityVelocity s12 && s12.getId() == mc.thePlayer.getEntityId()) {
+                velocity = 20;
             }
         }
     }
 
-    private void update() {
+    @Override
+    public boolean shouldListenEvents() {
+        return Utils.isWorldLoaded();
+    }
+
+    private void tick() {
         if (mc.thePlayer.hurtTime == 10) {
             hurtTime = 10;
         }
@@ -69,7 +68,7 @@ public class Player implements Imports, EventListener {
         if (hurtTime > 0) hurtTime--;
     }
 
-    public static boolean isClutch() {
+    public boolean isClutch() {
         return hurtTime > 0 || airTicks > 12;
     }
 }

@@ -38,7 +38,7 @@ public class AutoClicker extends Module {
 
                 if (shouldStopClicking()) return;
 
-                Clicks.addClick();
+                Clicks.getInstance().addClick();
             }
         }
 

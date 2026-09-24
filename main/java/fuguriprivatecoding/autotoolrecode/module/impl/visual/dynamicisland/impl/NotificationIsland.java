@@ -22,7 +22,7 @@ public class NotificationIsland extends IslandComponent {
     ResourceLocation closeLocation = Client.of("image/close.png");
 
     public static IslandComponent create(IslandContext ctx) {
-        if (!Modules.getModule(Notifications.class).isToggled() || Notifications.notifications.isEmpty()) {
+        if (!Modules.getInstance().getModule(Notifications.class).isToggled() || Notifications.notifications.isEmpty()) {
             return null;
         }
 

@@ -11,8 +11,8 @@ import fuguriprivatecoding.autotoolrecode.gui.config.ConfigScreen;
 import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
 import fuguriprivatecoding.autotoolrecode.gui.main.MainScreen;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
-import fuguriprivatecoding.autotoolrecode.handle.Debl;
 import fuguriprivatecoding.autotoolrecode.handle.Player;
+import fuguriprivatecoding.autotoolrecode.key.KeyCaller;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.ai.NeuralNet;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
@@ -26,7 +26,7 @@ import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PositionResolverComponent;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shaders;
-import lombok.experimental.UtilityClass;
+import lombok.Getter;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import ru.govnoteam.core.NeuralNetwork;
@@ -37,8 +37,10 @@ import java.io.IOException;
 
 // TODO: СПАСТЕШЬ МАТЬ ИСЧЕЗНЕТ!
 
-@UtilityClass
 public class Client implements Imports {
+
+    @Getter
+    private final static Client instance = new Client();
 
 	public final String CLIENT_NAME = "AutoTool";
     public final ClientVersion CLIENT_VERSION = new ClientVersion(6, 7, 1);
@@ -56,8 +58,6 @@ public class Client implements Imports {
 	public void init() throws IOException {
 		long start = System.nanoTime();
 		starting = true;
-
-        new Debl();
 
         File msdf_gen_file = new File(CLIENT_DIR, "msdf-gen.zip");
         FileUtils.unpackIfNeeded(msdf_gen_file, "assets/minecraft/autotool/msdf-gen/msdf-gen.zip");
@@ -84,7 +84,7 @@ public class Client implements Imports {
 
         Display.setTitle(getFullName());
 
-        Runtime.getRuntime().addShutdownHook(new Thread(Client::onClose));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> Client.getInstance().onClose()));
 
 		ConsoleScreen.init();
 
@@ -95,7 +95,8 @@ public class Client implements Imports {
         Fonts.init();
         fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts.init();
 
-        Modules.init();
+        KeyCaller.getInstance().init();
+        Modules.getInstance().init();
 
 		Configs.init();
         KeyBinds.loadBinds();
@@ -103,9 +104,9 @@ public class Client implements Imports {
         NameGenerator.init("names.txt");
 
         Commands.init();
-        new PositionResolverComponent();
-		new Clicks();
-        new Player();
+        PositionResolverComponent.getInstance().init();
+		Clicks.getInstance().init();
+        Player.getInstance().registerToEvents();
 
 		ViaMCP.create();
 
@@ -156,7 +157,7 @@ public class Client implements Imports {
         return CLIENT_NAME + " " + CLIENT_VERSION;
     }
 
-    public ResourceLocation of(String path) {
-        return new ResourceLocation(RESOURCES_ID, RESOURCES_CLIENT_ID + path);
+    public static ResourceLocation of(String path) {
+        return new ResourceLocation(Client.getInstance().RESOURCES_ID, Client.getInstance().RESOURCES_CLIENT_ID + path);
     }
 }

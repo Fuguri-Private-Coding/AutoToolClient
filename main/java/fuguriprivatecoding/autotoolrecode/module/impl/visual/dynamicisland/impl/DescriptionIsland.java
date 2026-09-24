@@ -17,7 +17,7 @@ public class DescriptionIsland extends IslandComponent {
             return null;
         }
 
-        for (Module module : Modules.getModulesByCategory(ClickScreen.selectedCategory)) {
+        for (Module module : Modules.getInstance().getModulesByCategory(ClickScreen.selectedCategory)) {
             if (module.isHovered() && !module.getDescription().equalsIgnoreCase("")) {
                 return new DescriptionIsland(module.getDescription());
             }

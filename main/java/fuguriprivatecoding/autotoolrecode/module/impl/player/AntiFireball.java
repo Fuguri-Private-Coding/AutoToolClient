@@ -28,8 +28,10 @@ public class AntiFireball extends Module {
     public EntityFireball target;
 
     @Override
-    public void onDisable() {
-        target = null;
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            target = null;
+        }
     }
 
     @Override

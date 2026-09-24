@@ -33,7 +33,7 @@ public class BloomUtils implements Imports {
     }
 
     public static void draw() {
-        if (glow == null) glow = Modules.getModule(Glow.class);
+        if (glow == null) glow = Modules.getInstance().getModule(Glow.class);
         if (!Display.isActive() || !Display.isVisible() || !glow.isToggled()) return;
 
         inputFramebuffer.bindFramebuffer(true);

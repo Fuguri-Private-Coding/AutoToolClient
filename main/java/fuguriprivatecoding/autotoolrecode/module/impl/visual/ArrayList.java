@@ -64,7 +64,7 @@ public class ArrayList extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent render2DEvent) {
-            List<Module> moduleList = Modules.getEnabledModules();
+            List<Module> moduleList = Modules.getInstance().getEnabledModules();
 
             int size = fontScale.getValue();
             if (font != Fonts.get(fonts.getMode())) {

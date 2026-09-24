@@ -19,7 +19,7 @@ public class FovModifier extends Module {
     public CheckBox dynamicFov = new CheckBox("DynamicFov", this, false);
 
     public static float getFov() {
-        FovModifier fovModifier = Modules.getModule(FovModifier.class);
+        FovModifier fovModifier = Modules.getInstance().getModule(FovModifier.class);
         if (fovModifier == null || !fovModifier.isToggled()) return mc.gameSettings.fovSetting;
 
         float fov = fovModifier.defaultFov.getValue();

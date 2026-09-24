@@ -11,7 +11,7 @@ public class Reach extends Module {
     public final FloatSetting addRange = new FloatSetting("Add range", this, -3, 3, 1.5f, 0.01f);
 
     public static double getAddRange() {
-        Reach reach = Modules.getModule(Reach.class);
+        Reach reach = Modules.getInstance().getModule(Reach.class);
 
         if (reach == null || !reach.isToggled()) {
             return 0;

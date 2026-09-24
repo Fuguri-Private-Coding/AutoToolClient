@@ -213,7 +213,7 @@ public class GuiChat extends GuiScreen {
     }
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        Glow glow = Modules.getModule(Glow.class);
+        Glow glow = Modules.getInstance().getModule(Glow.class);
         animation2D.setEnd(fontRendererObj.getStringWidth(inputField.getText() + "_") + 4);
         animation2D.update(6f, Easing.OUT_CUBIC);
 

@@ -117,13 +117,12 @@ public class Scaffold extends Module {
     private float yawOffsetValue = 45f;
 
     @Override
-    public void onEnable() {
-        yawOffsetValue = (float) yawOffset.getRandomizedDoubleValue();
-    }
-
-    @Override
-    public void onDisable() {
-        resetValues();
+    public void tick(boolean toggled) {
+        if (toggled) {
+            yawOffsetValue = (float) yawOffset.getRandomizedDoubleValue();
+        } else {
+            resetValues();
+        }
     }
 
     @Override
@@ -203,7 +202,7 @@ public class Scaffold extends Module {
 
                 case "JumpSprint" -> {
                     boolean sprint = mc.gameSettings.keyBindJump.isKeyDown() && MoveUtils.isMoving();
-                    e.setSprinting(sprintJumpOnGround.isToggled() ? sprint && Player.airTicks <= sprintTicksAfterGround.getValue() : sprint);
+                    e.setSprinting(sprintJumpOnGround.isToggled() ? sprint && Player.getInstance().airTicks <= sprintTicksAfterGround.getValue() : sprint);
                 }
                 case "None" -> e.setSprinting(false);
             }
@@ -319,7 +318,7 @@ public class Scaffold extends Module {
     }
 
     private boolean isClutch() {
-        return (Player.isClutch() || DistanceUtils.getDistance(targetBlock) > minDistanceToClutch.getValue()) && clutch.isToggled();
+        return (Player.getInstance().isClutch() || DistanceUtils.getDistance(targetBlock) > minDistanceToClutch.getValue()) && clutch.isToggled();
     }
 
     private boolean isSameY(RayTrace mouse, boolean sameY) {
@@ -336,7 +335,7 @@ public class Scaffold extends Module {
 
         if (mc.gameSettings.keyBindJump.isKeyDown()) {
             int currentAirTicks = (speedTelly ? 0 : airTicks);
-            return mc.thePlayer.onGround || Player.airTicks < currentAirTicks;
+            return mc.thePlayer.onGround || Player.getInstance().airTicks < currentAirTicks;
         }
 
         if (flick.isToggled()) {

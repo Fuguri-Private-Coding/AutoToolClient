@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.handle;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
-import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.player.BestClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
@@ -19,17 +18,17 @@ import net.minecraft.util.RayTrace;
 
 public class Clicks implements Imports, EventListener {
 
-    public Clicks() {
-        Events.register(this);
+    @Getter
+    private static final Clicks instance = new Clicks();
+    private Clicks() {}
+
+    public void init() {
+        registerToEvents();
     }
 
-    @Getter static int clicks;
+    private final ClickSettings clickSettings = Modules.getInstance().getModule(ClickSettings.class);
 
-    private static final ClickSettings clickSettings = Modules.getModule(ClickSettings.class);
-
-    @Override public boolean listen() {
-        return Utils.isWorldLoaded();
-    }
+    @Getter int clicks;
 
     @Override
     public void onEvent(Event event) {
@@ -55,6 +54,11 @@ public class Clicks implements Imports, EventListener {
         }
     }
 
+    @Override
+    public boolean shouldListenEvents() {
+        return Utils.isWorldLoaded();
+    }
+
     public boolean needClick(EntityLivingBase target) {
         if (mc.rayTrace.typeOfHit == RayTrace.RayType.BLOCK) return false;
         if (target != null && BackTrack.needCancel(target)) return false;
@@ -76,7 +80,7 @@ public class Clicks implements Imports, EventListener {
         return target.hurtTime <= startHurtTime || mc.thePlayer.hurtTime >= endHurtTime;
     }
 
-    public static void addClick() {
+    public void addClick() {
         clicks++;
     }
 

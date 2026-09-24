@@ -44,7 +44,7 @@ public class GuiPlayerTabOverlay extends Gui
 
     public String getPlayerName(NetworkPlayerInfo profile)
     {
-        final MidClick midClick = Modules.getModule(MidClick.class);
+        final MidClick midClick = Modules.getInstance().getModule(MidClick.class);
 
         String currentName = profile.getGameProfile().getName();
 

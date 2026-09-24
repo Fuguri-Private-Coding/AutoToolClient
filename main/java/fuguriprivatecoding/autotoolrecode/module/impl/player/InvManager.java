@@ -86,15 +86,14 @@ public class InvManager extends Module {
     private final StopWatch startDelayTimer = new StopWatch();
 
     @Override
-    public void onEnable() {
-        this.clientOpen = mc.currentScreen instanceof GuiInventory;
-        this.serverOpen = this.clientOpen;
-    }
-
-    @Override
-    public void onDisable() {
-        this.close();
-        this.clear();
+    public void tick(boolean toggled) {
+        if (toggled) {
+            this.clientOpen = mc.currentScreen instanceof GuiInventory;
+            this.serverOpen = this.clientOpen;
+        } else {
+            this.close();
+            this.clear();
+        }
     }
 
     @Override

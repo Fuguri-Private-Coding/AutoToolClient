@@ -1,7 +1,6 @@
 package net.minecraft.client.renderer.entity;
 
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.NameTags;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,9 +53,6 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
     }
 
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        if (Modules.getModule(NameTags.class).isToggled() && !Modules.getModule(NameTags.class).renderAllNames.isToggled() && !(entity instanceof EntityPlayer)) {
-            return;
-        }
         this.renderName(entity, x, y, z);
     }
 
@@ -72,7 +68,7 @@ public abstract class Render<T extends Entity> implements IEntityRenderer {
 
     protected void renderOffsetLivingLabel(T entityIn, double x, double y, double z, String str, float p_177069_9_, double p_177069_10_) {
         boolean entity = entityIn instanceof EntityPlayer ent && str.equalsIgnoreCase(ent.getDisplayName().getFormattedText());
-        if (entity && Modules.getModule(NameTags.class).isToggled()) return;
+        if (entity && Modules.getInstance().getModule(NameTags.class).isToggled()) return;
 
         this.renderLivingLabel(entityIn, str, x, y, z, 256);
     }

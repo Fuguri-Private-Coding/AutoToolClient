@@ -33,8 +33,10 @@ public class ClickGui extends Module {
     }
 
 	@Override
-	public void onEnable() {
-        mc.displayGuiScreen(ClickScreen.INST);
-		toggle();
+	public void tick(boolean toggled) {
+		if (toggled) {
+			mc.displayGuiScreen(ClickScreen.INST);
+			toggle();
+		}
 	}
 }

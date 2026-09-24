@@ -24,7 +24,7 @@ public abstract class InventoryEffectRenderer extends GuiContainer {
 
     protected void updateActivePotionEffects() {
         if (!this.mc.thePlayer.getActivePotionEffects().isEmpty()) {
-            CenteredInventory centeredInventory = Modules.getModule(CenteredInventory.class);
+            CenteredInventory centeredInventory = Modules.getInstance().getModule(CenteredInventory.class);
             if (centeredInventory.isToggled()) this.guiLeft = (this.width - this.xSize) / 2;
             else this.guiLeft = 160 + (this.width - this.xSize - 200) / 2;
             this.hasActivePotionEffects = true;

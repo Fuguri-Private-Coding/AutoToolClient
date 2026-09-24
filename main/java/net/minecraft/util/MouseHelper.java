@@ -21,7 +21,7 @@ public class MouseHelper {
     }
 
     public void mouseXYChange() {
-        RawMouseInput mouseInput = Modules.getModule(RawMouseInput.class);
+        RawMouseInput mouseInput = Modules.getInstance().getModule(RawMouseInput.class);
 
         if (mouseInput != null && mouseInput.isToggled() && Mouse.isGrabbed() && mouseInput.isAvailable()) {
             this.deltaX = (int) RawMouseInput.deltaX;

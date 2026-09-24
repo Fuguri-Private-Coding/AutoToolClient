@@ -41,20 +41,22 @@ public class CustomSkin extends Module {
     }
     
     public static String getType() {
-        CustomSkin customSkin = Modules.getModule(CustomSkin.class);
+        CustomSkin customSkin = Modules.getInstance().getModule(CustomSkin.class);
         return customSkin.skinType.is("Slim") ? "slim" : "default";
     }
 
     @Override
-    public void onEnable() {
-        selectedSkin = "";
-        updateSkins();
+    public void tick(boolean toggled) {
+        if (toggled) {
+            selectedSkin = "";
+            updateSkins();
+        }
     }
 
     public void updateSkins() {
         skinMode.getModes().clear();
         skinMode.addMode("None");
-        for (File skin : Objects.requireNonNull(Client.SKIN_DIRECTORY.listFiles())) {
+        for (File skin : Objects.requireNonNull(Client.getInstance().SKIN_DIRECTORY.listFiles())) {
             skinMode.addMode(skin.getName().replaceAll(".png", ""));
         }
     }
@@ -66,7 +68,7 @@ public class CustomSkin extends Module {
 
     public ResourceLocation getSkin() {
         if (!selectedSkin.equalsIgnoreCase(skinMode.getMode())) {
-            skinFile = new File(Client.SKIN_DIRECTORY, skinMode.getMode() + ".png");
+            skinFile = new File(Client.getInstance().SKIN_DIRECTORY, skinMode.getMode() + ".png");
             if (!skinFile.exists()) return null;
 
             try (InputStream inputStream = new FileInputStream(skinFile)) {

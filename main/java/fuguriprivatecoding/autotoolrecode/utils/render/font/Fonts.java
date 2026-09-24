@@ -15,7 +15,7 @@ public class Fonts implements Imports {
 
     public HashMap<String, ClientFont> fonts = new HashMap<>();
 
-    public final File FONT_DIRECTORY = new File(Client.CLIENT_DIR + "/fonts");
+    public final File FONT_DIRECTORY = new File(Client.getInstance().CLIENT_DIR + "/fonts");
 
     public void init() {
         if (FONT_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию для шрифтов.");

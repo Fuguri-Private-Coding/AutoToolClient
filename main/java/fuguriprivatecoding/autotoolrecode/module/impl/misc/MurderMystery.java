@@ -36,8 +36,10 @@ public class MurderMystery extends Module {
     StopWatch watch = new StopWatch();
 
     @Override
-    public void onDisable() {
-        reset();
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            reset();
+        }
     }
 
     @Override
@@ -100,7 +102,7 @@ public class MurderMystery extends Module {
     }
 
     public static boolean isMurder(String name) {
-        return Modules.getModule(MurderMystery.class).isToggled() && murder != null && murder.getName().equalsIgnoreCase(name);
+        return Modules.getInstance().getModule(MurderMystery.class).isToggled() && murder != null && murder.getName().equalsIgnoreCase(name);
     }
 
     public static boolean isMurder(EntityPlayer entity) {
@@ -108,7 +110,7 @@ public class MurderMystery extends Module {
     }
 
     public static boolean isDetective(String name) {
-        return Modules.getModule(MurderMystery.class).isToggled() && detective != null && detective.getName().equalsIgnoreCase(name);
+        return Modules.getInstance().getModule(MurderMystery.class).isToggled() && detective != null && detective.getName().equalsIgnoreCase(name);
     }
 
     public static boolean isDetective(EntityPlayer entity) {

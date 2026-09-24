@@ -15,7 +15,7 @@ import java.util.Map;
 @UtilityClass
 public class KeyBinds {
 
-    @Getter final File BIND_DIRECTORY = new File(Client.CLIENT_DIR + "/binds");
+    @Getter final File BIND_DIRECTORY = new File(Client.getInstance().CLIENT_DIR + "/binds");
     @Getter File bindFile = new File(BIND_DIRECTORY, "binds.json");
 
     public void init() {
@@ -29,7 +29,7 @@ public class KeyBinds {
             JsonObject json = (JsonObject) parser.parse(reader);
             reader.close();
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-                Module module = Modules.getModule(entry.getKey());
+                Module module = Modules.getInstance().getModule(entry.getKey());
                 if (module == null) {
                     continue;
                 }
@@ -45,7 +45,7 @@ public class KeyBinds {
     public void saveBinds() {
         FileUtils.createIfNotExists(bindFile);
         JsonObject mainObject = new JsonObject();
-        for (Module module : Modules.getModules()) {
+        for (Module module : Modules.getInstance().getModules()) {
             JsonObject moduleObject = new JsonObject();
             moduleObject.addProperty("key", module.getKey());
             mainObject.add(module.getName(), moduleObject);

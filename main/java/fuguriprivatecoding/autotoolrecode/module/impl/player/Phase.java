@@ -35,18 +35,17 @@ public class Phase extends Module {
     private WorldSettings.GameType lastGameType;
 
     @Override
-    public void onEnable() {
-        if (mc != null && mc.thePlayer != null) {
-            lastGameType = mc.playerController.getCurrentGameType();
-            setGameMode(WorldSettings.GameType.SURVIVAL);
+    public void tick(boolean toggled) {
+        if (toggled) {
+            if (mc != null && mc.thePlayer != null) {
+                lastGameType = mc.playerController.getCurrentGameType();
+                setGameMode(WorldSettings.GameType.SURVIVAL);
+            }
+        } else {
+            resetBreaking();
+            setGameMode(lastGameType);
+            lastGameType = null;
         }
-    }
-
-    @Override
-    public void onDisable() {
-        resetBreaking();
-        setGameMode(lastGameType);
-        lastGameType = null;
     }
 
     private void resetBreaking() {

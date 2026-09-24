@@ -19,15 +19,14 @@ public class FakeGameMode extends Module {
     WorldSettings.GameType lastGameType;
 
     @Override
-    public void onDisable() {
-        setGameMode(lastGameType);
-        lastGameType = null;
-    }
-
-    @Override
-    public void onEnable() {
-        lastGameType = mc.playerController.getCurrentGameType();
-        setGameMode(getGameType(mode.getMode()));
+    public void tick(boolean toggled) {
+        if (toggled) {
+            setGameMode(lastGameType);
+            lastGameType = null;
+        } else {
+            lastGameType = mc.playerController.getCurrentGameType();
+            setGameMode(getGameType(mode.getMode()));
+        }
     }
 
     @Override

@@ -24,8 +24,10 @@ public class AutoTool extends Module {
     StopWatch backSwitchTimer = new StopWatch();
 
     @Override
-    public void onDisable() {
-        switchBack();
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            switchBack();
+        }
     }
 
     @Override

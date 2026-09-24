@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
@@ -11,13 +12,13 @@ import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 @ModuleInfo(name = "ClientSettings", category = Category.CLIENT, description = "Модуль где вы можете подробно настраивать клиент.", toggled = true)
 public class ClientSettings extends Module {
 
-    public FloatSetting toggleModuleVolume = new FloatSetting("ToggleModuleVolume", this, 0.1f, 1, 1, 0.1f) {};
+    public CheckBox toggleSound = new CheckBox("ToggleSound", this, true);
     public FloatSetting backgroundRadius = new FloatSetting("BackgroundGuiRadius", this, 0.5f, 7, 7, 0.1f) {};
     public IntegerSetting scroll = new IntegerSetting("ScrollStep", this, -50, 50, 10);
     public FloatSetting scale = new FloatSetting("Scale", this, 0.5f, 2, 1, 0.01f) {};
 
     public static int getScroll() {
-        ClientSettings clientSettings = Modules.getModule(ClientSettings.class);
+        ClientSettings clientSettings = Modules.getInstance().getModule(ClientSettings.class);
         int currentScroll = DeltaTracker.getDeltaScroll();
 
         return currentScroll / 120 * clientSettings.scroll.getValue();

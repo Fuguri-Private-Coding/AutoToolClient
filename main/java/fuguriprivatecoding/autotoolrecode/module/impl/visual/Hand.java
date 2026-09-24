@@ -117,7 +117,7 @@ public class Hand extends Module {
     }
 
     public static boolean isLegacy() {
-        Hand hand = Modules.getModule(Hand.class);
+        Hand hand = Modules.getInstance().getModule(Hand.class);
         return hand != null && hand.isToggled() && hand.effect.get("LegacyAnimations");
     }
 }

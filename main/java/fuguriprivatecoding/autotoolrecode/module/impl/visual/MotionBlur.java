@@ -23,8 +23,10 @@ public class MotionBlur extends Module {
     public IntegerSetting blurAmount = new IntegerSetting("BlurAmount", this, 1, 100, 70);
 
     @Override
-    public void onDisable() {
-        mc.entityRenderer.stopUseShader();
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            mc.entityRenderer.stopUseShader();
+        }
     }
 
     @Override

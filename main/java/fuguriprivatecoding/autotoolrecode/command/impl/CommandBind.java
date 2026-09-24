@@ -22,12 +22,12 @@ public class CommandBind extends Command {
 		
 		if (args.length == 2) {
 			if (args[1].equalsIgnoreCase("clear")) {
-				Modules.getModules().forEach(module -> module.setKey(Keyboard.KEY_NONE));
+				Modules.getInstance().getModules().forEach(module -> module.setKey(Keyboard.KEY_NONE));
                 addMessage("All binds are cleared!");
 			}
 
 			if (args[1].equalsIgnoreCase("list")) {
-				List<Module> modules = Modules.getModules().stream()
+				List<Module> modules = Modules.getInstance().getModules().stream()
 					.filter(module -> module.getKey() != Keyboard.KEY_NONE).toList();
 
 				for (Module module : modules) {
@@ -35,7 +35,7 @@ public class CommandBind extends Command {
 				}
 			}
 		} else if (args.length == 3) {
-			Module module = Modules.getModule(args[1]);
+			Module module = Modules.getInstance().getModule(args[1]);
 		
 			if (module == null) {
                 addMessage("There is no such module!");

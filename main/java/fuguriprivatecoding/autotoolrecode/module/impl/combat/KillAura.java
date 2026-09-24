@@ -119,9 +119,11 @@ public class KillAura extends Module {
     private Rot lastDelta = new Rot();
 
     @Override
-    public void onDisable() {
-        if (!Modules.getModule(Scaffold.class).isToggled()) CameraRot.INST.setWillChange(false);
-        TargetStorage.setTarget(null);
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            if (!Modules.getInstance().getModule(Scaffold.class).isToggled()) CameraRot.INST.setWillChange(false);
+            TargetStorage.setTarget(null);
+        }
     }
 
     @Override
@@ -131,14 +133,14 @@ public class KillAura extends Module {
         }
 
         EntityLivingBase target = TargetStorage.getTarget();
-        if (Modules.getModule(Scaffold.class).isToggled()) return;
+        if (Modules.getInstance().getModule(Scaffold.class).isToggled()) return;
 
         if (target != null) {
             if (event instanceof RunGameLoopEvent && needClicking(target)) {
                 if (clickTimer.reachedMS(delay)) {
                     updateDelay();
                     clickTimer.reset();
-                    Clicks.addClick();
+                    Clicks.getInstance().addClick();
                 }
             }
 

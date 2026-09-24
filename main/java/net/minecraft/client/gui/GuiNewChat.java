@@ -76,7 +76,7 @@ public class GuiNewChat extends Gui {
                                 int i2 = 0;
                                 int j2 = -i1 * 9;
 
-                                Glow glow = Modules.getModule(Glow.class);
+                                Glow glow = Modules.getInstance().getModule(Glow.class);
 
                                 if (glow != null && glow.isToggled() && glow.toGlow.get("Chat")) {
                                     BloomUtils.startWrite();

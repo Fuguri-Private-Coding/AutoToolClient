@@ -44,8 +44,10 @@ public class Blink extends Module {
     private int resetDelays;
 
     @Override
-    public void onDisable() {
-        reset();
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            reset();
+        }
     }
 
     @Override

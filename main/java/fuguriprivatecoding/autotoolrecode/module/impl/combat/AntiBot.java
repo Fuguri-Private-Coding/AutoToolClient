@@ -11,7 +11,7 @@ import java.util.Objects;
 public class AntiBot extends Module {
 
     public static boolean isBot(Entity ent) {
-        AntiBot antiBot = Modules.getModule(AntiBot.class);
+        AntiBot antiBot = Modules.getInstance().getModule(AntiBot.class);
         return antiBot.isToggled() && ent.getCustomNameTag() == "";
     }
 }

@@ -41,7 +41,7 @@ public class GuiMove extends Module {
             case ConfigScreen configScreen -> !configScreen.textField.isFocused() && guis.get("Client");
             case GuiInventory _ -> guis.get("Inventory");
             case GuiChest _ -> guis.get("Chest");
-            default -> false;
+            case null, default -> false;
         };
     }
 }

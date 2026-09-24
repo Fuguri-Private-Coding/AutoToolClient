@@ -233,6 +233,10 @@ public class DynamicIsland extends Module {
         RenderUtils.drawRect(internetX + 2f + 2f, internetY, 1f, 4, Colors.WHITE);
     }
 
+    @Override
+    public boolean shouldListenEvents() {
+        return true;
+    }
 
     private void updateRun(Runnable run, String key, float additionalWidth, float additionalHeight) {
         this.additionalWidth = additionalWidth;

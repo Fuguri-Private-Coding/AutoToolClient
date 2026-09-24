@@ -52,23 +52,22 @@ public class Speed extends Module {
     }
 
     @Override
-    public void onDisable() {
-        if (currentSpeedMode != null) {
-            currentSpeedMode.onDisable(this);
-        }
+    public void tick(boolean toggled) {
+        if (toggled) {
+            if (currentSpeedMode != null) {
+                currentSpeedMode.onEnable(this);
+            }
+        } else {
+            if (currentSpeedMode != null) {
+                currentSpeedMode.onDisable(this);
+            }
 
-        if (resetMotion.isToggled()) {
-            mc.thePlayer.stopMotion();
-        }
+            if (resetMotion.isToggled()) {
+                mc.thePlayer.stopMotion();
+            }
 
-        mc.timer.timerSpeed = 1f;
-        mc.thePlayer.speedInAir = 0.02f;
-    }
-
-    @Override
-    public void onEnable() {
-        if (currentSpeedMode != null) {
-            currentSpeedMode.onEnable(this);
+            mc.timer.timerSpeed = 1f;
+            mc.thePlayer.speedInAir = 0.02f;
         }
     }
 

@@ -37,8 +37,10 @@ public class Trajectory extends Module {
     Color fadeColor;
 
     @Override
-    public void onDisable() {
-        positions.clear();
+    public void tick(boolean toggled) {
+        if (!toggled) {
+            positions.clear();
+        }
     }
 
     @Override

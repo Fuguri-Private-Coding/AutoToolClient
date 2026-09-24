@@ -334,7 +334,7 @@ public class ItemRenderer {
 
             if (this.itemToRender != null) {
                 EnumAction enumaction = this.itemToRender.getItemUseAction();
-                Hand hand = Modules.getModule(Hand.class);
+                Hand hand = Modules.getInstance().getModule(Hand.class);
 
                 boolean animations = hand.effect.get("Animations");
                 boolean itemPos = hand.effect.get("ItemPos");
@@ -495,7 +495,7 @@ public class ItemRenderer {
     }
 
     private void renderFireInFirstPerson(float partialTicks) {
-        NoRender noRender = Modules.getModule(NoRender.class);
+        NoRender noRender = Modules.getInstance().getModule(NoRender.class);
 
         if (noRender.isToggled() && noRender.fire.isToggled()) return;
 

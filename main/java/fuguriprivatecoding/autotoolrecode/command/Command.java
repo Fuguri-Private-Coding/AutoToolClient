@@ -1,6 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.command;
 
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.gui.console.ConsoleScreen;
 import lombok.Getter;
 
@@ -22,7 +21,6 @@ public abstract class Command {
 	public abstract void execute(String[] args);
 
 	protected void usage() {
-		ClientUtils.chatLog(usage);
 		ConsoleScreen.log(usage);
 	}
 

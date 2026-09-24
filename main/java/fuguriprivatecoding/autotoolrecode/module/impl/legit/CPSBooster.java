@@ -17,7 +17,7 @@ public class CPSBooster extends Module {
     public void onEvent(Event event) {
         if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.LEFT) {
             if (Math.random() * 100 <= chance.getValue()) {
-                Clicks.addClick();
+                Clicks.getInstance().addClick();
             }
         }
     }

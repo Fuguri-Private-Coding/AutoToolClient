@@ -17,7 +17,7 @@ public class Teams extends Module {
         ;
 
     public static boolean isTeammate(EntityPlayer entity) {
-        Teams teams = Modules.getModule(Teams.class);
+        Teams teams = Modules.getInstance().getModule(Teams.class);
 
         if (!teams.isToggled())
             return false;

@@ -7,12 +7,15 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
-import lombok.Getter;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 @ModuleInfo(name = "CustomCape", category = Category.VISUAL, description = "Изменяет вам плащ.")
@@ -33,16 +36,10 @@ public class CustomCape extends Module {
     }
 
     @Override
-    public void onEnable() {
-        selectedCape = "";
-        updateCape();
-    }
-
-    public void updateCape() {
-        capeMode.getModes().clear();
-        capeMode.addMode("None");
-        for (File cape : Objects.requireNonNull(Client.CAPE_DIRECTORY.listFiles())) {
-            capeMode.addMode(cape.getName().replaceAll(".png", ""));
+    public void tick(boolean toggled) {
+        if (toggled) {
+            selectedCape = "";
+            updateCape();
         }
     }
 
@@ -51,9 +48,17 @@ public class CustomCape extends Module {
         if (event instanceof WorldChangeEvent) selectedCape = "";
     }
 
+    public void updateCape() {
+        capeMode.getModes().clear();
+        capeMode.addMode("None");
+        for (File cape : Objects.requireNonNull(Client.getInstance().CAPE_DIRECTORY.listFiles())) {
+            capeMode.addMode(cape.getName().replaceAll(".png", ""));
+        }
+    }
+
     public ResourceLocation getCape() {
         if (!selectedCape.equalsIgnoreCase(capeMode.getMode())) {
-            capeFile = new File(Client.CAPE_DIRECTORY, capeMode.getMode() + ".png");
+            capeFile = new File(Client.getInstance().CAPE_DIRECTORY, capeMode.getMode() + ".png");
             if (!capeFile.exists()) return null;
 
             try (InputStream inputStream = new FileInputStream(capeFile)) {

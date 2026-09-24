@@ -2,14 +2,13 @@ package fuguriprivatecoding.autotoolrecode.utils.packet;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
-import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.ESP;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
+import lombok.Getter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
@@ -19,16 +18,11 @@ import net.minecraft.network.play.server.S18PacketEntityTeleport;
 
 public class PositionResolverComponent implements Imports, EventListener {
 
-    public PositionResolverComponent() {
-        Events.register(this);
-    }
+    @Getter
+    private static final PositionResolverComponent instance = new PositionResolverComponent();
 
-    @Override
-    public boolean listen() {
-        BackTrack backTrack = Modules.getModule(BackTrack.class);
-        ESP esp = Modules.getModule(ESP.class);
-
-        return Utils.isWorldLoaded() && (backTrack.isToggled() || esp.isToggled());
+    public void init() {
+        registerToEvents();
     }
 
     @Override
@@ -85,5 +79,10 @@ public class PositionResolverComponent implements Imports, EventListener {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean shouldListenEvents() {
+        return Utils.isWorldLoaded() && Modules.getInstance().getModule(BackTrack.class).isToggled();
     }
 }

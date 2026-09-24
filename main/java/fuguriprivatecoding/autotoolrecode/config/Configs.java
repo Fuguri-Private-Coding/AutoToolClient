@@ -26,7 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @UtilityClass
 public class Configs implements Imports {
 
-    @Getter final File CONFIG_DIRECTORY = new File(Client.CLIENT_DIR + "/configs");
+    @Getter final File CONFIG_DIRECTORY = new File(Client.getInstance().CLIENT_DIR + "/configs");
     @Getter private final List<Config> configs = new CopyOnWriteArrayList<>();
     @Getter Config defaultConfig = new Config("default");
     @Getter @Setter Config lastLoadedConfig = new Config("default");
@@ -111,7 +111,7 @@ public class Configs implements Imports {
             if (json == null) return;
 
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-                Module module = Modules.getModule(entry.getKey());
+                Module module = Modules.getInstance().getModule(entry.getKey());
                 if (module != null && module.getCategory() == category) {
                     applyModuleSettings(module, (JsonObject) entry.getValue(), true);
                 }
@@ -150,7 +150,7 @@ public class Configs implements Imports {
 
     private JsonObject createCategoryExportObject(Category category) {
         JsonObject json = new JsonObject();
-        for (Module module : Modules.getModulesByCategory(category)) {
+        for (Module module : Modules.getInstance().getModulesByCategory(category)) {
             json.add(module.getName(), module.getObject());
         }
         return json;
@@ -165,7 +165,7 @@ public class Configs implements Imports {
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
                 if ("ConfigInformation".equals(entry.getKey())) continue;
 
-                Module module = Modules.getModule(entry.getKey());
+                Module module = Modules.getInstance().getModule(entry.getKey());
                 if (module != null) {
                     applyModuleSettings(module, (JsonObject) entry.getValue(), true);
                 }
@@ -189,7 +189,7 @@ public class Configs implements Imports {
         infoObject.addProperty("LastUpdate", config.getLastUpdateDate());
         mainObject.add("ConfigInformation", infoObject);
 
-        for (Module module : Modules.getModules()) {
+        for (Module module : Modules.getInstance().getModules()) {
             JsonObject moduleObject = module.getObject();
             mainObject.add(module.getName(), moduleObject);
         }

@@ -24,12 +24,12 @@ public class Degree45Mode extends AbstractSpeedMode {
 
     @Override
     public void onDisable(Speed speed) {
-        if (!Modules.getModule(Scaffold.class).isToggled() && !Modules.getModule(KillAura.class).isToggled() && !Modules.getModule(Fucker.class).isToggled()) CameraRot.INST.setWillChange(false);
+        if (!Modules.getInstance().getModule(Scaffold.class).isToggled() && !Modules.getInstance().getModule(KillAura.class).isToggled() && !Modules.getInstance().getModule(Fucker.class).isToggled()) CameraRot.INST.setWillChange(false);
     }
 
     @Override
     public void handleEvent(Event event, Speed speed) {
-        if (Modules.getModule(Scaffold.class).isToggled() || Modules.getModule(KillAura.class).isToggled() || Modules.getModule(Fucker.class).isToggled()) return;
+        if (Modules.getInstance().getModule(Scaffold.class).isToggled() || Modules.getInstance().getModule(KillAura.class).isToggled() || Modules.getInstance().getModule(Fucker.class).isToggled()) return;
 
         if (event instanceof TickEvent) {
             float yaw = speed.rotateWithMovement.isToggled() ? MoveUtils.getDir() : CameraRot.INST.getYaw();

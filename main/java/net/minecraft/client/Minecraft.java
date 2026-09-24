@@ -354,7 +354,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             new ResourceLocation("minecraft", "autotool/image/logo32.png")
         );
 
-        Client.init();
+        Client.getInstance().init();
 
         if (this.gameSettings.language != null) {
             this.fontRendererObj.setUnicodeFlag(this.isUnicode());
@@ -1104,7 +1104,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     }
 
     public void clickMouse() {
-        CPSCounter cpsCounter = Modules.getModule(CPSCounter.class);
+        CPSCounter cpsCounter = Modules.getInstance().getModule(CPSCounter.class);
         if (cpsCounter.isToggled())
             CPSCounter.leftCps.add(System.currentTimeMillis());
 
@@ -1143,7 +1143,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     @SuppressWarnings("incomplete-switch")
     public void rightClickMouse(boolean swing) {
         if (!this.playerController.getIsHittingBlock()) {
-            CPSCounter cpsCounter = Modules.getModule(CPSCounter.class);
+            CPSCounter cpsCounter = Modules.getInstance().getModule(CPSCounter.class);
             if (cpsCounter.isToggled()) {
                 CPSCounter.rightCps.add(System.currentTimeMillis());
             }
@@ -1759,7 +1759,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             this.thePlayer = null;
         }
 
-        if (!Modules.getModule(Fixes.class).isToggled() || !Modules.getModule(Fixes.class).fixes.get("FastWorldLoading")) {
+        Fixes fixes = Modules.getInstance().getModule(Fixes.class);
+
+        if (!fixes.isToggled() || !fixes.fixes.get("FastWorldLoading")) {
             System.gc();
         }
 

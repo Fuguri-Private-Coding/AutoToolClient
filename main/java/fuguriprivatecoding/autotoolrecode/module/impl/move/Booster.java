@@ -32,7 +32,7 @@ public class Booster extends Module {
     @Override
     public void onEvent(Event event) {
         if (teleporting) return;
-        if (event instanceof KeyEvent e && e.getKey() == key.getKey()) active = true;
+        if (event instanceof KeyEvent e && e.getKey() == key.getKey() && e.isPressed()) active = true;
 
         if (!active && checkBalance.isToggled()) {
             if (event instanceof TickEvent e) {

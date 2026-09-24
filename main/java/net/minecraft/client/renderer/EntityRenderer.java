@@ -459,7 +459,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             if (useFOVSetting) {
                 f = FovModifier.getFov();
 
-                if (Config.isDynamicFov() && !Modules.getModule(FovModifier.class).isToggled()) {
+                if (Config.isDynamicFov() && !Modules.getInstance().getModule(FovModifier.class).isToggled()) {
                     f *= this.fovModifierHandPrev + (this.fovModifierHand - this.fovModifierHandPrev) * partialTicks;
                 }
             }
@@ -517,7 +517,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             f = f / (float) entitylivingbase.maxHurtTime;
             f = MathHelper.sin(f * f * f * f * (float) Math.PI);
-            final HurtCamera hurtCamera = Modules.getModule(HurtCamera.class);
+            final HurtCamera hurtCamera = Modules.getInstance().getModule(HurtCamera.class);
 
             f = f * (hurtCamera.isToggled() ? hurtCamera.strength.getValue() : 1f);
 
@@ -568,7 +568,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
             }
         } else if (this.mc.gameSettings.thirdPersonView > 0) {
-            CustomCamera customCamera = Modules.getModule(CustomCamera.class);
+            CustomCamera customCamera = Modules.getInstance().getModule(CustomCamera.class);
 
             double d3 = customCamera.isToggled() ? customCamera.cameraDistance.getValue() : this.thirdPersonDistanceTemp + (this.thirdPersonDistance - this.thirdPersonDistanceTemp) * partialTicks;
 
@@ -689,7 +689,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             GlStateManager.scale(this.cameraZoom, this.cameraZoom, 1.0D);
         }
 
-        AspectRatio aspectRatio = Modules.getModule(AspectRatio.class);
+        AspectRatio aspectRatio = Modules.getInstance().getModule(AspectRatio.class);
 
         float aspect = (float) this.mc.displayWidth / (float) this.mc.displayHeight;
 
@@ -707,7 +707,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
         this.hurtCameraEffect(partialTicks);
 
-        ViewBobbing viewBobbing = Modules.getModule(ViewBobbing.class);
+        ViewBobbing viewBobbing = Modules.getInstance().getModule(ViewBobbing.class);
 
         if (this.mc.gameSettings.viewBobbing && (viewBobbing == null || !viewBobbing.isToggled() || !viewBobbing.removeScreenBobbing.isToggled())) {
             this.setupViewBobbing(partialTicks);
@@ -773,7 +773,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 Shaders.applyHandDepth();
             }
 
-            AspectRatio aspectRatio = Modules.getModule(AspectRatio.class);
+            AspectRatio aspectRatio = Modules.getInstance().getModule(AspectRatio.class);
 
             float aspect = (float) this.mc.displayWidth / (float) this.mc.displayHeight;
 
@@ -1007,8 +1007,8 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     }
 
     public void updateCameraAndRender(float partialTicks, long nanoTime) {
-        if (shadows == null) shadows = Modules.getModule(Glow.class);
-        if (blur == null) blur = Modules.getModule(Blur.class);
+        if (shadows == null) shadows = Modules.getInstance().getModule(Glow.class);
+        if (blur == null) blur = Modules.getInstance().getModule(Blur.class);
         Config.renderPartialTicks = partialTicks;
         this.frameInit();
         boolean flag = Display.isActive();
@@ -1346,7 +1346,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             GlStateManager.matrixMode(5889);
             GlStateManager.loadIdentity();
 
-            AspectRatio aspectRatio = Modules.getModule(AspectRatio.class);
+            AspectRatio aspectRatio = Modules.getInstance().getModule(AspectRatio.class);
 
             float aspect = (float) this.mc.displayWidth / (float) this.mc.displayHeight;
 
@@ -1640,7 +1640,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             GlStateManager.matrixMode(5889);
             GlStateManager.loadIdentity();
 
-            AspectRatio aspectRatio = Modules.getModule(AspectRatio.class);
+            AspectRatio aspectRatio = Modules.getInstance().getModule(AspectRatio.class);
 
             float aspect = (float) this.mc.displayWidth / (float) this.mc.displayHeight;
 

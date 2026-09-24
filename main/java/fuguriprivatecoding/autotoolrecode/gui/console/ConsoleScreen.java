@@ -3,31 +3,34 @@ package fuguriprivatecoding.autotoolrecode.gui.console;
 import fuguriprivatecoding.autotoolrecode.command.Commands;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
-import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
+import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
-import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
+
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
 import static java.lang.Math.min;
 
 public class ConsoleScreen extends GuiScreen implements EventListener {
@@ -56,7 +59,7 @@ public class ConsoleScreen extends GuiScreen implements EventListener {
     ClientSettings clientSettings;
 
     private ConsoleScreen() {
-        Events.register(this);
+        registerToEvents();
         mc = Minecraft.getMinecraft();
 
         lastMouse = new Vector2f(0, 0);
@@ -86,8 +89,8 @@ public class ConsoleScreen extends GuiScreen implements EventListener {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (clickGui == null) clickGui = Modules.getModule(ClickGui.class);
-        if (clientSettings == null) clientSettings = Modules.getModule(ClientSettings.class);
+        if (clickGui == null) clickGui = Modules.getInstance().getModule(ClickGui.class);
+        if (clientSettings == null) clientSettings = Modules.getInstance().getModule(ClientSettings.class);
 
         float scale = clientSettings.scale.getValue();
 
@@ -294,7 +297,7 @@ public class ConsoleScreen extends GuiScreen implements EventListener {
     }
 
     @Override
-    public boolean listen() {
+    public boolean shouldListenEvents() {
         return mc.currentScreen == this;
     }
 

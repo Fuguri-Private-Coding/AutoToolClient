@@ -36,27 +36,26 @@ public class BedESP extends Module {
     private BedThread thread;
 
     @Override
-    public void onEnable() {
-        running = true;
+    public void tick(boolean toggled) {
+        if (toggled) {
+            running = true;
 
-        if (thread == null || !thread.isAlive()) {
-            thread = new BedThread();
-            thread.setDaemon(true);
-            thread.start();
-        }
-    }
+            if (thread == null || !thread.isAlive()) {
+                thread = new BedThread();
+                thread.setDaemon(true);
+                thread.start();
+            }
+        } else {
+            running = false;
 
-    @Override
-    public void onDisable() {
-        running = false;
+            if (thread != null) {
+                thread.interrupt();
+                thread = null;
+            }
 
-        if (thread != null) {
-            thread.interrupt();
-            thread = null;
-        }
-
-        synchronized (beds) {
-            beds.clear();
+            synchronized (beds) {
+                beds.clear();
+            }
         }
     }
 

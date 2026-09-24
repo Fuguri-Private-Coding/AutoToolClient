@@ -4,24 +4,23 @@ import fuguriprivatecoding.autotoolrecode.config.Config;
 import fuguriprivatecoding.autotoolrecode.config.Configs;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
-import fuguriprivatecoding.autotoolrecode.event.Events;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.TextButton;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.client.ClientSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.ClickGui;
+import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
+import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Animation2D;
-import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -29,6 +28,7 @@ import net.minecraft.util.Util;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
+
 import java.awt.*;
 import java.io.IOException;
 
@@ -36,8 +36,8 @@ import static java.lang.Math.min;
 
 public class ConfigScreen extends GuiScreen implements EventListener {
 
-    ClickGui clickGui = Modules.getModule(ClickGui.class);
-    ClientSettings clientSettings = Modules.getModule(ClientSettings.class);
+    ClickGui clickGui = Modules.getInstance().getModule(ClickGui.class);
+    ClientSettings clientSettings = Modules.getInstance().getModule(ClientSettings.class);
     public TextButton textField;
 
     Vector2f pos, size, lastMouse, lastSize, lastPos;
@@ -57,7 +57,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
     }
 
     private ConfigScreen() {
-        Events.register(this);
+        registerToEvents();
         mc = Minecraft.getMinecraft();
 
         lastMouse = new Vector2f(0, 0);
@@ -387,7 +387,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
     }
 
     @Override
-    public boolean listen() {
+    public boolean shouldListenEvents() {
         return mc.currentScreen == this;
     }
 

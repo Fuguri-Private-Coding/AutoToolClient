@@ -34,7 +34,7 @@ public class MidClick extends Module {
     }
 
     public static boolean isFriend(EntityPlayer entity) {
-        MidClick midClick = Modules.getModule(MidClick.class);
+        MidClick midClick = Modules.getInstance().getModule(MidClick.class);
 
         if (!midClick.isToggled())
             return false;

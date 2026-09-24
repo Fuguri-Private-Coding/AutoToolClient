@@ -52,7 +52,7 @@ public class RotationHandler extends Module {
     }
 
     @Override
-    public boolean listen() {
+    public boolean shouldListenEvents() {
         return Utils.isWorldLoaded();
     }
 }

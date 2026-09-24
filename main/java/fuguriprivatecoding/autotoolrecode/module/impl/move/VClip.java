@@ -22,11 +22,13 @@ public class VClip extends Module {
     private int remainingTime = 6000;
 
     @Override
-    public void onEnable() {
-        remainingTime = 6000;
-        if (!isNearBars()) {
-            this.startTime = System.currentTimeMillis();
-            this.remainingTime = 6000;
+    public void tick(boolean toggled) {
+        if (toggled) {
+            remainingTime = 6000;
+            if (!isNearBars()) {
+                this.startTime = System.currentTimeMillis();
+                this.remainingTime = 6000;
+            }
         }
     }
 

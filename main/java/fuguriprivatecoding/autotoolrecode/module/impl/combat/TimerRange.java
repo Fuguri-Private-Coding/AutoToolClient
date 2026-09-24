@@ -88,7 +88,7 @@ public class TimerRange extends Module {
                 useBestRotationForPredict.isToggled() ? RotUtils.getBestRotation(box).getYaw() : mc.thePlayer.rotationYaw
             );
 
-            BackTrack backTrack = Modules.getModule(BackTrack.class);
+            BackTrack backTrack = Modules.getInstance().getModule(BackTrack.class);
 
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 double distance = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), box);
@@ -132,7 +132,8 @@ public class TimerRange extends Module {
     }
 
     public static boolean needSnap() {
-        return switch (Modules.getModule(TimerRange.class).snapConditions.getMode()) {
+        TimerRange timerRange = Modules.getInstance().getModule(TimerRange.class);
+        return switch (timerRange.snapConditions.getMode()) {
             case "ToTeleport" -> teleporting || balance > 0;
             case "ToClick" -> click;
             default -> false;

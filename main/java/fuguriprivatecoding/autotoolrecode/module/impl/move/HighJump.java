@@ -25,11 +25,12 @@ public class HighJump extends Module {
     boolean active, falling, moving;
 
     @Override
-    public void onEnable() {
-        ticksSinceJump = 0;
-        active = falling = false;
-        moving = MoveUtils.isMoving();
-        super.onEnable();
+    public void tick(boolean toggled) {
+        if (toggled) {
+            ticksSinceJump = 0;
+            active = falling = false;
+            moving = MoveUtils.isMoving();
+        }
     }
 
     @Override

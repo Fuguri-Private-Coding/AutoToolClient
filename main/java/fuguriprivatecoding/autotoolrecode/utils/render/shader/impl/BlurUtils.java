@@ -33,7 +33,7 @@ public class BlurUtils implements Imports {
     }
 
     public static void draw() {
-        if (blur == null) blur = Modules.getModule(Blur.class);
+        if (blur == null) blur = Modules.getInstance().getModule(Blur.class);
         if (!Display.isActive() || !Display.isVisible() || !blur.isToggled()) return;
 
         inputFramebuffer.bindFramebuffer(true);

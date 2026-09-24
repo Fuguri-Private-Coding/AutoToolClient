@@ -2,7 +2,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.render.DrawBlockHighlightEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -28,7 +27,13 @@ public class BlockOverlay extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof DrawBlockHighlightEvent e && !Modules.getModule(Scaffold.class).isToggled() && Modules.getModule(Fucker.class).block == null) {
+        if (event instanceof DrawBlockHighlightEvent e) {
+            Scaffold scaffold = Modules.getInstance().getModule(Scaffold.class);
+            Fucker fucker = Modules.getInstance().getModule(Fucker.class);
+
+            if (scaffold.isToggled() || fucker.block != null)
+                return;
+
             e.cancel();
             if (mc.rayTrace.typeOfHit == RayTrace.RayType.BLOCK) {
                 BlockPos pos = mc.rayTrace.getBlockPos();
