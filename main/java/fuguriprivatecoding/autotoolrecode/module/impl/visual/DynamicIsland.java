@@ -13,7 +13,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
-import fuguriprivatecoding.autotoolrecode.utils.music.MediaController;
+import fuguriprivatecoding.autotoolrecode.utils.sound.music.MediaController;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;

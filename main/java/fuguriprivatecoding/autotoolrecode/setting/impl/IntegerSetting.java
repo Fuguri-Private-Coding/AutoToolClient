@@ -62,16 +62,6 @@ public class IntegerSetting extends Setting {
     }
 
     @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        float[] v = new float[] {value};
-        if (ImGui.sliderFloat(getName(), v, min, max)) {
-            setValue( Math.round(v[0]));
-        }
-        ImGui.popID();
-    }
-
-    @Override
     public JsonObject getObject() {
         JsonObject object = new JsonObject();
 

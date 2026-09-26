@@ -2,16 +2,10 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
-import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
-import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
-import org.lwjgl.input.Keyboard;
 
-import java.awt.*;
 import java.util.function.BooleanSupplier;
 
 @Getter
@@ -30,29 +24,6 @@ public class KeyBind extends Setting {
     public KeyBind(String name, SettingAble parent, BooleanSupplier visible, int key) {
         super(name, parent, visible);
         this.key = key;
-    }
-
-    @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        ImGui.text(getName());
-        ImGui.sameLine();
-        String keyName = Keyboard.getKeyName(key);
-        if (keyName == null) keyName = "UNKNOWN";
-
-        if (listeningForKey) {
-            ImGui.text("[Press a key]");
-            for (int i = 0; i < Keyboard.KEYBOARD_SIZE; i++) {
-                if (ImGui.isKeyPressed(i)) {
-                    key = i;
-                    listeningForKey = false;
-                    break;
-                }
-            }
-        } else if (ImGui.button(keyName)) {
-            listeningForKey = true;
-        }
-        ImGui.popID();
     }
 
     @Override

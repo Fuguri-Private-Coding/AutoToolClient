@@ -10,7 +10,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.Notifications;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.client.sound.Sounds;
+import fuguriprivatecoding.autotoolrecode.utils.sound.Sounds;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import lombok.Getter;
@@ -19,23 +19,24 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class Module implements Imports, SettingAble, EventListener, KeyListener {
 
-	final ModuleInfo annotation = getClass().getAnnotation(ModuleInfo.class);
+	private final ModuleInfo annotation = getClass().getAnnotation(ModuleInfo.class);
 
-	@Getter final String name = annotation.name();
-	@Getter final Category category = annotation.category();
-	@Setter @Getter int key = annotation.key();
-	@Getter boolean toggled;
-	@Getter final List<Setting> settings;
-	@Getter @Setter boolean hide = annotation.hide();
-	@Getter String description = annotation.description();
+	final String name = annotation.name();
+	final Category category = annotation.category();
+	@Setter int key = annotation.key();
+	boolean toggled;
+	final List<Setting> settings;
+	@Setter boolean hide = annotation.hide();
+	final String description = annotation.description();
 
-	@Getter @Setter boolean isHovered;
+	@Setter boolean isHovered;
 
-	@Getter EasingAnimation arrayListAnim = new EasingAnimation(0);
-	@Getter EasingAnimation toggleAnimation = new EasingAnimation();
-    @Getter EasingAnimation descAnim = new EasingAnimation();
+	final EasingAnimation arrayListAnim = new EasingAnimation(0);
+	final EasingAnimation toggleAnimation = new EasingAnimation();
+    final EasingAnimation descAnim = new EasingAnimation();
 
     public Module() {
 		settings = new ArrayList<>();
@@ -47,8 +48,7 @@ public class Module implements Imports, SettingAble, EventListener, KeyListener 
 	}
 
 	public void setToggled(boolean toggled) {
-		if (this.toggled != toggled)
-			toggle();
+		if (this.toggled != toggled) toggle();
 	}
 
 	public void toggle() {
@@ -74,7 +74,7 @@ public class Module implements Imports, SettingAble, EventListener, KeyListener 
 
 	void playSound() {
 		if (Client.getInstance().starting || name.equalsIgnoreCase("ClickGui")) return;
-        (toggled ? Sounds.getEnableVlSound() : Sounds.getDisableVlSound()).playSound(1);
+        (toggled ? Sounds.getEnableSound() : Sounds.getDisableSound()).playSound(0.9f);
 	}
 
 	public void tick(boolean toggled) {
@@ -91,23 +91,18 @@ public class Module implements Imports, SettingAble, EventListener, KeyListener 
 	}
 
 	@Override
-	public void addSettings(Setting... settings) {
-		this.settings.addAll(List.of(settings));
-	}
-
-	@Override
 	public void onTick(boolean pressed) {
 		if (pressed) toggle();
 	}
 
 	@Override
 	public boolean shouldListenEvents() {
-		return Utils.isWorldLoaded() && toggled;
+		return Utils.nullCheck() && toggled;
 	}
 
 	@Override
 	public boolean shouldListenKey() {
-		return Utils.isWorldLoaded() && mc.currentScreen == null;
+		return Utils.nullCheck() && mc.currentScreen == null;
 	}
 
 	public JsonObject getObject() {

@@ -40,18 +40,8 @@ public class CheckBox extends Setting {
 
 	public CheckBox(String name, SettingAble parent, BooleanSupplier visible, boolean toggled) {
 		super(name, parent, visible);
-		this.setVisible(visible);
 		this.toggled = toggled;
 	}
-
-    @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        if (ImGui.checkbox(getName(), toggled)) {
-            toggled = !toggled;
-        }
-        ImGui.popID();
-    }
 
     @Override
     public JsonObject getObject() {

@@ -69,6 +69,10 @@ public class TimerRange extends Module {
 
             teleportTicks = 0;
 
+            if (target == null) {
+                return;
+            }
+
             Vec3 pos = target.getServerPosition().divine(32.0D)
                 .subtract(target.getPositionVector());
 

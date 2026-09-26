@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface SettingAble {
     List<Setting> getSettings();
-    void addSettings(Setting... settings);
     void addSetting(Setting setting);
 }

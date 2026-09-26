@@ -24,6 +24,8 @@ public class EventCaller {
             return;
         }
 
+        // TODO Исправить брейк поинты и в принципе куча экзепшенов.
+
         try {
             for (EventListener listener : listeners) {
                 if (!listener.shouldListenEvents())
@@ -31,6 +33,8 @@ public class EventCaller {
 
                 listener.onEvent(event);
             }
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+//            System.out.println(ignored.getMessage());
+        }
     }
 }

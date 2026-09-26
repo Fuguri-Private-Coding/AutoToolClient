@@ -1,19 +1,17 @@
 package fuguriprivatecoding.autotoolrecode.setting.impl;
 
 import com.google.gson.JsonObject;
-import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
-import imgui.ImGui;
-import imgui.type.ImInt;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.setting.Setting;
 
-import java.awt.Color;
-import java.util.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 @Getter
@@ -34,23 +32,8 @@ public class Mode extends Setting {
     }
 
     public Mode(String name, SettingAble parent, BooleanSupplier visible) {
-        super(name, parent);
-        this.setVisible(visible);
+        super(name, parent, visible);
         initAnimation();
-    }
-
-
-    @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        ImGui.text(getName());
-        ImGui.sameLine();
-
-        ImInt index = new ImInt(modes.indexOf(mode));
-        if (ImGui.combo("", index, modes.toArray(String[]::new), 5)) {
-            mode = modes.get(index.get());
-        }
-        ImGui.popID();
     }
 
     @Override

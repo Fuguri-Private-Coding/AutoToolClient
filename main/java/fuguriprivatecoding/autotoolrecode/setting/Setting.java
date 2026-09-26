@@ -1,24 +1,16 @@
 package fuguriprivatecoding.autotoolrecode.setting;
 
-import com.google.gson.JsonObject;
-import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import lombok.Getter;
 
-import java.awt.*;
 import java.util.function.BooleanSupplier;
 
-public abstract class Setting implements ISetting {
-	final String name;
-	BooleanSupplier visible;
-
-	@Getter
-	EasingAnimation visibleAnim = new EasingAnimation();
+public abstract class Setting implements SaveLoadable {
+	@Getter protected final String name;
+	protected BooleanSupplier visible;
 
 	public Setting(String name, SettingAble parent) {
 		this.name = name;
-		visible = () -> true;
 		parent.addSetting(this);
 	}
 
@@ -28,28 +20,13 @@ public abstract class Setting implements ISetting {
 		parent.addSetting(this);
 	}
 
-    public abstract void render();
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		this.visible = () -> visible;
-	}
-
-	@Override
-	public void setVisible(BooleanSupplier visible) {
+	@SuppressWarnings("unchecked")
+	public <E extends Setting> E visibleIf(BooleanSupplier visible) {
 		this.visible = visible;
+		return (E) this;
 	}
 
-	@Override
 	public boolean isVisible() {
-		return visible.getAsBoolean();
+		return visible == null || visible.getAsBoolean();
 	}
-
-    public abstract JsonObject getObject();
-    public abstract void setObject(JsonObject object);
 }

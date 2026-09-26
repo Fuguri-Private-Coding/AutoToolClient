@@ -106,25 +106,6 @@ public class DoubleSlider extends Setting {
     }
 
     @Override
-    public void render() {
-        ImGui.pushID(hashCode());
-        float[] vMin = new float[] {(float) minValue};
-        float[] vMax = new float[] {(float) minValue};
-
-        float min = (float) this.min;
-        float max = (float) this.max;
-
-        if (ImGui.sliderFloat("Min" + getName(), vMin, min, max)) {
-            setMinValue(vMin[0]);
-        }
-
-        if (ImGui.sliderFloat("Max" + getName(), vMax, min, max)) {
-            setMaxValue(vMax[0]);
-        }
-        ImGui.popID();
-    }
-
-    @Override
     public JsonObject getObject() {
         JsonObject object = new JsonObject();
 

@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.utils.music;
+package fuguriprivatecoding.autotoolrecode.utils.sound.music;
 
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;

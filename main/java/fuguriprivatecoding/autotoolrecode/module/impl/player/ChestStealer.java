@@ -1,6 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
+import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
+import fuguriprivatecoding.autotoolrecode.event.events.render.ScreenEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -10,6 +12,7 @@ import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.mouse.MouseDelta;
 import fuguriprivatecoding.autotoolrecode.utils.gui.mouse.MousePoint;
 import fuguriprivatecoding.autotoolrecode.utils.player.inventory.InventoryUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.TextureUtils;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -143,21 +146,21 @@ public class ChestStealer extends Module {
             }
         }
 
-//        if (event instanceof ScreenEvent e) {
-//            if (slots != null && slots.getFirst() != null && slots.getFirst().centerPos != null && opened && render.isToggled()) {
-//                if (e.getType() == ScreenEvent.Type.PRE && renderModes.get("HoverSlot")) {
-//                    e.cancel();
-//                    mouse.render();
-//                } else {
-//                    if (renderModes.get("Cursor")) {
-//                        float x = mouse.getPrevX() + (mouse.getMouseX() - mouse.getPrevX()) * mc.timer.renderPartialTicks;
-//                        float y = mouse.getPrevY() + (mouse.getMouseY() - mouse.getPrevY()) * mc.timer.renderPartialTicks;
-//
-//                        TextureUtils.texture(Client.of("image/cursor.png"), x - 2, y, 10, 10, 0, 1f, color.getFadedColor());
-//                    }
-//                }
-//            }
-//        }
+        if (event instanceof ScreenEvent e) {
+            if (slots != null && slots.getFirst() != null && slots.getFirst().centerPos != null && opened && render.isToggled()) {
+                if (e.getType() == ScreenEvent.Type.PRE && renderModes.get("HoverSlot")) {
+                    e.cancel();
+                    mouse.render();
+                } else {
+                    if (renderModes.get("Cursor")) {
+                        float x = mouse.getPrevX() + (mouse.getMouseX() - mouse.getPrevX()) * mc.timer.renderPartialTicks;
+                        float y = mouse.getPrevY() + (mouse.getMouseY() - mouse.getPrevY()) * mc.timer.renderPartialTicks;
+
+                        TextureUtils.texture(Client.of("image/cursor.png"), x - 2, y, 10, 10, 0, 1f, color.getFadedColor());
+                    }
+                }
+            }
+        }
     }
 
     List<StealerSlot> getSlots(ContainerChest container) {
