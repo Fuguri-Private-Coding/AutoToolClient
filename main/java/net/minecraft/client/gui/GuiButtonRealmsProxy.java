@@ -46,7 +46,7 @@ public class GuiButtonRealmsProxy extends GuiButton
 
     public int getPositionY()
     {
-        return super.yPosition;
+        return super.y;
     }
 
     public boolean mousePressed(Minecraft mc, int mouseX, int mouseY)

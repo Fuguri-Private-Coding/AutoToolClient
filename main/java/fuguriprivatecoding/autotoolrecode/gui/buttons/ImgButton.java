@@ -1,12 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.gui.buttons;
 
+import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.TextureUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -18,21 +17,10 @@ public class ImgButton extends GuiButton {
 
     ResourceLocation image;
 
-    float x, y, width, height;
-    float prevX, prevY, prevWidth, prevHeight;
-
     EasingAnimation hoverAnim = new EasingAnimation();
 
     public ImgButton(int id, ResourceLocation image, float x, float y, float width, float height) {
         super(id, (int) x, (int) y, (int) width, (int) height, "");
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.prevX = x;
-        this.prevY = y;
-        this.prevWidth = width;
-        this.prevHeight = height;
         this.image = image;
     }
 
@@ -43,10 +31,10 @@ public class ImgButton extends GuiButton {
         hoverAnim.update(2, Easing.OUT_BACK);
         hoverAnim.setEnd(hovered ? 1 : 0);
 
-        float x = prevX - hoverAnim.getValue() * 1;
-        float y = prevY - hoverAnim.getValue() * 1;
-        float width = prevWidth + hoverAnim.getValue() * 2;
-        float height = prevHeight + hoverAnim.getValue() * 2;
+        float x = this.x - hoverAnim.getValue() * 1;
+        float y = this.y - hoverAnim.getValue() * 1;
+        float width = this.width + hoverAnim.getValue() * 2;
+        float height = this.height + hoverAnim.getValue() * 2;
 
         Color rectColor = ColorUtils.interpolateColor(Colors.BLACK.withAlpha(0.3f), Colors.BLACK.withAlpha(0.5f), hoverAnim.getValue());
 

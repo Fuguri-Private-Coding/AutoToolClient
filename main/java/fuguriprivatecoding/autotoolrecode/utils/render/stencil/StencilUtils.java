@@ -20,6 +20,17 @@ public class StencilUtils implements Imports {
         setUpTexture(x, y, width, height, radius, radius, radius, radius);
     }
 
+    public static void setUpTextures(float x, float y, float width, float height, final float leftDown, final float leftUp, final float rightUp, final float rightDown) {
+        initStencil();
+        GL11.glEnable(2960);
+        bindWriteStencilBuffer();
+        RoundedUtils.drawRect(x, y, width, height, leftDown, leftUp , rightUp, rightDown, Color.WHITE);
+    }
+
+    public static void setUpTextures(float x, float y, float width, float height, float radius) {
+        setUpTextures(x, y, width, height, radius, radius, radius, radius);
+    }
+
     public static void writeTexture() {
         bindReadStencilBuffer(1);
     }

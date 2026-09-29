@@ -13,7 +13,6 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
-import fuguriprivatecoding.autotoolrecode.utils.sound.music.MediaController;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -23,6 +22,7 @@ import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.Fonts;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf.MsdfFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
+import fuguriprivatecoding.autotoolrecode.utils.sound.music.MediaController;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Mouse;
@@ -223,7 +223,7 @@ public class DynamicIsland extends Module {
         StencilUtils.endWriteTexture();
         GL11.glPopMatrix();
 
-        boldFont.draw(currentTimeText, timeX, timeY, 8, Color.WHITE);
+        boldFont.draw(currentTimeText, timeX - 2, timeY, 8, Colors.WHITE);
 
         float internetX = x + width + 5;
         float internetY = y + 5;

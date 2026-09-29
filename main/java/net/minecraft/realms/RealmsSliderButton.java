@@ -69,7 +69,7 @@ public class RealmsSliderButton extends RealmsButton
         {
             if (this.sliding)
             {
-                this.value = (float)(p_renderBg_1_ - (this.getProxy().xPosition + 4)) / (float)(this.getProxy().getButtonWidth() - 8);
+                this.value = (float)(p_renderBg_1_ - (this.getProxy().x + 4)) / (float)(this.getProxy().getButtonWidth() - 8);
                 this.value = MathHelper.clamp(this.value, 0.0F, 1.0F);
                 float f = this.toValue(this.value);
                 this.clicked(f);
@@ -79,14 +79,14 @@ public class RealmsSliderButton extends RealmsButton
 
             Minecraft.getMinecraft().getTextureManager().bindTexture(WIDGETS_LOCATION);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.blit(this.getProxy().xPosition + (int)(this.value * (float)(this.getProxy().getButtonWidth() - 8)), this.getProxy().yPosition, 0, 66, 4, 20);
-            this.blit(this.getProxy().xPosition + (int)(this.value * (float)(this.getProxy().getButtonWidth() - 8)) + 4, this.getProxy().yPosition, 196, 66, 4, 20);
+            this.blit(this.getProxy().x + (int)(this.value * (float)(this.getProxy().getButtonWidth() - 8)), this.getProxy().y, 0, 66, 4, 20);
+            this.blit(this.getProxy().x + (int)(this.value * (float)(this.getProxy().getButtonWidth() - 8)) + 4, this.getProxy().y, 196, 66, 4, 20);
         }
     }
 
     public void clicked(int p_clicked_1_, int p_clicked_2_)
     {
-        this.value = (float)(p_clicked_1_ - (this.getProxy().xPosition + 4)) / (float)(this.getProxy().getButtonWidth() - 8);
+        this.value = (float)(p_clicked_1_ - (this.getProxy().x + 4)) / (float)(this.getProxy().getButtonWidth() - 8);
         this.value = MathHelper.clamp(this.value, 0.0F, 1.0F);
         this.clicked(this.toValue(this.value));
         this.getProxy().displayString = this.getMessage();

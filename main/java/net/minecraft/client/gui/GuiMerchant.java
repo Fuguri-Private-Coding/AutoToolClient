@@ -216,7 +216,7 @@ public class GuiMerchant extends GuiContainer
             {
                 mc.getTextureManager().bindTexture(GuiMerchant.MERCHANT_GUI_TEXTURE);
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                boolean flag = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+                boolean flag = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
                 int i = 0;
                 int j = 176;
 
@@ -234,7 +234,7 @@ public class GuiMerchant extends GuiContainer
                     i += this.height;
                 }
 
-                this.drawTexturedModalRect(this.xPosition, this.yPosition, j, i, this.width, this.height);
+                this.drawTexturedModalRect(this.x, this.y, j, i, this.width, this.height);
             }
         }
     }

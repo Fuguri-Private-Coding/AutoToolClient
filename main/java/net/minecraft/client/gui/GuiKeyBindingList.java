@@ -116,12 +116,12 @@ public class GuiKeyBindingList extends GuiListExtended
         {
             boolean flag = GuiKeyBindingList.this.field_148191_k.buttonId == this.keybinding;
             GuiKeyBindingList.this.mc.fontRendererObj.drawString(this.keyDesc, x + 90 - GuiKeyBindingList.this.maxListLabelWidth, y + slotHeight / 2 - GuiKeyBindingList.this.mc.fontRendererObj.FONT_HEIGHT / 2, 16777215);
-            this.btnReset.xPosition = x + 190;
-            this.btnReset.yPosition = y;
+            this.btnReset.x = x + 190;
+            this.btnReset.y = y;
             this.btnReset.enabled = this.keybinding.getKeyCode() != this.keybinding.getKeyCodeDefault();
             this.btnReset.drawButton(GuiKeyBindingList.this.mc, mouseX, mouseY);
-            this.btnChangeKeyBinding.xPosition = x + 105;
-            this.btnChangeKeyBinding.yPosition = y;
+            this.btnChangeKeyBinding.x = x + 105;
+            this.btnChangeKeyBinding.y = y;
             this.btnChangeKeyBinding.displayString = GameSettings.getKeyDisplayString(this.keybinding.getKeyCode());
             boolean flag1 = false;
 

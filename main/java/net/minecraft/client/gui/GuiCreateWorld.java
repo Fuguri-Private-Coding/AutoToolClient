@@ -443,7 +443,7 @@ public class GuiCreateWorld extends GuiScreen
 
             if (WorldType.worldTypes[this.selectedIndex].showWorldInfoNotice())
             {
-                this.fontRendererObj.drawSplitString(I18n.format(WorldType.worldTypes[this.selectedIndex].getTranslatedInfo(), new Object[0]), this.btnMapType.xPosition + 2, this.btnMapType.yPosition + 22, this.btnMapType.getButtonWidth(), 10526880);
+                this.fontRendererObj.drawSplitString(I18n.format(WorldType.worldTypes[this.selectedIndex].getTranslatedInfo(), new Object[0]), this.btnMapType.x + 2, this.btnMapType.y + 22, this.btnMapType.getButtonWidth(), 10526880);
             }
         }
         else

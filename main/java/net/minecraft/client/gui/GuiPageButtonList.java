@@ -282,8 +282,8 @@ public class GuiPageButtonList extends GuiListExtended
                     this.field_178075_A = (Gui)this.field_178072_w.get(k);
                     guitextfield = (GuiTextField)this.field_178075_A;
                     guitextfield.setFocused(true);
-                    int l = guitextfield.yPosition + this.slotHeight;
-                    int i1 = guitextfield.yPosition;
+                    int l = guitextfield.y + this.slotHeight;
+                    int i1 = guitextfield.y;
 
                     if (l > this.bottom)
                     {
@@ -430,7 +430,7 @@ public class GuiPageButtonList extends GuiListExtended
 
         private void func_178024_a(GuiButton p_178024_1_, int p_178024_2_, int p_178024_3_, int p_178024_4_, boolean p_178024_5_)
         {
-            p_178024_1_.yPosition = p_178024_2_;
+            p_178024_1_.y = p_178024_2_;
 
             if (!p_178024_5_)
             {
@@ -440,7 +440,7 @@ public class GuiPageButtonList extends GuiListExtended
 
         private void func_178027_a(GuiTextField p_178027_1_, int p_178027_2_, boolean p_178027_3_)
         {
-            p_178027_1_.yPosition = p_178027_2_;
+            p_178027_1_.y = p_178027_2_;
 
             if (!p_178027_3_)
             {

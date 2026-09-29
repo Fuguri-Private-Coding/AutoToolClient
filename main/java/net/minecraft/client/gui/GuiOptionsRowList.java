@@ -73,13 +73,13 @@ public class GuiOptionsRowList extends GuiListExtended
         {
             if (this.field_148323_b != null)
             {
-                this.field_148323_b.yPosition = y;
+                this.field_148323_b.y = y;
                 this.field_148323_b.drawButton(this.field_148325_a, mouseX, mouseY);
             }
 
             if (this.field_148324_c != null)
             {
-                this.field_148324_c.yPosition = y;
+                this.field_148324_c.y = y;
                 this.field_148324_c.drawButton(this.field_148325_a, mouseX, mouseY);
             }
         }

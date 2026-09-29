@@ -39,7 +39,7 @@ public class GuiScreenOF extends GuiScreen
                 int j = GuiVideoSettings.getButtonWidth(guibutton);
                 int k = GuiVideoSettings.getButtonHeight(guibutton);
 
-                if (x >= guibutton.xPosition && y >= guibutton.yPosition && x < guibutton.xPosition + j && y < guibutton.yPosition + k)
+                if (x >= guibutton.x && y >= guibutton.y && x < guibutton.x + j && y < guibutton.y + k)
                 {
                     return guibutton;
                 }

@@ -235,7 +235,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer
 
         if (this.searchField != null && this.guiLeft != i)
         {
-            this.searchField.xPosition = this.guiLeft + 82;
+            this.searchField.x = this.guiLeft + 82;
         }
     }
 

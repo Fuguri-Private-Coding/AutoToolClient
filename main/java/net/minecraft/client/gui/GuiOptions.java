@@ -59,7 +59,7 @@ public class GuiOptions extends GuiScreen implements GuiYesNoCallback
             if (this.mc.isSingleplayer() && !this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled())
             {
                 this.field_175357_i.setWidth(this.field_175357_i.getButtonWidth() - 20);
-                this.field_175356_r = new GuiLockIconButton(109, this.field_175357_i.xPosition + this.field_175357_i.getButtonWidth(), this.field_175357_i.yPosition);
+                this.field_175356_r = new GuiLockIconButton(109, this.field_175357_i.x + this.field_175357_i.getButtonWidth(), this.field_175357_i.y);
                 this.buttonList.add(this.field_175356_r);
                 this.field_175356_r.func_175229_b(this.mc.theWorld.getWorldInfo().isDifficultyLocked());
                 this.field_175356_r.enabled = !this.field_175356_r.func_175230_c();

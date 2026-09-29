@@ -213,7 +213,7 @@ public class GuiBeacon extends GuiContainer
             {
                 mc.getTextureManager().bindTexture(GuiBeacon.beaconGuiTextures);
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+                this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
                 int i = 219;
                 int j = 0;
 
@@ -230,14 +230,14 @@ public class GuiBeacon extends GuiContainer
                     j += this.width * 3;
                 }
 
-                this.drawTexturedModalRect(this.xPosition, this.yPosition, j, i, this.width, this.height);
+                this.drawTexturedModalRect(this.x, this.y, j, i, this.width, this.height);
 
                 if (!GuiBeacon.beaconGuiTextures.equals(this.field_146145_o))
                 {
                     mc.getTextureManager().bindTexture(this.field_146145_o);
                 }
 
-                this.drawTexturedModalRect(this.xPosition + 2, this.yPosition + 2, this.field_146144_p, this.field_146143_q, 18, 18);
+                this.drawTexturedModalRect(this.x + 2, this.y + 2, this.field_146144_p, this.field_146143_q, 18, 18);
             }
         }
 

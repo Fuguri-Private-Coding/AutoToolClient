@@ -13,8 +13,8 @@ public class GuiTextField extends Gui
 {
     private final int id;
     public final FontRenderer fontRendererInstance;
-    public int xPosition;
-    public int yPosition;
+    public int x;
+    public int y;
     public final int width;
     public final int height;
     private String text = "";
@@ -37,8 +37,8 @@ public class GuiTextField extends Gui
     {
         this.id = componentId;
         this.fontRendererInstance = fontrendererObj;
-        this.xPosition = x;
-        this.yPosition = y;
+        this.x = x;
+        this.y = y;
         this.width = par5Width;
         this.height = par6Height;
     }
@@ -428,7 +428,7 @@ public class GuiTextField extends Gui
 
     public void mouseClicked(int p_146192_1_, int p_146192_2_, int p_146192_3_)
     {
-        boolean flag = p_146192_1_ >= this.xPosition && p_146192_1_ < this.xPosition + this.width && p_146192_2_ >= this.yPosition && p_146192_2_ < this.yPosition + this.height;
+        boolean flag = p_146192_1_ >= this.x && p_146192_1_ < this.x + this.width && p_146192_2_ >= this.y && p_146192_2_ < this.y + this.height;
 
         if (this.canLoseFocus)
         {
@@ -437,7 +437,7 @@ public class GuiTextField extends Gui
 
         if (this.isFocused && flag && p_146192_3_ == 0)
         {
-            int i = p_146192_1_ - this.xPosition;
+            int i = p_146192_1_ - this.x;
 
             if (this.enableBackgroundDrawing)
             {
@@ -455,8 +455,8 @@ public class GuiTextField extends Gui
         {
             if (this.getEnableBackgroundDrawing())
             {
-                drawRect(this.xPosition - 1, this.yPosition - 1, this.xPosition + this.width + 1, this.yPosition + this.height + 1, -6250336);
-                drawRect(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + this.height, -16777216);
+                drawRect(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, -6250336);
+                drawRect(this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
             }
 
             int i = this.isEnabled ? this.enabledColor : this.disabledColor;
@@ -465,8 +465,8 @@ public class GuiTextField extends Gui
             String s = this.fontRendererInstance.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.getWidth());
             boolean flag = j >= 0 && j <= s.length();
             boolean flag1 = this.isFocused && this.cursorCounter / 6 % 2 == 0 && flag;
-            int l = this.enableBackgroundDrawing ? this.xPosition + 4 : this.xPosition;
-            int i1 = this.enableBackgroundDrawing ? this.yPosition + (this.height - 8) / 2 : this.yPosition;
+            int l = this.enableBackgroundDrawing ? this.x + 4 : this.x;
+            int i1 = this.enableBackgroundDrawing ? this.y + (this.height - 8) / 2 : this.y;
             int j1 = l;
 
             if (k > s.length())
@@ -534,14 +534,14 @@ public class GuiTextField extends Gui
             p_146188_4_ = j;
         }
 
-        if (p_146188_3_ > this.xPosition + this.width)
+        if (p_146188_3_ > this.x + this.width)
         {
-            p_146188_3_ = this.xPosition + this.width;
+            p_146188_3_ = this.x + this.width;
         }
 
-        if (p_146188_1_ > this.xPosition + this.width)
+        if (p_146188_1_ > this.x + this.width)
         {
-            p_146188_1_ = this.xPosition + this.width;
+            p_146188_1_ = this.x + this.width;
         }
 
         Tessellator tessellator = Tessellator.getInstance();

@@ -593,7 +593,7 @@ public class GuiScreenBook extends GuiScreen
         {
             if (this.visible)
             {
-                boolean flag = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+                boolean flag = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 mc.getTextureManager().bindTexture(GuiScreenBook.bookGuiTextures);
                 int i = 0;
@@ -609,7 +609,7 @@ public class GuiScreenBook extends GuiScreen
                     j += 13;
                 }
 
-                this.drawTexturedModalRect(this.xPosition, this.yPosition, i, j, 23, 13);
+                this.drawTexturedModalRect(this.x, this.y, i, j, 23, 13);
             }
         }
     }

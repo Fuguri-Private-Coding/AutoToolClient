@@ -1,9 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.gui.buttons;
 
+import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
@@ -15,9 +14,6 @@ import java.awt.*;
 
 public class TextButton extends GuiTextField {
 
-    float x, y, width, height;
-    float prevX, prevY, prevWidth, prevHeight;
-
     boolean forward;
 
     EasingAnimation hoverAnim = new EasingAnimation();
@@ -26,14 +22,6 @@ public class TextButton extends GuiTextField {
     public TextButton(int id, float x, float y, float width, float height) {
         super(id, null, (int) x, (int) y, (int) width, (int) height);
         this.setMaxStringLength(16);
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.prevX = x;
-        this.prevY = y;
-        this.prevWidth = width;
-        this.prevHeight = height;
     }
 
     @Override
@@ -52,15 +40,15 @@ public class TextButton extends GuiTextField {
             forward = false;
         }
 
-        float x = prevX - hoverAnim.getValue() * 0.5f;
-        float y = prevY - hoverAnim.getValue() * 0.5f;
-        float width = prevWidth + hoverAnim.getValue() * 1;
-        float height = prevHeight + hoverAnim.getValue() * 1;
+        float x = this.x - hoverAnim.getValue() * 0.5f;
+        float y = this.y - hoverAnim.getValue() * 0.5f;
+        float width = this.width + hoverAnim.getValue() * 1;
+        float height = this.height + hoverAnim.getValue() * 1;
 
         float textX = x + width / 2f;
         float textY = y + 2 + (height - 8) / 2f;
 
-        float cursorX = (float) (x + width / 2f + fontRenderer.getStringWidth(getText()) / 2f + 1);
+        float cursorX = x + width / 2f + fontRenderer.getStringWidth(getText()) / 2f + 1;
         float cursorY = textY - 2 - 4.5f * hoverAnim.getValue() + 4.5f - keyTypedAnim.getValue() * 2 / 2;
         float cursorWidth = 0.5f;
         float cursorHeight = 9 * hoverAnim.getValue() + keyTypedAnim.getValue() * 2;

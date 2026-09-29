@@ -96,7 +96,7 @@ public class GuiScreenOptionsSounds extends GuiScreen
             {
                 if (this.field_146155_p)
                 {
-                    this.field_146156_o = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
+                    this.field_146156_o = (float)(mouseX - (this.x + 4)) / (float)(this.width - 8);
                     this.field_146156_o = MathHelper.clamp(this.field_146156_o, 0.0F, 1.0F);
                     mc.gameSettings.setSoundLevel(this.field_146153_r, this.field_146156_o);
                     mc.gameSettings.saveOptions();
@@ -104,8 +104,8 @@ public class GuiScreenOptionsSounds extends GuiScreen
                 }
 
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                this.drawTexturedModalRect(this.xPosition + (int)(this.field_146156_o * (float)(this.width - 8)), this.yPosition, 0, 66, 4, 20);
-                this.drawTexturedModalRect(this.xPosition + (int)(this.field_146156_o * (float)(this.width - 8)) + 4, this.yPosition, 196, 66, 4, 20);
+                this.drawTexturedModalRect(this.x + (int)(this.field_146156_o * (float)(this.width - 8)), this.y, 0, 66, 4, 20);
+                this.drawTexturedModalRect(this.x + (int)(this.field_146156_o * (float)(this.width - 8)) + 4, this.y, 196, 66, 4, 20);
             }
         }
 
@@ -113,7 +113,7 @@ public class GuiScreenOptionsSounds extends GuiScreen
         {
             if (super.mousePressed(mc, mouseX, mouseY))
             {
-                this.field_146156_o = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
+                this.field_146156_o = (float)(mouseX - (this.x + 4)) / (float)(this.width - 8);
                 this.field_146156_o = MathHelper.clamp(this.field_146156_o, 0.0F, 1.0F);
                 mc.gameSettings.setSoundLevel(this.field_146153_r, this.field_146156_o);
                 mc.gameSettings.saveOptions();

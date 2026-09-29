@@ -67,7 +67,7 @@ public class AsyncVersionSlider extends GuiButton {
         {
             if (this.dragging)
             {
-                this.sliderValue = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
+                this.sliderValue = (float)(mouseX - (this.x + 4)) / (float)(this.width - 8);
                 this.sliderValue = MathHelper.clamp(this.sliderValue, 0.0F, 1.0F);
                 this.dragValue = sliderValue;
 
@@ -79,8 +79,8 @@ public class AsyncVersionSlider extends GuiButton {
 
             mc.getTextureManager().bindTexture(buttonTextures);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.drawTexturedModalRect(this.xPosition + (int)(this.sliderValue * (float)(this.width - 8)), this.yPosition, 0, 66, 4, 20);
-            this.drawTexturedModalRect(this.xPosition + (int)(this.sliderValue * (float)(this.width - 8)) + 4, this.yPosition, 196, 66, 4, 20);
+            this.drawTexturedModalRect(this.x + (int)(this.sliderValue * (float)(this.width - 8)), this.y, 0, 66, 4, 20);
+            this.drawTexturedModalRect(this.x + (int)(this.sliderValue * (float)(this.width - 8)) + 4, this.y, 196, 66, 4, 20);
         }
     }
 
@@ -92,7 +92,7 @@ public class AsyncVersionSlider extends GuiButton {
     {
         if (super.mousePressed(mc, mouseX, mouseY))
         {
-            this.sliderValue = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
+            this.sliderValue = (float)(mouseX - (this.x + 4)) / (float)(this.width - 8);
             this.sliderValue = MathHelper.clamp(this.sliderValue, 0.0F, 1.0F);
             this.dragValue = sliderValue;
 
