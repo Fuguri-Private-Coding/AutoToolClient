@@ -46,6 +46,6 @@ public class Button extends GuiButton {
         float textX = x + width / 2f;
         float textY = y + 2 + (height - 8) / 2f;
 
-        fontRenderer.drawCenter(name, textX, textY, 8 + (hoverAnim.getValue() * 0.2f), Colors.WHITE);
+        fontRenderer.drawCenter(name, textX, textY, 8, Colors.WHITE);
     }
 }

@@ -32,6 +32,8 @@ public class Configs implements Imports {
     @Getter @Setter Config lastLoadedConfig = new Config("default");
 
     private final Gson GSON = new Gson();
+    private final GsonBuilder GSON_BUILDER = new GsonBuilder();
+    private final JsonParser JSON_PARSER = new JsonParser();
 
     public void init() {
         if (CONFIG_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию для конфигов.");
@@ -109,7 +111,6 @@ public class Configs implements Imports {
             }
 
             logSuccess("Imported settings to " + category.name);
-
         } catch (UnsupportedFlavorException | IOException e) {
             logError("Failed to read settings from Clipboard");
         }
@@ -119,7 +120,7 @@ public class Configs implements Imports {
         if (module == null) return;
 
         JsonObject json = createModuleExportObject(module);
-        String textToCopy = new GsonBuilder().create().toJson(json);
+        String textToCopy = GSON_BUILDER.create().toJson(json);
 
         copyToClipboard(textToCopy);
         logSuccess("Exported settings from " + module.getName());
@@ -127,7 +128,7 @@ public class Configs implements Imports {
 
     public void exportSettings(Category category) {
         JsonObject json = createCategoryExportObject(category);
-        String textToCopy = new GsonBuilder().create().toJson(json);
+        String textToCopy = GSON_BUILDER.create().toJson(json);
 
         copyToClipboard(textToCopy);
         logSuccess("Exported settings from " + category.name);
@@ -155,20 +156,19 @@ public class Configs implements Imports {
     public void refreshConfigs() {
         configs.clear();
         for (File file : Objects.requireNonNull(CONFIG_DIRECTORY.listFiles())) {
-            Config config = loadConfigFromFile(file);
+            if (file == null)
+                continue;
+
+            Config config = getConfigFromFile(file);
             if (config != null) {
                 configs.add(config);
             }
         }
     }
 
-    private Config loadConfigFromFile(File configFile) {
-        if (configFile == null) {
-            return null;
-        }
-
+    private Config getConfigFromFile(File configFile) {
         try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
-            JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
+            JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
             JsonObject config = json.getAsJsonObject("ConfigInformation");
 
             return new Config(

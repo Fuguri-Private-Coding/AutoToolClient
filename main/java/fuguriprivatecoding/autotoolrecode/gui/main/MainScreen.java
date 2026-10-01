@@ -3,15 +3,12 @@ package fuguriprivatecoding.autotoolrecode.gui.main;
 import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.Button;
 import fuguriprivatecoding.autotoolrecode.gui.buttons.ImgButton;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.client.Discord;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
 import fuguriprivatecoding.autotoolrecode.utils.render.font.Fonts;
-import fuguriprivatecoding.autotoolrecode.utils.render.scissor.ScissorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
 import net.minecraft.client.gui.*;
@@ -52,39 +49,9 @@ public class MainScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         final ScaledResolution sc = new ScaledResolution(mc);
-        final ClientFont font = Fonts.fonts.get("SFPro");
-
-        final String profileName = Discord.getName() != null ? Discord.getName() : "Человек";
-
-        final String hello = "Привет §a" + profileName + ".";
-
-        final String welcome = "Добро пожаловать в §9AutoTool§f!";
-
         BackgroundUtils.run();
 
-        boolean isHovered = GuiUtils.isHovered(mouseX, mouseY, sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f - 25, 160, 25f);
-
-        anim.update(1.5f, Easing.OUT_BACK);
-        anim.setEnd(isHovered);
-
-        float heightAnim = 15 * anim.getValue();
-
-        ScissorUtils.enableScissor();
-        ScissorUtils.scissor(sc, sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f - 25 - heightAnim - 3, 160, 25f + 4 + heightAnim);
-
-        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f - 25 - heightAnim, 160, 25f + heightAnim, 2, 12.5f, 12.5f, 2, Colors.BLACK.withAlpha(0.5f));
-        String discord = "нах ты открыл, ладно нажимай.";
-        boolean isHoveredText = GuiUtils.isHovered(mouseX, mouseY, sc.getScaledWidth() / 2f - font.getStringWidth(discord) / 2f, sc.getScaledHeight() / 2f + 2 - heightAnim, font.getStringWidth(discord), 9);
-
-        Color hoveredColor = isHoveredText && anim.getValue() == 1 ? Colors.RED.withAlphaClamp(anim.getValue()) : Colors.WHITE.withAlphaClamp(anim.getValue());
-        font.drawCenteredString(discord, sc.getScaledWidth() / 2f, sc.getScaledHeight() / 2f + 5 - heightAnim, hoveredColor);
-
-        ScissorUtils.disableScissor();
-
-        font.drawCenteredString(hello, sc.getScaledWidth() / 2f + 1.5f, sc.getScaledHeight() / 2f - 5 - 15 - heightAnim, Color.WHITE);
-        font.drawCenteredString(welcome, sc.getScaledWidth() / 2f + 1.5f, sc.getScaledHeight() / 2f - 5 - 5f - heightAnim, Color.WHITE);
-
-        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f + 5, 160, 105, 15, 2, 2, 15, Colors.BLACK.withAlpha(0.5f));
+        RoundedUtils.drawRect(sc.getScaledWidth() / 2f - 80, sc.getScaledHeight() / 2f + 5, 160, 105, 15, Colors.BLACK.withAlpha(0.3f));
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

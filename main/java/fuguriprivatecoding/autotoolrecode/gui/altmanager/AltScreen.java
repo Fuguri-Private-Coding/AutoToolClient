@@ -12,7 +12,6 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.generate.NameGenerator;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.Scroll;
-import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BackgroundUtils;
@@ -24,11 +23,11 @@ import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Session;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
+
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -98,7 +97,7 @@ public class AltScreen extends GuiScreen {
         float buttonsWidth = 110;
         float buttonsHeight = 105;
 
-        Color rectsColor = new Color(0,0,0,0.5f);
+        Color rectsColor = Colors.BLACK.withAlpha(0.3f);
 
         scroll.update(scrollTotal, sc.getScaledHeight() - 35);
         scroll.handleScrollInput(GuiUtils.isHovered(mouseX, mouseY, rectX, rectY, rectWidth, rectHeight));
