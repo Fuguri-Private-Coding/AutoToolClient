@@ -1,13 +1,13 @@
 package fuguriprivatecoding.autotoolrecode.setting.impl;
 
 import com.google.gson.JsonObject;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
+import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
-import imgui.ImGui;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import lombok.Getter;
 import lombok.Setter;
-import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import org.lwjgl.util.vector.Vector4f;
+
 import java.awt.*;
 import java.util.function.BooleanSupplier;
 

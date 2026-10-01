@@ -14,6 +14,7 @@ import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.gui.ScaleUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BlurUtils;
@@ -25,11 +26,13 @@ import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import fuguriprivatecoding.autotoolrecode.utils.sound.music.MediaController;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import smtc.TrackInfo;
 
 import java.awt.*;
+import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -51,6 +54,9 @@ public class DynamicIsland extends Module {
 
     private float additionalHeight = 0;
     private float additionalWidth = 0;
+
+    EasingAnimation textFadeAnimation = new EasingAnimation();
+    EasingAnimation textCtxAnim = new EasingAnimation();
 
     private final Date date = new Date();
 
@@ -81,7 +87,12 @@ public class DynamicIsland extends Module {
         float rectX = sc.getScaledWidth() / 2f - this.width.getValue() / 2f + 5;
         float rectY = 5 + 5;
 
-        Colors whiteColor = Colors.WHITE;
+        Color rectColor = color.getFadedColor();
+
+        textCtxAnim.setEnd(rectColor.getRed() / 255f > 0.5 && rectColor.getGreen() / 255f > 0.5 && rectColor.getBlue() / 255f > 0.5);
+        textCtxAnim.update(2, Easing.OUT_CUBIC);
+
+        Colors whiteColor = new Colors(ColorUtils.interpolateColor(Colors.WHITE, Colors.BLACK, textCtxAnim.getValue()));
 
         MediaController mediaController = MediaController.getInstance();
 
@@ -200,7 +211,7 @@ public class DynamicIsland extends Module {
             );
         }
 
-        RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), new Colors(this.color.getFadedColor()));
+        RoundedUtils.drawRect(x, y, width, height, rectRadius.getValue(), this.color.getFadedColor());
 
         if (blur.isToggled()) {
             BlurUtils.startWrite();
@@ -209,7 +220,7 @@ public class DynamicIsland extends Module {
         }
 
         BloomUtils.startWrite();
-        RenderUtils.drawMixedRoundedRect(x, y, width, height, rectRadius.getValue(), new Colors(this.color.getFadedColor()), new Colors(this.color.getFadedColor()), 3f);
+        RenderUtils.drawMixedRoundedRect(x, y, width, height, rectRadius.getValue(), this.color.getFadedColor(), this.color.getFadedColor(), 3f);
         BloomUtils.stopWrite();
 
         float translateX = x + 5;
@@ -223,14 +234,45 @@ public class DynamicIsland extends Module {
         StencilUtils.endWriteTexture();
         GL11.glPopMatrix();
 
-        boldFont.draw(currentTimeText, timeX - 2, timeY, 8, Colors.WHITE);
+        Color backColor = getPixelColor(ScaleUtils.getScaledResolution(), timeX, timeY);
+        textFadeAnimation.setEnd(backColor.getRed() / 255f > 0.5f && backColor.getGreen() / 255f > 0.5f && backColor.getBlue() / 255f > 0.5f);
+        textFadeAnimation.update(2f, Easing.OUT_CUBIC);
+
+        Color elementColor = ColorUtils.interpolateColor(Colors.WHITE, Colors.BLACK, textFadeAnimation.getValue());
+
+        boldFont.draw(currentTimeText, timeX - 2, timeY, 8, elementColor);
 
         float internetX = x + width + 5;
         float internetY = y + 5;
 
-        RenderUtils.drawRect(internetX, internetY + 2, 1f, 2, Colors.WHITE);
-        RenderUtils.drawRect(internetX + 2f, internetY + 1, 1f, 3, Colors.WHITE);
-        RenderUtils.drawRect(internetX + 2f + 2f, internetY, 1f, 4, Colors.WHITE);
+        RenderUtils.drawRect(internetX, internetY + 2, 1f, 2, elementColor);
+        RenderUtils.drawRect(internetX + 2f, internetY + 1, 1f, 3, elementColor);
+        RenderUtils.drawRect(internetX + 2f + 2f, internetY, 1f, 4, elementColor);
+    }
+
+    public static Color getPixelColor(ScaledResolution sc, float x, float y) {
+        float scale = sc.getScaleFactor();
+
+        int realX = (int) (x * scale);
+        int realY = (int) (mc.displayHeight - (y * scale));
+
+        ByteBuffer buffer = BufferUtils.createByteBuffer(4);
+
+        GL11.glReadPixels(
+            realX,
+            realY,
+            1,
+            1,
+            GL11.GL_RGBA,
+            GL11.GL_UNSIGNED_BYTE,
+            buffer
+        );
+
+        return new Color(
+            buffer.get(0) & 0xFF,
+            buffer.get(1) & 0xFF,
+            buffer.get(2) & 0xFF
+        );
     }
 
     @Override

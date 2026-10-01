@@ -118,7 +118,7 @@ public class Client implements Imports {
 
 		mc.gameSettings.ofFastRender = false;
 
-		Configs.loadConfig(Configs.getDefaultConfig());
+		Configs.getDefaultConfig().load();
 
         Discord.init();
 
@@ -142,7 +142,7 @@ public class Client implements Imports {
 	}
 
 	public void onClose() {
-		Configs.saveConfig(Configs.getDefaultConfig());
+        Configs.getDefaultConfig().save();
 		KeyBinds.saveBinds();
         MediaController.getInstance().close();
     }

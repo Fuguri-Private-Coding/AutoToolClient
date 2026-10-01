@@ -263,7 +263,7 @@ public class ConfigScreen extends GuiScreen implements EventListener {
         if (keyCode == Keyboard.KEY_RETURN) {
             if (creatingConfig && !textField.getText().isEmpty()) {
                 Config config = new Config(textField.getText());
-                Configs.saveConfig(config);
+                config.save();
                 ClientUtils.chatLog("Successful created config: " + textField.getText() + ".");
                 Configs.refreshConfigs();
                 textField.setText("");
@@ -361,20 +361,22 @@ public class ConfigScreen extends GuiScreen implements EventListener {
 
             if (selectedConfig != null) {
                 if (load) {
-                    Configs.loadConfig(selectedConfig);
+                    selectedConfig.load();
+                    Configs.getDefaultConfig().save();
                     ClientUtils.chatLog("Successful loaded config: " + selectedConfig.getName() + ".");
                     Configs.setLastLoadedConfig(selectedConfig);
                 }
 
                 if (delete) {
-                    Configs.deleteConfig(selectedConfig);
+                    selectedConfig.delete();
+                    Configs.refreshConfigs();
                     ClientUtils.chatLog("Successful deleted config: " + selectedConfig.getName() + ".");
                 }
 
                 if (save) {
-                    Configs.saveConfig(selectedConfig);
+                    selectedConfig.save();
                     ClientUtils.chatLog("Successful saved config: " + selectedConfig.getName() + ".");
-                    Configs.saveConfig(Configs.getDefaultConfig());
+                    Configs.getDefaultConfig().save();
                     Configs.setLastLoadedConfig(selectedConfig);
                 }
             }

@@ -1,28 +1,33 @@
 package fuguriprivatecoding.autotoolrecode.config;
 
-import lombok.Getter;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import fuguriprivatecoding.autotoolrecode.module.Module;
+import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
-import lombok.Setter;
+import lombok.Getter;
 
-import java.io.File;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 public class Config {
     private static final String CONFIG_FORMAT = ".json";
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
-    @Getter @Setter
-    private String name;
-    @Getter private final File configFile;
+    @Getter private final String name;
+    @Getter private final File file;
     private Date lastUpdateDate;
 
     public Config(String name) {
        this.name = name;
-       configFile = new File(Configs.CONFIG_DIRECTORY, name + CONFIG_FORMAT);
+       file = new File(Configs.CONFIG_DIRECTORY, name + CONFIG_FORMAT);
        lastUpdateDate = new Date();
-       FileUtils.createIfNotExists(configFile);
+       FileUtils.createIfNotExists(file);
     }
 
     public Config(String name, Date date) {
@@ -36,5 +41,54 @@ public class Config {
 
     public void onUpdate() {
         lastUpdateDate = new Date();
+    }
+
+    public void load() {
+        try (Reader reader = new FileReader(getFile())) {
+            JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
+
+            for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                if ("ConfigInformation".equals(entry.getKey())) continue;
+
+                Module module = Modules.getInstance().getModule(entry.getKey());
+                JsonObject moduleObject = entry.getValue().getAsJsonObject();
+
+                if (module != null && moduleObject != null) {
+                    module.setObject(moduleObject, true);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    public void save() {
+        FileUtils.createIfNotExists(getFile());
+        onUpdate();
+
+        JsonObject mainObject = new JsonObject();
+
+        JsonObject infoObject = new JsonObject();
+        infoObject.addProperty("Name", name);
+        infoObject.addProperty("LastUpdate", getLastUpdateDate());
+        mainObject.add("ConfigInformation", infoObject);
+
+        for (Module module : Modules.getInstance().getModules()) {
+            JsonObject moduleObject = module.getObject();
+            mainObject.add(module.getName(), moduleObject);
+        }
+
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(getFile()));
+            String json = new GsonBuilder().create().toJson(mainObject);
+            writer.println(json);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+        }
+    }
+
+    public boolean delete() {
+        return getFile().delete();
     }
 }

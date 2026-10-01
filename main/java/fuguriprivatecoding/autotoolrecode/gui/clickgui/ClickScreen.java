@@ -1151,7 +1151,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 	@Override
 	public void onGuiClosed() {
-		Configs.saveAsync(Configs.getDefaultConfig());
+		Configs.getDefaultConfig().save();
 	}
 
     @Override
