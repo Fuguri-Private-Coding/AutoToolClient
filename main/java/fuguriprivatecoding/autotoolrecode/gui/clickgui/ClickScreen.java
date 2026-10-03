@@ -140,7 +140,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
         GL11.glPushMatrix();
 
-		GL11.glScaled(scale,scale,1f);
+		GL11.glScaled(scale, scale,1f);
 
 		if (closing) {
 			animateCloseTransition();
@@ -206,11 +206,11 @@ public class ClickScreen extends GuiScreen implements EventListener {
 		ScaledResolution sc = ScaleUtils.getScaledResolution(scale);
 
 		if (clickGui.glow.isToggled()) {
-			BloomUtils.startWrite();
-			RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
-			RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.getValue(), 50, 2, 0, clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
-			if (guis.getValue() > 0) RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
-			BloomUtils.stopWrite();
+			BloomUtils.addToDraw(() -> {
+				RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+				RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 25, sc.getScaledHeight() - 10 + guis.getValue(), 50, 2, 0, clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+				if (guis.getValue() > 0) RenderUtils.drawMixedRoundedRect(sc.getScaledWidth() / 2f - 50, sc.getScaledHeight() - guis.getValue(), 100, 20, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+			});
 		}
 
 		if (clickGui.blur.isToggled()) {
@@ -783,7 +783,7 @@ public class ClickScreen extends GuiScreen implements EventListener {
 					Color bgColorWithAlpha = new Colors(BACKGROUND_COLOR).withMultiplyAlphaClamp(alphaDesc);
 
 					RoundedUtils.drawRect(sc.getScaledWidth() / 2f - descriptionWidth / 2f, 5, descriptionWidth + 6, 14, clientSettings.backgroundRadius.getValue(), bgColorWithAlpha);
-					fontRenderer.drawString(module.getDescription(), sc.getScaledWidth() / 2f - descriptionWidth / 2f + 3 + 2, 5 + 5, Colors.WHITE.withAlphaClamp(alphaDesc), true);
+					fontRenderer.drawString(module.getDescription(), sc.getScaledWidth() / 2f - descriptionWidth / 2f + 5, 5 + 5, Colors.WHITE.withAlphaClamp(alphaDesc), true);
 					ScaleUtils.stopScaling();
 				}
             }

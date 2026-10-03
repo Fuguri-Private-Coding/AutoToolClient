@@ -120,7 +120,7 @@ public class TimerRange extends Module {
                 return;
 
             teleporting = true;
-            balance = PlayerUtils.teleport(teleportTicks, additionalTicks.getValue());
+            balance = PlayerUtils.tick(teleportTicks, additionalTicks.getValue());
 
             if (balance > 0) {
                 timer.reset();

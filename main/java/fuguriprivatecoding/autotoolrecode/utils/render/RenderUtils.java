@@ -93,32 +93,6 @@ public class RenderUtils implements Imports {
         drawBoundingBox(bb, color);
     }
 
-    public void drawDot(Vec3 pos, double size, Color color) {
-        GlStateManager.pushMatrix();
-
-        AxisAlignedBB box = new AxisAlignedBB(pos, pos)
-            .offset(RenderManager.getRenderPosition().invert())
-            .expand(size, size, size);
-
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        glEnable(GL_BLEND);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_DEPTH_TEST);
-
-        glDepthMask(false);
-        glLineWidth(2.0F);
-
-        drawBoundingBox(box, color);
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_DEPTH_TEST);
-
-        glDepthMask(true);
-        glDisable(GL_BLEND);
-
-        GlStateManager.popMatrix();
-    }
-
     public void drawHitBox(AxisAlignedBB bb, Color color, float lineWidth) {
         bb = bb.expand(0.1f);
 

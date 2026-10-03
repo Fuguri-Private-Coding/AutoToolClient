@@ -102,7 +102,7 @@ public class PlayerUtils implements Imports {
             && !BLACKLIST_BLOCK.contains(block);
     }
 
-    public int teleport(int ticks, int additionalTicks) {
+    public int tick(int ticks, int additionalTicks) {
         int balance = 0;
 
         for (int i = 0; i < ticks; i++) {

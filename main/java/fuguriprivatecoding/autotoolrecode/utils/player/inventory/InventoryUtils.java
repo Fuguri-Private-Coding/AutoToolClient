@@ -3,8 +3,10 @@ package fuguriprivatecoding.autotoolrecode.utils.player.inventory;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.AtomicDouble;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import lombok.Getter;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockFalling;
+import net.minecraft.block.BlockTNT;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.Enchantment;
@@ -12,11 +14,10 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -188,13 +189,13 @@ public class InventoryUtils implements Imports {
 
             if (stack != null && stack.getItem() instanceof ItemTool && type == getToolType(stack)) {
                 final double efficiency = getToolEfficiency(stack);
-                if (efficiency > bestTool.getEfficiency())
+                if (efficiency > bestTool.efficiency())
                     bestTool = new Tool(0, efficiency, stack);
             }
         }
 
-        return bestTool.getStack() == itemStack ||
-                getToolEfficiency(itemStack) > bestTool.getEfficiency();
+        return bestTool.stack() == itemStack ||
+                getToolEfficiency(itemStack) > bestTool.efficiency();
     }
 
     public static int getToolType(final ItemStack stack) {
@@ -298,13 +299,13 @@ public class InventoryUtils implements Imports {
         forEachInventorySlot(InventoryUtils.EXCLUDE_ARMOR_BEGIN, InventoryUtils.END, ((slot, stack) -> {
             if (stack.getItem() instanceof ItemTool && type == getToolType(stack)) {
                 double efficiency = getToolEfficiency(stack);
-                if (efficiency > bestTool.get().getEfficiency())
+                if (efficiency > bestTool.get().efficiency())
                     bestTool.set(new Tool(slot, efficiency, stack));
             }
         }));
 
-        return bestTool.get().getStack() == itemStack ||
-                bestTool.get().getEfficiency() < getToolEfficiency(itemStack);
+        return bestTool.get().stack() == itemStack ||
+                bestTool.get().efficiency() < getToolEfficiency(itemStack);
     }
 
     public static boolean isGoodItem(ItemStack stack) {
@@ -332,14 +333,6 @@ public class InventoryUtils implements Imports {
         };
     }
 
-    public static boolean isInventoryEmpty(IInventory inventory) {
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            if (InventoryUtils.isValid(inventory.getStackInSlot(i)))
-                return false;
-        }
-        return true;
-    }
-
     public static boolean isInventoryFull() {
         for (int i = 9; i < 45; i++) {
             if (!mc.thePlayer.inventoryContainer.getSlot(i).getHasStack())
@@ -348,58 +341,10 @@ public class InventoryUtils implements Imports {
         return true;
     }
 
-    public static int findBestBlockStack() {
-        int bestSlot = -1;
-        int blockCount = -1;
-        for (int i = 44; i >= 9; --i) {
-            final ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
-            if (stack != null && stack.getItem() instanceof ItemBlock && InventoryUtils.isGoodBlockStack(stack) && stack.stackSize > blockCount) {
-                bestSlot = i;
-                blockCount = stack.stackSize;
-            }
-        }
-        return bestSlot;
-    }
-
-    public static int findItem(int startSlot, int endSlot, Item item) {
-        for (int i = startSlot; i <= endSlot; i++) {
-            ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
-            if (stack != null && stack.getItem() == item) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public static int getEnchantment(ItemStack itemStack, Enchantment enchantment) {
-        if (itemStack == null || itemStack.getEnchantmentTagList() == null || itemStack.getEnchantmentTagList().hasNoTags())
-            return 0;
-
-        for (int i = 0; i < itemStack.getEnchantmentTagList().tagCount(); i++) {
-            final NBTTagCompound tagCompound = itemStack.getEnchantmentTagList().getCompoundTagAt(i);
-
-            if ((tagCompound.hasKey("ench") && tagCompound.getShort("ench") == enchantment.effectId) || (tagCompound.hasKey("id") && tagCompound.getShort("id") == enchantment.effectId))
-                return tagCompound.getShort("lvl");
-        }
-
-        return 0;
-    }
-
     @FunctionalInterface
     public interface SlotConsumer {
         void accept(final int p0, final ItemStack p1);
     }
 
-    @Getter
-    public static class Tool {
-        private final int slot;
-        private final double efficiency;
-        private final ItemStack stack;
-
-        public Tool(final int slot, final double efficiency, final ItemStack stack) {
-            this.slot = slot;
-            this.efficiency = efficiency;
-            this.stack = stack;
-        }
-    }
+    public record Tool(int slot, double efficiency, ItemStack stack) { }
 }

@@ -9,6 +9,7 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.Islan
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.impl.*;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;
+import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
@@ -26,13 +27,11 @@ import fuguriprivatecoding.autotoolrecode.utils.render.stencil.StencilUtils;
 import fuguriprivatecoding.autotoolrecode.utils.sound.music.MediaController;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import smtc.TrackInfo;
 
 import java.awt.*;
-import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -89,7 +88,9 @@ public class DynamicIsland extends Module {
 
         Color rectColor = color.getFadedColor();
 
-        textCtxAnim.setEnd(rectColor.getRed() / 255f > 0.5 && rectColor.getGreen() / 255f > 0.5 && rectColor.getBlue() / 255f > 0.5);
+        float brightness = (rectColor.getRed() * 0.299f + rectColor.getGreen() * 0.587f + rectColor.getBlue() * 0.114f) / 255f;
+
+        textCtxAnim.setEnd(brightness > 0.7f);
         textCtxAnim.update(2, Easing.OUT_CUBIC);
 
         Colors whiteColor = new Colors(ColorUtils.interpolateColor(Colors.WHITE, Colors.BLACK, textCtxAnim.getValue()));
@@ -162,9 +163,9 @@ public class DynamicIsland extends Module {
                 BlurUtils.stopWrite();
             }
 
-            BloomUtils.startWrite();
-            RenderUtils.drawMixedRoundedRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, new Colors(this.color.getFadedColor()).withMultiplyAlphaClamp(ba), new Colors(this.color.getFadedColor()).withMultiplyAlphaClamp(ba), 3f);
-            BloomUtils.stopWrite();
+            BloomUtils.addToDraw(() -> {
+                RenderUtils.drawMixedRoundedRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, new Colors(this.color.getFadedColor()).withMultiplyAlphaClamp(ba), new Colors(this.color.getFadedColor()).withMultiplyAlphaClamp(ba), 3f);
+            });
 
             if (media && this.width.getValue() == 10 + this.additionalWidth) {
                 boolean clicked = Mouse.isButtonDown(0) && !pressed;
@@ -219,9 +220,9 @@ public class DynamicIsland extends Module {
             BlurUtils.stopWrite();
         }
 
-        BloomUtils.startWrite();
-        RenderUtils.drawMixedRoundedRect(x, y, width, height, rectRadius.getValue(), this.color.getFadedColor(), this.color.getFadedColor(), 3f);
-        BloomUtils.stopWrite();
+        BloomUtils.addToDraw(() -> {
+            RenderUtils.drawMixedRoundedRect(x, y, width, height, rectRadius.getValue(), this.color.getFadedColor(), this.color.getFadedColor(), 3f);
+        });
 
         float translateX = x + 5;
         float translateY = y + 5;
@@ -234,8 +235,10 @@ public class DynamicIsland extends Module {
         StencilUtils.endWriteTexture();
         GL11.glPopMatrix();
 
-        Color backColor = getPixelColor(ScaleUtils.getScaledResolution(), timeX, timeY);
-        textFadeAnimation.setEnd(backColor.getRed() / 255f > 0.5f && backColor.getGreen() / 255f > 0.5f && backColor.getBlue() / 255f > 0.5f);
+        Color backColor = Utils.getPixelColor(ScaleUtils.getScaledResolution(), timeX, timeY);
+        float backBrightness = (backColor.getRed() * 0.299f + backColor.getGreen() * 0.587f + backColor.getBlue() * 0.114f) / 255f;
+
+        textFadeAnimation.setEnd(backBrightness > 0.7f);
         textFadeAnimation.update(2f, Easing.OUT_CUBIC);
 
         Color elementColor = ColorUtils.interpolateColor(Colors.WHITE, Colors.BLACK, textFadeAnimation.getValue());
@@ -250,34 +253,9 @@ public class DynamicIsland extends Module {
         RenderUtils.drawRect(internetX + 2f + 2f, internetY, 1f, 4, elementColor);
     }
 
-    public static Color getPixelColor(ScaledResolution sc, float x, float y) {
-        float scale = sc.getScaleFactor();
-
-        int realX = (int) (x * scale);
-        int realY = (int) (mc.displayHeight - (y * scale));
-
-        ByteBuffer buffer = BufferUtils.createByteBuffer(4);
-
-        GL11.glReadPixels(
-            realX,
-            realY,
-            1,
-            1,
-            GL11.GL_RGBA,
-            GL11.GL_UNSIGNED_BYTE,
-            buffer
-        );
-
-        return new Color(
-            buffer.get(0) & 0xFF,
-            buffer.get(1) & 0xFF,
-            buffer.get(2) & 0xFF
-        );
-    }
-
     @Override
     public boolean shouldListenEvents() {
-        return true;
+        return isToggled();
     }
 
     private void updateRun(Runnable run, String key, float additionalWidth, float additionalHeight) {

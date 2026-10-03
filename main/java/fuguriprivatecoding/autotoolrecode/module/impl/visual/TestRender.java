@@ -16,7 +16,7 @@ public class TestRender extends Module {
     public void onEvent(Event event) {
         if (event instanceof Render2DEvent) {
             FresnelUtils.drawScreen(50, 50, 100, 100,
-                    15, 2f, 7f, Colors.WHITE.withAlpha(0f), 1f,
+                    15, 2f, 4f, Colors.WHITE.withAlpha(0f), 1f,
                     2f, true, 5f, 0.2f, Colors.WHITE.withAlpha(1f)
             );
 

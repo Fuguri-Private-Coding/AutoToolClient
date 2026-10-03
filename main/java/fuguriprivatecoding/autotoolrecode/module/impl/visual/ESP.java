@@ -32,22 +32,22 @@ public class ESP extends Module {
             RenderUtils.start3D();
 
             if (glow.isToggled()) {
-                BloomUtils.startWrite();
-                RenderUtils.startHitBoxBegin(hitBoxLineWidth.getValue());
-                for (EntityPlayer entity : mc.theWorld.playerEntities) {
-                    if (shouldContinueRender(entity))
-                        continue;
+                BloomUtils.addToDraw(() -> {
+                    RenderUtils.startHitBoxBegin(hitBoxLineWidth.getValue());
+                    for (EntityPlayer entity : mc.theWorld.playerEntities) {
+                        if (shouldContinueRender(entity))
+                            continue;
 
-                    AxisAlignedBB bb = entity.getExpandedBoundingBox()
-                        .offset(entity.getSmoothPositionVector().subtract(RenderManager.getRenderPosition())
-                            .subtract(entity.getPositionVector()));
+                        AxisAlignedBB bb = entity.getExpandedBoundingBox()
+                            .offset(entity.getSmoothPositionVector().subtract(RenderManager.getRenderPosition())
+                                .subtract(entity.getPositionVector()));
 
-                    ColorUtils.glColor(glowColor.getFadedColor());
-                    RenderUtils.renderHitBoxBatch(bb);
-                }
-                ColorUtils.resetColor();
-                RenderUtils.endHitBoxBegin();
-                BloomUtils.stopWrite();
+                        ColorUtils.glColor(glowColor.getFadedColor());
+                        RenderUtils.renderHitBoxBatch(bb);
+                    }
+                    ColorUtils.resetColor();
+                    RenderUtils.endHitBoxBegin();
+                });
             }
 
             RenderUtils.startHitBoxBegin(hitBoxLineWidth.getValue());

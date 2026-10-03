@@ -126,7 +126,7 @@ public class Client implements Imports {
 
         File file = new File("test123.json");
 
-        // todo("Тут Просто Тест Нейросети Был Ну Да Пукнуть")
+        // todo "Тут Просто Тест Нейросети Был Ну Да Пукнуть"
 
         if (file.exists()) {
             ClientUtils.chatLog("Зовгрузко модели нахуй.");

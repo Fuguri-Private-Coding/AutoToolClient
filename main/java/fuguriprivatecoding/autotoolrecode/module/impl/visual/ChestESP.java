@@ -33,9 +33,9 @@ public class ChestESP extends Module {
             draw(color.getFadedColor());
 
             if (glow.isToggled()) {
-                BloomUtils.startWrite();
-                draw(glowColor.getFadedColor());
-                BloomUtils.stopWrite();
+                BloomUtils.addToDraw(() -> {
+                    draw(glowColor.getFadedColor());
+                });
             }
 
             RenderUtils.stop3D();

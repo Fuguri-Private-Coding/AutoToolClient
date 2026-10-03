@@ -203,9 +203,10 @@ public class Ping extends Module {
                         Vec3 diff = pos.subtract(mc.thePlayer.getPositionVector());
                         AxisAlignedBB bb = mc.thePlayer.getEntityBoundingBox().offset(diff);
                         if (glow.isToggled()) {
-                            BloomUtils.startWrite();
-                            RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue());
-                            BloomUtils.stopWrite();
+                            BloomUtils.addToDraw(() -> {
+                                RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue());
+
+                            });
                         }
                         RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());
                         RenderUtils.stop3D();
@@ -213,9 +214,9 @@ public class Ping extends Module {
 
                     case "Player" -> {
                         if (glow.isToggled()) {
-                            BloomUtils.startWrite();
-                            RenderUtils.renderPlayer(mc.thePlayer, pos, mc.thePlayer.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor());
-                            BloomUtils.stopWrite();
+                            BloomUtils.addToDraw(() -> {
+                                RenderUtils.renderPlayer(mc.thePlayer, pos, mc.thePlayer.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor());
+                            });
                         }
                         RenderUtils.renderPlayer(mc.thePlayer, pos, mc.thePlayer.rotationYawHead, mc.timer.renderPartialTicks);
                     }

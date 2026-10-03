@@ -187,12 +187,13 @@ public class BackTrack extends Module {
 
                 AxisAlignedBB bb = target.getEntityBoundingBox().offset(realPos.subtract(target.getPositionVector()));
 
+                Vec3 finalRealPos = realPos;
                 switch (render.getMode()) {
                     case "Player" -> {
                         if (glow.isToggled()) {
-                            BloomUtils.startWrite();
-                            RenderUtils.renderPlayer(target, realPos, target.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor());
-                            BloomUtils.stopWrite();
+                            BloomUtils.addToDraw(() -> {
+                                RenderUtils.renderPlayer(target, finalRealPos, target.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor());
+                            });
                         }
                         RenderUtils.renderPlayer(target, realPos, target.rotationYawHead, mc.timer.renderPartialTicks);
                     }
@@ -200,9 +201,9 @@ public class BackTrack extends Module {
                     case "Box" -> {
                         RenderUtils.start3D();
                         if (glow.isToggled()) {
-                            BloomUtils.startWrite();
-                            RenderUtils.drawBoundingBox(bb, glowColor.getFadedColor());
-                            BloomUtils.stopWrite();
+                            BloomUtils.addToDraw(() -> {
+                                RenderUtils.drawBoundingBox(bb, glowColor.getFadedColor());
+                            });
                         }
                         RenderUtils.drawBoundingBox(bb, color.getFadedColor());
                         RenderUtils.stop3D();
@@ -211,9 +212,9 @@ public class BackTrack extends Module {
                     case "HitBox" -> {
                         RenderUtils.start3D();
                         if (glow.isToggled()) {
-                            BloomUtils.startWrite();
-                            RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue());
-                            BloomUtils.stopWrite();
+                            BloomUtils.addToDraw(() -> {
+                                RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue());
+                            });
                         }
                         RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());
                         RenderUtils.stop3D();

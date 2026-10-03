@@ -1,9 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.config;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
@@ -22,6 +19,9 @@ public class Config {
     @Getter private final String name;
     @Getter private final File file;
     private Date lastUpdateDate;
+
+    private final JsonParser PARSER = new JsonParser();
+    private final Gson GSON = new GsonBuilder().create();
 
     public Config(String name) {
        this.name = name;
@@ -45,7 +45,7 @@ public class Config {
 
     public void load() {
         try (Reader reader = new FileReader(getFile())) {
-            JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
+            JsonObject json = PARSER.parse(reader).getAsJsonObject();
 
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
                 if ("ConfigInformation".equals(entry.getKey())) continue;
@@ -78,13 +78,10 @@ public class Config {
             mainObject.add(module.getName(), moduleObject);
         }
 
-        try {
-            PrintWriter writer = new PrintWriter(new FileWriter(getFile()));
-            String json = new GsonBuilder().create().toJson(mainObject);
-            writer.println(json);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace(System.out);
+        try (FileWriter writer = new FileWriter(file)) {
+            GSON.toJson(mainObject, writer);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 

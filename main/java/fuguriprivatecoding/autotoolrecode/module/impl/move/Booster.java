@@ -47,7 +47,7 @@ public class Booster extends Module {
         if (active) {
             if (event instanceof TickEvent) {
                 teleporting = true;
-                int newBalance = PlayerUtils.teleport(maxTicks.getValue(), additionalTicks.getValue());
+                int newBalance = PlayerUtils.tick(maxTicks.getValue(), additionalTicks.getValue());
                 if (checkBalance.isToggled()) balance = newBalance;
                 teleporting = false;
                 active = false;

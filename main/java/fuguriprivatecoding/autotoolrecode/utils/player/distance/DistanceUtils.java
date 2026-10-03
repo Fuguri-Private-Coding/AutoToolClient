@@ -1,7 +1,6 @@
 package fuguriprivatecoding.autotoolrecode.utils.player.distance;
 
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;

@@ -1,20 +1,18 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual;
 
-import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.render.Render2DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
+import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.ColorUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.TextureUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
+
 import java.awt.*;
 
 import static java.lang.Math.*;
@@ -52,9 +50,9 @@ public class TargetESP extends Module {
 
                 if (mode.getMode().equals("Sigma")) {
                     if (glow.isToggled()) {
-                        BloomUtils.startWrite();
-                        renderSigma(target, hurt, instantChangeColor.isToggled());
-                        BloomUtils.stopWrite();
+                        BloomUtils.addToDraw(() -> {
+                            renderSigma(target, hurt, instantChangeColor.isToggled());
+                        });
                     }
                     renderSigma(target, hurt, instantChangeColor.isToggled());
                 }

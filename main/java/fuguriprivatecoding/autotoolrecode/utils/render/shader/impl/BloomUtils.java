@@ -13,12 +13,16 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import java.nio.FloatBuffer;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BloomUtils implements Imports {
 
     private static Framebuffer inputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static Framebuffer outputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static GaussianKernel gaussianKernel = new GaussianKernel(0);
+
+    private static final List<Runnable> list = new CopyOnWriteArrayList<>();
 
     private final static Shader program = Shaders.bloom;
 
@@ -32,17 +36,26 @@ public class BloomUtils implements Imports {
         mc.getFramebuffer().bindFramebuffer(true);
     }
 
+    public static void addToDraw(Runnable run) {
+        list.add(run);
+    }
+
+    public static void clear() {
+        list.clear();
+    }
+
     public static void draw() {
         if (glow == null) glow = Modules.getInstance().getModule(Glow.class);
         if (!Display.isActive() || !Display.isVisible() || !glow.isToggled()) return;
 
         inputFramebuffer.bindFramebuffer(true);
-
-        final int radius = glow.radius.getValue();
-
+        for (Runnable runnable : list) {
+            runnable.run();
+        }
         outputFramebuffer.bindFramebuffer(true);
         program.start();
 
+        final int radius = glow.radius.getValue();
         if (gaussianKernel.getSize() != radius) {
             gaussianKernel = new GaussianKernel(radius);
             gaussianKernel.compute();
@@ -78,6 +91,8 @@ public class BloomUtils implements Imports {
         GlStateManager.disableBlend();
 
         Shader.stop();
+
+        clear();
 
         update();
     }

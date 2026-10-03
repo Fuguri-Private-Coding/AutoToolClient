@@ -73,11 +73,11 @@ public class BedESP extends Module {
 
             RenderUtils.start3D();
             if (glow.isToggled()) {
-                BloomUtils.startWrite();
-                for (BlockPos[] bed : beds) {
-                    RenderUtils.renderBed(bed, glowColor.getFadedColor());
-                }
-                BloomUtils.stopWrite();
+                BloomUtils.addToDraw(() -> {
+                    for (BlockPos[] bed : beds) {
+                        RenderUtils.renderBed(bed, glowColor.getFadedColor());
+                    }
+                });
             }
 
             for (BlockPos[] bed : beds) {

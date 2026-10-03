@@ -1,10 +1,6 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
-
-import java.util.Iterator;
-import java.util.List;
-
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
@@ -18,6 +14,9 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class GuiNewChat extends Gui {
     static final Logger logger = LogManager.getLogger();
@@ -79,9 +78,9 @@ public class GuiNewChat extends Gui {
                                 Glow glow = Modules.getInstance().getModule(Glow.class);
 
                                 if (glow != null && glow.isToggled() && glow.toGlow.get("Chat")) {
-                                    BloomUtils.startWrite();
-                                    RenderUtils.drawMixedRect(i2, j2 - 9, l + 4, 9, glow.chatColor.getColor(), glow.chatColor.getFadeColor(), glow.chatColor.getSpeed());
-                                    BloomUtils.stopWrite();
+                                    BloomUtils.addToDraw(() -> {
+                                        RenderUtils.drawMixedRect(i2, j2 - 9, l + 4, 9, glow.chatColor.getColor(), glow.chatColor.getFadeColor(), glow.chatColor.getSpeed());
+                                    });
                                 }
 
                                 drawRect(i2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);

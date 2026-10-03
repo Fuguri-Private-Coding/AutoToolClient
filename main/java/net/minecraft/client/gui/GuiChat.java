@@ -1,27 +1,22 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
-
-import java.io.IOException;
-import java.util.List;
-
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.Glow;
-import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
+import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
 import net.minecraft.network.play.client.C14PacketTabComplete;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.RayTrace;
+import net.minecraft.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+
+import java.io.IOException;
+import java.util.List;
 
 public class GuiChat extends GuiScreen {
     private static final Logger logger = LogManager.getLogger();
@@ -218,9 +213,9 @@ public class GuiChat extends GuiScreen {
         animation2D.update(6f, Easing.OUT_CUBIC);
 
         if (glow != null && glow.isToggled() && glow.toGlow.get("Chat")) {
-            BloomUtils.startWrite();
-            RenderUtils.drawMixedRect(2f, this.height - 14f, animation2D.getValue(), 12, glow.chatColor.getColor(), glow.chatColor.getFadeColor(), glow.chatColor.getSpeed());
-            BloomUtils.stopWrite();
+            BloomUtils.addToDraw(() -> {
+                RenderUtils.drawMixedRect(2f, this.height - 14f, animation2D.getValue(), 12, glow.chatColor.getColor(), glow.chatColor.getFadeColor(), glow.chatColor.getSpeed());
+            });
         }
 
         drawRect(2f, this.height - 14f, 2f + animation2D.getValue(), this.height - 2f, Integer.MIN_VALUE);
