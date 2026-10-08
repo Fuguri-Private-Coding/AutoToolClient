@@ -163,9 +163,9 @@ public class DynamicIsland extends Module {
                 BlurUtils.stopWrite();
             }
 
-            BloomUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, new Colors(this.color.getFadedColor()).withMultiplyAlphaClamp(ba), new Colors(this.color.getFadedColor()).withMultiplyAlphaClamp(ba), 3f);
-            });
+            BloomUtils.startWrite();
+            RenderUtils.drawMixedRoundedRect(renderX, rectY + height.getValue(), widthRect, 15, 7.5f, new Colors(this.color.getFadedColor()).withMultiplyAlphaClamp(ba), new Colors(this.color.getFadedColor()).withMultiplyAlphaClamp(ba), 3f);
+            BloomUtils.stopWrite();
 
             if (media && this.width.getValue() == 10 + this.additionalWidth) {
                 boolean clicked = Mouse.isButtonDown(0) && !pressed;
@@ -220,9 +220,9 @@ public class DynamicIsland extends Module {
             BlurUtils.stopWrite();
         }
 
-        BloomUtils.addToDraw(() -> {
-            RenderUtils.drawMixedRoundedRect(x, y, width, height, rectRadius.getValue(), this.color.getFadedColor(), this.color.getFadedColor(), 3f);
-        });
+        BloomUtils.startWrite();
+        RenderUtils.drawMixedRoundedRect(x, y, width, height, rectRadius.getValue(), this.color.getFadedColor(), this.color.getFadedColor(), 3f);
+        BloomUtils.stopWrite();
 
         float translateX = x + 5;
         float translateY = y + 5;

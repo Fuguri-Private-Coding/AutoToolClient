@@ -142,9 +142,9 @@ public class ConfigScreen extends GuiScreen implements EventListener {
         scrolls.update(15f);
 
         if (clickGui.glow.isToggled()) {
-            BloomUtils.addToDraw(() -> {
-                RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
-            });
+            BloomUtils.startWrite();
+            RenderUtils.drawMixedRoundedRect(background.x, background.y, sizeBackground.x, sizeBackground.y, clientSettings.backgroundRadius.getValue(), clickGui.colorShadow.getColor(), clickGui.colorShadow.getFadeColor(), clickGui.colorShadow.getSpeed());
+            BloomUtils.stopWrite();
         }
 
         if (clickGui.blur.isToggled()) {

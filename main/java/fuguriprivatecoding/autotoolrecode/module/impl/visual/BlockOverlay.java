@@ -40,9 +40,9 @@ public class BlockOverlay extends Module {
 
                 RenderUtils.start3D();
                 if (glow.isToggled()) {
-                    BloomUtils.addToDraw(() -> {
-                        RenderUtils.drawBlockESP(pos, glowColor.getFadedColor());
-                    });
+                    BloomUtils.startWrite();
+                    RenderUtils.drawBlockESP(pos, glowColor.getFadedColor());
+                    BloomUtils.stopWrite();
                 }
                 RenderUtils.drawBlockESP(pos, color.getFadedColor());
                 RenderUtils.stop3D();

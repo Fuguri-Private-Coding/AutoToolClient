@@ -61,16 +61,16 @@ public class NameTags extends Module {
             }
 
             if (glow.isToggled()) {
-                BloomUtils.addToDraw(() -> {
-                    for (EntityPlayer entity : mc.theWorld.playerEntities) {
-                        if (shouldContinue(entity)) continue;
+                BloomUtils.startWrite();
+                for (EntityPlayer entity : mc.theWorld.playerEntities) {
+                    if (shouldContinue(entity)) continue;
 
-                        Vec3 pos = entity.getSmoothPositionVector().subtract(RenderManager.getRenderPosition());
-                        Vec3 addPos = new Vec3(0, entity.getEyeHeight() + yOffset.getValue(), 0);
+                    Vec3 pos = entity.getSmoothPositionVector().subtract(RenderManager.getRenderPosition());
+                    Vec3 addPos = new Vec3(0, entity.getEyeHeight() + yOffset.getValue(), 0);
 
-                        renderNameTag(getText(entity), pos.add(addPos), true);
-                    }
-                });
+                    renderNameTag(getText(entity), pos.add(addPos), true);
+                }
+                BloomUtils.stopWrite();
             }
 
             RenderUtils.stop3D();

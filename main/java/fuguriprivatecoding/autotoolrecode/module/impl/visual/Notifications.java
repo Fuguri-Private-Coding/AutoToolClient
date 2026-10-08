@@ -103,31 +103,31 @@ public class Notifications extends Module {
 
             if (glow.isToggled()) {
                 yOffset[0] = 0;
-                BloomUtils.addToDraw(() -> {
-                    for (Notification notification : notifications) {
-                        EasingAnimation openAnim = notification.getOpenAnim();
-                        if (Modules.getInstance().getModule(DynamicIsland.class).isToggled()) continue;
+                BloomUtils.startWrite();
+                for (Notification notification : notifications) {
+                    EasingAnimation openAnim = notification.getOpenAnim();
+                    if (Modules.getInstance().getModule(DynamicIsland.class).isToggled()) continue;
 
-                        String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
-                        String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
+                    String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
+                    String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
 
-                        float width = fontRenderer.getStringWidth(text);
+                    float width = fontRenderer.getStringWidth(text);
 
-                        float x = sc.getScaledWidth() / 2f - width / 2f;
-                        float y = 5 + yOffset[0];
-                        float height = 15;
+                    float x = sc.getScaledWidth() / 2f - width / 2f;
+                    float y = 5 + yOffset[0];
+                    float height = 15;
 
-                        ScaleUtils.startScaling(x, y, width + 5, height, openAnim.getValue());
+                    ScaleUtils.startScaling(x, y, width + 5, height, openAnim.getValue());
 
-                        Color backgroundGlowColorFirst = new Colors(this.glowColor.getColor()).withAlphaClamp(openAnim.getValue());
-                        Color backgroundGlowColorSecond = new Colors(this.glowColor.getFadeColor()).withAlphaClamp(openAnim.getValue());
+                    Color backgroundGlowColorFirst = new Colors(this.glowColor.getColor()).withAlphaClamp(openAnim.getValue());
+                    Color backgroundGlowColorSecond = new Colors(this.glowColor.getFadeColor()).withAlphaClamp(openAnim.getValue());
 
-                        RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed());
+                    RenderUtils.drawMixedRoundedRect(x, y, width + 5, height, 7.5f, backgroundGlowColorFirst, backgroundGlowColorSecond, glowColor.getSpeed());
 
-                        ScaleUtils.stopScaling();
-                        yOffset[0] += (15 + gapOffset.getValue()) * openAnim.getValue();
-                    }
-                });
+                    ScaleUtils.stopScaling();
+                    yOffset[0] += (15 + gapOffset.getValue()) * openAnim.getValue();
+                }
+                BloomUtils.stopWrite();
             }
 
             if (blur.isToggled()) {

@@ -94,9 +94,9 @@ public class ScoreBoard extends Module {
                 float finalWidth = width;
                 if (roundedRect.isToggled()) {
                     if (glow.isToggled()) {
-                        BloomUtils.addToDraw(() -> {
-                            RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed());
-                        });
+                        BloomUtils.startWrite();
+                        RenderUtils.drawMixedRoundedRect(pos.x, pos.y, finalWidth, height, roundFactor.getValue(), colorShadow.getColor(), colorShadow.getFadeColor(), colorShadow.getSpeed());
+                        BloomUtils.stopWrite();
                     }
                     if (blur.isToggled()) {
                         BlurUtils.startWrite();
@@ -114,9 +114,9 @@ public class ScoreBoard extends Module {
                     StencilUtils.endWriteTexture();
                 } else {
                     if (glow.isToggled()) {
-                        BloomUtils.addToDraw(() -> {
-                            RenderUtils.drawMixedRect(pos.x, pos.y, finalWidth, height, colorShadow.getSpeed(), colorShadow.getColor(), colorShadow.getFadeColor());
-                        });
+                        BloomUtils.startWrite();
+                        RenderUtils.drawMixedRect(pos.x, pos.y, finalWidth, height, colorShadow.getSpeed(), colorShadow.getColor(), colorShadow.getFadeColor());
+                        BloomUtils.stopWrite();
                     }
                     if (blur.isToggled()) {
                         BlurUtils.startWrite();

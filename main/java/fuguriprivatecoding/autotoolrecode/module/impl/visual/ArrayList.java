@@ -98,12 +98,12 @@ public class ArrayList extends Module {
             }
 
             if (glow.isToggled()) {
-                BloomUtils.addToDraw(() -> {
-                    for (RenderEntry e : entries) {
-                        float x = xOffset - e.width() + e.slideValue() * e.width();
-                        drawLine(x, e.yOffset(), e.module(), moduleList, sc, left, size, e.slideValue(), true, false);
-                    }
-                });
+                BloomUtils.startWrite();
+                for (RenderEntry e : entries) {
+                    float x = xOffset - e.width() + e.slideValue() * e.width();
+                    drawLine(x, e.yOffset(), e.module(), moduleList, sc, left, size, e.slideValue(), true, false);
+                }
+                BloomUtils.stopWrite();
             }
 
             if (blur.isToggled()) {

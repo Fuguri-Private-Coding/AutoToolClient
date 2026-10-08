@@ -156,9 +156,9 @@ public class Scaffold extends Module {
             RenderUtils.start3D();
 
             if (glow.isToggled()) {
-                BloomUtils.addToDraw(() -> {
-                    RenderUtils.drawBlockESP(targetBlock, glowColor.getFadedColor());
-                });
+                BloomUtils.startWrite();
+                RenderUtils.drawBlockESP(targetBlock, glowColor.getFadedColor());
+                BloomUtils.stopWrite();
             }
             RenderUtils.drawBlockESP(targetBlock, color.getFadedColor());
 

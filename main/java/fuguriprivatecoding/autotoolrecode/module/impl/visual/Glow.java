@@ -32,17 +32,17 @@ public class Glow extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof Render3DEvent && toGlow.get("Players")) {
-            BloomUtils.addToDraw(() -> {
-                RendererLivingEntity.setShaderBrightness(playersColor.getFadedColor());
-                RenderUtils.startPlayer();
-                for (EntityPlayer player : mc.theWorld.playerEntities) {
-                    if (shouldContinueRender(player))
-                        continue;
-                    RenderUtils.drawPlayerModel(player, player.getSmoothPositionVector().subtract(RenderManager.getRenderPosition()), player.rotationYawHead, mc.timer.renderPartialTicks);
-                }
-                RenderUtils.stopPlayer();
-                RendererLivingEntity.unsetShaderBrightness();
-            });
+            BloomUtils.startWrite();
+            RendererLivingEntity.setShaderBrightness(playersColor.getFadedColor());
+            RenderUtils.startPlayer();
+            for (EntityPlayer player : mc.theWorld.playerEntities) {
+                if (shouldContinueRender(player))
+                    continue;
+                RenderUtils.drawPlayerModel(player, player.getSmoothPositionVector().subtract(RenderManager.getRenderPosition()), player.rotationYawHead, mc.timer.renderPartialTicks);
+            }
+            RenderUtils.stopPlayer();
+            RendererLivingEntity.unsetShaderBrightness();
+            BloomUtils.stopWrite();
         }
     }
 
