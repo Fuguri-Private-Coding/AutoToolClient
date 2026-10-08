@@ -1,22 +1,23 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
-import fuguriprivatecoding.autotoolrecode.setting.impl.*;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
-import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
+import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.RayTrace;
 import org.lwjgl.input.Mouse;
 
-import java.lang.annotation.Target;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "AimAssist", category = Category.LEGIT, description = "Помощь в прицеливании.")
@@ -30,6 +31,9 @@ public class AimAssist extends Module {
     final BooleanSupplier boxSize = () -> hitVec.is("Best") || hitVec.is("Nearest");
     final IntegerSetting hBoxSize = new IntegerSetting("HBoxSize", this, boxSize, 1, 100, 100);
     final IntegerSetting vBoxSize = new IntegerSetting("VBoxSize", this, boxSize, 1, 100, 100);
+
+    private final MultiMode targets = new MultiMode("Targets", this)
+        .addModes("Players", "Mobs", "Animals", "Villagers");
 
     DoubleSlider yawSpeed = new DoubleSlider("YawSpeed", this, 0, 20, 5, 0.1f);
     final CheckBox moveVertical = new CheckBox("MoveVertical", this, false);
@@ -54,7 +58,11 @@ public class AimAssist extends Module {
     @Override
     public void onEvent(Event event) {
         if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.POST) {
-            TargetStorage.setTarget(TargetFinder.findTarget(distance.getValue(), true, false, false));
+            List<EntityLivingBase> entityList = TargetFinder.findTarget(distance.getValue(), targets.get("Players"), targets.get("Mobs"), targets.get("Animals"), targets.get("Villagers"));
+
+            entityList.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
+
+            TargetStorage.setTarget(entityList.getFirst());
 
             EntityLivingBase target = TargetStorage.getTarget();
 

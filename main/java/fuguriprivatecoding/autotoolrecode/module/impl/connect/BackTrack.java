@@ -14,6 +14,7 @@ import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.TimedVar;
@@ -24,6 +25,8 @@ import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
@@ -247,8 +250,10 @@ public class BackTrack extends Module {
             if (legacyTargetFinding.isToggled()) {
                 return TargetStorage.getSelectedEntity();
             } else {
-                float distance = findTargetDistance.getValue();
-                return TargetFinder.findTarget(distance, true, false, false);
+                List<EntityLivingBase> targets = TargetFinder.findTarget(findTargetDistance.getValue(), true, false, false, false);
+                targets.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
+
+                return targets.getFirst();
             }
         }
     }

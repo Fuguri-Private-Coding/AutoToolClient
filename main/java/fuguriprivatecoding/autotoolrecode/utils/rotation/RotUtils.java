@@ -1,16 +1,17 @@
 package fuguriprivatecoding.autotoolrecode.utils.rotation;
 
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
-import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.*;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
+
 import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.Math.*;
+import static java.lang.Math.sqrt;
 
 public class RotUtils implements Imports {
 	public static Vec3 getBestHitVec(Entity entity) {
@@ -117,7 +118,14 @@ public class RotUtils implements Imports {
 		return Math.abs(MathHelper.wrapDegree(yaw - CameraRot.INST.getYaw()));
 	}
 
-    public static Rot getPossibleBestRotation(Rot startRot, AxisAlignedBB box) {
+	public static float getFovToEntity(EntityLivingBase entity) {
+		Vec3 delta = entity.getPositionVector().subtract(mc.thePlayer.getPositionEyes(1.0F));
+		float yaw = (float) (Math.toDegrees(MathHelper.atan2(delta.zCoord, delta.xCoord))) - 90;
+		return Math.abs(MathHelper.wrapDegree(yaw - CameraRot.INST.getYaw()));
+	}
+
+
+	public static Rot getPossibleBestRotation(Rot startRot, AxisAlignedBB box) {
         double step = 0.07;
         double nearest = 15.0;
 

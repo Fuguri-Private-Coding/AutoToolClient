@@ -21,6 +21,7 @@ import fuguriprivatecoding.autotoolrecode.utils.packet.VecWithTime;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.RenderUtils;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
+import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
@@ -36,6 +37,8 @@ import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -181,7 +184,10 @@ public class Ping extends Module {
                 }
 
                 if (actions.get("Distance")) {
-                    EntityLivingBase target = TargetFinder.findTarget(6f, true, false, false);
+                    List<EntityLivingBase> targets = TargetFinder.findTarget(8f, true, false, false, false);
+                    targets.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
+
+                    EntityLivingBase target = targets.getFirst();
                     if (Modules.getInstance().getModule(KillAura.class).isToggled() || Modules.getInstance().getModule(AimAssist.class).isToggled()) {
                         target = TargetStorage.getTarget();
                     }

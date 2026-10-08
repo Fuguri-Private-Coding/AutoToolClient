@@ -102,11 +102,6 @@ public class TimerRange extends Module {
                 boolean distanceSkip = newDistance > 6.0D && checkHittableDistance.isToggled();
                 boolean backTrackSkip = newDistance > backTrack.distanceToCancelHits.getValue() && backTrack.isToggled();
 
-                if (backTrackSkip || distanceSkip) {
-                    teleportTicks = 0;
-                    break;
-                }
-
                 if (skip) {
                     simulatedPlayer.tick();
                     continue;

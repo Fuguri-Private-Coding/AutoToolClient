@@ -20,22 +20,17 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.raytrace.RayCastUtils;
+import fuguriprivatecoding.autotoolrecode.utils.target.TargetFinder;
 import fuguriprivatecoding.autotoolrecode.utils.target.TargetStorage;
 import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.RayTrace;
 import net.minecraft.util.Vec3;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BooleanSupplier;
 
 @ModuleInfo(name = "KillAura", category = Category.COMBAT, description = "Автоматически целится и бьет противника.")
@@ -308,13 +303,7 @@ public class KillAura extends Module {
     }
 
     private EntityLivingBase findNewTarget() {
-        List<EntityLivingBase> entityList = new CopyOnWriteArrayList<>();
-
-        for (Entity entity : mc.theWorld.loadedEntityList) {
-            if (isValidTarget(entity) && entity instanceof EntityLivingBase base && matchesTargetType(base)) {
-                entityList.add(base);
-            }
-        }
+        List<EntityLivingBase> entityList = TargetFinder.findTarget(findDistance.getValue(), targets.get("Players"), targets.get("Mobs"), targets.get("Animals"), targets.get("Villagers"));
 
         entityList.sort(
             switch (sortType.getMode()) {
@@ -339,19 +328,5 @@ public class KillAura extends Module {
             CameraRot.INST.setWillChange(false);
 
         return newTarget;
-    }
-
-    private boolean isValidTarget(Entity entity) {
-        return entity != mc.thePlayer && entity.isEntityAlive() && DistanceUtils.getDistance(entity) <= findDistance.getValue();
-    }
-
-    private boolean matchesTargetType(EntityLivingBase entity) {
-        return switch (entity) {
-            case EntityPlayer player -> targets.get("Players") && !player.isFriend() && !player.isBot() && !player.isTeam();
-            case EntityMob ignore -> targets.get("Mobs");
-            case EntityAnimal ignore -> targets.get("Animals");
-            case EntityVillager ignore -> targets.get("Villagers");
-            default -> false;
-        };
     }
 }
