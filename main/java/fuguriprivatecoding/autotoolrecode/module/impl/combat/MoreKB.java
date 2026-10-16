@@ -15,7 +15,6 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 @ModuleInfo(name = "MoreKB", category = Category.COMBAT, description = "Автоматический ресет спринта после хита.")
 public class MoreKB extends Module {
@@ -75,7 +74,8 @@ public class MoreKB extends Module {
 
             case "Packet" -> {
                 if (event instanceof SprintEvent && mc.thePlayer.isSprinting()) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
+                    mc.thePlayer.setServerSprintState(false);
+//                    mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
                     reset--;
                 }
             }
