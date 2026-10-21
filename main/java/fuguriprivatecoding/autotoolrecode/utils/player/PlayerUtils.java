@@ -1,13 +1,16 @@
 package fuguriprivatecoding.autotoolrecode.utils.player;
 
-import lombok.experimental.UtilityClass;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import net.minecraft.block.*;
+import lombok.experimental.UtilityClass;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 @UtilityClass
 public class PlayerUtils implements Imports {

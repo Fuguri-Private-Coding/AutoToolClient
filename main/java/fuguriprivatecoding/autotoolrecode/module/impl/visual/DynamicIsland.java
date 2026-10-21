@@ -181,7 +181,7 @@ public class DynamicIsland extends Module {
         width.setEnd(10 + additionalWidth);
         height.setEnd(15 + additionalHeight);
         imageSize.setEnd(mc.currentScreen != null && media ? 30f : 10f);
-        buttonAlpha.setEnd(media);
+        buttonAlpha.setEnd(media && mc.currentScreen != null);
 
         opened = additionalHeight > 0;
 
@@ -241,7 +241,7 @@ public class DynamicIsland extends Module {
         textFadeAnimation.setEnd(backBrightness > 0.7f);
         textFadeAnimation.update(2f, Easing.OUT_CUBIC);
 
-        Color elementColor = ColorUtils.interpolateColor(Colors.WHITE, Colors.BLACK, textFadeAnimation.getValue());
+        Color elementColor = new Colors(ColorUtils.interpolateColor(Colors.WHITE, Colors.BLACK, textFadeAnimation.getValue())).withAlphaClamp(1 - buttonAlpha.getValue());
 
         boldFont.draw(currentTimeText, timeX - 2, timeY, 8, elementColor);
 

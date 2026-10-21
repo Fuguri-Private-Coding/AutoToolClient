@@ -3,7 +3,6 @@ package fuguriprivatecoding.autotoolrecode.utils.predict;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
-import lombok.Getter;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -18,7 +17,6 @@ import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.ServersideAttributeMap;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,19 +29,23 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.List;
 
 public class SimulatedPlayer implements Imports {
-    private final EntityPlayer player;
+    public final EntityPlayerSP player;
     public AxisAlignedBB box;
     public final MovementInput movementInput;
     private int jumpTicks;
-    public double motionX, motionY, motionZ;
-    @Getter private boolean inWater;
+    public double motionZ;
+    public double motionY;
+    public double motionX;
+    private boolean inWater;
     public boolean onGround;
+    private boolean isAirBorne;
     public float rotationYaw;
-    private double posX, posY, posZ;
+    public double posX;
+    public double posY;
+    public double posZ;
     private final PlayerCapabilities capabilities;
     private final Entity ridingEntity;
     private float jumpMovementFactor;
@@ -59,16 +61,19 @@ public class SimulatedPlayer implements Imports {
     public float fallDistance;
     private final float stepHeight;
     private boolean isCollided;
-    private int fire, nextStepDistance;
-    private float distanceWalkedModified, distanceWalkedOnStepModified;
+    private int fire;
+    private float distanceWalkedModified;
+    private float distanceWalkedOnStepModified;
+    private int nextStepDistance;
     public final float height;
     private final float width;
     private final int fireResistance;
-    private boolean isInWeb, noClip;
-    @Getter private boolean isSprinting;
+    private boolean isInWeb;
+    private boolean noClip;
+    private boolean isSprinting;
     private final FoodStats foodStats;
 
-    public SimulatedPlayer(EntityPlayer player, AxisAlignedBB box, MovementInput movementInput, int jumpTicks, double motionZ, double motionY, double motionX, boolean inWater, boolean onGround, boolean isAirBorne, float rotationYaw, double posX, double posY, double posZ, PlayerCapabilities capabilities, Entity ridingEntity, float jumpMovementFactor, World worldObj, boolean isCollidedHorizontally, boolean isCollidedVertically, WorldBorder worldBorder, IChunkProvider chunkProvider, boolean isOutsideBorder, Entity riddenByEntity, BaseAttributeMap attributeMap, boolean isSpectator, float fallDistance, float stepHeight, boolean isCollided, int fire, float distanceWalkedModified, float distanceWalkedOnStepModified, int nextStepDistance, float height, float width, int fireResistance, boolean isInWeb, boolean noClip, boolean isSprinting, FoodStats foodStats) {
+    public SimulatedPlayer(EntityPlayerSP player, AxisAlignedBB box, MovementInput movementInput, int jumpTicks, double motionZ, double motionY, double motionX, boolean inWater, boolean onGround, boolean isAirBorne, float rotationYaw, double posX, double posY, double posZ, PlayerCapabilities capabilities, Entity ridingEntity, float jumpMovementFactor, World worldObj, boolean isCollidedHorizontally, boolean isCollidedVertically, WorldBorder worldBorder, IChunkProvider chunkProvider, boolean isOutsideBorder, Entity riddenByEntity, BaseAttributeMap attributeMap, boolean isSpectator, float fallDistance, float stepHeight, boolean isCollided, int fire, float distanceWalkedModified, float distanceWalkedOnStepModified, int nextStepDistance, float height, float width, int fireResistance, boolean isInWeb, boolean noClip, boolean isSprinting, FoodStats foodStats) {
         this.player = player;
         this.box = box;
         this.movementInput = movementInput;
@@ -78,6 +83,7 @@ public class SimulatedPlayer implements Imports {
         this.motionX = motionX;
         this.inWater = inWater;
         this.onGround = onGround;
+        this.isAirBorne = isAirBorne;
         this.rotationYaw = rotationYaw;
         this.posX = posX;
         this.posY = posY;
@@ -126,7 +132,11 @@ public class SimulatedPlayer implements Imports {
 
     private static final float SPEED_IN_AIR = 0.02F;
 
-    public static SimulatedPlayer fromClientPlayer(MovementInput input, float rotationYaw) {
+    public static SimulatedPlayer fromClientPlayer(MovementInput input, float motionMulti) {
+        return fromClientPlayer(input, motionMulti, mc.thePlayer.rotationYaw);
+    }
+
+    public static SimulatedPlayer fromClientPlayer(MovementInput input, float motionMulti, float rotationYaw) {
         EntityPlayerSP player = mc.thePlayer;
 
         PlayerCapabilities capabilities = createCapabilitiesCopy(player);
@@ -139,102 +149,49 @@ public class SimulatedPlayer implements Imports {
         movementInput.sneak = input.sneak;
 
         return new SimulatedPlayer(player,
-            player.getEntityBoundingBox(),
-            movementInput,
-            player.jumpTicks,
-            player.motionZ,
-            player.motionY,
-            player.motionX,
-            player.isInWater(),
-            player.onGround,
-            player.isAirBorne,
-            rotationYaw,
-            player.posX,
-            player.posY,
-            player.posZ,
-            capabilities,
-            player.ridingEntity,
-            player.jumpMovementFactor,
-            player.worldObj,
-            player.isCollidedHorizontally,
-            player.isCollidedVertically,
-            player.worldObj.getWorldBorder(),
-            player.worldObj.getChunkProvider(),
-            player.isOutsideBorder(),
-            player.riddenByEntity,
-            player.getAttributeMap(),
-            player.isSpectator(),
-            player.fallDistance,
-            player.stepHeight,
-            player.isCollided,
-            player.fire,
-            player.distanceWalkedModified,
-            player.distanceWalkedOnStepModified,
-            player.nextStepDistance,
-            player.height,
-            player.width,
-            player.fireResistance,
-            player.isInWeb,
-            player.noClip,
-            player.isSprinting(),
-            foodStats
+                player.getEntityBoundingBox(),
+                movementInput,
+                player.jumpTicks,
+                player.motionZ * motionMulti,
+                player.motionY * motionMulti,
+                player.motionX * motionMulti,
+                player.isInWater(),
+                player.onGround,
+                player.isAirBorne,
+                rotationYaw,
+                player.posX,
+                player.posY,
+                player.posZ,
+                capabilities,
+                player.ridingEntity,
+                player.jumpMovementFactor,
+                player.worldObj,
+                player.isCollidedHorizontally,
+                player.isCollidedVertically,
+                player.worldObj.getWorldBorder(),
+                player.worldObj.getChunkProvider(),
+                player.isOutsideBorder(),
+                player.riddenByEntity,
+                player.getAttributeMap(),
+                player.isSpectator(),
+                player.fallDistance,
+                player.stepHeight,
+                player.isCollided,
+                player.fire,
+                player.distanceWalkedModified,
+                player.distanceWalkedOnStepModified,
+                player.nextStepDistance,
+                player.height,
+                player.width,
+                player.fireResistance,
+                player.isInWeb,
+                player.noClip,
+                player.isSprinting(),
+                foodStats
         );
     }
 
-    public static SimulatedPlayer fromOtherPlayer(EntityPlayer player, MovementInput input, float rotationYaw) {
-        PlayerCapabilities capabilities = createCapabilitiesCopy(player);
-        FoodStats foodStats = createFoodStatsCopy(player);
-
-        MovementInput movementInput = new MovementInput();
-        movementInput.jump = input.jump;
-        movementInput.moveForward = input.moveForward;
-        movementInput.moveStrafe = input.moveStrafe;
-        movementInput.sneak = input.sneak;
-
-        return new SimulatedPlayer(player,
-            player.getEntityBoundingBox(),
-            movementInput,
-            player.jumpTicks,
-            player.motionZ,
-            player.motionY,
-            player.motionX,
-            player.isInWater(),
-            player.onGround,
-            player.isAirBorne,
-            rotationYaw,
-            player.posX,
-            player.posY,
-            player.posZ,
-            capabilities,
-            player.ridingEntity,
-            player.jumpMovementFactor,
-            player.worldObj,
-            player.isCollidedHorizontally,
-            player.isCollidedVertically,
-            player.worldObj.getWorldBorder(),
-            player.worldObj.getChunkProvider(),
-            player.isOutsideBorder(),
-            player.riddenByEntity,
-            player.getAttributeMap(),
-            player.isSpectator(),
-            player.fallDistance,
-            player.stepHeight,
-            player.isCollided,
-            player.fire,
-            player.distanceWalkedModified,
-            player.distanceWalkedOnStepModified,
-            player.nextStepDistance,
-            player.height,
-            player.width,
-            player.fireResistance,
-            player.isInWeb,
-            player.noClip,
-            player.isSprinting(),
-            foodStats
-        );
-    }
-
-    private static FoodStats createFoodStatsCopy(EntityPlayer player) {
+    private static FoodStats createFoodStatsCopy(EntityPlayerSP player) {
         NBTTagCompound foodStatsNBT = new NBTTagCompound();
         FoodStats foodStats = new FoodStats();
 
@@ -243,7 +200,7 @@ public class SimulatedPlayer implements Imports {
         return foodStats;
     }
 
-    private static PlayerCapabilities createCapabilitiesCopy(EntityPlayer player) {
+    private static PlayerCapabilities createCapabilitiesCopy(EntityPlayerSP player) {
         NBTTagCompound capabilitiesNBT = new NBTTagCompound();
         PlayerCapabilities capabilities = new PlayerCapabilities();
 
@@ -400,15 +357,18 @@ public class SimulatedPlayer implements Imports {
         posY = y;
         posZ = z;
         float f = width / 2.0f;
-        setEntityBoundingBox(new AxisAlignedBB(x - f, y, z - f, x + f, y + height, z + f));
+        float f1 = height;
+        setEntityBoundingBox(new AxisAlignedBB(x - f, y, z - f, x + f, y + f1, z + f));
     }
 
     private void setSprinting(boolean state) {
         isSprinting = state;
     }
 
-    private void pushOutOfBlocks(double x, double y, double z) {
-        if (!noClip) {
+    private boolean pushOutOfBlocks(double x, double y, double z) {
+        if (noClip) {
+            return false;
+        } else {
             BlockPos blockPos = new BlockPos(x, y, z);
             double d0 = x - blockPos.getX();
             double d1 = z - blockPos.getZ();
@@ -447,6 +407,7 @@ public class SimulatedPlayer implements Imports {
                     motionZ = f;
                 }
             }
+            return false;
         }
     }
 
@@ -738,7 +699,7 @@ public class SimulatedPlayer implements Imports {
                 if (block1 != Blocks.ladder) {
                     d13 = 0.0;
                 }
-                if (onGround) {
+                if (block1 != null && onGround) {
                     onEntityCollidedWithBlock(block1);
                 }
                 distanceWalkedModified = (float) (distanceWalkedModified + MathHelper.sqrt_double(d12 * d12 + d14 * d14) * 0.6);
@@ -843,7 +804,7 @@ public class SimulatedPlayer implements Imports {
         }
     }
 
-    public void handleWaterMovement() {
+    public boolean handleWaterMovement() {
         if (handleMaterialAcceleration(getEntityBoundingBox().expand(0.0, -0.4000000059604645, 0.0)
                 .contract(0.001, 0.001, 0.001), Material.water)) {
             fallDistance = 0.0f;
@@ -853,6 +814,7 @@ public class SimulatedPlayer implements Imports {
             inWater = false;
         }
 
+        return inWater;
     }
 
     public boolean handleMaterialAcceleration(AxisAlignedBB boundingBox, Material material) {
@@ -968,6 +930,12 @@ public class SimulatedPlayer implements Imports {
             motionX -= (MathHelper.sin(f) * 0.2f);
             motionZ += (MathHelper.cos(f) * 0.2f);
         }
+
+        isAirBorne = true;
+    }
+
+    public boolean isSprinting() {
+        return isSprinting;
     }
 
     public boolean isPotionActive(Potion potion) {
@@ -980,6 +948,10 @@ public class SimulatedPlayer implements Imports {
 
     public float getJumpUpwardsMotion() {
         return 0.42f;
+    }
+
+    public boolean isInWater() {
+        return inWater;
     }
 
     public void updateLivingEntityInput() {
@@ -1256,8 +1228,8 @@ public class SimulatedPlayer implements Imports {
 
         return Pair.of(d3, d5);
     }
-    public float getEyeHeight()
-    {
+
+    public float getEyeHeight() {
         return this.height * 0.85F;
     }
 }

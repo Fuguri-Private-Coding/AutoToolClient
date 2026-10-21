@@ -8,11 +8,11 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.connect.BackTrack;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
@@ -31,7 +31,6 @@ public class TimerRange extends Module {
     final FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0, 2.5f, 1, 0.1f);
     final IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
     final CheckBox useBestRotationForPredict = new CheckBox("UseBestRotationForPredict", this, true);
-    final CheckBox checkHittableDistance = new CheckBox("CheckHittableDistance", this, true);
 
     final IntegerSetting tickDelay = new IntegerSetting("TickDelay", this, 0, 20, 0);
 
@@ -54,8 +53,9 @@ public class TimerRange extends Module {
             mc.timer.renderPartialTicks = partialTicks.getValue();
         }
 
-        if (event instanceof BestClickTimingEvent && click) {
+        if (event instanceof BestClickTimingEvent && click && balance == teleportTicks) {
             mc.clickMouse();
+            ClientUtils.chatLog("Debil");
             click = false;
         }
 
@@ -76,39 +76,28 @@ public class TimerRange extends Module {
             Vec3 pos = target.getServerPosition().divine(32.0D)
                 .subtract(target.getPositionVector());
 
-            Vec3 newPos = target.getNPosition().subtract(target.getPositionVector());
-
-            AxisAlignedBB box = target.getExpandedBoundingBox()
+            AxisAlignedBB box = target.getEntityBoundingBox()
                 .offset(pos);
 
-            AxisAlignedBB newBox = target.getExpandedBoundingBox()
-                .offset(newPos);
-
-            if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) < 3.0 || !timer.reachedMS(tickDelay.getValue() * 50L))
+            if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) <= 3.0 || !timer.reachedMS(tickDelay.getValue() * 50L))
                 return;
 
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(
                 mc.thePlayer.movementInput,
+                1,
                 useBestRotationForPredict.isToggled() ? RotUtils.getBestRotation(box).getYaw() : mc.thePlayer.rotationYaw
             );
 
-            BackTrack backTrack = Modules.getInstance().getModule(BackTrack.class);
-
             for (int i = 0; i < maxTicks.getValue(); i++) {
                 double distance = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), box);
-                double newDistance = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), newBox);
-
                 boolean skip = distance > 3.0D;
-                boolean distanceSkip = newDistance > 6.0D && checkHittableDistance.isToggled();
-                boolean backTrackSkip = newDistance > backTrack.distanceToCancelHits.getValue() && backTrack.isToggled();
 
                 if (skip) {
                     simulatedPlayer.tick();
-                    continue;
+                } else {
+                    teleportTicks = i + 1;
+                    break;
                 }
-
-                teleportTicks = i + 1;
-                break;
             }
 
             if (teleportTicks == 0)

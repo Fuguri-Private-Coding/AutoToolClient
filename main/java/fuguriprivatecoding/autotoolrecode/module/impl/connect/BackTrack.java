@@ -98,7 +98,6 @@ public class BackTrack extends Module {
         if (event instanceof PacketEvent e) {
             Packet packet = e.getPacket();
 
-
             if (packet instanceof C02PacketUseEntity c02 && c02.getAction() == C02PacketUseEntity.Action.ATTACK && debug.isToggled() && target != null) {
                 Vec3 targetPosition = target.getNPosition().subtract(target.getPositionVector());
                 double distance = DistanceUtils.getDistance(target.getExpandedBoundingBox().offset(targetPosition));
@@ -106,7 +105,7 @@ public class BackTrack extends Module {
                 if (distance > 3) ClientUtils.chatLog("Distance: " + String.format("%.2f", distance) + ", Offset: " + String.format("%.2f", distance - 3));
             }
 
-            if (target == null || e.isCanceled() || e.getDirection() == PacketDirection.OUTGOING) return;
+            if (target == null || e.isCanceled() || e.getDirection() == PacketDirection.OUTGOING || packet instanceof S03PacketTimeUpdate) return;
 
             if ((packet instanceof S06PacketUpdateHealth
                     || packet instanceof S02PacketChat
