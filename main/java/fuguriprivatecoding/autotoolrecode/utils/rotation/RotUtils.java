@@ -15,7 +15,7 @@ import static java.lang.Math.sqrt;
 
 public class RotUtils implements Imports {
 	public static Vec3 getBestHitVec(Entity entity) {
-		return getBestHitVec(getEntityExpandedBB(entity));
+		return getBestHitVec(entity.getExpandedBoundingBox());
 	}
 
 	public static Vec3 getBestHitVec(AxisAlignedBB bb) {

@@ -44,7 +44,7 @@ public class MoreKB extends Module {
                 return;
             }
 
-            boolean need = target.hurtResistantTime == 20 && !notWhile(target) && delay == 0 && reset == 0;
+            boolean need = target.isEntityAlive() && target.hurtTime == 10 && !notWhile(target) && delay == 0 && reset == 0;
 
             if (need) {
                 delay = delayTicks.getRandomizedIntValue();

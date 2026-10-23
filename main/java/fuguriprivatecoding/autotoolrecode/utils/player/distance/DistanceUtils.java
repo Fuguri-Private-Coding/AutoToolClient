@@ -38,6 +38,6 @@ public class DistanceUtils implements Imports {
 	}
 
     public static double getDistance(Vec3 eyes, AxisAlignedBB bb) {
-        return eyes.distanceTo(RotUtils.getBestHitVec(bb));
+        return eyes.distanceTo(RotUtils.getBestHitVec(bb, eyes));
     }
 }

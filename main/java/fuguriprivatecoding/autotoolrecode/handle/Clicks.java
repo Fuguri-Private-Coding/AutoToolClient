@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
 import fuguriprivatecoding.autotoolrecode.event.events.player.BestClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.ClickSettings;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.TimerRange;
@@ -30,6 +31,9 @@ public class Clicks implements Imports, EventListener {
 
     @Getter int clicks;
 
+    int start;
+    int end;
+
     @Override
     public void onEvent(Event event) {
         EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
@@ -45,6 +49,11 @@ public class Clicks implements Imports, EventListener {
                     mc.clickMouse();
                 }
             }
+        }
+
+        if (event instanceof TickEvent && target != null && target.hurtTime == 10 && target.isEntityAlive()) {
+            start = clickSettings.startHurtTime.getRandomizedIntValue();
+            end = clickSettings.endHurtTime.getRandomizedIntValue();
         }
 
         if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.LEFT) {
@@ -74,10 +83,7 @@ public class Clicks implements Imports, EventListener {
             return false;
         }
 
-        int startHurtTime = clickSettings.startHurtTime.getRandomizedIntValue();
-        int endHurtTime = clickSettings.endHurtTime.getRandomizedIntValue();
-
-        return target.hurtTime <= startHurtTime || mc.thePlayer.hurtTime >= endHurtTime;
+        return target.hurtTime <= start || mc.thePlayer.hurtTime >= end;
     }
 
     public void addClick() {

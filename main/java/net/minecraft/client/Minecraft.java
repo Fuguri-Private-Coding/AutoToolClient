@@ -13,6 +13,7 @@ import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.*;
 import fuguriprivatecoding.autotoolrecode.event.events.render.MBlurEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.PostTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.gui.main.MainScreen;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
@@ -774,12 +775,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         this.mcProfiler.startSection("tick");
 
         for (int j = 0; j < this.timer.elapsedTicks; ++j) {
-            TickEvent tickEvent = TickEvent.getInstance();
-            tickEvent.call();
-
-            if (tickEvent.isCanceled()) continue;
-
             runTick();
+
+            PostTickEvent event = PostTickEvent.getInstance();
+            event.call();
         }
 
         this.mcProfiler.endStartSection("preRenderErrors");
@@ -1268,6 +1267,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     }
 
     public void runTick() throws IOException {
+        TickEvent tickEvent = TickEvent.getInstance();
+        tickEvent.call();
+
+        if (tickEvent.isCanceled())
+            return;
+
         if (this.rightClickDelayTimer > 0) {
             --this.rightClickDelayTimer;
         }
