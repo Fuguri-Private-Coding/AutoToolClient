@@ -1,32 +1,20 @@
 package net.minecraft.client.entity;
 
 import fuguriprivatecoding.autotoolrecode.command.Commands;
-import fuguriprivatecoding.autotoolrecode.event.events.player.*;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.SlowDownEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.SprintEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.UpdateEvent;
 import fuguriprivatecoding.autotoolrecode.utils.player.move.MoveUtils;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
-import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
-import net.minecraft.client.gui.GuiCommandBlock;
-import net.minecraft.client.gui.GuiEnchantment;
-import net.minecraft.client.gui.GuiHopper;
-import net.minecraft.client.gui.GuiMerchant;
-import net.minecraft.client.gui.GuiRepair;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiScreenBook;
-import net.minecraft.client.gui.inventory.GuiBeacon;
-import net.minecraft.client.gui.inventory.GuiBrewingStand;
-import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiCrafting;
-import net.minecraft.client.gui.inventory.GuiDispenser;
-import net.minecraft.client.gui.inventory.GuiEditSign;
-import net.minecraft.client.gui.inventory.GuiFurnace;
-import net.minecraft.client.gui.inventory.GuiScreenHorseInventory;
+import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.inventory.*;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.command.server.CommandBlockLogic;
@@ -39,26 +27,12 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C01PacketChatMessage;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.network.play.client.C0APacketAnimation;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
-import net.minecraft.network.play.client.C0CPacketInput;
-import net.minecraft.network.play.client.C0DPacketCloseWindow;
-import net.minecraft.network.play.client.C13PacketPlayerAbilities;
-import net.minecraft.network.play.client.C16PacketClientStatus;
+import net.minecraft.network.play.client.*;
 import net.minecraft.potion.Potion;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatFileWriter;
 import net.minecraft.tileentity.TileEntitySign;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.IChatComponent;
-import net.minecraft.util.MovementInput;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
 
@@ -100,32 +74,6 @@ public class EntityPlayerSP extends AbstractClientPlayer {
         this.statWriter = statFile;
         this.mc = mcIn;
         this.dimension = 0;
-    }
-
-    public Rot getRotation() {
-        return new Rot(rotationYaw, rotationPitch);
-    }
-
-    public Rot getPrevRotation() {
-        return new Rot(prevRotationYaw, prevRotationPitch);
-    }
-
-    public void moveRotation(Rot delta) {
-        moveRotation(delta.getYaw(), delta.getPitch());
-    }
-
-    public void moveRotation(float deltaYaw, float deltaPitch) {
-        prevRotationYaw = rotationYaw;
-        prevRotationPitch = rotationPitch;
-        rotationYaw += deltaYaw;
-        rotationPitch += deltaPitch;
-        rotationPitch = Math.clamp(rotationPitch, -90, 90);
-    }
-
-    public void stopMotion() {
-        this.motionX = 0.0;
-        this.motionY = 0.0;
-        this.motionZ = 0.0;
     }
 
     public boolean attackEntityFrom(DamageSource source, float amount) {

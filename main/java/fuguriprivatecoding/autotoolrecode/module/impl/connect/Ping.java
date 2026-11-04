@@ -2,7 +2,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.connect;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.PacketDirection;
-import fuguriprivatecoding.autotoolrecode.event.events.*;
+import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.render.Render3DEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PacketEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
@@ -11,8 +11,6 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.combat.KillAura;
-import fuguriprivatecoding.autotoolrecode.module.impl.legit.AimAssist;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Scaffold;
 import fuguriprivatecoding.autotoolrecode.setting.impl.*;
 import fuguriprivatecoding.autotoolrecode.utils.packet.PacketUtils;
@@ -34,7 +32,8 @@ import net.minecraft.item.ItemFishingRod;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
-import net.minecraft.network.play.server.*;
+import net.minecraft.network.play.server.S08PacketPlayerPosLook;
+import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 
@@ -185,11 +184,18 @@ public class Ping extends Module {
 
                 if (actions.get("Distance")) {
                     List<EntityLivingBase> targets = TargetFinder.findTarget(8f, true, false, false, false);
+
+                    if (targets.isEmpty()) {
+                        return;
+                    }
+
                     targets.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
 
+                    EntityLivingBase storageTarget = TargetStorage.getTarget();
                     EntityLivingBase target = targets.getFirst();
-                    if (Modules.getInstance().getModule(KillAura.class).isToggled() || Modules.getInstance().getModule(AimAssist.class).isToggled()) {
-                        target = TargetStorage.getTarget();
+
+                    if (storageTarget != null) {
+                        target = storageTarget;
                     }
 
                     if (target != null && DistanceUtils.getDistance(target) <= distanceToReset.getValue()) {

@@ -99,6 +99,8 @@ public class KillAura extends Module {
 
     private final CheckBox lockView = new CheckBox("LockView", this, false);
 
+    private final CheckBox keepUpdateRayCast = new CheckBox("KeepUpdateRayCast", this, false);
+
     private final Mode moveFix = new Mode("MoveFix", this)
         .addModes("OFF", "Legit", "Silent")
         .setMode("Silent");
@@ -195,8 +197,8 @@ public class KillAura extends Module {
 
         Rot needRot = RotUtils.getRotationToPoint(needPoint);
 
-        if (hitVec.is("Nearest")) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), box);
-        if (fullBox.isVecInside(mc.thePlayer.getPositionEyes(1f))) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotation(), fullBox);
+        if (hitVec.is("Nearest")) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotations(), box);
+        if (fullBox.isVecInside(mc.thePlayer.getPositionEyes(1f))) needRot = RotUtils.getNearestRotation(mc.thePlayer.getRotations(), fullBox);
 
         if (teleport) needRot = RotUtils.getBestRotation(fullBox);
 
@@ -222,7 +224,7 @@ public class KillAura extends Module {
         if (needRotation == null)
             return;
 
-        Rot delta = mc.thePlayer.getRotation().deltaTo(needRotation);
+        Rot delta = mc.thePlayer.getRotations().deltaTo(needRotation);
 
         if (!teleport) delta = transformDelta(target, delta);
 
@@ -232,14 +234,14 @@ public class KillAura extends Module {
         CameraRot.INST.setUnlocked(!lockView.isToggled());
         mc.thePlayer.moveRotation(delta);
 
-        if (lockView.isToggled()) {
+        if (keepUpdateRayCast.isToggled()) {
             mc.entityRenderer.getMouseOver(1f);
         }
     }
 
     private Rot transformDelta(EntityLivingBase target, Rot delta) {
         if (smoothModes.get("Neuro")) {
-            delta = NeuralNet.computeDelta(mc.thePlayer.getRotation(), target).multiplied(multipleDelta.getValue()).lerp(delta, correctDelta.getValue());
+            delta = NeuralNet.computeDelta(mc.thePlayer.getRotations(), target).multiplied(multipleDelta.getValue()).lerp(delta, correctDelta.getValue());
         }
 
         if (smoothModes.get("Noise")) {
@@ -272,8 +274,8 @@ public class KillAura extends Module {
 
         if (smoothModes.get("MouseDelta")) {
             Rot mouseDelta = invertDelta.isToggled() ?
-                CameraRot.INST.deltaTo(CameraRot.INST.getPrevRot()) :
-                CameraRot.INST.getPrevRot().deltaTo(CameraRot.INST);
+                CameraRot.INST.deltaTo(CameraRot.INST.getPrev()) :
+                CameraRot.INST.getPrev().deltaTo(CameraRot.INST);
 
             float multipleDelta = (float) deltaMultiplier.getRandomizedDoubleValue();
 

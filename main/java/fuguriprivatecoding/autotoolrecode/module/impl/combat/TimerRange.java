@@ -10,9 +10,11 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
+import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
+import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
@@ -33,6 +35,7 @@ public class TimerRange extends Module {
     final FloatSetting partialTicks = new FloatSetting("PartialTicks", this, 0, 2.5f, 1, 0.1f);
     final IntegerSetting additionalTicks = new IntegerSetting("AdditionalTicks", this, 0,5,1);
     final IntegerSetting idealChance = new IntegerSetting("IdealChance", this, 0, 100, 50);
+    final CheckBox dynamic = new CheckBox("Dynamic", this, true);
     final IntegerSetting tickDelay = new IntegerSetting("TickDelay", this, 0, 20, 0);
 
     final Mode snapConditions = new Mode("SnapConditions", this)
@@ -57,7 +60,11 @@ public class TimerRange extends Module {
         }
 
         if (event instanceof BestClickTimingEvent && click) {
+            ClientUtils.chatLog("ClickDistance: " + String.format("%.2f", DistanceUtils.getDistance(target)));
+            ClientUtils.chatLog(mc.rayTrace.toString());
+            mc.entityRenderer.getMouseOver(1f);
             if (mc.rayTrace.entityHit == target)  {
+                ClientUtils.chatLog("Clicked");
                 mc.clickMouse();
             }
             click = false;
@@ -71,6 +78,9 @@ public class TimerRange extends Module {
             predictList.clear();
 
             if (target == null)
+                return;
+
+            if (!mc.thePlayer.hasMotion(false))
                 return;
 
             SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(
@@ -96,6 +106,7 @@ public class TimerRange extends Module {
         if (event instanceof TickEvent e && !teleporting) {
             if (balance > 0) {
                 e.cancel();
+                mc.timer.elapsedTicks = 0;
                 balance--;
                 return;
             }
@@ -106,7 +117,7 @@ public class TimerRange extends Module {
                 return;
             }
 
-            Vec3 pos = target.getServerPosition().divine(32.0D).subtract(target.getPositionVector());
+            Vec3 pos = target.getServerPosition().divide(32.0D).subtract(target.getPositionVector());
 
             AxisAlignedBB box = target.getExpandedBoundingBox()
                 .offset(pos);
@@ -115,12 +126,20 @@ public class TimerRange extends Module {
                 return;
 
             for (PredictProcess process : predictList.reversed()) {
-                double distance = DistanceUtils.getDistance(process.player.getPosEyes(), box);
+                if (!dynamic.isToggled() && process.tick != maxTicks.getValue())
+                    continue;
 
+                if (process.tick == 0)
+                    continue;
+
+                double distance = DistanceUtils.getDistance(process.player.getPosEyes(), box);
                 double factor = idealChance.getValue() / 100D;
 
                 if (distance > 3.0D || distance < 2.0D + factor)
                     continue;
+
+                ClientUtils.chatLog("TeleportDistance: " + String.format("%.2f", distance));
+                ClientUtils.chatLog("Tick: " + process.tick);
 
                 teleportTicks = process.tick;
                 break;

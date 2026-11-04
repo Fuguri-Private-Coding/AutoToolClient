@@ -1,7 +1,5 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland;
 
-import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.impl.IslandContext;
-
 public abstract class IslandComponent {
     public abstract String getKey(IslandContext ctx);
 

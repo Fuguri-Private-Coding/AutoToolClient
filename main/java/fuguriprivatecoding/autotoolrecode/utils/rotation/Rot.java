@@ -1,10 +1,10 @@
 package fuguriprivatecoding.autotoolrecode.utils.rotation;
 
-import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import org.joml.Vector2f;
 
 @Setter
@@ -19,7 +19,6 @@ public class Rot {
 		yaw = 0;
 		pitch = 0;
 	}
-
 
     public Rot(float[] array) {
         this.yaw = array[0];
@@ -38,6 +37,10 @@ public class Rot {
         );
     }
 
+    public Vec3 toPolarVec() {
+        return RotUtils.getVectorForRotation(this);
+    }
+
     public Rot lerp(Rot end, float delta) {
         return lerp(end, delta, delta);
     }
@@ -47,13 +50,6 @@ public class Rot {
             MathHelper.wrapDegree(end.getYaw() - yaw),
             end.getPitch() - pitch
         );
-    }
-
-    public Rot fix() {
-        final float gcd = RotUtils.getMouseGCD();
-        this.yaw = (float) MathUtils.round(this.yaw, gcd);
-        this.pitch = (float) MathUtils.round(this.pitch, gcd);
-        return this;
     }
 
     public Rot fixed() {
@@ -151,26 +147,4 @@ public class Rot {
 			Math.clamp(pitch, -90, 90)
 		);
 	}
-
-	public float length() {
-		return (float) Math.hypot(yaw, pitch);
-	}
-
-    public JsonObject toJsonObject() {
-        JsonObject object = new JsonObject();
-
-        object.addProperty("yaw", yaw);
-        object.addProperty("pitch", pitch);
-
-        return object;
-    }
-
-    public static Rot fromJsonObject(JsonObject object) {
-        if (!object.has("yaw") || !object.has("pitch")) {
-            System.out.println("missing yaw or pitch to create rot from json-object");
-            return null;
-        }
-
-        return new Rot(object.get("yaw").getAsFloat(), object.get("pitch").getAsFloat());
-    }
 }

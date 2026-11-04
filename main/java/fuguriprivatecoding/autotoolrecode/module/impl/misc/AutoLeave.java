@@ -10,7 +10,6 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.KeyBind;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 import fuguriprivatecoding.autotoolrecode.utils.client.ChatUtils;
-import net.minecraft.network.play.client.C01PacketChatMessage;
 import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "AutoLeave", category = Category.MISC, description = "Авто выход в хаб сервера.")
@@ -21,9 +20,9 @@ public class AutoLeave extends Module {
             .setMode("HotKey")
             ;
 
-    IntegerSetting health = new IntegerSetting("Health", this, () -> mode.getMode().equalsIgnoreCase("Health"), 1,19,3);
+    IntegerSetting health = new IntegerSetting("Health", this, () -> mode.is("Health"), 1,19,3);
 
-    KeyBind key = new KeyBind("Key", this, () -> mode.getMode().equalsIgnoreCase("HotKey"), Keyboard.KEY_M);
+    KeyBind key = new KeyBind("Key", this, () -> mode.is("HotKey"), Keyboard.KEY_M);
 
     @Override
     public void onEvent(Event event) {

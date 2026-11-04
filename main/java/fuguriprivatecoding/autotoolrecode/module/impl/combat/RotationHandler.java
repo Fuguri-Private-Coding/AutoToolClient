@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.player.*;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -13,7 +13,6 @@ import fuguriprivatecoding.autotoolrecode.utils.rotation.CameraRot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.Rot;
 import fuguriprivatecoding.autotoolrecode.utils.rotation.RotUtils;
 import fuguriprivatecoding.autotoolrecode.utils.value.Constants;
-import net.minecraft.util.MathHelper;
 
 @ModuleInfo(name = "RotationHandler", category = Category.COMBAT, description = "Плавный разворот ротации при ее изменении.")
 public class RotationHandler extends Module {
@@ -30,17 +29,17 @@ public class RotationHandler extends Module {
             if (event instanceof TickEvent) {
                 Rot speed = new Rot((float) yawSpeed.getRandomizedDoubleValue(), (float) pitchSpeed.getRandomizedDoubleValue());
 
-                Rot delta = mc.thePlayer.getRotation().deltaTo(CameraRot.INST).limitedLine(speed);
+                Rot delta = mc.thePlayer.getRotations().deltaTo(CameraRot.INST).limitedLine(speed);
 
                 delta = lastDelta.lerp(delta, (float) mixDelta.getRandomizedIntValue() / 100f);
 
                 lastDelta = delta;
 
-                mc.thePlayer.moveRotation(delta.fix());
+                mc.thePlayer.moveRotation(delta.fixed());
 
-                delta = mc.thePlayer.getRotation().deltaTo(CameraRot.INST);
+                delta = mc.thePlayer.getRotations().deltaTo(CameraRot.INST);
 
-                if (delta.length() <= RotUtils.getMouseGCD()) {
+                if (delta.lengthFloat() <= RotUtils.getMouseGCD()) {
                     CameraRot.INST.setUnlocked(false);
                 }
             }

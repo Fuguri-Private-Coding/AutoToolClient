@@ -172,7 +172,7 @@ public class Scaffold extends Module {
 
         if (event instanceof MoveButtonEvent e) {
             if (rotMode.is("Normal")) {
-                if (sneakIf.get("Rotate") && lastDelta.length() > minDeltaToSneak.getValue()) {
+                if (sneakIf.get("Rotate") && lastDelta.lengthFloat() > minDeltaToSneak.getValue()) {
                     if (!isClutch() || sneakIfRotateWithClutch.isToggled()) {
                         e.setSneak(true);
                     }
@@ -209,7 +209,7 @@ public class Scaffold extends Module {
         }
 
         if (event instanceof JumpEvent e && type == ScaffoldType.ACTIVE) e.setYaw(getJumpYaw(strictYaw.isToggled(), rotateWithMovement.isToggled()));
-        if (event instanceof ClickEvent e && (e.getButton() == ClickEvent.Button.RIGHT || e.getButton() == ClickEvent.Button.LEFT)) e.cancel();
+        if (event instanceof ClickEvent e && (e.getButton() == ClickEvent.Button.RIGHT)) e.cancel();
     }
 
     private void click() {
@@ -283,12 +283,12 @@ public class Scaffold extends Module {
             }
         }
 
-        Rot delta = mc.thePlayer.getRotation().deltaTo(rotation);
+        Rot delta = mc.thePlayer.getRotations().deltaTo(rotation);
         Rot speed = getDeltaSpeed();
 
         delta = delta.limitedLine(speed);
 
-        delta.fix();
+        delta = delta.fixed();
 
         lastDelta = delta.copy();
 
@@ -411,6 +411,88 @@ public class Scaffold extends Module {
 
         return rotData.rotation().getPitch();
     }
+
+
+//    private float getPitch(float yaw, boolean handleMouse) {
+//        if (targetBlock == null) return lastRotation.getPitch();
+//
+//        List<RotData> dataList = new ArrayList<>();
+//        float step = 0.1f;
+//
+//        EnumFacing side = EnumFacing.getFacingFromVector(
+//            (float) (mc.thePlayer.posX - (targetBlock.getX() + 0.5)),
+//            0f,
+//            (float) (mc.thePlayer.posZ - (targetBlock.getZ() + 0.5))
+//        );
+//
+//        Vec3 upPoint = getFacePoint(targetBlock, side, true);
+//        Vec3 downPoint = getFacePoint(targetBlock, side, false);
+//
+//        float upRotation = RotUtils.getRotationToPoint(upPoint).getPitch();
+//        float downRotation = RotUtils.getRotationToPoint(downPoint).getPitch();
+//
+//        if (upRotation )
+//
+//        for (float pitch = upRotation; pitch <= downRotation; pitch += step) {
+//            Rot rot = new Rot(yaw, pitch);
+//
+//            RayTrace hit = RayCastUtils.rayCast(0f, 12f, rot);
+//
+//            if (hit != null) {
+//                RotData data = new RotData(rot, hit);
+//                if (isOverBlock(hit, targetBlock)) dataList.add(data);
+//            }
+//        }
+//
+//        if (dataList.isEmpty()) return lastRotation.getPitch();
+//
+//        dataList.sort(Comparator.comparingDouble(data -> Math.abs(mc.thePlayer.rotationPitch) - data.rotation().getPitch()));
+//
+//        RotData rotData = dataList.getFirst();
+//        if (handleMouse) lastRotation = rotData.rotation();
+//
+//        return rotData.rotation().getPitch();
+//    }
+//
+//    private Vec3 getFacePoint(BlockPos pos, EnumFacing side, boolean top) {
+//        double x = pos.getX() + 0.5;
+//        double y = pos.getY() + (top ? 1 : 0);
+//        double z = pos.getZ() + 0.5;
+//
+//        switch (side) {
+//            case DOWN -> y = pos.getY();
+//            case UP -> y = pos.getY() + 1;
+//            case NORTH -> z = pos.getZ();
+//            case SOUTH -> z = pos.getZ() + 1;
+//            case WEST -> x = pos.getX();
+//            case EAST -> x = pos.getX() + 1;
+//        }
+//
+//        return new Vec3(x, y, z);
+//    }
+//
+//    private Vec3 getFaceSidePoint(BlockPos pos, EnumFacing side, boolean right) {
+//        double x = pos.getX() + 0.5;
+//        double z = pos.getZ() + 0.5;
+//
+//        if (side.getFrontOffsetX() != 0) x = pos.getX() + (side.getFrontOffsetX() > 0 ? 1 : 0);
+//        if (side.getFrontOffsetZ() != 0) z = pos.getZ() + (side.getFrontOffsetZ() > 0 ? 1 : 0);
+//
+//        double rx = side.getFrontOffsetZ();
+//        double rz = -side.getFrontOffsetX();
+//
+//        if (!right) {
+//            rx = -rx;
+//            rz = -rz;
+//        }
+//
+//        x += 0.5 * rx;
+//        z += 0.5 * rz;
+//
+//        double y = pos.getY() + (side.getAxis() == EnumFacing.Axis.Y ? 1 : 0.5);
+//
+//        return new Vec3(x, y, z);
+//    }
 
     private Rot getBestRotation(float yawOffset, float offset, boolean sortOffset, float step) {
         List<RotData> validRotations = new ArrayList<>();

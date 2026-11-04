@@ -6,6 +6,7 @@ import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.IslandComponent;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.IslandContext;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.impl.*;
 import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.ColorSetting;

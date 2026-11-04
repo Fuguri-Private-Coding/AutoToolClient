@@ -112,10 +112,10 @@ public class Fucker extends Module {
 
             Rot needRot = RotUtils.getBestRotation(bb);
 
-            Rot delta = mc.thePlayer.getRotation().deltaTo(needRot);
+            Rot delta = mc.thePlayer.getRotations().deltaTo(needRot);
 
             CameraRot.INST.setUnlocked(true);
-            mc.thePlayer.moveRotation(delta.fix());
+            mc.thePlayer.moveRotation(delta.fixed());
 
             if (!lastPos.equals(blockPos)) {
                 reset();

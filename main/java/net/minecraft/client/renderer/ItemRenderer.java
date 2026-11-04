@@ -324,8 +324,8 @@ public class ItemRenderer {
             float f1 = abstractclientplayer.getSwingProgress(partialTicks);
             CameraRot camera = CameraRot.INST;
 
-            float f2 = camera.getPrevRot().getPitch() + (camera.getPitch() - camera.getPrevRot().getPitch()) * partialTicks;
-            float f3 = camera.getPrevRot().getYaw() + (camera.getYaw() - camera.getPrevRot().getYaw()) * partialTicks;
+            float f2 = camera.getPrev().getPitch() + (camera.getPitch() - camera.getPrev().getPitch()) * partialTicks;
+            float f3 = camera.getPrev().getYaw() + (camera.getYaw() - camera.getPrev().getYaw()) * partialTicks;
             this.rotateArroundXAndY(f2, f3);
             this.setLightMapFromPlayer(abstractclientplayer);
             this.rotateWithPlayerRotations(abstractclientplayer, partialTicks);

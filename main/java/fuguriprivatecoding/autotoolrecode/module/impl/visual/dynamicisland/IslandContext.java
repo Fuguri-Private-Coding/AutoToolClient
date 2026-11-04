@@ -1,4 +1,4 @@
-package fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.impl;
+package fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland;
 
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
 import fuguriprivatecoding.autotoolrecode.utils.sound.music.MediaController;

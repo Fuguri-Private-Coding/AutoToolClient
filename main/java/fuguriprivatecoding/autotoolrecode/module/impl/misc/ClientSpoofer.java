@@ -9,13 +9,16 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
 public class ClientSpoofer extends Module {
 
     public Mode brand = new Mode("Brand", this)
-            .addModes("LunarClient", "LabyMod", "FML", "Optifine", "Forge")
-            .setMode("LunarClient");
+            .addModes("LunarClient", "LabyMod", "Optifine", "Badlion")
+            .setMode("Badlion");
 
     public String getBrand() {
         switch (brand.getMode()) {
+            case "Badlion" -> {
+                return "badlion";
+            }
             case "LunarClient" -> {
-                return "LunarClient";
+                return "lunaclient:v2.23.12-2644";
             }
 
             case "LabyMod" -> {
@@ -24,14 +27,6 @@ public class ClientSpoofer extends Module {
 
             case "Optifine" -> {
                 return "optifine";
-            }
-
-            case "FML" -> {
-                return "fml,forge";
-            }
-
-            case "Forge" -> {
-                return "forge";
             }
         }
         return "";

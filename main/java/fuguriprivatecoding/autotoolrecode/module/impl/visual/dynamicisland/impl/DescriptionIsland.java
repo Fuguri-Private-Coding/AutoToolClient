@@ -4,6 +4,7 @@ import fuguriprivatecoding.autotoolrecode.gui.clickgui.ClickScreen;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.IslandComponent;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.IslandContext;
 
 public class DescriptionIsland extends IslandComponent {
     private final String text;

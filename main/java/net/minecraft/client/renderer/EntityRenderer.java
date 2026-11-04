@@ -1,11 +1,10 @@
 package net.minecraft.client.renderer;
 
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.gson.JsonSyntaxException;
 import fuguriprivatecoding.autotoolrecode.event.events.render.*;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.module.impl.combat.Hitbox;
-import fuguriprivatecoding.autotoolrecode.module.impl.combat.Reach;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.Shader;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.BloomUtils;
@@ -106,6 +105,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
     private int rendererUpdateCount;
     private MouseFilter mouseFilterXAxis = new MouseFilter();
     private MouseFilter mouseFilterYAxis = new MouseFilter();
+    private Entity pointedEntity;
     private final float thirdPersonDistance = 4.0F;
     private float thirdPersonDistanceTemp = 4.0F;
     private float smoothCamYaw;
@@ -353,16 +353,17 @@ public class EntityRenderer implements IResourceManagerReloadListener {
         if (entity != null && this.mc.theWorld != null) {
             this.mc.mcProfiler.startSection("pick");
             this.mc.pointedEntity = null;
-            double d0 = this.mc.playerController.getBlockReachDistance() + Reach.getAddRange();
+            double d0 = (double) this.mc.playerController.getBlockReachDistance();
             this.mc.rayTrace = entity.rayTrace(d0, partialTicks);
             double d1 = d0;
             Vec3 vec3 = entity.getPositionEyes(partialTicks);
             boolean flag = false;
+            int i = 3;
 
             if (this.mc.playerController.extendedReach()) {
                 d0 = 6.0D;
                 d1 = 6.0D;
-            } else if (d0 > 3.0D + Reach.getAddRange()) {
+            } else if (d0 > 3.0D) {
                 flag = true;
             }
 
@@ -372,20 +373,25 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
             Vec3 vec31 = entity.getLook(partialTicks);
             Vec3 vec32 = vec3.addVector(vec31.xCoord * d0, vec31.yCoord * d0, vec31.zCoord * d0);
-            Entity pointedEntity = null;
+            this.pointedEntity = null;
             Vec3 vec33 = null;
             float f = 1.0F;
-            List<Entity> list = this.mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec31.xCoord * d0, vec31.yCoord * d0, vec31.zCoord * d0).expand((double) f, (double) f, (double) f), Predicates.and(EntitySelectors.NOT_SPECTATING, Entity::canBeCollidedWith));
+            List<Entity> list = this.mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec31.xCoord * d0, vec31.yCoord * d0, vec31.zCoord * d0).expand((double) f, (double) f, (double) f), Predicates.and(EntitySelectors.NOT_SPECTATING, new Predicate<Entity>() {
+                public boolean apply(Entity p_apply_1_) {
+                    return p_apply_1_.canBeCollidedWith();
+                }
+            }));
             double d2 = d1;
 
-            for (Entity entity1 : list) {
-                float f1 = (float) (entity1.getCollisionBorderSize() + Hitbox.getExpand());
-                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand(f1, f1, f1);
+            for (int j = 0; j < list.size(); ++j) {
+                Entity entity1 = (Entity) list.get(j);
+                float f1 = entity1.getCollisionBorderSize();
+                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand((double) f1, (double) f1, (double) f1);
                 RayTrace movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
 
                 if (axisalignedbb.isVecInside(vec3)) {
                     if (d2 >= 0.0D) {
-                        pointedEntity = entity1;
+                        this.pointedEntity = entity1;
                         vec33 = movingobjectposition == null ? vec3 : movingobjectposition.hitVec;
                         d2 = 0.0D;
                     }
@@ -396,16 +402,16 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                         boolean flag1 = false;
 
                         if (Reflector.ForgeEntity_canRiderInteract.exists()) {
-                            flag1 = Reflector.callBoolean(entity1, Reflector.ForgeEntity_canRiderInteract);
+                            flag1 = Reflector.callBoolean(entity1, Reflector.ForgeEntity_canRiderInteract, new Object[0]);
                         }
 
                         if (!flag1 && entity1 == entity.ridingEntity) {
                             if (d2 == 0.0D) {
-                                pointedEntity = entity1;
+                                this.pointedEntity = entity1;
                                 vec33 = movingobjectposition.hitVec;
                             }
                         } else {
-                            pointedEntity = entity1;
+                            this.pointedEntity = entity1;
                             vec33 = movingobjectposition.hitVec;
                             d2 = d3;
                         }
@@ -413,16 +419,16 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                 }
             }
 
-            if (pointedEntity != null && flag && vec3.distanceTo(vec33) > 3.0D + Reach.getAddRange()) {
-                pointedEntity = null;
+            if (this.pointedEntity != null && flag && vec3.distanceTo(vec33) > 3.0D) {
+                this.pointedEntity = null;
                 this.mc.rayTrace = new RayTrace(RayTrace.RayType.MISS, vec33, null, new BlockPos(vec33));
             }
 
-            if (pointedEntity != null && (d2 < d1 || this.mc.rayTrace == null)) {
-                this.mc.rayTrace = new RayTrace(pointedEntity, vec33);
+            if (this.pointedEntity != null && (d2 < d1 || this.mc.rayTrace == null)) {
+                this.mc.rayTrace = new RayTrace(this.pointedEntity, vec33);
 
-                if (pointedEntity instanceof EntityLivingBase || pointedEntity instanceof EntityItemFrame) {
-                    this.mc.pointedEntity = pointedEntity;
+                if (this.pointedEntity instanceof EntityLivingBase || this.pointedEntity instanceof EntityItemFrame) {
+                    this.mc.pointedEntity = this.pointedEntity;
                 }
             }
 

@@ -11,9 +11,10 @@ import net.minecraft.util.Vec3;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.Math.sqrt;
+import static java.lang.Math.*;
 
 public class RotUtils implements Imports {
+
 	public static Vec3 getBestHitVec(Entity entity) {
 		return getBestHitVec(entity.getExpandedBoundingBox());
 	}
@@ -26,25 +27,27 @@ public class RotUtils implements Imports {
         return bb.clampVecToInside(eye);
     }
 
-    public static AxisAlignedBB getHitBox(EntityLivingBase target, double horizontal, double vertical) {
-        AxisAlignedBB box = target.getExpandedBoundingBox();
+	public static AxisAlignedBB getHitBox(EntityLivingBase target, double horizontal, double vertical) {
+		AxisAlignedBB box = target.getExpandedBoundingBox();
 
-        double horizontalPercent = horizontal / 200d;
-        double verticalPercent = vertical / 200d;
+		double horizontalScale = horizontal / 100.0d;
+		double verticalScale = vertical / 100.0d;
 
-        Vec3 center = box.getCenter();
+		Vec3 center = box.getCenter();
 
-        box = new AxisAlignedBB(
-            center.xCoord - box.getLengthX() * horizontalPercent,
-            center.yCoord - box.getLengthY() * verticalPercent,
-            center.zCoord - box.getLengthZ() * horizontalPercent,
-            center.xCoord + box.getLengthX() * horizontalPercent,
-            center.yCoord + box.getLengthY() * verticalPercent,
-            center.zCoord + box.getLengthZ() * horizontalPercent
-        );
+		double halfX = box.getLengthX() / 2.0d;
+		double halfY = box.getLengthY() / 2.0d;
+		double halfZ = box.getLengthZ() / 2.0d;
 
-        return box;
-    }
+		return new AxisAlignedBB(
+			center.xCoord - halfX * horizontalScale,
+			center.yCoord - halfY * verticalScale,
+			center.zCoord - halfZ * horizontalScale,
+			center.xCoord + halfX * horizontalScale,
+			center.yCoord + halfY * verticalScale,
+			center.zCoord + halfZ * horizontalScale
+		);
+	}
 
 	public static Rot getBestRotation(AxisAlignedBB bb) {
 		return getRotationToPoint(getBestHitVec(bb));

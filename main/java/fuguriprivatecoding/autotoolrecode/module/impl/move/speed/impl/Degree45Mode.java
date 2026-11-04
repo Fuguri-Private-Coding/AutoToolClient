@@ -40,9 +40,9 @@ public class Degree45Mode extends AbstractSpeedMode {
 
             Rot rotation = new Rot(yaw, CameraRot.INST.getPitch());
 
-            Rot delta = mc.thePlayer.getRotation().deltaTo(rotation);
+            Rot delta = mc.thePlayer.getRotations().deltaTo(rotation);
             CameraRot.INST.setUnlocked(true);
-            mc.thePlayer.moveRotation(delta.fix());
+            mc.thePlayer.moveRotation(delta.fixed());
         }
         
         if (event instanceof MoveEvent e) {

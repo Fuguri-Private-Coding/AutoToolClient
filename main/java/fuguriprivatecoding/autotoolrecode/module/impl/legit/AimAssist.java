@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -57,12 +57,12 @@ public class AimAssist extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.POST) {
+        if (event instanceof TickEvent) {
             List<EntityLivingBase> entityList = TargetFinder.findTarget(distance.getValue(), targets.get("Players"), targets.get("Mobs"), targets.get("Animals"), targets.get("Villagers"));
 
             entityList.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
 
-            TargetStorage.setTarget(entityList.getFirst());
+            TargetStorage.setTarget(entityList.isEmpty() ? null : entityList.getFirst());
 
             EntityLivingBase target = TargetStorage.getTarget();
 
@@ -73,7 +73,7 @@ public class AimAssist extends Module {
             if (workingWhile.get("Sprinting") && !mc.thePlayer.isSprinting()) return;
             if (workingWhile.get("MouseHolding") && !Mouse.isButtonDown(0)) return;
 
-            Rot lr = mc.thePlayer.getRotation();
+            Rot lr = mc.thePlayer.getRotations();
 
             AxisAlignedBB box = RotUtils.getHitBox(target, hBoxSize.getValue(), vBoxSize.getValue());
 
@@ -98,7 +98,7 @@ public class AimAssist extends Module {
     private Rot getRotation(EntityLivingBase target, AxisAlignedBB box) {
         Rot needRot = switch (hitVec.getMode()) {
             case "Best" -> RotUtils.getBestRotation(box);
-            case "Nearest" -> RotUtils.getNearestRotation(mc.thePlayer.getRotation(), box);
+            case "Nearest" -> RotUtils.getNearestRotation(mc.thePlayer.getRotations(), box);
             case "Head" -> RotUtils.getRotationToPoint(target.getPositionEyes(1f));
             case "Body" -> RotUtils.getRotationToPoint(target.getPositionVector().addVector(0, target.height / 2f, 0));
             default -> null;

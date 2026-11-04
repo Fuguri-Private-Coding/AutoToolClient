@@ -1,6 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.impl;
 
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.IslandComponent;
+import fuguriprivatecoding.autotoolrecode.module.impl.visual.dynamicisland.IslandContext;
 import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
 import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.TextureUtils;
 import net.minecraft.util.ResourceLocation;

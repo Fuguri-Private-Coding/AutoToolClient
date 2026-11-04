@@ -24,7 +24,7 @@ public class NeuralNet implements Imports {
 
     private float[] input(EntityLivingBase target) {
         if (mc.thePlayer == null) return new float[INPUT_LENGTH];
-        Rot delta = RotUtils.getDeltaToPoint(mc.thePlayer.getRotation(), RotUtils.getBestHitVec(target));
+        Rot delta = RotUtils.getDeltaToPoint(mc.thePlayer.getRotations(), RotUtils.getBestHitVec(target));
 
         Vec3 targetMotion = target.getPositionVector().subtract(target.getLastPositionVector());
         Vec3 playerMotion = mc.thePlayer.getPositionVector().subtract(mc.thePlayer.getLastPositionVector());

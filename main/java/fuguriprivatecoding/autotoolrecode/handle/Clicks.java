@@ -2,8 +2,8 @@ package fuguriprivatecoding.autotoolrecode.handle;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.EventListener;
-import fuguriprivatecoding.autotoolrecode.event.events.player.BestClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.LegitClickTimingEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.ClickSettings;
@@ -38,7 +38,7 @@ public class Clicks implements Imports, EventListener {
     public void onEvent(Event event) {
         EntityLivingBase target = TargetStorage.getTargetOrSelectedEntity();
 
-        if (event instanceof BestClickTimingEvent) {
+        if (event instanceof LegitClickTimingEvent) {
             boolean clicking = needClick(target);
 
             int iters = clicks;

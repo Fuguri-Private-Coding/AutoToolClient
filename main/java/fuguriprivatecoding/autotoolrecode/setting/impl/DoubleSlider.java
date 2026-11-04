@@ -2,32 +2,14 @@ package fuguriprivatecoding.autotoolrecode.setting.impl;
 
 import com.google.gson.JsonObject;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
-import fuguriprivatecoding.autotoolrecode.utils.animation.Easing;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.gui.GuiUtils;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
 import fuguriprivatecoding.autotoolrecode.utils.math.MathUtils;
 import fuguriprivatecoding.autotoolrecode.utils.math.RandomUtils;
-import fuguriprivatecoding.autotoolrecode.utils.render.color.Colors;
-import fuguriprivatecoding.autotoolrecode.utils.render.font.ClientFont;
-import fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.RoundedUtils;
-import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
-import imgui.ImGui;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.gui.ScaledResolution;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.lwjgl.LWJGLUtil;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
-import java.awt.*;
 import java.util.function.BooleanSupplier;
-
-import static fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports.mc;
-import static java.lang.Math.round;
-import static java.lang.Math.signum;
 
 @Getter
 @Setter
@@ -65,6 +47,28 @@ public class DoubleSlider extends Setting {
         this.maxValue = value;
         this.animatedValueMin = value;
         this.animatedValueMax = value;
+        this.step = step;
+    }
+
+    public DoubleSlider(String name, SettingAble parent, double min, double max, double minValue, double maxValue, double step) {
+        super(name, parent);
+        this.min = min;
+        this.max = max;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.animatedValueMin = minValue;
+        this.animatedValueMax = maxValue;
+        this.step = step;
+    }
+
+    public DoubleSlider(String name, SettingAble parent, BooleanSupplier visible, double min, double max, double minValue, double maxValue, double step) {
+        super(name, parent, visible);
+        this.min = min;
+        this.max = max;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.animatedValueMin = minValue;
+        this.animatedValueMax = maxValue;
         this.step = step;
     }
 

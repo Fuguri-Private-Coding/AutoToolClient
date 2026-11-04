@@ -289,8 +289,8 @@ public class RenderManager
             if (livingPlayerIn == Minecraft.getMinecraft().thePlayer) {
                 CameraRot camera = CameraRot.INST;
 
-                this.playerViewY = camera.getPrevRot().getYaw() + (camera.getYaw() - camera.getPrevRot().getYaw()) * partialTicks;
-                this.playerViewX = camera.getPrevRot().getPitch() + (camera.getPitch() - camera.getPrevRot().getPitch()) * partialTicks;
+                this.playerViewY = camera.getPrev().getYaw() + (camera.getYaw() - camera.getPrev().getYaw()) * partialTicks;
+                this.playerViewX = camera.getPrev().getPitch() + (camera.getPitch() - camera.getPrev().getPitch()) * partialTicks;
             } else {
                 this.playerViewY = livingPlayerIn.prevRotationYaw + (livingPlayerIn.rotationYaw - livingPlayerIn.prevRotationYaw) * partialTicks;
                 this.playerViewX = livingPlayerIn.prevRotationPitch + (livingPlayerIn.rotationPitch - livingPlayerIn.prevRotationPitch) * partialTicks;
