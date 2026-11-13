@@ -20,9 +20,6 @@ public class Config {
     @Getter private final File file;
     private Date lastUpdateDate;
 
-    private final JsonParser PARSER = new JsonParser();
-    private final Gson GSON = new GsonBuilder().create();
-
     public Config(String name) {
        this.name = name;
        file = new File(Configs.CONFIG_DIRECTORY, name + CONFIG_FORMAT);
@@ -45,7 +42,7 @@ public class Config {
 
     public void load() {
         try (Reader reader = new FileReader(getFile())) {
-            JsonObject json = PARSER.parse(reader).getAsJsonObject();
+            JsonObject json = Configs.JSON_PARSER.parse(reader).getAsJsonObject();
 
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
                 if ("ConfigInformation".equals(entry.getKey())) continue;
@@ -79,7 +76,7 @@ public class Config {
         }
 
         try (FileWriter writer = new FileWriter(file)) {
-            GSON.toJson(mainObject, writer);
+            Configs.GSON.toJson(mainObject, writer);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

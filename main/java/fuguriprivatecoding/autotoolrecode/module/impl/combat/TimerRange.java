@@ -14,7 +14,6 @@ import fuguriprivatecoding.autotoolrecode.setting.impl.CheckBox;
 import fuguriprivatecoding.autotoolrecode.setting.impl.FloatSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.IntegerSetting;
 import fuguriprivatecoding.autotoolrecode.setting.impl.Mode;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.PlayerUtils;
 import fuguriprivatecoding.autotoolrecode.utils.player.distance.DistanceUtils;
 import fuguriprivatecoding.autotoolrecode.utils.predict.SimulatedPlayer;
@@ -60,11 +59,7 @@ public class TimerRange extends Module {
         }
 
         if (event instanceof BestClickTimingEvent && click) {
-            ClientUtils.chatLog("ClickDistance: " + String.format("%.2f", DistanceUtils.getDistance(target)));
-            ClientUtils.chatLog(mc.rayTrace.toString());
-            mc.entityRenderer.getMouseOver(1f);
             if (mc.rayTrace.entityHit == target)  {
-                ClientUtils.chatLog("Clicked");
                 mc.clickMouse();
             }
             click = false;
@@ -106,7 +101,6 @@ public class TimerRange extends Module {
         if (event instanceof TickEvent e && !teleporting) {
             if (balance > 0) {
                 e.cancel();
-                mc.timer.elapsedTicks = 0;
                 balance--;
                 return;
             }
@@ -137,9 +131,6 @@ public class TimerRange extends Module {
 
                 if (distance > 3.0D || distance < 2.0D + factor)
                     continue;
-
-                ClientUtils.chatLog("TeleportDistance: " + String.format("%.2f", distance));
-                ClientUtils.chatLog("Tick: " + process.tick);
 
                 teleportTicks = process.tick;
                 break;

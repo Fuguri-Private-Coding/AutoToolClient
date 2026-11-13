@@ -243,7 +243,8 @@ public class Ping extends Module {
             case ItemEnderPearl _ when actions.get("UsingPearl") -> reset(usingPearlDelay.getValue());
             default -> {
                 if (actions.get("PlaceBlock")) {
-                    reset(placeBlockDelay.getValue());                }
+                    reset(placeBlockDelay.getValue());
+                }
             }
         }
     }

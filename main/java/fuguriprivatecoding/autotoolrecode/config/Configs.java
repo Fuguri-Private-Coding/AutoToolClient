@@ -31,9 +31,9 @@ public class Configs implements Imports {
     @Getter Config defaultConfig = new Config("default");
     @Getter @Setter Config lastLoadedConfig = new Config("default");
 
-    private final Gson GSON = new Gson();
-    private final GsonBuilder GSON_BUILDER = new GsonBuilder();
-    private final JsonParser JSON_PARSER = new JsonParser();
+    public static final Gson GSON = new Gson();
+    public static final GsonBuilder GSON_BUILDER = new GsonBuilder();
+    public static final JsonParser JSON_PARSER = new JsonParser();
 
     public void init() {
         if (CONFIG_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию для конфигов.");

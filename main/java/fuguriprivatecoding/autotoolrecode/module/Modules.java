@@ -30,7 +30,6 @@ public class Modules {
 
 	public void init() {
 		new AutoSoup();
-		new KillAura();
 		new AspectRatio();
 		new DynamicIsland();
 		new AutoRegister();
@@ -89,6 +88,7 @@ public class Modules {
 		new FullBright();
 		new ClientSpoofer();
 		new TimerRange();
+		new KillAura();
 		new ClickGui();
 		new Fixes();
 		new FlagDetector();
