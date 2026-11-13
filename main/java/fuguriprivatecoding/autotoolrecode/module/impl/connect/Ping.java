@@ -213,7 +213,7 @@ public class Ping extends Module {
                     case "HitBox" -> {
                         RenderUtils.start3D();
                         Vec3 diff = pos.subtract(mc.thePlayer.getPositionVector());
-                        AxisAlignedBB bb = mc.thePlayer.getEntityBoundingBox().offset(diff);
+                        AxisAlignedBB bb = mc.thePlayer.getExpandedBoundingBox().offset(diff);
                         if (glow.isToggled()) {
                             BloomUtils.startWrite();
                             RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue());

@@ -10,9 +10,9 @@ import fuguriprivatecoding.autotoolrecode.module.impl.visual.Notifications;
 import fuguriprivatecoding.autotoolrecode.setting.Setting;
 import fuguriprivatecoding.autotoolrecode.utils.Utils;
 import fuguriprivatecoding.autotoolrecode.utils.animation.EasingAnimation;
-import fuguriprivatecoding.autotoolrecode.utils.sound.Sounds;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.Imports;
 import fuguriprivatecoding.autotoolrecode.utils.interfaces.SettingAble;
+import fuguriprivatecoding.autotoolrecode.utils.sound.Sounds;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -44,7 +44,6 @@ public class Module implements Imports, SettingAble, EventListener, KeyListener 
 
 		Modules.getInstance().register(this);
 		registerToKeyBinds();
-		registerToEvents();
 	}
 
 	public void setToggled(boolean toggled) {
@@ -53,6 +52,12 @@ public class Module implements Imports, SettingAble, EventListener, KeyListener 
 
 	public void toggle() {
 		toggled = !toggled;
+
+		if (toggled) {
+			registerToEvents();
+		} else {
+			unRegisterToEvents();
+		}
 
         ClientSettings clientSettings = Modules.getInstance().getModule(ClientSettings.class);
 

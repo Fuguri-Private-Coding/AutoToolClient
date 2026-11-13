@@ -102,16 +102,18 @@ public class BackTrack extends Module {
                 Vec3 targetPosition = target.getNPosition().subtract(target.getPositionVector());
                 double distance = DistanceUtils.getDistance(target.getExpandedBoundingBox().offset(targetPosition));
 
-                if (distance > 3) ClientUtils.chatLog("Distance: " + String.format("%.2f", distance) + ", Offset: " + String.format("%.2f", distance - 3));
+                if (distance > 3)
+                    ClientUtils.chatLog("Distance: " + String.format("%.2f", distance) + ", Offset: " + String.format("%.2f", distance - 3));
             }
 
-            if (target == null || e.isCanceled() || e.getDirection() == PacketDirection.OUTGOING || packet instanceof S03PacketTimeUpdate) return;
+            if (target == null || e.isCanceled() || e.getDirection() == PacketDirection.OUTGOING || packet instanceof S03PacketTimeUpdate)
+                return;
 
             if ((packet instanceof S06PacketUpdateHealth
-                    || packet instanceof S02PacketChat
-                    || packet instanceof S19PacketEntityStatus
-                    || packet instanceof S29PacketSoundEffect)
-                    && realTimeDamage.isToggled()) return;
+                || packet instanceof S02PacketChat
+                || packet instanceof S19PacketEntityStatus
+                || packet instanceof S29PacketSoundEffect)
+                && realTimeDamage.isToggled()) return;
 
             if (packet instanceof S13PacketDestroyEntities s13) {
                 for (int entityID : s13.getEntityIDs()) {
@@ -129,7 +131,8 @@ public class BackTrack extends Module {
 
         if (event instanceof TickEvent) {
             if (working) {
-                if (constantRandomize.isToggled() && constantRandomSupplier.getAsBoolean()) saveDelay = delay.getRandomizedIntValue();
+                if (constantRandomize.isToggled() && constantRandomSupplier.getAsBoolean())
+                    saveDelay = delay.getRandomizedIntValue();
 
                 if (adaptiveDelay.isToggled()) {
                     double minDistanceDelay = DistanceUtils.getDistance(target) / Math.clamp(this.distance.getMinValue(), 0, 3);
@@ -156,71 +159,70 @@ public class BackTrack extends Module {
 
             handle(false);
 
-            if (target != null) {
-                Vec3 realPos = target.getNPosition();
+            if (target == null)
+                return;
 
-                AxisAlignedBB realBox = target.getExpandedBoundingBox().offset(realPos.subtract(target.getPositionVector()));
+            Vec3 realPos = target.getNPosition();
 
-                double distanceToReal = DistanceUtils.getDistance(realBox);
-                double distanceToFake = DistanceUtils.getDistance(target);
+            AxisAlignedBB realBox = target.getExpandedBoundingBox().offset(realPos.subtract(target.getPositionVector()));
 
-                boolean improve = distanceToFake + threshold.getValue() >= distanceToReal;
+            double distanceToReal = DistanceUtils.getDistance(realBox);
+            double distanceToFake = DistanceUtils.getDistance(target);
 
-                boolean distance = distanceToReal > this.distance.getMaxValue() || distanceToReal < this.distance.getMinValue();
+            boolean improve = distanceToFake + threshold.getValue() < distanceToReal;
 
-                boolean targetHurtTime = target.hurtTime > minTargetHurtTime.getValue() && resetIf.get("TargetHurtTime");
-                boolean playerHurtTime = mc.thePlayer.hurtTime > minPlayerHurtTime.getValue() && resetIf.get("PlayerHurtTime");
+            boolean distance = distanceToReal <= this.distance.getMaxValue() && distanceToReal >= this.distance.getMinValue();
 
-                boolean onlyWhenNeed = this.onlyWhenNeed.isToggled() && mc.thePlayer.hurtTime < 8 && mc.thePlayer.hurtTime > 3 && distanceToReal > 3;
+            boolean targetHurtTime = !resetIf.get("TargetHurtTime") || target.hurtTime <= minTargetHurtTime.getValue();
+            boolean playerHurtTime = !resetIf.get("PlayerHurtTime") || mc.thePlayer.hurtTime <= minPlayerHurtTime.getValue();
 
-                working = !improve && !distance && !targetHurtTime && !playerHurtTime && !onlyWhenNeed;
+            boolean onlyWhenNeed = !this.onlyWhenNeed.isToggled() || (mc.thePlayer.hurtTime < 8 && mc.thePlayer.hurtTime > 3 && distanceToReal > 3);
 
-                if (!working) {
-                    handle(true);
+            working = improve && distance && targetHurtTime && playerHurtTime && onlyWhenNeed;
 
-                    delayBetweenBackTracks = delayBetweenTicks.getValue();
-                    saveDelay = delay.getRandomizedIntValue();
-                    currentDelay = saveDelay;
+            if (!working) {
+                handle(true);
 
-                    if (renderOnlyIfWorking.isToggled()) return;
+                delayBetweenBackTracks = delayBetweenTicks.getValue();
+                saveDelay = delay.getRandomizedIntValue();
+                currentDelay = saveDelay;
+
+                if (renderOnlyIfWorking.isToggled()) return;
+            }
+
+            realPos = target.getRealPosition();
+
+            AxisAlignedBB bb = target.getExpandedBoundingBox().offset(realPos.subtract(target.getPositionVector()));
+            switch (render.getMode()) {
+                case "Player" -> {
+                    if (glow.isToggled()) {
+                        BloomUtils.startWrite();
+                        RenderUtils.renderPlayer(target, realPos, target.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor());
+                        BloomUtils.stopWrite();
+                    }
+                    RenderUtils.renderPlayer(target, realPos, target.rotationYawHead, mc.timer.renderPartialTicks);
                 }
 
-                realPos = target.getRealPosition();
-
-                AxisAlignedBB bb = target.getEntityBoundingBox().offset(realPos.subtract(target.getPositionVector()));
-
-                Vec3 finalRealPos = realPos;
-                switch (render.getMode()) {
-                    case "Player" -> {
-                        if (glow.isToggled()) {
-                            BloomUtils.startWrite();
-                            RenderUtils.renderPlayer(target, finalRealPos, target.rotationYawHead, mc.timer.renderPartialTicks, glowColor.getFadedColor());
-                            BloomUtils.stopWrite();
-                        }
-                        RenderUtils.renderPlayer(target, realPos, target.rotationYawHead, mc.timer.renderPartialTicks);
+                case "Box" -> {
+                    RenderUtils.start3D();
+                    if (glow.isToggled()) {
+                        BloomUtils.startWrite();
+                        RenderUtils.drawBoundingBox(bb, glowColor.getFadedColor());
+                        BloomUtils.stopWrite();
                     }
+                    RenderUtils.drawBoundingBox(bb, color.getFadedColor());
+                    RenderUtils.stop3D();
+                }
 
-                    case "Box" -> {
-                        RenderUtils.start3D();
-                        if (glow.isToggled()) {
-                            BloomUtils.startWrite();
-                            RenderUtils.drawBoundingBox(bb, glowColor.getFadedColor());
-                            BloomUtils.stopWrite();
-                        }
-                        RenderUtils.drawBoundingBox(bb, color.getFadedColor());
-                        RenderUtils.stop3D();
+                case "HitBox" -> {
+                    RenderUtils.start3D();
+                    if (glow.isToggled()) {
+                        BloomUtils.startWrite();
+                        RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue());
+                        BloomUtils.stopWrite();
                     }
-
-                    case "HitBox" -> {
-                        RenderUtils.start3D();
-                        if (glow.isToggled()) {
-                            BloomUtils.startWrite();
-                            RenderUtils.drawHitBox(bb, glowColor.getFadedColor(), lineWidth.getValue());
-                            BloomUtils.stopWrite();
-                        }
-                        RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());
-                        RenderUtils.stop3D();
-                    }
+                    RenderUtils.drawHitBox(bb, color.getFadedColor(), lineWidth.getValue());
+                    RenderUtils.stop3D();
                 }
             }
         }

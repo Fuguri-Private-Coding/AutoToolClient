@@ -81,7 +81,7 @@ public class Blink extends Module {
                 case "HitBox" -> {
                     RenderUtils.start3D();
                     Vec3 diff = pos.subtract(mc.thePlayer.getPositionVector());
-                    RenderUtils.drawHitBox(mc.thePlayer.getEntityBoundingBox().offset(diff), color.getFadedColor(), lineWidth.getValue());
+                    RenderUtils.drawHitBox(mc.thePlayer.getExpandedBoundingBox().offset(diff), color.getFadedColor(), lineWidth.getValue());
                     RenderUtils.stop3D();
                 }
 

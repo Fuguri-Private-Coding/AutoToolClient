@@ -7,4 +7,8 @@ public interface EventListener {
     default void registerToEvents() {
         EventCaller.getInstance().register(this);
     }
+
+    default void unRegisterToEvents() {
+        EventCaller.getInstance().unRegister(this);
+    }
 }

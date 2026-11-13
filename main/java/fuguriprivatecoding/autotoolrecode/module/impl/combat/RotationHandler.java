@@ -30,13 +30,10 @@ public class RotationHandler extends Module {
                 Rot speed = new Rot((float) yawSpeed.getRandomizedDoubleValue(), (float) pitchSpeed.getRandomizedDoubleValue());
 
                 Rot delta = mc.thePlayer.getRotations().deltaTo(CameraRot.INST).limitedLine(speed);
-
                 delta = lastDelta.lerp(delta, (float) mixDelta.getRandomizedIntValue() / 100f);
-
                 lastDelta = delta;
 
                 mc.thePlayer.moveRotation(delta.fixed());
-
                 delta = mc.thePlayer.getRotations().deltaTo(CameraRot.INST);
 
                 if (delta.lengthFloat() <= RotUtils.getMouseGCD()) {

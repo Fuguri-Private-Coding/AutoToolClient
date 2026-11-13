@@ -94,8 +94,6 @@ public class RenderUtils implements Imports {
     }
 
     public void drawHitBox(AxisAlignedBB bb, Color color, float lineWidth) {
-        bb = bb.expand(0.1f);
-
         drawBoundingBox(bb, color);
 
         if (lineWidth >= 1) {

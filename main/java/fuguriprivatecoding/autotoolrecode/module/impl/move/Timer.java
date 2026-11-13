@@ -12,8 +12,11 @@ public class Timer extends Module {
 
 	FloatSetting timerSpeed = new FloatSetting("TimerSpeed", this, 0.1f, 10f, 2f, 0.1f) {};
 
-	public void onDisable() {
-		mc.timer.timerSpeed = 1.0F;
+	@Override
+	public void onTick(boolean pressed) {
+		if (!pressed) {
+			mc.timer.timerSpeed = 1.0F;
+		}
 	}
 
 	@Override

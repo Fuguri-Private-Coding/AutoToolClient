@@ -10,8 +10,6 @@ import fuguriprivatecoding.autotoolrecode.module.Modules;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.AntiBot;
 import fuguriprivatecoding.autotoolrecode.module.impl.combat.Teams;
 import fuguriprivatecoding.autotoolrecode.module.impl.misc.MidClick;
-import fuguriprivatecoding.autotoolrecode.module.impl.misc.Test;
-import fuguriprivatecoding.autotoolrecode.module.impl.misc.Test2;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.Phase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
@@ -166,10 +164,8 @@ public abstract class EntityPlayer extends EntityLivingBase {
 
     public void onUpdate() {
         Phase phase = Modules.getInstance().getModule(Phase.class);
-        Test test = Modules.getInstance().getModule(Test.class);
-        Test2 test2 = Modules.getInstance().getModule(Test2.class);
 
-        this.noClip = phase.isToggled() || this.isSpectator() || test.shouldNoclip() || test2.isVonyat();
+        this.noClip = phase.isToggled() || this.isSpectator();
 
         if (this.isSpectator()) {
             this.onGround = false;

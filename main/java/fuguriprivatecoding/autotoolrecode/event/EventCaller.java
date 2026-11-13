@@ -14,7 +14,13 @@ public class EventCaller {
     private final List<EventListener> listeners = new ArrayList<>();
 
     void register(EventListener listener) {
-        listeners.add(listener);
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    void unRegister(EventListener listener) {
+        listeners.remove(listener);
     }
 
     void call(Event event, boolean onlyInWorld) {

@@ -42,7 +42,6 @@ public class Modules {
 		new CPSBooster();
 		new Trajectory();
 		new FastBreak();
-		new Test2();
 		new Regen();
 		new Reach();
 		new Teams();
@@ -100,7 +99,6 @@ public class Modules {
 		new ClickSettings();
 		new NameTags();
 		new NoRender();
-		new Test();
 		new MidClick();
 		new CustomCape();
 		new InvClicker();
