@@ -109,9 +109,9 @@ public class NameTags extends Module {
         float nameWidth = mc.fontRendererObj.getStringWidth(name);
 
         float backgroundX = -nameWidth / 2f - 2.5f;
-        float backgroundY = 0;
-        float backgroundWidth = nameWidth + 5;
-        float backgroundHeight = mc.fontRendererObj.FONT_HEIGHT + 4;
+        float backgroundY = 0f;
+        float backgroundWidth = nameWidth + 2f;
+        float backgroundHeight = mc.fontRendererObj.FONT_HEIGHT + 2;
 
         if (background.isToggled()) {
             Gui.drawRect(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight, glow ? glowColor.getFadedColor().getRGB() : backgroundColor.getFadedColor().getRGB());
@@ -119,7 +119,9 @@ public class NameTags extends Module {
 
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
-        mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f + 1.25f, backgroundY + 3 + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
+        if (!background.isToggled() || !glow) {
+            mc.fontRendererObj.drawString(name, backgroundX + backgroundWidth / 2f - nameWidth / 2f, backgroundY + textYOffset.getValue(), Color.white.getRGB(), textShadow.isToggled());
+        }
 
         glPopMatrix();
     }

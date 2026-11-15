@@ -3,7 +3,6 @@ package fuguriprivatecoding.autotoolrecode.module.impl.combat;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.BestClickTimingEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.MoveEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.PostTickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
@@ -22,9 +21,6 @@ import fuguriprivatecoding.autotoolrecode.utils.time.StopWatch;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @ModuleInfo(name = "TimerRange", category = Category.COMBAT, description = "Телепортирует вас к противнику чтобы вы ударили его первее.")
 public class TimerRange extends Module {
@@ -46,8 +42,6 @@ public class TimerRange extends Module {
     public static int balance = 0;
     int teleportTicks;
 
-    List<PredictProcess> predictList = new CopyOnWriteArrayList<>();
-
     StopWatch timer = new StopWatch();
 
     @Override
@@ -63,31 +57,6 @@ public class TimerRange extends Module {
                 mc.clickMouse();
             }
             click = false;
-        }
-
-        if (event instanceof MoveEvent && !teleporting) {
-            if (balance > 0) {
-                return;
-            }
-
-            predictList.clear();
-
-            if (target == null)
-                return;
-
-            if (!mc.thePlayer.hasMotion(false))
-                return;
-
-            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(
-                mc.thePlayer.movementInput,
-                1,
-                mc.thePlayer.rotationYaw
-            );
-
-            for (int times = 0; times <= maxTicks.getValue(); times++) {
-                predictList.add(new PredictProcess(times, simulatedPlayer));
-                simulatedPlayer.tick();
-            }
         }
 
         if (event instanceof PostTickEvent) {
@@ -111,28 +80,33 @@ public class TimerRange extends Module {
                 return;
             }
 
+            if (!mc.thePlayer.hasMotion(false))
+                return;
+
             Vec3 pos = target.getServerPosition().divide(32.0D).subtract(target.getPositionVector());
 
             AxisAlignedBB box = target.getExpandedBoundingBox()
                 .offset(pos);
 
-            if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) <= 3.0 || !timer.reachedMS(tickDelay.getValue() * 50L) || predictList.isEmpty())
+            if (target.hurtTime > maxTargetHurtTime.getValue() || DistanceUtils.getDistance(box) <= 3.0 || !timer.reachedMS(tickDelay.getValue() * 50L))
                 return;
 
-            for (PredictProcess process : predictList.reversed()) {
-                if (!dynamic.isToggled() && process.tick != maxTicks.getValue())
-                    continue;
+            SimulatedPlayer simulatedPlayer = SimulatedPlayer.fromClientPlayer(
+                mc.thePlayer.movementInput,
+                1,
+                mc.thePlayer.rotationYaw
+            );
 
-                if (process.tick == 0)
-                    continue;
-
-                double distance = DistanceUtils.getDistance(process.player.getPosEyes(), box);
+            for (int times = 0; times <= maxTicks.getValue(); times++) {
+                double distance = DistanceUtils.getDistance(simulatedPlayer.getPosEyes(), box);
                 double factor = idealChance.getValue() / 100D;
 
-                if (distance > 3.0D || distance < 2.0D + factor)
+                if (distance > 3.0D || distance < 2.0D + factor) {
+                    simulatedPlayer.tick();
                     continue;
+                }
 
-                teleportTicks = process.tick;
+                teleportTicks = times;
                 break;
             }
 
@@ -163,6 +137,4 @@ public class TimerRange extends Module {
             default -> false;
         };
     }
-
-    public record PredictProcess(int tick, SimulatedPlayer player) {}
 }

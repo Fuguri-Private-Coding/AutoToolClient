@@ -13,10 +13,14 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 public class Shader implements Imports {
 	final int programId;
+
+	private final Map<String, Integer> locations = new HashMap<>();
 
 	public Shader(ResourceLocation fragmentShaderDir, ResourceLocation vertexShaderDir) {
 		programId = GL20.glCreateProgram();
@@ -122,6 +126,6 @@ public class Shader implements Imports {
     }
 
 	public int getLocation(final String name) {
-		return GL20.glGetUniformLocation(programId, name);
+		return locations.computeIfAbsent(name, n -> GL20.glGetUniformLocation(programId, n));
 	}
 }

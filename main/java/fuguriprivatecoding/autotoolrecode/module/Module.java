@@ -43,6 +43,7 @@ public class Module implements Imports, SettingAble, EventListener, KeyListener 
 		setToggled(annotation.toggled());
 
 		Modules.getInstance().register(this);
+		registerToEvents();
 		registerToKeyBinds();
 	}
 

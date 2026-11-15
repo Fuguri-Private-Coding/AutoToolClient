@@ -12,17 +12,14 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+
 import java.nio.FloatBuffer;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BloomUtils implements Imports {
 
     private static Framebuffer inputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static Framebuffer outputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
     private static GaussianKernel gaussianKernel = new GaussianKernel(0);
-
-    private static final List<Runnable> list = new CopyOnWriteArrayList<>();
 
     private final static Shader program = Shaders.bloom;
 
@@ -36,25 +33,11 @@ public class BloomUtils implements Imports {
         mc.getFramebuffer().bindFramebuffer(true);
     }
 
-    public static void addToDraw(Runnable run) {
-        list.add(run);
-    }
-
-    public static void clear() {
-        list.clear();
-    }
-
     public static void draw() {
         if (glow == null) glow = Modules.getInstance().getModule(Glow.class);
         if (!Display.isActive() || !Display.isVisible() || !glow.isToggled()) return;
 
-        inputFramebuffer.bindFramebuffer(true);
-        for (Runnable runnable : list) {
-            runnable.run();
-        }
-        outputFramebuffer.bindFramebuffer(true);
         program.start();
-
         final int radius = glow.radius.getValue();
         if (gaussianKernel.getSize() != radius) {
             gaussianKernel = new GaussianKernel(radius);
@@ -64,7 +47,7 @@ public class BloomUtils implements Imports {
             buffer.put(gaussianKernel.getKernel());
             buffer.flip();
 
-            program.uniform("radius", (float) radius);
+            program.uniform("radius", radius);
             program.uniform("kernel", buffer);
             program.uniform("image", 0);
             program.uniform("image2", 20);
@@ -74,6 +57,7 @@ public class BloomUtils implements Imports {
         program.uniform("texel_size", 1.0F / mc.displayWidth, 1.0F / mc.displayHeight);
         program.uniform("direction", glow.offset1.getValue(), 0);
 
+        outputFramebuffer.bindFramebuffer(true);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_SRC_ALPHA);
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.0F);
@@ -92,18 +76,16 @@ public class BloomUtils implements Imports {
 
         Shader.stop();
 
-        clear();
-
         update();
     }
 
     public static void update() {
         if (mc.displayWidth != inputFramebuffer.framebufferWidth || mc.displayHeight != inputFramebuffer.framebufferHeight) {
             inputFramebuffer.deleteFramebuffer();
-            inputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
+            inputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
 
             outputFramebuffer.deleteFramebuffer();
-            outputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
+            outputFramebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
         } else {
             inputFramebuffer.framebufferClear();
             outputFramebuffer.framebufferClear();

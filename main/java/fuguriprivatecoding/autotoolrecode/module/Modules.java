@@ -29,6 +29,7 @@ public class Modules {
 	private final Map<Class<? extends Module>, Module> classModuleMap = new HashMap<>();
 
 	public void init() {
+		new Dot();
 		new AutoSoup();
 		new AspectRatio();
 		new DynamicIsland();
@@ -47,7 +48,6 @@ public class Modules {
 		new Teams();
 		new Hitbox();
 		new Blur();
-		new Dot();
 		new FastPlace();
 		new BedESP();
 		new CustomSkin();
