@@ -1,7 +1,7 @@
 package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
-import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.MotionEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -57,12 +57,16 @@ public class AimAssist extends Module {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof TickEvent) {
+        if (event instanceof MotionEvent e && e.getType() == MotionEvent.Type.POST) {
             List<EntityLivingBase> entityList = TargetFinder.findTarget(distance.getValue(), targets.get("Players"), targets.get("Mobs"), targets.get("Animals"), targets.get("Villagers"));
 
-            entityList.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
-
-            TargetStorage.setTarget(entityList.isEmpty() ? null : entityList.getFirst());
+            if (entityList != null) {
+                entityList.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
+                TargetStorage.setTarget(entityList.getFirst());
+            } else {
+                if (TargetStorage.getTarget() != null)
+                    TargetStorage.setTarget(null);
+            }
 
             EntityLivingBase target = TargetStorage.getTarget();
 

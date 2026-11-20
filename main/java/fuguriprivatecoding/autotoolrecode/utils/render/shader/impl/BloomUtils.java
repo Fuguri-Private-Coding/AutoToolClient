@@ -37,6 +37,7 @@ public class BloomUtils implements Imports {
         if (glow == null) glow = Modules.getInstance().getModule(Glow.class);
         if (!Display.isActive() || !Display.isVisible() || !glow.isToggled()) return;
 
+        outputFramebuffer.bindFramebuffer(true);
         program.start();
         final int radius = glow.radius.getValue();
         if (gaussianKernel.getSize() != radius) {

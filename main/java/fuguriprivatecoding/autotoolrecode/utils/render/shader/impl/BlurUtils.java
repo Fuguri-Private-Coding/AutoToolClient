@@ -36,8 +36,6 @@ public class BlurUtils implements Imports {
         if (blur == null) blur = Modules.getInstance().getModule(Blur.class);
         if (!Display.isActive() || !Display.isVisible() || !blur.isToggled()) return;
 
-        inputFramebuffer.bindFramebuffer(true);
-
         final int radius = blur.radius.getValue();
 
         outputFramebuffer.bindFramebuffer(true);

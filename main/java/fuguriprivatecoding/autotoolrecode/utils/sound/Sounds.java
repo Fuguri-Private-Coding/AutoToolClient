@@ -17,7 +17,7 @@ public class Sounds {
     @Getter static Sound enableSound, disableSound;
 
     public void init() throws IOException {
-        if (SOUND_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию для звуков.");
+        SOUND_DIRECTORY.mkdirs();
 
         File enable = new File(SOUND_DIRECTORY, "enableSound.wav");
         File disable = new File(SOUND_DIRECTORY, "disableSound.wav");
@@ -27,7 +27,5 @@ public class Sounds {
 
         enableSound = new Sound(enable);
         disableSound = new Sound(disable);
-
-        ClientUtils.chatLog("Успешно инициализировал звуки.");
     }
 }

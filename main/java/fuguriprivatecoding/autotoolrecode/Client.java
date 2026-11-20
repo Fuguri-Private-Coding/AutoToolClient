@@ -56,7 +56,6 @@ public class Client implements Imports {
 	public boolean starting = true;
 
 	public void init() throws IOException {
-		long start = System.nanoTime();
 		starting = true;
 
         File msdf_gen_file = new File(CLIENT_DIR, "msdf-gen.zip");
@@ -106,7 +105,7 @@ public class Client implements Imports {
         Commands.init();
         PositionResolverComponent.getInstance().init();
 		Clicks.getInstance().init();
-        Player.getInstance().registerToEvents();
+        Player.getInstance().init();
 
 		ViaMCP.create();
 
@@ -120,7 +119,7 @@ public class Client implements Imports {
 
 		Configs.getDefaultConfig().load();
 
-        Discord.init();
+        Discord.start();
 
         starting = false;
 
@@ -136,9 +135,6 @@ public class Client implements Imports {
                 throw new RuntimeException(e);
             }
         }
-
-		double elapsedNanos = System.nanoTime() - start;
-		ConsoleScreen.log("Клиент инициализировался за " + String.format("%.2f", (float) (elapsedNanos / 1000000000D)) + " секунд.");
 	}
 
 	public void onClose() {
@@ -148,9 +144,9 @@ public class Client implements Imports {
     }
 
     private void createDirectories() {
-        if (CLIENT_DIR.mkdirs()) ClientUtils.chatLog("Успешно создал директорию клиента.");
-        if (SKIN_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию скинов.");
-        if (CAPE_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию плащей.");
+        CLIENT_DIR.mkdirs();
+        SKIN_DIRECTORY.mkdirs();
+        CAPE_DIRECTORY.mkdirs();
     }
 
     public String getFullName() {

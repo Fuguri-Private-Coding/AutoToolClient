@@ -1,12 +1,9 @@
 package smtc;
 
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
-
 public final class SmtcNative {
 
     public static void init() {
         System.loadLibrary("smtc_bridge");
-        ClientUtils.chatLog("Успешно инициализировал SMTC Native Bridge.");
     }
 
     public static native boolean nInit();

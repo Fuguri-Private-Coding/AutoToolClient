@@ -2,8 +2,9 @@ package fuguriprivatecoding.autotoolrecode.module.impl.player;
 
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
-import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.BestClickTimingEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.ModuleInfo;
@@ -20,23 +21,31 @@ import org.lwjgl.input.Mouse;
 public class FastPlace extends Module {
 
     DoubleSlider CPS = new DoubleSlider("CPS", this, 1,80,20,1f);
+    private final DoubleSlider CPSUpdateDelay = new DoubleSlider("CPSUpdateDelay", this, 0, 20, 5, 1);
     CheckBox oneClick = new CheckBox("OneClick", this, true);
 
-    StopWatch timer = new StopWatch();
+    private final StopWatch clickTimer = new StopWatch();
+    private long delay;
 
-    long delay;
-    int clicks = 0;
+    private double currentCps;
+    private int currentCpsUpdateDelay;
+    private int clicks = 1;
 
     @Override
     public void onEvent(Event event) {
         if (Modules.getInstance().getModule(Scaffold.class).isToggled() || mc.currentScreen != null) return;
 
         if (event instanceof RunGameLoopEvent) {
-            if (timer.reachedMS(delay)) {
-                delay = (long) (1000D / CPS.getRandomizedIntValue());
+            if (clickTimer.reachedMS(delay)) {
+                updateDelay();
+                clickTimer.reset();
+
                 clicks++;
-                timer.reset();
             }
+        }
+
+        if (event instanceof TickEvent) {
+            if (currentCpsUpdateDelay > 0) currentCpsUpdateDelay--;
         }
 
         if (event instanceof BestClickTimingEvent) {
@@ -67,8 +76,20 @@ public class FastPlace extends Module {
         boolean item = heldStack != null && heldStack.getItem() instanceof ItemBlock;
         boolean hitBlock = hit.typeOfHit == RayTrace.RayType.BLOCK;
 
-        boolean oneClickCheck = !this.oneClick.isToggled() || oneClick;
+//        boolean oneClickCheck = !this.oneClick.isToggled() || oneClick;
 
-        return Mouse.isButtonDown(1) && oneClickCheck && item && hitBlock;
+        return Mouse.isButtonDown(1) && item && hitBlock;
+    }
+
+    private void updateDelay() {
+        updateCps();
+        delay = Math.round(1000 / currentCps);
+    }
+
+    private void updateCps() {
+        if (currentCpsUpdateDelay == 0) {
+            currentCpsUpdateDelay = CPSUpdateDelay.getRandomizedIntValue();
+            currentCps = CPS.getRandomizedDoubleValue();
+        }
     }
 }

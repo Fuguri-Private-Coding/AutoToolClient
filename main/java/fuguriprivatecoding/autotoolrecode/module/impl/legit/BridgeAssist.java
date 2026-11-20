@@ -18,7 +18,7 @@ public class BridgeAssist extends Module {
     CheckBox sneakIfPressed = new CheckBox("SneakIfPressed", this);
     CheckBox pitchCheck = new CheckBox("PitchCheck", this);
 
-    DoubleSlider pitch = new DoubleSlider("Pitch",this, pitchCheck::isToggled, 0,90, 90,0.1f);
+    DoubleSlider pitch = new DoubleSlider("Pitch",this, pitchCheck::isToggled, 0,90, 60, 90,0.1f);
 
     @Override
     public void onEvent(Event event) {

@@ -36,12 +36,13 @@ public class GuiMove extends Module {
     }
 
     private boolean isKeyHandle(GuiScreen current) {
+        if (current == null) return false;
         return switch (current) {
             case ClickScreen clickScreen -> !clickScreen.binding && clickScreen.activeKeyBind == null && guis.get("Client");
             case ConfigScreen configScreen -> !configScreen.textField.isFocused() && guis.get("Client");
             case GuiInventory _ -> guis.get("Inventory");
             case GuiChest _ -> guis.get("Chest");
-            case null, default -> false;
+            default -> false;
         };
     }
 }

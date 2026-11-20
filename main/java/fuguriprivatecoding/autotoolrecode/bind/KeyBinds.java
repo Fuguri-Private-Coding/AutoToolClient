@@ -4,7 +4,6 @@ import com.google.gson.*;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.module.Module;
 import fuguriprivatecoding.autotoolrecode.module.Modules;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
@@ -19,7 +18,7 @@ public class KeyBinds {
     @Getter File bindFile = new File(BIND_DIRECTORY, "binds.json");
 
     public void init() {
-        if (BIND_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию для биндов");
+        BIND_DIRECTORY.mkdirs();
     }
 
     public void loadBinds() {
@@ -36,7 +35,6 @@ public class KeyBinds {
                 JsonObject moduleObject = (JsonObject) entry.getValue();
                 module.setKey(moduleObject.get("key").getAsInt());
             }
-            ClientUtils.chatLog("Успешно загрузил бинды");
         } catch (RuntimeException | IOException e) {
             e.printStackTrace(System.out);
         }

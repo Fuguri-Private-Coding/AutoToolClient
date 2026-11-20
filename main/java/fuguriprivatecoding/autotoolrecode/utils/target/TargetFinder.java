@@ -38,6 +38,10 @@ public class TargetFinder implements Imports {
             }
         }
 
+        if (entityList.isEmpty()) {
+            return null;
+        }
+
         return entityList;
     }
 

@@ -54,16 +54,11 @@ public class Module implements Imports, SettingAble, EventListener, KeyListener 
 	public void toggle() {
 		toggled = !toggled;
 
-		if (toggled) {
-			registerToEvents();
-		} else {
-			unRegisterToEvents();
-		}
-
         ClientSettings clientSettings = Modules.getInstance().getModule(ClientSettings.class);
 
 		if (clientSettings != null && clientSettings.toggleSound.isToggled()) {
-			playSound();
+			float volume = clientSettings.volume.getValue();
+			playSound(volume);
 		}
 
         tick(toggled);
@@ -78,9 +73,9 @@ public class Module implements Imports, SettingAble, EventListener, KeyListener 
         if (!Client.getInstance().starting && notifications != null && notifications.isToggled() && !name.equalsIgnoreCase("ClickGui")) Notifications.addNotification(getName(), toggled);
     }
 
-	void playSound() {
+	void playSound(float volume) {
 		if (Client.getInstance().starting || name.equalsIgnoreCase("ClickGui")) return;
-        (toggled ? Sounds.getEnableSound() : Sounds.getDisableSound()).playSound(0.9f);
+        (toggled ? Sounds.getEnableSound() : Sounds.getDisableSound()).playSound(volume);
 	}
 
 	public void tick(boolean toggled) {

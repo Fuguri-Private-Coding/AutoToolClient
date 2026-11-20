@@ -59,6 +59,11 @@ public class Notifications extends Module {
     }
 
     @Override
+    public boolean shouldListenEvents() {
+        return true;
+    }
+
+    @Override
     public void onEvent(Event event) {
         if (event instanceof RenderScreenEvent) {
             if (!notifications.isEmpty()) {

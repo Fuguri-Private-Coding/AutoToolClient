@@ -3,6 +3,7 @@ package fuguriprivatecoding.autotoolrecode.module.impl.legit;
 import fuguriprivatecoding.autotoolrecode.event.Event;
 import fuguriprivatecoding.autotoolrecode.event.events.RunGameLoopEvent;
 import fuguriprivatecoding.autotoolrecode.event.events.player.ClickEvent;
+import fuguriprivatecoding.autotoolrecode.event.events.world.TickEvent;
 import fuguriprivatecoding.autotoolrecode.handle.Clicks;
 import fuguriprivatecoding.autotoolrecode.module.Category;
 import fuguriprivatecoding.autotoolrecode.module.Module;
@@ -26,8 +27,8 @@ public class AutoClicker extends Module {
     private final StopWatch clickTimer = new StopWatch();
     private long delay;
 
-    private double currentCps = 10;
-    private int currentCpsUpdateDelay = 1;
+    private double currentCps;
+    private int currentCpsUpdateDelay;
 
     @Override
     public void onEvent(Event event) {
@@ -40,6 +41,10 @@ public class AutoClicker extends Module {
 
                 Clicks.getInstance().addClick();
             }
+        }
+
+        if (event instanceof TickEvent) {
+            if (currentCpsUpdateDelay > 0) currentCpsUpdateDelay--;
         }
 
         if (event instanceof ClickEvent e && e.getButton() == ClickEvent.Button.LEFT) {

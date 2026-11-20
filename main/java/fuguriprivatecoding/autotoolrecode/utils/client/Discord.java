@@ -14,10 +14,6 @@ public class Discord implements Imports {
     @Getter private static String name, id;
     private static long timestamp;
 
-    public static void init() {
-        start();
-    }
-
     public static void start() {
         DiscordThread thread = new DiscordThread();
         thread.setDaemon(true);

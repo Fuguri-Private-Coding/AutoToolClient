@@ -307,6 +307,12 @@ public class KillAura extends Module {
     private EntityLivingBase findNewTarget() {
         List<EntityLivingBase> entityList = TargetFinder.findTarget(findDistance.getValue(), targets.get("Players"), targets.get("Mobs"), targets.get("Animals"), targets.get("Villagers"));
 
+        if (entityList == null) {
+            if (TargetStorage.getTarget() != null)
+                CameraRot.INST.setWillChange(false);
+            return null;
+        }
+
         entityList.sort(
             switch (sortType.getMode()) {
                 case "Distance" -> Comparator.comparingDouble(DistanceUtils::getDistance);

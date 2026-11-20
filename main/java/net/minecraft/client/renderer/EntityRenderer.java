@@ -1107,7 +1107,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
                     GlStateManager.disableLighting();
                     GlStateManager.enableAlpha();
 
-                    if (blur.isToggled()) BlurUtils.draw();
+                    if (blur.isToggled() && (mc.getCurrentServerData() != null || mc.getIntegratedServer() != null)) BlurUtils.draw();
                     this.mc.getFramebuffer().bindFramebuffer(false);
                     this.framebuffer.bindFramebufferTexture();
                     Shader.drawQuad();

@@ -10,7 +10,6 @@ import fuguriprivatecoding.autotoolrecode.module.impl.misc.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.move.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.player.*;
 import fuguriprivatecoding.autotoolrecode.module.impl.visual.*;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -29,98 +28,111 @@ public class Modules {
 	private final Map<Class<? extends Module>, Module> classModuleMap = new HashMap<>();
 
 	public void init() {
-		new Dot();
-		new AutoSoup();
-		new AspectRatio();
-		new DynamicIsland();
-		new AutoRegister();
-		new FastLadder();
-		new BridgeAssist();
+		// Combat
 		new AntiBot();
-		new FovModifier();
-		new Notifications();
-		new ItemPhysics();
-		new CPSBooster();
-		new Trajectory();
-		new FastBreak();
-		new Regen();
-		new Reach();
-		new Teams();
+		new AutoSoup();
+		new ClickSettings();
 		new Hitbox();
-		new Blur();
-		new FastPlace();
-		new BedESP();
-		new CustomSkin();
-		new Booster();
-		new ChestStealer();
+		new KeepSprint();
 		new MoreKB();
-		new Velocity();
-		new MurderMystery();
-		new InvManager();
-		new CPSCounter();
-		new CenteredInventory();
-		new CustomCrosshair();
-		new ESP();
-		new NoFall();
-		new BackTrack();
+		new Reach();
 		new RotationHandler();
-		new Glow();
-		new Fly();
+		new Teams();
+		new TimerRange();
+		new Velocity();
+		new KillAura();
+
+		// Connect
+		new BackTrack();
+		new Blink();
+		new Ping();
+
+		// Legit
+		new AimAssist();
 		new AutoClicker();
-		new AutoTool();
-		new AntiFireball();
-		new ChestESP();
-		new Phase();
+		new BridgeAssist();
+		new CPSBooster();
+		new InvClicker();
+
+		// Misc
+		new AutoLeave();
+		new ClientSpoofer();
+		new Debugger();
+		new FakeGameMode();
+		new Fixes();
+		new FlagDetector();
+		new MidClick();
+		new MurderMystery();
 		new NoScreenClose();
+		new RawMouseInput();
+
+		// Move
 		new AirStuck();
-		new VClip();
+		new Booster();
+		new FastLadder();
+		new Fly();
+		new GuiMove();
+		new HighJump();
+		new LongJump();
+		new NoFall();
 		new NoSlow();
 		new NoWeb();
 		new Speed();
 		new Sprint();
 		new Timer();
+		new VClip();
+
+		// Player
+		new AntiFireball();
+		new AutoRegister();
+		new AutoTool();
+		new ChestStealer();
+		new FastBreak();
+		new FastPlace();
+		new Fucker();
+		new InvManager();
+		new Phase();
+		new Regen();
+		new Scaffold();
+
+		// Visual
 		new ArrayList();
-		new MoreSwing();
-		new Debugger();
-		new Ping();
-		new TargetESP();
-		new FullBright();
-		new ClientSpoofer();
-		new TimerRange();
-		new KillAura();
+		new AspectRatio();
+		new BedESP();
+		new BlockOverlay();
+		new Blur();
+		new CenteredInventory();
+		new ChestESP();
 		new ClickGui();
-		new Fixes();
-		new FlagDetector();
-		new AimAssist();
-		new Blink();
-		new MotionBlur();
+		new CPSCounter();
+		new CustomCamera();
+		new CustomCape();
+		new CustomCrosshair();
+		new CustomSkin();
+		new Dot();
+		new DynamicIsland();
+		new Effects();
+		new ESP();
+		new FovModifier();
+		new FullBright();
+		new Glow();
 		new Hand();
-		new ViewBobbing();
-		new ClickSettings();
+		new HurtCamera();
+		new ItemPhysics();
+		new MoreSwing();
+		new MotionBlur();
 		new NameTags();
 		new NoRender();
-		new MidClick();
-		new CustomCape();
-		new InvClicker();
-		new Fucker();
-		new HurtCamera();
-		new CustomCamera();
-		new BlockOverlay();
-		new FakeGameMode();
-		new KeepSprint();
-		new AutoLeave();
-		new Effects();
-		new GuiMove();
-		new ClientSettings();
+		new Notifications();
 		new ScoreBoard();
-		new TimeChanger();
+		new TargetESP();
 		new TestRender();
-		new Scaffold();
-		new HighJump();
-		new LongJump();
-		new RawMouseInput();
+		new TimeChanger();
+		new Trajectory();
+		new ViewBobbing();
 
-		ClientUtils.chatLog("Успешно инициализировал модули.");
+		// Client
+		new ClientSettings();
 	}
 
 	public void register(Module module) {

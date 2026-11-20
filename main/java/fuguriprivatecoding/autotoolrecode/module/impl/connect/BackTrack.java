@@ -169,16 +169,16 @@ public class BackTrack extends Module {
             double distanceToReal = DistanceUtils.getDistance(realBox);
             double distanceToFake = DistanceUtils.getDistance(target);
 
-            boolean improve = distanceToFake + threshold.getValue() < distanceToReal;
+            boolean improve = distanceToFake + threshold.getValue() >= distanceToReal;
 
-            boolean distance = distanceToReal <= this.distance.getMaxValue() && distanceToReal >= this.distance.getMinValue();
+            boolean distance = distanceToReal > this.distance.getMaxValue() || distanceToReal < this.distance.getMinValue();
 
-            boolean targetHurtTime = !resetIf.get("TargetHurtTime") || target.hurtTime <= minTargetHurtTime.getValue();
-            boolean playerHurtTime = !resetIf.get("PlayerHurtTime") || mc.thePlayer.hurtTime <= minPlayerHurtTime.getValue();
+            boolean targetHurtTime = target.hurtTime > minTargetHurtTime.getValue() && resetIf.get("TargetHurtTime");
+            boolean playerHurtTime = mc.thePlayer.hurtTime > minPlayerHurtTime.getValue() && resetIf.get("PlayerHurtTime");
 
-            boolean onlyWhenNeed = !this.onlyWhenNeed.isToggled() || (mc.thePlayer.hurtTime < 8 && mc.thePlayer.hurtTime > 3 && distanceToReal > 3);
+            boolean onlyWhenNeed = this.onlyWhenNeed.isToggled() && mc.thePlayer.hurtTime < 8 && mc.thePlayer.hurtTime > 3 && distanceToReal > 3;
 
-            working = improve && distance && targetHurtTime && playerHurtTime && onlyWhenNeed;
+            working = !improve && !distance && !targetHurtTime && !playerHurtTime && !onlyWhenNeed;
 
             if (!working) {
                 handle(true);
@@ -252,6 +252,10 @@ public class BackTrack extends Module {
                 return TargetStorage.getSelectedEntity();
             } else {
                 List<EntityLivingBase> targets = TargetFinder.findTarget(findTargetDistance.getValue(), true, false, false, false);
+
+                if (targets == null)
+                    return null;
+
                 targets.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
 
                 return targets.getFirst();

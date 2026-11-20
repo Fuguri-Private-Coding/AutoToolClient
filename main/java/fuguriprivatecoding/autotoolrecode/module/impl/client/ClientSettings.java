@@ -13,6 +13,7 @@ import fuguriprivatecoding.autotoolrecode.utils.time.DeltaTracker;
 public class ClientSettings extends Module {
 
     public CheckBox toggleSound = new CheckBox("ToggleSound", this, true);
+    public FloatSetting volume = new FloatSetting("ToggleVolume", this, 0, 1, 0.9f, 0.1f);
     public FloatSetting backgroundRadius = new FloatSetting("BackgroundGuiRadius", this, 0.5f, 7, 7, 0.1f) {};
     public IntegerSetting scroll = new IntegerSetting("ScrollStep", this, -50, 50, 10);
     public FloatSetting scale = new FloatSetting("Scale", this, 0.5f, 2, 1, 0.01f) {};

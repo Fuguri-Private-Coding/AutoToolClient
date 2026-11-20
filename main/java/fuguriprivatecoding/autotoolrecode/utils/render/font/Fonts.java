@@ -18,7 +18,7 @@ public class Fonts implements Imports {
     public final File FONT_DIRECTORY = new File(Client.getInstance().CLIENT_DIR + "/fonts");
 
     public void init() {
-        if (FONT_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию для шрифтов.");
+        FONT_DIRECTORY.mkdirs();
         initFonts();
     }
 

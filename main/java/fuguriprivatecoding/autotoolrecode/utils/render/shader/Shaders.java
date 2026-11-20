@@ -1,14 +1,13 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.ResourceLocation;
 
 @UtilityClass
 public class Shaders {
 
-	public Shader roundedRect, background, gaussianBlur, bloom, motionBlur, msdfFonts, texture, fresnelTexture, stencil;
+	public Shader roundedRect, background, gaussianBlur, bloom, motionBlur, msdfFonts, texture, fresnelTexture;
 
 	public void init() {
 		roundedRect = new Shader(getShaderSource("roundedRect.glsl"), getShaderSource("vertex.txt"));
@@ -19,9 +18,6 @@ public class Shaders {
 		motionBlur = new Shader(getShaderSource("motionBlur.glsl"), getShaderSource("vertex.txt"));
 		texture = new Shader(getShaderSource("texture.glsl"), getShaderSource("vertex.txt"));
 		fresnelTexture = new Shader(getShaderSource("fresnelTexture.glsl"), getShaderSource("fresnelVertex.txt"));
-//		stencil = new Shader(getShaderSource("stencil.glsl"), getShaderSource("vertex.txt"));
-
-		ClientUtils.chatLog("Успешно инициализировал шейдеры.");
 	}
 
 	private ResourceLocation getShaderSource(String name) {

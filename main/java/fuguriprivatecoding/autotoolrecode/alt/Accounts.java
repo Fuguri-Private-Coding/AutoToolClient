@@ -1,9 +1,11 @@
 package fuguriprivatecoding.autotoolrecode.alt;
 
-import com.google.gson.*;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import fuguriprivatecoding.autotoolrecode.Client;
 import fuguriprivatecoding.autotoolrecode.gui.altmanager.AltScreen;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import fuguriprivatecoding.autotoolrecode.utils.file.FileUtils;
 import lombok.experimental.UtilityClass;
 
@@ -19,7 +21,7 @@ public class Accounts {
     File accountFile = new File(ACCOUNT_DIRECTORY, "accounts.json");
 
     public void init() {
-        if (ACCOUNT_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию аккаунтов.");
+        ACCOUNT_DIRECTORY.mkdirs();
     }
 
     public void loadAccounts() {

@@ -209,7 +209,7 @@ public class DynamicIsland extends Module {
 
         if (glass.isToggled()) {
             FresnelUtils.drawScreen(x, y, width, height, rectRadius.getValue(), 2f, 10f, Colors.WHITE.withAlpha(0f), 1f,
-                    2f, true, 1f, 0.1f, Colors.WHITE.withAlpha(1f)
+                    2f, true, 10f, 0.05f, Colors.WHITE.withAlpha(1f)
             );
         }
 

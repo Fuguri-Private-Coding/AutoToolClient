@@ -185,21 +185,19 @@ public class Ping extends Module {
                 if (actions.get("Distance")) {
                     List<EntityLivingBase> targets = TargetFinder.findTarget(8f, true, false, false, false);
 
-                    if (targets.isEmpty()) {
-                        return;
-                    }
+                    if (targets != null) {
+                        targets.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
 
-                    targets.sort(Comparator.comparingDouble(RotUtils::getFovToEntity));
+                        EntityLivingBase storageTarget = TargetStorage.getTarget();
+                        EntityLivingBase target = targets.getFirst();
 
-                    EntityLivingBase storageTarget = TargetStorage.getTarget();
-                    EntityLivingBase target = targets.getFirst();
+                        if (storageTarget != null) {
+                            target = storageTarget;
+                        }
 
-                    if (storageTarget != null) {
-                        target = storageTarget;
-                    }
-
-                    if (target != null && DistanceUtils.getDistance(target) <= distanceToReset.getValue()) {
-                        reset(distanceDelay.getValue());
+                        if (target != null && DistanceUtils.getDistance(target) <= distanceToReset.getValue()) {
+                            reset(distanceDelay.getValue());
+                        }
                     }
                 }
 

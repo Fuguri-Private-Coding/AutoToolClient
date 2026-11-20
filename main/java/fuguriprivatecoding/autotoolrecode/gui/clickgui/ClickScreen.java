@@ -78,8 +78,6 @@ public class ClickScreen extends GuiScreen implements EventListener {
 
 	final Animation2D settingLine, background, sizeBackground, modulesScrolls, moduleLine, settingsScrolls;
 
-	Rot offsetRot = Constants.ROT_ZERO, prevOffsetRot = Constants.ROT_ZERO;
-
 	final EasingAnimation guis = new EasingAnimation();
 
     public static ClickScreen INST;

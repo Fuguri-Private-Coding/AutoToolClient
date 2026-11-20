@@ -36,8 +36,7 @@ public class Configs implements Imports {
     public static final JsonParser JSON_PARSER = new JsonParser();
 
     public void init() {
-        if (CONFIG_DIRECTORY.mkdirs()) ClientUtils.chatLog("Успешно создал директорию для конфигов.");
-
+        CONFIG_DIRECTORY.mkdirs();
         refreshConfigs();
     }
 

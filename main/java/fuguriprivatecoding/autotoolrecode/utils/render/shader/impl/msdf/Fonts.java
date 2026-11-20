@@ -1,10 +1,8 @@
 package fuguriprivatecoding.autotoolrecode.utils.render.shader.impl.msdf;
 
 import fuguriprivatecoding.autotoolrecode.Client;
-import fuguriprivatecoding.autotoolrecode.utils.client.ClientUtils;
 import lombok.experimental.UtilityClass;
 
-import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +21,6 @@ public class Fonts {
         FONTS.put("Roboto", MsdfFont.create("Roboto"));
 
         if (FONTS_DIR.mkdir()) {
-            ClientUtils.chatLog("При инициализации шрифтов, папки \"" + FONTS_DIR.getName() + "\" не существовало.");
-            ClientUtils.chatLog("Инициализация отменена.");
             return;
         }
 

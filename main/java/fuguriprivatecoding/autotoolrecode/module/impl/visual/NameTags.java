@@ -36,8 +36,6 @@ public class NameTags extends Module {
     public final ColorSetting backgroundColor = new ColorSetting("BackgroundColor", this, background::isToggled);
     public final CheckBox textShadow = new CheckBox("TextShadow", this);
 
-    public final CheckBox renderAllNames = new CheckBox("RenderAllNames", this, false);
-
     private final IntegerSetting maxDistanceToRender = new IntegerSetting("MaxDistanceToRender", this,0, 256, 256);
 
     final CheckBox glow = new CheckBox("Glow", this);
@@ -54,10 +52,11 @@ public class NameTags extends Module {
             for (EntityPlayer entity : mc.theWorld.playerEntities) {
                 if (shouldContinue(entity)) continue;
 
-                Vec3 pos = entity.getSmoothPositionVector().subtract(RenderManager.getRenderPosition());
-                Vec3 addPos = new Vec3(0, entity.getEyeHeight() + yOffset.getValue(), 0);
+                Vec3 pos = entity.getSmoothPositionVector()
+                    .subtract(RenderManager.getRenderPosition())
+                    .addVector(0, entity.getEyeHeight() + yOffset.getValue(), 0);
 
-                renderNameTag(getText(entity), pos.add(addPos), false);
+                renderNameTag(getText(entity), pos, false);
             }
 
             if (glow.isToggled()) {
@@ -65,10 +64,11 @@ public class NameTags extends Module {
                 for (EntityPlayer entity : mc.theWorld.playerEntities) {
                     if (shouldContinue(entity)) continue;
 
-                    Vec3 pos = entity.getSmoothPositionVector().subtract(RenderManager.getRenderPosition());
-                    Vec3 addPos = new Vec3(0, entity.getEyeHeight() + yOffset.getValue(), 0);
+                    Vec3 pos = entity.getSmoothPositionVector()
+                        .subtract(RenderManager.getRenderPosition())
+                        .addVector(0, entity.getEyeHeight() + yOffset.getValue(), 0);
 
-                    renderNameTag(getText(entity), pos.add(addPos), true);
+                    renderNameTag(getText(entity), pos, true);
                 }
                 BloomUtils.stopWrite();
             }
