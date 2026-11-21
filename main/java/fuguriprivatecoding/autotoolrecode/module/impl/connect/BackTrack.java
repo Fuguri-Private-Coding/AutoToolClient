@@ -137,7 +137,7 @@ public class BackTrack extends Module {
                 if (adaptiveDelay.isToggled()) {
                     double minDistanceDelay = DistanceUtils.getDistance(target) / Math.clamp(this.distance.getMinValue(), 0, 3);
                     double distanceFactor = Math.clamp(minDistanceDelay, 0, 1);
-                    currentDelay = (long) (saveDelay * distanceFactor);
+                    currentDelay -= (long) (saveDelay - (saveDelay * distanceFactor));
                 }
             } else {
                 if (delayBetweenBackTracks > 0) delayBetweenBackTracks--;

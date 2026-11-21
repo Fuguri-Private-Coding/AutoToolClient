@@ -77,13 +77,15 @@ public class Notifications extends Module {
         }
 
         if (event instanceof Render2DEvent) {
+            if (Modules.getInstance().getModule(DynamicIsland.class).isToggled())
+                return;
+
             ScaledResolution sc = new ScaledResolution(mc);
             ClientFont fontRenderer = Fonts.fonts.get(fonts.getMode());
 
             final float[] yOffset = {0};
             for (Notification notification : notifications) {
                 EasingAnimation openAnim = notification.getOpenAnim();
-                if (Modules.getInstance().getModule(DynamicIsland.class).isToggled()) continue;
 
                 String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
                 String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
@@ -111,7 +113,6 @@ public class Notifications extends Module {
                 BloomUtils.startWrite();
                 for (Notification notification : notifications) {
                     EasingAnimation openAnim = notification.getOpenAnim();
-                    if (Modules.getInstance().getModule(DynamicIsland.class).isToggled()) continue;
 
                     String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
                     String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
@@ -140,7 +141,6 @@ public class Notifications extends Module {
                 BlurUtils.startWrite();
                 for (Notification notification : notifications) {
                     EasingAnimation openAnim = notification.getOpenAnim();
-                    if (Modules.getInstance().getModule(DynamicIsland.class).isToggled()) continue;
 
                     String toggleText = notification.isToggled() ? "§a включен" : "§c выключен";
                     String text = ClientUtils.prefixLog + "§fМодуль " + notification.getText() + "§f был" + toggleText + "§f.";
